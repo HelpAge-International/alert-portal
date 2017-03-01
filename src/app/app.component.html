@@ -1,3 +1,5 @@
-<h1>
-  {{title}}
-</h1>
+<ul>
+  <li class="text" *ngFor="let group of groups | async">
+    {{group.$key}}
+  </li>
+</ul>
