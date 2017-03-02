@@ -29,6 +29,9 @@ Before running the tests make sure you are serving the app via `ng serve`.
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
+## IDE
+Basically, any IDE can be used to develop Angular2 applications. But in case you are using **IntelliJ IDEA** please refer to the [Documentation on setting up Angular2 settings](https://www.jetbrains.com/help/idea/2016.3/using-angularjs.html) before continuing.
+
 ## Translations - i18n
 Every string in .html templates should be available for translation. This includes image attributes along with paragrpahs or any other element containing text.
 
