@@ -40,6 +40,10 @@ For detailed instructions on how to mark text for translation, please refer to [
 ## Routing
 All the routes are defined in the `src/app/app-routing.module.ts`. As an example `/login` route is already defined.
 
+##Firebase
+For the Firebase connection, [AngularFire2](https://github.com/angular/angularfire2) library is used.
+Please see its [Documentation](https://github.com/angular/angularfire2/blob/master/docs/api-reference.md) that describes login and data retrieval/change processes
+
 For detailed instructions on using routes and route parameters, please refer to the [Angular's official documentation on Routing](https://angular.io/docs/ts/latest/guide/router.html)
 
 ## Folder Structure
