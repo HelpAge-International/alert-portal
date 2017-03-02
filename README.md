@@ -2,8 +2,11 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-rc.0.
 
+>**Please install [Angular CLI](https://github.com/angular/angular-cli) before continuing.**
+
 ## Development server
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` in root folder of the project for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
+> If `ng serve` fails, try running `npm install`first.
 
 ## Code scaffolding
 
@@ -26,16 +29,24 @@ Before running the tests make sure you are serving the app via `ng serve`.
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
+## Translations - i18n
+Every string in .html templates should be available for translation. This includes image attributes along with paragrpahs or any other element containing text.
 
------------------------------------------------
+For detailed instructions on how to mark text for translation, please refer to [Angular's official documentation on i18n](https://angular.io/docs/ts/latest/cookbook/i18n.html#!#i18n-attribute)
+ 
+## Routing
+All the routes are defined in the `src/app/app-routing.module.ts`. As an example `/login` route is already defined.
 
-### Structure:
+For detailed instructions on using routes and route parameters, please refer to the [Angular's official documentation on Routing](https://angular.io/docs/ts/latest/guide/router.html)
+
+## Folder Structure
 * "src" folder - project sources
 * "src/app" folder - main app component
 * "src/app/agency-admin" - agency-admin component
 * "src/app/country-admin" - country-admin component
 * "src/app/**any-other-folder**" - **any-other-folder** component
 * "src/app/assets" - images, other JavaScript and CSS fils are located in their respective subfolders
+* "src/app/app-routing.module.ts" - All the routes should be defined here. E.g. `/login` route is already defined as an example.
 
 ```
 .
@@ -54,6 +65,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 │   │   │   ├── agency-admin.component.html
 │   │   │   ├── agency-admin.component.spec.ts
 │   │   │   └── agency-admin.component.ts
+│   │   ├── app-routing.module.ts
 │   │   ├── app.component.css
 │   │   ├── app.component.html
 │   │   ├── app.component.spec.ts

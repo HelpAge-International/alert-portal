@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login',  component: LoginComponent },
   { path: 'agency-admin',  component: AgencyAdminComponent }
+  //TODO: define needed routes here. see the example above
 
 ];
 
