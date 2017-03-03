@@ -1,0 +1,104 @@
+{% extends "default.html" %} <!--Our page template-->
+{% set title = "Home" %} <!--Set our page title-->
+{% block header %}
+<div class="Header_bar">
+  <div class="Header_bar__wrap--inner">
+    {% include "parts/navbar.html"%}
+  </div>
+</div>
+<div class="Sub-header_bar">
+  {% include "parts/Subnav__system-admin.html"%}
+</div>
+{% endblock %}
+
+
+{% block content %} <!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+
+    <div class="Header-title__wrap">
+      <h1>Agency Settings</h1>
+    </div>
+
+
+    {% include "parts/Bordered-subnav.html"%}
+
+
+    <div class="Sub-header-title__wrap">
+      <h2>Support Skills</h2>
+      <button type="button" class="btn btn-outline-primary Inline-editable--enable">Edit Module Settings</button>
+    </div>
+
+
+    <div class="row Line-row Small-spaced Header">
+      <div class="col-lg-6 col-md-6 col-sm-12">Module</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Privacy Setting</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Status</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-6 col-md-6 col-sm-12">Min prep actions</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Public</div>
+      <div class="col-lg-3 col-md-3 col-sm-6">Enabled</div>
+    </div>
+
+
+  </div>
+</div>
+{% include "parts/modal.html"%}
+{% endblock %} <!--End of content-->

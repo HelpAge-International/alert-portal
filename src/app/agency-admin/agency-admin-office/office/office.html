@@ -1,0 +1,28 @@
+{% extends "default.html" %} <!--Our page template-->
+{% set title = "Home" %} <!--Set our page title-->
+{% block header %}
+<div class="Header_bar">
+  <div class="Header_bar__wrap--inner">
+    {% include "parts/navbar.html"%}
+  </div>
+</div>
+<div class="Sub-header_bar">
+  {% include "parts/Subnav__system-admin.html"%}
+</div>
+{% endblock %}
+
+{% block content %} <!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>Country Offices</h1>
+      <button type="button" class="btn btn-primary">Add new country office</button>
+    </div>
+
+    <div class="Empty--ribbon">You have not added any country offices to your agency</div>
+
+  </div>
+
+</div>
+{% include "parts/modal.html"%}
+{% endblock %} <!--End of content-->

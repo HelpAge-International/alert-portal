@@ -1,0 +1,57 @@
+{% extends "default.html" %} <!--Our page template-->
+{% set title = "Home" %} <!--Set our page title-->
+{% block header %}
+<div class="Header_bar">
+  <div class="Header_bar__wrap--inner">
+    {% include "parts/navbar.html"%}
+  </div>
+</div>
+<div class="Sub-header_bar">
+  {% include "parts/Subnav__system-admin.html"%}
+</div>
+{% endblock %}
+
+{% block content %} <!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Back--button">Messages</div>
+
+    <div class="Header-title__wrap">
+      <h1>Create new message</h1>
+    </div>
+
+
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="form-group">
+          <label for="n-Done">Title</label>
+          <input type="text" class="form-control" name="n-Done">
+        </div>
+      </div>
+    </div>
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="form-group">
+          <label for="n-Done">Message Content</label>
+          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <label for="f-Format">Recipients</label>
+    <div class="row">
+      <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" name="f-Format" id="All">All users</label>
+      <label for="Agency" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" name="f-Format" id="Agency">Agency Administrators</label>
+      <label for="Country Administrators" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" name="f-Format" id="Country Administrators">Country Administrators</label>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-primary">Send message</div>
+      <div class="btn btn-primary btn-ghost">Cancel</div>
+    </div>
+
+  </div>
+</div>
+{% include "parts/modal.html"%}
+{% endblock %} <!--End of content-->

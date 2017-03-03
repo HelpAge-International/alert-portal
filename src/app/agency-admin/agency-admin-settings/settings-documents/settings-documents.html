@@ -1,0 +1,119 @@
+{% extends "default.html" %} <!--Our page template-->
+{% set title = "Home" %} <!--Set our page title-->
+{% block header %}
+<div class="Header_bar">
+  <div class="Header_bar__wrap--inner">
+    {% include "parts/navbar.html"%}
+  </div>
+</div>
+<div class="Sub-header_bar">
+  {% include "parts/Subnav__system-admin.html"%}
+</div>
+{% endblock %}
+
+
+{% block content %} <!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+
+    <div class="Header-title__wrap">
+      <h1>Agency Settings</h1>
+    </div>
+
+
+    {% include "parts/Bordered-subnav.html"%}
+
+
+    <div class="Sub-header-title__wrap">
+      <h2>Documents</h2>
+    </div>
+
+    <div class="row Spacing-wrap">
+      <div class="col-lg-1 col-md-2">Filter:</div>
+      <div class="col-lg-3 col-md-4">
+        <select class="form-control">
+          <option>All documents</option>
+          <option>MPA</option>
+          <option>APA</option>
+          <option>Response Plan</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="Sub-header-title__wrap">
+      <h2>Phillipines</h2>
+      <span class="Hide-all">Hide all</span>
+    </div>
+
+    <div class="row Line-row Small-spaced Header">
+      <div class="col-lg-1">Action</div>
+      <div class="col-lg-3">Action Name</div>
+      <div class="col-lg-2">Name</div>
+      <div class="col-lg-1">Type</div>
+      <div class="col-lg-2">Uploaded by</div>
+      <div class="col-lg-2">Date &amp; Time</div>
+      <div class="col-lg-1"></div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-1 col-md-3">MPA</div>
+      <div class="col-lg-3 col-md-6">Establish Emergency Response Team/Structure (assign people…</div>
+      <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
+      <div class="col-lg-1 col-md-3">PDF</div>
+      <div class="col-lg-2 col-md-3">Jack Thompson</div>
+      <div class="col-lg-2 col-md-3">02/02/2017 at 16:04</div>
+      <div class="col-lg-1 col-md-3">View</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-1 col-md-3">MPA</div>
+      <div class="col-lg-3 col-md-6">Develop volunteer’s programme/framework on emergencies…</div>
+      <div class="col-lg-2 col-md-3">hurricaneresponse.pdf</div>
+      <div class="col-lg-1 col-md-3">PDF</div>
+      <div class="col-lg-2 col-md-3">Jack Thompson</div>
+      <div class="col-lg-2 col-md-3">01/02/2017 at 09:28</div>
+      <div class="col-lg-1 col-md-3">View</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-1 col-md-3">Response plan: Typhoon</div>
+      <div class="col-lg-3 col-md-6">Rapid response health, shelter and cash project to 6,000 typho…</div>
+      <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
+      <div class="col-lg-1 col-md-3">PDF</div>
+      <div class="col-lg-2 col-md-3">Jack Thompson</div>
+      <div class="col-lg-2 col-md-3">02/02/2017 at 16:04</div>
+      <div class="col-lg-1 col-md-3">View</div>
+    </div>
+
+    <div class="row Line-row Small-spaced">
+      <div class="col-lg-1 col-md-3">MPA</div>
+      <div class="col-lg-3 col-md-6">Establish Emergency Response Team/Structure (assign people…</div>
+      <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
+      <div class="col-lg-1 col-md-3">PDF</div>
+      <div class="col-lg-2 col-md-3">Jack Thompson</div>
+      <div class="col-lg-2 col-md-3">02/02/2017 at 16:04</div>
+      <div class="col-lg-1 col-md-3">View</div>
+    </div>
+
+    <div class="Sub-header-title__wrap">
+      <h2>Malaysia</h2>
+      <span class="Hide-all Hidden">Show all</span>
+    </div>
+
+    <div class="Sub-header-title__wrap">
+      <h2>Indonesia</h2>
+      <span class="Hide-all Hidden">Show all</span>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-outline-secondary">Cancel</div>
+      <div class="btn btn-primary">Save settings</div>
+    </div>
+
+
+
+  </div>
+</div>
+{% include "parts/modal.html"%}
+{% endblock %} <!--End of content-->
