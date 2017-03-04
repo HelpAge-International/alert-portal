@@ -18,6 +18,16 @@ import { DirectorDashboardComponent } from './director-dashboard/director-dashbo
 import { DonorModuleComponent } from './donor-module/donor-module.component';
 
 import { AppRoutingModule }     from './app-routing.module';
+import { ForgotPasswordComponent } from './login/forgot-password/forgot-password.component';
+import { AddAgencyComponent } from './system-admin/add-agency/add-agency.component';
+import { MessagesComponent } from './system-admin/messages/messages.component';
+import { SystemAdminMenuComponent } from './system-admin/system-admin-menu/system-admin-menu.component';
+import { MessagesCreateComponent } from './system-admin/messages/messages-create/messages-create.component';
+import { MinPrepComponent } from './system-admin/min-prep/min-prep.component';
+import { MpaComponent } from './system-admin/mpa/mpa.component';
+import { CreateActionComponent } from './system-admin/min-prep/create-action/create-action.component';
+import { CreateMpaActionComponent } from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
+import { SystemSettingsComponent } from './system-admin/system-settings/system-settings.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -47,7 +57,17 @@ const firebaseAuthConfig = {
     CountryOfficeProfileComponent,
     MapComponent,
     DirectorDashboardComponent,
-    DonorModuleComponent
+    DonorModuleComponent,
+    ForgotPasswordComponent,
+    AddAgencyComponent,
+    MessagesComponent,
+    SystemAdminMenuComponent,
+    MessagesCreateComponent,
+    MinPrepComponent,
+    MpaComponent,
+    CreateActionComponent,
+    CreateMpaActionComponent,
+    SystemSettingsComponent
   ],
   imports: [
     BrowserModule,
