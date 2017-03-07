@@ -3,6 +3,10 @@
   </div>
 </div>
 
+<div [hidden]="inactive" class="Alert-error">
+  {{errorMessage}}
+</div>
+
 <!--Start Put page data-->
 <div class="Page-top__wrap">
   <div class="Login__wrap--inner">
@@ -15,15 +19,15 @@
 
     <div class="input-group">
       <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
-      <input type="text" class="form-control" placeholder="Email Address" aria-describedby="basic-addon1">
+      <input [(ngModel)]="localUser.userEmail" type="text" class="form-control" placeholder="Email Address" aria-describedby="basic-addon1">
     </div>
 
     <div class="input-group">
-      <span class="input-group-addon" id="basic-addon1"><i class="fa fa-lock" aria-hidden="true"></i></span>
-      <input type="text" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
+      <span class="input-group-addon" id="basic-addon2"><i class="fa fa-lock" aria-hidden="true"></i></span>
+      <input [(ngModel)]="localUser.password" type="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
     </div>
 
-    <button type="submit" class="btn btn-primary Login__button--submit">Login</button>
+    <button type="submit" class="btn btn-primary Login__button--submit" (click)="onSubmit()">Login</button>
     <a routerLink="/forgot-password" class="Login__forgotten-pass">Forgot your password?</a>
   </div>
 
