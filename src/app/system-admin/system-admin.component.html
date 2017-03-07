@@ -19,16 +19,18 @@
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button">Back</div>
+    <!--<div class="Back&#45;&#45;button">Back</div>-->
     <div class="Header-title__wrap">
       <h1>Agencies</h1>
-      <a href="/system-admin/add-agency" class="btn btn-primary">Add new agency</a>
+      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">Add new agency</a>
     </div>
 
     <!-- Display only when no agencies in the list -->
-    <div class="Empty--ribbon" style="display: none">No agencies have been added to the Alert Portal</div>
+    <div *ngIf="agencies.isEmpty" class="Empty--ribbon">
+      No agencies have been added to the Alert Portal
+    </div>
 
-    <table class="table Table__v-spacing__mid Agency-table">
+    <table *ngIf="!agencies.isEmpty" class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>Logo</th>
         <th>Agency Name</th>
@@ -36,26 +38,27 @@
         <th>Status</th>
         <th>Actions</th>
       </tr>
-      <tr>
-        <td><img src="/assets/images/ocha.png" alt="" class="Agency-logo"></td>
-        <td>OCHA</td>
+      <tr *ngFor="let agency of agencies | async">
+        <td><img src="{{agency.logoPath}}" alt="" class="Agency-logo"></td>
+        <td>{{agency.name}}</td>
         <td></td>
-        <td>Active</td>
+        <td *ngIf="agency.isActive">Active</td>
+        <td *ngIf="!agency.isActive">DeActive</td>
         <td>
           <div class="btn btn-danger">Deactivate</div>
           <div class="btn btn-primary">Edit</div>
         </td>
       </tr>
-      <tr>
-        <td><img src="/assets/images/oxfam.png" alt="" class="Agency-logo"></td>
-        <td>Oxfam</td>
-        <td></td>
-        <td>Active</td>
-        <td>
-          <div class="btn btn-danger">Deactivate</div>
-          <div class="btn btn-primary">Edit</div>
-        </td>
-      </tr>
+      <!--<tr>-->
+      <!--<td><img src="/assets/images/oxfam.png" alt="" class="Agency-logo"></td>-->
+      <!--<td>Oxfam</td>-->
+      <!--<td></td>-->
+      <!--<td>Active</td>-->
+      <!--<td>-->
+      <!--<div class="btn btn-danger">Deactivate</div>-->
+      <!--<div class="btn btn-primary">Edit</div>-->
+      <!--</td>-->
+      <!--</tr>-->
     </table>
   </div>
 

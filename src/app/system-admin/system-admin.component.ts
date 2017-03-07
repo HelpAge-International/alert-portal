@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+
 
 @Component({
   selector: 'app-system-admin',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SystemAdminComponent implements OnInit {
 
-  constructor() { }
+  agencies:FirebaseListObservable<any>;
+
+  constructor(private af:AngularFire) { }
 
   ngOnInit() {
+    this.agencies = this.af.database.list("/sand/agency");
   }
 
 }
