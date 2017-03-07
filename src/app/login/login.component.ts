@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
+import {AngularFire, AuthProviders, AuthMethods, FirebaseListObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 
 @Component({
@@ -17,6 +17,10 @@ export class LoginComponent implements OnInit {
     userEmail: '',
     password: ''
   };
+
+  systemAdmins: FirebaseListObservable<any>;
+  agencyAdmins: FirebaseListObservable<any>;
+  countryAdmins: FirebaseListObservable<any>;
 
   constructor(public af: AngularFire, private router: Router) {
     this.af.auth.subscribe(auth => {
@@ -44,12 +48,37 @@ export class LoginComponent implements OnInit {
           method: AuthMethods.Password,
         }).then(
         (success) => {
-          console.log(success);
-          console.log(this.localUser.userEmail);
-          console.log(this.localUser.password);
-          // TODO - Check user type, navigate to relevant dashboard
+          //console.log(success);
+          // TODO - FIX - Remove .subscribe and use something similar like observeSingleEvent(iOS)
+          this.af.database.list('sand/systemAdmin', { preserveSnapshot: true})
+            .subscribe(snapshots=>{
+              snapshots.forEach(snapshot => {
+                console.log(snapshot.key, snapshot.val());
+                if (snapshot.key == success.uid) {
+                  this.router.navigate(['system-admin']);
+                }
+              });
+            });
+          this.af.database.list('sand/administratorAgency', { preserveSnapshot: true})
+            .subscribe(snapshots=>{
+              snapshots.forEach(snapshot => {
+                if (snapshot.key == success.uid) {
+                  this.router.navigate(['agency-admin']);
+                }
+              });
+            });
+          // TODO - Uncomment when the country admin is setup
+          /*this.af.database.list('sand/administratorCountry', { preserveSnapshot: true})
+            .subscribe(snapshots=>{
+              snapshots.forEach(snapshot => {
+                if (snapshot.key == success.uid) {
+                  this.router.navigate(['country-admin']);
+                } else {
+                  console.log("Not a country admin")
+                }
+              });
+            });*/
 
-          this.router.navigate(['system-admin']);
         }).catch(
         (err) => {
           this.errorMessage = err;
@@ -71,17 +100,12 @@ export class LoginComponent implements OnInit {
   validate() {
     if ((!Boolean(this.localUser.userEmail)) && (!Boolean(this.localUser.password))) {
       this.errorMessage = "Please enter your email address and password to login";
-      console.log("Please enter your email address and password to login");
       return false;
-
     } else if (!Boolean(this.localUser.userEmail)) {
       this.errorMessage = "Please enter your email address";
-      console.log("Please enter your email address");
       return false;
-
     } else if (!Boolean(this.localUser.password)) {
       this.errorMessage = "Please enter your password";
-      console.log("Please enter your password");
       return false;
     }
     return true;
@@ -89,21 +113,5 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
   }
+
 }
-
-//
-//           /*switch (res.userType) {
-//             case USER_TYPE.SYSTEM_ADMIN:
-//               this._router.navigate(['system-admin']);
-//               break;
-//             case USER_TYPE.AGENCY_ADMIN:
-//               this._router.navigate(['agency-admin']);
-//               break;
-//             // case USER_TYPE.COUNTRY_ADMIN:
-//             //   this._router.navigate(['country-admin']);
-//             //   break;
-//             default:
-//               this._router.navigate(['']); // Redirecting to login page
-//           }*/
-
-
