@@ -13,6 +13,7 @@ import {MpaComponent} from "./system-admin/mpa/mpa.component";
 import {CreateActionComponent} from "./system-admin/min-prep/create-action/create-action.component";
 import { CreateMpaActionComponent } from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
 import {SystemSettingsComponent} from "./system-admin/system-settings/system-settings.component";
+import {CountryAdminComponent} from "./country-admin/country-admin.component";
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'system-admin/messages/create',  component: MessagesCreateComponent },
   { path: 'system-admin/messages',  component: MessagesComponent },
   { path: 'system-admin',  component: SystemAdminComponent },
+  { path: 'country-admin',  component: CountryAdminComponent },
   //TODO: define needed routes here. see the example above
 
 ];
