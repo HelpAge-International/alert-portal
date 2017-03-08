@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Constant} from "../utils/Constant";
+import {ModelAgency} from "../model/agency.model";
+import {MdDialog} from "@angular/material";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -7,14 +11,25 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
   templateUrl: './system-admin.component.html',
   styleUrls: ['./system-admin.component.css']
 })
+
 export class SystemAdminComponent implements OnInit {
 
-  agencies:FirebaseListObservable<any>;
+  agencies: FirebaseListObservable<any>;
 
-  constructor(private af:AngularFire) { }
+  constructor(private af: AngularFire, private router: Router) {
+  }
 
   ngOnInit() {
-    this.agencies = this.af.database.list("/sand/agency");
+    this.agencies = this.af.database.list(Constant.APP_STATUS + "/agency");
+  }
+
+  toggleActive(agency: ModelAgency) {
+    console.log(agency);
+    agency.isActive = !agency.isActive;
+  }
+
+  editAgency(agency) {
+    this.router.navigate(['/system-admin/add-agency', {id: agency.$key}]);
   }
 
 }
