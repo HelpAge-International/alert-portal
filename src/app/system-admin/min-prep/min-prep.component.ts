@@ -40,16 +40,17 @@ export class MinPrepComponent implements OnInit {
     });
   }
 
-  editChsMinPrepAction(chsMinPrepAction: Action) {
+  editChsMinPrepAction(chsMinPrepAction) {
     // TODO - After add chs action is implemented
     console.log("Edit button pressed");
+    this.router.navigate(['/system-admin/min-prep/create', {id: chsMinPrepAction.$key}]);
   }
 
   deleteChsMinPrepAction(chsMinPrepAction) {
     console.log("Delete button pressed");
       this.af.database.object(this.path+ "/" + chsMinPrepAction.$key).remove()
         .then(_ =>
-        console.log("Chs action deleteed")
+        console.log("Chs action deleted")
         );
   }
 }

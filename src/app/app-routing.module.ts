@@ -22,6 +22,7 @@ const routes: Routes = [
   {path: 'agency-admin', component: AgencyAdminComponent},
   {path: 'system-admin/system-settings', component: SystemSettingsComponent},
   {path: 'system-admin/min-prep/create', component: CreateActionComponent},
+  {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
   {path: 'system-admin/min-prep', component: MinPrepComponent},
   {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
   {path: 'system-admin/mpa', component: MpaComponent},

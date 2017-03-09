@@ -46,11 +46,9 @@ export class CreateActionComponent implements OnInit {
   }
 
   onSubmit() {
-
     if (this.validate()) {
 
       if (this.forEditing) {
-        //TODO Update Info
         this.editChsAction();
       } else {
         this.addNewChsAction();
