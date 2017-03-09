@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AngularFire, AuthProviders, AuthMethods, FirebaseListObservable} from 'angularfire2';
+import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router} from '@angular/router';
 
 @Component({
@@ -10,22 +10,19 @@ import {Router} from '@angular/router';
 
 export class LoginComponent implements OnInit {
 
-  inactive: Boolean = true;
-  errorMessage: any;
+  private inactive: Boolean = true;
+  private errorMessage: any;
 
-  localUser = {
+  private localUser = {
     userEmail: '',
     password: ''
   };
 
-  systemAdmins: FirebaseListObservable<any>;
-  agencyAdmins: FirebaseListObservable<any>;
-  countryAdmins: FirebaseListObservable<any>;
-
   constructor(public af: AngularFire, private router: Router) {
+
+    // TODO - Remove if unnecessary
     this.af.auth.subscribe(auth => {
       if (auth) {
-        // TODO - Check user type, navigate to dashboard
         this.router.navigate(['login']);
         console.log("Logged In");
       } else {
@@ -34,10 +31,11 @@ export class LoginComponent implements OnInit {
         console.log("Not Logged In");
       }
     });
+
   }
 
   onSubmit() {
-    console.log("Login Button Pressed");
+
     if (this.validate()) {
       this.af.auth.login({
           email: this.localUser.userEmail,
@@ -48,12 +46,9 @@ export class LoginComponent implements OnInit {
           method: AuthMethods.Password,
         }).then(
         (success) => {
-          //console.log(success);
-          // TODO - FIX - Remove .subscribe and use something similar like observeSingleEvent(iOS)
           this.af.database.list('sand/systemAdmin', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
-                console.log(snapshot.key, snapshot.val());
                 if (snapshot.key == success.uid) {
                   this.router.navigate(['system-admin']);
                 }
@@ -67,27 +62,25 @@ export class LoginComponent implements OnInit {
                 }
               });
             });
-          // TODO - Uncomment when the country admin is setup
-          /*this.af.database.list('sand/administratorCountry', { preserveSnapshot: true})
+          this.af.database.list('sand/administratorCountry', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigate(['country-admin']);
-                } else {
-                  console.log("Not a country admin")
                 }
               });
-            });*/
-
+            });
         }).catch(
         (err) => {
           this.errorMessage = err;
           this.inactive = false;
-        })
+        });
       this.inactive = true;
+
     } else {
       this.inactive = false;
     }
+
   }
 
   /**
@@ -98,6 +91,7 @@ export class LoginComponent implements OnInit {
    * @returns {boolean}
    */
   validate() {
+
     if ((!Boolean(this.localUser.userEmail)) && (!Boolean(this.localUser.password))) {
       this.errorMessage = "Please enter your email address and password to login";
       return false;
@@ -109,6 +103,7 @@ export class LoginComponent implements OnInit {
       return false;
     }
     return true;
+
   }
 
   ngOnInit() {

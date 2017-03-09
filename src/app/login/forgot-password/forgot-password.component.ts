@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import {AngularFire, FirebaseApp, AuthProviders, AuthMethods} from 'angularfire2';
+import {FirebaseApp} from 'angularfire2';
 import {Router} from '@angular/router';
 
 @Component({
@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.css']
 })
+
 export class ForgotPasswordComponent implements OnInit {
 
   private inactive: Boolean = true;
@@ -21,15 +22,17 @@ export class ForgotPasswordComponent implements OnInit {
   onSubmit() {
 
     if (this.validate()) {
-      this.auth.sendPasswordResetEmail(this.email).then(
-        (success) => {
+
+      this.auth.sendPasswordResetEmail(this.email)
+        .then((success) => {
           console.log("Password reset email sent");
           this.router.navigate(['login']);
-        }).catch(
-        (err) => {
+        })
+        .catch((err) => {
           this.errorMessage = err;
           this.inactive = false;
         });
+
       this.inactive = true;
 
     } else {
@@ -43,11 +46,13 @@ export class ForgotPasswordComponent implements OnInit {
    * @returns {boolean}
    */
   validate() {
+
     if (!Boolean(this.email)) {
       this.errorMessage = "Please enter your email address";
       return false;
     }
     return true;
+
   }
 
   ngOnInit() {
