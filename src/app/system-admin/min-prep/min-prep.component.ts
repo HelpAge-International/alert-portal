@@ -15,6 +15,8 @@ import {Action} from '../../model/action';
 export class MinPrepComponent implements OnInit {
 
   private chsMinPrepActions: FirebaseListObservable<any>;
+
+  private path: string =  '';
   // ActionType = ActionType;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -24,7 +26,8 @@ export class MinPrepComponent implements OnInit {
 
     this.af.auth.subscribe(auth => {
       if (auth) {
-        this.chsMinPrepActions = this.af.database.list(Constants.APP_STATUS + "/action/" + auth.uid, {
+        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
+        this.chsMinPrepActions = this.af.database.list(this.path, {
           query: {
             orderByChild: 'type',
             equalTo: ActionType.chs
@@ -42,7 +45,11 @@ export class MinPrepComponent implements OnInit {
     console.log("Edit button pressed");
   }
 
-  deleteChsMinPrepAction(chsMinPrepAction: Action) {
+  deleteChsMinPrepAction(chsMinPrepAction) {
     console.log("Delete button pressed");
+      this.af.database.object(this.path+ "/" + chsMinPrepAction.$key).remove()
+        .then(_ =>
+        console.log("Chs action deleteed")
+        );
   }
 }
