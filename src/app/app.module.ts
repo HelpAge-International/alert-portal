@@ -29,6 +29,9 @@ import { CreateActionComponent } from './system-admin/min-prep/create-action/cre
 import { CreateMpaActionComponent } from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
 import { SystemSettingsComponent } from './system-admin/system-settings/system-settings.component';
 
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {CommonModule} from "@angular/common";
+
 // Must export the config
 export const firebaseConfig = {
   apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
@@ -74,7 +77,8 @@ const firebaseAuthConfig = {
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig)
+    AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
+    NgbModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
