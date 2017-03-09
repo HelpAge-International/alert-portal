@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Router} from "@angular/router";
-import {Constants} from '../../utils/Constants';
-import {ActionType} from '../../utils/Enums';
-import {Action} from '../../model/action';
-
+import { AngularFire, FirebaseListObservable } from "angularfire2";
+import { Router } from "@angular/router";
+import { Action } from '../../model/action';
+import { Constants } from '../../utils/Constants';
+import { ActionType } from '../../utils/Enums';
 
 @Component({
   selector: 'app-min-prep',
@@ -42,6 +41,7 @@ export class MinPrepComponent implements OnInit {
   }
 
   editChsMinPrepAction(chsMinPrepAction: Action) {
+    // TODO - After add chs action is implemented
     console.log("Edit button pressed");
   }
 
