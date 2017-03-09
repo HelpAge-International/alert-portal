@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Constants} from '../../utils/Constants'
-import {ActionType} from '../../utils/Enums'
+import {Router} from "@angular/router";
+import {Constants} from '../../utils/Constants';
+import {ActionType} from '../../utils/Enums';
+import {Action} from '../../model/action';
+
 
 @Component({
   selector: 'app-min-prep',
@@ -12,15 +15,34 @@ import {ActionType} from '../../utils/Enums'
 export class MinPrepComponent implements OnInit {
 
   private chsMinPrepActions: FirebaseListObservable<any>;
+  // ActionType = ActionType;
 
-  constructor(private af: AngularFire) {
-
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    console.log(Constants.uid);
 
-    this.chsMinPrepActions = this.af.database.list(Constants.APP_STATUS + "/agency/" + Constants.uid);
+    this.af.auth.subscribe(auth => {
+      if (auth) {
+        this.chsMinPrepActions = this.af.database.list(Constants.APP_STATUS + "/action/" + auth.uid, {
+          query: {
+            orderByChild: 'type',
+            equalTo: ActionType.chs
+          }
+        });
+      } else {
+        // user is not logged in
+        console.log("Error occurred - User isn't logged in");
+        this.router.navigateByUrl("/login");
+      }
+    });
   }
 
+  editChsMinPrepAction(chsMinPrepAction: Action) {
+    console.log("Edit button pressed");
+  }
+
+  deleteChsMinPrepAction(chsMinPrepAction: Action) {
+    console.log("Delete button pressed");
+  }
 }

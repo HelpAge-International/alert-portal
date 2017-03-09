@@ -24,11 +24,11 @@ export class LoginComponent implements OnInit {
     // TODO - Remove if unnecessary
     this.af.auth.subscribe(auth => {
       if (auth) {
-        this.router.navigate(['login']);
+        this.router.navigateByUrl("/login");
         console.log("Logged In");
       } else {
         // user is not logged in - Login page is presented
-        this.router.navigate(['login']);
+        this.router.navigateByUrl("/login");
         console.log("Not Logged In");
       }
     });
