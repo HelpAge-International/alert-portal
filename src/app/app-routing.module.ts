@@ -16,22 +16,6 @@ import {SystemSettingsComponent} from "./system-admin/system-settings/system-set
 import {CountryAdminComponent} from "./country-admin/country-admin.component";
 
 const routes: Routes = [
-<<<<<<< HEAD
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'forgot-password',  component: ForgotPasswordComponent },
-  { path: 'login',  component: LoginComponent },
-  { path: 'agency-admin',  component: AgencyAdminComponent },
-  { path: 'system-admin/system-settings',  component: SystemSettingsComponent},
-  { path: 'system-admin/min-prep/create',  component: CreateActionComponent},
-  { path: 'system-admin/min-prep',  component: MinPrepComponent},
-  { path: 'system-admin/mpa/create',  component: CreateMpaActionComponent},
-  { path: 'system-admin/mpa',  component: MpaComponent},
-  { path: 'system-admin/add-agency',  component: AddAgencyComponent },
-  { path: 'system-admin/messages/create',  component: MessagesCreateComponent },
-  { path: 'system-admin/messages',  component: MessagesComponent },
-  { path: 'system-admin',  component: SystemAdminComponent },
-  { path: 'country-admin',  component: CountryAdminComponent },
-=======
   {path: '', redirectTo: '/login', pathMatch: 'full'},
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'login', component: LoginComponent},
@@ -46,7 +30,7 @@ const routes: Routes = [
   {path: 'system-admin/messages/create', component: MessagesCreateComponent},
   {path: 'system-admin/messages', component: MessagesComponent},
   {path: 'system-admin', component: SystemAdminComponent},
->>>>>>> system_admin_fei
+  {path: 'country-admin',  component: CountryAdminComponent},
   //TODO: define needed routes here. see the example above
 
 ];

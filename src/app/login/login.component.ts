@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router} from '@angular/router';
+import {Constants} from "../utils/Constants";
 
 @Component({
   selector: 'app-login',
@@ -46,27 +47,28 @@ export class LoginComponent implements OnInit {
           method: AuthMethods.Password,
         }).then(
         (success) => {
-          this.af.database.list('sand/systemAdmin', { preserveSnapshot: true})
+          Constants.uid = success.uid;
+          this.af.database.list(Constants.APP_STATUS + '/systemAdmin', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigate(['system-admin']);
+                  this.router.navigateByUrl("/system-admin");
                 }
               });
             });
-          this.af.database.list('sand/administratorAgency', { preserveSnapshot: true})
+          this.af.database.list(Constants.APP_STATUS + '/administratorAgency', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigate(['agency-admin']);
+                  this.router.navigateByUrl("/agency-admin");
                 }
               });
             });
-          this.af.database.list('sand/administratorCountry', { preserveSnapshot: true})
+          this.af.database.list(Constants.APP_STATUS + '/administratorCountry', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigate(['country-admin']);
+                  this.router.navigateByUrl("/country-admin");
                 }
               });
             });

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Constant} from "../utils/Constant";
+import {Constants} from "../utils/Constants";
 import {ModelAgency} from "../model/agency.model";
 import {MdDialog} from "@angular/material";
 import {Router} from "@angular/router";
@@ -20,7 +20,7 @@ export class SystemAdminComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.agencies = this.af.database.list(Constant.APP_STATUS + "/agency");
+    this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
   }
 
   toggleActive(agency: ModelAgency) {

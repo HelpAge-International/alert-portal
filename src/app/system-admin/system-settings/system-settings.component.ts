@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFireAuth, AngularFire} from "angularfire2";
-import {Constant} from "../../utils/Constant";
+import {Constants} from "../../utils/Constants";
 
 @Component({
   selector: 'app-system-settings',
@@ -29,6 +29,6 @@ export class SystemSettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.af.database.object(Constant.APP_STATUS+"/system/hoXTsvefEranzaSQTWbkhpBenLn2");
+    this.af.database.object(Constants.APP_STATUS+"/system/hoXTsvefEranzaSQTWbkhpBenLn2");
   }
 }

@@ -4,7 +4,7 @@ import * as firebase from "firebase";
 import {firebaseConfig} from "../../app.module";
 import {AngularFire} from "angularfire2";
 import {ModelUserPublic} from "../../model/user-public.model";
-import {Constant} from "../../utils/Constant";
+import {Constants} from "../../utils/Constants";
 import {ModelAgency} from "../../model/agency.model";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import 'rxjs/add/operator/switchMap';
@@ -52,11 +52,11 @@ export class AddAgencyComponent implements OnInit {
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    this.af.database.object(Constant.APP_STATUS+"/agency/"+agencyId).subscribe((agency:ModelAgency) => {
+    this.af.database.object(Constants.APP_STATUS+"/agency/"+agencyId).subscribe((agency:ModelAgency) => {
       this.agencyName = agency.name;
     });
     //load from user public
-    this.af.database.object(Constant.APP_STATUS+"/userPublic/"+agencyId).subscribe((user:ModelUserPublic) => {
+    this.af.database.object(Constants.APP_STATUS+"/userPublic/"+agencyId).subscribe((user:ModelUserPublic) => {
       this.agencyAdminTitle = user.title;
       this.agencyAdminFirstName = user.firstName;
       this.agencyAdminLastName = user.lastName;
@@ -105,19 +105,19 @@ export class AddAgencyComponent implements OnInit {
   private writeToFirebase(uid: string) {
 
     //write to userPublic node
-    this.af.database.object(Constant.APP_STATUS + "/userPublic/" + uid)
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
       .set(new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName, null, 0));
 
     //write to administratorAgency node
     let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
-    this.af.database.object(Constant.APP_STATUS + "/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid).set(true);
+    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid).set(true);
 
     //write to agency node with temp data
     let agency = new ModelAgency();
     agency.name = this.agencyName;
     agency.isActive = true;
     agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
-    this.af.database.object(Constant.APP_STATUS + "/agency/" + uid).set(agency);
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).set(agency);
 
     //back to home page
     this.backToHome();
