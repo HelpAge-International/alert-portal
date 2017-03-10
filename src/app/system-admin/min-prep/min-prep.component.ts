@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFire, FirebaseListObservable } from "angularfire2";
 import { Router } from "@angular/router";
-import { Action } from '../../model/action';
 import { Constants } from '../../utils/Constants';
 import { ActionType } from '../../utils/Enums';
 
@@ -14,7 +13,6 @@ import { ActionType } from '../../utils/Enums';
 export class MinPrepComponent implements OnInit {
 
   private chsMinPrepActions: FirebaseListObservable<any>;
-
   private path: string =  '';
   // ActionType = ActionType;
 
@@ -32,6 +30,7 @@ export class MinPrepComponent implements OnInit {
             equalTo: ActionType.chs
           }
         });
+
       } else {
         // user is not logged in
         console.log("Error occurred - User isn't logged in");
@@ -41,7 +40,6 @@ export class MinPrepComponent implements OnInit {
   }
 
   editChsMinPrepAction(chsMinPrepAction) {
-    // TODO - After add chs action is implemented
     console.log("Edit button pressed");
     this.router.navigate(['/system-admin/min-prep/create', {id: chsMinPrepAction.$key}]);
   }

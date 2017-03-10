@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Message } from '../../model/message';
 
 @Component({
   selector: 'app-messages',
@@ -10,6 +11,7 @@ export class MessagesComponent implements OnInit {
   constructor() { }
 
   createNewMessage() {
+    // TODO - After confirming with Ryan
     console.log('Create new message button pressed');
   }
 
