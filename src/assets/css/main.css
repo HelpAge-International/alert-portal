@@ -4748,39 +4748,6 @@ button.close {
   height: 0;
 }
 
-<<<<<<< HEAD
-.Alert-success {
-  position: absolute;
-  width: 100%;
-  background: #46aa31;
-  color: #FFF;
-  z-index: 9;
-  text-align: center;
-  display: -webkit-flex;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-justify-content: center;
-  -moz-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -moz-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  height: 60px;
-  -webkit-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-}
-
-.Alert-success.Inactive {
-  height: 0;
-}
-
-=======
->>>>>>> system_admin_fei
 .Alert-warning {
   position: absolute;
   width: 100%;
@@ -4840,10 +4807,6 @@ button.close {
 .Alert-error.Inactive {
   height: 0;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> system_admin_fei
 .Ribbon__response {
   height: 100px;
   background: #EEEEEE;

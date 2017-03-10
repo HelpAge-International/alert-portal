@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {AngularFireAuth, AngularFire} from "angularfire2";
 import {Constants, FILE_SETTING} from "../../utils/Constants";
 import {ModelSystem} from "../../model/system.model";
+import {Router} from "@angular/router";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-system-settings',
@@ -29,13 +31,31 @@ export class SystemSettingsComponent implements OnInit {
   thresholdValue: number[] = Constants.THRESHOLD_VALUE;
   fileTypeList: number[] = [0, 1, 2];
   fileTypeListName: string[] = ["KB", "MB", "GB"];
+  modelSystem: ModelSystem;
+  uid: string;
+  successMessage:string = "Settings successfully saved!";
+  isSaved:boolean = false;
 
-  constructor(private af: AngularFire) {
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    this.af.database.object(Constants.APP_STATUS + "/system/hoXTsvefEranzaSQTWbkhpBenLn2").subscribe(x => {
-      console.log(x)
+    // console.log("uid: "+this.af.auth.getAuth().auth.uid);
+    this.af.auth.subscribe(x => {
+      console.log("uid: " + x.uid);
+      if (x.uid) {
+        this.uid = x.uid;
+        this.initData(this.uid);
+      } else {
+        this.router.navigateByUrl("/login")
+      }
+    })
+
+  }
+
+  private initData(uid) {
+    this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe((x: ModelSystem) => {
+      this.modelSystem = x;
       // console.log(x.fileSettings[FILE_SETTING.PNG])
       //load minimum threshold from database
       this.minGreen = x.minThreshold[0];
@@ -57,6 +77,40 @@ export class SystemSettingsComponent implements OnInit {
       //load file size type
       this.fileSize = x.fileSize;
       this.fileType = x.fileType;
+    });
+  }
+
+  saveSetting() {
+    if (this.uid) {
+      this.writeToFirebase();
+    } else {
+      this.router.navigateByUrl("/login");
+    }
+  }
+
+  private writeToFirebase() {
+    this.modelSystem.minThreshold[0] = this.minGreen;
+    this.modelSystem.minThreshold[1] = this.minAmber;
+    this.modelSystem.minThreshold[2] = this.minRed;
+    this.modelSystem.advThreshold[0] = this.advGreen;
+    this.modelSystem.advThreshold[1] = this.advAmber;
+    this.modelSystem.advThreshold[2] = this.advRed;
+    this.modelSystem.fileSettings[FILE_SETTING.PDF] = this.isPdf;
+    this.modelSystem.fileSettings[FILE_SETTING.HTML] = this.isHtml;
+    this.modelSystem.fileSettings[FILE_SETTING.DOC] = this.isDoc;
+    this.modelSystem.fileSettings[FILE_SETTING.DOCX] = this.isDocx;
+    this.modelSystem.fileSettings[FILE_SETTING.PS] = this.isPs;
+    this.modelSystem.fileSettings[FILE_SETTING.RTF] = this.isRtf;
+    this.modelSystem.fileSettings[FILE_SETTING.JPEG] = this.isJpeg;
+    this.modelSystem.fileSettings[FILE_SETTING.PNG] = this.isPng;
+    this.modelSystem.fileSize = this.fileSize;
+    this.modelSystem.fileType = this.fileType;
+
+    this.af.database.object(Constants.APP_STATUS + "/system/"+this.uid).set(this.modelSystem).then(resolve => {
+      this.isSaved = true;
+      // Observable.timer(2000,1).subscribe(() => {
+      //   console.log("time up")
+      // })
     });
   }
 }
