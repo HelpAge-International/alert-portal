@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {ModelAgency} from "../model/agency.model";
-import {MdDialog} from "@angular/material";
 import {Router} from "@angular/router";
 
 
@@ -15,12 +14,26 @@ import {Router} from "@angular/router";
 export class SystemAdminComponent implements OnInit {
 
   agencies: FirebaseListObservable<any>;
+  uid: string;
 
   constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
+    this.af.auth.subscribe(x => {
+      this.uid = x.auth.uid;
+      console.log("uid: "+this.uid);
+      if (this.uid) {
+        this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
+      } else {
+        this.navigateToLogin();
+      }
+    });
+
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl("/login");
   }
 
   toggleActive(agency: ModelAgency) {

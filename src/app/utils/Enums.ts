@@ -18,3 +18,16 @@ export enum ActionPreparednessLevel {
   minimumPreparedness = 0,
   advancedPreparedness = 1
 }
+
+export enum PersonTitle {
+  Mr = 0,
+  Miss = 1,
+  Dr = 2
+}
+
+export enum FileType {
+  MB = 0,
+  GB = 1
+}
+
+

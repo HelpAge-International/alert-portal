@@ -17,3 +17,5 @@ export enum FILE_SETTING {
   JPEG = 6,
   PNG = 7
 }
+
+

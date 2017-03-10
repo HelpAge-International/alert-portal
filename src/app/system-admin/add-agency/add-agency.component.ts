@@ -9,7 +9,7 @@ import {ModelAgency} from "../../model/agency.model";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/mergeMap';
-
+import {PersonTitle} from "../../utils/Enums";
 
 @Component({
   selector: 'app-add-agency',
@@ -33,6 +33,11 @@ export class AddAgencyComponent implements OnInit {
   hideWarning: boolean
   pageTitle = "Add New Agency"
   isEdit = false;
+  PersonTitle = PersonTitle;
+  // personTitle:string [] = ["Mr", "Miss", "Dr"];
+  personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
+  private emailInDatabase: string;
+  private agencyId: string;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
@@ -43,6 +48,7 @@ export class AddAgencyComponent implements OnInit {
     this.route.params
       .subscribe((params: Params) => {
         if (params["id"]) {
+          this.agencyId = params["id"];
           this.isEdit = true;
           this.pageTitle = "Edit Agency";
           this.loadAgencyInfo(params["id"]);
@@ -52,25 +58,75 @@ export class AddAgencyComponent implements OnInit {
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    this.af.database.object(Constants.APP_STATUS+"/agency/"+agencyId).subscribe((agency:ModelAgency) => {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe((agency: ModelAgency) => {
       this.agencyName = agency.name;
+
+      //load from user public
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId).subscribe((user: ModelUserPublic) => {
+        this.agencyAdminTitle = user.title;
+        this.agencyAdminFirstName = user.firstName;
+        this.agencyAdminLastName = user.lastName;
+        this.agencyAdminTitle = user.title;
+        this.agencyAdminEmail = user.email;
+        this.emailInDatabase = user.email;
+      });
     });
-    //load from user public
-    this.af.database.object(Constants.APP_STATUS+"/userPublic/"+agencyId).subscribe((user:ModelUserPublic) => {
-      this.agencyAdminTitle = user.title;
-      this.agencyAdminFirstName = user.firstName;
-      this.agencyAdminLastName = user.lastName;
-    });
+
   }
 
   onSubmit() {
     if (this.validateForm()) {
       if (this.isEdit) {
         //TODO Update Info
+        this.updateAgencyInfo();
       } else {
         this.registerNewAgency();
       }
     }
+  }
+
+  private updateAgencyInfo() {
+    console.log("update");
+    console.log(this.agencyAdminEmail);
+    console.log(this.emailInDatabase);
+    if (this.agencyAdminEmail == this.emailInDatabase) {
+      this.updateNoEmailChange();
+    } else {
+      this.updateWithNewEmail();
+    }
+  }
+
+  private updateWithNewEmail() {
+    console.log("new email");
+    let secondApp = firebase.initializeApp(firebaseConfig, "second");
+    let tempPassword = "testtest";
+    secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
+      console.log("user " + x.uid + " created successfully");
+      let uid: string = x.uid;
+      this.writeToFirebase(uid);
+      secondApp.auth().signOut();
+    });
+  }
+
+  private updateNoEmailChange() {
+    console.log("no email change");
+    console.log("agencyId: " + this.agencyId);
+    this.updateToFirebase();
+    this.backToHome();
+  }
+
+  private updateToFirebase() {
+    //update user
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/firstName")
+      .set(this.agencyAdminFirstName);
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/lastName")
+      .set(this.agencyAdminLastName);
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/title")
+      .set(this.agencyAdminTitle);
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/email")
+      .set(this.agencyAdminEmail);
+    //update agency
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").set(this.agencyName);
   }
 
   private registerNewAgency() {
@@ -103,22 +159,26 @@ export class AddAgencyComponent implements OnInit {
   }
 
   private writeToFirebase(uid: string) {
-
     //write to userPublic node
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
-      .set(new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName, null, 0));
+      .set(new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName, null, 0, this.agencyAdminEmail));
 
     //write to administratorAgency node
     let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
     this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid).set(true);
-
-    //write to agency node with temp data
-    let agency = new ModelAgency();
-    agency.name = this.agencyName;
-    agency.isActive = true;
-    agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).set(agency);
-
+    if (this.isEdit) {
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId").set(this.agencyId);
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/adminId").set(uid);
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId").set(uid);
+      //write to agency node with temp data
+      let agency = new ModelAgency();
+      agency.name = this.agencyName;
+      agency.isActive = true;
+      agency.adminId = uid;
+      agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).set(agency);
+    }
     //back to home page
     this.backToHome();
   }

@@ -106,11 +106,12 @@ export class SystemSettingsComponent implements OnInit {
     this.modelSystem.fileSize = this.fileSize;
     this.modelSystem.fileType = this.fileType;
 
-    this.af.database.object(Constants.APP_STATUS + "/system/"+this.uid).set(this.modelSystem).then(resolve => {
+    this.af.database.object(Constants.APP_STATUS + "/system/"+this.uid).set(this.modelSystem).then(() => {
       this.isSaved = true;
-      // Observable.timer(2000,1).subscribe(() => {
-      //   console.log("time up")
-      // })
+      Observable.timer(2000).subscribe(() => {
+        console.log("time up");
+        this.isSaved = false;
+      })
     });
   }
 }

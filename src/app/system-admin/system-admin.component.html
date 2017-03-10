@@ -26,11 +26,11 @@
     </div>
 
     <!-- Display only when no agencies in the list -->
-    <div *ngIf="agencies.isEmpty" class="Empty--ribbon">
-      No agencies have been added to the Alert Portal
-    </div>
+    <!--<div [hidden]="agencies.isEmpty" class="Empty&#45;&#45;ribbon">-->
+      <!--No agencies have been added to the Alert Portal-->
+    <!--</div>-->
 
-    <table *ngIf="!agencies.isEmpty" class="table Table__v-spacing__mid Agency-table">
+    <table  class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>Logo</th>
         <th>Agency Name</th>
