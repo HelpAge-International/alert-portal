@@ -9,6 +9,14 @@ export class MessagesComponent implements OnInit {
 
   constructor() { }
 
+  createNewMessage() {
+    console.log('Create new message button pressed');
+  }
+
+  deleteMessage() {
+      console.log('Delete message button pressed');
+  }
+
   ngOnInit() {
   }
 
