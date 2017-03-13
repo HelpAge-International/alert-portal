@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Message } from '../../model/message';
+import {Component, OnInit} from '@angular/core';
+import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import {Router} from "@angular/router";
+import {Constants} from '../../utils/Constants';
+import {Message} from '../../model/message';
 
 @Component({
   selector: 'app-messages',
@@ -8,7 +11,13 @@ import { Message } from '../../model/message';
 })
 export class MessagesComponent implements OnInit {
 
-  constructor() { }
+  private messageRefs: Promise<any>;
+  private sentMessages: [FirebaseObjectObservable<any>];
+  private messages: FirebaseListObservable<any>;
+  private path: string = '';
+
+  constructor(private af: AngularFire, private router: Router) {
+  }
 
   createNewMessage() {
     // TODO - After confirming with Ryan
@@ -16,10 +25,42 @@ export class MessagesComponent implements OnInit {
   }
 
   deleteMessage() {
-      console.log('Delete message button pressed');
+    console.log('Delete message button pressed');
   }
 
   ngOnInit() {
+
+    this.af.auth.subscribe(auth => {
+
+      if (auth) {
+        this.path = Constants.APP_STATUS + '/systemAdmin/' + auth.uid + '/sentmessages';
+        this.messageRefs = this.af.database.list(this.path).forEach(element => {
+              console.log(element.keys())
+          element.forEach(message => {
+            // console.log(message.$key);
+            this.path = Constants.APP_STATUS + '/message/' + message.$key;
+            console.log(this.path);
+            var msg = this.af.database.object(this.path);
+
+            console.log(msg);
+            this.sentMessages.push(msg);
+            this.messages.push(msg);
+          });
+        });
+
+        /*this.messageRefs.forEach(element => {
+
+
+
+        });
+        console.log(this.sentMessages);*/
+
+      } else {
+        // user is not logged in
+        console.log("Error occurred - User isn't logged in");
+        this.router.navigateByUrl("/login");
+      }
+    });
   }
 
 }
