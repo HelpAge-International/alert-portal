@@ -5,7 +5,7 @@
         John Doe
       </li>
       <li class="Header_bar__country">
-        PHL
+        System Admin
       </li>
       <li class="Header_bar__alert">
         <i class="fa fa-bell" aria-hidden="true"></i>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Show only when no actions are created yet -->
-    <div class="Empty--ribbon" style="display: none">No actions have been created</div>
+    <!--<div class="Empty&#45;&#45;ribbon">No actions have been created</div>-->
 
     <div class="Data--ribbon" *ngFor="let chsMinPrepAction of chsMinPrepActions | async" >
       <div class="col-sm-9 ">
@@ -38,17 +38,5 @@
         <div class="btn btn-primary" (click)="editChsMinPrepAction(chsMinPrepAction)">Edit</div>
       </div>
     </div>
-
-    <!--<div class="Data--ribbon">
-      <div class="col-sm-9">
-        <p>Develop volunteer’s programme/framework on emergencies</p>
-        <p>type: <b>CHS</b></p>
-      </div>
-      <div class="col-lg-3 Right-aligned">
-        <div class="btn btn-danger">Delete</div>
-        <div class="btn btn-primary">Edit</div>
-      </div>
-    </div>-->
-
   </div>
 </div>

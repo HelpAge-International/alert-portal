@@ -3,7 +3,7 @@ import { AngularFire } from "angularfire2";
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { ChsMinPreparednessAction } from '../../../model/chsMinPreparednessAction';
 import { Constants } from '../../../utils/Constants';
-import { ActionType } from "../../../utils/Enums";
+import { ActionType } from '../../../utils/Enums';
 
 @Component({
   selector: 'app-create-action',

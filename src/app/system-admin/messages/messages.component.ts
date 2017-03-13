@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Message } from '../../model/message';
 
 @Component({
   selector: 'app-messages',
@@ -8,6 +9,15 @@ import { Component, OnInit } from '@angular/core';
 export class MessagesComponent implements OnInit {
 
   constructor() { }
+
+  createNewMessage() {
+    // TODO - After confirming with Ryan
+    console.log('Create new message button pressed');
+  }
+
+  deleteMessage() {
+      console.log('Delete message button pressed');
+  }
 
   ngOnInit() {
   }
