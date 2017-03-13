@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AngularFire, FirebaseObjectObservable, AngularFireAuth} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-system-admin-header',
@@ -10,10 +11,10 @@ import {Constants} from "../../utils/Constants";
 export class SystemAdminHeaderComponent implements OnInit {
 
   uid: string;
-  firstName: string ="";
-  lastName: string ="";
+  firstName: string = "";
+  lastName: string = "";
 
-  constructor(private af: AngularFire) {
+  constructor(private af: AngularFire, private router:Router) {
   }
 
   ngOnInit() {
@@ -24,6 +25,8 @@ export class SystemAdminHeaderComponent implements OnInit {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
+      } else {
+        this.router.navigateByUrl("/login");
       }
     });
 

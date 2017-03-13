@@ -4,6 +4,7 @@ import {Constants, FILE_SETTING} from "../../utils/Constants";
 import {ModelSystem} from "../../model/system.model";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
+import {FileType} from "../../utils/Enums";
 
 @Component({
   selector: 'app-system-settings',
@@ -30,11 +31,12 @@ export class SystemSettingsComponent implements OnInit {
   fileType: number;
   thresholdValue: number[] = Constants.THRESHOLD_VALUE;
   fileTypeList: number[] = [0, 1, 2];
+  FileType = FileType;
   fileTypeListName: string[] = ["KB", "MB", "GB"];
   modelSystem: ModelSystem;
   uid: string;
-  successMessage:string = "Settings successfully saved!";
-  isSaved:boolean = false;
+  successMessage: string = "Settings successfully saved!";
+  isSaved: boolean = false;
 
   constructor(private af: AngularFire, private router: Router) {
   }
@@ -106,7 +108,7 @@ export class SystemSettingsComponent implements OnInit {
     this.modelSystem.fileSize = this.fileSize;
     this.modelSystem.fileType = this.fileType;
 
-    this.af.database.object(Constants.APP_STATUS + "/system/"+this.uid).set(this.modelSystem).then(() => {
+    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).set(this.modelSystem).then(() => {
       this.isSaved = true;
       Observable.timer(2000).subscribe(() => {
         console.log("time up");

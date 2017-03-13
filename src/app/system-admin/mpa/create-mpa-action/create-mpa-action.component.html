@@ -1,18 +1,4 @@
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-    <ul>
-      <li class="Header_bar__username">
-        John Doe
-      </li>
-      <li class="Header_bar__country">
-        PHL
-      </li>
-      <li class="Header_bar__alert">
-        <i class="fa fa-bell" aria-hidden="true"></i>
-      </li>
-    </ul>
-  </div>
-</div>
+<app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
 
@@ -20,7 +6,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <div class="Back--button">Generic MPA/APAs</div>
+    <!--<div class="Back&#45;&#45;button">Generic MPA/APAs</div>-->
 
     <div class="Header-title__wrap">
       <h1>Create new generic MPA/APA</h1>
@@ -31,7 +17,7 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
           <label for="n-Done">What needs to be done?</label>
-          <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control"></textarea>
+          <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" [(ngModel)]="actionDetail"></textarea>
         </div>
       </div>
     </div>
@@ -42,16 +28,16 @@
 
         <div class="Radio--ribbon">
           <label for="Min-prep">MPA</label>
-          <input type="radio" name="Prep-level" id="Min-prep">
+          <input type="radio" name="Prep-level" id="Min-prep" [checked]="mpa" #box  (select)="selectMpa(box.value)">
         </div>
 
         <div class="Radio--ribbon">
           <label for="Adv-prep">APA</label>
-          <input type="radio" name="Prep-level" id="Adv-prep">
+          <input type="radio" name="Prep-level" id="Adv-prep" [checked]="!mpa" #box  (select)="selectApa(box.value)">
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-outline-secondary">Cancel</div>
+          <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
           <div class="btn btn-primary">Save new action</div>
         </div>
 
