@@ -69,6 +69,12 @@ export class AddAgencyComponent implements OnInit {
         this.agencyAdminTitle = user.title;
         this.agencyAdminEmail = user.email;
         this.emailInDatabase = user.email;
+        this.agencyAdminAddressLine1 = user.addressLine1;
+        this.agencyAdminAddressLine2 = user.addressLine2;
+        this.agencyAdminAddressLine3 = user.addressLine3;
+        this.agencyAdminCountry = user.country;
+        this.agencyAdminCity = user.city;
+        this.agencyAdminPostCode = user.postCode;
       });
     });
 
