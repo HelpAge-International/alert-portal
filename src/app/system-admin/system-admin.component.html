@@ -5,7 +5,7 @@
         John Doe
       </li>
       <li class="Header_bar__country">
-        Sys
+        System Admin
       </li>
       <li class="Header_bar__alert">
         <i class="fa fa-bell" aria-hidden="true"></i>
@@ -26,9 +26,9 @@
     </div>
 
     <!-- Display only when no agencies in the list -->
-    <!--<div [hidden]="agencies.isEmpty" class="Empty&#45;&#45;ribbon">-->
-      <!--No agencies have been added to the Alert Portal-->
-    <!--</div>-->
+    <div *ngIf="(agencies | async)?.isEmpty" class="Empty--ribbon">
+      No agencies have been added to the Alert Portal
+    </div>
 
     <table  class="table Table__v-spacing__mid Agency-table">
       <tr>
@@ -39,14 +39,14 @@
         <th>Actions</th>
       </tr>
       <tr *ngFor="let agency of agencies | async">
-        <td><img src="{{agency.logoPath}}" alt="" class="Agency-logo"></td>
-        <td>{{agency.name}}</td>
+        <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>
+        <td>{{agency?.name}}</td>
         <td></td>
-        <td *ngIf="agency.isActive">Active</td>
-        <td *ngIf="!agency.isActive">DeActive</td>
+        <td *ngIf="agency?.isActive">Active</td>
+        <td *ngIf="!agency?.isActive">DeActive</td>
         <td>
-          <div *ngIf="!agency.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Activate</div>
-          <div *ngIf="agency.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Deactivate</div>
+          <div *ngIf="!agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Activate</div>
+          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Deactivate</div>
           <div class="btn btn-primary" (click)="editAgency(agency)">Edit</div>
         </td>
       </tr>

@@ -19,7 +19,7 @@
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div [routerLink]="['/system-admin']" class="Back--button">Home</div>
+    <!--<div [routerLink]="['/system-admin']" class="Back&#45;&#45;button">Home</div>-->
 
     <div class="Header-title__wrap">
       <h1>{{pageTitle}}</h1>
@@ -129,7 +129,7 @@
       </div>
 
       <div class="Form-submit__wrapper">
-        <div class="btn btn-outline-secondary">Cancel</div>
+        <div class="btn btn-outline-secondary" (click)="cancelSubmit()">Cancel</div>
         <button class="btn btn-primary" (click)="onSubmit()">Save new agency</button>
       </div>
 

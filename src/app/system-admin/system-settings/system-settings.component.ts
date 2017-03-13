@@ -114,4 +114,8 @@ export class SystemSettingsComponent implements OnInit {
       })
     });
   }
+
+  back() {
+    this.router.navigateByUrl("/system-admin");
+  }
 }

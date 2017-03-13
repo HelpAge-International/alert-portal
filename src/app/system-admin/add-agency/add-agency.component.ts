@@ -147,16 +147,40 @@ export class AddAgencyComponent implements OnInit {
   }
 
   private registerNewAgency() {
+    this.validateAgencyName();
+  }
+
+  private validateAgencyName() {
+    console.log("validate agency name")
+    this.af.database.list("/sand/agency", {
+      query: {
+        orderByChild: "name",
+        equalTo: this.agencyName
+      }
+    }).subscribe(agencyList => {
+      if (agencyList.length == 0) {
+        console.log("create new user");
+        this.createNewUser();
+      } else {
+        this.waringMessage = "Agency name duplicate!";
+        this.hideWarning = false;
+      }
+    });
+  }
+
+  private createNewUser() {
     console.log("start register new agency");
     let secondApp = firebase.initializeApp(firebaseConfig, "second");
     let tempPassword = "testtest";
-    secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
-      console.log("user " + x.uid + " created successfully");
-      let uid: string = x.uid;
+    secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
+      console.log("user " + success.uid + " created successfully");
+      let uid: string = success.uid;
       this.writeToFirebase(uid);
       secondApp.auth().signOut();
-    }, y => {
-      console.log(y.message);
+    }, error => {
+      console.log(error.message);
+      this.waringMessage = error.message;
+      this.hideWarning = false;
     });
   }
 
@@ -217,5 +241,9 @@ export class AddAgencyComponent implements OnInit {
 
   private backToHome() {
     this.router.navigateByUrl("/system-admin");
+  }
+
+  cancelSubmit() {
+    this.backToHome();
   }
 }
