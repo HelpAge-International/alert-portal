@@ -33,6 +33,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {CommonModule} from "@angular/common";
 import {MaterialModule} from "@angular/material";
 import "hammerjs";
+import { SystemAdminHeaderComponent } from './system-admin/system-admin-header/system-admin-header.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -72,7 +73,8 @@ const firebaseAuthConfig = {
     MpaComponent,
     CreateActionComponent,
     CreateMpaActionComponent,
-    SystemSettingsComponent
+    SystemSettingsComponent,
+    SystemAdminHeaderComponent
   ],
   imports: [
     BrowserModule,

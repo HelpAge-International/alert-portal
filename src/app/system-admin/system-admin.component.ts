@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {ModelAgency} from "../model/agency.model";
 import {Router} from "@angular/router";
@@ -22,7 +22,7 @@ export class SystemAdminComponent implements OnInit {
   ngOnInit() {
     this.af.auth.subscribe(x => {
       this.uid = x.auth.uid;
-      console.log("uid: "+this.uid);
+      console.log("uid: " + this.uid);
       if (this.uid) {
         this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
       } else {
@@ -39,7 +39,7 @@ export class SystemAdminComponent implements OnInit {
   toggleActive(agency) {
     agency.isActive = !agency.isActive;
     console.log(agency.isActive);
-    this.af.database.object(Constants.APP_STATUS+"/agency/"+agency.$key+"/isActive").set(agency.isActive);
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(agency.isActive);
   }
 
   editAgency(agency) {

@@ -152,7 +152,7 @@ export class AddAgencyComponent implements OnInit {
 
   private validateAgencyName() {
     console.log("validate agency name")
-    this.af.database.list("/sand/agency", {
+    this.af.database.list(Constants.APP_STATUS+"/agency", {
       query: {
         orderByChild: "name",
         equalTo: this.agencyName
