@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from "angularfire2";
 import { Router } from "@angular/router";
 import { Constants } from '../../utils/Constants';
 import { Message } from '../../model/message';
@@ -12,45 +12,40 @@ import { Message } from '../../model/message';
 export class MessagesComponent implements OnInit {
 
   private messageRefs: FirebaseListObservable<any>;
-  private sentMessages: [FirebaseObjectObservable<any>];
-  private messages: FirebaseListObservable<any>;
-  private path: string =  '';
+  private sentMessages: Message[] = [];
+  private path: string = '';
 
   constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    /*this.af.auth.subscribe(auth => {
+    this.af.auth.subscribe(auth => {
 
-     if (auth) {
-     this.path = Constants.APP_STATUS + '/systemAdmin/' + auth.uid + '/sentmessages';
-     this.messageRefs = this.af.database.list(this.path);
+      if (auth) {
+        this.path = Constants.APP_STATUS + '/systemAdmin/' + auth.uid + '/sentmessages';
+        this.messageRefs = this.af.database.list(this.path);
+        console.log(this.messageRefs);
 
-     console.log("herererer" + this.messageRefs.forEach(e=> { console.log(e.$key)}));
+        this.messageRefs.subscribe(messageRefs => {
+          messageRefs.forEach(messageRef => {
+            console.log('MessageRef:', messageRef.$key);
+            console.log(Constants.APP_STATUS + '/message/' + messageRef.$key);
 
-     this.messageRefs.forEach(element => {
+            this.af.database.object(Constants.APP_STATUS + '/message/' + messageRef.$key).subscribe((message: Message) => {
+              this.sentMessages.push(message);
+            });
 
-     element.forEach(message => {
-     // console.log(message.$key);
-     this.path = Constants.APP_STATUS + '/message/' + message.$key;
-     console.log(this.path);
-     var msg = this.af.database.object(this.path);
 
-     console.log(msg);
-     this.sentMessages.push(msg);
-     this.messages.push(msg);
-     });
+          });
+        });
 
-     });
-     console.log(this.sentMessages);
-
-     } else {
-     // user is not logged in
-     console.log("Error occurred - User isn't logged in");
-     this.router.navigateByUrl("/login");
-     }
-     });*/
+      } else {
+        // user is not logged in
+        console.log("Error occurred - User isn't logged in");
+        this.router.navigateByUrl("/login");
+      }
+    });
   }
 
   createNewMessage() {
@@ -59,7 +54,7 @@ export class MessagesComponent implements OnInit {
   }
 
   deleteMessage() {
-      console.log('Delete message button pressed');
+    console.log('Delete message button pressed');
   }
 
 }

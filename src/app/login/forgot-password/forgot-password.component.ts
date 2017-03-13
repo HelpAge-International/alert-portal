@@ -19,6 +19,9 @@ export class ForgotPasswordComponent implements OnInit {
     this.auth = fa.auth();
   }
 
+  ngOnInit() {
+  }
+
   onSubmit() {
 
     if (this.validate()) {
@@ -26,7 +29,7 @@ export class ForgotPasswordComponent implements OnInit {
       this.auth.sendPasswordResetEmail(this.email)
         .then((success) => {
           console.log("Password reset email sent");
-          this.router.navigateByUrl("/login");
+          this.router.navigate(['/login', {fromForgotPassword: success}]);
         })
         .catch((err) => {
           this.errorMessage = err;
@@ -55,7 +58,6 @@ export class ForgotPasswordComponent implements OnInit {
 
   }
 
-  ngOnInit() {
-  }
+
 
 }
