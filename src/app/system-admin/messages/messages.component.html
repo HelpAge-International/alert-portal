@@ -24,15 +24,15 @@
       <a routerLink="/system-admin/messages/create" class="btn btn-primary" (click)="createNewMessage()">Create new action</a>
     </div>
 
-    <div class="Data--ribbon" *ngFor="let sentMessage of messages | async" >
+    <div class="Data--ribbon">
       <div class="row">
         <div class="Info--ribbon--wrap">
           <div class="col-sm-4">From: <b>System administrator</b></div>
-          <div class="col-sm-5">at: <b>{{sentMessage.time}} 15:15, Tuesday 31st January</b></div>
+          <div class="col-sm-5">at: <b>15:15, Tuesday 31st January</b></div>
         </div>
         <div class="col-sm-12">
-          <h5>{{sentMessage.title}} Message Title</h5>
-          <p>{{sentMessage.content}}</p>
+          <h5>Message Tile</h5>
+          <p>Establish Emergency Response Team/Structure (assign people, clarified roles/functions, accountability framework, coordination and communication procedure)</p>
         </div>
       </div>
       <div class="col-sm-3 Right-aligned">

@@ -10,6 +10,7 @@ import { ActionType } from '../../../utils/Enums';
   templateUrl: './create-action.component.html',
   styleUrls: ['./create-action.component.css']
 })
+
 export class CreateActionComponent implements OnInit {
 
   private inactive: Boolean = true;
