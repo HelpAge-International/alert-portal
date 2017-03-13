@@ -15,7 +15,7 @@
 </div>
 <app-system-admin-menu></app-system-admin-menu>
 
-<div class="Alert-error" [hidden]="hideWarning">{{waringMessage | json}}</div>
+<div class="Alert-error" [hidden]="hideWarning">{{waringMessage}}</div>
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
@@ -47,7 +47,10 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="Title">Title*</label>
-            <input type="text" class="form-control" required id="Title">
+            <!--<input type="text" class="form-control" required id="Title">-->
+            <select id="Title" class="form-control" [(ngModel)]="agencyAdminTitle" name="personTitle">
+              <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title]}}</option>
+            </select>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
@@ -70,7 +73,8 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="Email">Email Address*</label>
-            <input type="text" class="form-control" id="Email" required [(ngModel)]="agencyAdminEmail" name="agencyAdminEmail"
+            <input type="text" class="form-control" id="Email" required [(ngModel)]="agencyAdminEmail"
+                   name="agencyAdminEmail"
                    #email="ngModel">
           </div>
         </div>

@@ -6,12 +6,20 @@ export class ModelUserPublic {
   lastName:string;
   phone:string;
   title:number;
+  email:string;
+  addressLine1: string
+  addressLine2: string
+  addressLine3: string
+  country: number
+  city: string
+  postCode: string
 
-  constructor(firstName: string, lastName: string, phone: string, title: number) {
+  constructor(firstName: string, lastName: string, phone: string, title: number, email:string) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.phone = phone;
     this.title = title;
+    this.email = email;
   }
 
 }

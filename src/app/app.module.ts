@@ -31,6 +31,8 @@ import { SystemSettingsComponent } from './system-admin/system-settings/system-s
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {CommonModule} from "@angular/common";
+import {MaterialModule} from "@angular/material";
+import "hammerjs";
 
 // Must export the config
 export const firebaseConfig = {
@@ -77,6 +79,7 @@ const firebaseAuthConfig = {
     FormsModule,
     HttpModule,
     AppRoutingModule,
+    MaterialModule,
     AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
     NgbModule.forRoot()
   ],
