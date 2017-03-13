@@ -9,7 +9,7 @@ import {ModelAgency} from "../../model/agency.model";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/mergeMap';
-import {PersonTitle} from "../../utils/Enums";
+import {PersonTitle, Country} from "../../utils/Enums";
 
 @Component({
   selector: 'app-add-agency',
@@ -20,7 +20,7 @@ export class AddAgencyComponent implements OnInit {
 
   waringMessage: string
   agencyName: string
-  agencyAdminTitle: number
+  agencyAdminTitle: number = 0;
   agencyAdminFirstName: string
   agencyAdminLastName: string
   agencyAdminEmail: string
@@ -34,10 +34,12 @@ export class AddAgencyComponent implements OnInit {
   pageTitle = "Add New Agency"
   isEdit = false;
   PersonTitle = PersonTitle;
-  // personTitle:string [] = ["Mr", "Miss", "Dr"];
+  Country = Country;
+  countryList: number[] = [Country.UK, Country.France, Country.Germany];
   personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
   private emailInDatabase: string;
   private agencyId: string;
+  private userPublic: ModelUserPublic;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
@@ -62,20 +64,22 @@ export class AddAgencyComponent implements OnInit {
       this.agencyName = agency.name;
 
       //load from user public
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId).subscribe((user: ModelUserPublic) => {
-        this.agencyAdminTitle = user.title;
-        this.agencyAdminFirstName = user.firstName;
-        this.agencyAdminLastName = user.lastName;
-        this.agencyAdminTitle = user.title;
-        this.agencyAdminEmail = user.email;
-        this.emailInDatabase = user.email;
-        this.agencyAdminAddressLine1 = user.addressLine1;
-        this.agencyAdminAddressLine2 = user.addressLine2;
-        this.agencyAdminAddressLine3 = user.addressLine3;
-        this.agencyAdminCountry = user.country;
-        this.agencyAdminCity = user.city;
-        this.agencyAdminPostCode = user.postCode;
-      });
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
+        .subscribe((user: ModelUserPublic) => {
+          this.userPublic = user;
+          this.agencyAdminTitle = user.title;
+          this.agencyAdminFirstName = user.firstName;
+          this.agencyAdminLastName = user.lastName;
+          this.agencyAdminTitle = user.title;
+          this.agencyAdminEmail = user.email;
+          this.emailInDatabase = user.email;
+          this.agencyAdminAddressLine1 = user.addressLine1;
+          this.agencyAdminAddressLine2 = user.addressLine2;
+          this.agencyAdminAddressLine3 = user.addressLine3;
+          this.agencyAdminCountry = user.country;
+          this.agencyAdminCity = user.city;
+          this.agencyAdminPostCode = user.postCode;
+        });
     });
 
   }
@@ -83,7 +87,6 @@ export class AddAgencyComponent implements OnInit {
   onSubmit() {
     if (this.validateForm()) {
       if (this.isEdit) {
-        //TODO Update Info
         this.updateAgencyInfo();
       } else {
         this.registerNewAgency();
@@ -118,21 +121,29 @@ export class AddAgencyComponent implements OnInit {
     console.log("no email change");
     console.log("agencyId: " + this.agencyId);
     this.updateToFirebase();
-    this.backToHome();
   }
 
   private updateToFirebase() {
     //update user
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/firstName")
-      .set(this.agencyAdminFirstName);
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/lastName")
-      .set(this.agencyAdminLastName);
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/title")
-      .set(this.agencyAdminTitle);
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId + "/email")
-      .set(this.agencyAdminEmail);
-    //update agency
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").set(this.agencyName);
+    if (this.userPublic) {
+      this.userPublic.firstName = this.agencyAdminFirstName;
+      this.userPublic.lastName = this.agencyAdminLastName;
+      this.userPublic.title = this.agencyAdminTitle;
+      this.userPublic.addressLine1 = this.agencyAdminAddressLine1;
+      this.userPublic.addressLine2 = this.agencyAdminAddressLine2;
+      this.userPublic.addressLine3 = this.agencyAdminAddressLine3;
+      this.userPublic.country = this.agencyAdminCountry;
+      this.userPublic.city = this.agencyAdminCity;
+      this.userPublic.postCode = this.agencyAdminPostCode;
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId)
+        .set(this.userPublic).then(success => {
+        //update agency
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name")
+          .set(this.agencyName).then(success => {
+          this.backToHome();
+        });
+      });
+    }
   }
 
   private registerNewAgency() {
@@ -166,27 +177,42 @@ export class AddAgencyComponent implements OnInit {
 
   private writeToFirebase(uid: string) {
     //write to userPublic node
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
-      .set(new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName, null, 0, this.agencyAdminEmail));
+    let newAgencyAdmin = new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName,
+      this.agencyAdminTitle, this.agencyAdminEmail);
 
-    //write to administratorAgency node
-    let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
-    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid).set(true);
-    if (this.isEdit) {
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId").set(this.agencyId);
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/adminId").set(uid);
-    } else {
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId").set(uid);
-      //write to agency node with temp data
-      let agency = new ModelAgency();
-      agency.name = this.agencyName;
-      agency.isActive = true;
-      agency.adminId = uid;
-      agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).set(agency);
-    }
-    //back to home page
-    this.backToHome();
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
+      .set(newAgencyAdmin).then(success => {
+      //write to administratorAgency node
+      let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid)
+        .set(true).then(success => {
+        if (this.isEdit) {
+          this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId")
+            .set(this.agencyId).then(success => {
+            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/adminId")
+              .set(uid).then(success => {
+              //back to home page
+              this.backToHome();
+            });
+          });
+
+        } else {
+          this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId")
+            .set(uid).then(success => {
+            //write to agency node with temp data
+            let agency = new ModelAgency();
+            agency.name = this.agencyName;
+            agency.isActive = true;
+            agency.adminId = uid;
+            agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
+            this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).set(agency).then(success => {
+              //back to home page
+              this.backToHome();
+            });
+          });
+        }
+      });
+    });
   }
 
   private backToHome() {

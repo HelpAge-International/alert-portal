@@ -36,9 +36,10 @@ export class SystemAdminComponent implements OnInit {
     this.router.navigateByUrl("/login");
   }
 
-  toggleActive(agency: ModelAgency) {
-    console.log(agency);
+  toggleActive(agency) {
     agency.isActive = !agency.isActive;
+    console.log(agency.isActive);
+    this.af.database.object(Constants.APP_STATUS+"/agency/"+agency.$key+"/isActive").set(agency.isActive);
   }
 
   editAgency(agency) {

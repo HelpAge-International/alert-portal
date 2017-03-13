@@ -5,7 +5,7 @@
         John Doe
       </li>
       <li class="Header_bar__country">
-        PHL
+        Sys
       </li>
       <li class="Header_bar__alert">
         <i class="fa fa-bell" aria-hidden="true"></i>
@@ -45,7 +45,8 @@
         <td *ngIf="agency.isActive">Active</td>
         <td *ngIf="!agency.isActive">DeActive</td>
         <td>
-          <div class="btn btn-danger" (click)="toggleActive(agency)">Deactivate</div>
+          <div *ngIf="!agency.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Activate</div>
+          <div *ngIf="agency.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Deactivate</div>
           <div class="btn btn-primary" (click)="editAgency(agency)">Edit</div>
         </td>
       </tr>
