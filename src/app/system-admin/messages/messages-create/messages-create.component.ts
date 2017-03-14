@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Router} from "@angular/router";
-import {Message} from '../../../model/message';
-import {Constants} from '../../../utils/Constants';
+import { Component, OnInit } from '@angular/core';
+import { AngularFire, FirebaseListObservable } from "angularfire2";
+import { Router } from "@angular/router";
+import { Message } from '../../../model/message';
+import { Constants } from '../../../utils/Constants';
 
 @Component({
   selector: 'app-messages-create',
@@ -10,16 +10,17 @@ import {Constants} from '../../../utils/Constants';
   styleUrls: ['./messages-create.component.css']
 })
 
+
 export class MessagesCreateComponent implements OnInit {
 
   private inactive: Boolean = true;
   private errorMessage: any;
   private messageTitle: string;
   private messageContent: string;
-  private path: string = '';
+  private path: string;
   private allUsersSelected: Boolean;
   private agencyAdminsSelected: Boolean;
-  private countryAdminsUsersSelected: Boolean;
+  private countryAdminsSelected: Boolean;
 
   constructor(private af: AngularFire, private router: Router) {
   }
@@ -39,62 +40,71 @@ export class MessagesCreateComponent implements OnInit {
 
   private createNewMessage() {
 
+    //TODO - TIME INTERVAL
     var newMessage: Message = new Message(Constants.uid, this.messageTitle, this.messageContent, 10000000);
     this.path = Constants.APP_STATUS + '/message';
 
     this.af.database.list(this.path).push(newMessage)
       .then(msgId => {
           console.log('New Message added');
-          this.router.navigateByUrl('/system-admin/messages');
 
-          this.path = Constants.APP_STATUS + '/systemAdmin/' + Constants.uid + '/sentmessages';
-          this.af.database.list(this.path).push(msgId.key)
-            .then(_ => {
-                console.log('Message id added to system admin');
-              }
-            );
+          this.path = Constants.APP_STATUS + '/systemAdmin/' + Constants.uid + '/sentmessages/';
+          this.af.database.object(this.path + msgId.key).set(true).then(_ => {
+              console.log('Message id added to system admin');
+            }
+          );
 
           this.addMsgToMessageRef(msgId.key);
         }
       );
+
   }
 
-  private addMsgToMessageRef(msgId: string) {
+  private addMsgToMessageRef(key: string) {
 
     if (this.allUsersSelected) {
-      this.path = Constants.APP_STATUS + '/messageRef/allusergroup/';
-      this.af.database.list(this.path).push(msgId)
-        .then(_ => {
-            console.log('Message id added to all users group in messageRef');
-          }
-        );
-    }
+      this.af.database.object(Constants.APP_STATUS + '/messageRef/allusergroup/' + key).set(true).then(_ => {
+          console.log('Message id added to all users group in messageRef');
+        }
+      );
+    } else {
 
-    if (this.agencyAdminsSelected) {
-      this.path = Constants.APP_STATUS + '/messageRef/agencygroup';
-      var agencies: FirebaseListObservable<any>;
-      agencies = this.af.database.list(this.path);
-      console.log('agencies-'+agencies);
-      /*agencies.forEach(agency=> {
-            console.log(agency.$key);
+      if (this.agencyAdminsSelected) {
+        var agencyAdminGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
+        var agencies: FirebaseListObservable<any> = this.af.database.list(agencyAdminGroupPath);
 
-            this.path = Constants.APP_STATUS + '/messageRef/agencygroup/' + agency.$key;
-            this.af.database.list(this.path).push(msgId)
-              .then(_ => {
+        agencies.subscribe(agencies => {
+          agencies.forEach(agency => {
+            this.af.database.object(agencyAdminGroupPath + agency.$key).subscribe((agency: any) => {
+              this.af.database.object(agencyAdminGroupPath + agency.$key + '/' + key).set(true).then(_ => {
                   console.log('Message id added to agency group in messageRef');
                 }
-              )
-          });*/
+              );
+            });
+
+          });
+        });
+      }
+
+      if (this.countryAdminsSelected) {
+        var countryAdminGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
+        var countries: FirebaseListObservable<any> = this.af.database.list(countryAdminGroupPath);
+
+        countries.subscribe(countries => {
+          countries.forEach(country => {
+            this.af.database.object(countryAdminGroupPath + country.$key).subscribe((country: any) => {
+              this.af.database.object(countryAdminGroupPath + country.$key + '/' + key).set(true).then(_ => {
+                  console.log('Message id added to country group in messageRef');
+                }
+              );
+            });
+
+          });
+        });
+      }
     }
 
-    if (this.countryAdminsUsersSelected) {
-      this.path = Constants.APP_STATUS + '/messageRef/countrygroup';
-      this.af.database.list(this.path).push(msgId)
-        .then(_ => {
-            console.log('Message id added to country group in messageRef');
-          }
-        );
-    }
+    this.router.navigate(['/system-admin/messages']);
 
   }
 
@@ -111,7 +121,7 @@ export class MessagesCreateComponent implements OnInit {
     } else if (!Boolean(this.messageContent)) {
       this.errorMessage = "Please add some content to the message";
       return false;
-    } else if ((!this.allUsersSelected) && (!this.agencyAdminsSelected) && (!this.countryAdminsUsersSelected)) {
+    } else if ((!this.allUsersSelected) && (!this.agencyAdminsSelected) && (!this.countryAdminsSelected)) {
       this.errorMessage = "Please select the recipients group";
       return false;
     }
