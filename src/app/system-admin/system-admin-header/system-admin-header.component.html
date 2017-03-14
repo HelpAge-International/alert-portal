@@ -4,9 +4,23 @@
       <li class="Header_bar__username" (click)="test()">
         {{firstName+" "+lastName}}
       </li>
-      <li class="Header_bar__country" (click)="showSetting()">
+      <li class="Header_bar__country" [mdMenuTriggerFor]="menu">
         System Admin
       </li>
+      <md-menu #menu="mdMenu">
+        <button md-menu-item>
+          <!--<md-icon>dialpad</md-icon>-->
+          Account Settings
+        </button>
+        <!--<button md-menu-item disabled>-->
+          <!--&lt;!&ndash;<md-icon>voicemail</md-icon>&ndash;&gt;-->
+          <!--<span>Check voicemail</span>-->
+        <!--</button>-->
+        <button md-menu-item>
+          <!--<md-icon>notifications_off</md-icon>-->
+          Logout
+        </button>
+      </md-menu>
       <li class="Header_bar__alert">
         <i class="fa fa-bell" aria-hidden="true"></i>
       </li>
