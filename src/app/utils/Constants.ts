@@ -4,6 +4,9 @@
 export class Constants {
   static APP_STATUS = "/sand";
   static uid: string = '';
+  static LOGIN_PATH = "/login";
+  static DEFAULT_MPA_PATH = "/system-admin/mpa";
+  static SYSTEM_ADMIN_HOME = "/system-admin";
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
 }
 

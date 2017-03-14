@@ -14,6 +14,11 @@ export enum ActionType {
   custom = 2
 }
 
+export enum ActionLevel {
+  MPA = 0,
+  APA = 1
+}
+
 export enum ActionPreparednessLevel {
   minimumPreparedness = 0,
   advancedPreparedness = 1

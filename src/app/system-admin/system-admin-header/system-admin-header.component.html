@@ -1,10 +1,10 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
     <ul>
-      <li class="Header_bar__username">
+      <li class="Header_bar__username" (click)="test()">
         {{firstName+" "+lastName}}
       </li>
-      <li class="Header_bar__country">
+      <li class="Header_bar__country" (click)="showSetting()">
         System Admin
       </li>
       <li class="Header_bar__alert">

@@ -1,6 +1,6 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
-
+<div class="Alert-error" [hidden]="actionForm.untouched || actionForm.form.valid">{{waringMessage}}</div>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -9,40 +9,43 @@
     <!--<div class="Back&#45;&#45;button">Generic MPA/APAs</div>-->
 
     <div class="Header-title__wrap">
-      <h1>Create new generic MPA/APA</h1>
+      <h1>{{title}}</h1>
     </div>
 
 
-    <div class="row System-admin--form-wrap">
-      <div class="col-lg-8 col-md-10">
-        <div class="form-group">
-          <label for="n-Done">What needs to be done?</label>
-          <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" [(ngModel)]="actionDetail"></textarea>
+    <form (ngSubmit)="onSubmit()" #actionForm="ngForm">
+      <div class="row System-admin--form-wrap">
+        <div class="col-lg-8 col-md-10">
+          <div class="form-group">
+            <label for="n-Done">What needs to be done?</label>
+            <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" required
+                      [(ngModel)]="actionDetail"></textarea>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="row System-admin--form-wrap">
-      <div class="col-lg-8 col-md-10">
-        <p>Is this a minimum or advanced preparedness action?</p>
+      <div class="row System-admin--form-wrap">
+        <div class="col-lg-8 col-md-10">
+          <p>Is this a minimum or advanced preparedness action?</p>
 
-        <div class="Radio--ribbon">
-          <label for="Min-prep">MPA</label>
-          <input type="radio" name="Prep-level" id="Min-prep" [checked]="mpa" #box  (select)="selectMpa(box.value)">
+          <div class="Radio--ribbon">
+            <label for="Min-prep">MPA</label>
+            <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="mpa" (change)="selectMpa()">
+          </div>
+
+          <div class="Radio--ribbon">
+            <label for="Adv-prep">APA</label>
+            <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!mpa" (change)="selectApa()">
+          </div>
+
+          <div class="Form-submit__wrapper">
+            <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
+            <button type="submit" class="btn btn-primary" [disabled]="!actionForm.form.valid">Save action</button>
+          </div>
+
         </div>
-
-        <div class="Radio--ribbon">
-          <label for="Adv-prep">APA</label>
-          <input type="radio" name="Prep-level" id="Adv-prep" [checked]="!mpa" #box  (select)="selectApa(box.value)">
-        </div>
-
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
-          <div class="btn btn-primary">Save new action</div>
-        </div>
-
       </div>
-    </div>
+    </form>
 
   </div>
 </div>

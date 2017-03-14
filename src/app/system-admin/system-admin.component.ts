@@ -21,9 +21,9 @@ export class SystemAdminComponent implements OnInit {
 
   ngOnInit() {
     this.af.auth.subscribe(x => {
-      this.uid = x.auth.uid;
-      console.log("uid: " + this.uid);
-      if (this.uid) {
+      if (x) {
+        this.uid = x.auth.uid;
+        console.log("uid: " + this.uid);
         this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
       } else {
         this.navigateToLogin();
@@ -33,7 +33,7 @@ export class SystemAdminComponent implements OnInit {
   }
 
   private navigateToLogin() {
-    this.router.navigateByUrl("/login");
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
   toggleActive(agency) {

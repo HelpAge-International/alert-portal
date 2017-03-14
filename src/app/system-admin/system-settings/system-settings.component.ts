@@ -30,9 +30,8 @@ export class SystemSettingsComponent implements OnInit {
   fileSize: number;
   fileType: number;
   thresholdValue: number[] = Constants.THRESHOLD_VALUE;
-  fileTypeList: number[] = [0, 1, 2];
+  fileTypeList: number[] = [0, 1];
   FileType = FileType;
-  fileTypeListName: string[] = ["KB", "MB", "GB"];
   modelSystem: ModelSystem;
   uid: string;
   successMessage: string = "Settings successfully saved!";
@@ -44,14 +43,13 @@ export class SystemSettingsComponent implements OnInit {
   ngOnInit() {
     // console.log("uid: "+this.af.auth.getAuth().auth.uid);
     this.af.auth.subscribe(x => {
-      console.log("uid: " + x.uid);
-      if (x.uid) {
+      if (x) {
         this.uid = x.uid;
         this.initData(this.uid);
       } else {
-        this.router.navigateByUrl("/login")
+        this.router.navigateByUrl(Constants.LOGIN_PATH)
       }
-    })
+    });
 
   }
 
@@ -108,12 +106,14 @@ export class SystemSettingsComponent implements OnInit {
     this.modelSystem.fileSize = this.fileSize;
     this.modelSystem.fileType = this.fileType;
 
-    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).set(this.modelSystem).then(() => {
+    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).set(this.modelSystem).then(_ => {
       this.isSaved = true;
       Observable.timer(2000).subscribe(() => {
         console.log("time up");
         this.isSaved = false;
       })
+    }, error => {
+      console.log(error.message);
     });
   }
 

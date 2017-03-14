@@ -40,6 +40,7 @@ export class AddAgencyComponent implements OnInit {
   private emailInDatabase: string;
   private agencyId: string;
   private userPublic: ModelUserPublic;
+  private adminId: string;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
@@ -62,6 +63,7 @@ export class AddAgencyComponent implements OnInit {
     //load from agency
     this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe((agency: ModelAgency) => {
       this.agencyName = agency.name;
+      this.adminId = agency.adminId;
 
       //load from user public
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
@@ -129,19 +131,31 @@ export class AddAgencyComponent implements OnInit {
       this.userPublic.firstName = this.agencyAdminFirstName;
       this.userPublic.lastName = this.agencyAdminLastName;
       this.userPublic.title = this.agencyAdminTitle;
-      this.userPublic.addressLine1 = this.agencyAdminAddressLine1;
-      this.userPublic.addressLine2 = this.agencyAdminAddressLine2;
-      this.userPublic.addressLine3 = this.agencyAdminAddressLine3;
-      this.userPublic.country = this.agencyAdminCountry;
-      this.userPublic.city = this.agencyAdminCity;
-      this.userPublic.postCode = this.agencyAdminPostCode;
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.agencyId)
-        .set(this.userPublic).then(success => {
-        //update agency
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name")
-          .set(this.agencyName).then(success => {
-          this.backToHome();
-        });
+      if (this.agencyAdminAddressLine1) {
+        this.userPublic.addressLine1 = this.agencyAdminAddressLine1;
+      }
+      if (this.agencyAdminAddressLine2) {
+        this.userPublic.addressLine2 = this.agencyAdminAddressLine2;
+      }
+      if (this.agencyAdminAddressLine3) {
+        this.userPublic.addressLine3 = this.agencyAdminAddressLine3;
+      }
+      if (this.agencyAdminCountry) {
+        this.userPublic.country = this.agencyAdminCountry;
+      }
+      if (this.agencyAdminCity) {
+        this.userPublic.city = this.agencyAdminCity;
+      }
+      if (this.agencyAdminPostCode) {
+        this.userPublic.postCode = this.agencyAdminPostCode;
+      }
+      let updateData = {};
+      updateData["/userPublic/" + this.adminId] = this.userPublic;
+      updateData["/agency/" + this.agencyId + "/name"] = this.agencyName;
+      this.af.database.object(Constants.APP_STATUS).update(updateData).then(_ => {
+        this.backToHome();
+      }, error => {
+        console.log(error.message);
       });
     }
   }
@@ -151,8 +165,8 @@ export class AddAgencyComponent implements OnInit {
   }
 
   private validateAgencyName() {
-    console.log("validate agency name")
-    this.af.database.list(Constants.APP_STATUS+"/agency", {
+    console.log("validate agency name");
+    this.af.database.list(Constants.APP_STATUS + "/agency", {
       query: {
         orderByChild: "name",
         equalTo: this.agencyName
@@ -200,47 +214,43 @@ export class AddAgencyComponent implements OnInit {
   }
 
   private writeToFirebase(uid: string) {
+    let agencyData = {};
     //write to userPublic node
     let newAgencyAdmin = new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName,
       this.agencyAdminTitle, this.agencyAdminEmail);
+    newAgencyAdmin.addressLine1 = "";
+    newAgencyAdmin.addressLine2 = "";
+    newAgencyAdmin.addressLine3 = "";
+    newAgencyAdmin.city = "";
+    newAgencyAdmin.country = -1;
+    newAgencyAdmin.postCode = "";
+    newAgencyAdmin.phone = "";
 
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
-      .set(newAgencyAdmin).then(success => {
-      //write to administratorAgency node
-      let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid)
-        .set(true).then(success => {
-        if (this.isEdit) {
-          this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId")
-            .set(this.agencyId).then(success => {
-            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/adminId")
-              .set(uid).then(success => {
-              //back to home page
-              this.backToHome();
-            });
-          });
-
-        } else {
-          this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + "/agencyId")
-            .set(uid).then(success => {
-            //write to agency node with temp data
-            let agency = new ModelAgency();
-            agency.name = this.agencyName;
-            agency.isActive = true;
-            agency.adminId = uid;
-            agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
-            this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).set(agency).then(success => {
-              //back to home page
-              this.backToHome();
-            });
-          });
-        }
-      });
+    //testing
+    agencyData["/userPublic/" + uid] = newAgencyAdmin;
+    let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
+    agencyData["/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid] = true;
+    if (this.isEdit) {
+      agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
+      agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
+    } else {
+      agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
+      let agency = new ModelAgency();
+      agency.name = this.agencyName;
+      agency.isActive = true;
+      agency.adminId = uid;
+      agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
+      agencyData["/agency/" + uid] = agency;
+    }
+    this.af.database.object(Constants.APP_STATUS).update(agencyData).then(_ => {
+      this.backToHome();
+    }, error => {
+      console.log(error.message);
     });
   }
 
   private backToHome() {
-    this.router.navigateByUrl("/system-admin");
+    this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
   }
 
   cancelSubmit() {

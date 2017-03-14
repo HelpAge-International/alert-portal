@@ -34,6 +34,7 @@ import {CommonModule} from "@angular/common";
 import {MaterialModule} from "@angular/material";
 import "hammerjs";
 import { SystemAdminHeaderComponent } from './system-admin/system-admin-header/system-admin-header.component';
+import { DialogComponent } from './system-admin/dialog/dialog.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -74,7 +75,8 @@ const firebaseAuthConfig = {
     CreateActionComponent,
     CreateMpaActionComponent,
     SystemSettingsComponent,
-    SystemAdminHeaderComponent
+    SystemAdminHeaderComponent,
+    DialogComponent
   ],
   imports: [
     BrowserModule,
@@ -85,6 +87,7 @@ const firebaseAuthConfig = {
     AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
     NgbModule.forRoot()
   ],
+  entryComponents:[DialogComponent],
   providers: [],
   bootstrap: [AppComponent]
 })
