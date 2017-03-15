@@ -4369,6 +4369,7 @@ button.close {
   background: #F9F9F9;
   margin-top: 2em;
   padding: 2em 1em;
+  flex-wrap: wrap;
 }
 
 .Radio--ribbon {

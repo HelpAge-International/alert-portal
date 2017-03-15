@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
-import {Router} from '@angular/router';
-import {Constants} from "../utils/Constants";
+import { Component, OnInit } from '@angular/core';
+import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
+import { Router, ActivatedRoute, Params } from "@angular/router";
+import { Constants } from "../utils/Constants";
 
 @Component({
   selector: 'app-login',
@@ -33,6 +33,9 @@ export class LoginComponent implements OnInit {
       }
     });
 
+  }
+
+  ngOnInit() {
   }
 
   onSubmit() {
@@ -106,9 +109,6 @@ export class LoginComponent implements OnInit {
     }
     return true;
 
-  }
-
-  ngOnInit() {
   }
 
 }
