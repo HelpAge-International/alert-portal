@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-root',
@@ -10,12 +11,12 @@ export class AppComponent {
 
   groups: FirebaseListObservable<any[]>;
 
-  constructor(public af: AngularFire){
+  constructor(public af: AngularFire, private translate: TranslateService) {
+    this.translate.addLangs(["en", "fr"]);
+    translate.setDefaultLang("en");
 
-    // for testing purposes - testing connection to firebase
-    this.groups = af.database.list('/sand/group')
-
-    console.log(this.groups)
+    let browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr/) ? browserLang : "en");
   }
 
   login() {
