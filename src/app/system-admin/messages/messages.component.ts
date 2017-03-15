@@ -42,9 +42,25 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  deleteMessage() {
+  deleteMessage(sentMessage) {
     // TODO - Delete all message refs
     console.log('Delete message button pressed');
+
+    this.af.database.object(this.path+ "/" + sentMessage.$key).remove()
+      .then(_ => {
+        console.log("Message deleted from system admin")
+      });
+
+    this.af.database.object(Constants.APP_STATUS + '/message/' + sentMessage.$key).remove()
+      .then(_ => {
+        console.log("Message deleted from messages")
+      });
+
+    this.af.database.object(Constants.APP_STATUS + '/messageRef/allusergroup/' + sentMessage.$key).remove()
+      .then(_ => {
+        console.log("Message deleted from allusergroup in messageRef")
+      });
+
   }
 
 }
