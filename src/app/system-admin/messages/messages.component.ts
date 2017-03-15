@@ -3,6 +3,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
 import {Message} from '../../model/message';
+import {DialogService} from "../dialog/dialog.service";
 
 @Component({
   selector: 'app-messages',
@@ -15,7 +16,7 @@ export class MessagesComponent implements OnInit {
   private sentMessages: Message[] = [];
   private path: string = '';
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
   }
 
   ngOnInit() {
@@ -43,21 +44,25 @@ export class MessagesComponent implements OnInit {
   }
 
   deleteMessage(sentMessage) {
-    let key: string = sentMessage.$key;
+    this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
+      if (result) {
+        let key: string = sentMessage.$key;
 
-    this.af.database.object(this.path + "/" + key).remove()
-      .then(_ => {
-        console.log("Message deleted from system admin")
-      });
+        this.af.database.object(this.path + "/" + key).remove()
+          .then(_ => {
+            console.log("Message deleted from system admin")
+          });
 
-    this.af.database.object(Constants.APP_STATUS + '/message/' + key).remove()
-      .then(_ => {
-        console.log("Message deleted from messages")
-      });
+        this.af.database.object(Constants.APP_STATUS + '/message/' + key).remove()
+          .then(_ => {
+            console.log("Message deleted from messages")
+          });
 
-    this.deleteMessageRefFromAllUsers(key);
-    this.deleteMessageRefFromAllAgencies(key);
-    this.deleteMessageRefFromAllCountries(key);
+        this.deleteMessageRefFromAllUsers(key);
+        this.deleteMessageRefFromAllAgencies(key);
+        this.deleteMessageRefFromAllCountries(key);
+      }
+    });
 
   }
 

@@ -18,6 +18,14 @@
   "DIALOG":{
     "TITLE":"Alert",
     "CONTENT":"Are you sure you want to proceed this action?"
+  },
+  "DELETE_ACTION_DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to delete this action?"
+  },
+  "DELETE_MESSAGE_DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to delete this message?"
   }
 
 }
