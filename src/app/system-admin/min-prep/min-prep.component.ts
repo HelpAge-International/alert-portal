@@ -35,7 +35,7 @@ export class MinPrepComponent implements OnInit {
       } else {
         // user is not logged in
         console.log("Error occurred - User isn't logged in");
-        this.router.navigateByUrl("/login");
+        this.navigateToLogin();
       }
     });
   }
@@ -57,4 +57,8 @@ export class MinPrepComponent implements OnInit {
     });
 
   }
+
+  private navigateToLogin() {
+        this.router.navigateByUrl(Constants.LOGIN_PATH);
+      }
 }

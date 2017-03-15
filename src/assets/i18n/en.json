@@ -26,6 +26,32 @@
   "DELETE_MESSAGE_DIALOG":{
     "TITLE":"Alert",
     "CONTENT":"Are you sure you want to delete this message?"
+  },
+  "CHS_MPA": {
+    "TITLE_TEXT": "CHS minimum preparedness actions",
+    "CREATE_NEW_ACTION": "Create new action",
+    "TYPE": "TYPE",
+    "DELETE": "Delete",
+    "CANCEL": "Cancel",
+    "EDIT": "Edit",
+    "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
+    "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
+    "SAVE_BUTTON_TEXT": "Save new action",
+    "EDIT_CHS_MPA": "Edit CHS minimum preparedness action",
+    "EDIT_BUTTON_TEXT": "Edit action"
+  },
+  "MESSAGES": {
+    "TITLE_TEXT": "Messages",
+    "CREATE_NEW_MESSAGE": "Create new message",
+    "FROM": "From",
+    "AT": "at",
+    "TITLE": "Title",
+    "MESSAGE_CONTENT": "Message content",
+    "RECIPIENTS": "Recipients",
+    "ALL_USERS": "All users",
+    "AGENCY_ADMINS": "Agency Administrators",
+    "COUNTRY_ADMINS": "Country Administrators",
+    "SEND_MESSAGE": "Send message"
   }
 
 }

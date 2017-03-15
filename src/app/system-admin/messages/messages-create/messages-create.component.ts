@@ -13,6 +13,7 @@ import { Constants } from '../../../utils/Constants';
 
 export class MessagesCreateComponent implements OnInit {
 
+  private uid: string;
   private inactive: Boolean = true;
   private errorMessage: any;
   private messageTitle: string;
@@ -26,6 +27,20 @@ export class MessagesCreateComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.af.auth.subscribe(auth => {
+      if (auth) {
+        this.uid = auth.uid;
+        console.log("uid: " + this.uid);
+      } else {
+        console.log("Error occurred - User isn't logged in");
+        this.navigateToLogin();
+      }
+    });
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
   onSubmit() {
@@ -40,15 +55,17 @@ export class MessagesCreateComponent implements OnInit {
 
   private createNewMessage() {
 
-    //TODO - TIME INTERVAL
-    var newMessage: Message = new Message(Constants.uid, this.messageTitle, this.messageContent, 10000000);
+    var currentDate = new Date();
+    var currentDateInMilliseconds = currentDate.getTime();
+
+    var newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, currentDateInMilliseconds);
     this.path = Constants.APP_STATUS + '/message';
 
     this.af.database.list(this.path).push(newMessage)
       .then(msgId => {
           console.log('New Message added');
 
-          this.path = Constants.APP_STATUS + '/systemAdmin/' + Constants.uid + '/sentmessages/';
+          this.path = Constants.APP_STATUS + '/systemAdmin/' + this.uid + '/sentmessages/';
           this.af.database.object(this.path + msgId.key).set(true).then(_ => {
               console.log('Message id added to system admin');
             }

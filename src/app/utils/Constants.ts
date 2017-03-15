@@ -3,7 +3,6 @@
  */
 export class Constants {
   static APP_STATUS = "/sand";
-  static uid: string = '';
   static LOGIN_PATH = "/login";
   static DEFAULT_MPA_PATH = "/system-admin/mpa";
   static SYSTEM_ADMIN_HOME = "/system-admin";

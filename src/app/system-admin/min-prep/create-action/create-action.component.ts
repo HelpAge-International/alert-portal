@@ -17,7 +17,7 @@ export class CreateActionComponent implements OnInit {
   private pageTitle: string = 'Create new CHS minimum preparedness action';
   private buttonText: string = 'Save new action';
   private textArea: string;
-  private path: string = Constants.APP_STATUS + "/action/" + Constants.uid;
+  private path: string;
   private forEditing = false;
   private idOfChsActionToEdit: string;
 
@@ -25,6 +25,17 @@ export class CreateActionComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.af.auth.subscribe(auth => {
+      if (auth) {
+        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
+        console.log("uid: " + auth.uid);
+      } else {
+        console.log("Error occurred - User isn't logged in");
+        this.navigateToLogin();
+      }
+    });
+
     this.route.params
       .subscribe((params: Params) => {
         if (params["id"]) {
@@ -35,14 +46,6 @@ export class CreateActionComponent implements OnInit {
           this.idOfChsActionToEdit = params["id"];
         }
       });
-  }
-
-  private loadCHSActionInfo(actionId: string) {
-    console.log(actionId);
-    console.log(this.path+actionId);
-    this.af.database.object(this.path+ '/' + actionId).subscribe((action:ChsMinPreparednessAction) => {
-      this.textArea = action.task;
-    });
   }
 
   onSubmit() {
@@ -57,6 +60,18 @@ export class CreateActionComponent implements OnInit {
     } else {
       this.inactive = false;
     }
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  private loadCHSActionInfo(actionId: string) {
+    console.log(actionId);
+    console.log(this.path+actionId);
+    this.af.database.object(this.path+ '/' + actionId).subscribe((action:ChsMinPreparednessAction) => {
+      this.textArea = action.task;
+    });
   }
 
   private addNewChsAction() {
