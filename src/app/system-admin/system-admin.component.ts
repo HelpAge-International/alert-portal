@@ -1,10 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import {Component, OnInit} from "@angular/core";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
-import {ModelAgency} from "../model/agency.model";
 import {Router} from "@angular/router";
-import {MdDialog} from "@angular/material";
-import {DialogComponent} from "./dialog/dialog.component";
 import {DialogService} from "./dialog/dialog.service";
 
 

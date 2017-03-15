@@ -13,11 +13,37 @@
     "NAME":"Agency Name",
     "STATUS":"Status",
     "ACTIONS":"Actions",
-    "ADD_NEW_AGENCY":"Add new agency"
+    "ADD_NEW_AGENCY":"Add New Agency",
+    "EDIT_AGENCY":"Edit Agency",
+    "ACTIVE":"Active",
+    "DEACTIVE":"Deactive",
+    "ACTIVATE":"Activate",
+    "DEACTIVATE":"Deactivate",
+    "AGENCY_DETAIL":"Agency Details",
+    "AGENCY_NAME":"Name",
+    "AGENCY_ADMIN_DETAIL":"Agency Administrator Details",
+    "AGENCY_ADMIN_TITLE":"Title",
+    "AGENCY_ADMIN_FIRST_NAME":"First Name",
+    "AGENCY_ADMIN_LAST_NAME":"Last Name",
+    "AGENCY_ADMIN_EMAIL":"Email Address",
+    "AGENCY_ADMIN_ADD1":"Address Line 1",
+    "AGENCY_ADMIN_ADD2":"Address Line 2",
+    "AGENCY_ADMIN_ADD3":"Address Line 3",
+    "AGENCY_ADMIN_COUNTRY":"Country",
+    "AGENCY_ADMIN_CITY":"City",
+    "AGENCY_ADMIN_POSTCODE":"Postcode",
+    "SAVE":"Save new agency",
+    "EDIT_AGENCY_BTN":"Edit agency",
+    "EDIT":"Edit",
+    "CANCEL":"Cancel"
+
   },
   "DIALOG":{
     "TITLE":"Alert",
     "CONTENT":"Are you sure you want to proceed this action?"
+  },
+  "ERROR":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to proceed this action?"
   }
-
 }

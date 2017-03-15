@@ -8,13 +8,14 @@
     <!--<div [routerLink]="['/system-admin']" class="Back&#45;&#45;button">Home</div>-->
 
     <div class="Header-title__wrap">
-      <h1>{{pageTitle}}</h1>
+      <h1 *ngIf="!isEdit">{{"HOME.ADD_NEW_AGENCY" | translate}}</h1>
+      <h1 *ngIf="isEdit">{{"HOME.EDIT_AGENCY" | translate}}</h1>
     </div>
 
     <h3 class="System-admin__Sub-title--spaced">Agency Details</h3>
     <hr>
 
-    <form #addAgencyForm="ngForm">
+    <form #addAgencyForm="ngForm" (ngSubmit)="onSubmit()">
 
       <div class="row">
         <div class="col-lg-4 col-md-6">
@@ -33,7 +34,7 @@
           <div class="form-group">
             <label for="Title">Title*</label>
             <!--<input type="text" class="form-control" required id="Title">-->
-            <select id="Title" class="form-control" [(ngModel)]="agencyAdminTitle" name="personTitle">
+            <select id="Title" class="form-control" required [(ngModel)]="agencyAdminTitle" name="personTitle">
               <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title]}}</option>
             </select>
           </div>
@@ -116,7 +117,8 @@
 
       <div class="Form-submit__wrapper">
         <div class="btn btn-outline-secondary" (click)="cancelSubmit()">Cancel</div>
-        <button class="btn btn-primary" (click)="onSubmit()">Save new agency</button>
+        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!addAgencyForm.form.valid" (click)="onSubmit()">Save new agency</button>
+        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!addAgencyForm.form.valid" (click)="onSubmit()">Edit agency</button>
       </div>
 
     </form>

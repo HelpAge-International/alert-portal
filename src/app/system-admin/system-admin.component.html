@@ -29,12 +29,12 @@
         <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>
         <td>{{agency?.name}}</td>
         <td></td>
-        <td *ngIf="agency?.isActive">Active</td>
-        <td *ngIf="!agency?.isActive">DeActive</td>
+        <td *ngIf="agency?.isActive">{{"HOME.ACTIVE" | translate}}</td>
+        <td *ngIf="!agency?.isActive">{{"HOME.DEACTIVE" | translate}}</td>
         <td>
-          <div *ngIf="!agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Activate</div>
-          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">Deactivate</div>
-          <div class="btn btn-primary" (click)="editAgency(agency)">Edit</div>
+          <div *ngIf="!agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"HOME.ACTIVATE" | translate}}</div>
+          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"HOME.DEACTIVATE" | translate}}</div>
+          <div class="btn btn-primary" (click)="editAgency(agency)">{{"HOME.EDIT" | translate}}</div>
         </td>
       </tr>
       <!--<tr>-->

@@ -1,22 +1,5 @@
-<<<<<<< HEAD
+
 <app-system-admin-header></app-system-admin-header>
-=======
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-    <ul>
-      <li class="Header_bar__username">
-        John Doe
-      </li>
-      <li class="Header_bar__country">
-        System Admin
-      </li>
-      <li class="Header_bar__alert">
-        <i class="fa fa-bell" aria-hidden="true"></i>
-      </li>
-    </ul>
-  </div>
-</div>
->>>>>>> sanj-systemAdmin
 <app-system-admin-menu></app-system-admin-menu>
 <div class="Alert-error" [hidden]="actionForm.untouched || actionForm.form.valid">{{waringMessage}}</div>
 
@@ -58,7 +41,8 @@
 
           <div class="Form-submit__wrapper">
             <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
-            <button type="submit" class="btn btn-primary" [disabled]="!actionForm.form.valid">Save action</button>
+            <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!actionForm.form.valid">Save new action</button>
+            <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!actionForm.form.valid">Edit action</button>
           </div>
 
         </div>

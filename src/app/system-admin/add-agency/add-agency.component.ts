@@ -31,7 +31,6 @@ export class AddAgencyComponent implements OnInit {
   agencyAdminCity: string
   agencyAdminPostCode: string
   hideWarning: boolean
-  pageTitle = "Add New Agency"
   isEdit = false;
   PersonTitle = PersonTitle;
   Country = Country;
@@ -53,7 +52,6 @@ export class AddAgencyComponent implements OnInit {
         if (params["id"]) {
           this.agencyId = params["id"];
           this.isEdit = true;
-          this.pageTitle = "Edit Agency";
           this.loadAgencyInfo(params["id"]);
         }
       });
