@@ -1,7 +1,7 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
     <ul>
-      <li class="Header_bar__username" (click)="test()">
+      <li class="Header_bar__username" >
         {{firstName+" "+lastName}}
       </li>
       <li class="Header_bar__country" [mdMenuTriggerFor]="menu">
@@ -16,7 +16,7 @@
           <!--&lt;!&ndash;<md-icon>voicemail</md-icon>&ndash;&gt;-->
           <!--<span>Check voicemail</span>-->
         <!--</button>-->
-        <button md-menu-item>
+        <button md-menu-item (click)="logout()">
           <!--<md-icon>notifications_off</md-icon>-->
           Logout
         </button>

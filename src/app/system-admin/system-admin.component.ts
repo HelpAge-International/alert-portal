@@ -3,6 +3,8 @@ import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "ang
 import {Constants} from "../utils/Constants";
 import {ModelAgency} from "../model/agency.model";
 import {Router} from "@angular/router";
+import {MdDialog} from "@angular/material";
+import {DialogComponent} from "./dialog/dialog.component";
 
 
 @Component({
@@ -16,7 +18,7 @@ export class SystemAdminComponent implements OnInit {
   agencies: FirebaseListObservable<any>;
   uid: string;
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private dialog:MdDialog) {
   }
 
   ngOnInit() {
@@ -37,9 +39,15 @@ export class SystemAdminComponent implements OnInit {
   }
 
   toggleActive(agency) {
-    agency.isActive = !agency.isActive;
-    console.log(agency.isActive);
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(agency.isActive);
+    let dialogRef = this.dialog.open(DialogComponent);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        agency.isActive = !agency.isActive;
+        console.log(agency.isActive);
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(agency.isActive);
+      }
+    });
+
   }
 
   editAgency(agency) {

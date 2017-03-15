@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MdDialogRef, MdDialog} from "@angular/material";
 
 @Component({
   selector: 'app-dialog',
@@ -8,16 +8,22 @@ import {MdDialogRef} from "@angular/material";
 })
 export class DialogComponent implements OnInit {
 
-  title:string = "Deactivate?";
-  content:string = "Are you sure you want to deactive?";
+  title:string = "Alert";
+  content:string = "Are you sure you want to proceed this action?";
 
-  constructor() { }
+  constructor(public dialogRef:MdDialogRef<DialogComponent>) { }
 
   ngOnInit() {
   }
 
   close() {
+    console.log("close dialog");
+    this.dialogRef.close(false);
+  }
 
+  confirm() {
+    console.log("confirm");
+    this.dialogRef.close(true);
   }
 
 }

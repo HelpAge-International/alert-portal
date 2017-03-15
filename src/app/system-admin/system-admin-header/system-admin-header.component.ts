@@ -34,17 +34,17 @@ export class SystemAdminHeaderComponent implements OnInit {
     });
   }
 
-  showSetting() {
-    console.log("show setting");
+  logout() {
+    console.log("logout");
     this.af.auth.logout();
   }
 
-  test() {
-    console.log("open dialog")
-    let dialogRef = this.dialog.open(DialogComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      console.log("dialog closed");
-    });
-  }
+  // test() {
+  //   console.log("open dialog")
+  //   let dialogRef = this.dialog.open(DialogComponent);
+  //   dialogRef.afterClosed().subscribe(result => {
+  //     console.log(result);
+  //   });
+  // }
 
 }

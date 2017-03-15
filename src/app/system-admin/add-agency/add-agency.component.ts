@@ -116,6 +116,8 @@ export class AddAgencyComponent implements OnInit {
       let uid: string = x.uid;
       this.writeToFirebase(uid);
       secondApp.auth().signOut();
+    }, error => {
+      console.log(error.message);
     });
   }
 
@@ -235,6 +237,7 @@ export class AddAgencyComponent implements OnInit {
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
+      agencyData["/group/agencygroup/"+uid] = true;
       let agency = new ModelAgency();
       agency.name = this.agencyName;
       agency.isActive = true;
@@ -242,7 +245,7 @@ export class AddAgencyComponent implements OnInit {
       agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
       agencyData["/agency/" + uid] = agency;
     }
-    this.af.database.object(Constants.APP_STATUS).update(agencyData).then(_ => {
+    this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
       this.backToHome();
     }, error => {
       console.log(error.message);
