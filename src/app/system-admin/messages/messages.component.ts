@@ -56,11 +56,6 @@ export class MessagesComponent implements OnInit {
         console.log("Message deleted from messages")
       });
 
-    this.af.database.object(Constants.APP_STATUS + '/messageRef/allusergroup/' + sentMessage.$key).remove()
-      .then(_ => {
-        console.log("Message deleted from allusergroup in messageRef")
-      });
-
   }
 
 }

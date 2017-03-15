@@ -70,13 +70,17 @@ export class MessagesCreateComponent implements OnInit {
     } else {
 
       if (this.agencyAdminsSelected) {
-        var agencyAdminGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
-        var agencies: FirebaseListObservable<any> = this.af.database.list(agencyAdminGroupPath);
+        var agencyAdminGroupPath: string = Constants.APP_STATUS + '/group/agencygroup/';
+        var agencyIds: FirebaseListObservable<any> = this.af.database.list(agencyAdminGroupPath);
 
-        agencies.subscribe(agencies => {
-          agencies.forEach(agency => {
-            this.af.database.object(agencyAdminGroupPath + agency.$key).subscribe((agency: any) => {
-              this.af.database.object(agencyAdminGroupPath + agency.$key + '/' + key).set(true).then(_ => {
+        var agencyGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
+        // var agencies: FirebaseListObservable<any> = this.af.database.list(agencyGroupPath);
+
+        agencyIds.subscribe(agencyIds => {
+          agencyIds.forEach(agencyId => {
+            console.log(agencyId);
+            this.af.database.object(agencyGroupPath + agencyId.$key).subscribe((agency: any) => {
+              this.af.database.object(agencyGroupPath + agency.$key + '/' + key).set(true).then(_ => {
                   console.log('Message id added to agency group in messageRef');
                 }
               );
@@ -87,13 +91,16 @@ export class MessagesCreateComponent implements OnInit {
       }
 
       if (this.countryAdminsSelected) {
-        var countryAdminGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
-        var countries: FirebaseListObservable<any> = this.af.database.list(countryAdminGroupPath);
+        var countryAdminGroupPath: string = Constants.APP_STATUS + '/group/countrygroup/';
+        var countryIds: FirebaseListObservable<any> = this.af.database.list(countryAdminGroupPath);
 
-        countries.subscribe(countries => {
-          countries.forEach(country => {
-            this.af.database.object(countryAdminGroupPath + country.$key).subscribe((country: any) => {
-              this.af.database.object(countryAdminGroupPath + country.$key + '/' + key).set(true).then(_ => {
+        var countryGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
+        // var countries: FirebaseListObservable<any> = this.af.database.list(countryGroupPath);
+
+        countryIds.subscribe(countryIds => {
+          countryIds.forEach(countryId => {
+            this.af.database.object(countryGroupPath + countryId.$key).subscribe((country: any) => {
+              this.af.database.object(countryGroupPath + country.$key + '/' + key).set(true).then(_ => {
                   console.log('Message id added to country group in messageRef');
                 }
               );
