@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFire, FirebaseListObservable } from "angularfire2";
-import { Router } from "@angular/router";
-import { Constants } from '../../utils/Constants';
-import { Message } from '../../model/message';
+import {Component, OnInit} from '@angular/core';
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Router} from "@angular/router";
+import {Constants} from '../../utils/Constants';
+import {Message} from '../../model/message';
 
 @Component({
   selector: 'app-messages',
@@ -43,19 +43,67 @@ export class MessagesComponent implements OnInit {
   }
 
   deleteMessage(sentMessage) {
-    // TODO - Delete all message refs
-    console.log('Delete message button pressed');
+    let key: string = sentMessage.$key;
 
-    this.af.database.object(this.path+ "/" + sentMessage.$key).remove()
+    this.af.database.object(this.path + "/" + key).remove()
       .then(_ => {
         console.log("Message deleted from system admin")
       });
 
-    this.af.database.object(Constants.APP_STATUS + '/message/' + sentMessage.$key).remove()
+    this.af.database.object(Constants.APP_STATUS + '/message/' + key).remove()
       .then(_ => {
         console.log("Message deleted from messages")
       });
 
+    this.deleteMessageRefFromAllUsers(key);
+    this.deleteMessageRefFromAllAgencies(key);
+    this.deleteMessageRefFromAllCountries(key);
+
+  }
+
+  private deleteMessageRefFromAllUsers(key) {
+
+    var allUsersGroupPath: string = Constants.APP_STATUS + '/messageRef/allusergroup/';
+    this.af.database.object(allUsersGroupPath + key).remove().then(_ => {
+        console.log('Message id removed from all users group in messageRef');
+      }
+    );
+  }
+
+  private deleteMessageRefFromAllAgencies(key) {
+
+    var agencyGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
+    var agencies: FirebaseListObservable<any> = this.af.database.list(agencyGroupPath);
+
+    agencies.subscribe(agencies => {
+      agencies.forEach(agency => {
+        this.af.database.object(agencyGroupPath + agency.$key).subscribe((agencyId: any) => {
+          this.af.database.object(agencyGroupPath + agencyId.$key + '/' + key).remove().then(_ => {
+              console.log('Message id removed from agency group in messageRef');
+            }
+          );
+        });
+
+      });
+    });
+  }
+
+  private deleteMessageRefFromAllCountries(key) {
+
+    var countryGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
+    var countries: FirebaseListObservable<any> = this.af.database.list(countryGroupPath);
+
+    countries.subscribe(countries => {
+      countries.forEach(country => {
+        this.af.database.object(countryGroupPath + country.$key).subscribe((countryId: any) => {
+          this.af.database.object(countryGroupPath + countryId.$key + '/' + key).remove().then(_ => {
+              console.log('Message id removed from country group in messageRef');
+            }
+          );
+        });
+
+      });
+    });
   }
 
 }
