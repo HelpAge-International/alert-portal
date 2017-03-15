@@ -32,6 +32,7 @@ const routes: Routes = [
   {path: 'system-admin/messages/create', component: MessagesCreateComponent},
   {path: 'system-admin/messages', component: MessagesComponent},
   {path: 'system-admin', component: SystemAdminComponent},
+  {path: 'system-admin/network', component: SystemAdminComponent},
   {path: 'country-admin',  component: CountryAdminComponent},
   //TODO: define needed routes here. see the example above
 

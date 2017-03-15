@@ -1,40 +1,47 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
-import { AngularFireModule, AuthProviders, AuthMethods } from 'angularfire2'
-import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { SystemAdminComponent } from './system-admin/system-admin.component';
-import { AgencyAdminComponent } from './agency-admin/agency-admin.component';
-import { CountryAdminComponent } from './country-admin/country-admin.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { ResponsePlansComponent } from './response-plans/response-plans.component';
-import { PreparednessComponent } from './preparedness/preparedness.component';
-import { RiskMonitoringComponent } from './risk-monitoring/risk-monitoring.component';
-import { CountryOfficeProfileComponent } from './country-office-profile/country-office-profile.component';
-import { MapComponent } from './map/map.component';
-import { DirectorDashboardComponent } from './director-dashboard/director-dashboard.component';
-import { DonorModuleComponent } from './donor-module/donor-module.component';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {HttpModule, Http} from '@angular/http';
+import {AngularFireModule, AuthProviders, AuthMethods} from 'angularfire2'
+import {AppComponent} from './app.component';
+import {LoginComponent} from './login/login.component';
+import {SystemAdminComponent} from './system-admin/system-admin.component';
+import {AgencyAdminComponent} from './agency-admin/agency-admin.component';
+import {CountryAdminComponent} from './country-admin/country-admin.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {ResponsePlansComponent} from './response-plans/response-plans.component';
+import {PreparednessComponent} from './preparedness/preparedness.component';
+import {RiskMonitoringComponent} from './risk-monitoring/risk-monitoring.component';
+import {CountryOfficeProfileComponent} from './country-office-profile/country-office-profile.component';
+import {MapComponent} from './map/map.component';
+import {DirectorDashboardComponent} from './director-dashboard/director-dashboard.component';
+import {DonorModuleComponent} from './donor-module/donor-module.component';
 
-import { AppRoutingModule }     from './app-routing.module';
-import { ForgotPasswordComponent } from './login/forgot-password/forgot-password.component';
-import { AddAgencyComponent } from './system-admin/add-agency/add-agency.component';
-import { MessagesComponent } from './system-admin/messages/messages.component';
-import { SystemAdminMenuComponent } from './system-admin/system-admin-menu/system-admin-menu.component';
-import { MessagesCreateComponent } from './system-admin/messages/messages-create/messages-create.component';
-import { MinPrepComponent } from './system-admin/min-prep/min-prep.component';
-import { MpaComponent } from './system-admin/mpa/mpa.component';
-import { CreateActionComponent } from './system-admin/min-prep/create-action/create-action.component';
-import { CreateMpaActionComponent } from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
-import { SystemSettingsComponent } from './system-admin/system-settings/system-settings.component';
+import {AppRoutingModule}     from './app-routing.module';
+import {ForgotPasswordComponent} from './login/forgot-password/forgot-password.component';
+import {AddAgencyComponent} from './system-admin/add-agency/add-agency.component';
+import {MessagesComponent} from './system-admin/messages/messages.component';
+import {SystemAdminMenuComponent} from './system-admin/system-admin-menu/system-admin-menu.component';
+import {MessagesCreateComponent} from './system-admin/messages/messages-create/messages-create.component';
+import {MinPrepComponent} from './system-admin/min-prep/min-prep.component';
+import {MpaComponent} from './system-admin/mpa/mpa.component';
+import {CreateActionComponent} from './system-admin/min-prep/create-action/create-action.component';
+import {CreateMpaActionComponent} from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
+import {SystemSettingsComponent} from './system-admin/system-settings/system-settings.component';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {CommonModule} from "@angular/common";
 import {MaterialModule} from "@angular/material";
 import "hammerjs";
-import { SystemAdminHeaderComponent } from './system-admin/system-admin-header/system-admin-header.component';
-import { DialogComponent } from './system-admin/dialog/dialog.component';
+import {SystemAdminHeaderComponent} from './system-admin/system-admin-header/system-admin-header.component';
+import {DialogComponent} from './system-admin/dialog/dialog.component';
+import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {DialogService} from "./system-admin/dialog/dialog.service";
+
+export function HttpLoaderFactory(http: Http) {
+  return new TranslateHttpLoader(http);
+}
 
 // Must export the config
 export const firebaseConfig = {
@@ -85,10 +92,18 @@ const firebaseAuthConfig = {
     AppRoutingModule,
     MaterialModule,
     AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    TranslateModule.forRoot({
+        loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [Http]
+      }
+    })
   ],
-  entryComponents:[DialogComponent],
-  providers: [],
+  entryComponents: [DialogComponent],
+  providers: [DialogService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {isSuccess} from "@angular/http/src/http_utils";
 import {MdDialog} from "@angular/material";
 import {DialogComponent} from "../dialog/dialog.component";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-system-admin-header',
@@ -16,8 +17,9 @@ export class SystemAdminHeaderComponent implements OnInit {
   uid: string;
   firstName: string = "";
   lastName: string = "";
+  counter: number = 0;
 
-  constructor(private af: AngularFire, private router: Router, public dialog:MdDialog) {
+  constructor(private af: AngularFire, private router: Router, public dialog: MdDialog, private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -39,12 +41,18 @@ export class SystemAdminHeaderComponent implements OnInit {
     this.af.auth.logout();
   }
 
-  // test() {
-  //   console.log("open dialog")
-  //   let dialogRef = this.dialog.open(DialogComponent);
-  //   dialogRef.afterClosed().subscribe(result => {
-  //     console.log(result);
-  //   });
-  // }
+  test() {
+    this.counter++;
+    if (this.counter % 2 == 0) {
+      this.translate.use("en");
+    } else {
+      this.translate.use("fr");
+    }
+    //   console.log("open dialog")
+    //   let dialogRef = this.dialog.open(DialogComponent);
+    //   dialogRef.afterClosed().subscribe(result => {
+    //     console.log(result);
+    //   });
+  }
 
 }

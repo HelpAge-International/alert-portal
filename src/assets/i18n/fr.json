@@ -1,0 +1,22 @@
+{
+  "MENU": {
+    "HOME": "Accueil",
+    "NETWORK": "RÉSEAU",
+    "CHS": "CHS Mesures minimales de préparation",
+    "MPAAPA": "Générique MPA/APAs",
+    "SETTING": "Les paramètres du système",
+    "MESSAGE": "Messages"
+  },
+  "HOME":{
+    "TITLE":"Agences",
+    "LOGO":"Logo",
+    "NAME":"Nom d'agence",
+    "STATUS":"Statut",
+    "ACTIONS":"Actes",
+    "ADD_NEW_AGENCY":"nouvelle agence"
+  },
+  "DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Voulez-vous vraiment effectuer cette action?"
+  }
+}

@@ -25,8 +25,8 @@
   <div class="Full-page__wrap--inner">
     <!--<div class="Back&#45;&#45;button">Back</div>-->
     <div class="Header-title__wrap">
-      <h1>Agencies</h1>
-      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">Add new agency</a>
+      <h1>{{"HOME.TITLE" | translate}}</h1>
+      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"HOME.ADD_NEW_AGENCY" | translate}}</a>
     </div>
 
     <!-- Display only when no agencies in the list -->
@@ -36,11 +36,11 @@
 
     <table class="table Table__v-spacing__mid Agency-table">
       <tr>
-        <th>Logo</th>
-        <th>Agency Name</th>
+        <th>{{"HOME.LOGO" | translate}}</th>
+        <th>{{"HOME.NAME" | translate}}</th>
         <th></th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th>{{"HOME.STATUS" | translate}}</th>
+        <th>{{"HOME.ACTIONS" | translate}}</th>
       </tr>
       <tr *ngFor="let agency of agencies | async">
         <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>

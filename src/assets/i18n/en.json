@@ -1,0 +1,23 @@
+{
+  "MENU": {
+    "HOME": "Home",
+    "NETWORK": "Networks",
+    "CHS": "CHS Minimum Preparedness Actions",
+    "MPAAPA": "Generic MPA/APAs",
+    "SETTING": "System Settings",
+    "MESSAGE": "Messages"
+  },
+  "HOME":{
+    "TITLE":"Agencies",
+    "LOGO":"Logo",
+    "NAME":"Agency Name",
+    "STATUS":"Status",
+    "ACTIONS":"Actions",
+    "ADD_NEW_AGENCY":"Add new agency"
+  },
+  "DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to proceed this action?"
+  }
+
+}
