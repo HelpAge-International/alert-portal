@@ -1,4 +1,28 @@
 {
+  "GLOBAL": {
+    "TYPE": "Type",
+    "DELETE": "Delete",
+    "CANCEL": "Cancel",
+    "EDIT": "Edit",
+    "FROM": "From",
+    "AT": "at",
+    "TITLE": "Title"
+    "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
+    "EMAIL_ADDRESS": "Email Address"
+  },
+  "LOGIN": {
+    "TITLE_TEXT": "Welcome to ALERT",
+    "WELCOME_INSTRUCTIONS": "Use your email address and password to login below",
+    "PASSWORD": "Password",
+    "Login": "Login",
+    "FORGOT_PASSWORD_BUTTON": "Forgot your password?"
+  },
+  "FORGOT_PASSWORD": {
+    "TITLE_TEXT": "Forgot Password?",
+    "INSTRUCTIONS": "Enter your email address to reset your password",
+    "RESET_PASSWORD": "Reset Password",
+    "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?"
+  },
   "MENU": {
     "HOME": "Home",
     "NETWORK": "Networks",
@@ -30,22 +54,26 @@
   "CHS_MPA": {
     "TITLE_TEXT": "CHS minimum preparedness actions",
     "CREATE_NEW_ACTION": "Create new action",
-    "TYPE": "TYPE",
-    "DELETE": "Delete",
-    "CANCEL": "Cancel",
-    "EDIT": "Edit",
     "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
-    "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "SAVE_BUTTON_TEXT": "Save new action",
     "EDIT_CHS_MPA": "Edit CHS minimum preparedness action",
     "EDIT_BUTTON_TEXT": "Edit action"
   },
+  "GENERIC_MPA_APA": {
+    "TITLE_TEXT": "Generic MPA/APAs",
+    "CREATE_NEW_ACTION": "Create new action",
+    "LEVEL": "Level",
+    "CREATE_NEW_GENERIC_MPA": "Create new generic MPA/APA",
+    "MPA_OR_APA": "Is this a minimum or advanced preparedness action?",
+    "SAVE_BUTTON_TEXT": "Save action",
+    "EDIT_MPA_OR_APA": "MPA_OR_APA",
+    "EDIT_BUTTON_TEXT": "Edit action",
+    "MPA": "MPA",
+    "APA": "APA"
+  },
   "MESSAGES": {
     "TITLE_TEXT": "Messages",
     "CREATE_NEW_MESSAGE": "Create new message",
-    "FROM": "From",
-    "AT": "at",
-    "TITLE": "Title",
     "MESSAGE_CONTENT": "Message content",
     "RECIPIENTS": "Recipients",
     "ALL_USERS": "All users",
@@ -53,5 +81,4 @@
     "COUNTRY_ADMINS": "Country Administrators",
     "SEND_MESSAGE": "Send message"
   }
-
 }
