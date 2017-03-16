@@ -63,7 +63,8 @@
     "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
     "SAVE_BUTTON_TEXT": "Save new action",
     "EDIT_CHS_MPA": "Edit CHS minimum preparedness action",
-    "EDIT_BUTTON_TEXT": "Edit action"
+    "EDIT_BUTTON_TEXT": "Edit action",
+    "NO_CONTENT_ERROR": "Please insert the action content to create a new CHS minimum preparedness action"
   },
   "GENERIC_MPA_APA": {
     "TITLE_TEXT": "Generic MPA/APAs",
@@ -75,7 +76,8 @@
     "EDIT_MPA_OR_APA": "MPA_OR_APA",
     "EDIT_BUTTON_TEXT": "Edit action",
     "MPA": "MPA",
-    "APA": "APA"
+    "APA": "APA",
+    "NO_CONTENT_ERROR": "Please insert the action content to create a new action"
   },
   "MESSAGES": {
     "TITLE_TEXT": "Messages",
@@ -85,6 +87,9 @@
     "ALL_USERS": "All users",
     "AGENCY_ADMINS": "Agency Administrators",
     "COUNTRY_ADMINS": "Country Administrators",
-    "SEND_MESSAGE": "Send message"
+    "SEND_MESSAGE": "Send message",
+    "NO_TITLE_ERROR": "Please enter a title for the message",
+    "NO_CONTENT_ERROR": "Please add some content to the message",
+    "NO_RECIPIENTS_ERROR": "Please select the recipients group"
   }
 }

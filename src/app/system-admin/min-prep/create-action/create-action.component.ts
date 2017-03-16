@@ -102,7 +102,7 @@ export class CreateActionComponent implements OnInit {
   private validate() {
 
     if (!Boolean(this.textArea)) {
-      this.errorMessage = "Please insert the action to create a new CHS minimum preparedness action";
+      this.errorMessage = "CHS_MPA.NO_CONTENT_ERROR";
       return false;
     }
     return true;

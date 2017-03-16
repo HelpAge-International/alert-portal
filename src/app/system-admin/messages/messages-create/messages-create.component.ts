@@ -140,13 +140,13 @@ export class MessagesCreateComponent implements OnInit {
   private validate() {
 
     if (!Boolean(this.messageTitle)) {
-      this.errorMessage = "Please enter a title for the message";
+      this.errorMessage = "MESSAGES.NO_TITLE_ERROR";
       return false;
     } else if (!Boolean(this.messageContent)) {
-      this.errorMessage = "Please add some content to the message";
+      this.errorMessage = "MESSAGES.NO_CONTENT_ERROR";
       return false;
     } else if ((!this.allUsersSelected) && (!this.agencyAdminsSelected) && (!this.countryAdminsSelected)) {
-      this.errorMessage = "Please select the recipients group";
+      this.errorMessage = "MESSAGES.NO_RECIPIENTS_ERROR";
       return false;
     }
     return true;
