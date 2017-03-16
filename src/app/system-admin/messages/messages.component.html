@@ -6,15 +6,15 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1>Messages</h1>
-      <a routerLink="/system-admin/messages/create" class="btn btn-primary">Create new message</a>
+      <h1>{{"MESSAGES.TITLE_TEXT" | translate}}</h1>
+      <a routerLink="/system-admin/messages/create" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</a>
     </div>
 
     <div class="Data--ribbon" *ngFor="let sentMessage of sentMessages">
       <div class="row col-lg-9 col-sm-10">
         <div class="Info--ribbon--wrap">
-          <div class="col-sm-4">From: <b>System Admin</b></div>
-          <div class="col-sm-5">at: <b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
+          <div class="col-sm-4">{{"GLOBAL.FROM" | translate}}<b>System Admin</b></div>
+          <div class="col-sm-5">{{"GLOBAL.AT" | translate}}<b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
         </div>
         <div class="col-sm-12">
           <h5>{{sentMessage.title}}</h5>
@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="col-sm-2 col-lg-3 Right-aligned">
-        <div class="btn btn-danger" (click)="deleteMessage(sentMessage)">Delete</div>
+        <div class="btn btn-danger" (click)="deleteMessage(sentMessage)">{{"GLOBAL.DELETE" | translate}}</div>
       </div>
     </div>
 

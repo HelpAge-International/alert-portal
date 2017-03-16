@@ -1,18 +1,4 @@
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-    <ul>
-      <li class="Header_bar__username">
-        John Doe
-      </li>
-      <li class="Header_bar__country">
-        System Admin
-      </li>
-      <li class="Header_bar__alert">
-        <i class="fa fa-bell" aria-hidden="true"></i>
-      </li>
-    </ul>
-  </div>
-</div>
+<app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
 <div class="Alert-error" [hidden]="inactive">
@@ -26,14 +12,14 @@
     <!--<div class="Back&#45;&#45;button" routerLink="/system-admin/messages">Messages</div>-->
 
     <div class="Header-title__wrap">
-      <h1>Create new message</h1>
+      <h1>{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</h1>
     </div>
 
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-4 col-md-6 col-sm-12">
         <div class="form-group">
-          <label for="n-Done">Title</label>
+          <label for="n-Done">{{"GLOBAL.TITLE" | translate}}</label>
           <input type="text" class="form-control" name="n-Done" [(ngModel)]="messageTitle">
         </div>
       </div>
@@ -41,26 +27,26 @@
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10 col-sm-12">
         <div class="form-group">
-          <label for="n-Done">Message Content</label>
+          <label for="n-Done">{{"MESSAGES.MESSAGE_CONTENT" | translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
                     [(ngModel)]="messageContent"></textarea>
         </div>
       </div>
     </div>
 
-    <label for="f-Format">Recipients</label>
+    <label for="f-Format">{{"MESSAGES.RECIPIENTS" | translate}}</label>
     <div class="row">
       <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">All users</label>
+        <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">{{"MESSAGES.ALL_USERS" | translate}}</label>
       <label for="Agency" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Agency" [(ngModel)]="agencyAdminsSelected">Agency Administrators</label>
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Agency" [(ngModel)]="agencyAdminsSelected">{{"MESSAGES.AGENCY_ADMINS" | translate}}</label>
       <label for="Country Administrators" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Country Administrators" [(ngModel)]="countryAdminsSelected">Country Administrators</label>
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Country Administrators" [(ngModel)]="countryAdminsSelected">{{"MESSAGES.COUNTRY_ADMINS" | translate}}</label>
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" routerLink="/system-admin/messages">Cancel</div>
-      <div class="btn btn-primary" (click)="onSubmit()">Send message</div>
+      <div class="btn btn-outline-secondary" routerLink="/system-admin/messages">{{"GLOBAL.CANCEL" | translate}}</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{"MESSAGES.SEND_MESSAGE" | translate}}</div>
     </div>
 
   </div>

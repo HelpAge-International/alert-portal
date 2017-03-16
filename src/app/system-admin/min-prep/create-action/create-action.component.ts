@@ -14,8 +14,8 @@ export class CreateActionComponent implements OnInit {
 
   private inactive: Boolean = true;
   private errorMessage: any;
-  private pageTitle: string = 'Create new CHS minimum preparedness action';
-  private buttonText: string = 'Save new action';
+  private pageTitle: string = 'CHS_MPA.CREATE_NEW_CHS_MPA';
+  private buttonText: string = 'CHS_MPA.SAVE_BUTTON_TEXT';
   private textArea: string;
   private path: string;
   private forEditing = false;
@@ -40,8 +40,8 @@ export class CreateActionComponent implements OnInit {
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
-          this.pageTitle = "Edit CHS minimum preparedness action";
-          this.buttonText = "Edit action";
+          this.pageTitle = 'CHS_MPA.EDIT_CHS_MPA';
+          this.buttonText = 'CHS_MPA.EDIT_BUTTON_TEXT';
           this.loadCHSActionInfo(params["id"]);
           this.idOfChsActionToEdit = params["id"];
         }

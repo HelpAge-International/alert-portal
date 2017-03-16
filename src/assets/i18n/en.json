@@ -1,12 +1,12 @@
 {
   "GLOBAL": {
-    "TYPE": "Type",
+    "TYPE": "Type:",
     "DELETE": "Delete",
     "CANCEL": "Cancel",
     "EDIT": "Edit",
-    "FROM": "From",
-    "AT": "at",
-    "TITLE": "Title"
+    "FROM": "From:",
+    "AT": "at:",
+    "TITLE": "Title",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "EMAIL_ADDRESS": "Email Address"
   },
@@ -54,6 +54,7 @@
   "CHS_MPA": {
     "TITLE_TEXT": "CHS minimum preparedness actions",
     "CREATE_NEW_ACTION": "Create new action",
+    "CHS": "Chs",
     "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
     "SAVE_BUTTON_TEXT": "Save new action",
     "EDIT_CHS_MPA": "Edit CHS minimum preparedness action",
@@ -65,7 +66,7 @@
     "LEVEL": "Level",
     "CREATE_NEW_GENERIC_MPA": "Create new generic MPA/APA",
     "MPA_OR_APA": "Is this a minimum or advanced preparedness action?",
-    "SAVE_BUTTON_TEXT": "Save action",
+    "SAVE_BUTTON_TEXT": "Save new action",
     "EDIT_MPA_OR_APA": "MPA_OR_APA",
     "EDIT_BUTTON_TEXT": "Edit action",
     "MPA": "MPA",

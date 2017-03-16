@@ -6,8 +6,8 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>CHS minimum preparedness actions</h1>
-      <a routerLink="/system-admin/min-prep/create" class="btn btn-primary">Create new action</a>
+      <h1>{{"CHS_MPA.TITLE_TEXT" | translate}}</h1>
+      <a routerLink="/system-admin/min-prep/create" class="btn btn-primary">{{"CHS_MPA.CREATE_NEW_ACTION" | translate}}</a>
     </div>
 
     <!-- Show only when no actions are created yet -->
@@ -17,11 +17,11 @@
       <div class="col-sm-9 ">
         <p>{{chsMinPrepAction.task}}</p>
         <!--<p>type: <b>{{ActionType[chsMinPrepAction.type]}}</b></p>-->
-        <p>type: <b>chs</b></p>
+        <p>{{"GLOBAL.TYPE" | translate}}<b>{{"CHS_MPA.CHS" | translate}}</b></p>
       </div>
       <div class="col-lg-3 Right-aligned">
-        <div class="btn btn-danger" (click)="deleteChsMinPrepAction(chsMinPrepAction)">Delete</div>
-        <div class="btn btn-primary" (click)="editChsMinPrepAction(chsMinPrepAction)">Edit</div>
+        <div class="btn btn-danger" (click)="deleteChsMinPrepAction(chsMinPrepAction)">{{"GLOBAL.DELETE" | translate}}</div>
+        <div class="btn btn-primary" (click)="editChsMinPrepAction(chsMinPrepAction)">{{"GLOBAL.EDIT" | translate}}</div>
       </div>
     </div>
   </div>
