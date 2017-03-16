@@ -8,20 +8,25 @@
     "AT": "at:",
     "TITLE": "Title",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
-    "EMAIL_ADDRESS": "Email Address"
+    "EMAIL_ADDRESS": "Email Address",
+    "GENERAL_ERROR": "An error occurred. Please check and try again"
   },
   "LOGIN": {
     "TITLE_TEXT": "Welcome to ALERT",
     "WELCOME_INSTRUCTIONS": "Use your email address and password to login below",
     "PASSWORD": "Password",
-    "Login": "Login",
-    "FORGOT_PASSWORD_BUTTON": "Forgot your password?"
+    "LOGIN": "Login",
+    "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
+    "NO_DATA_ERROR": "Please enter your email address and password to login",
+    "NO_EMAIL_ERROR": "Please enter your email address",
+    "NO_PASSWORD_ERROR": "Please enter your password"
   },
   "FORGOT_PASSWORD": {
     "TITLE_TEXT": "Forgot Password?",
     "INSTRUCTIONS": "Enter your email address to reset your password",
     "RESET_PASSWORD": "Reset Password",
-    "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?"
+    "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?",
+    "NO_EMAIL_ERROR": "Please enter your email address"
   },
   "MENU": {
     "HOME": "Home",

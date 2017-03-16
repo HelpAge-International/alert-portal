@@ -50,7 +50,6 @@ export class LoginComponent implements OnInit {
           method: AuthMethods.Password,
         }).then(
         (success) => {
-          Constants.uid = success.uid;
           this.af.database.list(Constants.APP_STATUS + '/systemAdmin', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
@@ -77,7 +76,7 @@ export class LoginComponent implements OnInit {
             });
         }).catch(
         (err) => {
-          this.errorMessage = err;
+          this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;
         });
       this.inactive = true;
@@ -98,13 +97,13 @@ export class LoginComponent implements OnInit {
   validate() {
 
     if ((!Boolean(this.localUser.userEmail)) && (!Boolean(this.localUser.password))) {
-      this.errorMessage = "Please enter your email address and password to login";
+      this.errorMessage = "LOGIN.NO_DATA_ERROR";
       return false;
     } else if (!Boolean(this.localUser.userEmail)) {
-      this.errorMessage = "Please enter your email address";
+      this.errorMessage = "LOGIN.NO_EMAIL_ERROR";
       return false;
     } else if (!Boolean(this.localUser.password)) {
-      this.errorMessage = "Please enter your password";
+      this.errorMessage = "LOGIN.NO_PASSWORD_ERROR";
       return false;
     }
     return true;
