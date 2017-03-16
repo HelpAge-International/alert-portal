@@ -7,43 +7,72 @@
     "SETTING": "System Settings",
     "MESSAGE": "Messages"
   },
-  "HOME":{
-    "TITLE":"Agencies",
-    "LOGO":"Logo",
-    "NAME":"Agency Name",
-    "STATUS":"Status",
-    "ACTIONS":"Actions",
-    "ADD_NEW_AGENCY":"Add New Agency",
-    "EDIT_AGENCY":"Edit Agency",
-    "ACTIVE":"Active",
-    "DEACTIVE":"Deactive",
-    "ACTIVATE":"Activate",
-    "DEACTIVATE":"Deactivate",
-    "AGENCY_DETAIL":"Agency Details",
-    "AGENCY_NAME":"Name",
-    "AGENCY_ADMIN_DETAIL":"Agency Administrator Details",
-    "AGENCY_ADMIN_TITLE":"Title",
-    "AGENCY_ADMIN_FIRST_NAME":"First Name",
-    "AGENCY_ADMIN_LAST_NAME":"Last Name",
-    "AGENCY_ADMIN_EMAIL":"Email Address",
-    "AGENCY_ADMIN_ADD1":"Address Line 1",
-    "AGENCY_ADMIN_ADD2":"Address Line 2",
-    "AGENCY_ADMIN_ADD3":"Address Line 3",
-    "AGENCY_ADMIN_COUNTRY":"Country",
-    "AGENCY_ADMIN_CITY":"City",
-    "AGENCY_ADMIN_POSTCODE":"Postcode",
-    "SAVE":"Save new agency",
-    "EDIT_AGENCY_BTN":"Edit agency",
-    "EDIT":"Edit",
-    "CANCEL":"Cancel"
-
+  "HOME": {
+    "SYSTEM_ADMIN": "System Admin",
+    "TITLE": "Agencies",
+    "LOGO": "Logo",
+    "NAME": "Agency Name",
+    "STATUS": "Status",
+    "ACTIONS": "Actions",
+    "ADD_NEW_AGENCY": "Add New Agency",
+    "EDIT_AGENCY": "Edit Agency",
+    "DELETE_AGENCY": "DELETE AGENCY",
+    "ACTIVE": "Active",
+    "DEACTIVE": "Deactive",
+    "ACTIVATE": "Activate",
+    "DEACTIVATE": "Deactivate",
+    "AGENCY_DETAIL": "Agency Details",
+    "AGENCY_NAME": "Name",
+    "AGENCY_ADMIN_DETAIL": "Agency Administrator Details",
+    "AGENCY_ADMIN_TITLE": "Title",
+    "AGENCY_ADMIN_FIRST_NAME": "First Name",
+    "AGENCY_ADMIN_LAST_NAME": "Last Name",
+    "AGENCY_ADMIN_EMAIL": "Email Address",
+    "AGENCY_ADMIN_ADD1": "Address Line 1",
+    "AGENCY_ADMIN_ADD2": "Address Line 2",
+    "AGENCY_ADMIN_ADD3": "Address Line 3",
+    "AGENCY_ADMIN_COUNTRY": "Country",
+    "AGENCY_ADMIN_CITY": "City",
+    "AGENCY_ADMIN_POSTCODE": "Postcode",
+    "SAVE": "Save New Agency",
+    "EDIT": "Edit",
+    "CANCEL": "Cancel",
+    "SETTING": {
+      "SETTING_SAVED": "Settings successfully saved!",
+      "TITLE": "System Settings",
+      "MIN": "Minimum preparedness threshold",
+      "ADV": "Advanced preparedness threshold",
+      "GREEN": "Green",
+      "AMBER": "Amber",
+      "RED": "Red",
+      "DOC_SETTING": "Document upload settings",
+      "FILE_FORMAT": "File Format",
+      "FILE_SIZE": "Maximum file size",
+      "SAVE": "Save Settings"
+    }
   },
-  "DIALOG":{
-    "TITLE":"Alert",
-    "CONTENT":"Are you sure you want to proceed this action?"
+  "DIALOG": {
+    "TITLE": "Alert",
+    "CONTENT": "Are you sure you want to proceed this action?"
   },
-  "ERROR":{
-    "TITLE":"Alert",
-    "CONTENT":"Are you sure you want to proceed this action?"
+  "ERROR": {
+    "NAME_DUPLICATE": "Agency name duplicate!",
+    "NAME_MISSING": "Name is missing!",
+    "EMAIL_NOT_VALID": "Email is not valid!"
+  },
+  "COMMON": {
+    "CANCEL": "Cancel",
+    "ACCOUNT_SETTING": "Account Setting",
+    "LOGOUT": "Logout",
+    "PERSON_TITLE": {
+      "MR": "Mr",
+      "MISS": "Miss",
+      "DR": "Dr"
+    },
+    "COUNTRY": {
+      "UK": "UK",
+      "FRANCE": "France",
+      "GERMANY": "Germany"
+    }
   }
 }

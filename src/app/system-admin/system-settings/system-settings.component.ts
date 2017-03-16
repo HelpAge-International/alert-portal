@@ -1,17 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFireAuth, AngularFire} from "angularfire2";
 import {Constants, FILE_SETTING} from "../../utils/Constants";
 import {ModelSystem} from "../../model/system.model";
 import {Router} from "@angular/router";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {FileType} from "../../utils/Enums";
+import {subscribeOn} from "rxjs/operator/subscribeOn";
 
 @Component({
   selector: 'app-system-settings',
   templateUrl: './system-settings.component.html',
   styleUrls: ['./system-settings.component.css']
 })
-export class SystemSettingsComponent implements OnInit {
+export class SystemSettingsComponent implements OnInit,OnDestroy {
 
   minGreen: number;
   minAmber: number;
@@ -34,15 +35,16 @@ export class SystemSettingsComponent implements OnInit {
   FileType = FileType;
   modelSystem: ModelSystem;
   uid: string;
-  successMessage: string = "Settings successfully saved!";
+  successMessage: string = "HOME.SETTING.SETTING_SAVED";
   isSaved: boolean = false;
+  private subscription: Subscription;
 
   constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
     // console.log("uid: "+this.af.auth.getAuth().auth.uid);
-    this.af.auth.subscribe(x => {
+    this.subscription = this.af.auth.subscribe(x => {
       if (x) {
         this.uid = x.uid;
         this.initData(this.uid);
@@ -51,6 +53,12 @@ export class SystemSettingsComponent implements OnInit {
       }
     });
 
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private initData(uid) {

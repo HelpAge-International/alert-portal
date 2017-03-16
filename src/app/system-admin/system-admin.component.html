@@ -13,7 +13,7 @@
     </div>
 
     <!-- Display only when no agencies in the list -->
-    <div *ngIf="(agencies | async)?.isEmpty" class="Empty--ribbon">
+    <div *ngIf="(agencies | async)?.length == 0" class="Empty--ribbon">
       No agencies have been added to the Alert Portal
     </div>
 

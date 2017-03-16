@@ -16,4 +16,5 @@ export class ModelAgency {
   public postCode:string;
   public website:string;
   public remainApproved:number;
+  public sentmessages:{};
 }

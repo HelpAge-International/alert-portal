@@ -1,8 +1,9 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Router} from "@angular/router";
 import {DialogService} from "./dialog/dialog.service";
+import {Subscription, Observable} from "rxjs";
 
 
 @Component({
@@ -11,26 +12,50 @@ import {DialogService} from "./dialog/dialog.service";
   styleUrls: ['./system-admin.component.css']
 })
 
-export class SystemAdminComponent implements OnInit {
+export class SystemAdminComponent implements OnInit,OnDestroy {
 
   agencies: FirebaseListObservable<any>;
   uid: string;
+  private subscription: Subscription;
 
   constructor(private af: AngularFire, private router: Router,
               private dialogService: DialogService) {
   }
 
   ngOnInit() {
-    this.af.auth.subscribe(x => {
+    this.subscription = this.af.auth.subscribe(x => {
       if (x) {
         this.uid = x.auth.uid;
         console.log("uid: " + this.uid);
         this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
+        this.test();
       } else {
         this.navigateToLogin();
       }
     });
+  }
 
+  private test() {
+    this.af.database.list(Constants.APP_STATUS+"/systemAdmin/"+this.uid+"/sentmessages")
+      .flatMap(list => {
+        let tempList = [];
+        list.forEach(x =>{
+          tempList.push(x)
+        })
+        return Observable.from(tempList)
+      })
+      .flatMap(item => {
+        return this.af.database.object(Constants.APP_STATUS+"/message/"+item.$key)
+      })
+      .subscribe(x=>{
+        console.log(x)
+      })
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private navigateToLogin() {
@@ -45,15 +70,6 @@ export class SystemAdminComponent implements OnInit {
         this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(agency.isActive);
       }
     });
-    // let dialogRef = this.dialog.open(DialogComponent);
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     agency.isActive = !agency.isActive;
-    //     console.log(agency.isActive);
-    //     this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(agency.isActive);
-    //   }
-    // });
-
   }
 
   editAgency(agency) {

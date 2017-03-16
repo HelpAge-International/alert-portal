@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from "@angular/core";
 import {CustomerValidator} from "../../utils/CustomValidator";
 import * as firebase from "firebase";
 import {firebaseConfig} from "../../app.module";
@@ -7,16 +7,18 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {Constants} from "../../utils/Constants";
 import {ModelAgency} from "../../model/agency.model";
 import {Router, ActivatedRoute, Params} from "@angular/router";
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/mergeMap';
+import "rxjs/add/operator/switchMap";
+import "rxjs/add/operator/mergeMap";
 import {PersonTitle, Country} from "../../utils/Enums";
+import {DialogService} from "../dialog/dialog.service";
+import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-add-agency',
   templateUrl: './add-agency.component.html',
   styleUrls: ['./add-agency.component.css']
 })
-export class AddAgencyComponent implements OnInit {
+export class AddAgencyComponent implements OnInit,OnDestroy {
 
   waringMessage: string
   agencyName: string
@@ -32,39 +34,62 @@ export class AddAgencyComponent implements OnInit {
   agencyAdminPostCode: string
   hideWarning: boolean
   isEdit = false;
-  PersonTitle = PersonTitle;
-  Country = Country;
+  // Country = Country;
+  Country = Constants.COUNTRY;
   countryList: number[] = [Country.UK, Country.France, Country.Germany];
+  // PersonTitle = PersonTitle;
+  PersonTitle = Constants.PERSON_TITLE;
   personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
   private emailInDatabase: string;
   private agencyId: string;
   private userPublic: ModelUserPublic;
   private adminId: string;
+  private rxhelper: RxHelper;
+  private deleteAgency: any = {};
+  private secondApp: firebase.app.App;
+  private systemAdminUid: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private af: AngularFire, private router: Router,
+              private route: ActivatedRoute, private dialogService: DialogService) {
+    this.rxhelper = new RxHelper();
   }
 
   ngOnInit() {
-    this.waringMessage = "warning message!!!";
-    this.hideWarning = true;
-    this.route.params
-      .subscribe((params: Params) => {
-        if (params["id"]) {
-          this.agencyId = params["id"];
-          this.isEdit = true;
-          this.loadAgencyInfo(params["id"]);
-        }
-      });
+    let subscription = this.af.auth.subscribe(user => {
+      if (user) {
+        this.systemAdminUid = user.auth.uid;
+        this.secondApp = firebase.initializeApp(firebaseConfig, "second");
+        this.waringMessage = "warning message!!!";
+        this.hideWarning = true;
+        let subscription = this.route.params
+          .subscribe((params: Params) => {
+            if (params["id"]) {
+              this.agencyId = params["id"];
+              this.isEdit = true;
+              this.loadAgencyInfo(params["id"]);
+            }
+          });
+        this.rxhelper.add(subscription);
+      } else {
+        this.router.navigateByUrl(Constants.LOGIN_PATH);
+      }
+    });
+    this.rxhelper.add(subscription);
+  }
+
+  ngOnDestroy() {
+    this.rxhelper.releaseAll();
+    this.secondApp.delete();
   }
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe((agency: ModelAgency) => {
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe((agency: ModelAgency) => {
       this.agencyName = agency.name;
       this.adminId = agency.adminId;
 
       //load from user public
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
         .subscribe((user: ModelUserPublic) => {
           this.userPublic = user;
           this.agencyAdminTitle = user.title;
@@ -80,8 +105,9 @@ export class AddAgencyComponent implements OnInit {
           this.agencyAdminCity = user.city;
           this.agencyAdminPostCode = user.postCode;
         });
+      this.rxhelper.add(subscription);
     });
-
+    this.rxhelper.add(subscription);
   }
 
   onSubmit() {
@@ -107,13 +133,13 @@ export class AddAgencyComponent implements OnInit {
 
   private updateWithNewEmail() {
     console.log("new email");
-    let secondApp = firebase.initializeApp(firebaseConfig, "second");
+    // let secondApp = firebase.initializeApp(firebaseConfig, "second");
     let tempPassword = "testtest";
-    secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
+    this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
       console.log("user " + x.uid + " created successfully");
       let uid: string = x.uid;
       this.writeToFirebase(uid);
-      secondApp.auth().signOut();
+      this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
     });
@@ -152,7 +178,7 @@ export class AddAgencyComponent implements OnInit {
       let updateData = {};
       updateData["/userPublic/" + this.adminId] = this.userPublic;
       updateData["/agency/" + this.agencyId + "/name"] = this.agencyName;
-      this.af.database.object(Constants.APP_STATUS).update(updateData).then(_ => {
+      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         this.backToHome();
       }, error => {
         console.log(error.message);
@@ -166,7 +192,7 @@ export class AddAgencyComponent implements OnInit {
 
   private validateAgencyName() {
     console.log("validate agency name");
-    this.af.database.list(Constants.APP_STATUS + "/agency", {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency", {
       query: {
         orderByChild: "name",
         equalTo: this.agencyName
@@ -176,21 +202,22 @@ export class AddAgencyComponent implements OnInit {
         console.log("create new user");
         this.createNewUser();
       } else {
-        this.waringMessage = "Agency name duplicate!";
+        this.waringMessage = "ERROR.NAME_DUPLICATE";
         this.hideWarning = false;
       }
     });
+    this.rxhelper.add(subscription);
   }
 
   private createNewUser() {
     console.log("start register new agency");
-    let secondApp = firebase.initializeApp(firebaseConfig, "second");
+    // let secondApp = firebase.initializeApp(firebaseConfig, "fourth");
     let tempPassword = "testtest";
-    secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
+    this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
       console.log("user " + success.uid + " created successfully");
       let uid: string = success.uid;
       this.writeToFirebase(uid);
-      secondApp.auth().signOut();
+      this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
       this.waringMessage = error.message;
@@ -201,11 +228,11 @@ export class AddAgencyComponent implements OnInit {
   private validateForm(): boolean {
     if (!this.agencyName) {
       this.hideWarning = false;
-      this.waringMessage = "Name is missing!";
+      this.waringMessage = "ERROR.NAME_MISSING";
       return false;
     } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
       this.hideWarning = false;
-      this.waringMessage = "Email is not valid!!";
+      this.waringMessage = "ERROR.EMAIL_NOT_VALID";
       return false;
     } else {
       this.hideWarning = true;
@@ -228,14 +255,17 @@ export class AddAgencyComponent implements OnInit {
 
     //testing
     agencyData["/userPublic/" + uid] = newAgencyAdmin;
-    let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
-    agencyData["/administratorAgency/" + uid + "/systemAdmin/" + systemAdminUid] = true;
+    // let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
+    agencyData["/administratorAgency/" + uid + "/systemAdmin/" + this.systemAdminUid] = true;
     if (this.isEdit) {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
+      agencyData["/administratorAgency/" + this.adminId] = null;
+      agencyData["/userPublic/" + this.adminId] = null;
+      agencyData["/userPrivate/" + this.adminId] = null;
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
-      agencyData["/group/agencygroup/"+uid] = true;
+      agencyData["/group/agencygroup/" + uid] = true;
       let agency = new ModelAgency();
       agency.name = this.agencyName;
       agency.isActive = true;
@@ -256,5 +286,35 @@ export class AddAgencyComponent implements OnInit {
 
   cancelSubmit() {
     this.backToHome();
+  }
+
+  delete() {
+    console.log("delete");
+    if (this.agencyId && this.adminId) {
+      let subscription = this.dialogService.createDialog("test", "test test").subscribe(result => {
+        console.log(result);
+        //TODO delete agency
+        if (result) {
+          this.deleteAgency["/userPublic/" + this.adminId] = null;
+          this.deleteAgency["/administratorAgency/" + this.adminId] = null;
+          this.deleteAgency["/group/agencygroup/" + this.adminId] = null;
+          this.deleteAgency["/agency/" + this.agencyId] = null;
+          this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
+          this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
+            result.forEach(item => {
+              console.log(item.$key);
+              this.deleteAgency["/message/" + item.$key] = null;
+            });
+            console.log(JSON.stringify(this.deleteAgency));
+            this.af.database.object(Constants.APP_STATUS).update(this.deleteAgency).then(() => {
+              this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
+            }, error => {
+              console.log(error.message);
+            });
+          })
+        }
+      });
+      this.rxhelper.add(subscription);
+    }
   }
 }

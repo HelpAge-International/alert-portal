@@ -1,7 +1,7 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
-<div class="Alert-error" [hidden]="hideWarning">{{waringMessage}}</div>
+<div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
@@ -10,9 +10,10 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"HOME.ADD_NEW_AGENCY" | translate}}</h1>
       <h1 *ngIf="isEdit">{{"HOME.EDIT_AGENCY" | translate}}</h1>
+      <button *ngIf="isEdit" class="btn btn-danger" (click)="delete()">{{"HOME.DELETE_AGENCY" | translate}}</button>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Agency Details</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"HOME.AGENCY_DETAIL" | translate}}</h3>
     <hr>
 
     <form #addAgencyForm="ngForm" (ngSubmit)="onSubmit()">
@@ -20,35 +21,36 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Name">Name*</label>
+            <label for="Name">{{"HOME.AGENCY_NAME" | translate}}*</label>
             <input type="text" class="form-control" id="Name" required [(ngModel)]="agencyName" name="name">
           </div>
         </div>
       </div>
 
-      <h3 class="System-admin__Sub-title--spaced">Agency Administrator Details</h3>
+      <h3 class="System-admin__Sub-title--spaced">{{"HOME.AGENCY_ADMIN_DETAIL" | translate}}</h3>
       <hr>
 
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Title">Title*</label>
+            <label for="Title">{{"HOME.AGENCY_ADMIN_TITLE" | translate}}*</label>
             <!--<input type="text" class="form-control" required id="Title">-->
             <select id="Title" class="form-control" required [(ngModel)]="agencyAdminTitle" name="personTitle">
-              <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title]}}</option>
+              <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title] | translate}}
+              </option>
             </select>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="f-Name">First Name*</label>
+            <label for="f-Name">{{"HOME.AGENCY_ADMIN_FIRST_NAME" | translate}}*</label>
             <input type="text" class="form-control" id="f-Name" required [(ngModel)]="agencyAdminFirstName"
                    name="agencyAdminFirstName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="l-Name">Last Name*</label>
+            <label for="l-Name">{{"HOME.AGENCY_ADMIN_LAST_NAME" | translate}}*</label>
             <input type="text" class="form-control" id="l-Name" required [(ngModel)]="agencyAdminLastName"
                    name="agencyAdminLastName">
           </div>
@@ -58,7 +60,7 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Email">Email Address*</label>
+            <label for="Email">{{"HOME.AGENCY_ADMIN_EMAIL" | translate}}*</label>
             <input type="text" class="form-control" id="Email" required [(ngModel)]="agencyAdminEmail"
                    name="agencyAdminEmail">
           </div>
@@ -68,21 +70,21 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-1">Address Line 1</label>
+            <label for="A-line-1">{{"HOME.AGENCY_ADMIN_ADD1" | translate}}</label>
             <input type="text" class="form-control" id="A-line-1" [(ngModel)]="agencyAdminAddressLine1"
                    name="agencyAdminAddressLine1">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-2">Address Line 2</label>
+            <label for="A-line-2">{{"HOME.AGENCY_ADMIN_ADD2" | translate}}</label>
             <input type="text" class="form-control" id="A-line-2" [(ngModel)]="agencyAdminAddressLine2"
                    name="agencyAdminAddressLine2">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-3">Address Line 3</label>
+            <label for="A-line-3">{{"HOME.AGENCY_ADMIN_ADD3" | translate}}</label>
             <input type="text" class="form-control" id="A-line-3" [(ngModel)]="agencyAdminAddressLine3"
                    name="agencyAdminAddressLine3">
           </div>
@@ -92,23 +94,23 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Country">Country</label>
+            <label for="Country">{{"HOME.AGENCY_ADMIN_COUNTRY" | translate}}</label>
             <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
                     name="agencyAdminCountry">
-              <option *ngFor="let country of countryList" [ngValue]="country">{{Country[country]}}</option>
+              <option *ngFor="let country of countryList" [ngValue]="country">{{Country[country] | translate}}</option>
             </select>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="City">City</label>
+            <label for="City">{{"HOME.AGENCY_ADMIN_CITY" | translate}}</label>
             <input type="text" class="form-control" id="City" [(ngModel)]="agencyAdminCity"
                    name="agencyAdminCity">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Postcode">Postcode</label>
+            <label for="Postcode">{{"HOME.AGENCY_ADMIN_POSTCODE" | translate}}</label>
             <input type="text" class="form-control" id="Postcode" [(ngModel)]="agencyAdminPostCode"
                    name="agencyAdminPostCode">
           </div>
@@ -116,9 +118,13 @@
       </div>
 
       <div class="Form-submit__wrapper">
-        <div class="btn btn-outline-secondary" (click)="cancelSubmit()">Cancel</div>
-        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!addAgencyForm.form.valid" (click)="onSubmit()">Save new agency</button>
-        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!addAgencyForm.form.valid" (click)="onSubmit()">Edit agency</button>
+        <div class="btn btn-outline-secondary" (click)="cancelSubmit()">{{"HOME.CANCEL" | translate}}</div>
+        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!addAgencyForm.form.valid"
+                (click)="onSubmit()">{{"HOME.SAVE" | translate}}
+        </button>
+        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!addAgencyForm.form.valid"
+                (click)="onSubmit()">{{"HOME.EDIT_AGENCY" | translate}}
+        </button>
       </div>
 
     </form>

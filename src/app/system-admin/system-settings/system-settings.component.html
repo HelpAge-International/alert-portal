@@ -1,22 +1,22 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
-<div *ngIf="isSaved" class="Alert-success">{{successMessage}}</div>
+<div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1>System Settings</h1>
+      <h1>{{"HOME.SETTING.TITLE" | translate}}</h1>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Minimum preparedness threshold</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.MIN" | translate}}</h3>
     <hr>
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--green"></i>Green
+        <i class="Traffic--green"></i>{{"HOME.SETTING.GREEN" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minGreen">
@@ -29,7 +29,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--amber"></i>Amber
+        <i class="Traffic--amber"></i>{{"HOME.SETTING.AMBER" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minAmber">
@@ -42,7 +42,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--red"></i>Red
+        <i class="Traffic--red"></i>{{"HOME.SETTING.RED" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minRed">
@@ -53,12 +53,12 @@
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Advanced preparedness threshold</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.ADV" | translate}}</h3>
     <hr>
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--green"></i>Green
+        <i class="Traffic--green"></i>{{"HOME.SETTING.GREEN" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advGreen">
@@ -71,7 +71,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--amber"></i>Amber
+        <i class="Traffic--amber"></i>{{"HOME.SETTING.AMBER" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advAmber">
@@ -84,7 +84,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--red"></i>Red
+        <i class="Traffic--red"></i>{{"HOME.SETTING.RED" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advRed">
@@ -95,10 +95,10 @@
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Document upload settings</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.DOC_SETTING" | translate}}</h3>
     <hr>
 
-    <label for="f-Format">File Format</label>
+    <label for="f-Format">{{"HOME.SETTING.FILE_FORMAT" | translate}}</label>
 
     <!--<h1>{{isPdf}}</h1>-->
     <div class="row">
@@ -140,7 +140,7 @@
     </div>
 
     <div class="File-size--spaced">
-      <label for="f-Format">Maximum file size</label>
+      <label for="f-Format">{{"HOME.SETTING.FILE_SIZE" | translate}}</label>
       <div class="row">
         <div class="col-lg-2 col-md-4 col-sm-4">
           <select class="form-control" [(ngModel)]="fileSize">
@@ -161,8 +161,8 @@
 
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
-      <div class="btn btn-primary" (click)="saveSetting()">Save settings</div>
+      <div class="btn btn-outline-secondary" (click)="back()">{{"COMMON.CANCEL" | translate}}</div>
+      <div class="btn btn-primary" (click)="saveSetting()">{{"HOME.SETTING.SAVE" | translate}}</div>
     </div>
 
 
