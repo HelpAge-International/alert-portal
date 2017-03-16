@@ -10,6 +10,8 @@
       <a routerLink="/system-admin/messages/create" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</a>
     </div>
 
+    <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>
+
     <div class="Data--ribbon" *ngFor="let sentMessage of sentMessages">
       <div class="row col-lg-9 col-sm-10">
         <div class="Info--ribbon--wrap">

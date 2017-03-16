@@ -10,8 +10,7 @@
       <a routerLink="/system-admin/min-prep/create" class="btn btn-primary">{{"CHS_MPA.CREATE_NEW_ACTION" | translate}}</a>
     </div>
 
-    <!-- Show only when no actions are created yet -->
-    <!--<div class="Empty&#45;&#45;ribbon">No actions have been created</div>-->
+    <div *ngIf="(chsMinPrepActions | async)?.length == 0" class="Empty--ribbon">{{"CHS_MPA.NO_ACTIONS" | translate}}</div>
 
     <div class="Data--ribbon" *ngFor="let chsMinPrepAction of chsMinPrepActions | async" >
       <div class="col-sm-9 ">
