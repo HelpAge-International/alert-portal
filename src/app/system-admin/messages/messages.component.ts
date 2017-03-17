@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
-import {Message} from '../../model/message';
+import {DialogService} from "../dialog/dialog.service";
+import Promise = firebase.Promise;
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-messages',
@@ -11,11 +13,11 @@ import {Message} from '../../model/message';
 })
 export class MessagesComponent implements OnInit {
 
-  private messageRefs: FirebaseListObservable<any>;
-  private sentMessages: Message[] = [];
-  private path: string = '';
+  private uid: string;
+  private sentMessages: FirebaseObjectObservable<any>[] = [];
+  private msgData = {};
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
   }
 
   ngOnInit() {
@@ -23,87 +25,74 @@ export class MessagesComponent implements OnInit {
     this.af.auth.subscribe(auth => {
 
       if (auth) {
-        this.path = Constants.APP_STATUS + '/systemAdmin/' + auth.uid + '/sentmessages';
-        this.messageRefs = this.af.database.list(this.path);
+        this.uid = auth.uid;
 
-        this.messageRefs.subscribe(messageRefs => {
-          messageRefs.forEach(messageRef => {
-            this.af.database.object(Constants.APP_STATUS + '/message/' + messageRef.$key).subscribe((message: Message) => {
-              this.sentMessages.push(message);
-            });
-          });
-        });
+        this.af.database.list(Constants.APP_STATUS + "/systemAdmin/" + this.uid + "/sentmessages")
+          .flatMap(list => {
+            this.sentMessages = [];
+            let tempList = [];
+            list.forEach(x => {
+              tempList.push(x)
+            })
+            return Observable.from(tempList)
+          })
+          .flatMap(item => {
+            return this.af.database.object(Constants.APP_STATUS + "/message/" + item.$key)
+          }).distinctUntilChanged()
+          .subscribe(x => {
+              this.sentMessages.push(x);
+          })
 
       } else {
         // user is not logged in
         console.log("Error occurred - User isn't logged in");
-        this.router.navigateByUrl("/login");
+        this.navigateToLogin();
       }
     });
   }
 
   deleteMessage(sentMessage) {
-    let key: string = sentMessage.$key;
+    this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
+      if (result) {
+        let key: string = sentMessage.$key;
 
-    this.af.database.object(this.path + "/" + key).remove()
-      .then(_ => {
-        console.log("Message deleted from system admin")
-      });
+        this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + key] = null;
+        this.msgData['/message/' + key] = null;
+        var allUsersGroupPath: string = '/messageRef/allusergroup/';
+        this.msgData[allUsersGroupPath + key] = null;
 
-    this.af.database.object(Constants.APP_STATUS + '/message/' + key).remove()
-      .then(_ => {
-        console.log("Message deleted from messages")
-      });
-
-    this.deleteMessageRefFromAllUsers(key);
-    this.deleteMessageRefFromAllAgencies(key);
-    this.deleteMessageRefFromAllCountries(key);
-
-  }
-
-  private deleteMessageRefFromAllUsers(key) {
-
-    var allUsersGroupPath: string = Constants.APP_STATUS + '/messageRef/allusergroup/';
-    this.af.database.object(allUsersGroupPath + key).remove().then(_ => {
-        console.log('Message id removed from all users group in messageRef');
+        var agencyGroupPath: string = Constants.APP_STATUS + '/group/agencygroup/';
+        this.af.database.list(agencyGroupPath)
+          .do(list =>{
+            list.forEach(item => {
+              this.msgData['/messageRef/agencygroup/'+item.$key+'/'+key]=null;
+              console.log("item key: "+item.$key);
+            })
+          })
+          .subscribe(() => {
+            console.log(JSON.stringify(this.msgData))
+            this.af.database.object(Constants.APP_STATUS).update(this.msgData);
+            console.log("done")
+          })
+        // agencies.toPromise().then(success => {
+        //
+        // }).
+        //
+        // agencies.do(agencies => {
+        //   agencies.forEach(agency => {
+        //     console.log('/messageRef/agencygroup/' + agency.$key + '/' + key);
+        //     this.msgData['/messageRef/agencygroup/' + agency.$key + '/' + key] = null;
+        //   });
+        // }).subscribe(_ => {
+        //   this.af.database.object(Constants.APP_STATUS).update(this.msgData);
+        // });
       }
-    );
+    });
+
   }
 
-  private deleteMessageRefFromAllAgencies(key) {
-
-    var agencyGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
-    var agencies: FirebaseListObservable<any> = this.af.database.list(agencyGroupPath);
-
-    agencies.subscribe(agencies => {
-      agencies.forEach(agency => {
-        this.af.database.object(agencyGroupPath + agency.$key).subscribe((agencyId: any) => {
-          this.af.database.object(agencyGroupPath + agencyId.$key + '/' + key).remove().then(_ => {
-              console.log('Message id removed from agency group in messageRef');
-            }
-          );
-        });
-
-      });
-    });
-  }
-
-  private deleteMessageRefFromAllCountries(key) {
-
-    var countryGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
-    var countries: FirebaseListObservable<any> = this.af.database.list(countryGroupPath);
-
-    countries.subscribe(countries => {
-      countries.forEach(country => {
-        this.af.database.object(countryGroupPath + country.$key).subscribe((countryId: any) => {
-          this.af.database.object(countryGroupPath + countryId.$key + '/' + key).remove().then(_ => {
-              console.log('Message id removed from country group in messageRef');
-            }
-          );
-        });
-
-      });
-    });
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
 }

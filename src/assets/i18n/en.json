@@ -1,4 +1,35 @@
 {
+  "GLOBAL": {
+    "TYPE": "Type:",
+    "DELETE": "Delete",
+    "CANCEL": "Cancel",
+    "CONFIRM": "Confirm",
+    "EDIT": "Edit",
+    "FROM": "From:",
+    "AT": "At:",
+    "TITLE": "Title",
+    "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
+    "EMAIL_ADDRESS": "Email Address",
+    "GENERAL_ERROR": "An error occurred. Please check and try again"
+  },
+  "LOGIN": {
+    "TITLE_TEXT": "Welcome to ALERT",
+    "WELCOME_INSTRUCTIONS": "Use your email address and password to login below",
+    "PASSWORD": "Password",
+    "LOGIN": "Login",
+    "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
+    "NO_DATA_ERROR": "Please enter your email address and password to login",
+    "NO_EMAIL_ERROR": "Please enter your email address",
+    "NO_PASSWORD_ERROR": "Please enter your password"
+  },
+  "FORGOT_PASSWORD": {
+    "TITLE_TEXT": "Forgot Password?",
+    "INSTRUCTIONS": "Enter your email address to reset your password",
+    "RESET_PASSWORD": "Reset Password",
+    "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?",
+    "NO_EMAIL_ERROR": "Please enter your email address",
+    "SUCCESS_MESSAGE": "Password reset email sent to "
+  },
   "MENU": {
     "HOME": "Home",
     "NETWORK": "Networks",
@@ -51,9 +82,55 @@
       "SAVE": "Save Settings"
     }
   },
-  "DIALOG": {
-    "TITLE": "Alert",
-    "CONTENT": "Are you sure you want to proceed this action?"
+  "DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to proceed this action?"
+  },
+  "DELETE_ACTION_DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to delete this action?"
+  },
+  "DELETE_MESSAGE_DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Are you sure you want to delete this message?"
+  },
+  "CHS_MPA": {
+    "TITLE_TEXT": "CHS minimum preparedness actions",
+    "CREATE_NEW_ACTION": "Create new action",
+    "NO_ACTIONS": "No CHS actions have been created",
+    "CHS": "Chs",
+    "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
+    "SAVE_BUTTON_TEXT": "Save new action",
+    "EDIT_CHS_MPA": "Edit CHS minimum preparedness action",
+    "EDIT_BUTTON_TEXT": "Edit action",
+    "NO_CONTENT_ERROR": "Please insert the action content to create a new CHS minimum preparedness action"
+  },
+  "GENERIC_MPA_APA": {
+    "TITLE_TEXT": "Generic MPA/APAs",
+    "CREATE_NEW_ACTION": "Create new action",
+    "LEVEL": "Level",
+    "CREATE_NEW_GENERIC_MPA": "Create new generic MPA/APA",
+    "MPA_OR_APA": "Is this a minimum or advanced preparedness action?",
+    "SAVE_BUTTON_TEXT": "Save new action",
+    "EDIT_MPA_OR_APA": "MPA_OR_APA",
+    "EDIT_BUTTON_TEXT": "Edit action",
+    "MPA": "MPA",
+    "APA": "APA",
+    "NO_CONTENT_ERROR": "Please insert the action content to create a new action"
+  },
+  "MESSAGES": {
+    "TITLE_TEXT": "Messages",
+    "CREATE_NEW_MESSAGE": "Create new message",
+    "NO_MESSAGES": "No sent messages",
+    "MESSAGE_CONTENT": "Message content",
+    "RECIPIENTS": "Recipients",
+    "ALL_USERS": "All users",
+    "AGENCY_ADMINS": "Agency Administrators",
+    "COUNTRY_ADMINS": "Country Administrators",
+    "SEND_MESSAGE": "Send message",
+    "NO_TITLE_ERROR": "Please enter a title for the message",
+    "NO_CONTENT_ERROR": "Please add some content to the message",
+    "NO_RECIPIENTS_ERROR": "Please select the recipients group"
   },
   "ERROR": {
     "NAME_DUPLICATE": "Agency name duplicate!",

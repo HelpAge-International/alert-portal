@@ -14,7 +14,7 @@ export class CreateMpaActionComponent implements OnInit {
   title: string = "Create new generic MPA/APA";
   actionDetail: string;
   mpa: boolean = true;
-  waringMessage: string = "Action content can not be empty!";
+  warningMessage: string = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
   private uid: string;
   private actionId: string;
   private isEdit: boolean;

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFire, FirebaseListObservable } from "angularfire2";
-import { Router } from "@angular/router";
-import { Constants } from '../../utils/Constants';
-import { ActionType } from '../../utils/Enums';
+import {Component, OnInit} from '@angular/core';
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Router} from "@angular/router";
+import {Constants} from '../../utils/Constants';
+import {ActionType} from '../../utils/Enums';
+import {DialogService} from "../dialog/dialog.service";
 
 @Component({
   selector: 'app-min-prep',
@@ -13,10 +14,10 @@ import { ActionType } from '../../utils/Enums';
 export class MinPrepComponent implements OnInit {
 
   private chsMinPrepActions: FirebaseListObservable<any>;
-  private path: string =  '';
+  private path: string = '';
   // ActionType = ActionType;
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
   }
 
   ngOnInit() {
@@ -34,7 +35,7 @@ export class MinPrepComponent implements OnInit {
       } else {
         // user is not logged in
         console.log("Error occurred - User isn't logged in");
-        this.router.navigateByUrl("/login");
+        this.navigateToLogin();
       }
     });
   }
@@ -45,10 +46,19 @@ export class MinPrepComponent implements OnInit {
   }
 
   deleteChsMinPrepAction(chsMinPrepAction) {
-    console.log("Delete button pressed");
-      this.af.database.object(this.path+ "/" + chsMinPrepAction.$key).remove()
-        .then(_ =>
-        console.log("Chs action deleted")
-        );
+    this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
+      if (result) {
+        console.log("Delete button pressed");
+        this.af.database.object(this.path + "/" + chsMinPrepAction.$key).remove()
+          .then(_ =>
+            console.log("Chs action deleted")
+          );
+      }
+    });
+
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 }

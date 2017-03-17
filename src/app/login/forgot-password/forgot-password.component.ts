@@ -29,10 +29,10 @@ export class ForgotPasswordComponent implements OnInit {
       this.auth.sendPasswordResetEmail(this.email)
         .then((success) => {
           console.log("Password reset email sent");
-          this.router.navigate(['/login', {fromForgotPassword: success}]);
+          this.router.navigate(['/login', {emailEntered: this.email}]);
         })
         .catch((err) => {
-          this.errorMessage = err;
+          this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;
         });
 
@@ -51,7 +51,7 @@ export class ForgotPasswordComponent implements OnInit {
   validate() {
 
     if (!Boolean(this.email)) {
-      this.errorMessage = "Please enter your email address";
+      this.errorMessage = "FORGOT_PASSWORD.NO_EMAIL_ERROR";
       return false;
     }
     return true;

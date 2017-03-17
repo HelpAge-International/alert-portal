@@ -14,10 +14,10 @@ export class CreateActionComponent implements OnInit {
 
   private inactive: Boolean = true;
   private errorMessage: any;
-  private pageTitle: string = 'Create new CHS minimum preparedness action';
-  private buttonText: string = 'Save new action';
+  private pageTitle: string = 'CHS_MPA.CREATE_NEW_CHS_MPA';
+  private buttonText: string = 'CHS_MPA.SAVE_BUTTON_TEXT';
   private textArea: string;
-  private path: string = Constants.APP_STATUS + "/action/" + Constants.uid;
+  private path: string;
   private forEditing = false;
   private idOfChsActionToEdit: string;
 
@@ -25,24 +25,27 @@ export class CreateActionComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.af.auth.subscribe(auth => {
+      if (auth) {
+        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
+        console.log("uid: " + auth.uid);
+      } else {
+        console.log("Error occurred - User isn't logged in");
+        this.navigateToLogin();
+      }
+    });
+
     this.route.params
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
-          this.pageTitle = "Edit CHS minimum preparedness action";
-          this.buttonText = "Edit action";
+          this.pageTitle = 'CHS_MPA.EDIT_CHS_MPA';
+          this.buttonText = 'CHS_MPA.EDIT_BUTTON_TEXT';
           this.loadCHSActionInfo(params["id"]);
           this.idOfChsActionToEdit = params["id"];
         }
       });
-  }
-
-  private loadCHSActionInfo(actionId: string) {
-    console.log(actionId);
-    console.log(this.path+actionId);
-    this.af.database.object(this.path+ '/' + actionId).subscribe((action:ChsMinPreparednessAction) => {
-      this.textArea = action.task;
-    });
   }
 
   onSubmit() {
@@ -57,6 +60,18 @@ export class CreateActionComponent implements OnInit {
     } else {
       this.inactive = false;
     }
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  private loadCHSActionInfo(actionId: string) {
+    console.log(actionId);
+    console.log(this.path+actionId);
+    this.af.database.object(this.path+ '/' + actionId).subscribe((action:ChsMinPreparednessAction) => {
+      this.textArea = action.task;
+    });
   }
 
   private addNewChsAction() {
@@ -87,7 +102,7 @@ export class CreateActionComponent implements OnInit {
   private validate() {
 
     if (!Boolean(this.textArea)) {
-      this.errorMessage = "Please insert the action to create a new CHS minimum preparedness action";
+      this.errorMessage = "CHS_MPA.NO_CONTENT_ERROR";
       return false;
     }
     return true;

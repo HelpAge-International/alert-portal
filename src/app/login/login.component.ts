@@ -12,14 +12,17 @@ import { Constants } from "../utils/Constants";
 export class LoginComponent implements OnInit {
 
   private inactive: Boolean = true;
-  private errorMessage: any;
+  private errorMessage: string;
+  private successInactive: Boolean = true;
+  private successMessage: string;
+  private emailEntered:string;
 
   private localUser = {
     userEmail: '',
     password: ''
   };
 
-  constructor(public af: AngularFire, private router: Router) {
+  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute) {
 
     // TODO - Remove if unnecessary
     this.af.auth.subscribe(auth => {
@@ -33,12 +36,22 @@ export class LoginComponent implements OnInit {
       }
     });
 
+    this.route.params
+      .subscribe((params: Params) => {
+        if (params["emailEntered"]) {
+          this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
+          this.emailEntered = params["emailEntered"];
+          this.successInactive = false;
+          console.log("From Forgot Password");
+        }
+      });
   }
 
   ngOnInit() {
   }
 
   onSubmit() {
+    this.successInactive = true;
 
     if (this.validate()) {
       this.af.auth.login({
@@ -50,7 +63,6 @@ export class LoginComponent implements OnInit {
           method: AuthMethods.Password,
         }).then(
         (success) => {
-          Constants.uid = success.uid;
           this.af.database.list(Constants.APP_STATUS + '/systemAdmin', { preserveSnapshot: true})
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
@@ -77,11 +89,10 @@ export class LoginComponent implements OnInit {
             });
         }).catch(
         (err) => {
-          this.errorMessage = err;
+          this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;
         });
       this.inactive = true;
-
     } else {
       this.inactive = false;
     }
@@ -98,13 +109,13 @@ export class LoginComponent implements OnInit {
   validate() {
 
     if ((!Boolean(this.localUser.userEmail)) && (!Boolean(this.localUser.password))) {
-      this.errorMessage = "Please enter your email address and password to login";
+      this.errorMessage = "LOGIN.NO_DATA_ERROR";
       return false;
     } else if (!Boolean(this.localUser.userEmail)) {
-      this.errorMessage = "Please enter your email address";
+      this.errorMessage = "LOGIN.NO_EMAIL_ERROR";
       return false;
     } else if (!Boolean(this.localUser.password)) {
-      this.errorMessage = "Please enter your password";
+      this.errorMessage = "LOGIN.NO_PASSWORD_ERROR";
       return false;
     }
     return true;

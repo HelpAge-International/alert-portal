@@ -1,7 +1,8 @@
 
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
-<div class="Alert-error" [hidden]="actionForm.untouched || actionForm.form.valid">{{waringMessage}}</div>
+
+<div class="Alert-error" [hidden]="actionForm.untouched || actionForm.form.valid">{{warningMessage | translate}}</div>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">

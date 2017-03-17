@@ -1,44 +1,29 @@
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-    <ul>
-      <li class="Header_bar__username">
-        John Doe
-      </li>
-      <li class="Header_bar__country">
-        System Admin
-      </li>
-      <li class="Header_bar__alert">
-        <i class="fa fa-bell" aria-hidden="true"></i>
-      </li>
-    </ul>
-  </div>
-</div>
-
+<app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
 <div class="Alert-error" [hidden]="inactive">
-  {{errorMessage}}
+  {{errorMessage | translate}}
 </div>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>{{pageTitle}}</h1>
+      <h1>{{pageTitle | translate}}</h1>
     </div>
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
-          <label for="n-Done">What needs to be done?</label>
+          <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
           <textarea [(ngModel)]="textArea" name="n-Done" id="n-Done" cols="30" rows="10" class="form-control"></textarea>
         </div>
       </div>
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" routerLink="/system-admin/min-prep">Cancel</div>
-      <div class="btn btn-primary" (click)="onSubmit()">{{buttonText}}</div>
+      <div class="btn btn-outline-secondary" routerLink="/system-admin/min-prep">{{"GLOBAL.CANCEL" | translate}}</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{buttonText | translate}}</div>
     </div>
 
   </div>

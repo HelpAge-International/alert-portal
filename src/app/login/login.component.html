@@ -4,7 +4,11 @@
 </div>
 
 <div [hidden]="inactive" class="Alert-error">
-  {{errorMessage}}
+  {{errorMessage | translate}}
+</div>
+
+<div [hidden]="successInactive" class="Alert-success">
+  {{successMessage | translate}} {{emailEntered}}
 </div>
 
 <!--Start Put page data-->
@@ -14,8 +18,8 @@
       <img src="/assets/images/alert_logo.svg" class="Login__logo">
     </div>
 
-    <p class="Login__info--blue">Welcome to ALERT.</p>
-    <p class="Login__info--blue--extra-space">Use your email address and password to login below</p>
+    <p class="Login__info--blue">{{"LOGIN.TITLE_TEXT" | translate}}</p>
+    <p class="Login__info--blue--extra-space">{{"LOGIN.WELCOME_INSTRUCTIONS" | translate}}</p>
 
     <div class="input-group">
       <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
@@ -27,8 +31,8 @@
       <input [(ngModel)]="localUser.password" type="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
     </div>
 
-    <button type="submit" class="btn btn-primary Login__button--submit" (click)="onSubmit()">Login</button>
-    <a routerLink="/forgot-password" class="Login__forgotten-pass">Forgot your password?</a>
+    <button type="submit" class="btn btn-primary Login__button--submit" (click)="onSubmit()">{{"LOGIN.LOGIN" | translate}}</button>
+    <a routerLink="/forgot-password" class="Login__forgotten-pass">{{"LOGIN.FORGOT_PASSWORD_BUTTON" | translate}}</a>
   </div>
 
 </div>
