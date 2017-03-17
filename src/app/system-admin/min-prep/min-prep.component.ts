@@ -59,6 +59,6 @@ export class MinPrepComponent implements OnInit {
   }
 
   private navigateToLogin() {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
 }
