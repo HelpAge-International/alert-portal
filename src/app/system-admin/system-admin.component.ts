@@ -28,29 +28,29 @@ export class SystemAdminComponent implements OnInit,OnDestroy {
         this.uid = x.auth.uid;
         console.log("uid: " + this.uid);
         this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
-        this.test();
+        // this.test();
       } else {
         this.navigateToLogin();
       }
     });
   }
 
-  private test() {
-    this.af.database.list(Constants.APP_STATUS+"/systemAdmin/"+this.uid+"/sentmessages")
-      .flatMap(list => {
-        let tempList = [];
-        list.forEach(x =>{
-          tempList.push(x)
-        })
-        return Observable.from(tempList)
-      })
-      .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS+"/message/"+item.$key)
-      })
-      .subscribe(x=>{
-        console.log(x)
-      })
-  }
+  // private test() {
+  //   this.af.database.list(Constants.APP_STATUS+"/systemAdmin/"+this.uid+"/sentmessages")
+  //     .flatMap(list => {
+  //       let tempList = [];
+  //       list.forEach(x =>{
+  //         tempList.push(x)
+  //       })
+  //       return Observable.from(tempList)
+  //     })
+  //     .flatMap(item => {
+  //       return this.af.database.object(Constants.APP_STATUS+"/message/"+item.$key)
+  //     })
+  //     .subscribe(x=>{
+  //       console.log(x)
+  //     })
+  // }
 
   ngOnDestroy() {
     if (this.subscription) {
