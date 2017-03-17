@@ -40,7 +40,7 @@ export class MessagesComponent implements OnInit {
             return this.af.database.object(Constants.APP_STATUS + "/message/" + item.$key)
           }).distinctUntilChanged()
           .subscribe(x => {
-              this.sentMessages.push(x);
+            this.sentMessages.push(x);
           })
 
       } else {
@@ -62,17 +62,25 @@ export class MessagesComponent implements OnInit {
         this.msgData[allUsersGroupPath + key] = null;
 
         var agencyGroupPath: string = Constants.APP_STATUS + '/group/agencygroup/';
+        var countryGroupPath: string = Constants.APP_STATUS + '/group/countrygroup/';
         this.af.database.list(agencyGroupPath)
-          .do(list =>{
+          .do(list => {
             list.forEach(item => {
-              this.msgData['/messageRef/agencygroup/'+item.$key+'/'+key]=null;
-              console.log("item key: "+item.$key);
+              this.msgData['/messageRef/agencygroup/' + item.$key + '/' + key] = null;
+              console.log("item key: " + item.$key);
             })
           })
           .subscribe(() => {
-            console.log(JSON.stringify(this.msgData))
-            this.af.database.object(Constants.APP_STATUS).update(this.msgData);
-            console.log("done")
+            let subscription = this.af.database.list(countryGroupPath)
+              .do(list => {
+                list.forEach(item => {
+                  this.msgData['/messageRef/countrygroup/' + item.$key + '/' + key] = null;
+                  console.log("item key: " + item.$key);
+                })
+              }).subscribe(() => {
+                this.af.database.object(Constants.APP_STATUS).update(this.msgData);
+            });
+            console.log("Done")
           })
         // agencies.toPromise().then(success => {
         //

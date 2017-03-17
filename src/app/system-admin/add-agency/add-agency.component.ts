@@ -293,7 +293,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     if (this.agencyId && this.adminId) {
       let subscription = this.dialogService.createDialog("test", "test test").subscribe(result => {
         console.log(result);
-        //TODO delete agency
+        //TODO delete agency (cant finish till whole system done)
         if (result) {
           this.deleteAgency["/userPublic/" + this.adminId] = null;
           this.deleteAgency["/administratorAgency/" + this.adminId] = null;
