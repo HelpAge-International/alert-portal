@@ -7,6 +7,10 @@
   {{errorMessage | translate}}
 </div>
 
+<div [hidden]="successInactive" class="Alert-success">
+  {{successMessage | translate}} {{emailEntered}}
+</div>
+
 <!--Start Put page data-->
 <div class="Page-top__wrap">
   <div class="Login__wrap--inner">

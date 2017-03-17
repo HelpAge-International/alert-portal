@@ -29,7 +29,7 @@ export class ForgotPasswordComponent implements OnInit {
       this.auth.sendPasswordResetEmail(this.email)
         .then((success) => {
           console.log("Password reset email sent");
-          this.router.navigate(['/login', {fromForgotPassword: success}]);
+          this.router.navigate(['/login', {emailEntered: this.email}]);
         })
         .catch((err) => {
           this.errorMessage = "GLOBAL.GENERAL_ERROR";

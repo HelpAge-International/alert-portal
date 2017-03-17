@@ -12,14 +12,17 @@ import { Constants } from "../utils/Constants";
 export class LoginComponent implements OnInit {
 
   private inactive: Boolean = true;
-  private errorMessage: any;
+  private errorMessage: string;
+  private successInactive: Boolean = true;
+  private successMessage: string;
+  private emailEntered:string;
 
   private localUser = {
     userEmail: '',
     password: ''
   };
 
-  constructor(public af: AngularFire, private router: Router) {
+  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute) {
 
     // TODO - Remove if unnecessary
     this.af.auth.subscribe(auth => {
@@ -33,12 +36,22 @@ export class LoginComponent implements OnInit {
       }
     });
 
+    this.route.params
+      .subscribe((params: Params) => {
+        if (params["emailEntered"]) {
+          this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
+          this.emailEntered = params["emailEntered"];
+          this.successInactive = false;
+          console.log("From Forgot Password");
+        }
+      });
   }
 
   ngOnInit() {
   }
 
   onSubmit() {
+    this.successInactive = true;
 
     if (this.validate()) {
       this.af.auth.login({
@@ -80,7 +93,6 @@ export class LoginComponent implements OnInit {
           this.inactive = false;
         });
       this.inactive = true;
-
     } else {
       this.inactive = false;
     }

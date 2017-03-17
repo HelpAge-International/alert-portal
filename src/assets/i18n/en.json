@@ -27,7 +27,8 @@
     "INSTRUCTIONS": "Enter your email address to reset your password",
     "RESET_PASSWORD": "Reset Password",
     "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?",
-    "NO_EMAIL_ERROR": "Please enter your email address"
+    "NO_EMAIL_ERROR": "Please enter your email address",
+    "SUCCESS_MESSAGE": "Password reset email sent to "
   },
   "MENU": {
     "HOME": "Home",

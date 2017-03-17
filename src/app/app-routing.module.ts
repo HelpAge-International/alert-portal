@@ -19,6 +19,7 @@ const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'login/:emailEntered', component: LoginComponent},
   {path: 'agency-admin', component: AgencyAdminComponent},
   {path: 'system-admin/system-settings', component: SystemSettingsComponent},
   {path: 'system-admin/min-prep/create', component: CreateActionComponent},
