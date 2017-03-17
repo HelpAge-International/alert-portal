@@ -1,0 +1,53 @@
+<app-system-admin-header></app-system-admin-header>
+<app-agency-admin-menu></app-agency-admin-menu>
+
+<div class="Alert-error" [hidden]="inactive">
+  {{errorMessage | translate}}
+</div>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <!--<div class="Back&#45;&#45;button" routerLink="/system-admin/messages">Messages</div>-->
+
+    <div class="Header-title__wrap">
+      <h1>{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</h1>
+    </div>
+
+
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="form-group">
+          <label for="n-Done">{{"GLOBAL.TITLE" | translate}}</label>
+          <input type="text" class="form-control" name="n-Done" [(ngModel)]="messageTitle">
+        </div>
+      </div>
+    </div>
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="form-group">
+          <label for="n-Done">{{"MESSAGES.MESSAGE_CONTENT" | translate}}</label>
+          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
+                    [(ngModel)]="messageContent"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <label for="f-Format">{{"MESSAGES.RECIPIENTS" | translate}}</label>
+    <div class="row">
+      <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">{{"MESSAGES.ALL_USERS" | translate}}</label>
+      <label for="Agency" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Agency" [(ngModel)]="agencyAdminsSelected">{{"MESSAGES.AGENCY_ADMINS" | translate}}</label>
+      <label for="Country Administrators" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Country Administrators" [(ngModel)]="countryAdminsSelected">{{"MESSAGES.COUNTRY_ADMINS" | translate}}</label>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-outline-secondary" routerLink="/system-admin/messages">{{"GLOBAL.CANCEL" | translate}}</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{"MESSAGES.SEND_MESSAGE" | translate}}</div>
+    </div>
+
+  </div>
+</div>

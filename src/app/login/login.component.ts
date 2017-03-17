@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit {
             .subscribe(snapshots=>{
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl("/agency-admin");
+                  this.router.navigateByUrl("/agency-admin/country-office");
                 }
               });
             });

@@ -38,6 +38,27 @@ import {DialogComponent} from './system-admin/dialog/dialog.component';
 import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {DialogService} from "./system-admin/dialog/dialog.service";
+import { CreatePasswordComponent } from './agency-admin/create-password/create-password.component';
+import { AgencyDetailsComponent } from './agency-admin/agency-details/agency-details.component';
+import { CountryOfficeComponent } from './agency-admin/country-office/country-office.component';
+import { CreateEditCountryComponent } from './agency-admin/country-office/create-edit-country/create-edit-country.component';
+import { CreateEditMpaComponent } from './agency-admin/agency-mpa/create-edit-mpa/create-edit-mpa.component';
+import { SettingsMenuComponent } from './agency-admin/settings/settings-menu/settings-menu.component';
+import { AgencyAdminMenuComponent } from './agency-admin/agency-admin-menu/agency-admin-menu.component';
+import { DepartmentComponent } from './agency-admin/settings/department/department.component';
+import { SkillsComponent } from './agency-admin/settings/skills/skills.component';
+import { ModulesComponent } from './agency-admin/settings/modules/modules.component';
+import { ClockSettingsComponent } from './agency-admin/settings/clock-settings/clock-settings.component';
+import { DocumentsComponent } from './agency-admin/settings/documents/documents.component';
+import { NetworkComponent } from './agency-admin/settings/network/network.component';
+import { CreateEditNetworkComponent } from './agency-admin/settings/network/create-edit-network/create-edit-network.component';
+import { NotificationComponent } from './agency-admin/settings/notification/notification.component';
+import { CreateEditNotificationComponent } from './agency-admin/settings/notification/create-edit-notification/create-edit-notification.component';
+import { StaffComponent } from './agency-admin/staff/staff.component';
+import { CreateEditStaffComponent } from './agency-admin/staff/create-edit-staff/create-edit-staff.component';
+import { AgencyMpaComponent } from './agency-admin/agency-mpa/agency-mpa.component';
+import { AgencyMessagesComponent } from './agency-admin/agency-messages/agency-messages.component';
+import { CreateEditMessageComponent } from './agency-admin/agency-messages/create-edit-message/create-edit-message.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -83,7 +104,28 @@ const firebaseAuthConfig = {
     CreateMpaActionComponent,
     SystemSettingsComponent,
     SystemAdminHeaderComponent,
-    DialogComponent
+    DialogComponent,
+    CreatePasswordComponent,
+    AgencyDetailsComponent,
+    CountryOfficeComponent,
+    CreateEditCountryComponent,
+    CreateEditMpaComponent,
+    SettingsMenuComponent,
+    AgencyAdminMenuComponent,
+    DepartmentComponent,
+    SkillsComponent,
+    ModulesComponent,
+    ClockSettingsComponent,
+    DocumentsComponent,
+    NetworkComponent,
+    CreateEditNetworkComponent,
+    NotificationComponent,
+    CreateEditNotificationComponent,
+    StaffComponent,
+    CreateEditStaffComponent,
+    AgencyMpaComponent,
+    AgencyMessagesComponent,
+    CreateEditMessageComponent
   ],
   imports: [
     BrowserModule,
