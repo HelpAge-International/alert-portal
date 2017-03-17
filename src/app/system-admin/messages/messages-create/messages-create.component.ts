@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import { AngularFire, FirebaseListObservable } from "angularfire2";
-import { Router } from "@angular/router";
-import { Message } from '../../../model/message';
-import { Constants } from '../../../utils/Constants';
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Router} from "@angular/router";
+import {Message} from '../../../model/message';
+import {Constants} from '../../../utils/Constants';
 import {RxHelper} from "../../../utils/RxHelper";
 
 @Component({
@@ -23,7 +23,7 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
   private allUsersSelected: Boolean;
   private agencyAdminsSelected: Boolean;
   private countryAdminsSelected: Boolean;
-  private subscriptions:RxHelper;
+  private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
@@ -98,7 +98,6 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
         var agencyIds: FirebaseListObservable<any> = this.af.database.list(agencyAdminGroupPath);
 
         var agencyGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
-        // var agencies: FirebaseListObservable<any> = this.af.database.list(agencyGroupPath);
 
         let subscription = agencyIds.subscribe(agencyIds => {
           agencyIds.forEach(agencyId => {
@@ -121,7 +120,6 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
         var countryIds: FirebaseListObservable<any> = this.af.database.list(countryAdminGroupPath);
 
         var countryGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
-        // var countries: FirebaseListObservable<any> = this.af.database.list(countryGroupPath);
 
         let subscription = countryIds.subscribe(countryIds => {
           countryIds.forEach(countryId => {

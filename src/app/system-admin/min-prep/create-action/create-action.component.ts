@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFire } from "angularfire2";
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { ChsMinPreparednessAction } from '../../../model/chsMinPreparednessAction';
-import { Constants } from '../../../utils/Constants';
-import { ActionType } from '../../../utils/Enums';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {AngularFire} from "angularfire2";
+import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction';
+import {Constants} from '../../../utils/Constants';
+import {ActionType} from '../../../utils/Enums';
+import {RxHelper} from "../../../utils/RxHelper";
 
 @Component({
   selector: 'app-create-action',
   templateUrl: './create-action.component.html',
   styleUrls: ['./create-action.component.css']
 })
-export class CreateActionComponent implements OnInit {
+export class CreateActionComponent implements OnInit, OnDestroy {
 
   private inactive: Boolean = true;
   private errorMessage: any;
@@ -20,8 +21,10 @@ export class CreateActionComponent implements OnInit {
   private path: string;
   private forEditing = false;
   private idOfChsActionToEdit: string;
+  private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
@@ -48,6 +51,10 @@ export class CreateActionComponent implements OnInit {
       });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.releaseAll();
+  }
+
   onSubmit() {
     if (this.validate()) {
 
@@ -68,10 +75,11 @@ export class CreateActionComponent implements OnInit {
 
   private loadCHSActionInfo(actionId: string) {
     console.log(actionId);
-    console.log(this.path+actionId);
-    this.af.database.object(this.path+ '/' + actionId).subscribe((action:ChsMinPreparednessAction) => {
+    console.log(this.path + actionId);
+    let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: ChsMinPreparednessAction) => {
       this.textArea = action.task;
     });
+    this.subscriptions.add(subscription);
   }
 
   private addNewChsAction() {
@@ -87,7 +95,7 @@ export class CreateActionComponent implements OnInit {
 
   private editChsAction() {
     var editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
-    this.af.database.object(this.path+ "/" + this.idOfChsActionToEdit).set(editedAction).then(_ => {
+    this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).set(editedAction).then(_ => {
         console.log('CHS action updated');
         this.router.navigateByUrl("/system-admin/min-prep");
       }

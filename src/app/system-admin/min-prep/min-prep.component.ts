@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
 import {ActionType} from '../../utils/Enums';
 import {DialogService} from "../dialog/dialog.service";
+import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-min-prep',
@@ -11,13 +12,15 @@ import {DialogService} from "../dialog/dialog.service";
   styleUrls: ['./min-prep.component.css']
 })
 
-export class MinPrepComponent implements OnInit {
+export class MinPrepComponent implements OnInit, OnDestroy {
 
   private chsMinPrepActions: FirebaseListObservable<any>;
   private path: string = '';
+  private subscriptions: RxHelper;
   // ActionType = ActionType;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
+    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
@@ -40,13 +43,17 @@ export class MinPrepComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.releaseAll();
+  }
+
   editChsMinPrepAction(chsMinPrepAction) {
     console.log("Edit button pressed");
     this.router.navigate(['/system-admin/min-prep/create', {id: chsMinPrepAction.$key}]);
   }
 
   deleteChsMinPrepAction(chsMinPrepAction) {
-    this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
+    let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
       if (result) {
         console.log("Delete button pressed");
         this.af.database.object(this.path + "/" + chsMinPrepAction.$key).remove()
@@ -55,6 +62,7 @@ export class MinPrepComponent implements OnInit {
           );
       }
     });
+    this.subscriptions.add(subscription);
 
   }
 
