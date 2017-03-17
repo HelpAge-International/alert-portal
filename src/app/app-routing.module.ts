@@ -24,6 +24,7 @@ import {StaffComponent} from "./agency-admin/staff/staff.component";
 import {CreateEditStaffComponent} from "./agency-admin/staff/create-edit-staff/create-edit-staff.component";
 import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-edit-message/create-edit-message.component";
 import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-messages.component";
+import {DepartmentComponent} from "./agency-admin/settings/department/department.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -54,10 +55,11 @@ const routes: Routes = [
   {path: 'agency-admin/agency-details', component: AgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
   {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
-  {path: 'agency-admin/mpa', component: AgencyMpaComponent},
-  {path: 'agency-admin/mpa/create-edit-mpa', component: CreateEditMpaComponent},
+  {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
+  {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
   {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
   {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
+  {path: 'agency-admin/settings/department', component: DepartmentComponent},
   {path: 'agency-admin/staff', component: StaffComponent},
   {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent}
 ];

@@ -11,6 +11,12 @@
       <button type="button" class="btn btn-primary">Add new country office</button>
     </div>
 
+    <!-- Display only when no countries in the list -->
+    <!--<div *ngIf="(agencies | async)?.length == 0" class="Empty&#45;&#45;ribbon">-->
+    <div class="Empty--ribbon">
+      No countries have been added to the Alert Portal
+    </div>
+
     <table class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>Country</th>
