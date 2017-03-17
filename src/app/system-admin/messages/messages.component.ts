@@ -15,6 +15,7 @@ export class MessagesComponent implements OnInit {
 
   private uid: string;
   private sentMessages: FirebaseObjectObservable<any>[] = [];
+  private msgData = {};
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
   }
@@ -39,7 +40,6 @@ export class MessagesComponent implements OnInit {
             return this.af.database.object(Constants.APP_STATUS + "/message/" + item.$key)
           }).distinctUntilChanged()
           .subscribe(x => {
-            console.log(x)
               this.sentMessages.push(x);
           })
 
@@ -56,39 +56,25 @@ export class MessagesComponent implements OnInit {
       if (result) {
         let key: string = sentMessage.$key;
 
-        let msgData = {};
-
-        msgData['/systemAdmin/' + this.uid + '/sentmessages/' + key] = null;
-        msgData['/message/' + key] = null;
+        this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + key] = null;
+        this.msgData['/message/' + key] = null;
 
         var allUsersGroupPath: string = '/messageRef/allusergroup/';
-        msgData[allUsersGroupPath + key] = null;
+        this.msgData[allUsersGroupPath + key] = null;
 
         var agencyGroupPath: string = Constants.APP_STATUS + '/messageRef/agencygroup/';
         var agencies: FirebaseListObservable<any> = this.af.database.list(agencyGroupPath);
-        agencies.subscribe(agencies => {
+        agencies.toPromise().then(success => {
+
+        }).
+
+        agencies.do(agencies => {
           agencies.forEach(agency => {
             console.log('/messageRef/agencygroup/' + agency.$key + '/' + key);
-            msgData['/messageRef/agencygroup/' + agency.$key + '/' + key] = null;
+            this.msgData['/messageRef/agencygroup/' + agency.$key + '/' + key] = null;
           });
-        });
-
-        var countryGroupPath: string = Constants.APP_STATUS + '/messageRef/countrygroup/';
-        var countries: FirebaseListObservable<any> = this.af.database.list(countryGroupPath);
-        countries.subscribe(countries => {
-          countries.forEach(country => {
-            console.log('/messageRef/countrygroup/' + country.$key + '/' + key);
-            msgData['/messageRef/countrygroup/' + country.$key + '/' + key] = null;
-          });
-        });
-
-        console.log(msgData);
-
-        this.af.database.object(Constants.APP_STATUS).update(msgData).then(() => {
-          console.log("Successful");
-          this
-        }, error => {
-          console.log(error.message);
+        }).subscribe(_ => {
+          this.af.database.object(Constants.APP_STATUS).update(this.msgData);
         });
       }
     });
