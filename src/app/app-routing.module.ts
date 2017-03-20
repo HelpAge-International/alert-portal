@@ -27,10 +27,17 @@ import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-mes
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
+
+  /**
+   * Login
+   */
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'login', component: LoginComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
-  {path: 'agency-admin', component: AgencyAdminComponent},
+
+  /**
+   * System admin
+   */
   {path: 'system-admin/system-settings', component: SystemSettingsComponent},
   {path: 'system-admin/min-prep/create', component: CreateActionComponent},
   {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
@@ -44,12 +51,11 @@ const routes: Routes = [
   {path: 'system-admin/messages', component: MessagesComponent},
   {path: 'system-admin', component: SystemAdminComponent},
   {path: 'system-admin/network', component: SystemAdminComponent},
-  {path: 'country-admin',  component: CountryAdminComponent},
-  //TODO: define needed routes here. see the example above
 
   /**
    * Agency admin
    */
+  {path: 'agency-admin', component: AgencyAdminComponent},
   {path: 'agency-admin/create-password', component: CreatePasswordComponent},
   {path: 'agency-admin/agency-details', component: AgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
@@ -57,9 +63,18 @@ const routes: Routes = [
   {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
   {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
   {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
+  {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
   {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
   {path: 'agency-admin/staff', component: StaffComponent},
-  {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent}
+  {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
+
+  /**
+   * Country admin
+   */
+  {path: 'country-admin',  component: CountryAdminComponent}
+  //TODO: define needed routes here. see the example above
+
+
 ];
 
 @NgModule({
