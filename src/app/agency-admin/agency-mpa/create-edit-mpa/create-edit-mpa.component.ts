@@ -27,6 +27,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private subscriptions: RxHelper;
   departmentSelected: string;
   departments = Department;
+
   keys(): Array<string> {
     var keys = Object.keys(this.departments);
     return keys.slice(keys.length / 2);
@@ -80,6 +81,14 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
     }
   }
 
+  mpaSelected() {
+    this.isMpa = true;
+  }
+
+  apaSelected() {
+    this.isMpa = false;
+  }
+
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
@@ -91,6 +100,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       console.log(action.preparednessLevel);
       console.log(ActionLevel.MPA);
       this.isMpa = action.preparednessLevel == ActionLevel.MPA ? true : false;
+      console.log(this.isMpa);
       this.departmentSelected = Department[action.department];
     });
     this.subscriptions.add(subscription);
@@ -111,20 +121,13 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   }
 
   private editMandatedPA() {
-    // var editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
-    // this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).set(editedAction).then(_ => {
-    // console.log('CHS action updated');
-    // this.router.navigateByUrl("/system-admin/min-prep");
-    // }
-    // );
-  }
-
-  mpaSelected() {
-    this.isMpa = true;
-  }
-
-  apaSelected() {
-    this.isMpa = false;
+    var level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
+    var editedAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, Department[this.departmentSelected], level);
+    this.af.database.object(this.path + "/" + this.idOfMpaToEdit).set(editedAction).then(_ => {
+        console.log('Mandated action updated');
+        this.router.navigateByUrl("/agency-admin/agency-mpa");
+      }
+    );
   }
 
   /**
