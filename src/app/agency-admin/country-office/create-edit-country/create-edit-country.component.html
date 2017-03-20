@@ -2,110 +2,136 @@
   <div class="Header_bar__wrap--inner">
   </div>
 </div>
-<div class="Sub-header_bar">
-</div>
-
+<app-agency-admin-menu></app-agency-admin-menu>
+<div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <div class="Back--button">Home</div>
+    <!--<div class="Back&#45;&#45;button">Home</div>-->
 
     <div class="Header-title__wrap">
-      <h1>Add new country office</h1>
+      <h1 *ngIf="!isEdit">Add New Country Office</h1>
+      <h1 *ngIf="isEdit">Edit Country Office</h1>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Agency Details</h3>
+    <h3 class="System-admin__Sub-title--spaced">Country office details</h3>
     <hr>
 
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <label for="Country">Country</label>
-        <select class="form-control" id="Country">
-          <option value="C-val-1">Option 1</option>
-          <option value="C-val-2">Option 2</option>
-          <option value="C-val-3">Option 3</option>
-        </select>
-      </div>
-    </div>
+    <form #countryForm="ngForm" (ngSubmit)="submit()">
 
-    <h3 class="System-admin__Sub-title--spaced">Agency Administrator Details</h3>
-    <hr>
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <label for="CountryOffice">Country</label>
+          <select class="form-control" id="CountryOffice" required [(ngModel)]="countryOfficeLocation"
+                  name="countryOfficeLocation">
+            <option *ngFor="let country of countrySelections" [ngValue]="country">
+              {{countryNames[country] | translate}}
+            </option>
+            <!--<option value="C-val-2">Option 2</option>-->
+            <!--<option value="C-val-3">Option 3</option>-->
+          </select>
+        </div>
+      </div>
 
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="Title">Title*</label>
-          <input type="text" class="form-control" id="Title">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="f-Name">First Name*</label>
-          <input type="text" class="form-control" id="f-Name">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="l-Name">Last Name*</label>
-          <input type="text" class="form-control" id="l-Name">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="Email">Email Address*</label>
-          <input type="text" class="form-control" id="Email">
-        </div>
-      </div>
-    </div>
+      <h3 class="System-admin__Sub-title--spaced">Country Administrator Details</h3>
+      <hr>
 
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="A-line-1">Address Line 1</label>
-          <input type="text" class="form-control" id="A-line-1">
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="Title">Title*</label>
+            <select class="form-control" id="Title" required [(ngModel)]="countryAdminTitle"
+                    name="countryAdminTitle">
+              <option *ngFor="let title of titleSelections" [ngValue]="title">
+                {{titleNames[title] | translate}}
+              </option>
+            </select>
+            <!--<input type="text" class="form-control" id="Title" required [(ngModel)]="countryAdminTitle"-->
+            <!--name="countryAdminTitle">-->
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="f-Name">First Name*</label>
+            <input type="text" class="form-control" id="f-Name" required [(ngModel)]="countryAdminFirstName"
+                   name="countryAdminFirstName">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="l-Name">Last Name*</label>
+            <input type="text" class="form-control" id="l-Name" required [(ngModel)]="countryAdminLastName"
+                   name="countryAdminLastName">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="Email">Email Address*</label>
+            <input type="text" class="form-control" id="Email" required [(ngModel)]="countryAdminEmail"
+                   name="countryAdminEmail">
+          </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="A-line-2">Address Line 2</label>
-          <input type="text" class="form-control" id="A-line-2">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="A-line-3">Address Line 3</label>
-          <input type="text" class="form-control" id="A-line-3">
-        </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="Country">Country</label>
-          <input type="text" class="form-control" id="Country">
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-1">Address Line 1</label>
+            <input type="text" class="form-control" id="A-line-1" [(ngModel)]="countryAdminAddress1"
+                   name="countryAdminAddress1">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-2">Address Line 2</label>
+            <input type="text" class="form-control" id="A-line-2" [(ngModel)]="countryAdminAddress2"
+                   name="countryAdminAddress2">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-3">Address Line 3</label>
+            <input type="text" class="form-control" id="A-line-3" [(ngModel)]="countryAdminAddress3"
+                   name="countryAdminAddress3">
+          </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="City">City</label>
-          <input type="text" class="form-control" id="City">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="Postcode">Postcode</label>
-          <input type="text" class="form-control" id="Postcode">
-        </div>
-      </div>
-    </div>
 
-    <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary">Cancel</div>
-      <div class="btn btn-primary">Save new agency</div>
-    </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="Country">Country</label>
+            <!--<input type="text" class="form-control" id="Country">-->
+            <div>
+              <md-select id="Country" [(ngModel)]="countryAdminCountry" name="countryAdminCountry">
+                <md-option *ngFor="let country of countrySelections">{{countryNames[country] | translate}}</md-option>
+              </md-select>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="City">City</label>
+            <input type="text" class="form-control" id="City" [(ngModel)]="countryAdminCity" name="countryAdminCity">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="Postcode">Postcode</label>
+            <input type="text" class="form-control" id="Postcode" [(ngModel)]="countryAdminPostcode"
+                   name="countryAdminPostcode">
+          </div>
+        </div>
+      </div>
 
+      <div class="Form-submit__wrapper">
+        <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
+        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">UPDATE COUNTRY OFFICE</button>
+        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">SAVE NEW COUNTRY OFFICE</button>
+      </div>
+
+    </form>
 
   </div>
 

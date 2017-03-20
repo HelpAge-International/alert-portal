@@ -8,13 +8,15 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>Country Offices</h1>
-      <button type="button" class="btn btn-primary">Add new country office</button>
+      <button [routerLink]="['/agency-admin/country-office/create-edit-country']" type="button" class="btn btn-primary">
+        ADD NEW COUNTRY OFFICE
+      </button>
     </div>
 
     <!-- Display only when no countries in the list -->
     <!--<div *ngIf="(agencies | async)?.length == 0" class="Empty&#45;&#45;ribbon">-->
-    <div class="Empty--ribbon">
-      No countries have been added to the Alert Portal
+    <div *ngIf="(countries | async)?.length == 0" class="Empty--ribbon">
+      You have not added any country offices to your agency
     </div>
 
     <table class="table Table__v-spacing__mid Agency-table">
@@ -25,26 +27,32 @@
         <th>Status</th>
         <th>Actions</th>
       </tr>
-      <tr>
-        <td>Phillipines</td>
-        <td>John Smith</td>
+      <tr *ngFor="let country of countries | async">
+        <td>{{countryNames[country?.location] | translate}}</td>
+        <td>{{getAdminName(country?.$key)}}</td>
         <td></td>
-        <td>Active</td>
+        <td *ngIf="country?.isActive">{{"HOME.ACTIVE" | translate}}</td>
+        <td *ngIf="!country?.isActive">{{"HOME.DEACTIVE" | translate}}</td>
         <td>
-          <div class="btn btn-danger">Deactivate</div>
-          <div class="btn btn-primary">Edit</div>
+          <div *ngIf="!country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"HOME.ACTIVATE" |
+            translate}}
+          </div>
+          <div *ngIf="country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"HOME.DEACTIVATE" |
+            translate}}
+          </div>
+          <div class="btn btn-primary" (click)="editCountry(country)">{{"HOME.EDIT" | translate}}</div>
         </td>
       </tr>
-      <tr>
-        <td>Malaysia</td>
-        <td>Terry Collins</td>
-        <td></td>
-        <td>Active</td>
-        <td>
-          <div class="btn btn-danger">Deactivate</div>
-          <div class="btn btn-primary">Edit</div>
-        </td>
-      </tr>
+      <!--<tr>-->
+      <!--<td>Malaysia</td>-->
+      <!--<td>Terry Collins</td>-->
+      <!--<td></td>-->
+      <!--<td>Active</td>-->
+      <!--<td>-->
+      <!--<div class="btn btn-danger">Deactivate</div>-->
+      <!--<div class="btn btn-primary">Edit</div>-->
+      <!--</td>-->
+      <!--</tr>-->
     </table>
   </div>
 

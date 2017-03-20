@@ -55,6 +55,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-details', component: AgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
   {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
+  {path: 'agency-admin/country-office/create-edit-country/:id', component: CreateEditCountryComponent},
   {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
   {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
   {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
