@@ -48,10 +48,12 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
       if (result) {
         console.log("Delete button pressed");
-        /*this.af.database.object(this.path + "/" + chsMinPrepAction.$key).remove()
+        let actionPath: string = Constants.APP_STATUS +'/action/' + this.uid + '/' + actionKey
+        console.log(actionPath);
+        this.af.database.object(actionPath).remove()
           .then(_ =>
-            console.log("Chs action deleted")
-          );*/
+            console.log("MPA deleted")
+          );
       }
     });
     this.subscriptions.add(subscription);

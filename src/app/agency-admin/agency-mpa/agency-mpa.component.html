@@ -34,35 +34,33 @@
 
     <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No minimum preparedness actions have been added to Alert </div>
 
-    <div *ngFor="let action of actions | async" class="Data--ribbon">
-      <div class="row">
-        <div class="col-sm-12">
-          <p>{{action.task}}</p>
-        </div>
+    <div class="Data--ribbon" *ngFor="let action of actions | async">
+      <div class="col-sm-9 ">
+        <p>{{action.task}}</p>
         <div class="Info--ribbon--wrap">
           <div class="col-sm-4">Type: <b>Mandated</b></div>
           <div class="col-sm-5">Department: <b>{{Department[action.department]}}</b></div>
         </div>
       </div>
-      <div class="col-sm-4 Right-aligned Ribbon__button">
-        <div (click)="deleteAction(action.$key)" class="btn btn-danger">Delete</div>
-        <div (click)="editAction(action.$key)" class="btn btn-primary">Edit</div>
+      <div class="col-lg-3 Right-aligned">
+        <div class="btn btn-danger" (click)="deleteAction(action.$key)">Delete</div>
+        <div class="btn btn-primary" (click)="editAction(action.$key)">Edit</div>
       </div>
     </div>
 
-    <!--<div class="Data&#45;&#45;ribbon">-->
+    <!--<div *ngFor="let action of actions | async" class="Data&#45;&#45;ribbon">-->
       <!--<div class="row">-->
         <!--<div class="col-sm-12">-->
-          <!--<p>Develop volunteer’s programme/framework on emergencies</p>-->
+          <!--<p>{{action.task}}</p>-->
         <!--</div>-->
         <!--<div class="Info&#45;&#45;ribbon&#45;&#45;wrap">-->
           <!--<div class="col-sm-4">Type: <b>Mandated</b></div>-->
-          <!--<div class="col-sm-5">Department: <b>Unassigned</b></div>-->
+          <!--<div class="col-sm-5">Department: <b>{{Department[action.department]}}</b></div>-->
         <!--</div>-->
       <!--</div>-->
-      <!--<div class="col-sm-4 Right-aligned Ribbon__button">-->
-        <!--<div class="btn btn-danger">Delete</div>-->
-        <!--<div class="btn btn-primary">Edit</div>-->
+      <!--<div class="col-lg-3 Right-aligned">-->
+        <!--<div (click)="deleteAction(action.$key)" class="btn btn-danger">Delete</div>-->
+        <!--<div (click)="editAction(action.$key)" class="btn btn-primary">Edit</div>-->
       <!--</div>-->
     <!--</div>-->
 
