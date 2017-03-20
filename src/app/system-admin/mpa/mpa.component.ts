@@ -3,20 +3,20 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel} from "../../utils/Enums";
 import {Router} from "@angular/router";
-import {DialogService} from "../dialog/dialog.service";
+import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
-import {subscribeOn} from "rxjs/operator/subscribeOn";
 
 @Component({
   selector: 'app-mpa',
   templateUrl: './mpa.component.html',
   styleUrls: ['./mpa.component.css']
 })
+
 export class MpaComponent implements OnInit,OnDestroy {
+  private uid: string;
   actions: FirebaseListObservable<any>;
   ActionType = ActionType;
   ActionLevel = ActionLevel;
-  private uid: string;
   private subscriptions:RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {

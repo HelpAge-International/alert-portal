@@ -3,7 +3,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
 import {ActionType} from '../../utils/Enums';
-import {DialogService} from "../dialog/dialog.service";
+import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
@@ -25,7 +25,7 @@ export class MinPrepComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.af.auth.subscribe(auth => {
+    let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.path = Constants.APP_STATUS + "/action/" + auth.uid;
         this.chsMinPrepActions = this.af.database.list(this.path, {
@@ -41,6 +41,7 @@ export class MinPrepComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -63,7 +64,6 @@ export class MinPrepComponent implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.add(subscription);
-
   }
 
   private navigateToLogin() {

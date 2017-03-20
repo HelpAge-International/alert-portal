@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {DialogService} from "../dialog/dialog.service";
+import {DialogService} from "../../dialog/dialog.service";
 import Promise = firebase.Promise;
 import {Observable} from "rxjs";
 import {RxHelper} from "../../utils/RxHelper";

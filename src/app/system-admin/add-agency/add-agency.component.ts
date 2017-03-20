@@ -10,7 +10,7 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
 import {PersonTitle, Country} from "../../utils/Enums";
-import {DialogService} from "../dialog/dialog.service";
+import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 
 @Component({

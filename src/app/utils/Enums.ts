@@ -41,4 +41,10 @@ export enum Country {
   Germany = 2
 }
 
-
+export enum Department {
+  Chs = 0,
+  Finance = 1,
+  Hr = 2,
+  Logistics = 3,
+  Programme = 4
+}
