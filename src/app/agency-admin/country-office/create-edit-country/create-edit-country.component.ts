@@ -142,7 +142,7 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   }
 
   private createNewUser() {
-    console.log("create new user...")
+    console.log("create new user...");
     let tempPass = "testtest";
     this.secondApp.auth().createUserWithEmailAndPassword(this.countryAdminEmail, tempPass).then(success => {
       console.log(success.uid + " was successfully created");
