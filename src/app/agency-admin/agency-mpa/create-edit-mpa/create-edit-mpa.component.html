@@ -4,13 +4,17 @@
 </div>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<div class="Alert-error" [hidden]="inactive">
+  {{errorMessage | translate}}
+</div>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
     <!--<div class="Back&#45;&#45;button">Mandated preparedness actions</div>-->
 
     <div class="Header-title__wrap">
-      <h1>Create new mandated preparedness action</h1>
+      <h1>{{pageTitle | translate}}</h1>
     </div>
 
 
@@ -18,7 +22,7 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
           <label for="n-Done">What needs to be done?</label>
-          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+          <textarea [(ngModel)]="textArea" name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
         </div>
       </div>
     </div>
@@ -28,24 +32,30 @@
         <p>Is this a minimum or advanced preparedness action?</p>
 
         <div class="row">
-          <label for="APA"   class="Checkbox--ribbon col-lg-8 col-md-10 col-sm-12"><input type="radio" checked name="Action-type" id="APA">APA</label>
-          <label for="MPA" class="Checkbox--ribbon col-lg-8 col-md-10 col-sm-12"><input type="radio" checked name="Action-type" id="MPA">MPA</label>
+          <label class="Checkbox--ribbon col-lg-8 col-md-10 col-sm-12">
+            <input type="radio" checked name="Action-type" [checked]="isMpa" (change)="mpaSelected()">
+            MPA
+          </label>
+          <label class="Checkbox--ribbon col-lg-8 col-md-10 col-sm-12">
+            <input type="radio" checked name="Action-type" [checked]="!isMpa" (change)="apaSelected()">
+            APA
+          </label>
         </div>
 
         <div class="row">
           <div class="col-lg-8 col-md-10 col-sm-12">
             <label for="Department">Department</label>
-            <select class="form-control" id="Department">
-              <option value="D-val-1">Option 1</option>
-              <option value="D-val-2">Option 2</option>
+            <select class="form-control" id="Department" [(ngModel)]="departmentSelected">
+              <option *ngFor="let department of keys()">{{department}}</option>
               <option value="modal-trigger">Add new department +</option>
             </select>
           </div>
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-outline-secondary">Cancel</div>
-          <div class="btn btn-primary">Save new action</div>
+          <div class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}
+          </div>
+          <div (click)="onSubmit()" class="btn btn-primary">{{buttonText | translate}}</div>
         </div>
 
       </div>

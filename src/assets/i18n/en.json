@@ -151,5 +151,22 @@
       "FRANCE": "France",
       "GERMANY": "Germany"
     }
+  },
+  "AGENCY_MANDATED_PA": {
+    "TITLE_TEXT": "Mandated preparedness actions",
+    "CREATE_NEW_ACTION": "Create new action",
+    "NO_ACTIONS": "No mandated preparedness actions have been added to Alert",
+    "MANDATED": "Mandated",
+    "CREATE_NEW_MANDATED_PA": "Create new mandated preparedness action",
+    "MPA_OR_APA": "Is this a minimum or adavanced preparedness action?",
+    "MP": "Minimum preparedness",
+    "AP": "Advanced preparedness",
+    "DEPARTMENT": "Department",
+    "SAVE_BUTTON_TEXT": "Save new action",
+    "EDIT_MANDATED_PA": "Edit mandated preparedness action",
+    "EDIT_BUTTON_TEXT": "Edit action",
+    "NO_DEPARTMENT_ERROR": "Please select a department",
+    "NO_CONTENT_ERROR": "Please insert the action content to create a new mandated preparedness action"
   }
+
 }

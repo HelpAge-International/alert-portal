@@ -19,11 +19,6 @@ export enum ActionLevel {
   APA = 1
 }
 
-export enum ActionPreparednessLevel {
-  minimumPreparedness = 0,
-  advancedPreparedness = 1
-}
-
 export enum PersonTitle {
   Mr = 0,
   Miss = 1,

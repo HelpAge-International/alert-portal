@@ -11,6 +11,7 @@ import {RxHelper} from "../../../utils/RxHelper";
   templateUrl: './create-action.component.html',
   styleUrls: ['./create-action.component.css']
 })
+
 export class CreateActionComponent implements OnInit, OnDestroy {
 
   private inactive: Boolean = true;

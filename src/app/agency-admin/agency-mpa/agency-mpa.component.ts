@@ -17,7 +17,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private uid: string;
   private actions: FirebaseListObservable<any>;
   private Department = Department;
-  private subscriptions:RxHelper;
+  private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
     this.subscriptions = new RxHelper();
@@ -48,7 +48,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
       if (result) {
         console.log("Delete button pressed");
-        let actionPath: string = Constants.APP_STATUS +'/action/' + this.uid + '/' + actionKey
+        let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + actionKey
         console.log(actionPath);
         this.af.database.object(actionPath).remove()
           .then(_ =>
