@@ -1,12 +1,12 @@
 {
   "GLOBAL": {
-    "TYPE": "Type:",
+    "TYPE": "Type: ",
     "DELETE": "Effacer",
     "CANCEL": "Annuler",
     "CONFIRM": "Confirmer",
     "EDIT": "Modifier",
-    "FROM": "De:",
-    "AT": "À:",
+    "FROM": "De: ",
+    "AT": "À: ",
     "TITLE": "Titre",
     "WHAT_NEEDS_TO_BE_DONE": "Ce qui doit être fait?",
     "EMAIL_ADDRESS": "Adresse e-mail",

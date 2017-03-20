@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Department} from "../../utils/Enums";
+import {Department, ActionLevel} from "../../utils/Enums";
 import {Router} from "@angular/router";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
@@ -9,15 +9,22 @@ import {RxHelper} from "../../utils/RxHelper";
 @Component({
   selector: 'app-agency-mpa',
   templateUrl: './agency-mpa.component.html',
-  styleUrls: ['./agency-mpa.component.css']
+  styleUrls: ['./agency-mpa.component.css'],
 })
 
+// TODO - Double filter
 export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private actions: FirebaseListObservable<any>;
   private Department = Department;
+  private ActionLevel = ActionLevel;
   private subscriptions: RxHelper;
+  departments = Department;
+  keys(): Array<string> {
+    var keys = Object.keys(this.departments);
+    return keys.slice(keys.length / 2);
+  }
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
     this.subscriptions = new RxHelper();
@@ -41,7 +48,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
+    this.subscriptions.releaseAll();
   }
 
   deleteAction(actionKey) {

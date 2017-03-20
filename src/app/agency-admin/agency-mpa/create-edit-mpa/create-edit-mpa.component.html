@@ -1,7 +1,4 @@
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-  </div>
-</div>
+<app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
 <div class="Alert-error" [hidden]="inactive">
@@ -21,7 +18,7 @@
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
-          <label for="n-Done">What needs to be done?</label>
+          <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
           <textarea [(ngModel)]="textArea" name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
         </div>
       </div>
@@ -29,25 +26,24 @@
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10">
-        <p>Is this a minimum or advanced preparedness action?</p>
+        <p>{{"AGENCY_MANDATED_PA.MPA_OR_APA?" | translate}}</p>
 
-        <div class="row">
-          <label class="Checkbox--ribbon col-lg-8 col-md-10 col-sm-12">
-            <input type="radio" checked name="Action-type" [checked]="isMpa" (change)="mpaSelected()">
-            MPA
-          </label>
-          <label class="Checkbox--ribbon col-lg-8 col-md-10 col-sm-12">
-            <input type="radio" checked name="Action-type" [checked]="!isMpa" (change)="apaSelected()">
-            APA
-          </label>
+        <div class="Radio--ribbon">
+          <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
+          <label for="Min-prep"> {{"AGENCY_MANDATED_PA.MP" | translate}} </label>
+        </div>
+
+        <div class="Radio--ribbon">
+          <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
+          <label for="Adv-prep"> {{"AGENCY_MANDATED_PA.AP" | translate}} </label>
         </div>
 
         <div class="row">
           <div class="col-lg-8 col-md-10 col-sm-12">
-            <label for="Department">Department</label>
+            <label for="Department">{{"AGENCY_MANDATED_PA.DEPARTMENT" | translate}}</label>
             <select class="form-control" id="Department" [(ngModel)]="departmentSelected">
               <option *ngFor="let department of keys()">{{department}}</option>
-              <option value="modal-trigger">Add new department +</option>
+              <option value="modal-trigger">{{"AGENCY_MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
             </select>
           </div>
         </div>

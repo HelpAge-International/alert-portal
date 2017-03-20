@@ -12,6 +12,7 @@ import {RxHelper} from "../../../utils/RxHelper";
   styleUrls: ['create-edit-mpa.component.css']
 })
 
+// TODO - Add department
 export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -21,13 +22,12 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private pageTitle: string = 'AGENCY_MANDATED_PA.CREATE_NEW_MANDATED_PA';
   private buttonText: string = 'AGENCY_MANDATED_PA.SAVE_BUTTON_TEXT';
   private textArea: string;
-  private isMpa: Boolean;
+  private isMpa: Boolean = true;
   private forEditing: Boolean = false;
   private idOfMpaToEdit: string;
   private subscriptions: RxHelper;
   departmentSelected: string;
   departments = Department;
-
   keys(): Array<string> {
     var keys = Object.keys(this.departments);
     return keys.slice(keys.length / 2);
@@ -97,9 +97,9 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
     let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: MandatedPreparednessAction) => {
       this.textArea = action.task;
-      console.log(action.preparednessLevel);
+      console.log(action.level);
       console.log(ActionLevel.MPA);
-      this.isMpa = action.preparednessLevel == ActionLevel.MPA ? true : false;
+      this.isMpa = action.level == ActionLevel.MPA ? true : false;
       console.log(this.isMpa);
       this.departmentSelected = Department[action.department];
     });

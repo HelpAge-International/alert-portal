@@ -7,12 +7,12 @@ export class MandatedPreparednessAction {
   public task: string;
   public type: ActionType;
   public department: Department;
-  public preparednessLevel: ActionLevel;
+  public level: ActionLevel;
 
-  constructor(task: string, type: ActionType, department: Department, preparednessLevel : ActionLevel) {
+  constructor(task: string, type: ActionType, department: Department, level : ActionLevel) {
     this.task = task;
     this.type = type;
     this.department = department;
-    this.preparednessLevel = preparednessLevel;
+    this.level = level;
   }
 }
