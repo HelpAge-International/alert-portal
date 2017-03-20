@@ -19,7 +19,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   private buttonText: string = 'CHS_MPA.SAVE_BUTTON_TEXT';
   private textArea: string;
   private path: string;
-  private forEditing = false;
+  private forEditing: Boolean = false;
   private idOfChsActionToEdit: string;
   private subscriptions: RxHelper;
 
@@ -29,7 +29,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.af.auth.subscribe(auth => {
+    let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.path = Constants.APP_STATUS + "/action/" + auth.uid;
         console.log("uid: " + auth.uid);
@@ -39,7 +39,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.route.params
+    let subscriptionEdit = this.route.params
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -49,6 +49,8 @@ export class CreateActionComponent implements OnInit, OnDestroy {
           this.idOfChsActionToEdit = params["id"];
         }
       });
+    this.subscriptions.add(subscription);
+    this.subscriptions.add(subscriptionEdit);
   }
 
   ngOnDestroy() {

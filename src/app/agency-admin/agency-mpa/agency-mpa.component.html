@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No minimum preparedness actions have been added to Alert </div>
+    <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No mandated preparedness actions have been added to Alert</div>
 
     <div class="Data--ribbon" *ngFor="let action of actions | async">
       <div class="col-sm-9 ">
