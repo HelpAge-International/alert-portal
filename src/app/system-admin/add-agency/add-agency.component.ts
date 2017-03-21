@@ -266,8 +266,8 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
       agencyData["/group/agencygroup/" + uid] = true;
-      let agency = new ModelAgency();
-      agency.name = this.agencyName;
+      let agency = new ModelAgency(this.agencyName, false);
+      // agency.name = this.agencyName;
       agency.isActive = true;
       agency.adminId = uid;
       agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
