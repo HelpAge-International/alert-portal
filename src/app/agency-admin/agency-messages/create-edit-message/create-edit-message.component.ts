@@ -71,13 +71,6 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         console.log('New Message added to message node');
 
         this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key] = true;
-
-        /*this.path = Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages/';
-        this.af.database.object(this.path + msgId.key).set(true).then(_ => {
-            console.log('Message id added to agency admin');
-          }
-        );*/
-
         this.addMsgToMessageRef(msgId.key);
       });
   }
