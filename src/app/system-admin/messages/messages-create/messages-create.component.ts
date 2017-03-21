@@ -137,7 +137,7 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
       }
     }
 
-    // this.router.navigate(['/system-admin/messages']);
+    this.router.navigate(['/system-admin/messages']);
 
   }
 

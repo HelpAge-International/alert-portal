@@ -92,6 +92,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
               }).subscribe(() => {
               this.af.database.object(Constants.APP_STATUS).update(this.msgData);
               console.log("Message Ref successfully deleted from all nodes");
+              this.router.navigate(['/system-admin/messages']);
             })
           })
         this.subscriptions.add(subscription);
