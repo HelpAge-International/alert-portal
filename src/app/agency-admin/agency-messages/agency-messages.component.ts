@@ -63,43 +63,43 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
   deleteMessage(sentMessage) {
 
     console.log("Delete button pressed");
-    /*this.dialogService.createDialog("DELETE_MESSAGE_DIALOG.TITLE", "DELETE_MESSAGE_DIALOG.CONTENT").subscribe(result => {
+    this.dialogService.createDialog("DELETE_MESSAGE_DIALOG.TITLE", "DELETE_MESSAGE_DIALOG.CONTENT").subscribe(result => {
 
-     if (result) {
+      if (result) {
 
-     let key: string = sentMessage.$key;
+        let key: string = sentMessage.$key;
 
-     var allUsersGroupPath: string = "/messageRef/allusergroup/";
-     var agencyGroupPath: string = Constants.APP_STATUS + "/group/agencygroup/";
-     var countryGroupPath: string = Constants.APP_STATUS + "/group/countrygroup/";
+        var allUsersGroupPath: string = "/messageRef/allusergroup/";
+        var agencyGroupPath: string = Constants.APP_STATUS + "/group/agencygroup/";
+        var countryGroupPath: string = Constants.APP_STATUS + "/group/countrygroup/";
 
-     this.msgData["/systemAdmin/" + this.uid + "/sentmessages/" + key] = null;
-     this.msgData["/message/" + key] = null;
-     this.msgData[allUsersGroupPath + key] = null;
+        this.msgData["/systemAdmin/" + this.uid + "/sentmessages/" + key] = null;
+        this.msgData["/message/" + key] = null;
+        this.msgData[allUsersGroupPath + key] = null;
 
-     let subscription = this.af.database.list(agencyGroupPath)
-     .do(list =>{
-     list.forEach(item => {
-     this.msgData["/messageRef/agencygroup/"+item.$key+"/"+key]=null;
-     console.log("item key: "+item.$key);
-     })
-     })
-     .subscribe(() => {
-     this.af.database.list(countryGroupPath)
-     .do(list =>{
-     list.forEach(item => {
-     this.msgData["/messageRef/countrygroup/"+item.$key+"/"+key]=null;
-     console.log("item key: "+item.$key);
-     })
-     }).subscribe(() => {
-     this.af.database.object(Constants.APP_STATUS).update(this.msgData);
-     console.log("Message Ref successfully deleted from all nodes");
-     })
-     })
-     this.subscriptions.add(subscription);
+        let subscription = this.af.database.list(agencyGroupPath)
+          .do(list => {
+            list.forEach(item => {
+              this.msgData["/messageRef/agencygroup/" + item.$key + "/" + key] = null;
+              console.log("item key: " + item.$key);
+            })
+          })
+          .subscribe(() => {
+            this.af.database.list(countryGroupPath)
+              .do(list => {
+                list.forEach(item => {
+                  this.msgData["/messageRef/countrygroup/" + item.$key + "/" + key] = null;
+                  console.log("item key: " + item.$key);
+                })
+              }).subscribe(() => {
+              this.af.database.object(Constants.APP_STATUS).update(this.msgData);
+              console.log("Message Ref successfully deleted from all nodes");
+            })
+          })
+        this.subscriptions.add(subscription);
 
-     }
-     });*/
+      }
+    });
 
   }
 

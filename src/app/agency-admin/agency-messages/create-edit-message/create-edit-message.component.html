@@ -36,8 +36,8 @@
 
     <label for="f-Format">{{"MESSAGES.RECIPIENTS" | translate}}</label>
     <div class="row">
-      <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input type="checkbox" name="f-Format" id="All"
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format"
                [(ngModel)]="allUsersSelected">All Users
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
@@ -50,7 +50,7 @@
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="ertLeadsSeclected">ERT Lead
+               [(ngModel)]="ertLeadsSelected">ERT Lead
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
