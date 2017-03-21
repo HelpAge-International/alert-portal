@@ -41,7 +41,7 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
 
   toggleActive(country) {
     let state: boolean = !country.isActive;
-    let subscription = this.dialogService.createDialog(country.name?"Deactivate " + country.name:"Deactivate", "Are you sure you want to do this?")
+    let subscription = this.dialogService.createDialog(country.name ? "Deactivate " + country.name : "Deactivate", "Are you sure you want to do this?")
       .subscribe(result => {
         if (!result) {
           return;
@@ -61,12 +61,15 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
       return;
     }
     let name: string = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + key + "/adminId")
+      .flatMap(adminId => {
+        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + adminId.$value)
+      })
       .subscribe(user => {
         name = user.firstName + " " + user.lastName;
       });
     this.subscriptions.add(subscription);
-    // console.log(list)
+
     if (name) {
       return name;
     }
