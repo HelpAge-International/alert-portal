@@ -67,9 +67,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
         let key: string = sentMessage.$key;
 
-        var allUsersGroupPath: string = "/messageRef/allusergroup/";
-        var agencyGroupPath: string = Constants.APP_STATUS + "/group/agencygroup/";
-        var countryGroupPath: string = Constants.APP_STATUS + "/group/countrygroup/";
+        let allUsersGroupPath: string = "/messageRef/allusergroup/";
+        let agencyGroupPath: string = Constants.APP_STATUS + "/group/agencygroup/";
+        let countryGroupPath: string = Constants.APP_STATUS + "/group/countrygroup/";
 
         this.msgData["/systemAdmin/" + this.uid + "/sentmessages/" + key] = null;
         this.msgData["/message/" + key] = null;

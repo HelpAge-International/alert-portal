@@ -3,9 +3,9 @@ import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {DialogService} from "../../dialog/dialog.service";
-import Promise = firebase.Promise;
 import {Observable} from "rxjs";
 import {RxHelper} from "../../utils/RxHelper";
+import Promise = firebase.Promise;
 
 @Component({
   selector: 'app-agency-messages',
@@ -62,6 +62,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   deleteMessage(sentMessage) {
 
+    // TODO - Delete all message references
     console.log("Delete button pressed");
     this.dialogService.createDialog("DELETE_MESSAGE_DIALOG.TITLE", "DELETE_MESSAGE_DIALOG.CONTENT").subscribe(result => {
 
@@ -72,12 +73,39 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
         this.msgData["/administratorAgency/" + this.uid + "/sentmessages/" + key] = null;
         this.msgData["/message/" + key] = null;
-        this.msgData[agencyMessageRefPath + 'agencyallusersgroup/' + this.uid + '/' + key] = null;
-        this.msgData[agencyMessageRefPath + '/countryadmins/' + this.uid + '/' + key] = null;
-        this.msgData[agencyMessageRefPath + '/countrydirectors/' + this.uid + '/' + key] = null;
-        this.msgData[agencyMessageRefPath + '/ertleads/' + this.uid + '/' + key] = null;
-        this.msgData[agencyMessageRefPath + '/erts/' + this.uid + '/' + key] = null;
 
+        let agencyAllUsersGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/agencyallusersgroup';
+        let agencyAllUsersMsgRefPath: string = "/messageRef/agency/" + this.uid + '/agencyallusersgroup/';
+        let agencyCountryAdminsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/countryadmins';
+        let agencyCountryAdminsMsgRef: string = "/messageRef/agency/" + this.uid + '/countryadmins/';
+        let agencyCountryDirectorsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/countrydirectors';
+        let agencyCountryDirectorsMsgRef: string = "/messageRef/agency/" + this.uid + '/countrydirectors/';
+        let agencyErtLeadsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/ertleads';
+        let agencyErtLeadsMsgRef: string = "/messageRef/agency/" + this.uid + '/ertleads/';
+        let agencyErtsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/erts';
+        let agencyErtsMsgRef: string = "/messageRef/agency/" + this.uid + '/erts/';
+
+        let subscription = this.af.database.list(agencyAllUsersGroupPath)
+          .do(list => {
+            list.forEach(item => {
+              this.msgData[agencyAllUsersMsgRefPath + item.$key + "/" + key] = null;
+              console.log("item key: " + item.$key);
+            })
+          })
+          .subscribe(() => {
+            this.af.database.list(agencyCountryAdminsGroupPath)
+              .do(list => {
+                list.forEach(item => {
+                  this.msgData[agencyCountryAdminsMsgRef + item.$key + "/" + key] = null;
+                  console.log("item key: " + item.$key);
+                })
+              })
+              .subscribe(() => {
+              this.af.database.object(Constants.APP_STATUS).update(this.msgData);
+              console.log("Message Ref successfully deleted from all nodes");
+            })
+          })
+        this.subscriptions.add(subscription);
 
         this.af.database.object(Constants.APP_STATUS).update(this.msgData)
           .then(_ => {

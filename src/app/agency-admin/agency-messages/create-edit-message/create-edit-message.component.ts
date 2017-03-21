@@ -18,13 +18,11 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private errorMessage: any;
   private messageTitle: string;
   private messageContent: string;
-  private path: string;
   private allUsersSelected: Boolean;
   private countryAdminsSelected: Boolean;
   private countryDirectorsSelected: Boolean;
   private ertLeadsSelected: Boolean;
   private ertsSelected: Boolean;
-  private msgData = {};
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -64,48 +62,116 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     var currentDateInMilliseconds = currentDate.getTime();
 
     var newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, currentDateInMilliseconds);
-    this.path = Constants.APP_STATUS + '/message';
+    let newMessagePath = Constants.APP_STATUS + '/message';
 
-    this.af.database.list(this.path).push(newMessage)
+    this.af.database.list(newMessagePath).push(newMessage)
       .then(msgId => {
         console.log('New Message added to message node');
 
-        this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key] = true;
+        var sentMsgPath = Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
+        this.af.database.object(sentMsgPath + msgId.key).set(true).then(_ => {
+            console.log('Message id added to agency admin');
+          }
+        );
         this.addMsgToMessageRef(msgId.key);
       });
   }
 
   private addMsgToMessageRef(key: string) {
 
-    let agencyMessageRefPath: string = '/messageRef/agency/';
+   let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
+    var agencyMessageRefPath: string = Constants.APP_STATUS + '/messageRef/agency/' + this.uid + '/';
 
     if (this.allUsersSelected) {
-      this.msgData[agencyMessageRefPath + 'agencyallusersgroup/' + this.uid + '/' + key] = true;
-      console.log(agencyMessageRefPath + 'agencyallusersgroup/' + this.uid + '/' + key);
+      var agencyAllUsersSelected: string = agencyGroupPath + 'agencyallusersgroup/';
+      var agencyAllUsers: FirebaseListObservable<any> = this.af.database.list(agencyAllUsersSelected);
+
+      var agencyAllUsersMessageRefPath: string = agencyMessageRefPath + 'agencyallusersgroup/';
+
+      let subscription = agencyAllUsers.subscribe(agencyAllUsersIds => {
+        agencyAllUsersIds.forEach(agencyAllUsersId => {
+          console.log(agencyAllUsersId);
+          this.af.database.object(agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key).set(true).then(_ => {
+                console.log('Message id added to agency group in messageRef');
+              });
+          });
+        });
+      this.subscriptions.add(subscription);
 
     } else {
 
       if (this.countryAdminsSelected) {
-        this.msgData[agencyMessageRefPath + '/countryadmins/' + this.uid + '/' + key] = true;
+
+        var agencyCountryAdminsSelected: string = agencyGroupPath + 'countryadmins/';
+        var agencyCountryAdmins: FirebaseListObservable<any> = this.af.database.list(agencyCountryAdminsSelected);
+
+        var agencyCountryAdminsMessageRefPath: string = agencyMessageRefPath + 'countryadmins/';
+
+        let subscription = agencyCountryAdmins.subscribe(agencyCountryAdminsIds => {
+          agencyCountryAdminsIds.forEach(agencyCountryAdminId => {
+            console.log(agencyCountryAdminId);
+            this.af.database.object(agencyCountryAdminsMessageRefPath + agencyCountryAdminId.$key + '/' + key).set(true).then(_ => {
+              console.log('Message id added to agency/countryAdmins group in messageRef');
+            });
+          });
+        });
+        this.subscriptions.add(subscription);
       }
 
       if (this.countryDirectorsSelected) {
-        this.msgData[agencyMessageRefPath + '/countrydirectors/' + this.uid + '/' + key] = true;
+
+        var agencyCountryDirectorsSelected: string = agencyGroupPath + 'countrydirectors/';
+        var agencyCountryDirectors: FirebaseListObservable<any> = this.af.database.list(agencyCountryDirectorsSelected);
+
+        var agencyCountryDirectorsMessageRefPath: string = agencyMessageRefPath + 'countrydirectors/';
+
+        let subscription = agencyCountryDirectors.subscribe(agencyCountryDirectorsIds => {
+          agencyCountryDirectorsIds.forEach(agencyCountryDirectorId => {
+            console.log(agencyCountryDirectorId);
+            this.af.database.object(agencyCountryDirectorsMessageRefPath + agencyCountryDirectorId.$key + '/' + key).set(true).then(_ => {
+              console.log('Message id added to agency/countrydirectors group in messageRef');
+            });
+          });
+        });
+        this.subscriptions.add(subscription);
       }
 
       if (this.ertLeadsSelected) {
-        this.msgData[agencyMessageRefPath + '/ertleads/' + this.uid + '/' + key] = true;
+
+        var agencyErtLeadsSelected: string = agencyGroupPath + 'ertleads/';
+        var agencyErtLeads: FirebaseListObservable<any> = this.af.database.list(agencyErtLeadsSelected);
+
+        var agencyErtLeadsMessageRefPath: string = agencyMessageRefPath + 'ertleads/';
+
+        let subscription = agencyErtLeads.subscribe(agencyErtLeadsIds => {
+          agencyErtLeadsIds.forEach(agencyErtLeadId => {
+            console.log(agencyErtLeadId);
+            this.af.database.object(agencyErtLeadsMessageRefPath + agencyErtLeadId.$key + '/' + key).set(true).then(_ => {
+              console.log('Message id added to agency/ertleads group in messageRef');
+            });
+          });
+        });
+        this.subscriptions.add(subscription);
       }
 
       if (this.ertsSelected) {
-        this.msgData[agencyMessageRefPath + '/erts/' + this.uid + '/' + key] = true;
+
+        var agencyErtsSelected: string = agencyGroupPath + 'erts/';
+        var agencyErts: FirebaseListObservable<any> = this.af.database.list(agencyErtsSelected);
+
+        var agencyErtsMessageRefPath: string = agencyMessageRefPath + 'erts/';
+
+        let subscription = agencyErts.subscribe(agencyErtsIds => {
+          agencyErtsIds.forEach(agencyErtId => {
+            console.log(agencyErtId);
+            this.af.database.object(agencyErtsMessageRefPath + agencyErtId.$key + '/' + key).set(true).then(_ => {
+              console.log('Message id added to agency/erts group in messageRef');
+            });
+          });
+        });
+        this.subscriptions.add(subscription);
       }
     }
-
-    this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
-      console.log("Message Ref successfully added to all nodes");
-      this.router.navigate(['/agency-admin/agency-messages']);
-    });
 
   }
 
