@@ -105,7 +105,9 @@
             <!--<input type="text" class="form-control" id="Country">-->
             <div>
               <md-select id="Country" [(ngModel)]="countryAdminCountry" name="countryAdminCountry">
-                <md-option *ngFor="let country of countrySelections">{{countryNames[country] | translate}}</md-option>
+                <md-option *ngFor="let country of countrySelections" [value]="country">{{countryNames[country] |
+                  translate}}
+                </md-option>
               </md-select>
             </div>
           </div>
@@ -127,8 +129,12 @@
 
       <div class="Form-submit__wrapper">
         <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
-        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">UPDATE COUNTRY OFFICE</button>
-        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">SAVE NEW COUNTRY OFFICE</button>
+        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">UPDATE COUNTRY
+          OFFICE
+        </button>
+        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">SAVE NEW
+          COUNTRY OFFICE
+        </button>
       </div>
 
     </form>

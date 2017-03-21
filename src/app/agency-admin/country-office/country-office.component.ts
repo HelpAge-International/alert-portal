@@ -41,7 +41,7 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
 
   toggleActive(country) {
     let state: boolean = !country.isActive;
-    let subscription = this.dialogService.createDialog("Deactivate " + country.name, "Are you sure you want to do this?")
+    let subscription = this.dialogService.createDialog(country.name?"Deactivate " + country.name:"Deactivate", "Are you sure you want to do this?")
       .subscribe(result => {
         if (!result) {
           return;

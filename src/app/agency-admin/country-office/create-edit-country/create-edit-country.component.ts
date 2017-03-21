@@ -39,6 +39,9 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   private secondApp: firebase.app.App;
   private countryData: {};
   private countryOfficeId: string;
+  private preEmail: string;
+  private preCountryOfficeLocation: number;
+  private isUserChange: boolean;
 
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
@@ -66,18 +69,33 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   }
 
   private loadCountryInfo(countryOfficeId: string) {
-    console.log("edit: "+countryOfficeId);
-    this.af.database.object(Constants.APP_STATUS+"/countryOffice/"+this.uid+"/"+countryOfficeId+"/adminId")
-      .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS+"/userPublic/"+id.$value)
+    console.log("edit: " + countryOfficeId);
+    // this.af.database.object(Constants.APP_STATUS+"/countryOffice/"+this.uid+"/"+countryOfficeId+"/adminId")
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
+      .do(result => {
+        console.log(result);
+        this.countryOfficeLocation = result.location;
+        this.preCountryOfficeLocation = result.location;
+      })
+      .flatMap(result => {
+        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + result.adminId)
       })
       .subscribe(user => {
+        console.log(user);
         this.countryAdminTitle = user.title;
         this.countryAdminFirstName = user.firstName;
         this.countryAdminLastName = user.lastName;
         this.countryAdminEmail = user.email;
-        console.log(user)
-      })
+        //store for compare later
+        this.preEmail = user.email;
+        this.countryAdminAddress1 = user.addressLine1;
+        this.countryAdminAddress2 = user.addressLine2;
+        this.countryAdminAddress3 = user.addressLine3;
+        this.countryAdminCountry = user.country;
+        this.countryAdminCity = user.city;
+        this.countryAdminPostcode = user.postCode;
+      });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -117,7 +135,28 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   }
 
   private updateCountryOffice() {
+    if (this.preEmail == this.countryAdminEmail) {
+      this.updateNoEmailChange();
+    } else {
+      this.updateWithNewEmail();
+    }
+  }
 
+  private updateNoEmailChange() {
+    console.log("no email change");
+    if (this.preCountryOfficeLocation == this.countryOfficeLocation) {
+      console.log("location not change: " + this.countryOfficeId);
+      this.updateFirebase(this.countryOfficeId);
+    } else {
+      console.log("check location");
+      this.validateLocation();
+    }
+  }
+
+  private updateWithNewEmail() {
+    console.log("change with new email");
+    this.isUserChange = true;
+    this.validateLocation();
   }
 
   private createCountryOffice() {
@@ -136,7 +175,13 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
         this.waringMessage = "ERROR.COUNTRY_DUPLICATE";
         return;
       }
-      this.createNewUser();
+      if (this.isEdit && this.isUserChange) {
+        this.createNewUser();
+      } else if (this.isEdit) {
+        this.updateFirebase(this.countryOfficeId);
+      } else {
+        this.createNewUser();
+      }
     });
     this.subscriptions.add(subscription);
   }
@@ -157,19 +202,92 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   }
 
   private updateFirebase(countryId: string) {
+    if (this.isEdit && this.isUserChange) {
+      this.changeAdminAndUpdate(countryId);
+    } else if (this.isEdit) {
+      this.updateData(countryId)
+    } else {
+      this.writeNewData(countryId)
+    }
+
+  }
+
+  private changeAdminAndUpdate(countryId: string) {
+    let updateAdminData = {};
+    let countryAdmin = new ModelUserPublic(this.countryAdminFirstName, this.countryAdminLastName,
+      this.countryAdminTitle, this.countryAdminEmail);
+
+    countryAdmin.addressLine1 = this.countryAdminAddress1 ? this.countryAdminAddress1 : "";
+    countryAdmin.addressLine2 = this.countryAdminAddress2 ? this.countryAdminAddress2 : "";
+    countryAdmin.addressLine3 = this.countryAdminAddress3 ? this.countryAdminAddress3 : "";
+    countryAdmin.country = this.countryAdminCountry ? this.countryAdminCountry : -1;
+    countryAdmin.city = this.countryAdminCity ? this.countryAdminCity : "";
+    countryAdmin.postCode = this.countryAdminPostcode ? this.countryAdminPostcode : "";
+    updateAdminData["/userPublic/" + countryId] = countryAdmin;
+
+    updateAdminData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
+    updateAdminData["/administratorCountry/" + countryId + "/countryId"] = this.countryOfficeId;
+
+    updateAdminData["/group/countrygroup/" + countryId] = true;
+
+    updateAdminData["/countryOffice/" + this.uid + "/" + this.countryOfficeId + "/adminId"] = countryId;
+    updateAdminData["/countryOffice/" + this.uid + "/" + this.countryOfficeId + "/location"] = this.countryOfficeLocation;
+
+    this.af.database.object(Constants.APP_STATUS).update(updateAdminData).then(success => {
+      this.backHome();
+    }, error => {
+      this.hideWarning = false;
+      this.waringMessage = error.message;
+      console.log(error.message);
+    });
+  }
+
+  private updateData(countryId: string) {
+    this.countryData = {};
+
+    this.countryData["/userPublic/" + countryId + "/firstName"] = this.countryAdminFirstName;
+    this.countryData["/userPublic/" + countryId + "/lastName"] = this.countryAdminLastName;
+    this.countryData["/userPublic/" + countryId + "/title"] = this.countryAdminTitle;
+    this.countryData["/userPublic/" + countryId + "/email"] = this.countryAdminEmail;
+    this.countryData["/userPublic/" + countryId + "/addressLine1"] = this.countryAdminAddress1;
+    this.countryData["/userPublic/" + countryId + "/addressLine2"] = this.countryAdminAddress2;
+    this.countryData["/userPublic/" + countryId + "/addressLine3"] = this.countryAdminAddress3;
+    this.countryData["/userPublic/" + countryId + "/country"] = this.countryAdminCountry;
+    this.countryData["/userPublic/" + countryId + "/city"] = this.countryAdminCity;
+    this.countryData["/userPublic/" + countryId + "/postCode"] = this.countryAdminPostcode;
+
+
+    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
+    this.countryData["/administratorCountry/" + countryId + "/countryId"] = countryId;
+
+    this.countryData["/group/countrygroup/" + countryId] = true;
+
+    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/adminId"] = countryId;
+    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/location"] = this.countryOfficeLocation;
+    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/isActive"] = true;
+
+    this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
+      this.backHome();
+    }, error => {
+      console.log(error.message);
+    });
+  }
+
+  private writeNewData(countryId: string) {
     this.countryData = {};
 
     let countryAdmin = new ModelUserPublic(this.countryAdminFirstName, this.countryAdminLastName,
       this.countryAdminTitle, this.countryAdminEmail);
-    countryAdmin.addressLine1 = this.countryAdminAddress1;
-    countryAdmin.addressLine2 = this.countryAdminAddress2;
-    countryAdmin.addressLine3 = this.countryAdminAddress3;
-    countryAdmin.country = this.countryAdminCountry;
-    countryAdmin.city = this.countryAdminCity;
-    countryAdmin.postCode = this.countryAdminPostcode;
+
+    countryAdmin.addressLine1 = this.countryAdminAddress1 ? this.countryAdminAddress1 : "";
+    countryAdmin.addressLine2 = this.countryAdminAddress2 ? this.countryAdminAddress2 : "";
+    countryAdmin.addressLine3 = this.countryAdminAddress3 ? this.countryAdminAddress3 : "";
+    countryAdmin.country = this.countryAdminCountry ? this.countryAdminCountry : -1;
+    countryAdmin.city = this.countryAdminCity ? this.countryAdminCity : "";
+    countryAdmin.postCode = this.countryAdminPostcode ? this.countryAdminPostcode : "";
     this.countryData["/userPublic/" + countryId] = countryAdmin;
 
-    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/"+this.uid] = true;
+    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
     this.countryData["/administratorCountry/" + countryId + "/countryId"] = countryId;
 
     this.countryData["/group/countrygroup/" + countryId] = true;
