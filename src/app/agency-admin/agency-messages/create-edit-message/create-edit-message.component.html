@@ -37,15 +37,31 @@
     <label for="f-Format">{{"MESSAGES.RECIPIENTS" | translate}}</label>
     <div class="row">
       <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">{{"MESSAGES.ALL_USERS" | translate}}</label>
-      <label for="Agency" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Agency" [(ngModel)]="agencyAdminsSelected">{{"MESSAGES.AGENCY_ADMINS" | translate}}</label>
-      <label for="Country Administrators" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Country Administrators" [(ngModel)]="countryAdminsSelected">{{"MESSAGES.COUNTRY_ADMINS" | translate}}</label>
+        <input type="checkbox" name="f-Format" id="All"
+               [(ngModel)]="allUsersSelected">All Users
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="countryAdminsSelected">Country Administrators
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="countryDirectorsSelected">Country Directors
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="ertLeadsSeclected">ERT Lead
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="ertsSelected">ERT
+      </label>
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" routerLink="/agency-admin/agency-messages">{{"GLOBAL.CANCEL" | translate}}</div>
+      <div class="btn btn-outline-secondary" routerLink="/agency-admin/agency-messages">{{"GLOBAL.CANCEL" |
+        translate}}
+      </div>
       <div class="btn btn-primary" (click)="onSubmit()">{{"MESSAGES.SEND_MESSAGE" | translate}}</div>
     </div>
 

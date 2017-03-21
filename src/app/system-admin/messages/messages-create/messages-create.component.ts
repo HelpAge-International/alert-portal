@@ -11,8 +11,7 @@ import {RxHelper} from "../../../utils/RxHelper";
   styleUrls: ['./messages-create.component.css']
 })
 
-
-export class MessagesCreateComponent implements OnInit,OnDestroy {
+export class MessagesCreateComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private inactive: Boolean = true;
@@ -44,10 +43,6 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
-  }
-
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
   onSubmit() {
@@ -161,6 +156,10 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
       return false;
     }
     return true;
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
 }
