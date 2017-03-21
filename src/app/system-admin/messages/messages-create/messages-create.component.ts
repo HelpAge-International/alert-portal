@@ -93,6 +93,7 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
       );
     } else {
 
+      // TODO - FIX
       if (this.agencyAdminsSelected) {
         var agencyAdminGroupPath: string = Constants.APP_STATUS + '/group/agencygroup/';
         var agencyIds: FirebaseListObservable<any> = this.af.database.list(agencyAdminGroupPath);
@@ -115,6 +116,7 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
         this.subscriptions.add(subscription);
       }
 
+      // TODO - FIX
       if (this.countryAdminsSelected) {
         var countryAdminGroupPath: string = Constants.APP_STATUS + '/group/countrygroup/';
         var countryIds: FirebaseListObservable<any> = this.af.database.list(countryAdminGroupPath);
@@ -137,7 +139,7 @@ export class MessagesCreateComponent implements OnInit,OnDestroy {
       }
     }
 
-    // this.router.navigate(['/system-admin/messages']);
+    this.router.navigate(['/system-admin/messages']);
 
   }
 

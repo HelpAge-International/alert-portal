@@ -1,4 +1,4 @@
-<app-system-admin-header></app-system-admin-header>
+<app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
 <div class="Alert-error" [hidden]="inactive">
@@ -45,7 +45,7 @@
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" routerLink="/system-admin/messages">{{"GLOBAL.CANCEL" | translate}}</div>
+      <div class="btn btn-outline-secondary" routerLink="/agency-admin/agency-messages">{{"GLOBAL.CANCEL" | translate}}</div>
       <div class="btn btn-primary" (click)="onSubmit()">{{"MESSAGES.SEND_MESSAGE" | translate}}</div>
     </div>
 

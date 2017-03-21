@@ -15,8 +15,7 @@
     <div class="Data--ribbon" *ngFor="let sentMessage of sentMessages">
       <div class="row col-lg-9 col-sm-10">
         <div class="Info--ribbon--wrap">
-          <div class="col-sm-4">{{"GLOBAL.FROM" | translate}}<b>System Admin</b></div>
-          <div class="col-sm-5">{{"GLOBAL.AT" | translate}}<b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
+          <div class="col-sm-4">{{"GLOBAL.SENT_AT" | translate}}<b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
         </div>
         <div class="col-sm-12">
           <h5>{{sentMessage.title}}</h5>
