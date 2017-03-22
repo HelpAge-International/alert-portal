@@ -26,7 +26,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     let subscription = this.af.auth.subscribe(auth => {
-
       if (auth) {
         this.uid = auth.uid;
 
@@ -41,11 +40,14 @@ export class MessagesComponent implements OnInit, OnDestroy {
           })
           .flatMap(item => {
             return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
-          }).distinctUntilChanged()
+          })
+          .distinctUntilChanged()
           .subscribe(x => {
             this.sentMessages.push(x);
           });
+
         this.subscriptions.add(subscription);
+
       } else {
         // user is not logged in
         console.log('Error occurred - User is not logged in');
@@ -61,7 +63,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   deleteMessage(sentMessage) {
 
-    this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
+    let subscription = this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
 
       if (result) {
 
@@ -78,14 +80,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
         let allAgencyAdminsMsgRef: string = '/messageRef/systemadmin/allagencyadminsgroup/';
         let allCountryAdminsMsgRef: string = '/messageRef/systemadmin/allcountryadminsgroup/';
 
-        console.log(allUsersGroupPath);
         let subscription = this.af.database.list(allUsersGroupPath)
           .do(list => {
-            console.log(list);
             list.forEach(item => {
-              console.log(item.$key);
               this.msgData[allUsersMsgRefPath + item.$key + '/' + key] = null;
-              console.log(allUsersMsgRefPath + item.$key + '/' + key);
             })
           })
           .subscribe(() => {
@@ -103,15 +101,16 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     })
                   })
                   .subscribe(() => {
-                    this.af.database.object(Constants.APP_STATUS).update(this.msgData);
-                    console.log('Message Ref successfully deleted from all nodes');
+                    this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+                      console.log('Message Ref successfully deleted from all nodes');
+                    })
                   })
               })
           });
         this.subscriptions.add(subscription);
       }
     });
-
+    this.subscriptions.add(subscription);
   }
 
   private navigateToLogin() {
