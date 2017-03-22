@@ -23,6 +23,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private countryDirectorsSelected: Boolean;
   private ertLeadsSelected: Boolean;
   private ertsSelected: Boolean;
+  private currentDateTimeInMilliseconds = new Date().getTime();
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -58,10 +59,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
   private createNewMessage() {
 
-    var currentDate = new Date();
-    var currentDateInMilliseconds = currentDate.getTime();
-
-    var newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, currentDateInMilliseconds);
+    var newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
     let newMessagePath = Constants.APP_STATUS + '/message';
 
     this.af.database.list(newMessagePath).push(newMessage)
@@ -69,7 +67,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         console.log('New Message added to message node');
 
         var sentMsgPath = Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
-        this.af.database.object(sentMsgPath + msgId.key).set(true).then(_ => {
+        this.af.database.object(sentMsgPath).set(true).then(_ => {
             console.log('Message id added to agency admin');
           }
         );
@@ -91,7 +89,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       let subscription = agencyAllUsers.subscribe(agencyAllUsersIds => {
         agencyAllUsersIds.forEach(agencyAllUsersId => {
           console.log(agencyAllUsersId);
-          this.af.database.object(agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key).set(true).then(_ => {
+          this.af.database.object(agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
                 console.log('Message id added to agency group in messageRef');
               });
           });
@@ -110,7 +108,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         let subscription = agencyCountryAdmins.subscribe(agencyCountryAdminsIds => {
           agencyCountryAdminsIds.forEach(agencyCountryAdminId => {
             console.log(agencyCountryAdminId);
-            this.af.database.object(agencyCountryAdminsMessageRefPath + agencyCountryAdminId.$key + '/' + key).set(true).then(_ => {
+            this.af.database.object(agencyCountryAdminsMessageRefPath + agencyCountryAdminId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
               console.log('Message id added to agency/countryAdmins group in messageRef');
             });
           });
@@ -128,7 +126,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         let subscription = agencyCountryDirectors.subscribe(agencyCountryDirectorsIds => {
           agencyCountryDirectorsIds.forEach(agencyCountryDirectorId => {
             console.log(agencyCountryDirectorId);
-            this.af.database.object(agencyCountryDirectorsMessageRefPath + agencyCountryDirectorId.$key + '/' + key).set(true).then(_ => {
+            this.af.database.object(agencyCountryDirectorsMessageRefPath + agencyCountryDirectorId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
               console.log('Message id added to agency/countrydirectors group in messageRef');
             });
           });
@@ -146,7 +144,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         let subscription = agencyErtLeads.subscribe(agencyErtLeadsIds => {
           agencyErtLeadsIds.forEach(agencyErtLeadId => {
             console.log(agencyErtLeadId);
-            this.af.database.object(agencyErtLeadsMessageRefPath + agencyErtLeadId.$key + '/' + key).set(true).then(_ => {
+            this.af.database.object(agencyErtLeadsMessageRefPath + agencyErtLeadId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
               console.log('Message id added to agency/ertleads group in messageRef');
             });
           });
@@ -164,7 +162,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         let subscription = agencyErts.subscribe(agencyErtsIds => {
           agencyErtsIds.forEach(agencyErtId => {
             console.log(agencyErtId);
-            this.af.database.object(agencyErtsMessageRefPath + agencyErtId.$key + '/' + key).set(true).then(_ => {
+            this.af.database.object(agencyErtsMessageRefPath + agencyErtId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
               console.log('Message id added to agency/erts group in messageRef');
             });
           });

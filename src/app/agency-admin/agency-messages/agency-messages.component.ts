@@ -62,61 +62,80 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   deleteMessage(sentMessage) {
 
-    // TODO - Delete all message references
     console.log("Delete button pressed");
     this.dialogService.createDialog("DELETE_MESSAGE_DIALOG.TITLE", "DELETE_MESSAGE_DIALOG.CONTENT").subscribe(result => {
 
-      if (result) {
+        if (result) {
 
-        let key: string = sentMessage.$key;
-        let agencyMessageRefPath: string = '/messageRef/agency/';
+          let key: string = sentMessage.$key;
 
-        this.msgData["/administratorAgency/" + this.uid + "/sentmessages/" + key] = null;
-        this.msgData["/message/" + key] = null;
+          this.msgData["/administratorAgency/" + this.uid + "/sentmessages/" + key] = null;
+          this.msgData["/message/" + key] = null;
 
-        let agencyAllUsersGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/agencyallusersgroup';
-        let agencyAllUsersMsgRefPath: string = "/messageRef/agency/" + this.uid + '/agencyallusersgroup/';
-        let agencyCountryAdminsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/countryadmins';
-        let agencyCountryAdminsMsgRef: string = "/messageRef/agency/" + this.uid + '/countryadmins/';
-        let agencyCountryDirectorsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/countrydirectors';
-        let agencyCountryDirectorsMsgRef: string = "/messageRef/agency/" + this.uid + '/countrydirectors/';
-        let agencyErtLeadsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/ertleads';
-        let agencyErtLeadsMsgRef: string = "/messageRef/agency/" + this.uid + '/ertleads/';
-        let agencyErtsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/erts';
-        let agencyErtsMsgRef: string = "/messageRef/agency/" + this.uid + '/erts/';
+          let agencyAllUsersGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/agencyallusersgroup';
+          let agencyCountryAdminsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/countryadmins';
+          let agencyCountryDirectorsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/countrydirectors';
+          let agencyErtLeadsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/ertleads';
+          let agencyErtsGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/erts';
 
-        let subscription = this.af.database.list(agencyAllUsersGroupPath)
-          .do(list => {
-            list.forEach(item => {
-              this.msgData[agencyAllUsersMsgRefPath + item.$key + "/" + key] = null;
-              console.log("item key: " + item.$key);
-            })
-          })
-          .subscribe(() => {
-            this.af.database.list(agencyCountryAdminsGroupPath)
-              .do(list => {
-                list.forEach(item => {
-                  this.msgData[agencyCountryAdminsMsgRef + item.$key + "/" + key] = null;
-                  console.log("item key: " + item.$key);
-                })
+          let agencyAllUsersMsgRefPath: string = "/messageRef/agency/" + this.uid + '/agencyallusersgroup/';
+          let agencyCountryAdminsMsgRef: string = "/messageRef/agency/" + this.uid + '/countryadmins/';
+          let agencyCountryDirectorsMsgRef: string = "/messageRef/agency/" + this.uid + '/countrydirectors/';
+          let agencyErtLeadsMsgRef: string = "/messageRef/agency/" + this.uid + '/ertleads/';
+          let agencyErtsMsgRef: string = "/messageRef/agency/" + this.uid + '/erts/';
+
+          let subscription = this.af.database.list(agencyAllUsersGroupPath)
+            .do(list => {
+              list.forEach(item => {
+                this.msgData[agencyAllUsersMsgRefPath + item.$key + "/" + key] = null;
+                console.log("Msg Ref Path - " + agencyAllUsersMsgRefPath + item.$key + "/" + key);
+
               })
-              .subscribe(() => {
-              this.af.database.object(Constants.APP_STATUS).update(this.msgData);
-              console.log("Message Ref successfully deleted from all nodes");
             })
-          })
-        this.subscriptions.add(subscription);
+            .subscribe(() => {
+              this.af.database.list(agencyCountryAdminsGroupPath)
+                .do(list => {
+                  list.forEach(item => {
+                    this.msgData[agencyCountryAdminsMsgRef + item.$key + "/" + key] = null;
+                  })
+                })
+                .subscribe(() => {
+                  this.af.database.list(agencyCountryDirectorsGroupPath)
+                    .do(list => {
+                      list.forEach(item => {
+                        this.msgData[agencyCountryDirectorsMsgRef + item.$key + "/" + key] = null;
+                      })
+                    })
+                    .subscribe(() => {
+                      this.af.database.list(agencyErtLeadsGroupPath)
+                        .do(list => {
+                          list.forEach(item => {
+                            this.msgData[agencyErtLeadsMsgRef + item.$key + "/" + key] = null;
+                          })
+                        })
+                        .subscribe(() => {
+                          this.af.database.list(agencyErtsGroupPath)
+                            .do(list => {
+                              list.forEach(item => {
+                                this.msgData[agencyErtsMsgRef + item.$key + "/" + key] = null;
+                              })
+                            })
+                            .subscribe(() => {
+                              this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+                                console.log("Message Ref successfully deleted from all nodes");
+                              }).catch(error => {
+                                console.log("Message deletion unsuccessful" + error);
+                              });
+                            })
+                        })
+                    })
+                })
+            });
+          this.subscriptions.add(subscription);
 
-        this.af.database.object(Constants.APP_STATUS).update(this.msgData)
-          .then(_ => {
-            console.log("Message successfully deleted from all nodes");
-
-          }).catch(error => {
-          console.log("Message deletion unsuccessful" + error);
-        });
+        }
       }
-
-    });
+    );
   }
 
   private navigateToLogin() {
