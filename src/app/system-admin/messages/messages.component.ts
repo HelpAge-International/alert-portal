@@ -36,7 +36,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
             let tempList = [];
             list.forEach(x => {
               tempList.push(x)
-            })
+            });
             return Observable.from(tempList)
           })
           .flatMap(item => {
@@ -44,7 +44,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
           }).distinctUntilChanged()
           .subscribe(x => {
               this.sentMessages.push(x);
-          })
+          });
         this.subscriptions.add(subscription);
       } else {
         // user is not logged in

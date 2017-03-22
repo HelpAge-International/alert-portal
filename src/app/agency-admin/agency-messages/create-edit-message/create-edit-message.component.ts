@@ -1,9 +1,9 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Router} from "@angular/router";
+import {AngularFire, FirebaseListObservable} from 'angularfire2';
+import {Router} from '@angular/router';
 import {Message} from '../../../model/message';
 import {Constants} from '../../../utils/Constants';
-import {RxHelper} from "../../../utils/RxHelper";
+import {RxHelper} from '../../../utils/RxHelper';
 
 @Component({
   selector: 'app-create-edit-message',
@@ -23,7 +23,9 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private countryDirectorsSelected: Boolean;
   private ertLeadsSelected: Boolean;
   private ertsSelected: Boolean;
-  private currentDateTimeInMilliseconds = new Date().getTime();
+  private currentDateTimeInMilliseconds;
+  private msgData = {};
+  private groups: string[] = [];
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -35,7 +37,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        console.log("uid: " + this.uid);
+        console.log('uid: ' + this.uid);
       } else {
         console.log("Error occurred - User isn't logged in");
         this.navigateToLogin();
@@ -44,6 +46,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.msgData = {};
     this.subscriptions.releaseAll();
   }
 
@@ -59,118 +62,80 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
   private createNewMessage() {
 
-    var newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
+    this.currentDateTimeInMilliseconds = new Date().getTime();
+
+    let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
     let newMessagePath = Constants.APP_STATUS + '/message';
 
     this.af.database.list(newMessagePath).push(newMessage)
       .then(msgId => {
         console.log('New Message added to message node');
 
-        var sentMsgPath = Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
-        this.af.database.object(sentMsgPath).set(true).then(_ => {
-            console.log('Message id added to agency admin');
-          }
-        );
+        let sentMsgPath = '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
+        this.msgData[sentMsgPath] = true;
         this.addMsgToMessageRef(msgId.key);
       });
   }
 
   private addMsgToMessageRef(key: string) {
 
-   let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
-    var agencyMessageRefPath: string = Constants.APP_STATUS + '/messageRef/agency/' + this.uid + '/';
+    let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
+    let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
     if (this.allUsersSelected) {
-      var agencyAllUsersSelected: string = agencyGroupPath + 'agencyallusersgroup/';
-      var agencyAllUsers: FirebaseListObservable<any> = this.af.database.list(agencyAllUsersSelected);
+      let agencyAllUsersSelected: string = agencyGroupPath + 'agencyallusersgroup/';
 
-      var agencyAllUsersMessageRefPath: string = agencyMessageRefPath + 'agencyallusersgroup/';
+      let agencyAllUsersMessageRefPath: string = agencyMessageRefPath + 'agencyallusersgroup/';
 
-      let subscription = agencyAllUsers.subscribe(agencyAllUsersIds => {
-        agencyAllUsersIds.forEach(agencyAllUsersId => {
-          console.log(agencyAllUsersId);
-          this.af.database.object(agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
-                console.log('Message id added to agency group in messageRef');
-              });
+      this.af.database.list(agencyAllUsersSelected)
+        .subscribe(agencyAllUsersIds => {
+          agencyAllUsersIds.forEach(agencyAllUsersId => {
+            this.msgData[agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
           });
-        });
-      this.subscriptions.add(subscription);
+
+          this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+            console.log("Message Ref successfully added to all nodes");
+            this.router.navigate(['/agency-admin/agency-messages']);
+          }).catch(error => {
+            console.log("Message deletion unsuccessful" + error);
+          });
+        })
 
     } else {
 
       if (this.countryAdminsSelected) {
-
-        var agencyCountryAdminsSelected: string = agencyGroupPath + 'countryadmins/';
-        var agencyCountryAdmins: FirebaseListObservable<any> = this.af.database.list(agencyCountryAdminsSelected);
-
-        var agencyCountryAdminsMessageRefPath: string = agencyMessageRefPath + 'countryadmins/';
-
-        let subscription = agencyCountryAdmins.subscribe(agencyCountryAdminsIds => {
-          agencyCountryAdminsIds.forEach(agencyCountryAdminId => {
-            console.log(agencyCountryAdminId);
-            this.af.database.object(agencyCountryAdminsMessageRefPath + agencyCountryAdminId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
-              console.log('Message id added to agency/countryAdmins group in messageRef');
-            });
-          });
-        });
-        this.subscriptions.add(subscription);
+        this.groups.push("countryadmins");
       }
-
       if (this.countryDirectorsSelected) {
-
-        var agencyCountryDirectorsSelected: string = agencyGroupPath + 'countrydirectors/';
-        var agencyCountryDirectors: FirebaseListObservable<any> = this.af.database.list(agencyCountryDirectorsSelected);
-
-        var agencyCountryDirectorsMessageRefPath: string = agencyMessageRefPath + 'countrydirectors/';
-
-        let subscription = agencyCountryDirectors.subscribe(agencyCountryDirectorsIds => {
-          agencyCountryDirectorsIds.forEach(agencyCountryDirectorId => {
-            console.log(agencyCountryDirectorId);
-            this.af.database.object(agencyCountryDirectorsMessageRefPath + agencyCountryDirectorId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
-              console.log('Message id added to agency/countrydirectors group in messageRef');
-            });
-          });
-        });
-        this.subscriptions.add(subscription);
+        this.groups.push("countrydirectors");
       }
-
       if (this.ertLeadsSelected) {
-
-        var agencyErtLeadsSelected: string = agencyGroupPath + 'ertleads/';
-        var agencyErtLeads: FirebaseListObservable<any> = this.af.database.list(agencyErtLeadsSelected);
-
-        var agencyErtLeadsMessageRefPath: string = agencyMessageRefPath + 'ertleads/';
-
-        let subscription = agencyErtLeads.subscribe(agencyErtLeadsIds => {
-          agencyErtLeadsIds.forEach(agencyErtLeadId => {
-            console.log(agencyErtLeadId);
-            this.af.database.object(agencyErtLeadsMessageRefPath + agencyErtLeadId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
-              console.log('Message id added to agency/ertleads group in messageRef');
-            });
-          });
-        });
-        this.subscriptions.add(subscription);
+        this.groups.push("ertleads");
+      }
+      if (this.ertsSelected) {
+        this.groups.push("erts");
       }
 
-      if (this.ertsSelected) {
+      for (let group of this.groups) {
 
-        var agencyErtsSelected: string = agencyGroupPath + 'erts/';
-        var agencyErts: FirebaseListObservable<any> = this.af.database.list(agencyErtsSelected);
-
-        var agencyErtsMessageRefPath: string = agencyMessageRefPath + 'erts/';
-
-        let subscription = agencyErts.subscribe(agencyErtsIds => {
-          agencyErtsIds.forEach(agencyErtId => {
-            console.log(agencyErtId);
-            this.af.database.object(agencyErtsMessageRefPath + agencyErtId.$key + '/' + key).set(this.currentDateTimeInMilliseconds).then(_ => {
-              console.log('Message id added to agency/erts group in messageRef');
-            });
+        let path = agencyGroupPath + group;
+        let subscription = this.af.database.list(path).subscribe(list => {
+          list.forEach(item => {
+            this.msgData[agencyMessageRefPath + group + '/' + item.$key + '/' + key] = this.currentDateTimeInMilliseconds;
           });
+
+          if (this.groups.indexOf(group) == this.groups.length-1) {
+            this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+              console.log("Message Ref successfully added to all nodes");
+              this.router.navigate(['/agency-admin/agency-messages']);
+            }).catch(error => {
+              console.log("Message deletion unsuccessful" + error);
+            });
+          }
         });
         this.subscriptions.add(subscription);
       }
     }
-
   }
 
   /**
@@ -181,14 +146,14 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private validate() {
 
     if (!Boolean(this.messageTitle)) {
-      this.errorMessage = "MESSAGES.NO_TITLE_ERROR";
+      this.errorMessage = 'MESSAGES.NO_TITLE_ERROR';
       return false;
     } else if (!Boolean(this.messageContent)) {
-      this.errorMessage = "MESSAGES.NO_CONTENT_ERROR";
+      this.errorMessage = 'MESSAGES.NO_CONTENT_ERROR';
       return false;
     } else if ((!this.allUsersSelected) && (!this.countryAdminsSelected) && (!this.countryDirectorsSelected)
       && (!this.ertLeadsSelected) && (!this.ertsSelected)) {
-      this.errorMessage = "MESSAGES.NO_RECIPIENTS_ERROR";
+      this.errorMessage = 'MESSAGES.NO_RECIPIENTS_ERROR';
       return false;
     }
     return true;
