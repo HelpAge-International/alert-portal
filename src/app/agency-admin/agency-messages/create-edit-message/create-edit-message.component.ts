@@ -65,9 +65,9 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     this.currentDateTimeInMilliseconds = new Date().getTime();
 
     let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
-    let newMessagePath = Constants.APP_STATUS + '/message';
+    let messagePath = Constants.APP_STATUS + '/message';
 
-    this.af.database.list(newMessagePath).push(newMessage)
+    this.af.database.list(messagePath).push(newMessage)
       .then(msgId => {
         console.log('New Message added to message node');
 
@@ -83,8 +83,8 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
     if (this.allUsersSelected) {
-      let agencyAllUsersSelected: string = agencyGroupPath + 'agencyallusersgroup/';
 
+      let agencyAllUsersSelected: string = agencyGroupPath + 'agencyallusersgroup/';
       let agencyAllUsersMessageRefPath: string = agencyMessageRefPath + 'agencyallusersgroup/';
 
       this.af.database.list(agencyAllUsersSelected)
@@ -97,23 +97,23 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
             console.log("Message Ref successfully added to all nodes");
             this.router.navigate(['/agency-admin/agency-messages']);
           }).catch(error => {
-            console.log("Message deletion unsuccessful" + error);
+            console.log("Message creation unsuccessful" + error);
           });
         })
 
     } else {
 
       if (this.countryAdminsSelected) {
-        this.groups.push("countryadmins");
+        this.groups.push('countryadmins');
       }
       if (this.countryDirectorsSelected) {
-        this.groups.push("countrydirectors");
+        this.groups.push('countrydirectors');
       }
       if (this.ertLeadsSelected) {
-        this.groups.push("ertleads");
+        this.groups.push('ertleads');
       }
       if (this.ertsSelected) {
-        this.groups.push("erts");
+        this.groups.push('erts');
       }
 
       for (let group of this.groups) {
@@ -129,7 +129,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
               console.log("Message Ref successfully added to all nodes");
               this.router.navigate(['/agency-admin/agency-messages']);
             }).catch(error => {
-              console.log("Message deletion unsuccessful" + error);
+              console.log("Message creation unsuccessful" + error);
             });
           }
         });
