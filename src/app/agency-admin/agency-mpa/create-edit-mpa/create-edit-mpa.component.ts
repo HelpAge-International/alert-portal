@@ -5,6 +5,7 @@ import {MandatedPreparednessAction} from '../../../model/mandatedPA';
 import {Constants} from '../../../utils/Constants';
 import {ActionType, Department, ActionLevel} from '../../../utils/Enums';
 import {RxHelper} from "../../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-edit-mpa',
@@ -12,7 +13,6 @@ import {RxHelper} from "../../../utils/RxHelper";
   styleUrls: ['create-edit-mpa.component.css']
 })
 
-// TODO - Add department
 export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -78,6 +78,9 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       }
     } else {
       this.inactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      })
     }
   }
 
@@ -87,6 +90,15 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   apaSelected() {
     this.isMpa = false;
+  }
+
+  checkDepartmentSelected() {
+
+    // TODO - Add department here when front end (Add department model) is available
+    // TODO - Departments may need to be saved under the agency as a list of strings (not enum values)
+    if (this.departmentSelected == 'addNewDepartment') {
+      console.log("Add new department selected");
+    }
   }
 
   private navigateToLogin() {

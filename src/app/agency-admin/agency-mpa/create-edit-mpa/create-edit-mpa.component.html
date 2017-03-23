@@ -41,9 +41,9 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 col-sm-12">
             <label for="Department">{{"AGENCY_MANDATED_PA.DEPARTMENT" | translate}}</label>
-            <select class="form-control" id="Department" [(ngModel)]="departmentSelected">
+            <select class="form-control" id="Department" [(ngModel)]="departmentSelected" (change)="checkDepartmentSelected()">
               <option *ngFor="let department of keys()">{{department}}</option>
-              <option value="modal-trigger">{{"AGENCY_MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
+              <option value="addNewDepartment">{{"AGENCY_MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
             </select>
           </div>
         </div>

@@ -4,6 +4,7 @@ import {Router} from '@angular/router';
 import {Message} from '../../../model/message';
 import {Constants} from '../../../utils/Constants';
 import {RxHelper} from '../../../utils/RxHelper';
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-edit-message',
@@ -57,6 +58,9 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       this.inactive = true;
     } else {
       this.inactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      })
     }
   }
 

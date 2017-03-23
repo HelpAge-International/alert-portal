@@ -62,8 +62,15 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
   }
 
   private initData(uid) {
-    this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe((x: ModelSystem) => {
-      this.modelSystem = x;
+    this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe(x => {
+      this.modelSystem = new ModelSystem();
+      this.modelSystem.advThreshold = x.advThreshold;
+      this.modelSystem.minThreshold = x.minThreshold;
+      this.modelSystem.assignHazard = x.assignHazard;
+      this.modelSystem.fileSettings = x.fileSettings;
+      this.modelSystem.fileSize = x.fileSize;
+      this.modelSystem.fileType = x.fileType;
+      this.modelSystem.genericAction = x.genericAction;
       // console.log(x.fileSettings[FILE_SETTING.PNG])
       //load minimum threshold from database
       this.minGreen = x.minThreshold[0];
@@ -116,7 +123,7 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
 
     this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).set(this.modelSystem).then(_ => {
       this.isSaved = true;
-      Observable.timer(2000).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
         console.log("time up");
         this.isSaved = false;
       })

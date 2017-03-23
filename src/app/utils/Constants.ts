@@ -10,6 +10,7 @@ export class Constants {
   static SYSTEM_ADMIN_HOME = "/system-admin";
   static AGENCY_ADMIN_HOME = "/agency-admin/country-office";
   static AGENCY_ADMIN_ADD_STARFF = "/agency-admin/staff/create-edit-staff";
+  static ALERT_DURATION: number = 5000;
 
   /*LIST VALUES FRO TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];

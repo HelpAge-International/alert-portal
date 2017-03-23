@@ -13,16 +13,15 @@
       <div class="col-lg-1 col-md-2 col-sm-2">
         <p>{{"GLOBAL.FILTER"| translate}}</p>
       </div>
-      <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" id="Min-prep">
-          <option value="C-val-1">Preparedness</option>
-          <option value="C-val-2">MPA</option>
-          <option value="C-val-3">APA</option>
+      <div class="col-lg-3 col-md-4">
+        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="checkActionLevelFilter()">
+          <option value="allActionLevels">All action levels</option>
+          <option *ngFor="let actionLevel of actionLevelsKeys()">{{actionLevel}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" id="Departments">
-          <option value="C-val-2">All departments</option>
+        <select class="form-control" [(ngModel)]="departmentSelected" (change)="checkDepartmentFilter()">
+          <option value="allDepartments">All departments</option>
           <option *ngFor="let department of keys()">{{department}}</option>
         </select>
       </div>

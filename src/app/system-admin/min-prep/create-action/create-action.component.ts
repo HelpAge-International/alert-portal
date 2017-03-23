@@ -5,6 +5,7 @@ import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction'
 import {Constants} from '../../../utils/Constants';
 import {ActionType} from '../../../utils/Enums';
 import {RxHelper} from "../../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-action',
@@ -69,6 +70,9 @@ export class CreateActionComponent implements OnInit, OnDestroy {
       }
     } else {
       this.inactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      })
     }
   }
 

@@ -20,9 +20,16 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private Department = Department;
   private ActionLevel = ActionLevel;
   private subscriptions: RxHelper;
+  private departmentSelected;
+  private actionLevelSelected;
   departments = Department;
   keys(): Array<string> {
     var keys = Object.keys(this.departments);
+    return keys.slice(keys.length / 2);
+  }
+  actionLevels = ActionLevel;
+  actionLevelsKeys(): Array<string> {
+    var keys = Object.keys(this.actionLevels);
     return keys.slice(keys.length / 2);
   }
 
@@ -49,6 +56,14 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+  }
+
+  checkActionLevelFilter() {
+    console.log("Action level selected - " + this.actionLevelSelected);
+  }
+
+  checkDepartmentFilter() {
+    console.log("Department selected - " + this.departmentSelected);
   }
 
   deleteAction(actionKey) {
