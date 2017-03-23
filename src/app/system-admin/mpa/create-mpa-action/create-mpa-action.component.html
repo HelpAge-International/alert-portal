@@ -1,8 +1,9 @@
-
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
-<div class="Alert-error" [hidden]="hideError">{{warningMessage | translate}}</div>
+<div class="Alert-error" [hidden]="actionForm.untouched && hideError || actionForm.form.valid && hideError">
+  {{warningMessage | translate}}
+</div>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -42,7 +43,8 @@
 
           <div class="Form-submit__wrapper">
             <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
-            <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="savePressed()">Save new action</button>
+            <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="savePressed()">Save new action
+            </button>
             <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="savePressed()">Edit action</button>
           </div>
 

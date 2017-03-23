@@ -6713,8 +6713,8 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   }
 }
 
-.Notification, .Notification-success, .Notification-warning, .Notification-danger {
-  position: relative;
+.Alert, .Alert-success, .Alert-warning, .Alert-error {
+  position: fixed;
   width: 100%;
   color: #fff;
   z-index: 9;
@@ -6735,22 +6735,28 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   -webkit-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out
+  transition: all 0.2s ease-in-out;
 }
 
-.Notification-success {
+.Alert-success {
   background: #46aa31
 }
 
-.Notification-warning {
+.Alert-warning {
   background: #f0ad4e
 }
 
-.Notification-danger {
+.Alert-error {
   background: #e10514
 }
 
-.Notification.Inactive, .Inactive.Notification-success, .Inactive.Notification-warning, .Inactive.Notification-danger {
+html.W-Sticky-nav--enabled .Alert-success,
+html.W-Sticky-nav--enabled .Alert-warning,
+html.W-Sticky-nav--enabled .Alert-error{
+  top:55px;
+}
+
+.Alert.Inactive, .Inactive.Alert-success, .Inactive.Alert-warning, .Inactive.Alert-error {
   height: 0;
   overflow: hidden;
   opacity: 0
