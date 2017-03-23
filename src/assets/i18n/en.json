@@ -33,8 +33,8 @@
     "SUCCESS_MESSAGE": "Password reset email sent to "
   },
   "MENU": {
-    "HOME": "Home",
-    "NETWORK": "Networks",
+    "HOME": "Agencies",
+    "NETWORK": "Global Networks",
     "CHS": "CHS Minimum Preparedness Actions",
     "MPAAPA": "Generic MPA/APAs",
     "SETTING": "System Settings",

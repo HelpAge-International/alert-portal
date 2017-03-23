@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="39px" height="35px" viewBox="0 0 39 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>Fill 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="01-Dashboard-(START-HERE)" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Home" transform="translate(-467.000000, -190.000000)" fill="#FFFFFF">
+            <g id="Country-Overview" transform="translate(15.000000, 137.000000)">
+                <g id="tick-green" transform="translate(430.000000, 11.000000)">
+                    <path d="M36.894634,76.0852687 C35.7875928,76.0852687 34.7330097,75.6036603 34.0078871,74.7622005 L22.9241183,61.9006618 C21.5501406,60.3060114 21.728808,57.8997114 23.3232649,56.5257337 C24.9175281,55.151756 27.3240216,55.3304234 28.6979994,56.9248802 L36.7151923,66.2279754 L54.062387,43.4990776 C55.3395785,41.8260303 57.7309733,41.5046999 59.4040206,42.7816978 C61.0772615,44.0586957 61.3983983,46.4502842 60.1214004,48.1233314 L39.9242375,74.5864367 C39.2273764,75.4995183 38.1559526,76.0494578 37.007874,76.0835265 C36.9701273,76.084688 36.9321871,76.0852687 36.894634,76.0852687" id="Fill-3"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

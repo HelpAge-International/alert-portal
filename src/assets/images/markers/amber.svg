@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="31px" height="56px" viewBox="0 0 31 56" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>Imported Layers</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M497.740661,642.249333 C500.313179,638.249333 500.61365,635.873333 500.61365,632.666667 C500.61365,624.566667 493.495664,618 485.263606,618 C476.928648,618 470,624.566667 470,632.666667 C470,635.873333 470.257938,638.249333 472.830456,642.249333 C473.976084,644.033333 485.263606,655.666667 485.263606,673.5 C485.263606,655.666667 496.593661,644.033333 497.740661,642.249333 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="30.6136495" height="55.5" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+    </defs>
+    <g id="06-MAP" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-opacity="0.2" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Map---PH-highlight" transform="translate(-470.000000, -618.000000)" stroke="#000000" stroke-width="2" fill="#F3A500">
+            <use id="Imported-Layers" mask="url(#mask-2)" xlink:href="#path-1"></use>
+        </g>
+    </g>
+</svg>
