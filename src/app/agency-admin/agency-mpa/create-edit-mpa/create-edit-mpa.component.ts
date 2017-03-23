@@ -109,10 +109,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
     let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: MandatedPreparednessAction) => {
       this.textArea = action.task;
-      console.log(action.level);
-      console.log(ActionLevel.MPA);
       this.isMpa = action.level == ActionLevel.MPA ? true : false;
-      console.log(this.isMpa);
       this.departmentSelected = Department[action.department];
     });
     this.subscriptions.add(subscription);
@@ -120,10 +117,9 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private addNewMandatedPA() {
 
-    var level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    console.log(level);
+    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
+    let newAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, Department[this.departmentSelected], level);
 
-    var newAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, Department[this.departmentSelected], level);
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
           console.log('New CHS action added');
@@ -133,8 +129,10 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   }
 
   private editMandatedPA() {
-    var level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    var editedAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, Department[this.departmentSelected], level);
+
+    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
+    let editedAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, Department[this.departmentSelected], level);
+
     this.af.database.object(this.path + "/" + this.idOfMpaToEdit).set(editedAction).then(_ => {
         console.log('Mandated action updated');
         this.router.navigateByUrl("/agency-admin/agency-mpa");

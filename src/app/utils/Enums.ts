@@ -14,6 +14,15 @@ export enum ActionType {
   custom = 2
 }
 
+// TODO - Update when Ryan provides actual category names
+export enum GenericActionCategory {
+  Category0 = 0,
+  Category1 = 1,
+  Category2 = 2,
+  Category3 = 3,
+  Category4 = 4
+}
+
 export enum ActionLevel {
   MPA = 0,
   APA = 1

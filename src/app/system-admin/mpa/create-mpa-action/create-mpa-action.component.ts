@@ -1,111 +1,143 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
+import {GenericMpaOrApaAction} from '../../../model/genericMPAAPA';
 import {Constants} from "../../../utils/Constants";
-import {Action} from "../../../model/action";
-import {ActionType, ActionLevel} from "../../../utils/Enums";
+import {ActionType, ActionLevel, GenericActionCategory} from "../../../utils/Enums";
 import {RxHelper} from "../../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-mpa-action',
   templateUrl: './create-mpa-action.component.html',
   styleUrls: ['./create-mpa-action.component.css']
 })
+
 export class CreateMpaActionComponent implements OnInit,OnDestroy {
-  title: string = "Create new generic MPA/APA";
-  actionDetail: string;
-  mpa: boolean = true;
-  warningMessage: string = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
-  private uid: string;
-  private actionId: string;
-  private isEdit: boolean;
-  private modelAction: Action;
-  private subscriptions:RxHelper;
+
+  private inactive: Boolean = true;
+  private errorMessage: any;
+  private pageTitle: string = 'GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
+  private buttonText: string = 'GENERIC_MPA_APA.SAVE_BUTTON_TEXT';
+  private textArea: string;
+  private category: string;
+  private path: string;
+  private isMpa: boolean = true;
+  private forEditing: Boolean = false;
+  private idOfGenericActionToEdit: string;
+  private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = new RxHelper();
+    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.route.params.subscribe((params: Params) => {
-          if (params["id"]) {
-            this.actionId = params["id"];
-            this.isEdit = true;
-            this.title = "Edit generic MPA/APA";
-            console.log(this.actionId);
-            this.loadActionInfo(this.actionId);
-          }
-        });
+
+    let subscription = this.af.auth.subscribe(auth => {
+      if (auth) {
+        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
+        console.log("uid: " + auth.uid);
       } else {
-        this.backToLogin();
+        console.log("Error occurred - User isn't logged in");
+        this.navigateToLogin();
       }
     });
+
+    let subscriptionEdit = this.route.params
+      .subscribe((params: Params) => {
+        if (params["id"]) {
+          this.forEditing = true;
+          this.pageTitle = 'GENERIC_MPA_APA.EDIT_MPA_APA';
+          this.buttonText = 'GENERIC_MPA_APA.EDIT_BUTTON_TEXT';
+          this.loadGenericActionInfo(params["id"]);
+          this.idOfGenericActionToEdit = params["id"];
+        }
+      });
     this.subscriptions.add(subscription);
+    this.subscriptions.add(subscriptionEdit);
   }
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+
   }
 
-  private loadActionInfo(actionId: string) {
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + "/" + actionId).subscribe((action: Action) => {
-      this.modelAction = action;
-      this.actionDetail = action.task;
-      this.mpa = action.level == ActionLevel.MPA ? true : false;
+  onSubmit() {
+    if (this.validate()) {
+
+      if (this.forEditing) {
+        this.editGenericAction();
+      } else {
+        this.addNewGenericAction();
+        this.inactive = true;
+      }
+    } else {
+      this.inactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      })
+    }
+  }
+
+  mpaSelected() {
+    this.isMpa = true;
+  }
+
+  apaSelected() {
+    this.isMpa = false;
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  private loadGenericActionInfo(actionId: string) {
+    let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: GenericMpaOrApaAction) => {
+      this.textArea = action.task;
+      this.isMpa = action.level == ActionLevel.MPA ? true : false;
+      this.category = GenericMpaOrApaAction[action.category];
     });
     this.subscriptions.add(subscription);
   }
 
-  selectMpa() {
-    console.log("mpa");
-    this.mpa = true;
+  private addNewGenericAction() {
+
+    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
+
+    let newAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.category]);
+
+    this.af.database.list(this.path).push(newAction)
+      .then(_ => {
+          console.log('New Generic action added');
+          this.router.navigateByUrl("/system-admin/mpa");
+        }
+      );
   }
 
-  selectApa() {
-    console.log("apa");
-    this.mpa = false;
-  }
+  private editGenericAction() {
 
-  onSubmit() {
-    console.log("submit action");
-    if (this.uid) {
-      if (this.isEdit) {
-        this.updateAction();
-      } else {
-        this.createNewAction();
+    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
+    let editedAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.category]);
+
+    this.af.database.object(this.path + "/" + this.idOfGenericActionToEdit).set(editedAction).then(_ => {
+        console.log('Generic action updated');
+        this.router.navigateByUrl("/system-admin/mpa");
       }
+    );
+  }
+
+  /**
+   * Returns false and specific error messages-
+   * if no input is entered
+   * @returns {boolean}
+   */
+  private validate() {
+
+    if (!Boolean(this.textArea)) {
+      this.errorMessage = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
+      return false;
     }
+    return true;
   }
 
-  private createNewAction() {
-    let action: Action = new Action();
-    action.task = this.actionDetail;
-    action.type = ActionType.mandated;
-    action.level = this.mpa ? ActionLevel.MPA : ActionLevel.APA;
-    this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid).push(action).then(success => {
-      this.router.navigateByUrl(Constants.DEFAULT_MPA_PATH);
-    });
-  }
-
-  private updateAction() {
-    if (this.modelAction && this.actionId) {
-      this.modelAction.task = this.actionDetail;
-      this.modelAction.level = this.mpa ? ActionLevel.MPA : ActionLevel.APA;
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + "/" + this.actionId)
-        .set(this.modelAction).then(success => {
-        this.router.navigateByUrl(Constants.DEFAULT_MPA_PATH);
-      });
-    }
-  }
-
-  back() {
-    this.router.navigateByUrl(Constants.DEFAULT_MPA_PATH);
-  }
-
-  backToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
 }

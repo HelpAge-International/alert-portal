@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {ActionType, ActionLevel} from "../../utils/Enums";
+import {ActionType, GenericActionCategory} from "../../utils/Enums";
 import {Router} from "@angular/router";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
@@ -16,7 +16,7 @@ export class MpaComponent implements OnInit,OnDestroy {
   private uid: string;
   actions: FirebaseListObservable<any>;
   ActionType = ActionType;
-  ActionLevel = ActionLevel;
+  GenericActionCategory = GenericActionCategory;
   private subscriptions:RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
@@ -30,7 +30,7 @@ export class MpaComponent implements OnInit,OnDestroy {
         this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
           query: {
             orderByChild: "type",
-            equalTo: 1
+            equalTo: ActionType.mandated
           }
         });
       } else {

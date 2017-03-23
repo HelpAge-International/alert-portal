@@ -7,7 +7,29 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>Generic MPA/APAs</h1>
+      <!--<i class="fa fa-question-circle fa-2x text-primary Tooltip" data-toggle="tooltip"-->
+      <!--data-placement="top" title="Tooltip on top" aria-hidden="true"></i>-->
       <a routerLink="/system-admin/mpa/create" class="btn btn-primary">Create new action</a>
+    </div>
+
+    <div class="row align-items-center Filter-form System-admin--form-wrap">
+      <div class="col-lg-1 col-md-1 col-sm-1">
+        Filter:
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5">
+        <select class="form-control" id="level">
+          <option value="" disabled selected hidden>All levels</option>
+          <option value="min-prep">Minimum preparedness</option>
+          <option value="adv-prep">Advanced preparedness</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5 ">
+        <select class="form-control" id="Category">
+          <option value="" disabled selected hidden>All categories</option>
+          <option value="HR">HR</option>
+          <option value="Logistics">Logistics</option>
+        </select>
+      </div>
     </div>
 
     <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No default minimum preparedness or advanced
@@ -18,8 +40,7 @@
     <div class="Data--ribbon" *ngFor="let action of actions | async">
       <div class="col-sm-9 ">
         <p>{{action.task}}</p>
-        <p>type: <b>{{ActionType[action.type]}}</b></p>
-        <p>level: <b>{{ActionLevel[action.level]}}</b></p>
+        <p>Category: <b>{{GenericActionCategory[action.category]}}</b></p>
       </div>
       <div class="col-lg-3 Right-aligned">
         <div class="btn btn-danger" (click)="delete(action.$key)">Delete</div>

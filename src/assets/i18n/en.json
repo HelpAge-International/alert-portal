@@ -33,7 +33,7 @@
     "SUCCESS_MESSAGE": "Password reset email sent to "
   },
   "MENU": {
-    "HOME": "Home",
+    "AGENCIES": "Agencies",
     "NETWORK": "Networks",
     "CHS": "CHS Minimum Preparedness Actions",
     "MPAAPA": "Generic MPA/APAs",
@@ -112,13 +112,14 @@
     "CREATE_NEW_ACTION": "Create new action",
     "LEVEL": "Level",
     "CREATE_NEW_GENERIC_MPA": "Create new generic MPA/APA",
-    "MPA_OR_APA": "Is this a minimum or advanced preparedness action?",
+    "MPA_OR_APA?": "Is this a minimum or advanced preparedness action?",
     "SAVE_BUTTON_TEXT": "Save new action",
+    "EDIT_MPA_APA": "Edit generic preparedness action",
     "EDIT_MPA_OR_APA": "MPA_OR_APA",
     "EDIT_BUTTON_TEXT": "Edit action",
     "MPA": "MPA",
     "APA": "APA",
-    "NO_CONTENT_ERROR": "Please insert the action content to create a new action"
+    "NO_CONTENT_ERROR": "Please insert the action content"
   },
   "MESSAGES": {
     "TITLE_TEXT": "System Messages",

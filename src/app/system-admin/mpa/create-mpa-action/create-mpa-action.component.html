@@ -1,54 +1,46 @@
-
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
-<div class="Alert-error" [hidden]="actionForm.untouched || actionForm.form.valid">{{warningMessage | translate}}</div>
+<div class="Alert-error" [hidden]="inactive">
+  {{errorMessage | translate}}
+</div>
 
-<!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-
-    <!--<div class="Back&#45;&#45;button">Generic MPA/APAs</div>-->
-
     <div class="Header-title__wrap">
-      <h1>{{title}}</h1>
+      <h1>{{pageTitle | translate}}</h1>
     </div>
 
-
-    <form (ngSubmit)="onSubmit()" #actionForm="ngForm">
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
-            <label for="n-Done">What needs to be done?</label>
-            <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" required
-                      [(ngModel)]="actionDetail"></textarea>
+            <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
+            <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" [(ngModel)]="textArea"></textarea>
           </div>
         </div>
       </div>
 
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
-          <p>Is this a minimum or advanced preparedness action?</p>
+          <p>{{"GENERIC_MPA_APA.MPA_OR_APA?" | translate}}</p>
 
           <div class="Radio--ribbon">
-            <label for="Min-prep">MPA</label>
-            <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="mpa" (change)="selectMpa()">
+            <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
+            <label for="Min-prep"> {{"GENERIC_MPA_APA.MPA" | translate}} </label>
           </div>
 
           <div class="Radio--ribbon">
-            <label for="Adv-prep">APA</label>
-            <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!mpa" (change)="selectApa()">
+            <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
+            <label for="Adv-prep"> {{"GENERIC_MPA_APA.APA" | translate}} </label>
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-outline-secondary" (click)="back()">Cancel</div>
-            <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!actionForm.form.valid">Save new action</button>
-            <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!actionForm.form.valid">Edit action</button>
+            <div class="btn btn-outline-secondary" routerLink="/system-admin/mpa">{{"GLOBAL.CANCEL" | translate}}</div>
+            <div class="btn btn-primary" (click)="onSubmit()">{{buttonText | translate}}</div>
           </div>
 
         </div>
       </div>
-    </form>
 
   </div>
 </div>
