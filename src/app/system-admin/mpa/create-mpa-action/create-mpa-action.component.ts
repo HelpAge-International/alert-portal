@@ -5,6 +5,7 @@ import {Constants} from "../../../utils/Constants";
 import {Action} from "../../../model/action";
 import {ActionType, ActionLevel} from "../../../utils/Enums";
 import {RxHelper} from "../../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-mpa-action',
@@ -13,6 +14,7 @@ import {RxHelper} from "../../../utils/RxHelper";
 })
 export class CreateMpaActionComponent implements OnInit,OnDestroy {
   title: string = "Create new generic MPA/APA";
+  hideError: boolean = true;
   actionDetail: string;
   mpa: boolean = true;
   warningMessage: string = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
@@ -20,7 +22,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private actionId: string;
   private isEdit: boolean;
   private modelAction: Action;
-  private subscriptions:RxHelper;
+  private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper();
@@ -78,6 +80,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
         this.createNewAction();
       }
     }
+
   }
 
   private createNewAction() {
@@ -97,6 +100,16 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + "/" + this.actionId)
         .set(this.modelAction).then(success => {
         this.router.navigateByUrl(Constants.DEFAULT_MPA_PATH);
+      });
+    }
+  }
+
+  savePressed() {
+    console.log("pressed");
+    this.hideError = this.actionDetail ? true : false;
+    if (!this.hideError) {
+      Observable.timer(Constants.ALERT_DURATION).subscribe(()=>{
+        this.hideError = true;
       });
     }
   }

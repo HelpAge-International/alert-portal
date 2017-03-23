@@ -22,6 +22,9 @@ export class Constants {
   static PERSON_TITLE_SELECTION:number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
   static COUNTRY:string[] = ["COMMON.COUNTRY.UK","COMMON.COUNTRY.FRANCE","COMMON.COUNTRY.GERMANY"];
   static COUNTRY_SELECTION = [Country.UK, Country.France, Country.Germany];
+
+  //OTHERS
+  static ALERT_DURATION = 5000;
 }
 
 export enum FILE_SETTING {

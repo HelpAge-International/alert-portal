@@ -62,8 +62,16 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
   }
 
   private initData(uid) {
-    this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe((x: ModelSystem) => {
-      this.modelSystem = x;
+    this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe(x => {
+      console.log(x)
+      this.modelSystem = new ModelSystem();
+      this.modelSystem.minThreshold = x.minThreshold;
+      this.modelSystem.advThreshold = x.advThreshold;
+      this.modelSystem.fileSettings = x.fileSettings;
+      this.modelSystem.fileSize = x.fileSize;
+      this.modelSystem.fileType = x.fileType;
+      this.modelSystem.assignHazard = x.assignHazard;
+      this.modelSystem.genericAction = x.genericAction;
       // console.log(x.fileSettings[FILE_SETTING.PNG])
       //load minimum threshold from database
       this.minGreen = x.minThreshold[0];
@@ -97,6 +105,7 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
   }
 
   private writeToFirebase() {
+    console.log("start write: "+JSON.stringify(this.modelSystem))
     this.modelSystem.minThreshold[0] = this.minGreen;
     this.modelSystem.minThreshold[1] = this.minAmber;
     this.modelSystem.minThreshold[2] = this.minRed;
@@ -114,7 +123,8 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
     this.modelSystem.fileSize = this.fileSize;
     this.modelSystem.fileType = this.fileType;
 
-    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).set(this.modelSystem).then(_ => {
+    console.log(this.modelSystem)
+    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + '/').set(this.modelSystem).then(() => {
       this.isSaved = true;
       Observable.timer(2000).subscribe(() => {
         console.log("time up");

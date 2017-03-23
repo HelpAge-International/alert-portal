@@ -55,7 +55,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
         function t(t, e) {
             for (var n = 0; n < e.length; n++) {
                 var i = e[n];
-                i.enumerable = i.enumerable || !1, i.configurable = !0, "value" in i && (i.writable = !0), 
+                i.enumerable = i.enumerable || !1, i.configurable = !0, "value" in i && (i.writable = !0),
                 Object.defineProperty(t, i.key, i);
             }
         }
@@ -114,7 +114,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             },
             getSelectorFromElement: function getSelectorFromElement(t) {
                 var e = t.getAttribute("data-target");
-                return e || (e = t.getAttribute("href") || "", e = /^#[a-z]/i.test(e) ? e : null), 
+                return e || (e = t.getAttribute("href") || "", e = /^#[a-z]/i.test(e) ? e : null),
                 e;
             },
             reflow: function reflow(t) {
@@ -186,7 +186,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 }
             } ]), e;
         }();
-        return t(document).on(d.CLICK_DATA_API, u.DISMISS, _._handleDismiss(new _())), t.fn[e] = _._jQueryInterface, 
+        return t(document).on(d.CLICK_DATA_API, u.DISMISS, _._handleDismiss(new _())), t.fn[e] = _._jQueryInterface,
         t.fn[e].Constructor = _, t.fn[e].noConflict = function() {
             return t.fn[e] = h, _._jQueryInterface;
         }, _;
@@ -217,11 +217,11 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                             var o = t(n).find(c.ACTIVE)[0];
                             o && t(o).removeClass(h.ACTIVE);
                         }
-                        e && (i.checked = !t(this._element).hasClass(h.ACTIVE), t(i).trigger("change")), 
+                        e && (i.checked = !t(this._element).hasClass(h.ACTIVE), t(i).trigger("change")),
                         i.focus();
                     }
                 }
-                this._element.setAttribute("aria-pressed", !t(this._element).hasClass(h.ACTIVE)), 
+                this._element.setAttribute("aria-pressed", !t(this._element).hasClass(h.ACTIVE)),
                 e && t(this._element).toggleClass(h.ACTIVE);
             }, e.prototype.dispose = function() {
                 t.removeData(this._element, r), this._element = null;
@@ -292,8 +292,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             DATA_RIDE: '[data-ride="carousel"]'
         }, T = function() {
             function h(e, i) {
-                n(this, h), this._items = null, this._interval = null, this._activeElement = null, 
-                this._isPaused = !1, this._isSliding = !1, this._config = this._getConfig(i), this._element = t(e)[0], 
+                n(this, h), this._items = null, this._interval = null, this._activeElement = null,
+                this._isPaused = !1, this._isSliding = !1, this._config = this._getConfig(i), this._element = t(e)[0],
                 this._indicatorsElement = t(this._element).find(v.INDICATORS)[0], this._addEventListeners();
             }
             return h.prototype.next = function() {
@@ -305,10 +305,10 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 if (this._isSliding) throw new Error("Carousel is sliding");
                 this._slide(p.PREVIOUS);
             }, h.prototype.pause = function(e) {
-                e || (this._isPaused = !0), t(this._element).find(v.NEXT_PREV)[0] && r.supportsTransitionEnd() && (r.triggerTransitionEnd(this._element), 
+                e || (this._isPaused = !0), t(this._element).find(v.NEXT_PREV)[0] && r.supportsTransitionEnd() && (r.triggerTransitionEnd(this._element),
                 this.cycle(!0)), clearInterval(this._interval), this._interval = null;
             }, h.prototype.cycle = function(t) {
-                t || (this._isPaused = !1), this._interval && (clearInterval(this._interval), this._interval = null), 
+                t || (this._isPaused = !1), this._interval && (clearInterval(this._interval), this._interval = null),
                 this._config.interval && !this._isPaused && (this._interval = setInterval((document.visibilityState ? this.nextWhenVisible : this.next).bind(this), this._config.interval));
             }, h.prototype.to = function(e) {
                 var n = this;
@@ -323,8 +323,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     this._slide(o, this._items[e]);
                 }
             }, h.prototype.dispose = function() {
-                t(this._element).off(l), t.removeData(this._element, a), this._items = null, this._config = null, 
-                this._element = null, this._interval = null, this._isPaused = null, this._isSliding = null, 
+                t(this._element).off(l), t.removeData(this._element, a), this._items = null, this._config = null,
+                this._element = null, this._interval = null, this._isPaused = null, this._isSliding = null,
                 this._activeElement = null, this._indicatorsElement = null;
             }, h.prototype._getConfig = function(n) {
                 return n = t.extend({}, _, n), r.typeCheckConfig(e, n, g), n;
@@ -371,7 +371,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 }
             }, h.prototype._slide = function(e, n) {
                 var i = this, o = t(this._element).find(v.ACTIVE_ITEM)[0], s = n || o && this._getItemByDirection(e, o), a = Boolean(this._interval), l = void 0, h = void 0, c = void 0;
-                if (e === p.NEXT ? (l = E.LEFT, h = E.NEXT, c = p.LEFT) : (l = E.RIGHT, h = E.PREV, 
+                if (e === p.NEXT ? (l = E.LEFT, h = E.NEXT, c = p.LEFT) : (l = E.RIGHT, h = E.PREV,
                 c = p.RIGHT), s && t(s).hasClass(E.ACTIVE)) return void (this._isSliding = !1);
                 var d = this._triggerSlideEvent(s, c);
                 if (!d.isDefaultPrevented() && o && s) {
@@ -380,13 +380,13 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                         relatedTarget: s,
                         direction: c
                     });
-                    r.supportsTransitionEnd() && t(this._element).hasClass(E.SLIDE) ? (t(s).addClass(h), 
+                    r.supportsTransitionEnd() && t(this._element).hasClass(E.SLIDE) ? (t(s).addClass(h),
                     r.reflow(s), t(o).addClass(l), t(s).addClass(l), t(o).one(r.TRANSITION_END, function() {
-                        t(s).removeClass(l + " " + h).addClass(E.ACTIVE), t(o).removeClass(E.ACTIVE + " " + h + " " + l), 
+                        t(s).removeClass(l + " " + h).addClass(E.ACTIVE), t(o).removeClass(E.ACTIVE + " " + h + " " + l),
                         i._isSliding = !1, setTimeout(function() {
                             return t(i._element).trigger(f);
                         }, 0);
-                    }).emulateTransitionEnd(u)) : (t(o).removeClass(E.ACTIVE), t(s).addClass(E.ACTIVE), 
+                    }).emulateTransitionEnd(u)) : (t(o).removeClass(E.ACTIVE), t(s).addClass(E.ACTIVE),
                     this._isSliding = !1, t(this._element).trigger(f)), a && this.cycle();
                 }
             }, h._jQueryInterface = function(e) {
@@ -405,7 +405,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     var i = t(n)[0];
                     if (i && t(i).hasClass(E.CAROUSEL)) {
                         var o = t.extend({}, t(i).data(), t(this).data()), s = this.getAttribute("data-slide-to");
-                        s && (o.interval = !1), h._jQueryInterface.call(t(i), o), s && t(i).data(a).to(s), 
+                        s && (o.interval = !1), h._jQueryInterface.call(t(i), o), s && t(i).data(a).to(s),
                         e.preventDefault();
                     }
                 }
@@ -455,9 +455,9 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             DATA_TOGGLE: '[data-toggle="collapse"]'
         }, E = function() {
             function l(e, i) {
-                n(this, l), this._isTransitioning = !1, this._element = e, this._config = this._getConfig(i), 
-                this._triggerArray = t.makeArray(t('[data-toggle="collapse"][href="#' + e.id + '"],' + ('[data-toggle="collapse"][data-target="#' + e.id + '"]'))), 
-                this._parent = this._config.parent ? this._getParent() : null, this._config.parent || this._addAriaAndCollapsedClass(this._element, this._triggerArray), 
+                n(this, l), this._isTransitioning = !1, this._element = e, this._config = this._getConfig(i),
+                this._triggerArray = t.makeArray(t('[data-toggle="collapse"][href="#' + e.id + '"],' + ('[data-toggle="collapse"][data-target="#' + e.id + '"]'))),
+                this._parent = this._config.parent ? this._getParent() : null, this._config.parent || this._addAriaAndCollapsedClass(this._element, this._triggerArray),
                 this._config.toggle && this.toggle();
             }
             return l.prototype.toggle = function() {
@@ -467,17 +467,17 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 if (this._isTransitioning) throw new Error("Collapse is transitioning");
                 if (!t(this._element).hasClass(g.SHOW)) {
                     var n = void 0, i = void 0;
-                    if (this._parent && (n = t.makeArray(t(this._parent).find(m.ACTIVES)), n.length || (n = null)), 
+                    if (this._parent && (n = t.makeArray(t(this._parent).find(m.ACTIVES)), n.length || (n = null)),
                     !(n && (i = t(n).data(a), i && i._isTransitioning))) {
                         var o = t.Event(_.SHOW);
                         if (t(this._element).trigger(o), !o.isDefaultPrevented()) {
                             n && (l._jQueryInterface.call(t(n), "hide"), i || t(n).data(a, null));
                             var s = this._getDimension();
-                            t(this._element).removeClass(g.COLLAPSE).addClass(g.COLLAPSING), this._element.style[s] = 0, 
-                            this._element.setAttribute("aria-expanded", !0), this._triggerArray.length && t(this._triggerArray).removeClass(g.COLLAPSED).attr("aria-expanded", !0), 
+                            t(this._element).removeClass(g.COLLAPSE).addClass(g.COLLAPSING), this._element.style[s] = 0,
+                            this._element.setAttribute("aria-expanded", !0), this._triggerArray.length && t(this._triggerArray).removeClass(g.COLLAPSED).attr("aria-expanded", !0),
                             this.setTransitioning(!0);
                             var h = function h() {
-                                t(e._element).removeClass(g.COLLAPSING).addClass(g.COLLAPSE).addClass(g.SHOW), e._element.style[s] = "", 
+                                t(e._element).removeClass(g.COLLAPSING).addClass(g.COLLAPSE).addClass(g.SHOW), e._element.style[s] = "",
                                 e.setTransitioning(!1), t(e._element).trigger(_.SHOWN);
                             };
                             if (!r.supportsTransitionEnd()) return void h();
@@ -493,8 +493,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     var n = t.Event(_.HIDE);
                     if (t(this._element).trigger(n), !n.isDefaultPrevented()) {
                         var i = this._getDimension(), o = i === p.WIDTH ? "offsetWidth" : "offsetHeight";
-                        this._element.style[i] = this._element[o] + "px", r.reflow(this._element), t(this._element).addClass(g.COLLAPSING).removeClass(g.COLLAPSE).removeClass(g.SHOW), 
-                        this._element.setAttribute("aria-expanded", !1), this._triggerArray.length && t(this._triggerArray).addClass(g.COLLAPSED).attr("aria-expanded", !1), 
+                        this._element.style[i] = this._element[o] + "px", r.reflow(this._element), t(this._element).addClass(g.COLLAPSING).removeClass(g.COLLAPSE).removeClass(g.SHOW),
+                        this._element.setAttribute("aria-expanded", !1), this._triggerArray.length && t(this._triggerArray).addClass(g.COLLAPSED).attr("aria-expanded", !1),
                         this.setTransitioning(!0);
                         var s = function s() {
                             e.setTransitioning(!1), t(e._element).removeClass(g.COLLAPSING).addClass(g.COLLAPSE).trigger(_.HIDDEN);
@@ -505,10 +505,10 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             }, l.prototype.setTransitioning = function(t) {
                 this._isTransitioning = t;
             }, l.prototype.dispose = function() {
-                t.removeData(this._element, a), this._config = null, this._parent = null, this._element = null, 
+                t.removeData(this._element, a), this._config = null, this._parent = null, this._element = null,
                 this._triggerArray = null, this._isTransitioning = null;
             }, l.prototype._getConfig = function(n) {
-                return n = t.extend({}, d, n), n.toggle = Boolean(n.toggle), r.typeCheckConfig(e, n, f), 
+                return n = t.extend({}, d, n), n.toggle = Boolean(n.toggle), r.typeCheckConfig(e, n, f),
                 n;
             }, l.prototype._getDimension = function() {
                 var e = t(this._element).hasClass(p.WIDTH);
@@ -529,7 +529,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             }, l._jQueryInterface = function(e) {
                 return this.each(function() {
                     var n = t(this), o = n.data(a), r = t.extend({}, d, n.data(), "object" === ("undefined" == typeof e ? "undefined" : i(e)) && e);
-                    if (!o && r.toggle && /show|hide/.test(e) && (r.toggle = !1), o || (o = new l(this, r), 
+                    if (!o && r.toggle && /show|hide/.test(e) && (r.toggle = !1), o || (o = new l(this, r),
                     n.data(a, o)), "string" == typeof e) {
                         if (void 0 === o[e]) throw new Error('No method named "' + e + '"');
                         o[e]();
@@ -591,7 +591,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 var r = {
                     relatedTarget: this
                 }, s = t.Event(_.SHOW, r);
-                return t(n).trigger(s), !s.isDefaultPrevented() && (this.focus(), this.setAttribute("aria-expanded", !0), 
+                return t(n).trigger(s), !s.isDefaultPrevented() && (this.focus(), this.setAttribute("aria-expanded", !0),
                 t(n).toggleClass(g.SHOW), t(n).trigger(t.Event(_.SHOWN, r)), !1);
             }, e.prototype.dispose = function() {
                 t.removeData(this._element, s), t(this._element).off(a), this._element = null;
@@ -615,7 +615,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                         };
                         if (t(s).hasClass(g.SHOW) && !(n && ("click" === n.type && /input|textarea/i.test(n.target.tagName) || "focusin" === n.type) && t.contains(s, n.target))) {
                             var l = t.Event(_.HIDE, a);
-                            t(s).trigger(l), l.isDefaultPrevented() || (o[r].setAttribute("aria-expanded", "false"), 
+                            t(s).trigger(l), l.isDefaultPrevented() || (o[r].setAttribute("aria-expanded", "false"),
                             t(s).removeClass(g.SHOW).trigger(t.Event(_.HIDDEN, a)));
                         }
                     }
@@ -624,7 +624,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 var n = void 0, i = r.getSelectorFromElement(e);
                 return i && (n = t(i)[0]), n || e.parentNode;
             }, e._dataApiKeydownHandler = function(n) {
-                if (/(38|40|27|32)/.test(n.which) && !/input|textarea/i.test(n.target.tagName) && (n.preventDefault(), 
+                if (/(38|40|27|32)/.test(n.which) && !/input|textarea/i.test(n.target.tagName) && (n.preventDefault(),
                 n.stopPropagation(), !this.disabled && !t(this).hasClass(g.DISABLED))) {
                     var i = e._getParentFromElement(this), o = t(i).hasClass(g.SHOW);
                     if (!o && n.which !== c || o && n.which === c) {
@@ -637,7 +637,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     var s = t(i).find(p.VISIBLE_ITEMS).get();
                     if (s.length) {
                         var a = s.indexOf(n.target);
-                        n.which === u && a > 0 && a--, n.which === d && a < s.length - 1 && a++, a < 0 && (a = 0), 
+                        n.which === u && a > 0 && a--, n.which === d && a < s.length - 1 && a++, a < 0 && (a = 0),
                         s[a].focus();
                     }
                 }
@@ -689,8 +689,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             FIXED_CONTENT: ".fixed-top, .fixed-bottom, .is-fixed, .sticky-top"
         }, v = function() {
             function h(e, i) {
-                n(this, h), this._config = this._getConfig(i), this._element = e, this._dialog = t(e).find(E.DIALOG)[0], 
-                this._backdrop = null, this._isShown = !1, this._isBodyOverflowing = !1, this._ignoreBackdropClick = !1, 
+                n(this, h), this._config = this._getConfig(i), this._element = e, this._dialog = t(e).find(E.DIALOG)[0],
+                this._backdrop = null, this._isShown = !1, this._isBodyOverflowing = !1, this._ignoreBackdropClick = !1,
                 this._isTransitioning = !1, this._originalBodyPadding = 0, this._scrollbarWidth = 0;
             }
             return h.prototype.toggle = function(t) {
@@ -702,8 +702,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 var i = t.Event(p.SHOW, {
                     relatedTarget: e
                 });
-                t(this._element).trigger(i), this._isShown || i.isDefaultPrevented() || (this._isShown = !0, 
-                this._checkScrollbar(), this._setScrollbar(), t(document.body).addClass(m.OPEN), 
+                t(this._element).trigger(i), this._isShown || i.isDefaultPrevented() || (this._isShown = !0,
+                this._checkScrollbar(), this._setScrollbar(), t(document.body).addClass(m.OPEN),
                 this._setEscapeEvent(), this._setResizeEvent(), t(this._element).on(p.CLICK_DISMISS, E.DATA_DISMISS, function(t) {
                     return n.hide(t);
                 }), t(this._dialog).on(p.MOUSEDOWN_DISMISS, function() {
@@ -719,24 +719,24 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 var i = r.supportsTransitionEnd() && t(this._element).hasClass(m.FADE);
                 i && (this._isTransitioning = !0);
                 var o = t.Event(p.HIDE);
-                t(this._element).trigger(o), this._isShown && !o.isDefaultPrevented() && (this._isShown = !1, 
-                this._setEscapeEvent(), this._setResizeEvent(), t(document).off(p.FOCUSIN), t(this._element).removeClass(m.SHOW), 
-                t(this._element).off(p.CLICK_DISMISS), t(this._dialog).off(p.MOUSEDOWN_DISMISS), 
+                t(this._element).trigger(o), this._isShown && !o.isDefaultPrevented() && (this._isShown = !1,
+                this._setEscapeEvent(), this._setResizeEvent(), t(document).off(p.FOCUSIN), t(this._element).removeClass(m.SHOW),
+                t(this._element).off(p.CLICK_DISMISS), t(this._dialog).off(p.MOUSEDOWN_DISMISS),
                 i ? t(this._element).one(r.TRANSITION_END, function(t) {
                     return n._hideModal(t);
                 }).emulateTransitionEnd(u) : this._hideModal());
             }, h.prototype.dispose = function() {
-                t.removeData(this._element, a), t(window, document, this._element, this._backdrop).off(l), 
-                this._config = null, this._element = null, this._dialog = null, this._backdrop = null, 
-                this._isShown = null, this._isBodyOverflowing = null, this._ignoreBackdropClick = null, 
+                t.removeData(this._element, a), t(window, document, this._element, this._backdrop).off(l),
+                this._config = null, this._element = null, this._dialog = null, this._backdrop = null,
+                this._isShown = null, this._isBodyOverflowing = null, this._ignoreBackdropClick = null,
                 this._originalBodyPadding = null, this._scrollbarWidth = null;
             }, h.prototype._getConfig = function(n) {
                 return n = t.extend({}, _, n), r.typeCheckConfig(e, n, g), n;
             }, h.prototype._showElement = function(e) {
                 var n = this, i = r.supportsTransitionEnd() && t(this._element).hasClass(m.FADE);
-                this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE || document.body.appendChild(this._element), 
-                this._element.style.display = "block", this._element.removeAttribute("aria-hidden"), 
-                this._element.scrollTop = 0, i && r.reflow(this._element), t(this._element).addClass(m.SHOW), 
+                this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE || document.body.appendChild(this._element),
+                this._element.style.display = "block", this._element.removeAttribute("aria-hidden"),
+                this._element.scrollTop = 0, i && r.reflow(this._element), t(this._element).addClass(m.SHOW),
                 this._config.focus && this._enforceFocus();
                 var o = t.Event(p.SHOWN, {
                     relatedTarget: e
@@ -761,9 +761,9 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 }) : t(window).off(p.RESIZE);
             }, h.prototype._hideModal = function() {
                 var e = this;
-                this._element.style.display = "none", this._element.setAttribute("aria-hidden", "true"), 
+                this._element.style.display = "none", this._element.setAttribute("aria-hidden", "true"),
                 this._isTransitioning = !1, this._showBackdrop(function() {
-                    t(document.body).removeClass(m.OPEN), e._resetAdjustments(), e._resetScrollbar(), 
+                    t(document.body).removeClass(m.OPEN), e._resetAdjustments(), e._resetScrollbar(),
                     t(e._element).trigger(p.HIDDEN);
                 });
             }, h.prototype._removeBackdrop = function() {
@@ -772,7 +772,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 var n = this, i = t(this._element).hasClass(m.FADE) ? m.FADE : "";
                 if (this._isShown && this._config.backdrop) {
                     var o = r.supportsTransitionEnd() && i;
-                    if (this._backdrop = document.createElement("div"), this._backdrop.className = m.BACKDROP, 
+                    if (this._backdrop = document.createElement("div"), this._backdrop.className = m.BACKDROP,
                     i && t(this._backdrop).addClass(i), t(this._backdrop).appendTo(document.body), t(this._element).on(p.CLICK_DISMISS, function(t) {
                         return n._ignoreBackdropClick ? void (n._ignoreBackdropClick = !1) : void (t.target === t.currentTarget && ("static" === n._config.backdrop ? n._element.focus() : n.hide()));
                     }), o && r.reflow(this._backdrop), t(this._backdrop).addClass(m.SHOW), !e) return;
@@ -789,7 +789,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 this._adjustDialog();
             }, h.prototype._adjustDialog = function() {
                 var t = this._element.scrollHeight > document.documentElement.clientHeight;
-                !this._isBodyOverflowing && t && (this._element.style.paddingLeft = this._scrollbarWidth + "px"), 
+                !this._isBodyOverflowing && t && (this._element.style.paddingLeft = this._scrollbarWidth + "px"),
                 this._isBodyOverflowing && !t && (this._element.style.paddingRight = this._scrollbarWidth + "px");
             }, h.prototype._resetAdjustments = function() {
                 this._element.style.paddingLeft = "", this._element.style.paddingRight = "";
@@ -874,9 +874,9 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
         }, m = function() {
             function h(e, i) {
                 var o = this;
-                n(this, h), this._element = e, this._scrollElement = "BODY" === e.tagName ? window : e, 
-                this._config = this._getConfig(i), this._selector = this._config.target + " " + g.NAV_LINKS + "," + (this._config.target + " " + g.DROPDOWN_ITEMS), 
-                this._offsets = [], this._targets = [], this._activeTarget = null, this._scrollHeight = 0, 
+                n(this, h), this._element = e, this._scrollElement = "BODY" === e.tagName ? window : e,
+                this._config = this._getConfig(i), this._selector = this._config.target + " " + g.NAV_LINKS + "," + (this._config.target + " " + g.DROPDOWN_ITEMS),
+                this._offsets = [], this._targets = [], this._activeTarget = null, this._scrollHeight = 0,
                 t(this._scrollElement).on(f.SCROLL, function(t) {
                     return o._process(t);
                 }), this.refresh(), this._process();
@@ -896,8 +896,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     e._offsets.push(t[0]), e._targets.push(t[1]);
                 });
             }, h.prototype.dispose = function() {
-                t.removeData(this._element, a), t(this._scrollElement).off(l), this._element = null, 
-                this._scrollElement = null, this._config = null, this._selector = null, this._offsets = null, 
+                t.removeData(this._element, a), t(this._scrollElement).off(l), this._element = null,
+                this._scrollElement = null, this._config = null, this._selector = null, this._offsets = null,
                 this._targets = null, this._activeTarget = null, this._scrollHeight = null;
             }, h.prototype._getConfig = function(n) {
                 if (n = t.extend({}, u, n), "string" != typeof n.target) {
@@ -917,7 +917,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     var i = this._targets[this._targets.length - 1];
                     return void (this._activeTarget !== i && this._activate(i));
                 }
-                if (this._activeTarget && t < this._offsets[0] && this._offsets[0] > 0) return this._activeTarget = null, 
+                if (this._activeTarget && t < this._offsets[0] && this._offsets[0] > 0) return this._activeTarget = null,
                 void this._clear();
                 for (var o = this._offsets.length; o--; ) {
                     var r = this._activeTarget !== this._targets[o] && t >= this._offsets[o] && (void 0 === this._offsets[o + 1] || t < this._offsets[o + 1]);
@@ -930,8 +930,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     return t + '[data-target="' + e + '"],' + (t + '[href="' + e + '"]');
                 });
                 var i = t(n.join(","));
-                i.hasClass(_.DROPDOWN_ITEM) ? (i.closest(g.DROPDOWN).find(g.DROPDOWN_TOGGLE).addClass(_.ACTIVE), 
-                i.addClass(_.ACTIVE)) : i.parents(g.LI).find("> " + g.NAV_LINKS).addClass(_.ACTIVE), 
+                i.hasClass(_.DROPDOWN_ITEM) ? (i.closest(g.DROPDOWN).find(g.DROPDOWN_TOGGLE).addClass(_.ACTIVE),
+                i.addClass(_.ACTIVE)) : i.parents(g.LI).find("> " + g.NAV_LINKS).addClass(_.ACTIVE),
                 t(this._scrollElement).trigger(f.ACTIVATE, {
                     relatedTarget: e
                 });
@@ -1029,7 +1029,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     var s = t(n.parentNode).find(f.DROPDOWN_ACTIVE_CHILD)[0];
                     s && t(s).removeClass(d.ACTIVE), n.setAttribute("aria-expanded", !1);
                 }
-                if (t(e).addClass(d.ACTIVE), e.setAttribute("aria-expanded", !0), i ? (r.reflow(e), 
+                if (t(e).addClass(d.ACTIVE), e.setAttribute("aria-expanded", !0), i ? (r.reflow(e),
                 t(e).addClass(d.SHOW)) : t(e).removeClass(d.FADE), e.parentNode && t(e.parentNode).hasClass(d.DROPDOWN_MENU)) {
                     var a = t(e).closest(f.DROPDOWN)[0];
                     a && t(a).find(f.DROPDOWN_TOGGLE).addClass(d.ACTIVE), e.setAttribute("aria-expanded", !0);
@@ -1116,8 +1116,8 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             MANUAL: "manual"
         }, I = function() {
             function h(t, e) {
-                n(this, h), this._isEnabled = !0, this._timeout = 0, this._hoverState = "", this._activeTrigger = {}, 
-                this._isTransitioning = !1, this._tether = null, this.element = t, this.config = this._getConfig(e), 
+                n(this, h), this._isEnabled = !0, this._timeout = 0, this._hoverState = "", this._activeTrigger = {},
+                this._isTransitioning = !1, this._tether = null, this.element = t, this.config = this._getConfig(e),
                 this.tip = null, this._setListeners();
             }
             return h.prototype.enable = function() {
@@ -1129,17 +1129,17 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             }, h.prototype.toggle = function(e) {
                 if (e) {
                     var n = this.constructor.DATA_KEY, i = t(e.currentTarget).data(n);
-                    i || (i = new this.constructor(e.currentTarget, this._getDelegateConfig()), t(e.currentTarget).data(n, i)), 
+                    i || (i = new this.constructor(e.currentTarget, this._getDelegateConfig()), t(e.currentTarget).data(n, i)),
                     i._activeTrigger.click = !i._activeTrigger.click, i._isWithActiveTrigger() ? i._enter(null, i) : i._leave(null, i);
                 } else {
                     if (t(this.getTipElement()).hasClass(m.SHOW)) return void this._leave(null, this);
                     this._enter(null, this);
                 }
             }, h.prototype.dispose = function() {
-                clearTimeout(this._timeout), this.cleanupTether(), t.removeData(this.element, this.constructor.DATA_KEY), 
-                t(this.element).off(this.constructor.EVENT_KEY), t(this.element).closest(".modal").off("hide.bs.modal"), 
-                this.tip && t(this.tip).remove(), this._isEnabled = null, this._timeout = null, 
-                this._hoverState = null, this._activeTrigger = null, this._tether = null, this.element = null, 
+                clearTimeout(this._timeout), this.cleanupTether(), t.removeData(this.element, this.constructor.DATA_KEY),
+                t(this.element).off(this.constructor.EVENT_KEY), t(this.element).closest(".modal").off("hide.bs.modal"),
+                this.tip && t(this.tip).remove(), this._isEnabled = null, this._timeout = null,
+                this._hoverState = null, this._activeTrigger = null, this._tether = null, this.element = null,
                 this.config = null, this.tip = null;
             }, h.prototype.show = function() {
                 var e = this;
@@ -1151,10 +1151,10 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     var i = t.contains(this.element.ownerDocument.documentElement, this.element);
                     if (n.isDefaultPrevented() || !i) return;
                     var o = this.getTipElement(), s = r.getUID(this.constructor.NAME);
-                    o.setAttribute("id", s), this.element.setAttribute("aria-describedby", s), this.setContent(), 
+                    o.setAttribute("id", s), this.element.setAttribute("aria-describedby", s), this.setContent(),
                     this.config.animation && t(o).addClass(m.FADE);
                     var a = "function" == typeof this.config.placement ? this.config.placement.call(this, o, this.element) : this.config.placement, l = this._getAttachment(a), c = this.config.container === !1 ? document.body : t(this.config.container);
-                    t(o).data(this.constructor.DATA_KEY, this).appendTo(c), t(this.element).trigger(this.constructor.Event.INSERTED), 
+                    t(o).data(this.constructor.DATA_KEY, this).appendTo(c), t(this.element).trigger(this.constructor.Event.INSERTED),
                     this._tether = new Tether({
                         attachment: l,
                         element: o,
@@ -1167,10 +1167,10 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                     }), r.reflow(o), this._tether.position(), t(o).addClass(m.SHOW);
                     var d = function d() {
                         var n = e._hoverState;
-                        e._hoverState = null, e._isTransitioning = !1, t(e.element).trigger(e.constructor.Event.SHOWN), 
+                        e._hoverState = null, e._isTransitioning = !1, t(e.element).trigger(e.constructor.Event.SHOWN),
                         n === g.OUT && e._leave(null, e);
                     };
-                    if (r.supportsTransitionEnd() && t(this.tip).hasClass(m.FADE)) return this._isTransitioning = !0, 
+                    if (r.supportsTransitionEnd() && t(this.tip).hasClass(m.FADE)) return this._isTransitioning = !0,
                     void t(this.tip).one(r.TRANSITION_END, d).emulateTransitionEnd(h._TRANSITION_DURATION);
                     d();
                 }
@@ -1178,13 +1178,13 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 var n = this, i = this.getTipElement(), o = t.Event(this.constructor.Event.HIDE);
                 if (this._isTransitioning) throw new Error("Tooltip is transitioning");
                 var s = function s() {
-                    n._hoverState !== g.SHOW && i.parentNode && i.parentNode.removeChild(i), n.element.removeAttribute("aria-describedby"), 
-                    t(n.element).trigger(n.constructor.Event.HIDDEN), n._isTransitioning = !1, n.cleanupTether(), 
+                    n._hoverState !== g.SHOW && i.parentNode && i.parentNode.removeChild(i), n.element.removeAttribute("aria-describedby"),
+                    t(n.element).trigger(n.constructor.Event.HIDDEN), n._isTransitioning = !1, n.cleanupTether(),
                     e && e();
                 };
-                t(this.element).trigger(o), o.isDefaultPrevented() || (t(i).removeClass(m.SHOW), 
-                this._activeTrigger[T.CLICK] = !1, this._activeTrigger[T.FOCUS] = !1, this._activeTrigger[T.HOVER] = !1, 
-                r.supportsTransitionEnd() && t(this.tip).hasClass(m.FADE) ? (this._isTransitioning = !0, 
+                t(this.element).trigger(o), o.isDefaultPrevented() || (t(i).removeClass(m.SHOW),
+                this._activeTrigger[T.CLICK] = !1, this._activeTrigger[T.FOCUS] = !1, this._activeTrigger[T.HOVER] = !1,
+                r.supportsTransitionEnd() && t(this.tip).hasClass(m.FADE) ? (this._isTransitioning = !0,
                 t(i).one(r.TRANSITION_END, s).emulateTransitionEnd(c)) : s(), this._hoverState = "");
             }, h.prototype.isWithContent = function() {
                 return Boolean(this.getTitle());
@@ -1192,14 +1192,14 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 return this.tip = this.tip || t(this.config.template)[0];
             }, h.prototype.setContent = function() {
                 var e = t(this.getTipElement());
-                this.setElementContent(e.find(E.TOOLTIP_INNER), this.getTitle()), e.removeClass(m.FADE + " " + m.SHOW), 
+                this.setElementContent(e.find(E.TOOLTIP_INNER), this.getTitle()), e.removeClass(m.FADE + " " + m.SHOW),
                 this.cleanupTether();
             }, h.prototype.setElementContent = function(e, n) {
                 var o = this.config.html;
                 "object" === ("undefined" == typeof n ? "undefined" : i(n)) && (n.nodeType || n.jquery) ? o ? t(n).parent().is(e) || e.empty().append(n) : e.text(t(n).text()) : e[o ? "html" : "text"](n);
             }, h.prototype.getTitle = function() {
                 var t = this.element.getAttribute("data-original-title");
-                return t || (t = "function" == typeof this.config.title ? this.config.title.call(this.element) : this.config.title), 
+                return t || (t = "function" == typeof this.config.title ? this.config.title.call(this.element) : this.config.title),
                 t;
             }, h.prototype.cleanupTether = function() {
                 this._tether && this._tether.destroy();
@@ -1227,21 +1227,21 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 }) : this._fixTitle();
             }, h.prototype._fixTitle = function() {
                 var t = i(this.element.getAttribute("data-original-title"));
-                (this.element.getAttribute("title") || "string" !== t) && (this.element.setAttribute("data-original-title", this.element.getAttribute("title") || ""), 
+                (this.element.getAttribute("title") || "string" !== t) && (this.element.setAttribute("data-original-title", this.element.getAttribute("title") || ""),
                 this.element.setAttribute("title", ""));
             }, h.prototype._enter = function(e, n) {
                 var i = this.constructor.DATA_KEY;
-                return n = n || t(e.currentTarget).data(i), n || (n = new this.constructor(e.currentTarget, this._getDelegateConfig()), 
-                t(e.currentTarget).data(i, n)), e && (n._activeTrigger["focusin" === e.type ? T.FOCUS : T.HOVER] = !0), 
-                t(n.getTipElement()).hasClass(m.SHOW) || n._hoverState === g.SHOW ? void (n._hoverState = g.SHOW) : (clearTimeout(n._timeout), 
+                return n = n || t(e.currentTarget).data(i), n || (n = new this.constructor(e.currentTarget, this._getDelegateConfig()),
+                t(e.currentTarget).data(i, n)), e && (n._activeTrigger["focusin" === e.type ? T.FOCUS : T.HOVER] = !0),
+                t(n.getTipElement()).hasClass(m.SHOW) || n._hoverState === g.SHOW ? void (n._hoverState = g.SHOW) : (clearTimeout(n._timeout),
                 n._hoverState = g.SHOW, n.config.delay && n.config.delay.show ? void (n._timeout = setTimeout(function() {
                     n._hoverState === g.SHOW && n.show();
                 }, n.config.delay.show)) : void n.show());
             }, h.prototype._leave = function(e, n) {
                 var i = this.constructor.DATA_KEY;
-                if (n = n || t(e.currentTarget).data(i), n || (n = new this.constructor(e.currentTarget, this._getDelegateConfig()), 
-                t(e.currentTarget).data(i, n)), e && (n._activeTrigger["focusout" === e.type ? T.FOCUS : T.HOVER] = !1), 
-                !n._isWithActiveTrigger()) return clearTimeout(n._timeout), n._hoverState = g.OUT, 
+                if (n = n || t(e.currentTarget).data(i), n || (n = new this.constructor(e.currentTarget, this._getDelegateConfig()),
+                t(e.currentTarget).data(i, n)), e && (n._activeTrigger["focusout" === e.type ? T.FOCUS : T.HOVER] = !1),
+                !n._isWithActiveTrigger()) return clearTimeout(n._timeout), n._hoverState = g.OUT,
                 n.config.delay && n.config.delay.hide ? void (n._timeout = setTimeout(function() {
                     n._hoverState === g.OUT && n.hide();
                 }, n.config.delay.hide)) : void n.hide();
@@ -1264,7 +1264,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
             }, h._jQueryInterface = function(e) {
                 return this.each(function() {
                     var n = t(this).data(a), o = "object" === ("undefined" == typeof e ? "undefined" : i(e)) && e;
-                    if ((n || !/dispose|hide/.test(e)) && (n || (n = new h(this, o), t(this).data(a, n)), 
+                    if ((n || !/dispose|hide/.test(e)) && (n || (n = new h(this, o), t(this).data(a, n)),
                     "string" == typeof e)) {
                         if (void 0 === n[e]) throw new Error('No method named "' + e + '"');
                         n[e]();
@@ -1346,14 +1346,14 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
                 return this.tip = this.tip || r(this.config.template)[0];
             }, u.prototype.setContent = function() {
                 var t = r(this.getTipElement());
-                this.setElementContent(t.find(g.TITLE), this.getTitle()), this.setElementContent(t.find(g.CONTENT), this._getContent()), 
+                this.setElementContent(t.find(g.TITLE), this.getTitle()), this.setElementContent(t.find(g.CONTENT), this._getContent()),
                 t.removeClass(_.FADE + " " + _.SHOW), this.cleanupTether();
             }, u.prototype._getContent = function() {
                 return this.element.getAttribute("data-content") || ("function" == typeof this.config.content ? this.config.content.call(this.element) : this.config.content);
             }, u._jQueryInterface = function(t) {
                 return this.each(function() {
                     var e = r(this).data(h), n = "object" === ("undefined" == typeof t ? "undefined" : i(t)) ? t : null;
-                    if ((e || !/destroy|hide/.test(t)) && (e || (e = new u(this, n), r(this).data(h, e)), 
+                    if ((e || !/destroy|hide/.test(t)) && (e || (e = new u(this, n), r(this).data(h, e)),
                     "string" == typeof t)) {
                         if (void 0 === e[t]) throw new Error('No method named "' + t + '"');
                         e[t]();
@@ -1428,10 +1428,12 @@ $(window).scroll(function() {
     var scroll = $(window).scrollTop();
     if (scroll >= 50) {
         $(".Sub-header_bar").addClass("Sticky-header");
+        $("html").addClass("W-Sticky-nav--enabled");
         $(".Header_bar").addClass("Only");
     } else {
         $(".Sub-header_bar").removeClass("Sticky-header");
         $(".Header_bar").removeClass("Only");
+      $("html").removeClass("W-Sticky-nav--enabled");
     }
 });
 
