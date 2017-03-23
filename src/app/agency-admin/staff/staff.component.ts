@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from "@angular/core";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
@@ -22,8 +22,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private officeId: string;
   private staff: ModelStaff;
   staffName: string;
-  skills: string;
-  skillset = new Set();
+  skillSet = new Set();
   private skillNames: string[] = [];
 
   constructor(private af: AngularFire, private router: Router) {
@@ -108,26 +107,23 @@ export class StaffComponent implements OnInit, OnDestroy {
     return this.staffName;
   }
 
-  showSkills(skillList): string {
-    this.skills = "";
+  showSkills(skillList): string[] {
     let skillIds = [];
     for (let key in skillList) {
       skillIds.push(key);
     }
     Observable.from(skillIds)
       .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS+"/skill/"+id);
+        return this.af.database.object(Constants.APP_STATUS + "/skill/" + id);
       })
       .distinct()
-      .subscribe(x => {
-        console.log(x.name)
-        if (!this.skillset.has(x.$key)) {
-          this.skillNames.push(x.name);
-          this.skillset.add(x.$key);
+      .subscribe(skill => {
+        if (!this.skillSet.has(skill.$key)) {
+          this.skillNames.push(skill.name);
+          this.skillSet.add(skill.$key);
         }
-        console.log(this.skillNames)
       })
-    return this.skills;
+    return this.skillNames;
   }
 
 }
