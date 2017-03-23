@@ -6,22 +6,32 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-
-
     <div class="Header-title__wrap">
-      <h1>Agency Settings</h1>
-      <button type="button" class="btn btn-primary">Add new staff member</button>
-    </div>
-
-    <div class="Sub-header-title__wrap">
-      <h2>Documents</h2>
+      <h1>Agency Staff</h1>
+      <button type="button" class="btn btn-primary" (click)="addNewStaff()">ADD NEW STAFF MEMBER</button>
     </div>
 
     <div class="row Spacing-wrap">
       <div class="col-lg-1 col-md-2">Filter:</div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control">
-          <option>All documents</option>
+          <option>Position</option>
+          <option>MPA</option>
+          <option>APA</option>
+          <option>Response Plan</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-4">
+        <select class="form-control">
+          <option>User Type</option>
+          <option>MPA</option>
+          <option>APA</option>
+          <option>Response Plan</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-4">
+        <select class="form-control">
+          <option>Office Type</option>
           <option>MPA</option>
           <option>APA</option>
           <option>Response Plan</option>
@@ -29,63 +39,74 @@
       </div>
     </div>
 
-    <div class="Sub-header-title__wrap">
-      <h2>Phillipines</h2>
-      <span class="Hide-all">Hide all</span>
+    <div *ngFor="let office of staffs">
+      <div class="Sub-header-title__wrap">
+        <h2>{{countries[office?.country]|translate}}</h2>
+        <span class="Hide-all">Hide all</span>
+      </div>
+
+      <div *ngIf="office?.staffs.length!=0" class="row Line-row Small-spaced Header">
+        <div class="col-lg-2">Name</div>
+        <div class="col-lg-1">Job Title</div>
+        <div class="col-lg-2">Office Type</div>
+        <div class="col-lg-2">Skills</div>
+        <div class="col-lg-3">Training Needs</div>
+        <div class="col-lg-1"></div>
+      </div>
+
+      <div *ngFor="let staff of office?.staffs" class="row Line-row Small-spaced">
+        <div class="col-lg-2">{{getStaffName(staff.id)}}</div>
+        <div class="col-lg-1">{{staff.position}}</div>
+        <div class="col-lg-2">{{staff.officeType}}</div>
+        <div class="col-lg-2">{{showSkills(staff.skills)}}</div>
+        <div class="col-lg-3">{{staff.trainingNeeds}}</div>
+        <div class="col-lg-1 col-md-3">
+          <button class="btn btn-primary">Edit</button>
+        </div>
+      </div>
     </div>
 
-    <div class="row Line-row Small-spaced Header">
-      <div class="col-lg-2">Name</div>
-      <div class="col-lg-1">Job Title</div>
-      <div class="col-lg-2">Office Type</div>
-      <div class="col-lg-2">Skills</div>
-      <div class="col-lg-3">Training Needs</div>
-      <div class="col-lg-1"></div>
-    </div>
+    <!--<div class="row Line-row Small-spaced">-->
+      <!--<div class="col-lg-2">Abigail Taylor</div>-->
+      <!--<div class="col-lg-1">ERT Lead</div>-->
+      <!--<div class="col-lg-2">Field Office</div>-->
+      <!--<div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>-->
+      <!--<div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non-->
+        <!--aliquet. Proin.-->
+      <!--</div>-->
+      <!--<div class="col-lg-1 col-md-3">-->
+        <!--<button class="btn btn-primary">Edit</button>-->
+      <!--</div>-->
+    <!--</div>-->
 
-    <div class="row Line-row Small-spaced">
-      <div class="col-lg-2">Abigail Taylor</div>
-      <div class="col-lg-1">ERT Lead</div>
-      <div class="col-lg-2">Field Office</div>
-      <div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>
-      <div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non aliquet. Proin.</div>
-      <div class="col-lg-1 col-md-3"><button class="btn btn-primary">Edit</button></div>
-    </div>
-
-    <div class="row Line-row Small-spaced">
-      <div class="col-lg-2">Abigail Taylor</div>
-      <div class="col-lg-1">ERT Lead</div>
-      <div class="col-lg-2">Field Office</div>
-      <div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>
-      <div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non aliquet. Proin.</div>
-      <div class="col-lg-1 col-md-3"><button class="btn btn-primary">Edit</button></div>
-    </div>
-
-    <div class="row Line-row Small-spaced">
-      <div class="col-lg-2">Abigail Taylor</div>
-      <div class="col-lg-1">ERT Lead</div>
-      <div class="col-lg-2">Field Office</div>
-      <div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>
-      <div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non aliquet. Proin.</div>
-      <div class="col-lg-1 col-md-3"><button class="btn btn-primary">Edit</button></div>
-    </div>
+    <!--<div class="row Line-row Small-spaced">-->
+      <!--<div class="col-lg-2">Abigail Taylor</div>-->
+      <!--<div class="col-lg-1">ERT Lead</div>-->
+      <!--<div class="col-lg-2">Field Office</div>-->
+      <!--<div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>-->
+      <!--<div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non-->
+        <!--aliquet. Proin.-->
+      <!--</div>-->
+      <!--<div class="col-lg-1 col-md-3">-->
+        <!--<button class="btn btn-primary">Edit</button>-->
+      <!--</div>-->
+    <!--</div>-->
 
 
-    <div class="Sub-header-title__wrap">
-      <h2>Malaysia</h2>
-      <span class="Hide-all Hidden">Show all</span>
-    </div>
+    <!--<div class="Sub-header-title__wrap">-->
+      <!--<h2>Malaysia</h2>-->
+      <!--<span class="Hide-all Hidden">Show all</span>-->
+    <!--</div>-->
 
-    <div class="Sub-header-title__wrap">
-      <h2>Indonesia</h2>
-      <span class="Hide-all Hidden">Show all</span>
-    </div>
+    <!--<div class="Sub-header-title__wrap">-->
+      <!--<h2>Indonesia</h2>-->
+      <!--<span class="Hide-all Hidden">Show all</span>-->
+    <!--</div>-->
 
     <div class="Form-submit__wrapper">
       <div class="btn btn-outline-secondary">Cancel</div>
       <div class="btn btn-primary">Save settings</div>
     </div>
-
 
 
   </div>

@@ -148,7 +148,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   private updateNoEmailChange() {
     console.log("no email change");
     console.log("agencyId: " + this.agencyId);
-    this.updateToFirebase();
+    this.validateAgencyName();
   }
 
   private updateToFirebase() {
@@ -199,8 +199,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       }
     }).subscribe(agencyList => {
       if (agencyList.length == 0) {
-        console.log("create new user");
-        this.createNewUser();
+        if (this.isEdit) {
+          this.updateToFirebase();
+        } else {
+          console.log("create new user");
+          this.createNewUser();
+        }
       } else {
         this.waringMessage = "ERROR.NAME_DUPLICATE";
         this.hideWarning = false;
@@ -245,12 +249,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     //write to userPublic node
     let newAgencyAdmin = new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName,
       this.agencyAdminTitle, this.agencyAdminEmail);
-    newAgencyAdmin.addressLine1 = "";
-    newAgencyAdmin.addressLine2 = "";
-    newAgencyAdmin.addressLine3 = "";
-    newAgencyAdmin.city = "";
-    newAgencyAdmin.country = -1;
-    newAgencyAdmin.postCode = "";
+    newAgencyAdmin.addressLine1 = this.agencyAdminAddressLine1 ? this.agencyAdminAddressLine1 : "";
+    newAgencyAdmin.addressLine2 = this.agencyAdminAddressLine2 ? this.agencyAdminAddressLine2 : "";
+    newAgencyAdmin.addressLine3 = this.agencyAdminAddressLine3 ? this.agencyAdminAddressLine3 : "";
+    newAgencyAdmin.city = this.agencyAdminCity ? this.agencyAdminCity : "";
+    newAgencyAdmin.country = this.agencyAdminCountry ? this.agencyAdminCountry : -1;
+    newAgencyAdmin.postCode = this.agencyAdminPostCode ? this.agencyAdminPostCode : "";
     newAgencyAdmin.phone = "";
 
     //testing
@@ -261,13 +265,14 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/administratorAgency/" + this.adminId] = null;
+      agencyData["/group/agencygroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
       agencyData["/group/agencygroup/" + uid] = true;
-      let agency = new ModelAgency();
-      agency.name = this.agencyName;
+      let agency = new ModelAgency(this.agencyName, false);
+      // agency.name = this.agencyName;
       agency.isActive = true;
       agency.adminId = uid;
       agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";

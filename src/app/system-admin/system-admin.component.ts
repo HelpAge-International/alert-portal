@@ -77,9 +77,9 @@ export class SystemAdminComponent implements OnInit,OnDestroy {
   toggleActive(agency) {
     this.dialogService.createDialog("DIALOG.TITLE", "DIALOG.CONTENT").subscribe(result => {
       if (result) {
-        agency.isActive = !agency.isActive;
+        let state:boolean = !agency.isActive;
         console.log(agency.isActive);
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(agency.isActive);
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(state);
       }
     });
   }

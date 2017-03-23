@@ -11,10 +11,16 @@ export class ModelAgency {
   public city:string;
   public country:number;
   public isActive:boolean;
+  public isDonor:boolean;
   public logoPath:string;
   public phone:string;
   public postCode:string;
   public website:string;
   public remainApproved:number;
   public sentmessages:{};
+
+  constructor(name:string, isDonor:boolean) {
+    this.name = name;
+    this.isDonor = isDonor;
+  }
 }

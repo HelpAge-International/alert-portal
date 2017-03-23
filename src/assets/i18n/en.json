@@ -137,7 +137,8 @@
   "ERROR": {
     "NAME_DUPLICATE": "Agency name duplicate!",
     "NAME_MISSING": "Name is missing!",
-    "EMAIL_NOT_VALID": "Email is not valid!"
+    "EMAIL_NOT_VALID": "Email is not valid!",
+    "COUNTRY_DUPLICATE":"This country is already registered!"
   },
   "COMMON": {
     "CANCEL": "Cancel",
