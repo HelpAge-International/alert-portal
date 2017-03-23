@@ -25,6 +25,7 @@ import {CreateEditStaffComponent} from "./agency-admin/staff/create-edit-staff/c
 import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-edit-message/create-edit-message.component";
 import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-messages.component";
 import {DepartmentComponent} from "./agency-admin/settings/department/department.component";
+import {GlobalNetworksComponent} from "./system-admin/global-networks/global-networks.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -51,7 +52,7 @@ const routes: Routes = [
   {path: 'system-admin/messages/create', component: MessagesCreateComponent},
   {path: 'system-admin/messages', component: MessagesComponent},
   {path: 'system-admin', component: SystemAdminComponent},
-  {path: 'system-admin/network', component: SystemAdminComponent},
+  {path: 'system-admin/network', component: GlobalNetworksComponent},
   {path: 'country-admin',  component: CountryAdminComponent},
   //TODO: define needed routes here. see the example above
 

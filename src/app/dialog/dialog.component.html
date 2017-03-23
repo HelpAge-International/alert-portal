@@ -1,8 +1,31 @@
-<h6>
-  {{title | translate}}
-</h6>
+<!--<h6>-->
+<!--{{title | translate}}-->
+<!--</h6>-->
 
-<p>{{content | translate}}</p>
+<!--<p>{{content | translate}}</p>-->
 
-<button md-raised-button (click)="close()">{{"GLOBAL.CANCEL" | translate}}</button>
-<button md-raised-button autofocus="true" color="primary" (click)="confirm()">{{"GLOBAL.CONFIRM" | translate}}</button>
+
+<div class="modal-header">
+  <!--<h5 class="modal-title" id="exampleModalLabel">Deactivate <strong>Alliance 2015</strong></h5>-->
+  <h5 class="modal-title" id="exampleModalLabel"><strong>{{title | translate}}</strong></h5>
+  <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+    <!--<span aria-hidden="true">&times;</span>-->
+  <!--</button>-->
+</div>
+<div class="modal-body">
+  <div class="text-center"><p>{{content | translate}}</p></div>
+</div>
+<div class="modal-footer">
+
+  <button md-raised-button type="button" class="btn btn-outline-secondary" (click)="close()">{{"GLOBAL.CANCEL" |
+    translate}}
+  </button>
+  <button md-raised-button autofocus="true" type="button" color="primary" class="btn btn-primary" (click)="confirm()">
+    {{"GLOBAL.CONFIRM" | translate}}
+  </button>
+
+</div>
+
+
+<!--<button md-raised-button (click)="close()">{{"GLOBAL.CANCEL" | translate}}</button>-->
+<!--<button md-raised-button autofocus="true" color="primary" (click)="confirm()">{{"GLOBAL.CONFIRM" | translate}}</button>-->
