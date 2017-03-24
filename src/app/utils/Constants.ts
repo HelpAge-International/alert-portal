@@ -10,6 +10,8 @@ export class Constants {
   //system admin
   static DEFAULT_MPA_PATH = "/system-admin/mpa";
   static SYSTEM_ADMIN_HOME = "/system-admin";
+  static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
+  static SYSTEM_ADMIN_ADD_NETWORK = "/system-admin/network/create";
 
   //agency admin
   static AGENCY_ADMIN_HOME = "/agency-admin/country-office";

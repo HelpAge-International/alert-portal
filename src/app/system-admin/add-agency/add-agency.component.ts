@@ -283,12 +283,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/administratorAgency/" + this.adminId] = null;
-      agencyData["/group/agencygroup/" + this.adminId] = null;
+      agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
-      agencyData["/group/agencygroup/" + uid] = true;
+      agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
       let agency = new ModelAgency(this.agencyName, false);
       // agency.name = this.agencyName;
       agency.isActive = true;
@@ -320,7 +320,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
         if (result) {
           this.deleteAgency["/userPublic/" + this.adminId] = null;
           this.deleteAgency["/administratorAgency/" + this.adminId] = null;
-          this.deleteAgency["/group/agencygroup/" + this.adminId] = null;
+          this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
           this.deleteAgency["/agency/" + this.agencyId] = null;
           this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
           this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {

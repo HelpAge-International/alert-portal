@@ -1,5 +1,6 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
+    <div class="logo"></div>
     <ul>
       <li class="Header_bar__username" (click)="test()">
         {{firstName+" "+lastName}}
@@ -13,8 +14,8 @@
           {{"COMMON.ACCOUNT_SETTING" | translate}}
         </button>
         <!--<button md-menu-item disabled>-->
-          <!--&lt;!&ndash;<md-icon>voicemail</md-icon>&ndash;&gt;-->
-          <!--<span>Check voicemail</span>-->
+        <!--&lt;!&ndash;<md-icon>voicemail</md-icon>&ndash;&gt;-->
+        <!--<span>Check voicemail</span>-->
         <!--</button>-->
         <button md-menu-item (click)="logout()">
           <!--<md-icon>notifications_off</md-icon>-->
