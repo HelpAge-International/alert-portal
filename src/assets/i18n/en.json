@@ -12,7 +12,11 @@
     "TITLE": "Title",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "EMAIL_ADDRESS": "Email Address",
-    "GENERAL_ERROR": "An error occurred. Please check and try again"
+    "GENERAL_ERROR": "An error occurred. Please check and try again",
+    "PREPAREDNESS_LEVEL": {
+      "MPA": "Minimum preparedness",
+      "APA": "Advanced preparedness"
+    }
   },
   "LOGIN": {
     "TITLE_TEXT": "Welcome to ALERT",
@@ -117,10 +121,20 @@
     "EDIT_MPA_APA": "Edit generic preparedness action",
     "EDIT_MPA_OR_APA": "MPA_OR_APA",
     "EDIT_BUTTON_TEXT": "Edit action",
-    "MPA": "Minimum preparedness",
-    "APA": "Advanced preparedness",
     "NO_CATEGORY_ERROR": "Please select a category",
-    "NO_CONTENT_ERROR": "Please insert the action content"
+    "NO_CONTENT_ERROR": "Please insert the action content",
+    "CATEGORIES": {
+      "CATEGORY0": "Category0",
+      "CATEGORY1": "Category1",
+      "CATEGORY2": "Category2",
+      "CATEGORY3": "Category3",
+      "CATEGORY4": "Category4",
+      "CATEGORY5": "Category5",
+      "CATEGORY6": "Category6",
+      "CATEGORY7": "Category7",
+      "CATEGORY8": "Category8",
+      "CATEGORY9": "Category9"
+    }
   },
   "MESSAGES": {
     "TITLE_TEXT": "System Messages",
@@ -164,8 +178,6 @@
     "MANDATED": "Mandated",
     "CREATE_NEW_MANDATED_PA": "Create new mandated preparedness action",
     "MPA_OR_APA?": "Is this a minimum or adavanced preparedness action?",
-    "MP": "Minimum preparedness",
-    "AP": "Advanced preparedness",
     "DEPARTMENT": "Department: ",
     "ADD_DEPARTMENT": "Add new department +",
     "PREPAREDNESS_LEVEL": "Preparedness Level: ",

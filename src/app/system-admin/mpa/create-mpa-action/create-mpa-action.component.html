@@ -26,12 +26,12 @@
 
           <div class="Radio--ribbon">
             <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
-            <label for="Min-prep"> {{"GENERIC_MPA_APA.MPA" | translate}} </label>
+            <label for="Min-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} </label>
           </div>
 
           <div class="Radio--ribbon">
             <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
-            <label for="Adv-prep"> {{"GENERIC_MPA_APA.APA" | translate}} </label>
+            <label for="Adv-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} </label>
           </div>
 
           <div class="row System-admin--form-wrap">
@@ -39,7 +39,7 @@
               <label for="Category">Category</label>
               <select class="form-control" id="Category" [(ngModel)]="categorySelected">
                 <!--<option value="" disabled selected hidden>Please select</option>-->
-                <option *ngFor="let category of categoryKeys()">{{category}}</option>
+                <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
               </select>
             </div>
           </div>

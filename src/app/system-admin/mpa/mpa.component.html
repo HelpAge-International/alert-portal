@@ -17,17 +17,17 @@
         Filter:
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" id="level">
-          <option value="" disabled selected hidden>All levels</option>
-          <option value="min-prep">Minimum preparedness</option>
-          <option value="adv-prep">Advanced preparedness</option>
+        <select class="form-control" [(ngModel)]="levelSelected" (change)="checkLevelSelected()">
+          <!--<option value="" disabled selected hidden>All levels</option>-->
+          <option value="allLevels">All preparedness levels</option>
+          <option *ngFor="let level of levelsList">{{ActionLevel[level] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
-        <select class="form-control" id="Category">
-          <option value="" disabled selected hidden>All categories</option>
-          <option value="HR">HR</option>
-          <option value="Logistics">Logistics</option>
+        <select class="form-control" [(ngModel)]="categorySelected" (change)="checkCategorySelected()">
+          <!--<option value="" disabled selected hidden>All categories</option>-->
+          <option value="allCategories">All categories</option>
+          <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
         </select>
       </div>
     </div>

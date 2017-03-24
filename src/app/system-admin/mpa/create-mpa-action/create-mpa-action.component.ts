@@ -26,11 +26,16 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private idOfGenericActionToEdit: string;
   private subscriptions: RxHelper;
   private categorySelected: string;
-  categories = GenericActionCategory;
-  categoryKeys(): Array<string> {
-    var keys = Object.keys(this.categories);
-    return keys.slice(keys.length / 2);
-  }
+  private Category = GenericActionCategory;
+  private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
+    GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
+    GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
+
+  // categories = GenericActionCategory;
+  // categoryKeys(): Array<string> {
+  //   var keys = Object.keys(this.categories);
+  //   return keys.slice(keys.length / 2);
+  // }
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper;

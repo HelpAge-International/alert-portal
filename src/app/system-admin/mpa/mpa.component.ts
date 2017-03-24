@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {ActionType, GenericActionCategory} from "../../utils/Enums";
+import {ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
 import {Router} from "@angular/router";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
@@ -18,6 +18,25 @@ export class MpaComponent implements OnInit,OnDestroy {
   ActionType = ActionType;
   GenericActionCategory = GenericActionCategory;
   private subscriptions:RxHelper;
+  private levelSelected;
+  private categorySelected;
+  private Category = Constants.CATEGORY;
+  private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
+    GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
+    GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
+
+  private ActionLevel = Constants.ACTION_LEVEL;
+  private levelsList = [ActionLevel.MPA, ActionLevel.APA];
+  // levels = ActionLevel;
+  // levelKeys(): Array<string> {
+  //   var keys = Object.keys(this.levels);
+  //   return keys.slice(keys.length / 2);
+  // }
+  // categories = GenericActionCategory;
+  // categoryKeys(): Array<string> {
+  //   var keys = Object.keys(this.categories);
+  //   return keys.slice(keys.length / 2);
+  // }
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
     this.subscriptions = new RxHelper();
@@ -42,6 +61,19 @@ export class MpaComponent implements OnInit,OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+  }
+
+  // TODO - Double filter
+  checkLevelSelected() {
+    if (this.levelSelected == 'allLevels') {
+      console.log("All levels selected - Remove level filter")
+    }
+  }
+
+  checkCategorySelected() {
+    if (this.categorySelected == 'allCategories') {
+      console.log("All categories selected - Remove category filter")
+    }
   }
 
   delete(actionKey) {

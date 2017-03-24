@@ -20,7 +20,12 @@ export enum GenericActionCategory {
   Category1 = 1,
   Category2 = 2,
   Category3 = 3,
-  Category4 = 4
+  Category4 = 4,
+  Category5 = 5,
+  Category6 = 6,
+  Category7 = 7,
+  Category8 = 8,
+  Category9 = 9
 }
 
 export enum ActionLevel {
