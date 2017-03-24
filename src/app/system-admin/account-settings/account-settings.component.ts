@@ -16,7 +16,7 @@ export class AccountSettingsComponent implements OnInit {
 
   private uid: string;
   authState: FirebaseAuthState;
-  private inactive: boolean = true;
+  private succesInactive: boolean = true;
   private succesMessage: string = 'Profile successfully updated!';
   private errorInactive: boolean = true;
   private errorMessage: string = 'No changes made!';
@@ -70,9 +70,9 @@ export class AccountSettingsComponent implements OnInit {
       } else {
         this.authState.auth.updateEmail(this.systemAdminEmail).then(_ => {
           this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
-            this.inactive = false;
+            this.succesInactive = false;
             Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-              this.inactive = true;
+              this.succesInactive = true;
             })
           }, error => {
             console.log(error.message);
