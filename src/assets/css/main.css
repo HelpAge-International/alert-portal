@@ -6632,6 +6632,70 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   justify-content: center
 }
 
+.section-nav {
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: flex-start;
+  -moz-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  list-style: none;
+  color: #131D50;
+  border-top: 1px solid #131D50;
+  border-bottom: 1px solid #131D50;
+  font-weight: 600;
+  width: 100%;
+  padding: 0;
+  margin: 1.5em 0;
+}
+
+.section-nav__item {
+  padding: 1.5em 2.5em;
+  -webkit-transition: color 0.2s;
+  -o-transition: color 0.2s;
+  -moz-transition: color 0.2s;
+  transition: color 0.2s;
+  border-left: 1px solid transparent;
+  position: relative;
+  text-align: center;
+}
+
+.section-nav__item a {
+  color: #131D50;
+  text-decoration: none;
+}
+
+.section-nav__item:hover {
+  color: #006EA0;
+}
+
+.section-nav .active {
+  background: #EEEEEE;
+}
+
+.section-nav .active a {
+  color: #131D50;
+}
+
+@media (max-width: 768px) {
+  .section-nav__item {
+    min-width: 25%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-nav__item {
+    min-width: 50%;
+  }
+}
+
 .Bordered-sub-nav {
   list-style: none;
   display: -webkit-flex;
@@ -6750,9 +6814,9 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   background: #e10514
 }
 
-html.W-Sticky-nav--enabled .Alert-success,
-html.W-Sticky-nav--enabled .Alert-warning,
-html.W-Sticky-nav--enabled .Alert-error{
+html.W-Sticky-nav--en.Alert-success,
+html.W-Sticky-nav--en.Alert-warning,
+html.W-Sticky-nav--en.Alert-error{
   top:55px;
 }
 

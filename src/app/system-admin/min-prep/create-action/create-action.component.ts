@@ -15,7 +15,7 @@ import {Observable} from "rxjs";
 
 export class CreateActionComponent implements OnInit, OnDestroy {
 
-  private inactive: Boolean = true;
+  private inactive: boolean = true;
   private errorMessage: any;
   private pageTitle: string = 'CHS_MPA.CREATE_NEW_CHS_MPA';
   private buttonText: string = 'CHS_MPA.SAVE_BUTTON_TEXT';

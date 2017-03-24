@@ -14,7 +14,8 @@ export class Constants {
 
   /*LIST VALUES FRO TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
-  static PERSON_TITLE: string [] = ["COMMON.PERSON_TITLE.MR", "COMMON.PERSON_TITLE.MISS", "COMMON.PERSON_TITLE.DR"];
+  static PERSON_TITLE: string [] = ["COMMON.PERSON_TITLE.MR", "COMMON.PERSON_TITLE.MRS", "COMMON.PERSON_TITLE.MISS",
+    "COMMON.PERSON_TITLE.DR", "COMMON.PERSON_TITLE.PROF"];
   static PERSON_TITLE_SELECTION: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
   static COUNTRY: string[] = ["COMMON.COUNTRY.UK", "COMMON.COUNTRY.FRANCE", "COMMON.COUNTRY.GERMANY"];
   static COUNTRY_SELECTION = [Country.UK, Country.France, Country.Germany];

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { Constants } from "../utils/Constants";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-login',
@@ -91,10 +92,16 @@ export class LoginComponent implements OnInit {
         (err) => {
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;
+          Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+            this.inactive = true;
+          })
         });
       this.inactive = true;
     } else {
       this.inactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      })
     }
 
   }

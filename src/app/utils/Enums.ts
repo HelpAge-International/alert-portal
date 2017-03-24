@@ -35,8 +35,10 @@ export enum ActionLevel {
 
 export enum PersonTitle {
   Mr = 0,
-  Miss = 1,
-  Dr = 2
+  Mrs = 1,
+  Miss = 2,
+  Dr = 3,
+  Prof = 4
 }
 
 export enum FileType {

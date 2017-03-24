@@ -162,8 +162,10 @@
     "LOGOUT": "Logout",
     "PERSON_TITLE": {
       "MR": "Mr",
+      "MRS": "Mrs",
       "MISS": "Miss",
-      "DR": "Dr"
+      "DR": "Dr",
+      "PROF": "Prof"
     },
     "COUNTRY": {
       "UK": "UK",

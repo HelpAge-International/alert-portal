@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {FirebaseApp} from 'angularfire2';
 import {Router} from '@angular/router';
+import {Observable} from "rxjs";
+import {Constants} from "../../utils/Constants";
 
 @Component({
   selector: 'app-forgot-password',
@@ -40,6 +42,9 @@ export class ForgotPasswordComponent implements OnInit {
 
     } else {
       this.inactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      })
     }
   }
 
