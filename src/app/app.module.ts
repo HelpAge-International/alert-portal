@@ -57,6 +57,8 @@ import {AgencyMpaComponent} from "./agency-admin/agency-mpa/agency-mpa.component
 import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-messages.component";
 import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-edit-message/create-edit-message.component";
 import {AgencyAdminHeaderComponent} from "./agency-admin/agency-admin-header/agency-admin-header.component";
+import { AccountSettingsComponent } from './system-admin/account-settings/account-settings.component';
+import { ChangePasswordComponent } from './system-admin/account-settings/change-password/change-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -124,7 +126,9 @@ const firebaseAuthConfig = {
     AgencyMpaComponent,
     AgencyMessagesComponent,
     CreateEditMessageComponent,
-    AgencyAdminHeaderComponent
+    AgencyAdminHeaderComponent,
+    AccountSettingsComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

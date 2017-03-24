@@ -25,6 +25,8 @@ import {CreateEditStaffComponent} from "./agency-admin/staff/create-edit-staff/c
 import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-edit-message/create-edit-message.component";
 import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-messages.component";
 import {DepartmentComponent} from "./agency-admin/settings/department/department.component";
+import {AccountSettingsComponent} from "./system-admin/account-settings/account-settings.component";
+import {ChangePasswordComponent} from "./system-admin/account-settings/change-password/change-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -52,9 +54,8 @@ const routes: Routes = [
   {path: 'system-admin/messages', component: MessagesComponent},
   {path: 'system-admin', component: SystemAdminComponent},
   {path: 'system-admin/network', component: SystemAdminComponent},
-  {path: 'country-admin',  component: CountryAdminComponent},
-  //TODO: define needed routes here. see the example above
-
+  {path: 'system-admin/account-settings', component: AccountSettingsComponent},
+  {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
   /**
    * Agency admin
    */

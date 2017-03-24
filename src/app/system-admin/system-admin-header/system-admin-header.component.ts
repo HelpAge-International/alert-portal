@@ -42,6 +42,10 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     }
   }
 
+  goToAccountSettings() {
+    this.router.navigateByUrl('system-admin/account-settings');
+  }
+
   logout() {
     console.log("logout");
     this.af.auth.logout();
