@@ -12,10 +12,11 @@ import {Observable} from "rxjs";
 })
 export class ChangePasswordComponent implements OnInit, OnDestroy {
 
+  private uid: string;
   private successInactive: boolean = true;
   private succesMessage: string = 'Password successfully updated!';
   private errorInactive: boolean = true;
-  private errorMessage: string = 'No changes made!';
+  private errorMessage: string;
   private currentPasswordEntered: string;
   private newPasswordEntered: string;
   private confirmPasswordEntered: string;
@@ -26,6 +27,15 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    let subscription = this.af.auth.subscribe(auth => {
+      if (auth) {
+        this.uid = auth.uid;
+        console.log("System admin uid: " + this.uid)
+      } else {
+        this.router.navigateByUrl(Constants.LOGIN_PATH);
+      }
+    });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -37,5 +47,13 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     console.log(this.currentPasswordEntered);
     console.log(this.newPasswordEntered);
     console.log(this.confirmPasswordEntered);
+
+    if (this.newPasswordEntered != this.confirmPasswordEntered) {
+      this.errorMessage = "Passwords don't match";
+      this.errorInactive = false;
+      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.errorInactive = true;
+      })
+    }
   }
 }
