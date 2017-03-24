@@ -7,12 +7,12 @@ export class ModelUserPublic {
   phone:string;
   title:number;
   email:string;
-  addressLine1: string
-  addressLine2: string
-  addressLine3: string
-  country: number
-  city: string
-  postCode: string
+  addressLine1: string;
+  addressLine2: string;
+  addressLine3: string;
+  country: number;
+  city: string;
+  postCode: string;
 
 
   constructor(firstName: string, lastName: string, title: number, email:string) {

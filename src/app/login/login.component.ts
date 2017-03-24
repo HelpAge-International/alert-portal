@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { Constants } from "../utils/Constants";
-import {Observable} from "rxjs";
+import {Component, OnInit} from '@angular/core';
+import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
+import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Constants} from "../utils/Constants";
+import {RxHelper} from "../utils/RxHelper";
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,8 @@ export class LoginComponent implements OnInit {
   private errorMessage: string;
   private successInactive: Boolean = true;
   private successMessage: string;
-  private emailEntered:string;
+  private emailEntered: string;
+  private subscriptions: RxHelper;
 
   private localUser = {
     userEmail: '',
@@ -24,9 +25,12 @@ export class LoginComponent implements OnInit {
   };
 
   constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute) {
+    this.subscriptions = new RxHelper();
+  }
 
-    // TODO - Remove if unnecessary
-    this.af.auth.subscribe(auth => {
+  ngOnInit() {
+    /*// TODO - Remove if unnecessary
+    let loginSubscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.router.navigateByUrl("/login");
         console.log("Logged In");
@@ -36,8 +40,9 @@ export class LoginComponent implements OnInit {
         console.log("Not Logged In");
       }
     });
+    this.subscriptions.add(loginSubscription);*/
 
-    this.route.params
+    let subscription = this.route.params
       .subscribe((params: Params) => {
         if (params["emailEntered"]) {
           this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
@@ -46,9 +51,11 @@ export class LoginComponent implements OnInit {
           console.log("From Forgot Password");
         }
       });
+    this.subscriptions.add(subscription);
   }
 
-  ngOnInit() {
+  ngOnDestroy() {
+    this.subscriptions.releaseAll()
   }
 
   onSubmit() {
@@ -64,24 +71,24 @@ export class LoginComponent implements OnInit {
           method: AuthMethods.Password,
         }).then(
         (success) => {
-          this.af.database.list(Constants.APP_STATUS + '/systemAdmin', { preserveSnapshot: true})
-            .subscribe(snapshots=>{
+          this.af.database.list(Constants.APP_STATUS + '/systemAdmin', {preserveSnapshot: true})
+            .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigateByUrl("/system-admin");
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS + '/administratorAgency', { preserveSnapshot: true})
-            .subscribe(snapshots=>{
+          this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
+            .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigateByUrl("/agency-admin/country-office");
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS + '/administratorCountry', { preserveSnapshot: true})
-            .subscribe(snapshots=>{
+          this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
+            .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigateByUrl("/country-admin");
@@ -92,16 +99,10 @@ export class LoginComponent implements OnInit {
         (err) => {
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;
-          Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-            this.inactive = true;
-          })
         });
       this.inactive = true;
     } else {
       this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.inactive = true;
-      })
     }
 
   }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {PersonTitle} from "../../utils/Enums";
@@ -15,8 +15,11 @@ import {Observable} from "rxjs";
 export class AccountSettingsComponent implements OnInit {
 
   private uid: string;
+  authState: FirebaseAuthState;
   private inactive: boolean = true;
   private succesMessage: string = 'Profile successfully updated!';
+  private errorInactive: boolean = true;
+  private errorMessage: string = 'No changes made!';
   private userPublic: ModelUserPublic;
   private systemAdminTitle: number = 0;
   private systemAdminFirstName: string;
@@ -34,6 +37,7 @@ export class AccountSettingsComponent implements OnInit {
   ngOnInit() {
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
+        this.authState = auth;
         this.uid = auth.uid;
         console.log("System admin uid: " + this.uid)
         this.loadSystemAdminData(this.uid);
@@ -49,24 +53,32 @@ export class AccountSettingsComponent implements OnInit {
   }
 
   onSubmit() {
-    //update user
-    console.log('onSubmit');
     if (this.userPublic) {
-      this.userPublic.firstName = this.systemAdminFirstName;
-      this.userPublic.lastName = this.systemAdminLastName;
-      this.userPublic.title = this.systemAdminTitle;
-      this.userPublic.phone = this.systemAdminPhone;
 
-      let updateData = {};
-      updateData["/userPublic/" + this.uid] = this.userPublic;
-      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-        this.inactive = false;
+      var editedUser: ModelUserPublic = new ModelUserPublic(this.systemAdminFirstName, this.systemAdminLastName, this.systemAdminTitle, this.systemAdminEmail);
+      editedUser.phone = this.systemAdminPhone;
+
+      let noChanges: boolean = editedUser.title == this.userPublic.title && editedUser.firstName == this.userPublic.firstName && editedUser.lastName == this.userPublic.lastName
+        && editedUser.email == this.userPublic.email && editedUser.phone == this.userPublic.phone;
+
+      if (noChanges) {
+        console.log("No changes made");
+        this.errorInactive = false;
         Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-          this.inactive = true;
+          this.errorInactive = true;
         })
-      }, error => {
-        console.log(error.message);
-      });
+      } else {
+        this.authState.auth.updateEmail(this.systemAdminEmail).then(_ => {
+          this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
+            this.inactive = false;
+            Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+              this.inactive = true;
+            })
+          }, error => {
+            console.log(error.message);
+          });
+        })
+      }
     }
   }
 
