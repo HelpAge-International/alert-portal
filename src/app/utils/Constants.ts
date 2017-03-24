@@ -27,13 +27,19 @@ export class Constants {
 
 export enum FILE_SETTING {
   PDF = 0,
-  HTML = 1,
-  DOC = 2,
-  DOCX = 3,
-  PS = 4,
-  RTF = 5,
-  JPEG = 6,
-  PNG = 7
+  DOC = 1,
+  DOCX = 2,
+  RTF = 3,
+  JPEG = 4,
+  PNG = 5,
+  CSV = 6,
+  XLS = 7,
+  XLSX = 8,
+  PPT = 9,
+  PPTX = 10,
+  TXT = 11,
+  ODT = 12,
+  TSV = 13
 }
 
 

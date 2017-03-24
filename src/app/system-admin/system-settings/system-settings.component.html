@@ -3,7 +3,6 @@
 
 <div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
 
-<!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
@@ -21,8 +20,6 @@
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minGreen">
           <option *ngFor="let threValue of thresholdValue" [ngValue]="threValue">{{threValue}}%</option>
-          <!--<option>50%</option>-->
-          <!--<option>25%</option>-->
         </select>
       </div>
     </div>
@@ -34,8 +31,6 @@
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minAmber">
           <option *ngFor="let threValue of thresholdValue" [ngValue]="threValue">{{threValue}}%</option>
-          <!--<option>50%</option>-->
-          <!--<option>25%</option>-->
         </select>
       </div>
     </div>
@@ -47,8 +42,6 @@
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minRed">
           <option *ngFor="let threValue of thresholdValue" [ngValue]="threValue">{{threValue}}%</option>
-          <!--<option>50%</option>-->
-          <!--<option>25%</option>-->
         </select>
       </div>
     </div>
@@ -63,8 +56,6 @@
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advGreen">
           <option *ngFor="let value of thresholdValue" [ngValue]="value">{{value}}%</option>
-          <!--<option>50%</option>-->
-          <!--<option>25%</option>-->
         </select>
       </div>
     </div>
@@ -76,8 +67,6 @@
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advAmber">
           <option *ngFor="let value of thresholdValue" [ngValue]="value">{{value}}%</option>
-          <!--<option>50%</option>-->
-          <!--<option>25%</option>-->
         </select>
       </div>
     </div>
@@ -89,8 +78,6 @@
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advRed">
           <option *ngFor="let value of thresholdValue" [ngValue]="value">{{value}}%</option>
-          <!--<option>50%</option>-->
-          <!--<option>25%</option>-->
         </select>
       </div>
     </div>
@@ -98,62 +85,78 @@
     <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.DOC_SETTING" | translate}}</h3>
     <hr>
 
-    <label for="f-Format">{{"HOME.SETTING.FILE_FORMAT" | translate}}</label>
+    <label>{{"HOME.SETTING.FILE_FORMAT" | translate}}</label>
 
-    <!--<h1>{{isPdf}}</h1>-->
     <div class="row">
-      <label for="PDF" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox"
-               name="f-Format" id="PDF" [(ngModel)]="isPdf">PDF</label>
-      <label for="HTML" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                   name="f-Format"
-                                                                                   [(ngModel)]="isHtml"
-                                                                                   id="HTML">HTML</label>
-      <label for="DOC" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                  [(ngModel)]="isDoc"
-                                                                                  name="f-Format" id="DOC">DOC</label>
-      <label for="DOCX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                   name="f-Format"
-                                                                                   [(ngModel)]="isDocx"
-                                                                                   id="DOCX">DOCX</label>
-      <label for="PS" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                 [(ngModel)]="isPs"
-                                                                                 name="f-Format" id="PS">PS</label>
-      <label for="RTF" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                  [(ngModel)]="isRtf"
-                                                                                  name="f-Format" id="RTF">RTF</label>
-      <label for="JPEG" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                   name="f-Format"
-                                                                                   [(ngModel)]="isJpeg"
-                                                                                   id="JPEG">JPEG</label>
-      <label for="PNG" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox"
-                                                                                  [(ngModel)]="isPng"
-                                                                                  name="f-Format" id="PNG">PNG</label>
-      <!--<label for="XLSX" class="Checkbox&#45;&#45;ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked-->
-      <!--name="f-Format"-->
-      <!--id="XLSX">XLSX</label>-->
-      <!--<label for="PPT" class="Checkbox&#45;&#45;ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked-->
-      <!--name="f-Format" id="PPT">PPT</label>-->
-      <!--<label for="PPTX" class="Checkbox&#45;&#45;ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked-->
-      <!--name="f-Format"-->
-      <!--id="PPTX">PPTX</label>-->
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPdf">
+        PDF
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isDoc">
+        DOC
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format"[(ngModel)]="isDocx">
+        DOCX
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isRtf">
+        RTF
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isJpeg">
+        JPEG
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPng">
+        PNG
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isCsv">
+        CSV
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isXls">
+        XLS
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isXlsx">
+        XLSX
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPpt">
+        PPT
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPptx">
+        PPTX
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isTxt">
+        TXT
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isOdt">
+        ODT
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isTsv">
+        TSV
+      </label>
     </div>
 
     <div class="File-size--spaced">
-      <label for="f-Format">{{"HOME.SETTING.FILE_SIZE" | translate}}</label>
+      <label>{{"HOME.SETTING.FILE_SIZE" | translate}}</label>
       <div class="row">
         <div class="col-lg-2 col-md-4 col-sm-4">
           <select class="form-control" [(ngModel)]="fileSize">
             <option *ngFor="let value of thresholdValue" [ngValue]="value">{{value}}</option>
-            <!--<option>20</option>-->
-            <!--<option>30</option>-->
           </select>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-4">
           <select class="form-control" [(ngModel)]="fileType">
             <option *ngFor="let value of fileTypeList" [ngValue]="value">{{FileType[value]}}</option>
-            <!--<option>MB</option>-->
-            <!--<option>GB</option>-->
           </select>
         </div>
       </div>

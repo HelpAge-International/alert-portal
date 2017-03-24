@@ -20,14 +20,22 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
   advGreen: number;
   advAmber: number;
   advRed: number;
+
   isPdf: boolean;
-  isHtml: boolean;
   isDoc: boolean;
   isDocx: boolean;
-  isPs: boolean;
   isRtf: boolean;
   isJpeg: boolean;
   isPng: boolean;
+  isCsv: boolean;
+  isXls: boolean;
+  isXlsx: boolean;
+  isPpt: boolean;
+  isPptx: boolean;
+  isTxt: boolean;
+  isOdt: boolean;
+  isTsv: boolean;
+
   fileSize: number;
   fileType: number;
   thresholdValue: number[] = Constants.THRESHOLD_VALUE;
@@ -82,13 +90,19 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
       this.advRed = x.advThreshold[2];
       //load file setting from database
       this.isPdf = x.fileSettings[FILE_SETTING.PDF];
-      this.isHtml = x.fileSettings[FILE_SETTING.HTML];
       this.isDoc = x.fileSettings[FILE_SETTING.DOC];
       this.isDocx = x.fileSettings[FILE_SETTING.DOCX];
-      this.isPs = x.fileSettings[FILE_SETTING.PS];
       this.isRtf = x.fileSettings[FILE_SETTING.RTF];
       this.isJpeg = x.fileSettings[FILE_SETTING.JPEG];
       this.isPng = x.fileSettings[FILE_SETTING.PNG];
+      this.isCsv = x.fileSettings[FILE_SETTING.CSV];
+      this.isXls = x.fileSettings[FILE_SETTING.XLS];
+      this.isXlsx = x.fileSettings[FILE_SETTING.XLSX];
+      this.isPpt = x.fileSettings[FILE_SETTING.PPT];
+      this.isPptx = x.fileSettings[FILE_SETTING.PPTX];
+      this.isTxt = x.fileSettings[FILE_SETTING.TXT];
+      this.isOdt = x.fileSettings[FILE_SETTING.ODT];
+      this.isTsv = x.fileSettings[FILE_SETTING.TSV];
       //load file size type
       this.fileSize = x.fileSize;
       this.fileType = x.fileType;
@@ -111,13 +125,19 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
     this.modelSystem.advThreshold[1] = this.advAmber;
     this.modelSystem.advThreshold[2] = this.advRed;
     this.modelSystem.fileSettings[FILE_SETTING.PDF] = this.isPdf;
-    this.modelSystem.fileSettings[FILE_SETTING.HTML] = this.isHtml;
     this.modelSystem.fileSettings[FILE_SETTING.DOC] = this.isDoc;
     this.modelSystem.fileSettings[FILE_SETTING.DOCX] = this.isDocx;
-    this.modelSystem.fileSettings[FILE_SETTING.PS] = this.isPs;
     this.modelSystem.fileSettings[FILE_SETTING.RTF] = this.isRtf;
     this.modelSystem.fileSettings[FILE_SETTING.JPEG] = this.isJpeg;
     this.modelSystem.fileSettings[FILE_SETTING.PNG] = this.isPng;
+    this.modelSystem.fileSettings[FILE_SETTING.CSV] = this.isCsv;
+    this.modelSystem.fileSettings[FILE_SETTING.XLS] = this.isXls;
+    this.modelSystem.fileSettings[FILE_SETTING.XLSX] = this.isXlsx;
+    this.modelSystem.fileSettings[FILE_SETTING.PPT] = this.isPpt;
+    this.modelSystem.fileSettings[FILE_SETTING.PPTX] = this.isPptx;
+    this.modelSystem.fileSettings[FILE_SETTING.TXT] = this.isTxt;
+    this.modelSystem.fileSettings[FILE_SETTING.ODT] = this.isOdt;
+    this.modelSystem.fileSettings[FILE_SETTING.TSV] = this.isTsv;
     this.modelSystem.fileSize = this.fileSize;
     this.modelSystem.fileType = this.fileType;
 
