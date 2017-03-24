@@ -34,6 +34,16 @@
             <label for="Adv-prep"> {{"GENERIC_MPA_APA.APA" | translate}} </label>
           </div>
 
+          <div class="row System-admin--form-wrap">
+            <div class="col-md-6">
+              <label for="Category">Category</label>
+              <select class="form-control" id="Category" [(ngModel)]="categorySelected">
+                <!--<option value="" disabled selected hidden>Please select</option>-->
+                <option *ngFor="let category of categoryKeys()">{{category}}</option>
+              </select>
+            </div>
+          </div>
+
           <div class="Form-submit__wrapper">
             <div class="btn btn-outline-secondary" routerLink="/system-admin/mpa">{{"GLOBAL.CANCEL" | translate}}</div>
             <div class="btn btn-primary" (click)="onSubmit()">{{buttonText | translate}}</div>

@@ -117,8 +117,9 @@
     "EDIT_MPA_APA": "Edit generic preparedness action",
     "EDIT_MPA_OR_APA": "MPA_OR_APA",
     "EDIT_BUTTON_TEXT": "Edit action",
-    "MPA": "MPA",
-    "APA": "APA",
+    "MPA": "Minimum preparedness",
+    "APA": "Advanced preparedness",
+    "NO_CATEGORY_ERROR": "Please select a category",
     "NO_CONTENT_ERROR": "Please insert the action content"
   },
   "MESSAGES": {

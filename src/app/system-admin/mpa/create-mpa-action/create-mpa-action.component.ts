@@ -20,12 +20,17 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private pageTitle: string = 'GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
   private buttonText: string = 'GENERIC_MPA_APA.SAVE_BUTTON_TEXT';
   private textArea: string;
-  private category: string;
   private path: string;
   private isMpa: boolean = true;
   private forEditing: Boolean = false;
   private idOfGenericActionToEdit: string;
   private subscriptions: RxHelper;
+  private categorySelected: string;
+  categories = GenericActionCategory;
+  categoryKeys(): Array<string> {
+    var keys = Object.keys(this.categories);
+    return keys.slice(keys.length / 2);
+  }
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper;
@@ -95,7 +100,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
     let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: GenericMpaOrApaAction) => {
       this.textArea = action.task;
       this.isMpa = action.level == ActionLevel.MPA ? true : false;
-      this.category = GenericMpaOrApaAction[action.category];
+      this.categorySelected = GenericActionCategory[action.category];
     });
     this.subscriptions.add(subscription);
   }
@@ -104,7 +109,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
 
-    let newAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.category]);
+    let newAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.categorySelected]);
 
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
@@ -117,7 +122,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private editGenericAction() {
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let editedAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.category]);
+    let editedAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.categorySelected]);
 
     this.af.database.object(this.path + "/" + this.idOfGenericActionToEdit).set(editedAction).then(_ => {
         console.log('Generic action updated');
@@ -129,12 +134,16 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   /**
    * Returns false and specific error messages-
    * if no input is entered
+   * if no category is selected
    * @returns {boolean}
    */
   private validate() {
 
     if (!Boolean(this.textArea)) {
       this.errorMessage = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
+      return false;
+    } else if (!Boolean(this.categorySelected)) {
+      this.errorMessage = "GENERIC_MPA_APA.NO_CATEGORY_ERROR";
       return false;
     }
     return true;
