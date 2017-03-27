@@ -19,9 +19,12 @@ import {Observable} from "rxjs";
   templateUrl: './add-agency.component.html',
   styleUrls: ['./add-agency.component.css']
 })
+
 export class AddAgencyComponent implements OnInit,OnDestroy {
 
-  waringMessage: string;
+  private errorMessage: string;
+  private inactive: boolean = true;
+  private alerts = {};
   agencyName: string;
   agencyAdminTitle: number = 0;
   agencyAdminFirstName: string;
@@ -33,14 +36,11 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   agencyAdminCountry: number;
   agencyAdminCity: string;
   agencyAdminPostCode: string;
-  hideWarning: boolean;
   isEdit = false;
-  // Country = Country;
   Country = Constants.COUNTRY;
   countryList: number[] = [Country.UK, Country.France, Country.Germany];
-  // PersonTitle = PersonTitle;
   PersonTitle = Constants.PERSON_TITLE;
-  personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
+  personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
   private emailInDatabase: string;
   private agencyId: string;
   private userPublic: ModelUserPublic;
@@ -62,8 +62,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       if (user) {
         this.systemAdminUid = user.auth.uid;
         this.secondApp = firebase.initializeApp(firebaseConfig, "second");
-        // this.waringMessage = "warning message!!!";
-        this.hideWarning = true;
+        this.inactive = true;
         let subscription = this.route.params
           .subscribe((params: Params) => {
             if (params["id"]) {
@@ -123,12 +122,14 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   }
 
   onSubmit() {
-    if (this.validateForm()) {
+    if (this.validate()) {
       if (this.isEdit) {
         this.updateAgencyInfo();
       } else {
         this.registerNewAgency();
       }
+    } else {
+      this.showAlert();
     }
   }
 
@@ -236,9 +237,8 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
           this.createNewUser();
         }
       } else {
-        this.waringMessage = "ERROR.NAME_DUPLICATE";
-        this.hideWarning = false;
-        this.dismissAlert();
+        this.errorMessage = "ERROR.NAME_DUPLICATE";
+        this.showAlert();
       }
     });
     this.rxhelper.add(subscription);
@@ -255,27 +255,9 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
-      this.waringMessage = error.message;
-      this.hideWarning = false;
-      this.dismissAlert();
+      this.errorMessage = error.message;
+      this.showAlert();
     });
-  }
-
-  private validateForm(): boolean {
-    if (!this.agencyName) {
-      this.hideWarning = false;
-      this.waringMessage = "ERROR.NAME_MISSING";
-      this.dismissAlert();
-      return false;
-    } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
-      this.hideWarning = false;
-      this.waringMessage = "ERROR.EMAIL_NOT_VALID";
-      this.dismissAlert();
-      return false;
-    } else {
-      this.hideWarning = true;
-      return true;
-    }
   }
 
   private writeToFirebase(uid: string) {
@@ -294,7 +276,6 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     agencyData["/administratorAgency/" + uid + "/systemAdmin/" + this.systemAdminUid] = true;
 
     if (this.isEdit) {
-
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
@@ -302,8 +283,8 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
-    } else {
 
+    } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
       let agency = new ModelAgency(this.agencyName);
@@ -359,10 +340,45 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     }
   }
 
-  dismissAlert() {
+  showAlert() {
+    this.inactive = false;
     let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-      this.hideWarning = true;
+      this.inactive = true;
     });
     this.rxhelper.add(subscribe);
+  }
+
+  /**
+   * Returns false and specific error messages-
+   * if no input is entered
+   * if no category is selected
+   * @returns {boolean}
+   */
+  private validate() {
+
+    if (!Boolean(this.agencyName)) {
+      this.alerts[this.agencyName] = true;
+      this.errorMessage = "ERROR.NAME_MISSING";
+      return false;
+    } else if (!Boolean(this.agencyAdminFirstName)) {
+      this.alerts[this.agencyAdminFirstName] = true;
+      this.errorMessage = "Please enter agency administrator's first name";
+      return false;
+    } else if (!Boolean(this.agencyAdminLastName)) {
+      this.alerts[this.agencyAdminLastName] = true;
+      this.errorMessage = "Please enter agency administrator's last name";
+      return false;
+    } else if (!Boolean(this.agencyAdminEmail)) {
+      this.alerts[this.agencyAdminEmail] = true;
+      this.errorMessage = "Please enter agency administrator's email address";
+      return false;
+    } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
+      this.alerts[this.agencyAdminEmail] = true;
+      this.inactive = false;
+      this.errorMessage = "ERROR.EMAIL_NOT_VALID";
+      return false;
+    }
+    this.alerts = {};
+    return true;
   }
 }
