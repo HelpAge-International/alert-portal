@@ -13,17 +13,17 @@
         <!--<div class="Back&#45;&#45;button">Home</div>-->
 
         <div class="Header-title__wrap">
-          <h1 *ngIf="!isEdit">{{"HOME.GLOBAL_NETWORKS.ADD_NEW_NETWORK" | translate}}</h1>
-          <h1 *ngIf="isEdit">{{"HOME.GLOBAL_NETWORKS.EDIT_NETWORK" | translate}}</h1>
+          <h1 *ngIf="!isEdit">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.ADD_NEW_NETWORK" | translate}}</h1>
+          <h1 *ngIf="isEdit">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.EDIT_NETWORK" | translate}}</h1>
         </div>
 
-        <h3 class="System-admin__Sub-title--spaced">{{"HOME.GLOBAL_NETWORKS.NETWORK_DETAIL" | translate}}</h3>
+        <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_DETAIL" | translate}}</h3>
         <hr>
 
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="Name">{{"HOME.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
+              <label for="Name">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      required
                      [(ngModel)]="networkName"
@@ -32,7 +32,8 @@
           </div>
         </div>
 
-        <h3 class="System-admin__Sub-title--spaced">{{"HOME.GLOBAL_NETWORKS.NETWORK_ADMIN_DETAIL" | translate}}</h3>
+        <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_DETAIL" |
+          translate}}</h3>
         <hr>
 
         <div class="row">
@@ -105,10 +106,9 @@
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="Country">{{"GLOBAL.COUNTRY" | translate}}</label>
-
+              <label for="Country"> {{'GLOBAL.COUNTRY' | translate}}</label>
               <select name="Country" id="Country" class="form-control" [(ngModel)]="adminCountry">
-                <option *ngFor="let country of COUNTRY_SELECTION">{{COUNTRY[country] | translate}}</option>
+                <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}</option>
               </select>
 
             </div>
@@ -131,10 +131,10 @@
 
         <div class="Form-submit__wrapper">
           <button *ngIf="!isEdit" md-raised-button class="btn btn-primary" type="submit" (click)="validate()">
-            {{"HOME.GLOBAL_NETWORKS.SAVE_NEW_NETWORK" | translate | uppercase}}
+            {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.SAVE_NEW_NETWORK" | translate | uppercase}}
           </button>
           <button *ngIf="isEdit" md-raised-button class="btn btn-primary" type="submit" (click)="validate()">
-            {{"HOME.GLOBAL_NETWORKS.EDIT_NETWORK" | translate | uppercase}}
+            {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.EDIT_NETWORK" | translate | uppercase}}
           </button>
           <button md-button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}
           </button>

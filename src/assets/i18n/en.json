@@ -19,14 +19,124 @@
     "COUNTRY": "Country",
     "CITY": "City",
     "POSTCODE": "Postcode",
+    "ACTIVE": "Active",
+    "DEACTIVE": "Deactive",
+    "ACTIVATE": "Activate",
+    "DEACTIVATE": "Deactivate",
     "PLEASE_ENTER": "Please enter",
     "OPTIONAL": "Optional",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "EMAIL_ADDRESS": "Email Address",
+    "NAME_MISSING": "Name is missing!",
+    "EMAIL_NOT_VALID": "Email is not valid!",
     "GENERAL_ERROR": "An error occurred. Please check and try again",
     "PREPAREDNESS_LEVEL": {
-      "MPA": "Minimum preparedness",
-      "APA": "Advanced preparedness"
+      "ALL": "All preparedness levels",
+      "MPA": "MPA",
+      "APA": "APA"
+    },
+    "ACCOUNT_SETTING": "Account Setting",
+    "LOGOUT": "Logout",
+    "PERSON_TITLE": {
+      "MR": "Mr",
+      "MRS": "Mrs",
+      "MISS": "Miss",
+      "DR": "Dr",
+      "PROF": "Prof"
+    },
+    "COUNTRY": {
+      "UK": "UK",
+      "FRANCE": "France",
+      "GERMANY": "Germany"
+    }
+  },
+  "SYSTEM_ADMIN": {
+    "MENU": {
+      "AGENCIES": "Agencies",
+      "NETWORK": "Global Networks",
+      "CHS": "CHS Minimum Preparedness Actions",
+      "MPAAPA": "Generic MPA/APAs",
+      "SETTING": "System Settings",
+      "MESSAGE": "Messages"
+    },
+    "AGENCIES": {
+      "SYSTEM_ADMIN": "System Admin",
+      "TITLE": "Agencies",
+      "ADD_NEW_AGENCY": "Add New Agency",
+      "EDIT_AGENCY": "Edit Agency",
+      "DELETE_AGENCY": "DELETE AGENCY",
+      "AGENCY_DETAIL": "Agency Details",
+      "AGENCY_NAME": "Agency Name",
+      "AGENCY_ADMIN_DETAIL": "Agency Administrator Details",
+      "SAVE": "Save New Agency",
+      "NAME_DUPLICATE": "Agency name duplicate!",
+      "NAME_MISSING": "Name is missing!",
+      "EMAIL_NOT_VALID": "Email is not valid!"
+    },
+    "GLOBAL_NETWORKS": {
+      "GLOBAL_NETWORKS": "Global Networks",
+      "EMPTY_LIST": "No Global Networks have been added to ALERT",
+      "ADD_NEW_NETWORK": "Add new network",
+      "SAVE_NEW_NETWORK": "Save new network",
+      "EDIT_NETWORK": "Edit network",
+      "NETWORK_NAME": "Network Name",
+      "NETWORK_DETAIL": "Network Details",
+      "NETWORK_ADMIN_DETAIL": "Network Administrator Details",
+      "NETWORK_NAME_DUPLICATE": "Network name duplicate!",
+      "NETWORK_NAME_EMPTY": "Network name can not be empty!",
+      "NETWORK_ADMIN_FIRST_NAME": "Network admin first name can not be empty!",
+      "NETWORK_ADMIN_LAST_NAME": "Network admin last name can not be empty!",
+      "NETWORK_ADMIN_EMAIL": "Network admin email can not be empty!"
+    },
+    "ACTIONS": {
+      "CREATE_NEW_ACTION": "Create new action",
+      "SAVE_BUTTON_TEXT": "Save new action",
+      "EDIT_BUTTON_TEXT": "Edit action",
+      "NO_CONTENT_ERROR": "Please insert the action content",
+      "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to Alert",
+      "CHS_MPA": {
+        "TITLE_TEXT": "CHS minimum preparedness actions",
+        "NO_ACTIONS": "No CHS actions have been created",
+        "CHS": "Chs",
+        "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
+        "EDIT_CHS_MPA": "Edit CHS minimum preparedness action"
+      },
+      "GENERIC_MPA_APA": {
+        "TITLE_TEXT": "Generic MPA/APAs",
+        "LEVEL": "Level",
+        "CREATE_NEW_GENERIC_MPA": "Create new generic MPA/APA",
+        "MPA_OR_APA?": "Is this a minimum or advanced preparedness action?",
+        "EDIT_MPA_APA": "Edit generic preparedness action",
+        "EDIT_MPA_OR_APA": "MPA_OR_APA",
+        "NO_CATEGORY_ERROR": "Please select a category",
+        "ALL_CATEGORIES": "All categories",
+        "CATEGORY": "Category",
+        "CATEGORIES": {
+          "CATEGORY0": "Category0",
+          "CATEGORY1": "Category1",
+          "CATEGORY2": "Category2",
+          "CATEGORY3": "Category3",
+          "CATEGORY4": "Category4",
+          "CATEGORY5": "Category5",
+          "CATEGORY6": "Category6",
+          "CATEGORY7": "Category7",
+          "CATEGORY8": "Category8",
+          "CATEGORY9": "Category9"
+        }
+      }
+    },
+    "SETTING": {
+      "SETTING_SAVED": "Settings successfully saved!",
+      "TITLE": "System Settings",
+      "MIN": "Minimum preparedness threshold",
+      "ADV": "Advanced preparedness threshold",
+      "GREEN": "Green",
+      "AMBER": "Amber",
+      "RED": "Red",
+      "DOC_SETTING": "Document upload settings",
+      "FILE_FORMAT": "File Format",
+      "FILE_SIZE": "Maximum file size",
+      "SAVE": "Save Settings"
     }
   },
   "LOGIN": {
@@ -144,6 +254,9 @@
     "EDIT_BUTTON_TEXT": "Edit action",
     "NO_CATEGORY_ERROR": "Please select a category",
     "NO_CONTENT_ERROR": "Please insert the action content",
+    "ALL_CATEGORIES": "All categories",
+    "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to Alert",
+    "CATEGORY": "Category",
     "CATEGORIES": {
       "CATEGORY0": "Category0",
       "CATEGORY1": "Category1",

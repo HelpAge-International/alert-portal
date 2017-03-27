@@ -1,10 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Component, OnInit, OnDestroy} from "@angular/core";
+import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
 import {Router} from "@angular/router";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-mpa',
@@ -14,19 +15,21 @@ import {RxHelper} from "../../utils/RxHelper";
 
 export class MpaComponent implements OnInit,OnDestroy {
   private uid: string;
-  actions: FirebaseListObservable<any>;
+  actions: Observable<any>;
   ActionType = ActionType;
   GenericActionCategory = GenericActionCategory;
-  private subscriptions:RxHelper;
+  private subscriptions: RxHelper;
   private levelSelected;
   private categorySelected;
   private Category = Constants.CATEGORY;
   private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
     GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
     GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
-
-  private ActionLevel = Constants.ACTION_LEVEL;
+  private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.MPA, ActionLevel.APA];
+  private selectedActionLevel: number;
+  private selectedCategoryLevel: number;
+
   // levels = ActionLevel;
   // levelKeys(): Array<string> {
   //   var keys = Object.keys(this.levels);
@@ -65,18 +68,16 @@ export class MpaComponent implements OnInit,OnDestroy {
 
   // TODO - Double filter
   checkLevelSelected() {
-    if (this.levelSelected == 'allLevels') {
-      console.log("All levels selected - Remove level filter")
-    }
+    this.selectedActionLevel = Number(ActionLevel[this.levelSelected]);
+    this.filterData();
   }
 
   checkCategorySelected() {
-    if (this.categorySelected == 'allCategories') {
-      console.log("All categories selected - Remove category filter")
-    }
+    this.selectedCategoryLevel = Number(GenericActionCategory[this.categorySelected]);
+    this.filterData();
   }
 
-  delete(actionKey) {
+  deleteAction(actionKey) {
     console.log("action key: " + actionKey);
     this.dialogService.createDialog("Delete Action?",
       "Are you sure you want to delete this action? This action cannot be undone.").subscribe(result => {
@@ -89,5 +90,78 @@ export class MpaComponent implements OnInit,OnDestroy {
   edit(actionKey) {
     console.log("navigate to edit");
     this.router.navigate(["/system-admin/mpa/create", {id: actionKey}]);
+  }
+
+  private filterData() {
+    if (isNaN(this.selectedActionLevel) && isNaN(this.selectedCategoryLevel)) {
+      //no filter. show all
+      console.log("show all results");
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      });
+    } else if (!isNaN(this.selectedActionLevel) && isNaN(this.selectedCategoryLevel)) {
+      //filter only with mpa
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.level == this.selectedActionLevel) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    } else if (isNaN(this.selectedActionLevel) && !isNaN(this.selectedCategoryLevel)) {
+      //filter only with apa
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.category == this.selectedCategoryLevel) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    } else {
+      // filter both action level and category
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.level == this.selectedActionLevel) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.category == this.selectedCategoryLevel) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    }
   }
 }
