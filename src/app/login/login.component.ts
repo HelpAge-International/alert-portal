@@ -69,8 +69,8 @@ export class LoginComponent implements OnInit {
         {
           provider: AuthProviders.Password,
           method: AuthMethods.Password,
-        }).then(
-        (success) => {
+        })
+        .then((success) => {
           this.af.database.list(Constants.APP_STATUS + '/systemAdmin', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
@@ -95,8 +95,8 @@ export class LoginComponent implements OnInit {
                 }
               });
             });
-        }).catch(
-        (err) => {
+        })
+        .catch((err) => {
           // err.message can't be used here as they won't be translated. A global message is shown here instead.
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;

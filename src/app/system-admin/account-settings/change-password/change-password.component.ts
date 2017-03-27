@@ -1,9 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseAuthState} from "angularfire2";
+import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
+import {CustomerValidator} from "../../../utils/CustomValidator";
 
 @Component({
   selector: 'app-change-password',
@@ -32,7 +33,9 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
-        console.log("System admin uid: " + this.uid)
+        console.log("System admin uid: " + this.uid);
+        console.log('Email - ' + this.af.auth.getAuth().auth.email);
+
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
@@ -50,23 +53,34 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     console.log(this.newPasswordEntered);
     console.log(this.confirmPasswordEntered);
 
+    console.log('Password - ' + this.currentPasswordEntered);
+
+
     if (this.validate()) {
 
       this.af.auth.login({
-        email: this.af.auth.getAuth().auth.email,
-        password: this.currentPasswordEntered
-      }).then((success) => {
-        this.authState.auth.updatePassword(this.newPasswordEntered).then(() => {
-          this.successInactive = false;
-          Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-            this.successInactive = true;
-          })
-        }, error => {
-          console.log(error.message);
-        });
-        }).catch(
-        (err) => {
-          this.errorMessage = "GLOBAL.GENERAL_ERROR";
+          email: this.af.auth.getAuth().auth.email,
+          password: this.currentPasswordEntered
+        },
+        {
+          provider: AuthProviders.Password,
+          method: AuthMethods.Password,
+        })
+        .then((success) => {
+          this.authState.auth.updatePassword(this.newPasswordEntered).then(() => {
+            this.currentPasswordEntered = '';
+            this.newPasswordEntered = '';
+            this.confirmPasswordEntered = '';
+            this.successInactive = false;
+            Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+              this.successInactive = true;
+            })
+          }, error => {
+            console.log(error.message);
+          });
+        })
+        .catch((err) => {
+          this.errorMessage = 'Current password is incorrect. Please re enter';
           this.errorInactive = false;
           Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
             this.errorInactive = true;
@@ -81,7 +95,6 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO - Check for password format here
   /**
    * Returns false and specific error messages
    * @returns {boolean}
@@ -97,8 +110,15 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     } else if (!Boolean(this.confirmPasswordEntered)) {
       this.errorMessage = 'Please confirm your new password';
       return false;
+    } else if (this.currentPasswordEntered == this.newPasswordEntered) {
+      this.errorMessage = 'You have entered the same password. Please enter a new password';
+      return false;
+    } else if (!CustomerValidator.PasswordValidator(this.newPasswordEntered)) {
+      this.errorMessage = 'Password must be at 6-15 digits long with no symbols and should include at least one numeric digit';
+      return false;
     } else if (this.newPasswordEntered != this.confirmPasswordEntered) {
       this.errorMessage = "Passwords don't match";
+      return false;
     }
     return true;
   }
