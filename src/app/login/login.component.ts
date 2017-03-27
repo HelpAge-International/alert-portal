@@ -97,6 +97,7 @@ export class LoginComponent implements OnInit {
             });
         }).catch(
         (err) => {
+          // err.message can't be used here as they won't be translated. A global message is shown here instead.
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.inactive = false;
         });
