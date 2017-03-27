@@ -18,7 +18,7 @@ import {ModelNetwork} from "../../../model/network.model";
 export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
   subscriptions: RxHelper;
 
-  waringMessage: string
+  waringMessage: string;
   hideWarning: boolean = true;
   networkName: string;
   adminTitle: number = 0;
@@ -140,7 +140,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
       }
     }).subscribe(networks => {
       if (networks.length != 0) {
-        this.waringMessage = "Network name duplicate!";
+        this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
         this.hideWarning = false;
         this.dismissWarning();
         return;
@@ -180,22 +180,22 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
 
   validForm(): boolean {
     if (!this.networkName) {
-      this.waringMessage = "Network name can not be empty!";
+      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_EMPTY";
       this.hideWarning = false;
       this.dismissWarning();
       return false;
     } else if (!this.adminFirstName) {
-      this.waringMessage = "Network admin first name can not be empty!";
+      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_FIRST_NAME";
       this.hideWarning = false;
       this.dismissWarning();
       return false;
     } else if (!this.adminLastName) {
-      this.waringMessage = "Network admin last name can not be empty!";
+      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_LAST_NAME";
       this.hideWarning = false;
       this.dismissWarning();
       return false;
     } else if (!this.adminEmail) {
-      this.waringMessage = "Network admin email can not be empty!";
+      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_EMAIL";
       this.hideWarning = false;
       this.dismissWarning();
       return false;

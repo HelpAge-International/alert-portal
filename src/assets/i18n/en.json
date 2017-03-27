@@ -10,6 +10,17 @@
     "AT": "At: ",
     "FILTER": "Filter",
     "TITLE": "Title",
+    "FIRST_NAME": "First Name",
+    "LAST_NAME": "Last Name",
+    "EMAIL": "Email Address",
+    "ADDRESS_LINE_1": "Address Line 1",
+    "ADDRESS_LINE_2": "Address Line 2",
+    "ADDRESS_LINE_3": "Address Line 3",
+    "COUNTRY": "Country",
+    "CITY": "City",
+    "POSTCODE": "Postcode",
+    "PLEASE_ENTER": "Please enter",
+    "OPTIONAL": "Optional",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "EMAIL_ADDRESS": "Email Address",
     "GENERAL_ERROR": "An error occurred. Please check and try again"
@@ -82,6 +93,16 @@
       "FILE_FORMAT": "File Format",
       "FILE_SIZE": "Maximum file size",
       "SAVE": "Save Settings"
+    },
+    "GLOBAL_NETWORKS": {
+      "GLOBAL_NETWORKS": "Global Networks",
+      "EMPTY_LIST": "No Global Networks have been added to ALERT",
+      "ADD_NEW_NETWORK": "Add new network",
+      "SAVE_NEW_NETWORK": "Save new network",
+      "EDIT_NETWORK": "Edit network",
+      "NETWORK_NAME": "Network Name",
+      "NETWORK_DETAIL": "Network Details",
+      "NETWORK_ADMIN_DETAIL": "Network Administrator Details"
     }
   },
   "DIALOG": {
@@ -136,10 +157,18 @@
   },
   "ERROR": {
     "NAME_DUPLICATE": "Agency name duplicate!",
-    "NETWORK_NAME_DUPLICATE": "Network name duplicate!",
     "NAME_MISSING": "Name is missing!",
     "EMAIL_NOT_VALID": "Email is not valid!",
-    "COUNTRY_DUPLICATE":"This country is already registered!"
+    "COUNTRY_DUPLICATE": "This country is already registered!",
+    "SYSTEM_ADMIN": {
+      "GLOBAL_NETWORKS": {
+        "NETWORK_NAME_DUPLICATE": "Network name duplicate!",
+        "NETWORK_NAME_EMPTY": "Network name can not be empty!",
+        "NETWORK_ADMIN_FIRST_NAME": "Network admin first name can not be empty!",
+        "NETWORK_ADMIN_LAST_NAME": "Network admin last name can not be empty!",
+        "NETWORK_ADMIN_EMAIL": "Network admin email can not be empty!"
+      }
+    }
   },
   "COMMON": {
     "CANCEL": "Cancel",

@@ -1,65 +1,38 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
-<!--<div class="modal fade" id="deactivate_network" tabindex="-1" role="dialog"-->
-     <!--aria-labelledby="exampleModalLabel"-->
-     <!--aria-hidden="true">-->
-  <!--<div class="modal-dialog" role="document">-->
-    <!--<div class="modal-content">-->
-      <!--<div class="modal-header">-->
-        <!--<h5 class="modal-title" id="exampleModalLabel">Deactivate <strong>Alliance 2015</strong></h5>-->
-        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-          <!--<span aria-hidden="true">&times;</span>-->
-        <!--</button>-->
-      <!--</div>-->
-      <!--<div class="modal-body">-->
-        <!--<div class="text-center"><p>Are you sure you want to deactivate this network? The-->
-          <!--associated users will be unable to access the network page-->
-          <!--and all associated indicators, actions and response plans-->
-          <!--will be removed.</p></div>-->
-      <!--</div>-->
-      <!--<div class="modal-footer">-->
-
-        <!--<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>-->
-        <!--<button type="button" class="btn btn-primary">Confirm</button>-->
-
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->
-
-
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>Global Networks</h1>
-      <button type="button" class="btn btn-primary" (click)="addNetwork()">Add new network</button>
+      <h1>{{"HOME.GLOBAL_NETWORKS.GLOBAL_NETWORKS" | translate}}</h1>
+      <button type="button" class="btn btn-primary" (click)="addNetwork()">{{"HOME.GLOBAL_NETWORKS.ADD_NEW_NETWORK" |
+        translate | uppercase}}
+      </button>
     </div>
 
-    <div *ngIf="(networks | async)?.length == 0" class="Empty--ribbon">No Global Networks have been added to ALERT</div>
+    <div *ngIf="(networks | async)?.length == 0" class="Empty--ribbon">{{"HOME.GLOBAL_NETWORKS.EMPTY_LIST" |
+      translate}}
+    </div>
 
     <table class="table Table__v-spacing__mid Agency-table">
       <tr *ngFor="let network of networks | async">
         <td><img src="{{network.logoPath}}" alt="" class="Agency-logo"></td>
         <td>{{network.name}}</td>
         <td></td>
-        <td>{{network.isActive?"Active":"DeActive"}}</td>
+        <td *ngIf="network.isActive">{{"HOME.ACTIVE" |translate}}</td>
+        <td *ngIf="!network.isActive">{{"HOME.DEACTIVE" |translate}}</td>
         <td>
-          <div class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network" (click)="toggleActive(network)">
-            {{network.isActive?"Deactivate":"Activate"}}
+          <div *ngIf="network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
+               (click)="toggleActive(network)">
+            {{"HOME.DEACTIVATE" | translate}}
           </div>
-          <div class="btn btn-primary" (click)="edit(network)">Edit</div>
+          <div *ngIf="!network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
+               (click)="toggleActive(network)">
+            {{"HOME.ACTIVATE" | translate}}
+          </div>
+          <div class="btn btn-primary" (click)="edit(network)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
       </tr>
-      <!--<tr>-->
-      <!--<td><img src="img/donor/StartNetwork.svg" alt="" class="Agency-logo"></td>-->
-      <!--<td>Start Nextwork</td>-->
-      <!--<td>Active</td>-->
-      <!--<td>-->
-      <!--<div class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network">Deactivate</div>-->
-      <!--<div class="btn btn-primary">Edit</div>-->
-      <!--</td>-->
-      <!--</tr>-->
     </table>
   </div>
 </div>
