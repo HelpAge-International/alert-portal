@@ -2,10 +2,8 @@
 <app-system-admin-menu></app-system-admin-menu>
 
 <div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
-<!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <!--<div [routerLink]="['/system-admin']" class="Back&#45;&#45;button">Home</div>-->
 
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"HOME.ADD_NEW_AGENCY" | translate}}</h1>
@@ -115,6 +113,20 @@
                    name="agencyAdminPostCode">
           </div>
         </div>
+      </div>
+
+      <label>Is this a donor agency?*</label>
+      <div class="row no-gutters">
+        <label for="yes-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+          <input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">
+          Yes
+        </label>
+      </div>
+      <div class="row no-gutters">
+        <label for="no-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+          <input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">
+          No
+        </label>
       </div>
 
       <div class="Form-submit__wrapper">

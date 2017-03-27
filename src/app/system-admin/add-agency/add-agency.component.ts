@@ -21,19 +21,19 @@ import {Observable} from "rxjs";
 })
 export class AddAgencyComponent implements OnInit,OnDestroy {
 
-  waringMessage: string
-  agencyName: string
+  waringMessage: string;
+  agencyName: string;
   agencyAdminTitle: number = 0;
-  agencyAdminFirstName: string
-  agencyAdminLastName: string
-  agencyAdminEmail: string
-  agencyAdminAddressLine1: string
-  agencyAdminAddressLine2: string
-  agencyAdminAddressLine3: string
-  agencyAdminCountry: number
-  agencyAdminCity: string
-  agencyAdminPostCode: string
-  hideWarning: boolean
+  agencyAdminFirstName: string;
+  agencyAdminLastName: string;
+  agencyAdminEmail: string;
+  agencyAdminAddressLine1: string;
+  agencyAdminAddressLine2: string;
+  agencyAdminAddressLine3: string;
+  agencyAdminCountry: number;
+  agencyAdminCity: string;
+  agencyAdminPostCode: string;
+  hideWarning: boolean;
   isEdit = false;
   // Country = Country;
   Country = Constants.COUNTRY;
@@ -50,6 +50,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   private secondApp: firebase.app.App;
   private systemAdminUid: string;
   private preAgencyName: string;
+  private isDonor: boolean = true;
 
   constructor(private af: AngularFire, private router: Router,
               private route: ActivatedRoute, private dialogService: DialogService) {
@@ -90,6 +91,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       this.agencyName = agency.name;
       this.preAgencyName = agency.name;
       this.adminId = agency.adminId;
+      this.isDonor = agency.isDonor;
 
       //load from user public
       let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
@@ -130,10 +132,19 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     }
   }
 
+  donorSelected() {
+    this.isDonor = true;
+  }
+
+  notDonorSelected() {
+    this.isDonor = false;
+  }
+
   private updateAgencyInfo() {
     console.log("update");
     console.log(this.agencyAdminEmail);
     console.log(this.emailInDatabase);
+    console.log(this.isDonor);
     if (this.agencyAdminEmail == this.emailInDatabase) {
       this.updateNoEmailChange();
     } else {
@@ -164,9 +175,11 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   private updateToFirebase() {
     //update user
     if (this.userPublic) {
+
       this.userPublic.firstName = this.agencyAdminFirstName;
       this.userPublic.lastName = this.agencyAdminLastName;
       this.userPublic.title = this.agencyAdminTitle;
+
       if (this.agencyAdminAddressLine1) {
         this.userPublic.addressLine1 = this.agencyAdminAddressLine1;
       }
@@ -185,9 +198,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       if (this.agencyAdminPostCode) {
         this.userPublic.postCode = this.agencyAdminPostCode;
       }
+
       let updateData = {};
       updateData["/userPublic/" + this.adminId] = this.userPublic;
       updateData["/agency/" + this.agencyId + "/name"] = this.agencyName;
+      updateData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
+
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         this.backToHome();
       }, error => {
@@ -274,28 +290,30 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     newAgencyAdmin.country = this.agencyAdminCountry ? this.agencyAdminCountry : -1;
     newAgencyAdmin.postCode = this.agencyAdminPostCode ? this.agencyAdminPostCode : "";
     newAgencyAdmin.phone = "";
-
-    //testing
     agencyData["/userPublic/" + uid] = newAgencyAdmin;
-    // let systemAdminUid = "hoXTsvefEranzaSQTWbkhpBenLn2";
     agencyData["/administratorAgency/" + uid + "/systemAdmin/" + this.systemAdminUid] = true;
+
     if (this.isEdit) {
+
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
+      agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/administratorAgency/" + this.adminId] = null;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
     } else {
+
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
-      let agency = new ModelAgency(this.agencyName, false);
-      // agency.name = this.agencyName;
+      let agency = new ModelAgency(this.agencyName);
+      agency.isDonor = this.isDonor;
       agency.isActive = true;
       agency.adminId = uid;
       agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
       agencyData["/agency/" + uid] = agency;
     }
+
     this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
       this.backToHome();
     }, error => {
@@ -342,7 +360,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   }
 
   dismissAlert() {
-    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(()=>{
+    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
       this.hideWarning = true;
     });
     this.rxhelper.add(subscribe);

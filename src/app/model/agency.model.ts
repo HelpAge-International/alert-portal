@@ -19,8 +19,7 @@ export class ModelAgency {
   public remainApproved:number;
   public sentmessages:{};
 
-  constructor(name:string, isDonor:boolean) {
+  constructor(name:string) {
     this.name = name;
-    this.isDonor = isDonor;
   }
 }

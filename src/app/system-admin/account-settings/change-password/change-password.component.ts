@@ -11,6 +11,7 @@ import {CustomerValidator} from "../../../utils/CustomValidator";
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css']
 })
+
 export class ChangePasswordComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -34,8 +35,6 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
         this.authState = auth;
         this.uid = auth.uid;
         console.log("System admin uid: " + this.uid);
-        console.log('Email - ' + this.af.auth.getAuth().auth.email);
-
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
@@ -48,13 +47,6 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log("Update password");
-    console.log(this.currentPasswordEntered);
-    console.log(this.newPasswordEntered);
-    console.log(this.confirmPasswordEntered);
-
-    console.log('Password - ' + this.currentPasswordEntered);
-
 
     if (this.validate()) {
 
@@ -66,7 +58,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
           provider: AuthProviders.Password,
           method: AuthMethods.Password,
         })
-        .then((success) => {
+        .then(() => {
           this.authState.auth.updatePassword(this.newPasswordEntered).then(() => {
             this.currentPasswordEntered = '';
             this.newPasswordEntered = '';
@@ -79,7 +71,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
             console.log(error.message);
           });
         })
-        .catch((err) => {
+        .catch(() => {
           this.errorMessage = 'Current password is incorrect. Please re enter';
           this.errorInactive = false;
           Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
