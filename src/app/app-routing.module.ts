@@ -27,6 +27,8 @@ import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-mes
 import {DepartmentComponent} from "./agency-admin/settings/department/department.component";
 import {AccountSettingsComponent} from "./system-admin/account-settings/account-settings.component";
 import {ChangePasswordComponent} from "./system-admin/account-settings/change-password/change-password.component";
+import {GlobalNetworksComponent} from "./system-admin/global-networks/global-networks.component";
+import {CreateEditGlobalNetworkComponent} from "./system-admin/global-networks/create-edit-global-network/create-edit-global-network.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -53,9 +55,14 @@ const routes: Routes = [
   {path: 'system-admin/messages/create', component: MessagesCreateComponent},
   {path: 'system-admin/messages', component: MessagesComponent},
   {path: 'system-admin', component: SystemAdminComponent},
-  {path: 'system-admin/network', component: SystemAdminComponent},
   {path: 'system-admin/account-settings', component: AccountSettingsComponent},
   {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
+  {path: 'system-admin/network', component: GlobalNetworksComponent},
+  {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
+  {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
+  {path: 'country-admin',  component: CountryAdminComponent},
+  //TODO: define needed routes here. see the example above
+
   /**
    * Agency admin
    */

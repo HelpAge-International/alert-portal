@@ -12,6 +12,7 @@ import "rxjs/add/operator/mergeMap";
 import {PersonTitle, Country} from "../../utils/Enums";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-add-agency',
@@ -48,6 +49,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   private deleteAgency: any = {};
   private secondApp: firebase.app.App;
   private systemAdminUid: string;
+  private preAgencyName: string;
 
   constructor(private af: AngularFire, private router: Router,
               private route: ActivatedRoute, private dialogService: DialogService) {
@@ -59,7 +61,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       if (user) {
         this.systemAdminUid = user.auth.uid;
         this.secondApp = firebase.initializeApp(firebaseConfig, "second");
-        this.waringMessage = "warning message!!!";
+        // this.waringMessage = "warning message!!!";
         this.hideWarning = true;
         let subscription = this.route.params
           .subscribe((params: Params) => {
@@ -84,14 +86,22 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe((agency: ModelAgency) => {
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe(agency => {
       this.agencyName = agency.name;
+      this.preAgencyName = agency.name;
       this.adminId = agency.adminId;
 
       //load from user public
       let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
-        .subscribe((user: ModelUserPublic) => {
-          this.userPublic = user;
+        .subscribe(user => {
+          this.userPublic = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
+          this.userPublic.addressLine1 = user.addressLine1;
+          this.userPublic.addressLine2 = user.addressLine2;
+          this.userPublic.addressLine3 = user.addressLine3;
+          this.userPublic.country = user.country;
+          this.userPublic.city = user.city;
+          this.userPublic.postCode = user.postCode;
+
           this.agencyAdminTitle = user.title;
           this.agencyAdminFirstName = user.firstName;
           this.agencyAdminLastName = user.lastName;
@@ -191,6 +201,10 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
   }
 
   private validateAgencyName() {
+    if (this.preAgencyName && this.preAgencyName == this.agencyName) {
+      this.updateToFirebase();
+      return;
+    }
     console.log("validate agency name");
     let subscription = this.af.database.list(Constants.APP_STATUS + "/agency", {
       query: {
@@ -208,6 +222,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       } else {
         this.waringMessage = "ERROR.NAME_DUPLICATE";
         this.hideWarning = false;
+        this.dismissAlert();
       }
     });
     this.rxhelper.add(subscription);
@@ -226,6 +241,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       console.log(error.message);
       this.waringMessage = error.message;
       this.hideWarning = false;
+      this.dismissAlert();
     });
   }
 
@@ -233,10 +249,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     if (!this.agencyName) {
       this.hideWarning = false;
       this.waringMessage = "ERROR.NAME_MISSING";
+      this.dismissAlert();
       return false;
     } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
       this.hideWarning = false;
       this.waringMessage = "ERROR.EMAIL_NOT_VALID";
+      this.dismissAlert();
       return false;
     } else {
       this.hideWarning = true;
@@ -265,12 +283,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/administratorAgency/" + this.adminId] = null;
-      agencyData["/group/agencygroup/" + this.adminId] = null;
+      agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
-      agencyData["/group/agencygroup/" + uid] = true;
+      agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
       let agency = new ModelAgency(this.agencyName, false);
       // agency.name = this.agencyName;
       agency.isActive = true;
@@ -302,7 +320,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
         if (result) {
           this.deleteAgency["/userPublic/" + this.adminId] = null;
           this.deleteAgency["/administratorAgency/" + this.adminId] = null;
-          this.deleteAgency["/group/agencygroup/" + this.adminId] = null;
+          this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
           this.deleteAgency["/agency/" + this.agencyId] = null;
           this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
           this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
@@ -321,5 +339,12 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       });
       this.rxhelper.add(subscription);
     }
+  }
+
+  dismissAlert() {
+    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(()=>{
+      this.hideWarning = true;
+    });
+    this.rxhelper.add(subscribe);
   }
 }

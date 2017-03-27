@@ -59,6 +59,8 @@ import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-
 import {AgencyAdminHeaderComponent} from "./agency-admin/agency-admin-header/agency-admin-header.component";
 import { AccountSettingsComponent } from './system-admin/account-settings/account-settings.component';
 import { ChangePasswordComponent } from './system-admin/account-settings/change-password/change-password.component';
+import { GlobalNetworksComponent } from './system-admin/global-networks/global-networks.component';
+import { CreateEditGlobalNetworkComponent } from './system-admin/global-networks/create-edit-global-network/create-edit-global-network.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -128,7 +130,9 @@ const firebaseAuthConfig = {
     CreateEditMessageComponent,
     AgencyAdminHeaderComponent,
     AccountSettingsComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    GlobalNetworksComponent,
+    CreateEditGlobalNetworkComponent
   ],
   imports: [
     BrowserModule,

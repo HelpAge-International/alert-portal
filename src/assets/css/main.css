@@ -6816,8 +6816,8 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 
 html.W-Sticky-nav--en.Alert-success,
 html.W-Sticky-nav--en.Alert-warning,
-html.W-Sticky-nav--en.Alert-error{
-  top:55px;
+html.W-Sticky-nav--en.Alert-error {
+  top: 55px;
 }
 
 .Alert.Inactive, .Inactive.Alert-success, .Inactive.Alert-warning, .Inactive.Alert-error {

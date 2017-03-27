@@ -1,0 +1,39 @@
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>{{"HOME.GLOBAL_NETWORKS.GLOBAL_NETWORKS" | translate}}</h1>
+      <button type="button" class="btn btn-primary" (click)="addNetwork()">{{"HOME.GLOBAL_NETWORKS.ADD_NEW_NETWORK" |
+        translate | uppercase}}
+      </button>
+    </div>
+
+    <div *ngIf="(networks | async)?.length == 0" class="Empty--ribbon">{{"HOME.GLOBAL_NETWORKS.EMPTY_LIST" |
+      translate}}
+    </div>
+
+    <table class="table Table__v-spacing__mid Agency-table">
+      <tr *ngFor="let network of networks | async">
+        <td><img src="{{network.logoPath}}" alt="" class="Agency-logo"></td>
+        <td>{{network.name}}</td>
+        <td></td>
+        <td *ngIf="network.isActive">{{"HOME.ACTIVE" |translate}}</td>
+        <td *ngIf="!network.isActive">{{"HOME.DEACTIVE" |translate}}</td>
+        <td>
+          <div *ngIf="network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
+               (click)="toggleActive(network)">
+            {{"HOME.DEACTIVATE" | translate}}
+          </div>
+          <div *ngIf="!network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
+               (click)="toggleActive(network)">
+            {{"HOME.ACTIVATE" | translate}}
+          </div>
+          <div class="btn btn-primary" (click)="edit(network)">{{"GLOBAL.EDIT" | translate}}</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+

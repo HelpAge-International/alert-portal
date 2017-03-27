@@ -6,11 +6,18 @@ export class Constants {
   /*PATHS*/
   static APP_STATUS = "/sand";
   static LOGIN_PATH = "/login";
+
+  //system admin
   static DEFAULT_MPA_PATH = "/system-admin/mpa";
   static SYSTEM_ADMIN_HOME = "/system-admin";
+  static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
+  static SYSTEM_ADMIN_ADD_NETWORK = "/system-admin/network/create";
+
+  //agency admin
   static AGENCY_ADMIN_HOME = "/agency-admin/country-office";
   static AGENCY_ADMIN_ADD_STARFF = "/agency-admin/staff/create-edit-staff";
   static ALERT_DURATION: number = 5000;
+  static AGENCY_ADMIN_STARFF = "/agency-admin/staff";
 
   /*LIST VALUES FRO TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
