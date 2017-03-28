@@ -46,11 +46,11 @@ export class GlobalNetworksComponent implements OnInit,OnDestroy {
     let title = "";
     let content = "";
     if (network.isActive) {
-      title = "Deactivate " + network.name;
-      content = "Are you sure you want to deactivate this network? The associated users will be unable to access the network page and all associated indicators, actions and response plans will be removed.";
+      title = "GLOBAL.DEACTIVATE";
+      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
     } else {
-      title = "Activate " + network.name;
-      content = "Are you sure you want to activate this network? The associated users will be able to access the network page.";
+      title = "GLOBAL.ACTIVATE";
+      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
     }
     let subscription = this.dialogService.createDialog(title, content)
       .subscribe(result => {

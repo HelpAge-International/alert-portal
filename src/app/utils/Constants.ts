@@ -3,13 +3,16 @@ import {Country, PersonTitle, GenericActionCategory} from "./Enums";
  * Created by Fei on 08/03/2017.
  */
 export class Constants {
+
+  static TEMP_PASSWORD = "testtest";
+
   /*PATHS*/
   static APP_STATUS = "/sand";
   static LOGIN_PATH = "/login";
 
   //system admin
   static DEFAULT_MPA_PATH = "/system-admin/mpa";
-  static SYSTEM_ADMIN_HOME = "/system-admin";
+  static SYSTEM_ADMIN_HOME = "/system-admin/agency";
   static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
   static SYSTEM_ADMIN_ADD_NETWORK = "/system-admin/network/create";
 

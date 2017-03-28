@@ -5,7 +5,7 @@ import {HttpModule, Http} from "@angular/http";
 import {AngularFireModule, AuthProviders, AuthMethods} from "angularfire2";
 import {AppComponent} from "./app.component";
 import {LoginComponent} from "./login/login.component";
-import {SystemAdminComponent} from "./system-admin/system-admin.component";
+import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
 import {AgencyAdminComponent} from "./agency-admin/agency-admin.component";
 import {CountryAdminComponent} from "./country-admin/country-admin.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";

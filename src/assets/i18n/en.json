@@ -97,7 +97,11 @@
       "NETWORK_NAME_EMPTY": "Network name can not be empty!",
       "NETWORK_ADMIN_FIRST_NAME": "Network admin first name can not be empty!",
       "NETWORK_ADMIN_LAST_NAME": "Network admin last name can not be empty!",
-      "NETWORK_ADMIN_EMAIL": "Network admin email can not be empty!"
+      "NETWORK_ADMIN_EMAIL": "Network admin email can not be empty!",
+      "DIALOG":{
+        "DEACTIVATE_CONTENT":"Are you sure you want to deactivate this network? The associated users will be unable to access the network page and all associated indicators, actions and response plans will be removed.",
+        "ACTIVATE_CONTENT":"Are you sure you want to activate this network? The associated users will be able to access the network page."
+      }
     },
     "ACTIONS": {
       "CREATE_NEW_ACTION": "Create new action",

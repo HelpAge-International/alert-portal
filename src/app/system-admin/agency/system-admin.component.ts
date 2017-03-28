@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Constants} from "../utils/Constants";
+import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
-import {DialogService} from "../dialog/dialog.service";
+import {DialogService} from "../../dialog/dialog.service";
 import {Subscription, Observable} from "rxjs";
 
 

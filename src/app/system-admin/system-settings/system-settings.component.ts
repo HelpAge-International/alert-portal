@@ -12,7 +12,7 @@ import {RxHelper} from "../../utils/RxHelper";
   templateUrl: './system-settings.component.html',
   styleUrls: ['./system-settings.component.css']
 })
-export class SystemSettingsComponent implements OnInit,OnDestroy {
+export class SystemSettingsComponent implements OnInit, OnDestroy {
 
   minGreen: number;
   minAmber: number;
@@ -43,7 +43,7 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
   FileType = FileType;
   modelSystem: ModelSystem;
   uid: string;
-  successMessage: string = "HOME.SETTING.SETTING_SAVED";
+  successMessage: string = "SYSTEM_ADMIN.SETTING.SETTING_SAVED";
   isSaved: boolean = false;
   private subscriptions: RxHelper;
 
