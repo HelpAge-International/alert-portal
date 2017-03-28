@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl("/system-admin");
+                  this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
                 }
               });
             });
