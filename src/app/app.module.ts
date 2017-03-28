@@ -61,6 +61,7 @@ import { AccountSettingsComponent } from './system-admin/account-settings/accoun
 import { ChangePasswordComponent } from './system-admin/account-settings/change-password/change-password.component';
 import { GlobalNetworksComponent } from './system-admin/global-networks/global-networks.component';
 import { CreateEditGlobalNetworkComponent } from './system-admin/global-networks/create-edit-global-network/create-edit-global-network.component';
+import { CreateEditRegionComponent } from './agency-admin/country-office/create-edit-region/create-edit-region.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -132,7 +133,8 @@ const firebaseAuthConfig = {
     AccountSettingsComponent,
     ChangePasswordComponent,
     GlobalNetworksComponent,
-    CreateEditGlobalNetworkComponent
+    CreateEditGlobalNetworkComponent,
+    CreateEditRegionComponent
   ],
   imports: [
     BrowserModule,

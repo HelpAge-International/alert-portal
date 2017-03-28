@@ -11,7 +11,7 @@ import {DialogService} from "../../dialog/dialog.service";
   templateUrl: './country-office.component.html',
   styleUrls: ['./country-office.component.css']
 })
-export class CountryOfficeComponent implements OnInit,OnDestroy {
+export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private subscriptions: RxHelper;
   private uid: string;
@@ -41,7 +41,16 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
 
   toggleActive(country) {
     let state: boolean = !country.isActive;
-    let subscription = this.dialogService.createDialog(country.name ? "Deactivate " + country.name : "Deactivate", "Are you sure you want to do this?")
+    let title = "";
+    let content = "";
+    if (country.isActive) {
+      title = "Deactivate?";
+      content = "Are you sure you want to deactivate this region? The associated regional director will no longer be able to approve response plans from the country offices within this region.";
+    } else {
+      title = "Activate?";
+      content = "Are you sure you want to activate this region?";
+    }
+    let subscription = this.dialogService.createDialog(title, content)
       .subscribe(result => {
         if (!result) {
           return;

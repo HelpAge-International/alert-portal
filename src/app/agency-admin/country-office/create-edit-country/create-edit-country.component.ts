@@ -9,13 +9,14 @@ import * as firebase from "firebase";
 import {firebaseConfig} from "../../../app.module";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelCountryOffice} from "../../../model/countryoffice.model";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-edit-country',
   templateUrl: './create-edit-country.component.html',
   styleUrls: ['./create-edit-country.component.css']
 })
-export class CreateEditCountryComponent implements OnInit,OnDestroy {
+export class CreateEditCountryComponent implements OnInit, OnDestroy {
   subscriptions: RxHelper;
   countryNames = Constants.COUNTRY;
   countrySelections = Constants.COUNTRY_SELECTION;
@@ -43,6 +44,7 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   private preCountryOfficeLocation: number;
   private isUserChange: boolean;
   private tempAdminId: string;
+  private alerts = {};
 
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
@@ -114,6 +116,7 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
   }
 
   submit() {
+    console.log("submit");
     if (!this.validateForm()) {
       return;
     }
@@ -125,10 +128,36 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
     // this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
   }
 
+  validate() {
+    console.log("validate form");
+    if (this.countryOfficeLocation < 0) {
+      this.waringMessage = "Country can not be null!";
+      this.showAlert();
+      return;
+    } else if (!this.countryAdminFirstName) {
+      this.alerts[this.countryAdminFirstName] = true;
+      this.waringMessage = "First name can not be empty!";
+      this.showAlert();
+      return;
+    } else if (!this.countryAdminLastName) {
+      this.alerts[this.countryAdminLastName] = true;
+      this.waringMessage = "Last name can not be empty!";
+      this.showAlert();
+      return;
+    } else if (!this.countryAdminEmail) {
+      this.alerts[this.countryAdminEmail] = true;
+      this.waringMessage = "Email can not be empty!";
+      this.showAlert();
+      return;
+    } else {
+      this.hideWarning = true;
+    }
+  }
+
   private validateForm(): boolean {
     if (!CustomerValidator.EmailValidator(this.countryAdminEmail)) {
-      this.hideWarning = false;
-      this.waringMessage = "ERROR.EMAIL_NOT_VALID";
+      this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
+      this.showAlert();
       return false;
     } else {
       this.hideWarning = true;
@@ -318,5 +347,13 @@ export class CreateEditCountryComponent implements OnInit,OnDestroy {
     }, error => {
       console.log(error.message);
     });
+  }
+
+  private showAlert() {
+    this.hideWarning = false;
+    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      this.hideWarning = true;
+    });
+    this.subscriptions.add(subscribe);
   }
 }

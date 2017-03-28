@@ -47,26 +47,24 @@
                 {{titleNames[title] | translate}}
               </option>
             </select>
-            <!--<input type="text" class="form-control" id="Title" required [(ngModel)]="countryAdminTitle"-->
-            <!--name="countryAdminTitle">-->
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="form-group">
+          <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminFirstName]}">
             <label for="f-Name">First Name*</label>
             <input type="text" class="form-control" id="f-Name" required [(ngModel)]="countryAdminFirstName"
                    name="countryAdminFirstName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="form-group">
+          <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminLastName]}">
             <label for="l-Name">Last Name*</label>
             <input type="text" class="form-control" id="l-Name" required [(ngModel)]="countryAdminLastName"
                    name="countryAdminLastName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="form-group">
+          <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminEmail]}">
             <label for="Email">Email Address*</label>
             <input type="text" class="form-control" id="Email" required [(ngModel)]="countryAdminEmail"
                    name="countryAdminEmail">
@@ -104,11 +102,11 @@
             <label for="Country">Country</label>
             <!--<input type="text" class="form-control" id="Country">-->
             <div>
-              <md-select id="Country" [(ngModel)]="countryAdminCountry" name="countryAdminCountry">
-                <md-option *ngFor="let country of countrySelections" [value]="country">{{countryNames[country] |
+              <select class="form-control" id="Country" [(ngModel)]="countryAdminCountry" name="countryAdminCountry">
+                <option *ngFor="let country of countrySelections" [value]="country">{{countryNames[country] |
                   translate}}
-                </md-option>
-              </md-select>
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -128,13 +126,13 @@
       </div>
 
       <div class="Form-submit__wrapper">
-        <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
-        <button *ngIf="isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">UPDATE COUNTRY
+        <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="validate()">UPDATE COUNTRY
           OFFICE
         </button>
-        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" [disabled]="!countryForm.form.valid">SAVE NEW
+        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="validate()">SAVE NEW
           COUNTRY OFFICE
         </button>
+        <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
       </div>
 
     </form>
