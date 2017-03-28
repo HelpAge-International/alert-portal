@@ -121,7 +121,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
   submit() {
     console.log("submit");
     if (!CustomerValidator.EmailValidator(this.adminEmail)) {
-      this.waringMessage = "ERROR.EMAIL_NOT_VALID";
+      this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
       return;
     }
@@ -141,7 +141,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
       }
     }).subscribe(networks => {
       if (networks.length != 0) {
-        this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
+        this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
         this.showAlert();
         return;
       }
@@ -180,22 +180,22 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
   validForm(): boolean {
     if (!this.networkName) {
       this.alerts[this.networkName] = true;
-      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_EMPTY";
+      this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_EMPTY";
       this.showAlert();
       return false;
     } else if (!this.adminFirstName) {
       this.alerts[this.adminFirstName] = true;
-      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_FIRST_NAME";
+      this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_FIRST_NAME";
       this.showAlert();
       return false;
     } else if (!this.adminLastName) {
       this.alerts[this.adminLastName] = true;
-      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_LAST_NAME";
+      this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_LAST_NAME";
       this.showAlert();
       return false;
     } else if (!this.adminEmail) {
       this.alerts[this.adminEmail] = true;
-      this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_EMAIL";
+      this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_EMAIL";
       this.showAlert();
       return false;
     } else {

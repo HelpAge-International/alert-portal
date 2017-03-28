@@ -4,13 +4,13 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>{{"HOME.GLOBAL_NETWORKS.GLOBAL_NETWORKS" | translate}}</h1>
-      <button type="button" class="btn btn-primary" (click)="addNetwork()">{{"HOME.GLOBAL_NETWORKS.ADD_NEW_NETWORK" |
+      <h1>{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.GLOBAL_NETWORKS" | translate}}</h1>
+      <button type="button" class="btn btn-primary" (click)="addNetwork()">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.ADD_NEW_NETWORK" |
         translate | uppercase}}
       </button>
     </div>
 
-    <div *ngIf="(networks | async)?.length == 0" class="Empty--ribbon">{{"HOME.GLOBAL_NETWORKS.EMPTY_LIST" |
+    <div *ngIf="(networks | async)?.length == 0" class="Empty--ribbon">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.EMPTY_LIST" |
       translate}}
     </div>
 
@@ -19,16 +19,16 @@
         <td><img src="{{network.logoPath}}" alt="" class="Agency-logo"></td>
         <td>{{network.name}}</td>
         <td></td>
-        <td *ngIf="network.isActive">{{"HOME.ACTIVE" |translate}}</td>
-        <td *ngIf="!network.isActive">{{"HOME.DEACTIVE" |translate}}</td>
+        <td *ngIf="network.isActive">{{"GLOBAL.ACTIVE" |translate}}</td>
+        <td *ngIf="!network.isActive">{{"GLOBAL.DEACTIVE" |translate}}</td>
         <td>
           <div *ngIf="network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
                (click)="toggleActive(network)">
-            {{"HOME.DEACTIVATE" | translate}}
+            {{"GLOBAL.DEACTIVATE" | translate}}
           </div>
           <div *ngIf="!network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
                (click)="toggleActive(network)">
-            {{"HOME.ACTIVATE" | translate}}
+            {{"GLOBAL.ACTIVATE" | translate}}
           </div>
           <div class="btn btn-primary" (click)="edit(network)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>

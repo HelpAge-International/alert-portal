@@ -10,17 +10,17 @@
       <div class="Full-page__wrap--inner">
 
         <div class="Header-title__wrap">
-          <h1 *ngIf="!isEdit">{{"HOME.GLOBAL_NETWORKS.ADD_NEW_NETWORK" | translate}}</h1>
-          <h1 *ngIf="isEdit">{{"HOME.GLOBAL_NETWORKS.EDIT_NETWORK" | translate}}</h1>
+          <h1 *ngIf="!isEdit">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.ADD_NEW_NETWORK" | translate}}</h1>
+          <h1 *ngIf="isEdit">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.EDIT_NETWORK" | translate}}</h1>
         </div>
 
-        <h3 class="System-admin__Sub-title--spaced">{{"HOME.GLOBAL_NETWORKS.NETWORK_DETAIL" | translate}}</h3>
+        <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_DETAIL" | translate}}</h3>
         <hr>
 
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[networkName]}">
-              <label for="Name">{{"HOME.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
+              <label for="Name">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      required
                      [(ngModel)]="networkName"
@@ -29,7 +29,8 @@
           </div>
         </div>
 
-        <h3 class="System-admin__Sub-title--spaced">{{"HOME.GLOBAL_NETWORKS.NETWORK_ADMIN_DETAIL" | translate}}</h3>
+        <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_DETAIL" |
+          translate}}</h3>
         <hr>
 
         <div class="row">
@@ -45,7 +46,7 @@
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[adminFirstName]}">
-              <label for="f-Name">{{"GLOBAL.FIRST_NAME" | translate}}*</label>
+              <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="f-Name" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="adminFirstName" name="adminFirstName">
@@ -53,7 +54,7 @@
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[adminLastName]}">
-              <label for="l-Name">{{"GLOBAL.LAST_NAME" | translate}}*</label>
+              <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="l-Name" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="adminLastName"
@@ -65,7 +66,7 @@
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[adminEmail]}">
-              <label for="Email">{{"GLOBAL.EMAIL" | translate}}*</label>
+              <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
               <input type="text" class="form-control" id="Email" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="adminEmail"
@@ -77,21 +78,21 @@
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="A-line-1">{{"GLOBAL.ADDRESS_LINE_1" | translate}}</label>
+              <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}</label>
               <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                      [(ngModel)]="adminAddressLine1" name="adminAddressLine1">
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="A-line-2">{{"GLOBAL.ADDRESS_LINE_2" | translate}}</label>
+              <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
               <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                      [(ngModel)]="adminAddressLine2" name="adminAddressLine2">
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="A-line-3">{{"GLOBAL.ADDRESS_LINE_3" | translate}}</label>
+              <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
               <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                      [(ngModel)]="adminAddressLine3" name="adminAddressLine3">
             </div>
@@ -101,24 +102,23 @@
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="Country">{{"GLOBAL.COUNTRY" | translate}}</label>
-
+              <label for="Country"> {{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
               <select name="Country" id="Country" class="form-control" [(ngModel)]="adminCountry">
-                <option *ngFor="let country of COUNTRY_SELECTION">{{COUNTRY[country] | translate}}</option>
+                <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}</option>
               </select>
 
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="City">{{"GLOBAL.CITY" | translate}}</label>
+              <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
               <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                      [(ngModel)]="adminCity" name="adminCity">
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="Postcode">{{"GLOBAL.POSTCODE" | translate}}</label>
+              <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
               <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                      [(ngModel)]="adminPostcode" name="adminPostcode">
             </div>
@@ -126,11 +126,11 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <button *ngIf="!isEdit" md-raised-button class="btn btn-primary" type="submit" (click)="validate()">
-            {{"HOME.GLOBAL_NETWORKS.SAVE_NEW_NETWORK" | translate | uppercase}}
+          <button *ngIf="!isEdit"  class="btn btn-primary" type="submit" (click)="validate()">
+            {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.SAVE_NEW_NETWORK" | translate | uppercase}}
           </button>
-          <button *ngIf="isEdit" md-raised-button class="btn btn-primary" type="submit" (click)="validate()">
-            {{"HOME.GLOBAL_NETWORKS.EDIT_NETWORK" | translate | uppercase}}
+          <button *ngIf="isEdit"  class="btn btn-primary" type="submit" (click)="validate()">
+            {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.EDIT_NETWORK" | translate | uppercase}}
           </button>
           <button md-button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}
           </button>

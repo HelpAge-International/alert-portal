@@ -4,22 +4,15 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>{{"HOME.TITLE" | translate}}</h1>
+      <h1>{{"SYSTEM_ADMIN.AGENCIES.TITLE" | translate}}</h1>
       <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate}}</a>
     </div>
 
     <div *ngIf="(agencies | async)?.length == 0" class="Empty--ribbon">
-      No agencies have been added to the Alert Portal
+      {{"SYSTEM_ADMIN.AGENCIES.NO_AGENCY" | translate}}
     </div>
 
     <table class="table Table__v-spacing__mid Agency-table">
-      <tr>
-        <th>{{"HOME.LOGO" | translate}}</th>
-        <th>{{"SYSTEM_ADMIN.AGENCIES.AGENCY_NAME" | translate}}</th>
-        <th></th>
-        <th>{{"HOME.STATUS" | translate}}</th>
-        <th>{{"HOME.ACTIONS" | translate}}</th>
-      </tr>
       <tr *ngFor="let agency of agencies | async">
         <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>
         <td>{{agency?.name}}</td>

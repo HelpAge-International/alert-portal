@@ -7,15 +7,15 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1>{{"HOME.SETTING.TITLE" | translate}}</h1>
+      <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.MIN" | translate}}</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.MIN" | translate}}</h3>
     <hr>
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--green"></i>{{"HOME.SETTING.GREEN" | translate}}
+        <i class="Traffic--green"></i>{{"SYSTEM_ADMIN.SETTING.GREEN" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minGreen">
@@ -26,7 +26,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--amber"></i>{{"HOME.SETTING.AMBER" | translate}}
+        <i class="Traffic--amber"></i>{{"SYSTEM_ADMIN.SETTING.AMBER" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minAmber">
@@ -37,7 +37,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--red"></i>{{"HOME.SETTING.RED" | translate}}
+        <i class="Traffic--red"></i>{{"SYSTEM_ADMIN.SETTING.RED" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="minRed">
@@ -46,12 +46,12 @@
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.ADV" | translate}}</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.ADV" | translate}}</h3>
     <hr>
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--green"></i>{{"HOME.SETTING.GREEN" | translate}}
+        <i class="Traffic--green"></i>{{"SYSTEM_ADMIN.SETTING.GREEN" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advGreen">
@@ -62,7 +62,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--amber"></i>{{"HOME.SETTING.AMBER" | translate}}
+        <i class="Traffic--amber"></i>{{"SYSTEM_ADMIN.SETTING.AMBER" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advAmber">
@@ -73,7 +73,7 @@
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
-        <i class="Traffic--red"></i>{{"HOME.SETTING.RED" | translate}}
+        <i class="Traffic--red"></i>{{"SYSTEM_ADMIN.SETTING.RED" | translate}}
       </div>
       <div class="col-lg-2 col-md-3">
         <select class="form-control" [(ngModel)]="advRed">
@@ -82,10 +82,10 @@
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"HOME.SETTING.DOC_SETTING" | translate}}</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.DOC_SETTING" | translate}}</h3>
     <hr>
 
-    <label>{{"HOME.SETTING.FILE_FORMAT" | translate}}</label>
+    <label>{{"SYSTEM_ADMIN.SETTING.FILE_FORMAT" | translate}}</label>
 
     <div class="row">
       <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
@@ -97,7 +97,7 @@
         DOC
       </label>
       <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format"[(ngModel)]="isDocx">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isDocx">
         DOCX
       </label>
       <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
@@ -147,7 +147,7 @@
     </div>
 
     <div class="File-size--spaced">
-      <label>{{"HOME.SETTING.FILE_SIZE" | translate}}</label>
+      <label>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}</label>
       <div class="row">
         <div class="col-lg-2 col-md-4 col-sm-4">
           <select class="form-control" [(ngModel)]="fileSize">
@@ -164,8 +164,8 @@
 
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" (click)="back()">{{"COMMON.CANCEL" | translate}}</div>
-      <div class="btn btn-primary" (click)="saveSetting()">{{"HOME.SETTING.SAVE" | translate}}</div>
+      <div class="btn btn-primary" (click)="saveSetting()">{{"SYSTEM_ADMIN.SETTING.SAVE" | translate | uppercase}}</div>
+      <div class="btn btn-outline-secondary" (click)="back()">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
 
 

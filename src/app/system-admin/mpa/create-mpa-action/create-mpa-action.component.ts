@@ -18,8 +18,8 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private inactive: Boolean = true;
   private errorMessage: any;
   private alerts = {};
-  private pageTitle: string = 'GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
-  private buttonText: string = 'GENERIC_MPA_APA.SAVE_BUTTON_TEXT';
+  private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
+  private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
   private textArea: string;
   private path: string;
   private isMpa: boolean = true;
@@ -28,9 +28,9 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private subscriptions: RxHelper;
   private categorySelected: string;
   private Category = GenericActionCategory;
-  private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
-    GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
-    GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
+  private categoriesList = [GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
+    GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
+    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper;
@@ -52,8 +52,8 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
-          this.pageTitle = 'GENERIC_MPA_APA.EDIT_MPA_APA';
-          this.buttonText = 'GENERIC_MPA_APA.EDIT_BUTTON_TEXT';
+          this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.EDIT_MPA_APA';
+          this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
           this.loadGenericActionInfo(params["id"]);
           this.idOfGenericActionToEdit = params["id"];
         }
@@ -146,11 +146,11 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
     if (!Boolean(this.textArea)) {
       this.alerts[this.textArea] = true;
-      this.errorMessage = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
+      this.errorMessage = "SYSTEM_ADMIN.ACTIONS.NO_CONTENT_ERROR";
       return false;
     } else if (!Boolean(this.categorySelected)) {
       this.alerts[this.categorySelected] = true;
-      this.errorMessage = "GENERIC_MPA_APA.NO_CATEGORY_ERROR";
+      this.errorMessage = "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.NO_CATEGORY_ERROR";
       return false;
     }
     return true;
