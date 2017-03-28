@@ -51,7 +51,8 @@
       "COUNTRY": "Country",
       "CITY": "City",
       "EMAIL_ADDRESS": "Email Address",
-      "POSTCODE": "Postcode"
+      "POSTCODE": "Postcode",
+      "PHONE": "Phone Number"
     }
   },
   "SYSTEM_ADMIN": {
@@ -75,9 +76,12 @@
       "AGENCY_ADMIN_DETAIL": "Agency Administrator Details",
       "SAVE": "Save New Agency",
       "IS_DONOR": "Is this a donor agency?",
-      "NAME_DUPLICATE": "Agency name duplicate!",
-      "NAME_MISSING": "Name is missing!",
-      "EMAIL_NOT_VALID": "Email is not valid!",
+      "NAME_DUPLICATE": "Agency name duplicate - Please chose a different name",
+      "NAME_MISSING": "Please enter name of the agency",
+      "F_NAME_MISSING": "Please enter agency administrator's first name",
+      "L_NAME_MISSING": "Please enter agency administrator's last name",
+      "EMAIL_MISSING": "Please enter agency administrator's email address",
+      "EMAIL_INVALID": "Please enter a correct email address",
       "NO_AGENCY":"No agencies have been added to the Alert Portal"
     },
     "GLOBAL_NETWORKS": {
@@ -97,6 +101,7 @@
     },
     "ACTIONS": {
       "CREATE_NEW_ACTION": "Create new action",
+      "EDIT_CHS_ACTION": "Edit CHS action",
       "SAVE_BUTTON_TEXT": "Save new action",
       "EDIT_BUTTON_TEXT": "Edit action",
       "NO_CONTENT_ERROR": "Please insert the action content",
@@ -145,6 +150,28 @@
       "FILE_FORMAT": "File Format",
       "FILE_SIZE": "Maximum file size",
       "SAVE": "Save Settings"
+    },
+    "ACCOUNT_SETTINGS": {
+      "TITLE": "Account Settings",
+      "PROFILE": "Profile",
+      "PASSWORD": "Password",
+      "CURRENT_PASSWORD": "Current Password",
+      "NEW_PASSWORD": "New Password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "UPDATE_PASSORD": "Update password",
+      "SAVE": "Save changes",
+      "SUCCESS_PROFILE" : "Profile successfully updated!",
+      "SUCCESS_PASSWORD" : "Password successfully updated!",
+      "INCORRECT_CURRENT_PASSWORD" : "Current password is incorrect. Please re enter",
+      "NO_CURRENT_PASSWORD" : "Please enter your current password",
+      "NO_NEW_PASSWORD" : "Please enter a new password",
+      "NO_CONFIRM_PASSWORD" : "Please confirm your new password",
+      "SAME_PASSWORD" : "Please enter a new password. You have entered the same password",
+      "INVALID_PASSWORD" : "Password must be at 6-15 digits long with no symbols and should include at least one numeric digit",
+      "UNMATCHED_PASSWORD" : "Passwords don't match",
+      "NO_F_NAME" : "Please enter the first name",
+      "NO_L_NAME" : "Please enter the last name",
+      "NO_EMAIL" : "Please enter the email address"
     }
   },
   "LOGIN": {

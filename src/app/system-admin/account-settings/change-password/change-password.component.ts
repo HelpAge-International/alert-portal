@@ -1,10 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from "angularfire2";
-import {Router} from "@angular/router";
-import {Constants} from "../../../utils/Constants";
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
-import {CustomerValidator} from "../../../utils/CustomValidator";
+import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
+import {Router} from '@angular/router';
+import {Constants} from '../../../utils/Constants';
+import {RxHelper} from '../../../utils/RxHelper';
+import {Observable} from 'rxjs';
+import {CustomerValidator} from '../../../utils/CustomValidator';
 
 @Component({
   selector: 'app-change-password',
@@ -17,7 +17,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private uid: string;
   authState: FirebaseAuthState;
   private successInactive: boolean = true;
-  private successMessage: string = 'Password successfully updated!';
+  private successMessage: string = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.SUCCESS_PASSWORD';
   private errorInactive: boolean = true;
   private errorMessage: string;
   private alerts = {};
@@ -35,7 +35,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
-        console.log("System admin uid: " + this.uid);
+        console.log('System admin uid: ' + this.uid);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
@@ -70,7 +70,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
           });
         })
         .catch(() => {
-          this.errorMessage = 'Current password is incorrect. Please re enter';
+          this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD';
           this.showAlert(true);
         });
 
@@ -102,31 +102,31 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private validate() {
 
     this.alerts = {};
-    if (!Boolean(this.currentPasswordEntered)) {
+    if (!(this.currentPasswordEntered)) {
       this.alerts[this.currentPasswordEntered] = true;
-      this.errorMessage = 'Please enter your current password';
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_CURRENT_PASSWORD';
       return false;
-    } else if (!Boolean(this.newPasswordEntered)) {
+    } else if (!(this.newPasswordEntered)) {
       this.alerts[this.newPasswordEntered] = true;
-      this.errorMessage = 'Please enter a new password';
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_NEW_PASSWORD';
       return false;
-    } else if (!Boolean(this.confirmPasswordEntered)) {
+    } else if (!(this.confirmPasswordEntered)) {
       this.alerts[this.confirmPasswordEntered] = true;
-      this.errorMessage = 'Please confirm your new password';
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_CONFIRM_PASSWORD';
       return false;
     } else if (this.currentPasswordEntered == this.newPasswordEntered) {
       this.alerts[this.currentPasswordEntered] = true;
       this.alerts[this.newPasswordEntered] = true;
-      this.errorMessage = 'You have entered the same password. Please enter a new password';
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.SAME_PASSWORD';
       return false;
     } else if (!CustomerValidator.PasswordValidator(this.newPasswordEntered)) {
       this.alerts[this.newPasswordEntered] = true;
-      this.errorMessage = 'Password must be at 6-15 digits long with no symbols and should include at least one numeric digit';
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.INVALID_PASSWORD';
       return false;
     } else if (this.newPasswordEntered != this.confirmPasswordEntered) {
       this.alerts[this.newPasswordEntered] = true;
       this.alerts[this.confirmPasswordEntered] = true;
-      this.errorMessage = "Passwords don't match";
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.UNMATCHED_PASSWORD';
       return false;
     }
     return true;

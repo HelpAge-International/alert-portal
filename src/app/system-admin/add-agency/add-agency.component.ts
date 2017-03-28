@@ -237,7 +237,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
           this.createNewUser();
         }
       } else {
-        this.errorMessage = "ERROR.NAME_DUPLICATE";
+        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.NAME_DUPLICATE";
         this.showAlert();
       }
     });
@@ -255,7 +255,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
-      this.errorMessage = error.message;
+      this.errorMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
     });
   }
@@ -354,26 +354,25 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
    */
   private validate() {
 
-    if (!Boolean(this.agencyName)) {
+    if (!(this.agencyName)) {
       this.alerts[this.agencyName] = true;
-      this.errorMessage = "ERROR.NAME_MISSING";
+      this.errorMessage = "SYSTEM_ADMIN.AGENCIES.NAME_MISSING";
       return false;
-    } else if (!Boolean(this.agencyAdminFirstName)) {
+    } else if (!(this.agencyAdminFirstName)) {
       this.alerts[this.agencyAdminFirstName] = true;
-      this.errorMessage = "Please enter agency administrator's first name";
+      this.errorMessage = "SYSTEM_ADMIN.AGENCIES.F_NAME_MISSING";
       return false;
-    } else if (!Boolean(this.agencyAdminLastName)) {
+    } else if (!(this.agencyAdminLastName)) {
       this.alerts[this.agencyAdminLastName] = true;
-      this.errorMessage = "Please enter agency administrator's last name";
+      this.errorMessage = "SYSTEM_ADMIN.AGENCIES.L_NAME_MISSING";
       return false;
-    } else if (!Boolean(this.agencyAdminEmail)) {
+    } else if (!(this.agencyAdminEmail)) {
       this.alerts[this.agencyAdminEmail] = true;
-      this.errorMessage = "Please enter agency administrator's email address";
+      this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_MISSING";
       return false;
     } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
       this.alerts[this.agencyAdminEmail] = true;
-      //this.inactive = false;
-      this.errorMessage = "ERROR.EMAIL_NOT_VALID";
+      this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_INVALID";
       return false;
     }
     return true;

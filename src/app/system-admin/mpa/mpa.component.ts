@@ -28,17 +28,6 @@ export class MpaComponent implements OnInit, OnDestroy {
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
 
-  // levels = ActionLevel;
-  // levelKeys(): Array<string> {
-  //   var keys = Object.keys(this.levels);
-  //   return keys.slice(keys.length / 2);
-  // }
-  // categories = GenericActionCategory;
-  // categoryKeys(): Array<string> {
-  //   var keys = Object.keys(this.categories);
-  //   return keys.slice(keys.length / 2);
-  // }
-
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
     this.subscriptions = new RxHelper();
   }

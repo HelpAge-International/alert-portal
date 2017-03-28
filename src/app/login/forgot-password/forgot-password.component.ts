@@ -1,8 +1,10 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
 import {FirebaseApp} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Observable} from "rxjs";
 import {Constants} from "../../utils/Constants";
+import {CustomerValidator} from "../../utils/CustomValidator";
+import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-forgot-password',
@@ -10,18 +12,25 @@ import {Constants} from "../../utils/Constants";
   styleUrls: ['./forgot-password.component.css']
 })
 
-export class ForgotPasswordComponent implements OnInit {
+export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   private inactive: Boolean = true;
   private errorMessage: any;
+  private alerts = {};
   private email: string = '';
   private auth: any;
+  private subscriptions: RxHelper;
 
   constructor(@Inject(FirebaseApp) fa: any, private router: Router) {
     this.auth = fa.auth();
+    this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.releaseAll();
   }
 
   onSubmit() {
@@ -35,28 +44,37 @@ export class ForgotPasswordComponent implements OnInit {
         })
         .catch((err) => {
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
-          this.inactive = false;
+          this.showAlert();
         });
 
       this.inactive = true;
 
     } else {
-      this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.inactive = true;
-      })
+      this.showAlert();
     }
+  }
+
+  private showAlert() {
+    this.inactive = false;
+    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      this.inactive = true;
+    });
+    this.subscriptions.add(subscription);
   }
 
   /**
    * Returns false and specific error messages-
-   * if no input is entered,
    * @returns {boolean}
    */
   validate() {
 
-    if (!Boolean(this.email)) {
+    if (!(this.email)) {
+      this.alerts[this.email] = true;
       this.errorMessage = "FORGOT_PASSWORD.NO_EMAIL_ERROR";
+      return false;
+    } else if (!CustomerValidator.EmailValidator(this.email)) {
+      this.alerts[this.email] = true;
+      this.errorMessage = "GLOBAL.EMAIL_NOT_VALID";
       return false;
     }
     return true;

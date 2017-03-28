@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {RxHelper} from "../utils/RxHelper";
+import {Observable} from "rxjs";
+import {CustomerValidator} from "../utils/CustomValidator";
 
 @Component({
   selector: 'app-login',
@@ -10,12 +12,13 @@ import {RxHelper} from "../utils/RxHelper";
   styleUrls: ['./login.component.css'],
 })
 
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   private inactive: Boolean = true;
   private errorMessage: string;
   private successInactive: Boolean = true;
   private successMessage: string;
+  private alerts = {};
   private emailEntered: string;
   private subscriptions: RxHelper;
 
@@ -30,24 +33,24 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     /*// TODO - Remove if unnecessary
-    let loginSubscription = this.af.auth.subscribe(auth => {
-      if (auth) {
-        this.router.navigateByUrl("/login");
-        console.log("Logged In");
-      } else {
-        // user is not logged in - Login page is presented
-        this.router.navigateByUrl("/login");
-        console.log("Not Logged In");
-      }
-    });
-    this.subscriptions.add(loginSubscription);*/
+     let loginSubscription = this.af.auth.subscribe(auth => {
+     if (auth) {
+     this.router.navigateByUrl("/login");
+     console.log("Logged In");
+     } else {
+     // user is not logged in - Login page is presented
+     this.router.navigateByUrl("/login");
+     console.log("Not Logged In");
+     }
+     });
+     this.subscriptions.add(loginSubscription);*/
 
     let subscription = this.route.params
       .subscribe((params: Params) => {
         if (params["emailEntered"]) {
           this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
           this.emailEntered = params["emailEntered"];
-          this.successInactive = false;
+          this.showAlert(false);
           console.log("From Forgot Password");
         }
       });
@@ -55,7 +58,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll()
+    this.subscriptions.releaseAll();
   }
 
   onSubmit() {
@@ -103,9 +106,26 @@ export class LoginComponent implements OnInit {
         });
       this.inactive = true;
     } else {
-      this.inactive = false;
+      this.showAlert(true);
     }
 
+  }
+
+  private showAlert(error: boolean) {
+
+    if (error) {
+      this.inactive = false;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.inactive = true;
+      });
+      this.subscriptions.add(subscription);
+    } else {
+      this.successInactive = false;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.successInactive = true;
+      });
+      this.subscriptions.add(subscription);
+    }
   }
 
   /**
@@ -117,13 +137,21 @@ export class LoginComponent implements OnInit {
    */
   validate() {
 
-    if ((!Boolean(this.localUser.userEmail)) && (!Boolean(this.localUser.password))) {
+    if ((!(this.localUser.userEmail)) && (!(this.localUser.password))) {
+      this.alerts[this.localUser.userEmail] = true;
+      this.alerts[this.localUser.password] = true;
       this.errorMessage = "LOGIN.NO_DATA_ERROR";
       return false;
-    } else if (!Boolean(this.localUser.userEmail)) {
+    } else if (!(this.localUser.userEmail)) {
+      this.alerts[this.localUser.userEmail] = true;
       this.errorMessage = "LOGIN.NO_EMAIL_ERROR";
       return false;
-    } else if (!Boolean(this.localUser.password)) {
+    } else if (!CustomerValidator.EmailValidator(this.localUser.userEmail)) {
+      this.alerts[this.localUser.userEmail] = true;
+      this.errorMessage = "GLOBAL.EMAIL_NOT_VALID";
+      return false;
+    } else if (!(this.localUser.password)) {
+      this.alerts[this.localUser.password] = true;
       this.errorMessage = "LOGIN.NO_PASSWORD_ERROR";
       return false;
     }

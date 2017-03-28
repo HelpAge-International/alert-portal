@@ -144,11 +144,11 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
    */
   private validate() {
 
-    if (!Boolean(this.textArea)) {
+    if (!(this.textArea)) {
       this.alerts[this.textArea] = true;
       this.errorMessage = "SYSTEM_ADMIN.ACTIONS.NO_CONTENT_ERROR";
       return false;
-    } else if (!Boolean(this.categorySelected)) {
+    } else if (!(this.categorySelected)) {
       this.alerts[this.categorySelected] = true;
       this.errorMessage = "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.NO_CATEGORY_ERROR";
       return false;

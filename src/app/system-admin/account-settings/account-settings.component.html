@@ -25,7 +25,7 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Title">Title</label>
+          <label for="Title">{{"GLOBAL.TITLE" | translate}}</label>
 
           <select name="Title" id="Title" class="form-control" [(ngModel)]="systemAdminTitle">
             <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title] | translate}}</option>
@@ -35,13 +35,13 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[systemAdminFirstName]}">
-          <label for="f-Name">First Name*</label>
+          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="systemAdminFirstName">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[systemAdminLastName]}">
-          <label for="l-Name">Last Name*</label>
+          <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="l-Name" [(ngModel)]="systemAdminLastName">
         </div>
       </div>
@@ -49,19 +49,19 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[systemAdminEmail]}">
-          <label for="Email">Email Address*</label>
+          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
           <input type="text" class="form-control" id="Email" [(ngModel)]="systemAdminEmail">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Phone">Phone Number</label>
+          <label for="Phone">{{"GLOBAL.USER_INFO.PHONE" | translate}}</label>
           <input type="text" class="form-control" id="Phone" [(ngModel)]="systemAdminPhone">
         </div>
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="onSubmit()">Save changes</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</div>
       <div class="btn btn-outline-secondary" routerLink="/system-admin">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
   </div>

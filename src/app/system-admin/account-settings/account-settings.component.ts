@@ -18,7 +18,7 @@ export class AccountSettingsComponent implements OnInit {
   private uid: string;
   authState: FirebaseAuthState;
   private successInactive: boolean = true;
-  private successMessage: string = 'Profile successfully updated!';
+  private successMessage: string = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
   private errorMessage: string = 'No changes made!';
   private alerts = {};
@@ -119,21 +119,21 @@ export class AccountSettingsComponent implements OnInit {
   private validate() {
 
     this.alerts = {};
-    if (!Boolean(this.systemAdminFirstName)) {
+    if (!(this.systemAdminFirstName)) {
       this.alerts[this.systemAdminFirstName] = true;
-      this.errorMessage = "First name can not be empty";
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_F_NAME';
       return false;
-    } else if (!Boolean(this.systemAdminLastName)) {
+    } else if (!(this.systemAdminLastName)) {
       this.alerts[this.systemAdminLastName] = true;
-      this.errorMessage = "Last name can not be empty";
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_L_NAME';
       return false;
-    } else if (!Boolean(this.systemAdminEmail)) {
+    } else if (!(this.systemAdminEmail)) {
       this.alerts[this.systemAdminEmail] = true;
-      this.errorMessage = "Email address can not be empty";
+      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_EMAIL';
       return false;
     } else if (!CustomerValidator.EmailValidator(this.systemAdminEmail)) {
       this.alerts[this.systemAdminEmail] = true;
-      this.errorMessage = "ERROR.EMAIL_NOT_VALID";
+      this.errorMessage = "GLOBAL.EMAIL_NOT_VALID";
       return false;
     }
     return true;

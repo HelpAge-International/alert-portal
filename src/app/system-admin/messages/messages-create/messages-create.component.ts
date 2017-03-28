@@ -143,11 +143,11 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
    */
   private validate() {
 
-    if (!Boolean(this.messageTitle)) {
+    if (!(this.messageTitle)) {
       this.alerts[this.messageTitle] = true;
       this.errorMessage = "MESSAGES.NO_TITLE_ERROR";
       return false;
-    } else if (!Boolean(this.messageContent)) {
+    } else if (!(this.messageContent)) {
       this.alerts[this.messageContent] = true;
       this.errorMessage = "MESSAGES.NO_CONTENT_ERROR";
       return false;
