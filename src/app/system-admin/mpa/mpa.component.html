@@ -19,18 +19,17 @@
         {{"GLOBAL.FILTER" | translate}}:
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" [(ngModel)]="levelSelected" (change)="checkLevelSelected()">
+        <select class="form-control" [(ngModel)]="levelSelected" (change)="filterData()">
           <!--<option value="" disabled selected hidden>All levels</option>-->
-          <option value="allLevels" selected>{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>
-          <option *ngFor="let level of levelsList">{{ActionPrepLevel[level] | translate}}</option>
+          <!--<option>{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>-->
+          <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
-        <select class="form-control" [(ngModel)]="categorySelected" (change)="checkCategorySelected()">
+        <select class="form-control" [(ngModel)]="categorySelected" (change)="filterData()">
           <!--<option value="" disabled selected hidden>All categories</option>-->
-          <option value="allCategories" selected>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.ALL_CATEGORIES" | translate}}
-          </option>
-          <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
+          <!--<option value="allCategories" selected>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.ALL_CATEGORIES" | translate}}</option>-->
+          <option *ngFor="let category of categoriesList" [value]="category">{{Category[category] | translate}}</option>
         </select>
       </div>
     </div>

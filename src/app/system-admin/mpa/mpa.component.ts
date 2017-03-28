@@ -13,22 +13,20 @@ import {Observable} from "rxjs";
   styleUrls: ['./mpa.component.css']
 })
 
-export class MpaComponent implements OnInit,OnDestroy {
+export class MpaComponent implements OnInit, OnDestroy {
   private uid: string;
   actions: Observable<any>;
   ActionType = ActionType;
   GenericActionCategory = GenericActionCategory;
   private subscriptions: RxHelper;
-  private levelSelected;
-  private categorySelected;
+  private levelSelected = 0;
+  private categorySelected = 0;
   private Category = Constants.CATEGORY;
-  private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
-    GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
-    GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
+  private categoriesList = [GenericActionCategory.ALL, GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
+    GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
+    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
   private ActionPrepLevel = Constants.ACTION_LEVEL;
-  private levelsList = [ActionLevel.MPA, ActionLevel.APA];
-  private selectedActionLevel: number;
-  private selectedCategoryLevel: number;
+  private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
 
   // levels = ActionLevel;
   // levelKeys(): Array<string> {
@@ -66,17 +64,6 @@ export class MpaComponent implements OnInit,OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  // TODO - Double filter
-  checkLevelSelected() {
-    this.selectedActionLevel = Number(ActionLevel[this.levelSelected]);
-    this.filterData();
-  }
-
-  checkCategorySelected() {
-    this.selectedCategoryLevel = Number(GenericActionCategory[this.categorySelected]);
-    this.filterData();
-  }
-
   deleteAction(actionKey) {
     console.log("action key: " + actionKey);
     this.dialogService.createDialog("Delete Action?",
@@ -92,8 +79,8 @@ export class MpaComponent implements OnInit,OnDestroy {
     this.router.navigate(["/system-admin/mpa/create", {id: actionKey}]);
   }
 
-  private filterData() {
-    if (isNaN(this.selectedActionLevel) && isNaN(this.selectedCategoryLevel)) {
+  filterData() {
+    if (this.levelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //no filter. show all
       console.log("show all results");
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
@@ -102,8 +89,9 @@ export class MpaComponent implements OnInit,OnDestroy {
           equalTo: ActionType.mandated
         }
       });
-    } else if (!isNaN(this.selectedActionLevel) && isNaN(this.selectedCategoryLevel)) {
+    } else if (this.levelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //filter only with mpa
+      console.log("show filter level");
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
@@ -113,14 +101,16 @@ export class MpaComponent implements OnInit,OnDestroy {
         .map(list => {
           let tempList = [];
           for (let item of list) {
-            if (item.level == this.selectedActionLevel) {
+            if (item.level == this.levelSelected) {
+              console.log(JSON.stringify(item));
               tempList.push(item);
             }
           }
           return tempList;
         });
-    } else if (isNaN(this.selectedActionLevel) && !isNaN(this.selectedCategoryLevel)) {
+    } else if (this.levelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
       //filter only with apa
+      console.log("show filter category");
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
@@ -130,7 +120,7 @@ export class MpaComponent implements OnInit,OnDestroy {
         .map(list => {
           let tempList = [];
           for (let item of list) {
-            if (item.category == this.selectedCategoryLevel) {
+            if (item.category == this.categorySelected) {
               tempList.push(item);
             }
           }
@@ -138,6 +128,7 @@ export class MpaComponent implements OnInit,OnDestroy {
         });
     } else {
       // filter both action level and category
+      console.log("show both filtered");
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
@@ -147,7 +138,7 @@ export class MpaComponent implements OnInit,OnDestroy {
         .map(list => {
           let tempList = [];
           for (let item of list) {
-            if (item.level == this.selectedActionLevel) {
+            if (item.level == this.levelSelected) {
               tempList.push(item);
             }
           }
@@ -156,7 +147,7 @@ export class MpaComponent implements OnInit,OnDestroy {
         .map(list => {
           let tempList = [];
           for (let item of list) {
-            if (item.category == this.selectedCategoryLevel) {
+            if (item.category == this.categorySelected) {
               tempList.push(item);
             }
           }

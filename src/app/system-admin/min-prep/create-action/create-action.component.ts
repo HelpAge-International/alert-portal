@@ -17,8 +17,8 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private inactive: boolean = true;
   private errorMessage: any;
-  private pageTitle: string = 'CHS_MPA.CREATE_NEW_CHS_MPA';
-  private buttonText: string = 'CHS_MPA.SAVE_BUTTON_TEXT';
+  private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CHS_MPA.CREATE_NEW_CHS_MPA';
+  private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
   private textArea: string;
   private path: string;
   private forEditing: Boolean = false;
@@ -45,8 +45,8 @@ export class CreateActionComponent implements OnInit, OnDestroy {
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
-          this.pageTitle = 'CHS_MPA.EDIT_CHS_MPA';
-          this.buttonText = 'CHS_MPA.EDIT_BUTTON_TEXT';
+          this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.CHS_MPA.EDIT_CHS_MPA';
+          this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
           this.loadCHSActionInfo(params["id"]);
           this.idOfChsActionToEdit = params["id"];
         }

@@ -16,7 +16,7 @@ export enum ActionType {
 
 // TODO - Update when Ryan provides actual category names
 export enum GenericActionCategory {
-  Category0 = 0,
+  ALL = 0,
   Category1 = 1,
   Category2 = 2,
   Category3 = 3,
@@ -25,12 +25,14 @@ export enum GenericActionCategory {
   Category6 = 6,
   Category7 = 7,
   Category8 = 8,
-  Category9 = 9
+  Category9 = 9,
+  Category10 = 10
 }
 
 export enum ActionLevel {
-  MPA = 0,
-  APA = 1
+  ALL = 0,
+  MPA = 1,
+  APA = 2
 }
 
 export enum PersonTitle {

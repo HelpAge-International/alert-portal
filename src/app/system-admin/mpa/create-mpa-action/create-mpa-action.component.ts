@@ -27,9 +27,9 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private subscriptions: RxHelper;
   private categorySelected: string;
   private Category = GenericActionCategory;
-  private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
-    GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
-    GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
+  private categoriesList = [GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
+    GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
+    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
 
   // categories = GenericActionCategory;
   // categoryKeys(): Array<string> {
