@@ -1,17 +1,13 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
-
-<!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <!--<div class="Back&#45;&#45;button">Back</div>-->
     <div class="Header-title__wrap">
       <h1>{{"HOME.TITLE" | translate}}</h1>
-      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"HOME.ADD_NEW_AGENCY" | translate}}</a>
+      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate}}</a>
     </div>
 
-    <!-- Display only when no agencies in the list -->
     <div *ngIf="(agencies | async)?.length == 0" class="Empty--ribbon">
       No agencies have been added to the Alert Portal
     </div>
@@ -19,7 +15,7 @@
     <table class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>{{"HOME.LOGO" | translate}}</th>
-        <th>{{"HOME.NAME" | translate}}</th>
+        <th>{{"SYSTEM_ADMIN.AGENCIES.AGENCY_NAME" | translate}}</th>
         <th></th>
         <th>{{"HOME.STATUS" | translate}}</th>
         <th>{{"HOME.ACTIONS" | translate}}</th>
@@ -28,12 +24,12 @@
         <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>
         <td>{{agency?.name}}</td>
         <td></td>
-        <td *ngIf="agency?.isActive">{{"HOME.ACTIVE" | translate}}</td>
-        <td *ngIf="!agency?.isActive">{{"HOME.DEACTIVE" | translate}}</td>
+        <td *ngIf="agency?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
+        <td *ngIf="!agency?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
         <td>
-          <div *ngIf="!agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"HOME.ACTIVATE" | translate}}</div>
-          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"HOME.DEACTIVATE" | translate}}</div>
-          <div class="btn btn-primary" (click)="editAgency(agency)">{{"HOME.EDIT" | translate}}</div>
+          <div *ngIf="!agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"GLOBAL.ACTIVATE" | translate}}</div>
+          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"GLOBAL.DEACTIVATE" | translate}}</div>
+          <div class="btn btn-primary" (click)="editAgency(agency)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
       </tr>
     </table>

@@ -6,149 +6,149 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1 *ngIf="!isEdit">{{"HOME.ADD_NEW_AGENCY" | translate}}</h1>
-      <h1 *ngIf="isEdit">{{"HOME.EDIT_AGENCY" | translate}}</h1>
-      <button *ngIf="isEdit" class="btn btn-danger" (click)="delete()">{{"HOME.DELETE_AGENCY" | translate}}</button>
+      <h1 *ngIf="!isEdit">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate}}</h1>
+      <h1 *ngIf="isEdit">{{"SYSTEM_ADMIN.AGENCIES.EDIT_AGENCY" | translate}}</h1>
+      <button *ngIf="isEdit" class="btn btn-danger" (click)="delete()">{{"SYSTEM_ADMIN.AGENCIES.DELETE_AGENCY" |
+        translate}}
+      </button>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"HOME.AGENCY_DETAIL" | translate}}</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.AGENCIES.AGENCY_DETAIL" | translate}}</h3>
     <hr>
 
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group" [ngClass]="{'has-danger': alerts[agencyName]}">
-            <label for="Name">{{"HOME.AGENCY_NAME" | translate}}*</label>
-            <input type="text" class="form-control" id="Name" required [(ngModel)]="agencyName" name="name">
-          </div>
-          <!--<div [ngClass]="{'has-danger': false}" class="form-group">-->
-            <!--<label for="Name">{{"HOME.AGENCY_NAME" | translate}}*</label>-->
-
-            <!--<input type="text" class="form-control" id="Name" required [(ngModel)]="agencyName" name="name">-->
-          <!--</div>-->
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyName]}">
+          <label for="Name">{{"SYSTEM_ADMIN.AGENCIES.AGENCY_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="Name" required [(ngModel)]="agencyName" name="name">
         </div>
       </div>
+    </div>
 
-      <h3 class="System-admin__Sub-title--spaced">{{"HOME.AGENCY_ADMIN_DETAIL" | translate}}</h3>
-      <hr>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.AGENCIES.AGENCY_ADMIN_DETAIL" | translate}}</h3>
+    <hr>
 
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="Title">{{"HOME.AGENCY_ADMIN_TITLE" | translate}}*</label>
-            <select id="Title" class="form-control" required [(ngModel)]="agencyAdminTitle" name="personTitle">
-              <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title] | translate}}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminFirstName]}">
-            <label for="f-Name">{{"HOME.AGENCY_ADMIN_FIRST_NAME" | translate}}*</label>
-            <input type="text" class="form-control" id="f-Name" required [(ngModel)]="agencyAdminFirstName"
-                   name="agencyAdminFirstName">
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminLastName]}">
-            <label for="l-Name">{{"HOME.AGENCY_ADMIN_LAST_NAME" | translate}}*</label>
-            <input type="text" class="form-control" id="l-Name" required [(ngModel)]="agencyAdminLastName"
-                   name="agencyAdminLastName">
-          </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Title">{{"GLOBAL.TITLE" | translate}}*</label>
+          <select id="Title" class="form-control" required [(ngModel)]="agencyAdminTitle" name="personTitle">
+            <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title] | translate}}
+            </option>
+          </select>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminEmail]}">
-            <label for="Email">{{"HOME.AGENCY_ADMIN_EMAIL" | translate}}*</label>
-            <input type="text" class="form-control" id="Email" required [(ngModel)]="agencyAdminEmail"
-                   name="agencyAdminEmail">
-          </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminFirstName]}">
+          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="f-Name" required [(ngModel)]="agencyAdminFirstName"
+                 name="agencyAdminFirstName">
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="A-line-1">{{"HOME.AGENCY_ADMIN_ADD1" | translate}}</label>
-            <input type="text" class="form-control" id="A-line-1" [(ngModel)]="agencyAdminAddressLine1"
-                   name="agencyAdminAddressLine1">
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="A-line-2">{{"HOME.AGENCY_ADMIN_ADD2" | translate}}</label>
-            <input type="text" class="form-control" id="A-line-2" [(ngModel)]="agencyAdminAddressLine2"
-                   name="agencyAdminAddressLine2">
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="A-line-3">{{"HOME.AGENCY_ADMIN_ADD3" | translate}}</label>
-            <input type="text" class="form-control" id="A-line-3" [(ngModel)]="agencyAdminAddressLine3"
-                   name="agencyAdminAddressLine3">
-          </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminLastName]}">
+          <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="l-Name" required [(ngModel)]="agencyAdminLastName"
+                 name="agencyAdminLastName">
         </div>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="Country">{{"HOME.AGENCY_ADMIN_COUNTRY" | translate}}</label>
-            <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
-                    name="agencyAdminCountry">
-              <option *ngFor="let country of countryList" [ngValue]="country">{{Country[country] | translate}}</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="City">{{"HOME.AGENCY_ADMIN_CITY" | translate}}</label>
-            <input type="text" class="form-control" id="City" [(ngModel)]="agencyAdminCity"
-                   name="agencyAdminCity">
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="Postcode">{{"HOME.AGENCY_ADMIN_POSTCODE" | translate}}</label>
-            <input type="text" class="form-control" id="Postcode" [(ngModel)]="agencyAdminPostCode"
-                   name="agencyAdminPostCode">
-          </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminEmail]}">
+          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate}}*</label>
+          <input type="text" class="form-control" id="Email" required [(ngModel)]="agencyAdminEmail"
+                 name="agencyAdminEmail">
         </div>
       </div>
+    </div>
 
-      <label>Is this a donor agency?*</label>
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}</label>
+          <input type="text" class="form-control" id="A-line-1" [(ngModel)]="agencyAdminAddressLine1"
+                 name="agencyAdminAddressLine1">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
+          <input type="text" class="form-control" id="A-line-2" [(ngModel)]="agencyAdminAddressLine2"
+                 name="agencyAdminAddressLine2">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
+          <input type="text" class="form-control" id="A-line-3" [(ngModel)]="agencyAdminAddressLine3"
+                 name="agencyAdminAddressLine3">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
+          <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
+                  name="agencyAdminCountry">
+            <option *ngFor="let country of countryList" [ngValue]="country">{{Country[country] | translate}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+          <input type="text" class="form-control" id="City" [(ngModel)]="agencyAdminCity"
+                 name="agencyAdminCity">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
+          <input type="text" class="form-control" id="Postcode" [(ngModel)]="agencyAdminPostCode"
+                 name="agencyAdminPostCode">
+        </div>
+      </div>
+    </div>
+
+    <label>Is this a donor agency?*</label>
 
 
     <!--<div class="Radio&#45;&#45;ribbon">-->
-      <!--<input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">-->
-      <!--<label for="yes-donor"> Yes </label>-->
+    <!--<input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">-->
+    <!--<label for="yes-donor"> Yes </label>-->
     <!--</div>-->
 
     <!--<div class="Radio&#45;&#45;ribbon">-->
-      <!--<input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">-->
-      <!--<label for="no-donor"> No </label>-->
+    <!--<input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">-->
+    <!--<label for="no-donor"> No </label>-->
     <!--</div>-->
 
 
-      <div class="row no-gutters">
-        <label for="yes-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-          <input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">
-          Yes
-        </label>
-      </div>
-      <div class="row no-gutters">
-        <label for="no-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-          <input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">
-          No
-        </label>
-      </div>
+    <div class="row no-gutters">
+      <label for="yes-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+        <input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">
+        Yes
+      </label>
+    </div>
+    <div class="row no-gutters">
+      <label for="no-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+        <input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">
+        No
+      </label>
+    </div>
 
-      <div class="Form-submit__wrapper">
-        <div class="btn btn-outline-secondary" (click)="cancelSubmit()">{{"HOME.CANCEL" | translate}}</div>
-        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"HOME.SAVE" | translate}}</button>
-        <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"HOME.EDIT_AGENCY" | translate}}</button>
-      </div>
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-outline-secondary" (click)="cancelSubmit()">{{"HOME.CANCEL" | translate}}</div>
+      <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"HOME.SAVE" | translate}}
+      </button>
+      <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"HOME.EDIT_AGENCY" |
+        translate}}
+      </button>
+    </div>
 
   </div>
 
