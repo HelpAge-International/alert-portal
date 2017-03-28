@@ -6,7 +6,8 @@
 
     <div class="Header-title__wrap">
       <h1>{{"AGENCY_MANDATED_PA.TITLE_TEXT"| translate}}</h1>
-      <a routerLink="/agency-admin/agency-mpa/create-edit-mpa" class="btn btn-primary">{{"AGENCY_MANDATED_PA.CREATE_NEW_ACTION"| translate}}</a>
+      <a routerLink="/agency-admin/agency-mpa/create-edit-mpa" class="btn btn-primary">{{"AGENCY_MANDATED_PA.CREATE_NEW_ACTION"|
+        translate}}</a>
     </div>
 
     <div class="Filter-system__wrap row">
@@ -15,27 +16,27 @@
       </div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="checkActionLevelFilter()">
-          <option value="allActionLevels">All action levels</option>
-          <option *ngFor="let actionLevel of actionLevelsKeys()">{{actionLevel}}</option>
+          <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
         <select class="form-control" [(ngModel)]="departmentSelected" (change)="checkDepartmentFilter()">
-          <option value="allDepartments">All departments</option>
-          <option *ngFor="let department of keys()">{{department}}</option>
+          <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
         </select>
       </div>
     </div>
 
-    <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No mandated preparedness actions have been added to Alert</div>
+    <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No mandated preparedness actions have been added
+      to Alert
+    </div>
 
     <div class="Data--ribbon" *ngFor="let action of actions | async">
       <div class="col-sm-9 ">
         <p>{{action.task}}</p>
         <div class="Info--ribbon--wrap">
           <div class="col-sm-4">{{"GLOBAL.TYPE"| translate}}<b>Mandated</b></div>
-          <div class="col-sm-5">{{"AGENCY_MANDATED_PA.DEPARTMENT"| translate}} <b>{{Department[action.department]}}</b></div>
-          <div class="col-sm-6">{{"AGENCY_MANDATED_PA.PREPAREDNESS_LEVEL"| translate}}<b>{{ActionLevel[action.level]}}</b></div>
+          <div class="col-sm-5">{{"AGENCY_MANDATED_PA.DEPARTMENT"| translate}} <b>{{Department[action.department]}}</b>
+          </div>
         </div>
       </div>
       <div class="col-lg-3 Right-aligned">

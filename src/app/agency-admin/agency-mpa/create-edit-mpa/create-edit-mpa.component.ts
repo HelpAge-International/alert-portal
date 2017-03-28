@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {MandatedPreparednessAction} from '../../../model/mandatedPA';
 import {Constants} from '../../../utils/Constants';
@@ -16,6 +16,7 @@ import {Observable} from "rxjs";
 export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private departments: FirebaseListObservable<any>;
   private path: string;
   private inactive: Boolean = true;
   private errorMessage: string = '';
@@ -27,11 +28,6 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private idOfMpaToEdit: string;
   private subscriptions: RxHelper;
   departmentSelected: string;
-  departments = Department;
-  keys(): Array<string> {
-    var keys = Object.keys(this.departments);
-    return keys.slice(keys.length / 2);
-  }
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper();
@@ -43,6 +39,9 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
         this.uid = auth.uid;
         this.path = Constants.APP_STATUS + '/action/' + this.uid;
         console.log("uid: " + auth.uid);
+        this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments");
+        console.log("Departments: " + this.departments);
+        console.log("Departments Path: " + Constants.APP_STATUS + "/agency/" + this.uid + "/departments");
       } else {
         console.log("Error occurred - User isn't logged in");
         this.navigateToLogin();

@@ -11,6 +11,7 @@ import {Subscription} from "rxjs";
   templateUrl: 'system-admin-header.component.html',
   styleUrls: ['system-admin-header.component.css']
 })
+
 export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
 
   uid: string;

@@ -1,4 +1,4 @@
-import {Country, PersonTitle, GenericActionCategory} from "./Enums";
+import {Country, PersonTitle} from "./Enums";
 /**
  * Created by Fei on 08/03/2017.
  */

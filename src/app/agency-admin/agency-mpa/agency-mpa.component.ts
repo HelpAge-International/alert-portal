@@ -17,21 +17,14 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private actions: FirebaseListObservable<any>;
+  private departments: FirebaseListObservable<any>;
   private Department = Department;
   private ActionLevel = ActionLevel;
   private subscriptions: RxHelper;
   private departmentSelected;
-  private actionLevelSelected;
-  departments = Department;
-  keys(): Array<string> {
-    var keys = Object.keys(this.departments);
-    return keys.slice(keys.length / 2);
-  }
-  actionLevels = ActionLevel;
-  actionLevelsKeys(): Array<string> {
-    var keys = Object.keys(this.actionLevels);
-    return keys.slice(keys.length / 2);
-  }
+  private actionLevelSelected = 0;
+  private ActionPrepLevel = Constants.ACTION_LEVEL;
+  private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
     this.subscriptions = new RxHelper();
@@ -47,6 +40,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
             equalTo: 1
           }
         });
+        this.getDepartments();
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
@@ -63,7 +57,9 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   checkDepartmentFilter() {
-    console.log("Department selected - " + this.departmentSelected);
+    console.log("Department selected - " + this.departmentSelected.key);
+    console.log("Department selected - " + this.departmentSelected.value);
+    console.log("Department selected - " + this.departmentSelected.$key);
   }
 
   deleteAction(actionKey) {
@@ -84,5 +80,9 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   editAction(actionKey) {
     console.log("Navigate to edit");
     this.router.navigate(["/agency-admin/agency-mpa/create-edit-mpa", {id: actionKey}]);
+  }
+
+  private getDepartments() {
+    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments");
   }
 }
