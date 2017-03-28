@@ -5931,7 +5931,6 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   background: #F9F9F9;
   border-bottom: #B1B2B3 1px solid;
   width: 100%;
-  height: 55px;
   -js-display: flex;
   display: -webkit-flex;
   display: -moz-box;
@@ -5946,7 +5945,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   -ms-flex-pack: center;
   justify-content: center;
   z-index: 99;
-  list-style: none
+  list-style: none;
 }
 
 .Sub-header_bar ul {
@@ -5964,21 +5963,39 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   padding: 0;
   width: 100%;
   max-width: 960px;
-  position: relative
+  position: relative;
 }
 
 .Sub-header_bar ul li {
   display: inline;
-  color: #636361
+  color: #636361;
+  padding: 1.5em;
 }
 
 .Sub-header_bar ul li a {
-  color: inherit
+  color: inherit;
+  text-decoration: none;
+}
+
+.Sub-header_bar ul li:hover {
+  color: #131D50;
 }
 
 .Sub-header_bar ul li .dropdown-menu {
   border-radius: 3px;
-  font-size: 1em
+  font-size: 1em;
+}
+
+.Sub-header_bar ul li .active {
+  background: #EEEEEE;
+}
+
+.Sub-header_bar ul .active {
+  background: #EEEEEE;
+}
+
+.Sub-header_bar ul .active a {
+  color: #131D50;
 }
 
 @media (max-width: 960px) {

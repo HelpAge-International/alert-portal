@@ -4,7 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from "./login/login.component";
 import {AgencyAdminComponent} from "./agency-admin/agency-admin.component";
 import {ForgotPasswordComponent} from "./login/forgot-password/forgot-password.component";
-import {SystemAdminComponent} from "./system-admin/system-admin.component";
+import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
 import {AddAgencyComponent} from "./system-admin/add-agency/add-agency.component";
 import {MessagesComponent} from "./system-admin/messages/messages.component";
 import {MessagesCreateComponent} from "./system-admin/messages/messages-create/messages-create.component";
@@ -54,7 +54,7 @@ const routes: Routes = [
   {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
   {path: 'system-admin/messages/create', component: MessagesCreateComponent},
   {path: 'system-admin/messages', component: MessagesComponent},
-  {path: 'system-admin', component: SystemAdminComponent},
+  {path: 'system-admin/agency', component: SystemAdminComponent},
   {path: 'system-admin/account-settings', component: AccountSettingsComponent},
   {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
   {path: 'system-admin/network', component: GlobalNetworksComponent},

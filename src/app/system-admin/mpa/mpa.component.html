@@ -19,7 +19,7 @@
         {{"GLOBAL.FILTER" | translate}}:
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" [(ngModel)]="levelSelected" (change)="filterData()">
+        <select class="form-control" [(ngModel)]="levelSelected" (change)="filterData()" >
           <!--<option value="" disabled selected hidden>All levels</option>-->
           <!--<option>{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>-->
           <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>

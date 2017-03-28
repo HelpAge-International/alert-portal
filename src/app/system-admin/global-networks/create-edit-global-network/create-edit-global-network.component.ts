@@ -15,7 +15,7 @@ import {ModelNetwork} from "../../../model/network.model";
   templateUrl: 'create-edit-global-network.component.html',
   styleUrls: ['create-edit-global-network.component.css']
 })
-export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
+export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   subscriptions: RxHelper;
 
   waringMessage: string;
@@ -156,7 +156,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
   }
 
   private createNewAdmin() {
-    let tempPassword = "testtest";
+    let tempPassword = Constants.TEMP_PASSWORD;
     this.secondApp.auth().createUserWithEmailAndPassword(this.adminEmail, tempPassword).then(success => {
       console.log("admin " + success.uid + " created successfully");
       let uid: string = success.uid;
@@ -164,7 +164,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
       this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
-      this.waringMessage = error.message;
+      this.waringMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
     });
   }
@@ -253,7 +253,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
     this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
       this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
     }, error => {
-      this.waringMessage = error.message;
+      console.log(error.message);
+      this.waringMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
     })
   }
@@ -294,7 +295,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
     this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
       this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
     }, error => {
-      this.waringMessage = error.message;
+      console.log(error.message);
+      this.waringMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
     });
   }
