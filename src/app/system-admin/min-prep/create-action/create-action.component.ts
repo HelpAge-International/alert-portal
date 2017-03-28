@@ -17,6 +17,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private inactive: boolean = true;
   private errorMessage: any;
+  private alerts = {};
   private pageTitle: string = 'CHS_MPA.CREATE_NEW_CHS_MPA';
   private buttonText: string = 'CHS_MPA.SAVE_BUTTON_TEXT';
   private textArea: string;
@@ -69,10 +70,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
         this.inactive = true;
       }
     } else {
-      this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.inactive = true;
-      })
+      this.showAlert();
     }
   }
 
@@ -91,7 +89,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private addNewChsAction() {
 
-    var newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
+    let newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
           console.log('New CHS action added');
@@ -101,13 +99,22 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   }
 
   private editChsAction() {
-    var editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
+    let editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
     this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).set(editedAction).then(_ => {
         console.log('CHS action updated');
         this.router.navigateByUrl("/system-admin/min-prep");
       }
     );
   }
+
+  private showAlert() {
+    this.inactive = false;
+    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      this.inactive = true;
+    });
+    this.subscriptions.add(subscription);
+  }
+
 
   /**
    * Returns false and specific error messages-
@@ -117,6 +124,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   private validate() {
 
     if (!Boolean(this.textArea)) {
+      this.alerts[this.textArea] = true;
       this.errorMessage = "CHS_MPA.NO_CONTENT_ERROR";
       return false;
     }

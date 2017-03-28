@@ -5,20 +5,16 @@
   {{errorMessage | translate}}
 </div>
 
-<!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-
-    <!--<div class="Back&#45;&#45;button" routerLink="/system-admin/messages">Messages</div>-->
 
     <div class="Header-title__wrap">
       <h1>{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</h1>
     </div>
 
-
     <div class="row System-admin--form-wrap">
       <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[messageTitle]}">
           <label for="n-Done">{{"GLOBAL.TITLE" | translate}}</label>
           <input type="text" class="form-control" name="n-Done" [(ngModel)]="messageTitle">
         </div>
@@ -26,7 +22,7 @@
     </div>
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10 col-sm-12">
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[messageContent]}">
           <label for="n-Done">{{"MESSAGES.MESSAGE_CONTENT" | translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
                     [(ngModel)]="messageContent"></textarea>
@@ -34,7 +30,7 @@
       </div>
     </div>
 
-    <label for="f-Format">{{"MESSAGES.RECIPIENTS" | translate}}</label>
+    <label>{{"MESSAGES.RECIPIENTS" | translate}}</label>
     <div class="row">
       <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">{{"MESSAGES.ALL_USERS" | translate}}</label>

@@ -17,6 +17,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
   private inactive: Boolean = true;
   private errorMessage: any;
+  private alerts = {};
   private pageTitle: string = 'GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
   private buttonText: string = 'GENERIC_MPA_APA.SAVE_BUTTON_TEXT';
   private textArea: string;
@@ -30,12 +31,6 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private categoriesList = [GenericActionCategory.Category0, GenericActionCategory.Category1, GenericActionCategory.Category2,
     GenericActionCategory.Category3, GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6,
     GenericActionCategory.Category7, GenericActionCategory.Category8, GenericActionCategory.Category9];
-
-  // categories = GenericActionCategory;
-  // categoryKeys(): Array<string> {
-  //   var keys = Object.keys(this.categories);
-  //   return keys.slice(keys.length / 2);
-  // }
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper;
@@ -82,10 +77,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
         this.inactive = true;
       }
     } else {
-      this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.inactive = true;
-      })
+      this.showAlert();
     }
   }
 
@@ -136,6 +128,14 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
     );
   }
 
+  private showAlert() {
+    this.inactive = false;
+    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      this.inactive = true;
+    });
+    this.subscriptions.add(subscription);
+  }
+
   /**
    * Returns false and specific error messages-
    * if no input is entered
@@ -145,9 +145,11 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private validate() {
 
     if (!Boolean(this.textArea)) {
+      this.alerts[this.textArea] = true;
       this.errorMessage = "GENERIC_MPA_APA.NO_CONTENT_ERROR";
       return false;
     } else if (!Boolean(this.categorySelected)) {
+      this.alerts[this.categorySelected] = true;
       this.errorMessage = "GENERIC_MPA_APA.NO_CATEGORY_ERROR";
       return false;
     }

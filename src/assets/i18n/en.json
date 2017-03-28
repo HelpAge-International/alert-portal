@@ -173,7 +173,7 @@
   },
   "ERROR": {
     "NAME_DUPLICATE": "Agency name duplicate!",
-    "NAME_MISSING": "Name is missing!",
+    "NAME_MISSING": "Agency name is missing!",
     "EMAIL_NOT_VALID": "Email is not valid!",
     "COUNTRY_DUPLICATE": "This country is already registered!",
     "SYSTEM_ADMIN": {

@@ -20,6 +20,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private successMessage: string = 'Password successfully updated!';
   private errorInactive: boolean = true;
   private errorMessage: string;
+  private alerts = {};
   private currentPasswordEntered: string;
   private newPasswordEntered: string;
   private confirmPasswordEntered: string;
@@ -63,27 +64,34 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
             this.currentPasswordEntered = '';
             this.newPasswordEntered = '';
             this.confirmPasswordEntered = '';
-            this.successInactive = false;
-            Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-              this.successInactive = true;
-            })
+            this.showAlert(false);
           }, error => {
             console.log(error.message);
           });
         })
         .catch(() => {
           this.errorMessage = 'Current password is incorrect. Please re enter';
-          this.errorInactive = false;
-          Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-            this.errorInactive = true;
-          })
+          this.showAlert(true);
         });
 
     } else {
+      this.showAlert(true);
+    }
+  }
+
+  private showAlert(error: boolean) {
+    if (error) {
       this.errorInactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
         this.errorInactive = true;
-      })
+      });
+      this.subscriptions.add(subscription);
+    } else {
+      this.successInactive = false;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.successInactive = true;
+      });
+      this.subscriptions.add(subscription);
     }
   }
 
@@ -93,22 +101,31 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
    */
   private validate() {
 
+    this.alerts = {};
     if (!Boolean(this.currentPasswordEntered)) {
+      this.alerts[this.currentPasswordEntered] = true;
       this.errorMessage = 'Please enter your current password';
       return false;
     } else if (!Boolean(this.newPasswordEntered)) {
+      this.alerts[this.newPasswordEntered] = true;
       this.errorMessage = 'Please enter a new password';
       return false;
     } else if (!Boolean(this.confirmPasswordEntered)) {
+      this.alerts[this.confirmPasswordEntered] = true;
       this.errorMessage = 'Please confirm your new password';
       return false;
     } else if (this.currentPasswordEntered == this.newPasswordEntered) {
+      this.alerts[this.currentPasswordEntered] = true;
+      this.alerts[this.newPasswordEntered] = true;
       this.errorMessage = 'You have entered the same password. Please enter a new password';
       return false;
     } else if (!CustomerValidator.PasswordValidator(this.newPasswordEntered)) {
+      this.alerts[this.newPasswordEntered] = true;
       this.errorMessage = 'Password must be at 6-15 digits long with no symbols and should include at least one numeric digit';
       return false;
     } else if (this.newPasswordEntered != this.confirmPasswordEntered) {
+      this.alerts[this.newPasswordEntered] = true;
+      this.alerts[this.confirmPasswordEntered] = true;
       this.errorMessage = "Passwords don't match";
       return false;
     }

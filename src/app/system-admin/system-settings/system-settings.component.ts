@@ -1,11 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFireAuth, AngularFire} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {Constants, FILE_SETTING} from "../../utils/Constants";
 import {ModelSystem} from "../../model/system.model";
 import {Router} from "@angular/router";
-import {Observable, Subscription} from "rxjs";
+import {Observable} from "rxjs";
 import {FileType} from "../../utils/Enums";
-import {subscribeOn} from "rxjs/operator/subscribeOn";
+import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-system-settings',
@@ -45,14 +45,15 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
   uid: string;
   successMessage: string = "HOME.SETTING.SETTING_SAVED";
   isSaved: boolean = false;
-  private subscription: Subscription;
+  private subscriptions: RxHelper;
+
 
   constructor(private af: AngularFire, private router: Router) {
+    this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
-    // console.log("uid: "+this.af.auth.getAuth().auth.uid);
-    this.subscription = this.af.auth.subscribe(x => {
+    let subscription = this.af.auth.subscribe(x => {
       if (x) {
         this.uid = x.uid;
         this.initData(this.uid);
@@ -60,13 +61,12 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH)
       }
     });
+    this.subscriptions.add(subscription)
 
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscriptions.releaseAll();
   }
 
   private initData(uid) {
@@ -142,11 +142,7 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
     this.modelSystem.fileType = this.fileType;
 
     this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).set(this.modelSystem).then(_ => {
-      this.isSaved = true;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        console.log("time up");
-        this.isSaved = false;
-      })
+      this.showAlert();
     }, error => {
       console.log(error.message);
     });
@@ -154,5 +150,14 @@ export class SystemSettingsComponent implements OnInit,OnDestroy {
 
   back() {
     this.router.navigateByUrl("/system-admin");
+  }
+
+  private showAlert() {
+    this.isSaved = true;
+    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      console.log("time up");
+      this.isSaved = false;
+    });
+    this.subscriptions.add(subscription);
   }
 }

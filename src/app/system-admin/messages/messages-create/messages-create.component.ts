@@ -17,6 +17,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
   private uid: string;
   private inactive: Boolean = true;
   private errorMessage: any;
+  private alerts = {};
   private messageTitle: string;
   private messageContent: string;
   private allUsersSelected: Boolean;
@@ -143,9 +144,11 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
   private validate() {
 
     if (!Boolean(this.messageTitle)) {
+      this.alerts[this.messageTitle] = true;
       this.errorMessage = "MESSAGES.NO_TITLE_ERROR";
       return false;
     } else if (!Boolean(this.messageContent)) {
+      this.alerts[this.messageContent] = true;
       this.errorMessage = "MESSAGES.NO_CONTENT_ERROR";
       return false;
     } else if ((!this.allUsersSelected) && (!this.agencyAdminsSelected) && (!this.countryAdminsSelected)) {

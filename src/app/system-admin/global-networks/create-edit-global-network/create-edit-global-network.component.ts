@@ -39,6 +39,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
 
   private uid: string;
+  private alerts = {};
   private secondApp: firebase.app.App;
   private networkId: string;
   private modelAdmin: ModelUserPublic;
@@ -109,7 +110,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
     this.secondApp.delete();
   }
 
-  dismissWarning() {
+  private showAlert() {
+    this.hideWarning = false;
     let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
       this.hideWarning = true;
     });
@@ -120,8 +122,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
     console.log("submit");
     if (!CustomerValidator.EmailValidator(this.adminEmail)) {
       this.waringMessage = "ERROR.EMAIL_NOT_VALID";
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
       return;
     }
     if (this.isEdit && this.preNetworkName == this.networkName) {
@@ -141,8 +142,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
     }).subscribe(networks => {
       if (networks.length != 0) {
         this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
-        this.hideWarning = false;
-        this.dismissWarning();
+        this.showAlert();
         return;
       }
       if (this.isEdit) {
@@ -165,8 +165,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
     }, error => {
       console.log(error.message);
       this.waringMessage = error.message;
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
     });
   }
 
@@ -180,24 +179,24 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
 
   validForm(): boolean {
     if (!this.networkName) {
+      this.alerts[this.networkName] = true;
       this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_EMPTY";
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
       return false;
     } else if (!this.adminFirstName) {
+      this.alerts[this.adminFirstName] = true;
       this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_FIRST_NAME";
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
       return false;
     } else if (!this.adminLastName) {
+      this.alerts[this.adminLastName] = true;
       this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_LAST_NAME";
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
       return false;
     } else if (!this.adminEmail) {
+      this.alerts[this.adminEmail] = true;
       this.waringMessage = "ERROR.SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_EMAIL";
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
       return false;
     } else {
       this.hideWarning = true;
@@ -255,8 +254,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
       this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
     }, error => {
       this.waringMessage = error.message;
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
     })
   }
 
@@ -297,8 +295,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit,OnDestroy {
       this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
     }, error => {
       this.waringMessage = error.message;
-      this.hideWarning = false;
-      this.dismissWarning();
+      this.showAlert();
     });
   }
 }

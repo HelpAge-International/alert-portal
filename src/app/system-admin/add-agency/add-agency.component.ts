@@ -340,7 +340,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     }
   }
 
-  showAlert() {
+  private showAlert() {
     this.inactive = false;
     let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
       this.inactive = true;
@@ -350,8 +350,6 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
 
   /**
    * Returns false and specific error messages-
-   * if no input is entered
-   * if no category is selected
    * @returns {boolean}
    */
   private validate() {
@@ -374,11 +372,10 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       return false;
     } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
       this.alerts[this.agencyAdminEmail] = true;
-      this.inactive = false;
+      //this.inactive = false;
       this.errorMessage = "ERROR.EMAIL_NOT_VALID";
       return false;
     }
-    this.alerts = {};
     return true;
   }
 }

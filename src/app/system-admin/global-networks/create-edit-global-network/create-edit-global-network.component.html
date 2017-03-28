@@ -4,13 +4,10 @@
 <div [hidden]="hideWarning" class="Alert-error">{{waringMessage | translate}}</div>
 
 <form #addNetworkForm (ngSubmit)="submit()">
-  <div id="wrap"><!-- start #wrap -->
+  <div id="wrap">
 
-    <!--Start Put page data-->
     <div class="Page-top__wrap--w_sub_header--no-paddng">
       <div class="Full-page__wrap--inner">
-
-        <!--<div class="Back&#45;&#45;button">Home</div>-->
 
         <div class="Header-title__wrap">
           <h1 *ngIf="!isEdit">{{"HOME.GLOBAL_NETWORKS.ADD_NEW_NETWORK" | translate}}</h1>
@@ -22,7 +19,7 @@
 
         <div class="row">
           <div class="col-lg-4 col-md-6">
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[networkName]}">
               <label for="Name">{{"HOME.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      required
@@ -40,7 +37,6 @@
             <div class="form-group">
               <label for="Title">{{"GLOBAL.TITLE" | translate}}*</label>
               <select name="Title" id="Title" class="form-control" required [(ngModel)]="adminTitle">
-                <!--<option value="" disabled selected hidden>Please select</option>-->
                 <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">{{PERSON_TITLE[title] |
                   translate}}
                 </option>
@@ -48,7 +44,7 @@
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[adminFirstName]}">
               <label for="f-Name">{{"GLOBAL.FIRST_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="f-Name" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
@@ -56,7 +52,7 @@
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[adminLastName]}">
               <label for="l-Name">{{"GLOBAL.LAST_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="l-Name" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
@@ -68,7 +64,7 @@
 
         <div class="row">
           <div class="col-lg-4 col-md-6">
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[adminEmail]}">
               <label for="Email">{{"GLOBAL.EMAIL" | translate}}*</label>
               <input type="text" class="form-control" id="Email" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
