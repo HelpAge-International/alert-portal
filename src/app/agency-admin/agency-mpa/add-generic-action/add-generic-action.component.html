@@ -3,7 +3,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <!--<div class="Back&#45;&#45;button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>-->
+    <div class="Back--button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>
     <div class="Header-title__wrap">
       <h1>Add generic preparedness actions</h1>
       <!--<button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}-->
@@ -28,7 +28,7 @@
 
     <div class="Data--ribbon row no-gutters Generic-action-item" *ngFor="let genericAction of genericActions | async">
       <div class="col-md-1 col-sm-1 col-1 text-center">
-        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_1" value="">
+        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_1" value="" [(ngModel)]="actionSelected" (change)="updateSelectedActions(genericAction)">
       </div>
       <div class="col-md-11 col-sm-11 col-11">
         <div class="col-sm-12">
@@ -40,7 +40,7 @@
           <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_1_department">
             Department:
             <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_1_select"
-                    onChange="addDepartmentModal(this, '#add_department')">
+                    onChange="addDepartmentModal(this, '#add_department')" [(ngModel)]="departmentSelected">
               <option selected hidden disabled>Please select</option>
               <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
               <option class="add-department">+ Add a department</option>
