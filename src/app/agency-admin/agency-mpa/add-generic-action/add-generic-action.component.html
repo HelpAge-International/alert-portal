@@ -1,0 +1,105 @@
+<app-agency-admin-header></app-agency-admin-header>
+<app-agency-admin-menu></app-agency-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Back--button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>
+    <div class="Header-title__wrap">
+      <h1>Add generic preparedness actions</h1>
+      <!--<button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}-->
+      <!--</button>-->
+      <button type="button" class="btn btn-primary disabled" id="add-action-btn">ADD NEW ACTION(S)</button>
+      <button type="button" class="btn btn-primary btn-ghost" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
+    </div>
+    <div class="row align-items-center Filter-form System-admin--form-wrap">
+      <div class="col-lg-1 col-md-1 col-sm-1">
+        Filter:
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5">
+        <select class="form-control" id="Category">
+          <option value="" disabled selected hidden>All levels</option>
+          <option value="min-prep">Minimum preparedness</option>
+          <option value="adv-prep">Advanced preparedness</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5 ">
+        <select class="form-control" id="Category1">
+          <option value="" disabled selected hidden>All departments</option>
+          <option value="HR">HR</option>
+          <option value="Logistics">Logistics</option>
+        </select>
+      </div>
+    </div>
+    <div class="Data--ribbon row no-gutters Generic-action-item">
+      <div class="col-md-1 col-sm-1 col-1 text-center">
+        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_1" value="">
+      </div>
+      <div class="col-md-11 col-sm-11 col-11">
+        <div class="col-sm-12">
+          <label for="gpa_action_1" class="form-check-label"><p>Establish Emergency Response Team/Structure (assign
+            people, clarified roles/functions, accountability framework, coordination and communication procedure)</p>
+          </label>
+        </div>
+        <div class="Info--ribbon--wrap">
+          <div class="col-md-4 col-sm-3 col-4">Category: <b>HR</b></div>
+          <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_1_department">
+            Department:
+            <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_1_select"
+                    onChange="addDepartmentModal(this, '#add_department')">
+              <option selected hidden disabled>Please select</option>
+              <option>Finance</option>
+              <option class="add-department">+ Add a department</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="Data--ribbon row no-gutters Generic-action-item">
+      <div class="col-md-1 col-sm-1 col-1 text-center">
+        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_2" value="">
+      </div>
+      <div class="col-md-11 col-sm-11 col-11">
+        <div class="col-sm-12">
+          <label for="gpa_action_2" class="form-check-label"><p>Develop volunteer’s programme/framework on
+            emergencies</p></label>
+        </div>
+        <div class="Info--ribbon--wrap">
+          <div class="col-md-4 col-sm-3 col-4">Category: <b>Logistics</b></div>
+          <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_2_department">
+            Department:
+            <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_2_select"
+                    onChange="addDepartmentModal(this, '#add_department')">
+              <option selected hidden disabled>Please select</option>
+              <option>Finance</option>
+              <option class="add-department">+ Add a department</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>Add new department</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Department Name</label>
+          <input type="text" class="form-control" id="Department-Name" placeholder="Please enter">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">SAVE</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
