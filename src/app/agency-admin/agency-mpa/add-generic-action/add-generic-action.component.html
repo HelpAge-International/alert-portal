@@ -16,13 +16,8 @@
         Filter:
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="checkActionLevelFilter()">
+        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="filterByLevel()">
           <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
-        </select>
-      </div>
-      <div class="col-lg-3 col-md-4 col-sm-5 ">
-        <select class="form-control" [(ngModel)]="departmentSelected" (change)="checkDepartmentFilter()">
-          <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
         </select>
       </div>
     </div>

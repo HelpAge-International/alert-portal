@@ -4,6 +4,7 @@ import {Constants} from "../../../utils/Constants";
 import {Department, ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enums";
 import {Router} from "@angular/router";
 import {RxHelper} from "../../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-add-generic-action',
@@ -14,7 +15,7 @@ import {RxHelper} from "../../../utils/RxHelper";
 export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  private genericActions: FirebaseListObservable<any>;
+  private genericActions: Observable<any>;
   private departments: FirebaseListObservable<any>;
   private Department = Department;
   private ActionLevel = ActionLevel;
@@ -51,12 +52,35 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  checkActionLevelFilter() {
-    console.log("Action level selected - " + this.actionLevelSelected);
-  }
+  filterByLevel() {
 
-  checkDepartmentFilter() {
-    console.log("Department selected - " + this.departmentSelected);
+    console.log("Action level selected - " + this.actionLevelSelected);
+
+    if (this.actionLevelSelected == ActionLevel.ALL) {
+      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      });
+    } else {
+      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.level == this.actionLevelSelected) {
+              console.log(JSON.stringify(item));
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    }
   }
 
   private getDepartments() {
