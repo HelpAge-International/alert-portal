@@ -57,9 +57,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   checkDepartmentFilter() {
-    console.log("Department selected - " + this.departmentSelected.key);
-    console.log("Department selected - " + this.departmentSelected.value);
-    console.log("Department selected - " + this.departmentSelected.$key);
+    console.log("Department selected - " + this.departmentSelected);
   }
 
   deleteAction(actionKey) {
@@ -80,6 +78,12 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   editAction(actionKey) {
     console.log("Navigate to edit");
     this.router.navigate(["/agency-admin/agency-mpa/create-edit-mpa", {id: actionKey}]);
+  }
+
+
+  lookUpGenericActionsPressed() {
+    console.log('Lookup generic actions pressed');
+    this.router.navigate(['agency-admin/agency-mpa/add-generic-action']);
   }
 
   private getDepartments() {
