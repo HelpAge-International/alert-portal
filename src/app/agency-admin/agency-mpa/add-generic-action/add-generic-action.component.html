@@ -3,7 +3,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>
+    <!--<div class="Back&#45;&#45;button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>-->
     <div class="Header-title__wrap">
       <h1>Add generic preparedness actions</h1>
       <!--<button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}-->
@@ -16,61 +16,38 @@
         Filter:
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" id="Category">
-          <option value="" disabled selected hidden>All levels</option>
-          <option value="min-prep">Minimum preparedness</option>
-          <option value="adv-prep">Advanced preparedness</option>
+        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="checkActionLevelFilter()">
+          <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
-        <select class="form-control" id="Category1">
-          <option value="" disabled selected hidden>All departments</option>
-          <option value="HR">HR</option>
-          <option value="Logistics">Logistics</option>
+        <select class="form-control" [(ngModel)]="departmentSelected" (change)="checkDepartmentFilter()">
+          <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
         </select>
       </div>
     </div>
-    <div class="Data--ribbon row no-gutters Generic-action-item">
+
+    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0" >No generic preparedness actions have been added
+      to Alert
+    </div>
+
+    <div class="Data--ribbon row no-gutters Generic-action-item" *ngFor="let genericAction of genericActions | async">
       <div class="col-md-1 col-sm-1 col-1 text-center">
         <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_1" value="">
       </div>
       <div class="col-md-11 col-sm-11 col-11">
         <div class="col-sm-12">
-          <label for="gpa_action_1" class="form-check-label"><p>Establish Emergency Response Team/Structure (assign
-            people, clarified roles/functions, accountability framework, coordination and communication procedure)</p>
+          <label for="gpa_action_1" class="form-check-label"><p>{{genericAction.task}}</p>
           </label>
         </div>
         <div class="Info--ribbon--wrap">
-          <div class="col-md-4 col-sm-3 col-4">Category: <b>HR</b></div>
+          <div class="col-md-4 col-sm-3 col-4">Category: <b>{{GenericActionCategory[genericAction.category]}}</b></div>
           <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_1_department">
             Department:
             <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_1_select"
                     onChange="addDepartmentModal(this, '#add_department')">
               <option selected hidden disabled>Please select</option>
-              <option>Finance</option>
-              <option class="add-department">+ Add a department</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="Data--ribbon row no-gutters Generic-action-item">
-      <div class="col-md-1 col-sm-1 col-1 text-center">
-        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_2" value="">
-      </div>
-      <div class="col-md-11 col-sm-11 col-11">
-        <div class="col-sm-12">
-          <label for="gpa_action_2" class="form-check-label"><p>Develop volunteer’s programme/framework on
-            emergencies</p></label>
-        </div>
-        <div class="Info--ribbon--wrap">
-          <div class="col-md-4 col-sm-3 col-4">Category: <b>Logistics</b></div>
-          <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_2_department">
-            Department:
-            <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_2_select"
-                    onChange="addDepartmentModal(this, '#add_department')">
-              <option selected hidden disabled>Please select</option>
-              <option>Finance</option>
+              <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
               <option class="add-department">+ Add a department</option>
             </select>
           </div>

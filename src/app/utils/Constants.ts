@@ -11,6 +11,7 @@ export class Constants {
   static LOGIN_PATH = "/login";
 
   //system admin
+  static SYSTEM_ADMIN_UID = "hoXTsvefEranzaSQTWbkhpBenLn2";
   static DEFAULT_MPA_PATH = "/system-admin/mpa";
   static SYSTEM_ADMIN_HOME = "/system-admin/agency";
   static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
