@@ -29,6 +29,7 @@ import {AccountSettingsComponent} from "./system-admin/account-settings/account-
 import {ChangePasswordComponent} from "./system-admin/account-settings/change-password/change-password.component";
 import {GlobalNetworksComponent} from "./system-admin/global-networks/global-networks.component";
 import {CreateEditGlobalNetworkComponent} from "./system-admin/global-networks/create-edit-global-network/create-edit-global-network.component";
+import {CreateEditRegionComponent} from "./agency-admin/country-office/create-edit-region/create-edit-region.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -71,6 +72,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-details', component: AgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
   {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
+  {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
   {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
   {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
   {path: 'agency-admin/country-office/create-edit-country/:id', component: CreateEditCountryComponent},

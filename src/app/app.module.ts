@@ -62,6 +62,7 @@ import { ChangePasswordComponent } from './system-admin/account-settings/change-
 import { GlobalNetworksComponent } from './system-admin/global-networks/global-networks.component';
 import { CreateEditGlobalNetworkComponent } from './system-admin/global-networks/create-edit-global-network/create-edit-global-network.component';
 import { CreateEditRegionComponent } from './agency-admin/country-office/create-edit-region/create-edit-region.component';
+import {RxHelper} from './utils/RxHelper';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -153,7 +154,7 @@ const firebaseAuthConfig = {
     })
   ],
   entryComponents: [DialogComponent],
-  providers: [DialogService],
+  providers: [DialogService, RxHelper],
   bootstrap: [AppComponent]
 })
 export class AppModule {
