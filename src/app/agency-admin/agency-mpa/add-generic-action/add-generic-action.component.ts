@@ -2,11 +2,11 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Department, ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enums";
+import {ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enums";
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
-import {ModalDismissReasons} from "@ng-bootstrap/ng-bootstrap";
+declare var jQuery:any;
 
 @Component({
   selector: 'app-add-generic-action',
@@ -24,11 +24,9 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private alerts = {};
   private genericActions: Observable<any>;
   private departments: FirebaseListObservable<any>;
-  private Department = Department;
   private ActionLevel = ActionLevel;
   private GenericActionCategory = GenericActionCategory;
   private actionSelected: boolean;
-  private disableButton: boolean = false;
   private departmentSelected;
   private newDepartment;
   private actionLevelSelected = 0;
@@ -180,10 +178,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     if (this.validateNewDepartment()) {
       this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
         console.log('New departmentadded');
-        //TODO - Close modal
-
-        // this.newDepartment = '';
-        // $('#add_department').closeModal();
+        jQuery("#add_department").modal("hide");
         this.showAlert(false);
       })
     } else {

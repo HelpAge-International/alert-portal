@@ -1,6 +1,10 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<div class="Alert-success" [hidden]="successInactive">
+  {{successMessage | translate}}
+</div>
+
 <div class="Alert-error" [hidden]="inactive">
   {{errorMessage | translate}}
 </div>
@@ -40,10 +44,11 @@
 
         <div class="row">
           <div class="col-lg-8 col-md-10 col-sm-12">
-            <label for="Department">{{"AGENCY_MANDATED_PA.DEPARTMENT" | translate}}</label>
-            <select class="form-control" id="Department" [(ngModel)]="departmentSelected" (change)="checkDepartmentSelected()">
+            <label>{{"AGENCY_MANDATED_PA.DEPARTMENT" | translate}}</label>
+
+            <select class="form-control" onChange="addDepartmentModal(this, '#add_department')" [(ngModel)]="departmentSelected">
               <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
-              <option value="addNewDepartment">{{"AGENCY_MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
+              <option class="add-department">{{"AGENCY_MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
             </select>
           </div>
         </div>
@@ -54,6 +59,32 @@
           <div (click)="onSubmit()" class="btn btn-primary">{{buttonText | translate}}</div>
         </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="Alert-error" [hidden]="newDepartmentErrorInactive">
+    {{newDepartmentErrorMessage | translate}}
+  </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>Add new department</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[newDepartment]}">
+          <label>Department Name</label>
+          <input type="text" class="form-control" id="Department-Name" placeholder="Please enter" [(ngModel)]="newDepartment">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addNewDepartment()">SAVE</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
