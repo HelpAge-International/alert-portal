@@ -24,9 +24,13 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private actionSelected: boolean;
   private departmentSelected;
   private actionLevelSelected = 0;
+  private categorySelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
-  private selectedActions: MandatedPreparednessAction[] = [];
+  private Category = Constants.CATEGORY;
+  private categoriesList = [GenericActionCategory.ALL, GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
+    GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
+    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];  private selectedActions: MandatedPreparednessAction[] = [];
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -56,17 +60,47 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     this.selectedActions = [];
   }
 
-  filterByLevel() {
+  // filter() {
+  //
+  //   console.log("Action level selected - " + this.actionLevelSelected);
+  //   if (this.actionLevelSelected == ActionLevel.ALL) {
+  //     this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
+  //       query: {
+  //         orderByChild: "type",
+  //         equalTo: ActionType.mandated
+  //       }
+  //     });
+  //   } else {
+  //     this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
+  //       query: {
+  //         orderByChild: "type",
+  //         equalTo: ActionType.mandated
+  //       }
+  //     })
+  //       .map(list => {
+  //         let tempList = [];
+  //         for (let item of list) {
+  //           if (item.level == this.actionLevelSelected) {
+  //             console.log(JSON.stringify(item));
+  //             tempList.push(item);
+  //           }
+  //         }
+  //         return tempList;
+  //       });
+  //   }
+  // }
 
-    console.log("Action level selected - " + this.actionLevelSelected);
-    if (this.actionLevelSelected == ActionLevel.ALL) {
+  filter() {
+    if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
+      //no filter. show all
       this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
         }
       });
-    } else {
+    } else if (this.actionLevelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
+      //filter only with mpa
       this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
         query: {
           orderByChild: "type",
@@ -77,7 +111,49 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
           let tempList = [];
           for (let item of list) {
             if (item.level == this.actionLevelSelected) {
-              console.log(JSON.stringify(item));
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    } else if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
+      //filter only with apa
+      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.category == this.categorySelected) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    } else {
+      // filter both action level and category
+      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.level == this.actionLevelSelected) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.category == this.categorySelected) {
               tempList.push(item);
             }
           }

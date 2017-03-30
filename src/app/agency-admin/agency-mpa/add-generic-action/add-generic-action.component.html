@@ -16,8 +16,13 @@
         Filter:
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="filterByLevel()">
+        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="filter()">
           <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5 ">
+        <select class="form-control" [(ngModel)]="categorySelected" (change)="filter()">
+          <option *ngFor="let category of categoriesList" [value]="category">{{Category[category] | translate}}</option>
         </select>
       </div>
     </div>
