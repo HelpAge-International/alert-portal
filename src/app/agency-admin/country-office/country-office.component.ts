@@ -12,15 +12,13 @@ import {DialogService} from "../../dialog/dialog.service";
   styleUrls: ['./country-office.component.css']
 })
 export class CountryOfficeComponent implements OnInit, OnDestroy {
-
-  private subscriptions: RxHelper;
   private uid: string;
   private countries: FirebaseListObservable<any[]>;
   private countryNames: string [] = Constants.COUNTRY;
   private admins: Observable<any>[];
+  private regions: FirebaseListObservable<any[]>;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -29,9 +27,10 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
-      console.log(user.auth.uid)
+      console.log(user.auth.uid);
       this.uid = user.auth.uid;
       this.countries = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+      this.regions = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid);
     });
   }
 

@@ -1,104 +1,63 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
-<!--<div class="Alert-error" [hidden]="inactive">-->
-<!--{{errorMessage | translate}}-->
-<!--</div>-->
-<form #regionForm (ngSubmit)="submit()">
-  <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
+<div class="Alert-error" [hidden]="hideWarning">
+  {{errorMessage | translate}}
+</div>
 
-      <div class="Header-title__wrap ">
-        <h1>Create new region</h1>
-      </div>
+<!--<form #regionForm (ngSubmit)="submit()">-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
 
-      <div class="row System-admin--form-wrap">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="Region-Name">Region Name*</label>
-            <input type="text" class="form-control" id="Region-Name" placeholder="Please enter"
-                   [(ngModel)]="regionName" name="regionName">
-          </div>
+    <div class="Header-title__wrap ">
+      <h1>Create new region</h1>
+    </div>
+
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Region-Name">Region Name*</label>
+          <input type="text" class="form-control" id="Region-Name" placeholder="Please enter" required
+                 [(ngModel)]="regionName" name="regionName">
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group countries_parent" id="countries_parent">
-            <label for="country">Countries*</label>
-
-            <!--<select *ngFor="let selectCountry of countries" name="country" id="country" class="form-control"-->
-                    <!--[(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">-->
-              <!--&lt;!&ndash;<option value="" disabled selected hidden>Select country</option>&ndash;&gt;-->
-              <!--<option *ngFor="let country of COUNTRY_SELECTION">{{COUNTRY_NAMES[country] |-->
-                <!--translate}}-->
-              <!--</option>-->
-            <!--</select>-->
-
-            <select *ngIf="countryBoxes[0]" name="country" id="country1" class="form-control"
-                    [(ngModel)]="countrySelected1">
-              <!--<option value="" disabled selected hidden>Select country</option>-->
-              <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY_NAMES[country] |
-                translate}}
-              </option>
-            </select>
-
-            <select *ngIf="countryBoxes[1]" name="country" id="country2" class="form-control"
-                    [(ngModel)]="countrySelected2">
-              <!--<option value="" disabled selected hidden>Select country</option>-->
-              <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY_NAMES[country] |
-                translate}}
-              </option>
-            </select>
-
-            <select *ngIf="countryBoxes[2]" name="country" id="country3" class="form-control"
-                    [(ngModel)]="countrySelected3">
-              <!--<option value="" disabled selected hidden>Select country</option>-->
-              <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY_NAMES[country] |
-                translate}}
-              </option>
-            </select>
-
-            <select *ngIf="countryBoxes[3]" name="country" id="country4" class="form-control"
-                    [(ngModel)]="countrySelected4">
-              <!--<option value="" disabled selected hidden>Select country</option>-->
-              <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY_NAMES[country] |
-                translate}}
-              </option>
-            </select>
-
-            <select *ngIf="countryBoxes[4]" name="country" id="country5" class="form-control"
-                    [(ngModel)]="countrySelected5">
-              <!--<option value="" disabled selected hidden>Select country</option>-->
-              <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY_NAMES[country] |
-                translate}}
-              </option>
-            </select>
-
-          </div>
-          <div class="form-group">
-            <!--<a href="#" id="add-country" onclick="addField('select[id=country]', '#countries_parent', '<div></div>')">+-->
-            <a id="add-country" (click)="addCountrySelection()">+Add another country</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="RegionalDirector">Regional Director</label>
-            <select name="regional-director" class="form-control">
-              <option selected disabled hidden>Unassigned</option>
-              <option>Forename Surname</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="Form-submit__wrapper">
-        <button type="submit" class="btn btn-primary">Save new region</button>
-        <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group countries_parent" id="countries_parent">
+          <label for="country">Countries*</label>
+
+          <select *ngFor="let selectCountry of countries" class="form-control"
+                  [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
+            <!--<option [value]="-1" disabled selected hidden>Select country</option>-->
+            <option *ngFor="let country of countrySelections | async">{{COUNTRY_NAMES[country.location] |
+              translate}}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <a id="add-country" (click)="addCountrySelection()">+Add another country</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="RegionalDirector">Regional Director</label>
+          <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId">
+            <option>Unassigned</option>
+            <option>Forename Surname</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <button type="submit" class="btn btn-primary" (click)="submit()">Save new region</button>
+      <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
+    </div>
   </div>
-</form>
+</div>
+<!--</form>-->
