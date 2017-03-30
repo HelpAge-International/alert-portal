@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {MdDialogRef, MdDialog} from "@angular/material";
+import {Component, OnInit} from '@angular/core';
+import {MdDialogRef} from "@angular/material";
 
 @Component({
   selector: 'app-dialog',
@@ -8,10 +8,11 @@ import {MdDialogRef, MdDialog} from "@angular/material";
 })
 export class DialogComponent implements OnInit {
 
-  title:string = "Alert";
-  content:string = "Are you sure you want to proceed this action?";
+  title: string = "Alert";
+  content: string = "Are you sure you want to proceed this action?";
 
-  constructor(public dialogRef:MdDialogRef<DialogComponent>) { }
+  constructor(public dialogRef: MdDialogRef<DialogComponent>) {
+  }
 
   ngOnInit() {
   }

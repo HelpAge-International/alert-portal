@@ -43,10 +43,6 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     }
   }
 
-  goToAccountSettings() {
-    this.router.navigateByUrl('system-admin/account-settings');
-  }
-
   logout() {
     console.log("logout");
     this.af.auth.logout();
@@ -59,11 +55,6 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     } else {
       this.translate.use("fr");
     }
-    //   console.log("open dialog")
-    //   let dialogRef = this.dialog.open(DialogComponent);
-    //   dialogRef.afterClosed().subscribe(result => {
-    //     console.log(result);
-    //   });
   }
 
 }

@@ -1,5 +1,11 @@
 {
   "hosting": {
-    "public": "/Users/Sanjaya/Documents/Roller/alert-portal"
+    "public": "dist",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

@@ -5,27 +5,54 @@
 <!--<p>{{content | translate}}</p>-->
 
 
-<div class="modal-header">
-  <!--<h5 class="modal-title" id="exampleModalLabel">Deactivate <strong>Alliance 2015</strong></h5>-->
-  <h5 class="modal-title" id="exampleModalLabel"><strong>{{title | translate}}</strong></h5>
-  <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-  <!--<span aria-hidden="true">&times;</span>-->
+<!--<div class="modal-header">-->
+  <!--&lt;!&ndash;<h5 class="modal-title" id="exampleModalLabel">Deactivate <strong>Alliance 2015</strong></h5>&ndash;&gt;-->
+  <!--<h5 class="modal-title" id="exampleModalLabel"><strong>{{title | translate}}</strong></h5>-->
+  <!--&lt;!&ndash;<button type="button" class="close" data-dismiss="modal" aria-label="Close">&ndash;&gt;-->
+  <!--&lt;!&ndash;<span aria-hidden="true">&times;</span>&ndash;&gt;-->
+  <!--&lt;!&ndash;</button>&ndash;&gt;-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+  <!--<div class="text-center"><p>{{content | translate}}</p></div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+
+  <!--<button md-raised-button type="button" class="btn btn-outline-secondary" (click)="close()">{{"GLOBAL.CANCEL" |-->
+    <!--translate}}-->
   <!--</button>-->
-</div>
-<div class="modal-body">
-  <div class="text-center"><p>{{content | translate}}</p></div>
-</div>
-<div class="modal-footer">
+  <!--<button md-raised-button type="button" color="primary" class="btn btn-primary" (click)="confirm()">-->
+    <!--{{"GLOBAL.CONFIRM" | translate}}-->
+  <!--</button>-->
 
-  <button md-raised-button type="button" class="btn btn-outline-secondary" (click)="close()">{{"GLOBAL.CANCEL" |
-    translate}}
-  </button>
-  <button md-raised-button type="button" color="primary" class="btn btn-primary" (click)="confirm()">
-    {{"GLOBAL.CONFIRM" | translate}}
-  </button>
-
-</div>
+<!--</div>-->
 
 
 <!--<button md-raised-button (click)="close()">{{"GLOBAL.CANCEL" | translate}}</button>-->
 <!--<button md-raised-button autofocus="true" color="primary" (click)="confirm()">{{"GLOBAL.CONFIRM" | translate}}</button>-->
+
+<!--<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
+<!--aria-hidden="true">-->
+<!--<div class="modal-dialog" role="document">-->
+<!--<div class="modal-content">-->
+<div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLabel"><strong>{{title | translate}}</strong></h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <div class="text-center"><p>{{content | translate}}</p></div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="confirm()">
+    {{"GLOBAL.CONFIRM" | translate}}
+  </button>
+  <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="close()">
+    {{"GLOBAL.CANCEL" | translate}}
+  </button>
+</div>
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
