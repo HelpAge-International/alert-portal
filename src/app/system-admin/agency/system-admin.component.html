@@ -20,7 +20,7 @@
         <td *ngIf="agency?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
         <td *ngIf="!agency?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
         <td>
-          <div *ngIf="!agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"GLOBAL.ACTIVATE" | translate}}</div>
+          <div *ngIf="!agency?.isActive" class="btn btn-success" (click)="toggleActive(agency)">{{"GLOBAL.ACTIVATE" | translate}}</div>
           <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"GLOBAL.DEACTIVATE" | translate}}</div>
           <div class="btn btn-primary" (click)="editAgency(agency)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
