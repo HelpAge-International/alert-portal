@@ -6,6 +6,7 @@ import {Department, ActionLevel, ActionType, GenericActionCategory} from "../../
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
+import {ModalDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-add-generic-action',
@@ -16,13 +17,20 @@ import {Observable} from "rxjs";
 export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private successInactive: boolean = true;
+  private successMessage: string = 'New department added';
+  private newDepartmentErrorInactive: boolean = true;
+  private newDepartmentErrorMessage: string;
+  private alerts = {};
   private genericActions: Observable<any>;
   private departments: FirebaseListObservable<any>;
   private Department = Department;
   private ActionLevel = ActionLevel;
   private GenericActionCategory = GenericActionCategory;
   private actionSelected: boolean;
+  private disableButton: boolean = false;
   private departmentSelected;
+  private newDepartment;
   private actionLevelSelected = 0;
   private categorySelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
@@ -31,6 +39,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private categoriesList = [GenericActionCategory.ALL, GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
     GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
     GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];  private selectedActions: MandatedPreparednessAction[] = [];
+  private departmentsPath: string;
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -41,6 +50,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
+        this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
         this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
           query: {
             orderByChild: "type",
@@ -60,35 +70,38 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     this.selectedActions = [];
   }
 
-  // filter() {
-  //
-  //   console.log("Action level selected - " + this.actionLevelSelected);
-  //   if (this.actionLevelSelected == ActionLevel.ALL) {
-  //     this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
-  //       query: {
-  //         orderByChild: "type",
-  //         equalTo: ActionType.mandated
-  //       }
-  //     });
-  //   } else {
-  //     this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
-  //       query: {
-  //         orderByChild: "type",
-  //         equalTo: ActionType.mandated
-  //       }
-  //     })
-  //       .map(list => {
-  //         let tempList = [];
-  //         for (let item of list) {
-  //           if (item.level == this.actionLevelSelected) {
-  //             console.log(JSON.stringify(item));
-  //             tempList.push(item);
-  //           }
-  //         }
-  //         return tempList;
-  //       });
-  //   }
-  // }
+  updateSelectedActions(genericAction) {
+
+    let newMandatePA: MandatedPreparednessAction = new MandatedPreparednessAction(genericAction.task, ActionType.mandated, this.departmentSelected, genericAction.level);
+
+    console.log('actionSelected ---- ' + this.actionSelected);
+
+    if (this.actionSelected) {
+
+      var index = this.selectedActions.indexOf(newMandatePA);
+      console.log('index ----' + index);
+
+      if (index < 0) {
+        this.selectedActions.push(newMandatePA);
+        console.log("Adding");
+      } else {
+        this.selectedActions[index] = newMandatePA;
+        console.log("Not added coz index is ---- " + index);
+      }
+
+    } else {
+
+      var index = this.selectedActions.indexOf(newMandatePA);
+
+      if (index > -1) {
+        this.selectedActions.splice(index, 1);
+      }
+    }
+    console.log('selectedActionsCount ---- ' + this.selectedActions.length);
+    console.log('selectedActions ---- ' + this.selectedActions);
+
+    this.actionSelected = null;
+  }
 
   filter() {
     if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
@@ -162,40 +175,54 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateSelectedActions(genericAction) {
+  addNewDepartment() {
 
-    let newMandatePA: MandatedPreparednessAction = new MandatedPreparednessAction(genericAction.task, ActionType.mandated, this.departmentSelected, genericAction.level);
+    if (this.validateNewDepartment()) {
+      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
+        console.log('New departmentadded');
+        //TODO - Close modal
 
-    console.log('actionSelected ---- ' + this.actionSelected);
-
-    if (this.actionSelected) {
-
-      var index = this.selectedActions.indexOf(newMandatePA);
-      console.log('index ----' + index);
-
-      if (index < 0) {
-        this.selectedActions.push(newMandatePA);
-        console.log("Adding");
-      } else {
-        this.selectedActions[index] = newMandatePA;
-        console.log("Not added coz index is ---- " + index);
-      }
-
+        // this.newDepartment = '';
+        // $('#add_department').closeModal();
+        this.showAlert(false);
+      })
     } else {
-
-      var index = this.selectedActions.indexOf(newMandatePA);
-
-      if (index > -1) {
-        this.selectedActions.splice(index, 1);
-      }
+      this.showAlert(true);
     }
-    console.log('selectedActionsCount ---- ' + this.selectedActions.length);
-    console.log('selectedActions ---- ' + this.selectedActions);
-
-    this.actionSelected = null;
   }
 
   private getDepartments() {
-    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments");
+    this.departments = this.af.database.list(this.departmentsPath);
+  }
+
+  private showAlert(error: boolean) {
+    if (error) {
+      this.newDepartmentErrorInactive = false;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.newDepartmentErrorInactive = true;
+      });
+      this.subscriptions.add(subscription);
+    } else {
+      this.successInactive = false;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.successInactive = true;
+      });
+      this.subscriptions.add(subscription);
+    }
+  }
+
+  /**
+   * Returns false and specific error messages-
+   * @returns {boolean}
+   */
+  private validateNewDepartment() {
+
+    this.alerts = {};
+    if (!(this.newDepartment)) {
+      this.alerts[this.newDepartment] = true;
+      this.newDepartmentErrorMessage = 'Please enter department name';
+      return false;
+    }
+    return true;
   }
 }

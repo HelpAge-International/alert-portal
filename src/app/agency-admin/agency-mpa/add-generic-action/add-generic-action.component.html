@@ -1,6 +1,10 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<div class="Alert-success" [hidden]="successInactive">
+  {{successMessage | translate}}
+</div>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>
@@ -8,7 +12,7 @@
       <h1>Add generic preparedness actions</h1>
       <!--<button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}-->
       <!--</button>-->
-      <button type="button" class="btn btn-primary disabled" id="add-action-btn">ADD NEW ACTION(S)</button>
+      <button type="button" class="btn btn-primary" id="add-action-btn">ADD NEW ACTION(S)</button>
       <button type="button" class="btn btn-primary btn-ghost" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
     <div class="row align-items-center Filter-form System-admin--form-wrap">
@@ -57,8 +61,10 @@
   </div>
 </div>
 
-<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="Alert-error" [hidden]="newDepartmentErrorInactive">
+    {{newDepartmentErrorMessage | translate}}
+  </div>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -68,13 +74,13 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[newDepartment]}">
           <label>Department Name</label>
-          <input type="text" class="form-control" id="Department-Name" placeholder="Please enter">
+          <input type="text" class="form-control" id="Department-Name" placeholder="Please enter" [(ngModel)]="newDepartment">
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">SAVE</button>
+        <button type="button" class="btn btn-primary" (click)="addNewDepartment()">SAVE</button>
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>
