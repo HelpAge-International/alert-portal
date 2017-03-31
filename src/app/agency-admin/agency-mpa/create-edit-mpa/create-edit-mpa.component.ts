@@ -120,10 +120,15 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private addNewMandatedPA() {
 
-    console.log("this.departmentSelected" + this.departmentSelected);
+    let currentDateTime = new Date().getTime();
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let newAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, this.departmentSelected, level);
+    let newAction: MandatedPreparednessAction = new MandatedPreparednessAction();
+    newAction.task = this.textArea;
+    newAction.type = ActionType.mandated;
+    newAction.department = this.departmentSelected;
+    newAction.level = level;
+    newAction.createdAt = currentDateTime;
 
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
@@ -136,9 +141,13 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private editMandatedPA() {
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let editedAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, this.departmentSelected, level);
+    let editedAction: MandatedPreparednessAction = new MandatedPreparednessAction();
+    editedAction.task = this.textArea;
+    editedAction.type = ActionType.mandated;
+    editedAction.department = this.departmentSelected;
+    editedAction.level = level;
 
-    this.af.database.object(this.path + "/" + this.idOfMpaToEdit).set(editedAction).then(_ => {
+    this.af.database.object(this.path + "/" + this.idOfMpaToEdit).update(editedAction).then(_ => {
         console.log('Mandated action updated');
         this.router.navigateByUrl("/agency-admin/agency-mpa");
       }

@@ -70,7 +70,14 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   updateSelectedActions(genericAction) {
 
-    let newMandatePA: MandatedPreparednessAction = new MandatedPreparednessAction(genericAction.task, ActionType.mandated, this.departmentSelected, genericAction.level);
+    let currentDateTime = new Date().getTime();
+
+    let newMandatePA: MandatedPreparednessAction = new MandatedPreparednessAction();
+    newMandatePA.task = genericAction.task;
+    newMandatePA.type = ActionType.mandated;
+    newMandatePA.department = this.departmentSelected;
+    newMandatePA.level = genericAction.level;
+    newMandatePA.createdAt = currentDateTime;
 
     console.log('actionSelected ---- ' + this.actionSelected);
 
