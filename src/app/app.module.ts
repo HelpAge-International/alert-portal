@@ -78,8 +78,8 @@ export function HttpLoaderFactory(http: Http) {
 // Must export the config
 export const firebaseConfig = {
   apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-  // authDomain: "alert-190fa.firebaseapp.com",
-  authDomain: "test.alertplatform.co.uk",
+  authDomain: "alert-190fa.firebaseapp.com",
+  // authDomain: "test.alertplatform.co.uk",
   databaseURL: "https://alert-190fa.firebaseio.com",
   storageBucket: "alert-190fa.appspot.com",
   messagingSenderId: "305491871378"
