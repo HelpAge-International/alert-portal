@@ -1,59 +1,86 @@
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-  </div>
-</div>
+<app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>Country Offices</h1>
+      <button [routerLink]="['/agency-admin/country-office/create-edit-region']" type="button" class="btn btn-primary">
+        CREATE A REGION
+      </button>
       <button [routerLink]="['/agency-admin/country-office/create-edit-country']" type="button" class="btn btn-primary">
         ADD NEW COUNTRY OFFICE
       </button>
     </div>
 
-    <!-- Display only when no countries in the list -->
-    <!--<div *ngIf="(agencies | async)?.length == 0" class="Empty&#45;&#45;ribbon">-->
     <div *ngIf="(countries | async)?.length == 0" class="Empty--ribbon">
       You have not added any country offices to your agency
     </div>
 
-    <table class="table Table__v-spacing__mid Agency-table">
+    <table *ngIf="(regions | async)?.length == 0" class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>Country</th>
         <th>Country Administrator</th>
         <th></th>
         <th>Status</th>
-        <th>Actions</th>
       </tr>
       <tr *ngFor="let country of countries | async">
         <td>{{countryNames[country?.location] | translate}}</td>
         <td>{{getAdminName(country?.$key)}}</td>
         <td></td>
-        <td *ngIf="country?.isActive">{{"HOME.ACTIVE" | translate}}</td>
-        <td *ngIf="!country?.isActive">{{"HOME.DEACTIVE" | translate}}</td>
+        <td *ngIf="country?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
+        <td *ngIf="!country?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
         <td>
-          <div *ngIf="!country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"HOME.ACTIVATE" |
+          <div *ngIf="!country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"GLOBAL.ACTIVATE" |
             translate}}
           </div>
-          <div *ngIf="country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"HOME.DEACTIVATE" |
+          <div *ngIf="country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"GLOBAL.DEACTIVATE"
+            |
             translate}}
           </div>
-          <div class="btn btn-primary" (click)="editCountry(country)">{{"HOME.EDIT" | translate}}</div>
+          <div class="btn btn-primary" (click)="editCountry(country)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
       </tr>
-      <!--<tr>-->
-      <!--<td>Malaysia</td>-->
-      <!--<td>Terry Collins</td>-->
-      <!--<td></td>-->
-      <!--<td>Active</td>-->
-      <!--<td>-->
-      <!--<div class="btn btn-danger">Deactivate</div>-->
-      <!--<div class="btn btn-primary">Edit</div>-->
-      <!--</td>-->
-      <!--</tr>-->
     </table>
+
+    <div [hidden]="(regions|async)?.length == 0" *ngFor="let region of regions | async">
+      <div class="Accordion Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+           aria-controls="collapseOne">
+        <div class="row align-items-center">
+          <div class="col-md-4 col-lg-4 col-sm-4"><h4>{{region.name}}</h4></div>
+          <div class="col-md-5 col-lg-5 col-sm-5"><strong>Regional director:</strong> Unassigned</div>
+          <div class="col-md-2 col-lg-2 col-sm-2"><a href="agency-admin__office__region--edit.html">Edit section</a>
+          </div>
+          <div class="col-md-1 col-lg-1 col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
+        </div>
+      </div>
+
+      <table class="table Table__v-spacing__mid Agency-table">
+        <tr>
+          <th>Country</th>
+          <th>Country Administrator</th>
+          <th></th>
+          <th>Status</th>
+        </tr>
+        <tr *ngFor="let country of getCountries(region) | async">
+          <td>{{countryNames[country?.location] | translate}}</td>
+          <td>{{getAdminName(country?.$key)}}</td>
+          <td></td>
+          <td *ngIf="country?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
+          <td *ngIf="!country?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
+          <td>
+            <div *ngIf="!country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"GLOBAL.ACTIVATE" |
+              translate}}
+            </div>
+            <div *ngIf="country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"GLOBAL.DEACTIVATE"
+              |
+              translate}}
+            </div>
+            <div class="btn btn-primary" (click)="editCountry(country)">{{"GLOBAL.EDIT" | translate}}</div>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 
 </div>

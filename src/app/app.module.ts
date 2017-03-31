@@ -65,6 +65,11 @@ import { AddGenericActionComponent } from './agency-admin/agency-mpa/add-generic
 import { AgencyAccountSettingsComponent } from './agency-admin/agency-account-settings/agency-account-settings.component';
 import { AgencyAccountDetailsComponent } from './agency-admin/agency-account-details/agency-account-details.component';
 import { AgencyChangePasswordComponent } from './agency-admin/agency-account-settings/agency-change-password/agency-change-password.component';
+import { CreateEditRegionComponent } from './agency-admin/country-office/create-edit-region/create-edit-region.component';
+import {RxHelper} from './utils/RxHelper';
+import {ModalModule} from "angular2-modal";
+import {BootstrapModalModule} from "angular2-modal/plugins/bootstrap";
+import { Modal } from 'angular2-modal/plugins/bootstrap';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -137,6 +142,7 @@ const firebaseAuthConfig = {
     ChangePasswordComponent,
     GlobalNetworksComponent,
     CreateEditGlobalNetworkComponent,
+    CreateEditRegionComponent,
     AddGenericActionComponent,
     AgencyAccountSettingsComponent,
     AgencyAccountDetailsComponent,
@@ -156,11 +162,14 @@ const firebaseAuthConfig = {
         useFactory: HttpLoaderFactory,
         deps: [Http]
       }
-    })
+    }),
+    ModalModule.forRoot(),
+    BootstrapModalModule
   ],
   entryComponents: [DialogComponent],
-  providers: [DialogService],
+  providers: [DialogService, RxHelper, Modal],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {
 }

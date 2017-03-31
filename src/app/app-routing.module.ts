@@ -33,6 +33,7 @@ import {AddGenericActionComponent} from "./agency-admin/agency-mpa/add-generic-a
 import {AgencyAccountDetailsComponent} from "./agency-admin/agency-account-details/agency-account-details.component";
 import {AgencyAccountSettingsComponent} from "./agency-admin/agency-account-settings/agency-account-settings.component";
 import {AgencyChangePasswordComponent} from "./agency-admin/agency-account-settings/agency-change-password/agency-change-password.component";
+import {CreateEditRegionComponent} from "./agency-admin/country-office/create-edit-region/create-edit-region.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -75,6 +76,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-details', component: AgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
   {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
+  {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
   {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
   {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
   {path: 'agency-admin/agency-mpa/add-generic-action', component: AddGenericActionComponent},

@@ -139,18 +139,20 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         orderByChild: "name",
         equalTo: this.networkName
       }
-    }).subscribe(networks => {
-      if (networks.length != 0) {
-        this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
-        this.showAlert();
-        return;
-      }
-      if (this.isEdit) {
-        this.editNetwork();
-      } else {
-        this.createNewAdmin();
-      }
-    });
+    })
+      .take(1)
+      .subscribe(networks => {
+        if (networks.length != 0) {
+          this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
+          this.showAlert();
+          return;
+        }
+        if (this.isEdit) {
+          this.editNetwork();
+        } else {
+          this.createNewAdmin();
+        }
+      });
     this.subscriptions.add(subscription);
 
   }

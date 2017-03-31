@@ -11,16 +11,15 @@ import {DialogService} from "../../dialog/dialog.service";
   templateUrl: './country-office.component.html',
   styleUrls: ['./country-office.component.css']
 })
-export class CountryOfficeComponent implements OnInit,OnDestroy {
-
-  private subscriptions: RxHelper;
+export class CountryOfficeComponent implements OnInit, OnDestroy {
   private uid: string;
   private countries: FirebaseListObservable<any[]>;
   private countryNames: string [] = Constants.COUNTRY;
   private admins: Observable<any>[];
+  private regions: FirebaseListObservable<any[]>;
+  private hasRegion:boolean;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -29,9 +28,10 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
-      console.log(user.auth.uid)
+      console.log(user.auth.uid);
       this.uid = user.auth.uid;
       this.countries = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+      this.regions = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid);
     });
   }
 
@@ -41,7 +41,16 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
 
   toggleActive(country) {
     let state: boolean = !country.isActive;
-    let subscription = this.dialogService.createDialog(country.name ? "Deactivate " + country.name : "Deactivate", "Are you sure you want to do this?")
+    let title = "";
+    let content = "";
+    if (country.isActive) {
+      title = "Deactivate?";
+      content = "Are you sure you want to deactivate this region? The associated regional director will no longer be able to approve response plans from the country offices within this region.";
+    } else {
+      title = "Activate?";
+      content = "Are you sure you want to activate this region?";
+    }
+    let subscription = this.dialogService.createDialog(title, content)
       .subscribe(result => {
         if (!result) {
           return;
@@ -53,6 +62,11 @@ export class CountryOfficeComponent implements OnInit,OnDestroy {
 
   editCountry(country) {
     this.router.navigate(["agency-admin/country-office/create-edit-country/", {id: country.$key}]);
+  }
+
+  getCountries(region) {
+    // console.log(region.countries);
+    return null;
   }
 
   getAdminName(key): string {
