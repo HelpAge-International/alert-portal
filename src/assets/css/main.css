@@ -6831,9 +6831,9 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   background: #e10514
 }
 
-html.W-Sticky-nav--en.Alert-success,
-html.W-Sticky-nav--en.Alert-warning,
-html.W-Sticky-nav--en.Alert-error {
+html.W-Sticky-nav--en .Alert-success,
+html.W-Sticky-nav--en .Alert-warning,
+html.W-Sticky-nav--en .Alert-error {
   top: 55px;
 }
 
