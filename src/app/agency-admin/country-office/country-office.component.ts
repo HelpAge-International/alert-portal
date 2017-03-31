@@ -17,6 +17,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private countryNames: string [] = Constants.COUNTRY;
   private admins: Observable<any>[];
   private regions: FirebaseListObservable<any[]>;
+  private hasRegion:boolean;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
@@ -61,6 +62,11 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   editCountry(country) {
     this.router.navigate(["agency-admin/country-office/create-edit-country/", {id: country.$key}]);
+  }
+
+  getCountries(region) {
+    // console.log(region.countries);
+    return null;
   }
 
   getAdminName(key): string {

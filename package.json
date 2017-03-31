@@ -25,6 +25,7 @@
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.20",
     "@ngx-translate/core": "^6.0.0",
     "@ngx-translate/http-loader": "0.0.3",
+    "angular2-modal": "^2.0.3",
     "angularfire2": "^2.0.0-beta.8",
     "core-js": "^2.4.1",
     "firebase": "^3.6.10",

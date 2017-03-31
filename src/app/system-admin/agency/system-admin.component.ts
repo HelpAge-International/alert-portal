@@ -1,10 +1,11 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
+import {Component, OnInit, OnDestroy, ViewContainerRef} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
 import {DialogService} from "../../dialog/dialog.service";
 import {Subscription, Observable} from "rxjs";
-
+import {Modal, BSModalContext} from "angular2-modal/plugins/bootstrap";
+import {Overlay} from "angular2-modal";
 
 @Component({
   selector: 'app-system-admin',
@@ -12,14 +13,14 @@ import {Subscription, Observable} from "rxjs";
   styleUrls: ['./system-admin.component.css']
 })
 
-export class SystemAdminComponent implements OnInit,OnDestroy {
+export class SystemAdminComponent implements OnInit, OnDestroy {
 
   agencies: FirebaseListObservable<any>;
   uid: string;
   private subscription: Subscription;
 
-  constructor(private af: AngularFire, private router: Router,
-              private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
+    overlay.defaultViewContainer = vcRef;
   }
 
   ngOnInit() {
@@ -35,35 +36,6 @@ export class SystemAdminComponent implements OnInit,OnDestroy {
     });
   }
 
-  private test() {
-    this.af.database.list(Constants.APP_STATUS + "/systemAdmin/" + this.uid + "/sentmessages")
-      .flatMap(list => {
-        let tempList = [];
-        list.forEach(x => {
-          tempList.push(x)
-        })
-        return Observable.from(tempList)
-      })
-      .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + "/message/" + item.$key)
-      })
-      .subscribe(x => {
-        console.log(x)
-      });
-
-    let data:number [] =[];
-    Observable.of(1)
-      .map(item =>{
-        return item+10;
-      })
-      .flatMap(item => {
-        return Observable.of(item);
-      })
-      .subscribe(result => {
-        console.log(result)
-      })
-  }
-
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -75,13 +47,33 @@ export class SystemAdminComponent implements OnInit,OnDestroy {
   }
 
   toggleActive(agency) {
-    this.dialogService.createDialog("DIALOG.TITLE", "DIALOG.CONTENT").subscribe(result => {
-      if (result) {
-        let state:boolean = !agency.isActive;
-        console.log(agency.isActive);
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(state);
-      }
+    // this.dialogService.createDialog("DIALOG.TITLE", "DIALOG.CONTENT").subscribe(result => {
+    //   if (result) {
+    //     let state:boolean = !agency.isActive;
+    //     console.log(agency.isActive);
+    //     this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(state);
+    //   }
+    // });
+    console.log("trigger dialog");
+    this.modal.alert()
+      .size('lg')
+      .showClose(true)
+      .title('A simple Alert style modal window')
+      .body(`
+            <h4>Alert is a classic (title/body/footer) 1 button modal window that 
+            does not block.</h4>
+            <b>Configuration:</b>
+            <ul>
+                <li>Non blocking (click anywhere outside to dismiss)</li>
+                <li>Size large</li>
+                <li>Dismissed with default keyboard key (ESC)</li>
+                <li>Close wth button click</li>
+                <li>HTML content</li>
+            </ul>`)
+      .open().then(_=> {
+        console.log("Here");
     });
+
   }
 
   editAgency(agency) {
