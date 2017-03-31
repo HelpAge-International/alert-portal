@@ -6,7 +6,7 @@ import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
-declare var jQuery:any;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-mpa',
@@ -24,7 +24,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private alerts = {};
   private newDepartment;
   private departmentsPath: string;
-  private departments: FirebaseListObservable<any>;
+  private departments: Observable<any>;
   private path: string;
   private inactive: Boolean = true;
   private errorMessage: string = '';
@@ -34,23 +34,23 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private isMpa: Boolean = true;
   private forEditing: Boolean = false;
   private idOfMpaToEdit: string;
+  private departmentSelected: string;
   private subscriptions: RxHelper;
-  departmentSelected: string;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
+
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
+
         this.uid = auth.uid;
         this.path = Constants.APP_STATUS + '/action/' + this.uid;
         this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
         console.log("uid: " + auth.uid);
-        this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments/");
-        console.log("Departments: " + this.departments);
-        console.log("Departments Path: " + Constants.APP_STATUS + "/agency/" + this.uid + "/departments");
+        this.getDepartments();
       } else {
         console.log("Error occurred - User isn't logged in");
         this.navigateToLogin();
@@ -100,13 +100,9 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
     this.isMpa = false;
   }
 
-  // checkDepartmentSelected() {
-  //
-  //   // TODO - Add department here when front end (Add department model) is available
-  //   if (this.departmentSelected == 'addNewDepartment') {
-  //     console.log("Add new department selected");
-  //   }
-  // }
+  checkSelectedDepartment() {
+    console.log("Selected Department ---- " + this.departmentSelected);
+  }
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
@@ -124,7 +120,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private addNewMandatedPA() {
 
-    console.log("this.departmentSelected"+ this.departmentSelected);
+    console.log("this.departmentSelected" + this.departmentSelected);
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
     let newAction: MandatedPreparednessAction = new MandatedPreparednessAction(this.textArea, ActionType.mandated, this.departmentSelected, level);
@@ -164,6 +160,23 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeModal() {
+    this.departmentSelected = '';
+    jQuery("#add_department").modal("hide");
+  }
+
+  private getDepartments() {
+
+    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments/")
+      .map(list => {
+        let tempList = [];
+        for (let item of list) {
+          tempList.push(item.$key);
+        }
+        return tempList;
+      });
+  }
+
   private showAlert(error: boolean) {
     if (error) {
       this.newDepartmentErrorInactive = false;
@@ -186,10 +199,10 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
    */
   private validate() {
 
-    if (!Boolean(this.textArea)) {
+    if (!(this.textArea)) {
       this.errorMessage = "AGENCY_MANDATED_PA.NO_CONTENT_ERROR";
       return false;
-    } else if (!Boolean(this.departmentSelected)) {
+    } else if (!(this.departmentSelected)) {
       this.errorMessage = "AGENCY_MANDATED_PA.NO_DEPARTMENT_ERROR";
       return false;
     }

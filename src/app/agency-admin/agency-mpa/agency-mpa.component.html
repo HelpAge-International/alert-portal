@@ -17,13 +17,14 @@
         <p>{{"GLOBAL.FILTER"| translate}}</p>
       </div>
       <div class="col-lg-3 col-md-4">
-        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="checkActionLevelFilter()">
+        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="filter()">
           <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" [(ngModel)]="departmentSelected" (change)="checkDepartmentFilter()">
-          <option *ngFor="let department of departments | async" [value]="department">{{department.$key}}</option>
+        <select class="form-control" [(ngModel)]="departmentSelected" (change)="filter()">
+          <option>All departments</option>
+          <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}</option>
         </select>
       </div>
     </div>
@@ -37,7 +38,7 @@
         <p>{{action.task}}</p>
         <div class="Info--ribbon--wrap">
           <div class="col-sm-4">{{"GLOBAL.TYPE"| translate}}<b>Mandated</b></div>
-          <div class="col-sm-5">{{"AGENCY_MANDATED_PA.DEPARTMENT"| translate}} <b>{{Department[action.department]}}</b>
+          <div class="col-sm-5">{{"AGENCY_MANDATED_PA.DEPARTMENT"| translate}} <b>{{action.department}}</b>
           </div>
         </div>
       </div>

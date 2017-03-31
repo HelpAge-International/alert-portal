@@ -23,7 +23,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private newDepartmentErrorMessage: string;
   private alerts = {};
   private genericActions: Observable<any>;
-  private departments: FirebaseListObservable<any>;
+  private departments: Observable<any>;
   private ActionLevel = ActionLevel;
   private GenericActionCategory = GenericActionCategory;
   private actionSelected: boolean;
@@ -186,8 +186,20 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkSelectedDepartment() {
+    console.log("Selected Department ---- " + this.departmentSelected);
+  }
+
   private getDepartments() {
-    this.departments = this.af.database.list(this.departmentsPath);
+
+    this.departments = this.af.database.list(this.departmentsPath)
+      .map(list => {
+        let tempList = [];
+        for (let item of list) {
+          tempList.push(item.$key);
+        }
+        return tempList;
+      });
   }
 
   private showAlert(error: boolean) {

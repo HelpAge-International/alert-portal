@@ -8,11 +8,12 @@ export class GenericMpaOrApaAction {
   public type: ActionType;
   public level: ActionLevel;
   public category: GenericActionCategory;
+  public createdAt: number;
 
-  constructor(task: string, type: ActionType, level: ActionLevel, category: GenericActionCategory) {
-    this.task = task;
-    this.type = type;
-    this.level = level;
-    this.category = category;
-  }
+  // constructor(task: string, type: ActionType, level: ActionLevel, category: GenericActionCategory) {
+  //   this.task = task;
+  //   this.type = type;
+  //   this.level = level;
+  //   this.category = category;
+  // }
 }

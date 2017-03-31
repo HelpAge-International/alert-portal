@@ -89,7 +89,13 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private addNewChsAction() {
 
-    let newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
+    let currentDateTime = new Date().getTime();
+
+    let newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
+    newAction.task = this.textArea;
+    newAction.type = ActionType.chs;
+    newAction.createdAt = currentDateTime;
+
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
           console.log('New CHS action added');
@@ -99,8 +105,10 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   }
 
   private editChsAction() {
-    let editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction(this.textArea, ActionType.chs);
-    this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).set(editedAction).then(_ => {
+    let editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
+    editedAction.task = this.textArea;
+    editedAction.type = ActionType.chs;
+    this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).update(editedAction).then(_ => {
         console.log('CHS action updated');
         this.router.navigateByUrl("/system-admin/min-prep");
       }

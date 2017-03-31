@@ -105,8 +105,14 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private addNewGenericAction() {
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
+    let currentDateTime = new Date().getTime();
 
-    let newAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.categorySelected]);
+    let newAction: GenericMpaOrApaAction = new GenericMpaOrApaAction();
+    newAction.task = this.textArea;
+    newAction.type = ActionType.mandated;
+    newAction.level = level;
+    newAction.category = GenericActionCategory[this.categorySelected];
+    newAction.createdAt = currentDateTime;
 
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
@@ -119,9 +125,13 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private editGenericAction() {
 
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let editedAction: GenericMpaOrApaAction = new GenericMpaOrApaAction(this.textArea, ActionType.mandated, level, GenericActionCategory[this.categorySelected]);
+    let editedAction: GenericMpaOrApaAction = new GenericMpaOrApaAction();
+    editedAction.task = this.textArea;
+    editedAction.type = ActionType.mandated;
+    editedAction.level = level;
+    editedAction.category = GenericActionCategory[this.categorySelected];
 
-    this.af.database.object(this.path + "/" + this.idOfGenericActionToEdit).set(editedAction).then(_ => {
+    this.af.database.object(this.path + "/" + this.idOfGenericActionToEdit).update(editedAction).then(_ => {
         console.log('Generic action updated');
         this.router.navigateByUrl("/system-admin/mpa");
       }

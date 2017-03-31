@@ -1,10 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Department, ActionLevel, ActionType} from "../../utils/Enums";
+import {ActionLevel, ActionType} from "../../utils/Enums";
 import {Router} from "@angular/router";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-agency-mpa',
@@ -16,9 +17,8 @@ import {RxHelper} from "../../utils/RxHelper";
 export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  private actions: FirebaseListObservable<any>;
-  private departments: FirebaseListObservable<any>;
-  private Department = Department;
+  private actions: Observable<any>;
+  private departments: Observable<any>;
   private ActionLevel = ActionLevel;
   private departmentSelected;
   private actionLevelSelected = 0;
@@ -64,7 +64,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
       if (result) {
         console.log("Delete button pressed");
-        let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + actionKey
+        let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + actionKey;
         console.log(actionPath);
         this.af.database.object(actionPath).remove()
           .then(_ =>
@@ -85,7 +85,91 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     this.router.navigate(['agency-admin/agency-mpa/add-generic-action']);
   }
 
-  private getDepartments() {
-    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments");
+  // TODO - Change checking the 'All departments' string to increase efficiency
+  filter() {
+    console.log("Selected Department ---- " + this.departmentSelected);
+
+    if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected == 'All departments') {
+      //no filter. show all
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      });
+    } else if (this.actionLevelSelected != ActionLevel.ALL && this.departmentSelected == 'All departments') {
+      //filter only with mpa
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.level == this.actionLevelSelected) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    } else if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected != 'All departments') {
+      //filter only with apa
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.department == this.departmentSelected) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    } else {
+      // filter both action level and category
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        query: {
+          orderByChild: "type",
+          equalTo: ActionType.mandated
+        }
+      })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.level == this.actionLevelSelected) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        })
+        .map(list => {
+          let tempList = [];
+          for (let item of list) {
+            if (item.department == this.departmentSelected) {
+              tempList.push(item);
+            }
+          }
+          return tempList;
+        });
+    }
   }
+
+  private getDepartments() {
+
+    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+      .map(list => {
+        let tempList = [];
+        for (let item of list) {
+          tempList.push(item.$key);
+        }
+        return tempList;
+      });
+  }
+
 }
