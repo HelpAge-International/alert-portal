@@ -90,7 +90,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
       let systemAdminAllUsersSelected: string = systemAdminGroupPath + 'allusersgroup/';
       let systemAdminAllUsersMessageRefPath: string = systemAdminMessageRefPath + 'allusersgroup/';
 
-      this.af.database.list(systemAdminAllUsersSelected)
+      let subscription = this.af.database.list(systemAdminAllUsersSelected)
         .subscribe(allUsersIds => {
           allUsersIds.forEach(userId => {
             this.msgData[systemAdminAllUsersMessageRefPath + userId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
@@ -103,6 +103,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
             console.log("Message creation unsuccessful" + error);
           });
         })
+      this.subscriptions.add(subscription);
 
     } else {
 

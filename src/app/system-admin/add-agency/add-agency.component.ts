@@ -228,7 +228,9 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
         orderByChild: "name",
         equalTo: this.agencyName
       }
-    }).subscribe(agencyList => {
+    })
+      .take(1)
+      .subscribe(agencyList => {
       if (agencyList.length == 0) {
         if (this.isEdit) {
           this.updateToFirebase();
