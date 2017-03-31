@@ -62,6 +62,9 @@ import { ChangePasswordComponent } from './system-admin/account-settings/change-
 import { GlobalNetworksComponent } from './system-admin/global-networks/global-networks.component';
 import { CreateEditGlobalNetworkComponent } from './system-admin/global-networks/create-edit-global-network/create-edit-global-network.component';
 import { AddGenericActionComponent } from './agency-admin/agency-mpa/add-generic-action/add-generic-action.component';
+import { AgencyAccountSettingsComponent } from './agency-admin/agency-account-settings/agency-account-settings.component';
+import { AgencyAccountDetailsComponent } from './agency-admin/agency-account-details/agency-account-details.component';
+import { AgencyChangePasswordComponent } from './agency-admin/agency-account-settings/agency-change-password/agency-change-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -134,7 +137,10 @@ const firebaseAuthConfig = {
     ChangePasswordComponent,
     GlobalNetworksComponent,
     CreateEditGlobalNetworkComponent,
-    AddGenericActionComponent
+    AddGenericActionComponent,
+    AgencyAccountSettingsComponent,
+    AgencyAccountDetailsComponent,
+    AgencyChangePasswordComponent
   ],
   imports: [
     BrowserModule,

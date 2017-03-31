@@ -30,6 +30,9 @@ import {ChangePasswordComponent} from "./system-admin/account-settings/change-pa
 import {GlobalNetworksComponent} from "./system-admin/global-networks/global-networks.component";
 import {CreateEditGlobalNetworkComponent} from "./system-admin/global-networks/create-edit-global-network/create-edit-global-network.component";
 import {AddGenericActionComponent} from "./agency-admin/agency-mpa/add-generic-action/add-generic-action.component";
+import {AgencyAccountDetailsComponent} from "./agency-admin/agency-account-details/agency-account-details.component";
+import {AgencyAccountSettingsComponent} from "./agency-admin/agency-account-settings/agency-account-settings.component";
+import {AgencyChangePasswordComponent} from "./agency-admin/agency-account-settings/agency-change-password/agency-change-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -82,6 +85,9 @@ const routes: Routes = [
   {path: 'agency-admin/settings/department', component: DepartmentComponent},
   {path: 'agency-admin/staff', component: StaffComponent},
   {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
+  {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
+  {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
+  {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
 
   /**
    * Country admin
