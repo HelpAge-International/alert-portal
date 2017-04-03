@@ -18,7 +18,7 @@ export class AccountSettingsComponent implements OnInit {
   private uid: string;
   authState: FirebaseAuthState;
   private successInactive: boolean = true;
-  private successMessage: string = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
+  private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
   private errorMessage: string = 'No changes made!';
   private alerts = {};
@@ -41,7 +41,7 @@ export class AccountSettingsComponent implements OnInit {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
-        console.log("System admin uid: " + this.uid)
+        console.log("System admin uid: " + this.uid);
         this.loadSystemAdminData(this.uid);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
@@ -112,7 +112,7 @@ export class AccountSettingsComponent implements OnInit {
     }
   }
 
-  /**
+  /**SYSTEM_ADMIN
    * Returns false and specific error messages-
    * @returns {boolean}
    */
@@ -121,15 +121,15 @@ export class AccountSettingsComponent implements OnInit {
     this.alerts = {};
     if (!(this.systemAdminFirstName)) {
       this.alerts[this.systemAdminFirstName] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_F_NAME';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_F_NAME';
       return false;
     } else if (!(this.systemAdminLastName)) {
       this.alerts[this.systemAdminLastName] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_L_NAME';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_L_NAME';
       return false;
     } else if (!(this.systemAdminEmail)) {
       this.alerts[this.systemAdminEmail] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_EMAIL';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_EMAIL';
       return false;
     } else if (!CustomerValidator.EmailValidator(this.systemAdminEmail)) {
       this.alerts[this.systemAdminEmail] = true;

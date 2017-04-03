@@ -16,9 +16,9 @@
     </div>
     <ul class="section-nav">
 
-      <li class="section-nav__item active"><a [routerLink]="['/system-admin/account-settings']">{{"SYSTEM_ADMIN.ACCOUNT_SETTINGS.PROFILE" | translate}}</a></li>
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE" | translate}}</a></li>
 
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/account-settings/change-password']">{{"SYSTEM_ADMIN.ACCOUNT_SETTINGS.PASSWORD" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/account-settings/change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD" | translate}}</a></li>
 
     </ul>
 
@@ -61,7 +61,7 @@
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</div>
       <div class="btn btn-outline-secondary" routerLink="/system-admin/agency">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
   </div>
