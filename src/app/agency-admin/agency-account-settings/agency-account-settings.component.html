@@ -25,33 +25,32 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Title">Title*</label>
+          <label for="Title">{{"GLOBAL.TITLE" | translate}}</label>
 
-          <select name="Title" id="Title" class="form-control">
-            <option value="" disabled selected hidden>Select title</option>
-            <option value="1">Mr.</option>
+          <select name="Title" id="Title" class="form-control" [(ngModel)]="agencyAdminTitle">
+            <option *ngFor="let title of personTitleList" [ngValue]="title">{{PersonTitle[title] | translate}}</option>
           </select>
 
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="f-Name">First Name*</label>
-          <input type="text" class="form-control" id="f-Name" value="John">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminFirstName]}">
+          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="f-Name" [(ngModel)]="agencyAdminFirstName">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="l-Name">Last Name*</label>
-          <input type="text" class="form-control" id="l-Name" value="Smith">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminLastName]}">
+          <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="l-Name" [(ngModel)]="agencyAdminLastName">
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="Email">Email Address</label>
-          <input type="text" class="form-control" id="Email" value="j.smith@gmail.com">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminEmail]}">
+          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+          <input type="text" class="form-control" id="Email" [(ngModel)]="agencyAdminEmail">
         </div>
       </div>
     </div>
@@ -59,30 +58,29 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="AddressLine1">Address Line 1</label>
-          <input type="text" class="form-control" id="AddressLine1" placeholder="Optional">
+          <input type="text" class="form-control" id="AddressLine1" placeholder="Optional" [(ngModel)]="agencyAdminAddressLine1">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="AddressLine2">Address Line 2</label>
-          <input type="text" class="form-control" id="AddressLine2" placeholder="Optional">
+          <input type="text" class="form-control" id="AddressLine2" placeholder="Optional" [(ngModel)]="agencyAdminAddressLine2">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="AddressLine3">Address Line 3</label>
-          <input type="text" class="form-control" id="AddressLine3" placeholder="Optional">
+          <input type="text" class="form-control" id="AddressLine3" placeholder="Optional" [(ngModel)]="agencyAdminAddressLine3">
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Title">Country*</label>
+          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
 
-          <select name="Country" id="Country" class="form-control" onChange="">
-            <option value="" disabled selected hidden>Optional</option>
-            <option value="AF">Afghanistan</option>
+          <select name="Country" id="Country" class="form-control" [(ngModel)]="agencyAdminCountry">
+            <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
           </select>
 
         </div>
@@ -90,13 +88,13 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="City">City</label>
-          <input type="text" class="form-control" id="City" placeholder="Optional">
+          <input type="text" class="form-control" id="City" placeholder="Optional" [(ngModel)]="agencyAdminCity">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="l-Name">Postcode/Zip Code</label>
-          <input type="text" class="form-control" id="l-Name" placeholder="Optional">
+          <input type="text" class="form-control" id="p-code" placeholder="Optional" [(ngModel)]="agencyAdminPostCode">
         </div>
       </div>
     </div>

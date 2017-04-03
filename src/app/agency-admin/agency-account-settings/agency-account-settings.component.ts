@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {PersonTitle} from "../../utils/Enums";
+import {PersonTitle, Country} from "../../utils/Enums";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
@@ -24,13 +24,21 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private errorMessage: string = 'No changes made!';
   private alerts = {};
   private userPublic: ModelUserPublic;
-  private systemAdminTitle: number = 0;
-  private systemAdminFirstName: string;
-  private systemAdminLastName: string;
-  private systemAdminEmail: string;
-  private systemAdminPhone: string;
+  private agencyAdminTitle: number = 0;
+  private agencyAdminFirstName: string;
+  private agencyAdminLastName: string;
+  private agencyAdminEmail: string;
+  private agencyAdminAddressLine1: string;
+  private agencyAdminAddressLine2: string;
+  private agencyAdminAddressLine3: string;
+  private agencyAdminCity: string;
+  private agencyAdminPostCode: string;
+  private agencyAdminCountry: number;
   private PersonTitle = Constants.PERSON_TITLE;
   private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
+  private Country = Constants.COUNTRY;
+  private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
+
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -58,14 +66,19 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   private loadAgencyAdminData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid).subscribe((systemAdmin: ModelUserPublic) => {
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid).subscribe((agencyAdmin: ModelUserPublic) => {
 
-      this.userPublic = systemAdmin;
-      this.systemAdminTitle = systemAdmin.title;
-      this.systemAdminFirstName = systemAdmin.firstName;
-      this.systemAdminLastName = systemAdmin.lastName;
-      this.systemAdminEmail = systemAdmin.email;
-      this.systemAdminPhone = systemAdmin.phone;
+      this.userPublic = agencyAdmin;
+      this.agencyAdminTitle = agencyAdmin.title;
+      this.agencyAdminFirstName = agencyAdmin.firstName;
+      this.agencyAdminLastName = agencyAdmin.lastName;
+      this.agencyAdminEmail = agencyAdmin.email;
+      this.agencyAdminAddressLine1 = agencyAdmin.addressLine1;
+      this.agencyAdminAddressLine2 = agencyAdmin.addressLine2;
+      this.agencyAdminAddressLine3 = agencyAdmin.addressLine3;
+      this.agencyAdminCountry = agencyAdmin.country;
+      this.agencyAdminCity = agencyAdmin.city;
+      this.agencyAdminPostCode = agencyAdmin.postCode;
     });
     this.subscriptions.add(subscription);
   }
@@ -93,20 +106,20 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private validate() {
 
     this.alerts = {};
-    if (!(this.systemAdminFirstName)) {
-      this.alerts[this.systemAdminFirstName] = true;
+    if (!(this.agencyAdminFirstName)) {
+      this.alerts[this.agencyAdminFirstName] = true;
       this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_F_NAME';
       return false;
-    } else if (!(this.systemAdminLastName)) {
-      this.alerts[this.systemAdminLastName] = true;
+    } else if (!(this.agencyAdminLastName)) {
+      this.alerts[this.agencyAdminLastName] = true;
       this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_L_NAME';
       return false;
-    } else if (!(this.systemAdminEmail)) {
-      this.alerts[this.systemAdminEmail] = true;
+    } else if (!(this.agencyAdminEmail)) {
+      this.alerts[this.agencyAdminEmail] = true;
       this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_EMAIL';
       return false;
-    } else if (!CustomerValidator.EmailValidator(this.systemAdminEmail)) {
-      this.alerts[this.systemAdminEmail] = true;
+    } else if (!CustomerValidator.EmailValidator(this.agencyAdminEmail)) {
+      this.alerts[this.agencyAdminEmail] = true;
       this.errorMessage = "GLOBAL.EMAIL_NOT_VALID";
       return false;
     }
