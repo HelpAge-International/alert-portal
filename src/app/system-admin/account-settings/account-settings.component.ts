@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -13,7 +13,8 @@ import {CustomerValidator} from "../../utils/CustomValidator";
   templateUrl: './account-settings.component.html',
   styleUrls: ['./account-settings.component.css']
 })
-export class AccountSettingsComponent implements OnInit {
+
+export class AccountSettingsComponent implements OnInit, OnDestroy {
 
   private uid: string;
   authState: FirebaseAuthState;
@@ -112,7 +113,7 @@ export class AccountSettingsComponent implements OnInit {
     }
   }
 
-  /**SYSTEM_ADMIN
+  /**
    * Returns false and specific error messages-
    * @returns {boolean}
    */
