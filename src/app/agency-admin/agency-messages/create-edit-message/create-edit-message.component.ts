@@ -20,10 +20,15 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private messageTitle: string;
   private messageContent: string;
   private allUsersSelected: Boolean;
+  private globalDirectorSelected: Boolean;
+  private globalUserSelected: Boolean;
+  private regionalDirectorSelected: Boolean;
   private countryAdminsSelected: Boolean;
   private countryDirectorsSelected: Boolean;
   private ertLeadsSelected: Boolean;
   private ertsSelected: Boolean;
+  private donorSelected: Boolean;
+  private partnerSelected: Boolean;
   private currentDateTimeInMilliseconds;
   private msgData = {};
   private groups: string[] = [];
@@ -107,6 +112,15 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
     } else {
 
+      if (this.globalDirectorSelected) {
+        this.groups.push('globaldirector');
+      }
+      if (this.globalUserSelected) {
+        this.groups.push('globaluser');
+      }
+      if (this.regionalDirectorSelected) {
+        this.groups.push('regionaldirector');
+      }
       if (this.countryAdminsSelected) {
         this.groups.push('countryadmins');
       }
@@ -118,6 +132,12 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       }
       if (this.ertsSelected) {
         this.groups.push('erts');
+      }
+      if (this.donorSelected) {
+        this.groups.push('donor');
+      }
+      if (this.partnerSelected) {
+        this.groups.push('partner');
       }
 
       for (let group of this.groups) {
@@ -155,8 +175,16 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     } else if (!Boolean(this.messageContent)) {
       this.errorMessage = 'MESSAGES.NO_CONTENT_ERROR';
       return false;
-    } else if ((!this.allUsersSelected) && (!this.countryAdminsSelected) && (!this.countryDirectorsSelected)
-      && (!this.ertLeadsSelected) && (!this.ertsSelected)) {
+    } else if ((!this.allUsersSelected)
+      && (!this.globalDirectorSelected)
+      && (!this.globalUserSelected)
+      && (!this.regionalDirectorSelected)
+      && (!this.countryAdminsSelected)
+      && (!this.countryDirectorsSelected)
+      && (!this.ertLeadsSelected)
+      && (!this.ertsSelected)
+      && (!this.donorSelected)
+      && (!this.partnerSelected)) {
       this.errorMessage = 'MESSAGES.NO_RECIPIENTS_ERROR';
       return false;
     }

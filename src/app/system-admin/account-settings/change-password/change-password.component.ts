@@ -17,7 +17,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private uid: string;
   authState: FirebaseAuthState;
   private successInactive: boolean = true;
-  private successMessage: string = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.SUCCESS_PASSWORD';
+  private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PASSWORD';
   private errorInactive: boolean = true;
   private errorMessage: string;
   private alerts = {};
@@ -70,7 +70,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
           });
         })
         .catch(() => {
-          this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD';
+          this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD';
           this.showAlert(true);
         });
 
@@ -104,29 +104,29 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     this.alerts = {};
     if (!(this.currentPasswordEntered)) {
       this.alerts[this.currentPasswordEntered] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_CURRENT_PASSWORD';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_CURRENT_PASSWORD';
       return false;
     } else if (!(this.newPasswordEntered)) {
       this.alerts[this.newPasswordEntered] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_NEW_PASSWORD';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_NEW_PASSWORD';
       return false;
     } else if (!(this.confirmPasswordEntered)) {
       this.alerts[this.confirmPasswordEntered] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.NO_CONFIRM_PASSWORD';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_CONFIRM_PASSWORD';
       return false;
     } else if (this.currentPasswordEntered == this.newPasswordEntered) {
       this.alerts[this.currentPasswordEntered] = true;
       this.alerts[this.newPasswordEntered] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.SAME_PASSWORD';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.SAME_PASSWORD';
       return false;
     } else if (!CustomerValidator.PasswordValidator(this.newPasswordEntered)) {
       this.alerts[this.newPasswordEntered] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.INVALID_PASSWORD';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.INVALID_PASSWORD';
       return false;
     } else if (this.newPasswordEntered != this.confirmPasswordEntered) {
       this.alerts[this.newPasswordEntered] = true;
       this.alerts[this.confirmPasswordEntered] = true;
-      this.errorMessage = 'SYSTEM_ADMIN.ACCOUNT_SETTINGS.UNMATCHED_PASSWORD';
+      this.errorMessage = 'GLOBAL.ACCOUNT_SETTINGS.UNMATCHED_PASSWORD';
       return false;
     }
     return true;

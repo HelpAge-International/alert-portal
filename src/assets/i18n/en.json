@@ -56,6 +56,28 @@
       "EMAIL_ADDRESS": "Email Address",
       "POSTCODE": "Postcode",
       "PHONE": "Phone Number"
+    },
+    "ACCOUNT_SETTINGS": {
+      "TITLE": "Account Settings",
+      "PROFILE": "Profile",
+      "PASSWORD": "Password",
+      "CURRENT_PASSWORD": "Current Password",
+      "NEW_PASSWORD": "New Password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "UPDATE_PASSORD": "Update password",
+      "SAVE": "Save changes",
+      "SUCCESS_PROFILE" : "Profile successfully updated!",
+      "SUCCESS_PASSWORD" : "Password successfully updated!",
+      "INCORRECT_CURRENT_PASSWORD" : "Current password is incorrect. Please re enter",
+      "NO_CURRENT_PASSWORD" : "Please enter your current password",
+      "NO_NEW_PASSWORD" : "Please enter a new password",
+      "NO_CONFIRM_PASSWORD" : "Please confirm your new password",
+      "SAME_PASSWORD" : "Please enter a new password. You have entered the same password",
+      "INVALID_PASSWORD" : "Password must be at 6-15 digits long with no symbols and should include at least one numeric digit",
+      "UNMATCHED_PASSWORD" : "Passwords don't match",
+      "NO_F_NAME" : "Please enter the first name",
+      "NO_L_NAME" : "Please enter the last name",
+      "NO_EMAIL" : "Please enter the email address"
     }
   },
   "SYSTEM_ADMIN": {
@@ -157,28 +179,6 @@
       "FILE_FORMAT": "File Format",
       "FILE_SIZE": "Maximum file size",
       "SAVE": "Save Settings"
-    },
-    "ACCOUNT_SETTINGS": {
-      "TITLE": "Account Settings",
-      "PROFILE": "Profile",
-      "PASSWORD": "Password",
-      "CURRENT_PASSWORD": "Current Password",
-      "NEW_PASSWORD": "New Password",
-      "CONFIRM_PASSWORD": "Confirm Password",
-      "UPDATE_PASSORD": "Update password",
-      "SAVE": "Save changes",
-      "SUCCESS_PROFILE" : "Profile successfully updated!",
-      "SUCCESS_PASSWORD" : "Password successfully updated!",
-      "INCORRECT_CURRENT_PASSWORD" : "Current password is incorrect. Please re enter",
-      "NO_CURRENT_PASSWORD" : "Please enter your current password",
-      "NO_NEW_PASSWORD" : "Please enter a new password",
-      "NO_CONFIRM_PASSWORD" : "Please confirm your new password",
-      "SAME_PASSWORD" : "Please enter a new password. You have entered the same password",
-      "INVALID_PASSWORD" : "Password must be at 6-15 digits long with no symbols and should include at least one numeric digit",
-      "UNMATCHED_PASSWORD" : "Passwords don't match",
-      "NO_F_NAME" : "Please enter the first name",
-      "NO_L_NAME" : "Please enter the last name",
-      "NO_EMAIL" : "Please enter the email address"
     }
   },
   "LOGIN": {

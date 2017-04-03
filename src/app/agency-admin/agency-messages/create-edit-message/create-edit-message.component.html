@@ -42,6 +42,18 @@
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="globalDirectorSelected">Global Director
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="globalUserSelected">Global User
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="regionalDirectorSelected">Regional Director
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
                [(ngModel)]="countryAdminsSelected">Country Administrators
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
@@ -55,6 +67,14 @@
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
                [(ngModel)]="ertsSelected">ERT
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="donorSelected">Donor
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
+               [(ngModel)]="partnerSelected">Partner
       </label>
     </div>
 
