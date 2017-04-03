@@ -56,6 +56,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+
     if (this.validate()) {
 
       if (this.userPublic) {
@@ -72,6 +73,8 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
             this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
               this.showAlert(false)
             }, error => {
+              this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+              this.showAlert(true);
               console.log(error.message);
             });
           })
@@ -80,7 +83,6 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
     } else {
       this.showAlert(true);
     }
-
   }
 
   private loadSystemAdminData(uid) {

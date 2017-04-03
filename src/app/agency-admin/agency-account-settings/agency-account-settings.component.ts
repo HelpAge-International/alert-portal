@@ -63,6 +63,54 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+  onSubmit() {
+
+    if (this.validate()) {
+
+      if (this.userPublic) {
+        var editedUser: ModelUserPublic = new ModelUserPublic(this.agencyAdminFirstName, this.agencyAdminLastName, this.agencyAdminTitle, this.agencyAdminEmail);
+        editedUser.addressLine1 = this.agencyAdminAddressLine1;
+        editedUser.addressLine2 = this.agencyAdminAddressLine2;
+        editedUser.addressLine3 = this.agencyAdminAddressLine3;
+        editedUser.country = this.agencyAdminCountry;
+        editedUser.city = this.agencyAdminCity;
+        editedUser.postCode = this.agencyAdminPostCode;
+
+        let noChanges: boolean = editedUser.title == this.userPublic.title && editedUser.firstName == this.userPublic.firstName && editedUser.lastName == this.userPublic.lastName
+          && editedUser.email == this.userPublic.email && editedUser.addressLine1 == this.userPublic.addressLine1 && editedUser.addressLine2 == this.userPublic.addressLine2
+          && editedUser.addressLine3 == this.userPublic.addressLine3 && editedUser.country == this.userPublic.country && editedUser.city == this.userPublic.city
+          && editedUser.postCode == this.userPublic.postCode;
+
+        if (noChanges) {
+          this.showAlert(true);
+        } else {
+          let emailChanged: boolean = editedUser.email != this.userPublic.email;
+
+          if (emailChanged) {
+            this.authState.auth.updateEmail(this.agencyAdminEmail).then(_ => {
+              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
+                this.showAlert(false);
+              }, error => {
+                this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+                this.showAlert(true);
+                console.log(error.message);
+              });
+            })
+          } else {
+            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
+              this.showAlert(false)
+            }, error => {
+              this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+              this.showAlert(true);
+              console.log(error.message);
+            });
+          }
+        }
+      }
+    } else {
+      this.showAlert(true);
+    }
+  }
 
   private loadAgencyAdminData(uid) {
 
