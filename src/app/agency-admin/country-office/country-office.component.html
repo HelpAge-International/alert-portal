@@ -49,20 +49,21 @@
         <div class="row align-items-center">
           <div class="col-md-4 col-lg-4 col-sm-4"><h4>{{region.name}}</h4></div>
           <div class="col-md-5 col-lg-5 col-sm-5"><strong>Regional director:</strong> Unassigned</div>
-          <div class="col-md-2 col-lg-2 col-sm-2"><a href="agency-admin__office__region--edit.html">Edit section</a>
+          <div class="col-md-2 col-lg-2 col-sm-2"><a href="agency-admin__office__region--edit.html" (click)="editRegion(region)">Edit section</a>
           </div>
-          <div class="col-md-1 col-lg-1 col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
+          <div class="col-md-1 col-lg-1 col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"
+                                                     (click)="hideCountryList(region)"></i></div>
         </div>
       </div>
 
-      <table class="table Table__v-spacing__mid Agency-table">
+      <table [hidden]="showRegionMap?.get(region.$key)" class="table Table__v-spacing__mid Agency-table">
         <tr>
           <th>Country</th>
           <th>Country Administrator</th>
           <th></th>
           <th>Status</th>
         </tr>
-        <tr *ngFor="let country of getCountries(region) | async">
+        <tr *ngFor="let country of getCountries(region)">
           <td>{{countryNames[country?.location] | translate}}</td>
           <td>{{getAdminName(country?.$key)}}</td>
           <td></td>

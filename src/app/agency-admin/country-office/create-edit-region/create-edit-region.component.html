@@ -5,12 +5,12 @@
   {{errorMessage | translate}}
 </div>
 
-<!--<form #regionForm (ngSubmit)="submit()">-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap ">
-      <h1>Create new region</h1>
+      <h1>{{pageTitle}}</h1>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger">Delete Region</button>
     </div>
 
     <div class="row System-admin--form-wrap">
@@ -30,9 +30,9 @@
 
           <select *ngFor="let selectCountry of countries" class="form-control"
                   [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
-            <!--<option [value]="-1" disabled selected hidden>Select country</option>-->
-            <option *ngFor="let country of countrySelections | async">{{COUNTRY_NAMES[country.location] |
-              translate}}
+            <option *ngFor="let country of countrySelections | async"
+                    [selected]="country.location === selectedCountries[selectCountry]">{{COUNTRY_NAMES[country.location]
+              | translate}}
             </option>
           </select>
         </div>
@@ -55,9 +55,8 @@
     </div>
 
     <div class="Form-submit__wrapper">
-      <button type="submit" class="btn btn-primary" (click)="submit()">Save new region</button>
+      <button type="submit" class="btn btn-primary" (click)="submit()">{{submitText | uppercase}}</button>
       <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
     </div>
   </div>
 </div>
-<!--</form>-->

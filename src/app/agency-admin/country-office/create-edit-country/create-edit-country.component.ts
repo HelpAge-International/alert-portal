@@ -204,20 +204,22 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
         orderByChild: "location",
         equalTo: this.countryOfficeLocation
       }
-    }).subscribe(result => {
-      if (result.length != 0) {
-        this.hideWarning = false;
-        this.waringMessage = "ERROR.COUNTRY_DUPLICATE";
-        return;
-      }
-      if (this.isEdit && this.isUserChange) {
-        this.createNewUser();
-      } else if (this.isEdit) {
-        this.updateFirebase(this.countryOfficeId);
-      } else {
-        this.createNewUser();
-      }
-    });
+    })
+      .take(1)
+      .subscribe(result => {
+        if (result.length != 0) {
+          this.hideWarning = false;
+          this.waringMessage = "ERROR.COUNTRY_DUPLICATE";
+          return;
+        }
+        if (this.isEdit && this.isUserChange) {
+          this.createNewUser();
+        } else if (this.isEdit) {
+          this.updateFirebase(this.countryOfficeId);
+        } else {
+          this.createNewUser();
+        }
+      });
     this.subscriptions.add(subscription);
   }
 
