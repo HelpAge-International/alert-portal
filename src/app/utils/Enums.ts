@@ -47,3 +47,9 @@ export enum Country {
   France = 1,
   Germany = 2
 }
+
+export enum Currency {
+  GBP = 0,
+  EUR = 1,
+  USD = 2
+}

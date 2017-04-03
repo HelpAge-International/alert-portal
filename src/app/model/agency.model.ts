@@ -10,6 +10,7 @@ export class ModelAgency {
   public addressLine3:string;
   public city:string;
   public country:number;
+  public currency:number;
   public isActive:boolean;
   public isDonor:boolean;
   public logoPath:string;

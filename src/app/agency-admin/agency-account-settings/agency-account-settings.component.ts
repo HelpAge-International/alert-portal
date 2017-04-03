@@ -38,7 +38,6 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
   private Country = Constants.COUNTRY;
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
-
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router) {
@@ -76,12 +75,19 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
         editedUser.city = this.agencyAdminCity;
         editedUser.postCode = this.agencyAdminPostCode;
 
-        let noChanges: boolean = editedUser.title == this.userPublic.title && editedUser.firstName == this.userPublic.firstName && editedUser.lastName == this.userPublic.lastName
-          && editedUser.email == this.userPublic.email && editedUser.addressLine1 == this.userPublic.addressLine1 && editedUser.addressLine2 == this.userPublic.addressLine2
-          && editedUser.addressLine3 == this.userPublic.addressLine3 && editedUser.country == this.userPublic.country && editedUser.city == this.userPublic.city
+        let noChanges: boolean = editedUser.title == this.userPublic.title
+          && editedUser.firstName == this.userPublic.firstName
+          && editedUser.lastName == this.userPublic.lastName
+          && editedUser.email == this.userPublic.email
+          && editedUser.addressLine1 == this.userPublic.addressLine1
+          && editedUser.addressLine2 == this.userPublic.addressLine2
+          && editedUser.addressLine3 == this.userPublic.addressLine3
+          && editedUser.country == this.userPublic.country
+          && editedUser.city == this.userPublic.city
           && editedUser.postCode == this.userPublic.postCode;
 
         if (noChanges) {
+          this.errorMessage = 'No changes made';
           this.showAlert(true);
         } else {
           let emailChanged: boolean = editedUser.email != this.userPublic.email;
