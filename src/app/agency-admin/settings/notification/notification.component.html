@@ -2,54 +2,133 @@
   <div class="Header_bar__wrap--inner">
   </div>
 </div>
-<div class="Sub-header_bar">
-</div>
+<app-agency-admin-menu></app-agency-admin-menu>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-  <div class="Full-page__wrap--inner">
+    <div class="Full-page__wrap--inner">
 
+    <app-settings-menu></app-settings-menu>
 
-    <div class="Header-title__wrap">
-      <h1>Agency Settings</h1>
+        <div class="Sub-header-title__wrap">
+            <h2>Default Notification settings</h2>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable">Cancel</button> 
+            <button type="button" class="btn btn-primary Inline-editable--enable">Save default notification settings</button>  
+        </div>
+
+        <div class="row Line-row no-gutters Header">
+            <div class="col-lg-4 col-4">Events</div>
+            <div class="col-lg-5 col-4">Users notified</div>
+            <div class="col-lg-3 col-4">Actions</div>
+        </div>
+        <div class="row Line-row no-gutters">
+            <div class="col-lg-4 col-4">Red alert request</div>
+            <div class="col-lg-5 col-4">
+                <div>Country Director</div>
+                <div>Donor</div>
+                <div>Regional Director</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
+        <div class="row Line-row no-gutters">
+            <div class="col-lg-4 col-4">Ambert alert request</div>
+            <div class="col-lg-5 col-4">
+                <div>ERT Lead</div>
+                <div>Donor</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
+        <div class="row Line-row no-gutters">
+            <div class="col-lg-4 col-4">Alert level changed</div>
+            <div class="col-lg-5 col-4">
+                <div>Country Director</div>
+                <div>ERT</div>
+                <div>ERT Lead</div>
+                <div>Donor</div>
+                <div>Global User</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
+        <div class="row Line-row no-gutters">
+            <div class="col-lg-4 col-4">Update hazard indicator</div>
+            <div class="col-lg-5 col-4">
+                <div>ERT</div>
+                <div>ERT Lead</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
+        <div class="row Line-row no-gutters">
+            <div class="col-lg-4 col-4">MPA/APA due</div>
+            <div class="col-lg-5 col-4">
+                <div>ERT</div>
+                <div>ERT Lead</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
+        <div class="row Line-row no-gutters">
+            <div class="col-lg-4 col-4">Response plan expired</div>
+            <div class="col-lg-5 col-4">
+                <div>Country Director</div>
+                <div>ERT</div>
+                <div>ERT Lead</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
+        <div class="row Line-row no-gutters">
+        <div class="col-lg-4 col-4">Response plan rejected</div>
+            <div class="col-lg-5 col-4">
+                <div>ERT</div>
+                <div>ERT Lead</div>
+            </div>
+            <div class="col-lg-3 col-4 row no-gutters">
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#add_user_type">Add user type</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" data-toggle="modal" data-target="#remove_user_type">Remove user type</a>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="Sub-header-title__wrap">
-      <h2>Default Notification settings</h2>
-      <button type="button" class="btn btn-outline-primary Inline-editable--enable">Edit default notification settings
-      </button>
-    </div>
-
-    <div class="row Line-row Header">
-      <div class="col-lg-3"></div>
-      <div class="col-lg-3">Country Admin</div>
-      <div class="col-lg-2">Country Director</div>
-      <div class="col-lg-2">ERT Lead</div>
-      <div class="col-lg-2">ERT Lead</div>
-    </div>
-
-    <div class="row Line-row">
-      <div class="col-lg-3">Red Alert Request</div>
-      <div class="col-lg-3"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--red"></div><p>Disabled</p></span></div>
-    </div>
-
-    <div class="row Line-row">
-      <div class="col-lg-3">Amber alert request</div>
-      <div class="col-lg-3"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--red"></div><p>Disabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-    </div>
-
-    <div class="row Line-row">
-      <div class="col-lg-3">Update hazard indicator</div>
-      <div class="col-lg-3"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--red"></div><p>Disabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-      <div class="col-lg-2"><span class="Inline-traffic"><div class="Traffic--green"></div><p>Enabled</p></span></div>
-    </div>
-
-  </div>
 </div>

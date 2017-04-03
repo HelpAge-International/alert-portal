@@ -24,7 +24,16 @@ import {StaffComponent} from "./agency-admin/staff/staff.component";
 import {CreateEditStaffComponent} from "./agency-admin/staff/create-edit-staff/create-edit-staff.component";
 import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-edit-message/create-edit-message.component";
 import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-messages.component";
+
 import {DepartmentComponent} from "./agency-admin/settings/department/department.component";
+import {SkillsComponent} from "./agency-admin/settings/skills/skills.component";
+import {ModulesComponent} from "./agency-admin/settings/modules/modules.component";
+import {ClockSettingsComponent} from "./agency-admin/settings/clock-settings/clock-settings.component";
+import {AgencyAdminSettingsResponsePlanComponent} from "./agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component";
+import {DocumentsComponent} from "./agency-admin/settings/documents/documents.component";
+import {NotificationComponent} from "./agency-admin/settings/notification/notification.component";
+
+
 import {AccountSettingsComponent} from "./system-admin/account-settings/account-settings.component";
 import {ChangePasswordComponent} from "./system-admin/account-settings/change-password/change-password.component";
 import {GlobalNetworksComponent} from "./system-admin/global-networks/global-networks.component";
@@ -85,6 +94,12 @@ const routes: Routes = [
   {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
   {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
   {path: 'agency-admin/settings/department', component: DepartmentComponent},
+  {path: 'agency-admin/settings/skills', component: SkillsComponent},
+  {path: 'agency-admin/settings/modules', component: ModulesComponent},
+  {path: 'agency-admin/settings/clock-settings', component: ClockSettingsComponent},
+  {path: 'agency-admin/settings/response-plans', component: AgencyAdminSettingsResponsePlanComponent},
+  {path: 'agency-admin/settings/documents', component: DocumentsComponent},
+  {path: 'agency-admin/settings/notifications', component: NotificationComponent},
   {path: 'agency-admin/staff', component: StaffComponent},
   {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
   {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
