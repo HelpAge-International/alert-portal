@@ -34,7 +34,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.af.auth.subscribe(auth => {
+    let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
         console.log("uid: " + this.uid);
@@ -43,6 +43,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
