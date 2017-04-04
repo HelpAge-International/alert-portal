@@ -13,7 +13,6 @@ import Promise = firebase.Promise;
   styleUrls: ['./agency-messages.component.css']
 })
 
-// TODO - Fix Bug
 export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -37,7 +36,8 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             this.sentMessages = [];
             let tempList = [];
             list.forEach(x => {
-              tempList.push(x)
+              console.log("comes here");
+              tempList.push(x);
             });
             return Observable.from(tempList)
           })
@@ -47,6 +47,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
           .distinctUntilChanged()
           .subscribe(x => {
             this.sentMessages.push(x);
+            console.log("comes here too");
           });
 
         this.subscriptions.add(subscription);
@@ -64,8 +65,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-
-  // TODO - Fix the subscription bug
+  // TODO - Fix the subscription bug - Navigates to Country office screen after deleting a message
   deleteMessage(sentMessage) {
 
     let subscription = this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
@@ -95,7 +95,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
           let groupPath = agencyGroupPath + group;
           let msgRefPath = agencyMessageRefPath + group;
 
-          this.af.database.list(groupPath)
+          let subscription = this.af.database.list(groupPath)
             .subscribe(list => {
               list.forEach(item => {
                 this.msgData[msgRefPath + '/' + item.$key + '/' + key] = null;
@@ -108,6 +108,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
               });
             }
           });
+          this.subscriptions.add(subscription);
         }
       }
     });

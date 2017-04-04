@@ -62,7 +62,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   }
 
   deleteMessage(sentMessage) {
-/*
+
     let subscription = this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
 
       if (result) {
@@ -110,7 +110,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.subscriptions.add(subscription);
       }
     });
-    this.subscriptions.add(subscription);*/
+    this.subscriptions.add(subscription);
   }
 
   private navigateToLogin() {
