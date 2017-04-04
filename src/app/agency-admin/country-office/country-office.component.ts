@@ -52,6 +52,9 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   private checkAnyCountryNoRegion() {
+    this.countriesWithRegion = [];
+    this.allCountries = [];
+    this.otherCountries = [];
     let subscription = this.regions
       .map(regions => {
         let countries = new Set();
@@ -62,6 +65,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         });
         return Array.from(countries);
       })
+      .first()
       .subscribe(result => {
         console.log(result);
         this.countriesWithRegion = result;
@@ -73,6 +77,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
             });
             return countryids;
           })
+          .first()
           .subscribe(result => {
             console.log(result);
             this.allCountries = result;
@@ -95,7 +100,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     console.log("do have other countries, fetch data!");
     let subscription = Observable.from(diff)
       .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS+"/countryOffice/"+this.uid+"/"+id);
+        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + id);
       })
       .subscribe(result => {
         console.log(result);
@@ -124,6 +129,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         if (!result) {
           return;
         }
+        this.otherCountries = [];
         this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + country.$key + "/isActive").set(state);
       });
     this.subscriptions.add(subscription);
