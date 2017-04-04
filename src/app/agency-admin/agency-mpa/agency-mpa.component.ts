@@ -24,10 +24,8 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private actionLevelSelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -52,18 +50,9 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  checkActionLevelFilter() {
-    console.log("Action level selected - " + this.actionLevelSelected);
-  }
-
-  checkDepartmentFilter() {
-    console.log("Department selected - " + this.departmentSelected);
-  }
-
   deleteAction(actionKey) {
     let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
       if (result) {
-        console.log("Delete button pressed");
         let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + actionKey;
         console.log(actionPath);
         this.af.database.object(actionPath).remove()
@@ -76,12 +65,10 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   editAction(actionKey) {
-    console.log("Navigate to edit");
     this.router.navigate(["/agency-admin/agency-mpa/create-edit-mpa", {id: actionKey}]);
   }
 
   lookUpGenericActionsPressed() {
-    console.log('Lookup generic actions pressed');
     this.router.navigate(['agency-admin/agency-mpa/add-generic-action']);
   }
 

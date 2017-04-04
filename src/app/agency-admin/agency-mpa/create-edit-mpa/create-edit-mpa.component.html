@@ -21,7 +21,7 @@
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10">
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[textArea]}">
           <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
           <textarea [(ngModel)]="textArea" name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
         </div>
@@ -30,7 +30,7 @@
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10">
-        <p>{{"AGENCY_MANDATED_PA.MPA_OR_APA?" | translate}}</p>
+        <p>{{"AGENCY_ADMIN.MANDATED_PA.MPA_OR_APA?" | translate}}</p>
 
         <div class="Radio--ribbon">
           <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
@@ -43,48 +43,51 @@
         </div>
 
         <div class="row">
-          <div class="col-lg-8 col-md-10 col-sm-12">
-            <label>{{"AGENCY_MANDATED_PA.DEPARTMENT" | translate}}</label>
+          <div class="col-lg-8 col-md-10 col-sm-12" [ngClass]="{'has-danger': alerts[departmentSelected]}">
+            <label>{{"GLOBAL.DEPARTMENT" | translate}}</label>
 
-            <select class="form-control" onChange="addDepartmentModal(this, '#add_department')" [(ngModel)]="departmentSelected" (change)="checkSelectedDepartment()">
-              <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}</option>
-              <option class="add-department">{{"AGENCY_MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
+            <select class="form-control" onChange="addDepartmentModal(this, '#add_department')"
+                    [(ngModel)]="departmentSelected" (change)="checkSelectedDepartment()">
+              <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}
+              </option>
+              <option class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
             </select>
           </div>
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}
-          </div>
-          <div (click)="onSubmit()" class="btn btn-primary">{{buttonText | translate}}</div>
+          <button (click)="onSubmit()" class="btn btn-primary">{{buttonText | translate | uppercase}}</button>
+          <button class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" |
+            translate}}
+          </button>
         </div>
-
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
   <div class="Alert-error" [hidden]="newDepartmentErrorInactive">
     {{newDepartmentErrorMessage | translate}}
   </div>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>Add new department</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.MANDATED_PA.ADD_DEPARTMENT_TITLE" | translate}}</strong></h5>
         <button type="button" class="close" (click)="closeModal()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="form-group" [ngClass]="{'has-danger': alerts[newDepartment]}">
-          <label>Department Name</label>
-          <input type="text" class="form-control" id="Department-Name" placeholder="Please enter" [(ngModel)]="newDepartment">
+          <label>{{"AGENCY_ADMIN.MANDATED_PA.DEPARTMENT_NAME" | translate}}</label>
+          <input type="text" class="form-control" id="Department-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" [(ngModel)]="newDepartment">
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="addNewDepartment()">SAVE</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addNewDepartment()">{{"GLOBAL.SAVE"| translate | uppercase}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
         <!--<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>-->
       </div>
     </div>

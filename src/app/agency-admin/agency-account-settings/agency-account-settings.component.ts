@@ -21,7 +21,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private successInactive: boolean = true;
   private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
-  private errorMessage: string = 'No changes made!';
+  private errorMessage: string;
   private alerts = {};
   private userPublic: ModelUserPublic;
   private agencyAdminTitle: number = 0;
@@ -38,10 +38,8 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
   private Country = Constants.COUNTRY;
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -87,7 +85,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
           && editedUser.postCode == this.userPublic.postCode;
 
         if (noChanges) {
-          this.errorMessage = 'No changes made';
+          this.errorMessage = 'GLOBAL.NO_CHANGES_MADE';
           this.showAlert(true);
         } else {
           let emailChanged: boolean = editedUser.email != this.userPublic.email;

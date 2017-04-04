@@ -6,8 +6,8 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1>{{"AGENCY_MESSAGES.TITLE_TEXT" | translate}}</h1>
-      <a routerLink="/agency-admin/agency-messages/create-edit-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</a>
+      <h1>{{"AGENCY_ADMIN.MESSAGES.TITLE_TEXT" | translate}}</h1>
+      <a routerLink="/agency-admin/agency-messages/create-edit-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</a>
     </div>
 
     <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>

@@ -18,7 +18,7 @@
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[messageTitle]}">
           <label for="n-Done">{{"GLOBAL.TITLE" | translate}}</label>
           <input type="text" class="form-control" name="n-Done" [(ngModel)]="messageTitle">
         </div>
@@ -26,7 +26,7 @@
     </div>
     <div class="row System-admin--form-wrap">
       <div class="col-lg-8 col-md-10 col-sm-12">
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[messageContent]}">
           <label for="n-Done">{{"MESSAGES.MESSAGE_CONTENT" | translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
                     [(ngModel)]="messageContent"></textarea>
@@ -34,55 +34,54 @@
       </div>
     </div>
 
-    <label for="f-Format">{{"MESSAGES.RECIPIENTS" | translate}}</label>
+    <label>{{"MESSAGES.RECIPIENTS" | translate}}</label>
     <div class="row">
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input type="checkbox" name="f-Format"
-               [(ngModel)]="allUsersSelected">All Users
+               [(ngModel)]="allUsersSelected">{{"MESSAGES.ALL_USERS" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="globalDirectorSelected">Global Director
+               [(ngModel)]="globalDirectorSelected">{{"AGENCY_ADMIN.MESSAGES.GLOBAL_DIRECTOR" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="globalUserSelected">Global User
+               [(ngModel)]="globalUserSelected">{{"AGENCY_ADMIN.MESSAGES.GLOBAL_USER" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="regionalDirectorSelected">Regional Director
+               [(ngModel)]="regionalDirectorSelected">{{"AGENCY_ADMIN.MESSAGES.REGIONAL_DIRECTOR" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="countryAdminsSelected">Country Administrators
+               [(ngModel)]="countryAdminsSelected">{{"MESSAGES.COUNTRY_ADMINS" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="countryDirectorsSelected">Country Directors
+               [(ngModel)]="countryDirectorsSelected">{{"AGENCY_ADMIN.MESSAGES.COUNTRY_DIRECTORS" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="ertLeadsSelected">ERT Lead
+               [(ngModel)]="ertLeadsSelected">{{"AGENCY_ADMIN.MESSAGES.ERT_LEAD" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="ertsSelected">ERT
+               [(ngModel)]="ertsSelected">{{"AGENCY_ADMIN.MESSAGES.ERT" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="donorSelected">Donor
+               [(ngModel)]="donorSelected">{{"AGENCY_ADMIN.MESSAGES.DONOR" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input [hidden]="allUsersSelected" type="checkbox" name="f-Format"
-               [(ngModel)]="partnerSelected">Partner
+               [(ngModel)]="partnerSelected">{{"AGENCY_ADMIN.MESSAGES.PARTNER" | translate}}
       </label>
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary" routerLink="/agency-admin/agency-messages">{{"GLOBAL.CANCEL" |
-        translate}}
-      </div>
-      <div class="btn btn-primary" (click)="onSubmit()">{{"MESSAGES.SEND_MESSAGE" | translate}}</div>
+      <button class="btn btn-primary" (click)="onSubmit()">{{"MESSAGES.SEND_MESSAGE" | translate | uppercase}}</button>
+      <button class="btn btn-outline-secondary" routerLink="/agency-admin/agency-messages">{{"GLOBAL.CANCEL" |
+        translate}}</button>
     </div>
 
   </div>

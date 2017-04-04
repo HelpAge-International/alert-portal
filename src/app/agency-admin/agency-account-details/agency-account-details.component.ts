@@ -6,6 +6,7 @@ import {Country, Currency} from "../../utils/Enums";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
+// import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-agency-account-details',
@@ -19,7 +20,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private successInactive: boolean = true;
   private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
-  private errorMessage: string = 'No changes made!';
+  private errorMessage: string;
   private alerts = {};
   private modalAgency: ModelAgency;
   private agencyLogo: string;
@@ -36,10 +37,14 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
   private Currency = Constants.CURRENCY;
   private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+    // const storageRef = firebase.storage().ref().child('/agency/bl9h4IN9QBhHwfsGuoHzrxtvSmz2/Debt-Recovery-Agency.jpg');
+    // storageRef.getDownloadURL().then(url => {
+    //     this.agencyLogo = url;
+    //     console.log(this.agencyLogo);
+    //   }
+    // );
   }
 
   ngOnInit() {
@@ -86,6 +91,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           && editedAgency.currency == this.modalAgency.currency;
 
         if (noChanges) {
+          this.errorMessage = 'GLOBAL.NO_CHANGES_MADE';
           this.showAlert(true);
         } else {
 
@@ -147,15 +153,15 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     this.alerts = {};
     if (!(this.agencyAddressLine1)) {
       this.alerts[this.agencyAddressLine1] = true;
-      this.errorMessage = 'Please enter address line 1';
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
     } else if (!(this.agencyCity)) {
       this.alerts[this.agencyCity] = true;
-      this.errorMessage = 'Please enter the name of the city';
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_CITY";
       return false;
     } else if (!(this.agencyPhone)) {
       this.alerts[this.agencyPhone] = true;
-      this.errorMessage = 'Please enter the phone number';
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_PHONE";
       return false;
     }
     return true;

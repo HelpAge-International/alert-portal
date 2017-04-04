@@ -19,10 +19,8 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private msgData = {};
   private groups: string[] = [];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper;
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -36,7 +34,6 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             this.sentMessages = [];
             let tempList = [];
             list.forEach(x => {
-              console.log("comes here");
               tempList.push(x);
             });
             return Observable.from(tempList)
@@ -46,8 +43,10 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
           })
           .distinctUntilChanged()
           .subscribe(x => {
+            console.log("sentMessages Before ----" + this.sentMessages.length);
             this.sentMessages.push(x);
-            console.log("comes here too");
+            console.log("sentMessages After ----" + this.sentMessages.length);
+
           });
 
         this.subscriptions.add(subscription);
@@ -73,8 +72,8 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       if (result) {
 
         let key: string = sentMessage.$key;
-        this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + key] = null;
         this.msgData['/message/' + key] = null;
+        this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + key] = null;
 
         this.groups.push('agencyallusersgroup');
         this.groups.push('globaldirector');
@@ -99,15 +98,15 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             .subscribe(list => {
               list.forEach(item => {
                 this.msgData[msgRefPath + '/' + item.$key + '/' + key] = null;
-            });
-            if (this.groups.indexOf(group) == this.groups.length-1) {
-              this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
-                console.log("Message Ref successfully deleted from all nodes");
-              }).catch(error => {
-                console.log("Message deletion unsuccessful" + error);
               });
-            }
-          });
+              if (this.groups.indexOf(group) == this.groups.length - 1) {
+                this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+                  console.log("Message Ref successfully deleted from all nodes");
+                }).catch(error => {
+                  console.log("Message deletion unsuccessful" + error);
+                });
+              }
+            });
           this.subscriptions.add(subscription);
         }
       }

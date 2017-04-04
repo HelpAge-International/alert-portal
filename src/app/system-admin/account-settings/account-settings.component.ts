@@ -21,7 +21,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   private successInactive: boolean = true;
   private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
-  private errorMessage: string = 'No changes made!';
+  private errorMessage: string;
   private alerts = {};
   private userPublic: ModelUserPublic;
   private systemAdminTitle: number = 0;
@@ -67,6 +67,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
           && editedUser.email == this.userPublic.email && editedUser.phone == this.userPublic.phone;
 
         if (noChanges) {
+          this.errorMessage = 'GLOBAL.NO_CHANGES_MADE';
           this.showAlert(true);
         } else {
           this.authState.auth.updateEmail(this.systemAdminEmail).then(_ => {

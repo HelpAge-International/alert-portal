@@ -1,12 +1,12 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enums";
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
-declare var jQuery:any;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-add-generic-action',
@@ -18,7 +18,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private successInactive: boolean = true;
-  private successMessage: string = 'New department added';
+  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
   private newDepartmentErrorInactive: boolean = true;
   private newDepartmentErrorMessage: string;
   private alerts = {};
@@ -36,12 +36,11 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private Category = Constants.CATEGORY;
   private categoriesList = [GenericActionCategory.ALL, GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
     GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
-    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];  private selectedActions: MandatedPreparednessAction[] = [];
+    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
+  private selectedActions: MandatedPreparednessAction[] = [];
   private departmentsPath: string;
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -184,7 +183,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
     if (this.validateNewDepartment()) {
       this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
-        console.log('New departmentadded');
+        console.log('New department added');
         jQuery("#add_department").modal("hide");
         this.showAlert(false);
       })
@@ -234,7 +233,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     this.alerts = {};
     if (!(this.newDepartment)) {
       this.alerts[this.newDepartment] = true;
-      this.newDepartmentErrorMessage = 'Please enter department name';
+      this.newDepartmentErrorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_NAME";
       return false;
     }
     return true;
