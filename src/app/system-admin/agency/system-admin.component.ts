@@ -47,7 +47,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   }
 
   toggleActive(agency) {
-    alert("bug fixing in progress")
+    // alert("bug fixing in progress")
     // this.dialogService.createDialog("DIALOG.TITLE", "DIALOG.CONTENT").subscribe(result => {
     //   if (result) {
     //     let state:boolean = !agency.isActive;
