@@ -1,6 +1,10 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<div class="Alert-error" [hidden]="errorInactive">
+  {{errorMessage | translate}}
+</div>
+
 <div class="Alert-success" [hidden]="successInactive">
   {{successMessage | translate}}
 </div>
@@ -10,7 +14,7 @@
     <div class="Back--button" routerLink="/agency-admin/agency-mpa">{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>Add generic preparedness actions</h1>
-      <button type="button" class="btn btn-primary" id="add-action-btn">{{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate | uppercase}}</button>
+      <button type="button" class="btn btn-primary" id="add-action-btn" (click)="addSelectedActionsToAgency()">{{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate | uppercase}}</button>
       <!--<button type="button" class="btn btn-primary btn-ghost" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>-->
       <button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>

@@ -130,10 +130,9 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
-          console.log('New CHS action added');
-          this.router.navigateByUrl("/agency-admin/agency-mpa");
-        }
-      );
+        console.log('New CHS action added');
+        this.router.navigateByUrl("/agency-admin/agency-mpa");
+      });
   }
 
   private editMandatedPA() {
