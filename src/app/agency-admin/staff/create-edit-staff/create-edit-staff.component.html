@@ -15,7 +15,7 @@
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Title">Title</label>
-          <select class="form-control" id="Title" [(ngModel)]="title" name="title">
+          <select class="form-control" id="Title" [(ngModel)]="title" name="title" required>
             <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">{{PERSON_TITLE[title]|translate}}
             </option>
             <!--<option value="D-val-2">Mrs</option>-->
@@ -23,137 +23,119 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="f-Name">First Name</label>
-          <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName">
+          <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
+                 placeholder="Please enter">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="l-Name">Last Name</label>
-          <input type="text" class="form-control" id="l-Name" [(ngModel)]="lastName" name="lastName">
+          <input type="text" class="form-control" id="l-Name" [(ngModel)]="lastName" name="lastName"
+                 placeholder="Please enter">
         </div>
       </div>
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="JobTitle">User Type</label>
-          <select class="form-control" id="JobTitle">
-            <option value="D-val-1" disabled selected>Please select</option>
+          <label for="User-Type">User Type</label>
+          <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType">
+            <option *ngFor="let type of USER_TYPE_SELECTION" [value]="type">{{USER_TYPE[type]}}</option>
+          </select>
+        </div>
+        <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
+          <label for="region">Region</label>
+          <select class="form-control" id="region" [(ngModel)]="region" name="region">
+            <option value="D-val-1" hidden disabled selected>Please select</option>
             <option value="D-val-2">Option</option>
           </select>
         </div>
-        <div class="col-lg-4 col-md-6 form-group">
+        <div class="col-lg-4 col-md-6 form-group" [hidden]="hideCountry">
           <label for="c-Office">Country Office</label>
-          <select class="form-control" id="c-Office">
-            <option value="D-val-1" disabled selected>Please select</option>
-            <option value="D-val-2">Option</option>
+          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice">
+            <option *ngFor="let country of countryList | async" [value]="country">{{Country[country.location]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="p-Type">Position</label>
-          <select class="form-control" id="p-Type">
-            <option value="D-val-1" disabled selected>Please select</option>
-            <option value="D-val-2">Option</option>
+          <label for="Position">Department</label>
+          <select class="form-control" id="Department" [(ngModel)]="department" name="department">
+            <option *ngFor="let department of departmentList | async" [value]="department">{{department}}</option>
+          </select>
+        </div>
+        <!--</div>-->
+
+        <!--<div class="row Spaced">-->
+        <div class="col-lg-4 col-md-6 form-group">
+          <label for="Position">Position</label>
+          <select class="form-control" id="Position" [(ngModel)]="position" name="position">
+            <option *ngFor="let position of STAFF_POSITION_SELECTION" [value]="position">{{STAFF_POSITION[position]}}
+            </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="o-Type">Office Type</label>
-          <select class="form-control" id="o-Type">
-            <option value="D-val-1" disabled selected>Please select</option>
-            <option value="D-val-2">Option</option>
+          <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType">
+            <option *ngFor="let type of OFFICE_TYPE_SELECTION" [value]="type">{{OFFICE_TYPE[type]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="e-Name">Email Address</label>
-          <input type="text" class="form-control" id="e-Name" [(ngModel)]="email" name="email">
+          <label for="e-Address">Email Address</label>
+          <input type="text" class="form-control" id="e-Address" placeholder="Please enter" [(ngModel)]="email"
+                 name="email">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="t-Name">Telephone Number</label>
-          <input type="text" class="form-control" id="t-Name" [(ngModel)]="phone" name="phone">
+          <label for="telephone">Telephone Number</label>
+          <input type="text" class="form-control" id="telephone" placeholder="Please enter" [(ngModel)]="phone"
+                 name="phone">
         </div>
       </div>
 
-      <!--<div class="row Spaced">-->
-      <!--<div class="col-lg-4 col-md-6 form-group">-->
-      <!--<label for="e-Address">Email Address</label>-->
-      <!--<input type="text" class="form-control" id="e-Address">-->
-      <!--</div>-->
-      <!--</div>-->
-
       <label>Support Skills</label>
       <div class="row Spaced">
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Coordination</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Finance</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">HR</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Logistics</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Security</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">PR/Communications</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Proposal Writing</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Programme Management</label>
+        <label *ngFor="let support of supportSkillList | async"
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">{{support.name}}</label>
       </div>
 
       <label>Technical Skills</label>
       <div class="row Spaced">
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Healthcare</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Physcological Support</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">WaSh</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Nutrition</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Relief</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Shelter</label>
+        <label *ngFor="let tech of techSkillsList | async" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
+          type="checkbox">{{tech.name}}</label>
       </div>
-
-      <!--<label for="o-Skill">Other Skills</label>-->
-      <!--<div class="row">-->
-      <!--<div class="col-lg-4 col-md-6 form-group">-->
-      <!--<input type="text" class="form-control" id="o-Skill" placeholder="Add other skill">-->
-      <!--</div>-->
-      <!--<div class="col-lg-3">-->
-      <!--<button class="btn btn-outline-primary">Save</button>-->
-      <!--</div>-->
-      <!--</div>-->
 
       <div class="row Spaced">
         <div class="col-lg-8 col-md-10 form-group">
           <label for="n-Done">Training needs</label>
-          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
+                    [(ngModel)]="trainingNeeds"></textarea>
         </div>
       </div>
 
       <label>Notifications</label>
       <div class="row Spaced">
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Amber alert request</label>
-
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Red alert request</label>
-
+        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Amber alert
+          request</label>
+        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Red alert
+          request</label>
         <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Update hazard
           indicator</label>
-
         <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">MPA/APA due</label>
-
         <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Response plan expired</label>
-
         <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Response plan rejected</label>
       </div>
 
       <label>Is this staff member part of the response team?</label>
-      <div>
-        <md-radio-group class="Radio--ribbon">
-          <md-radio-button class="flex-column" value="false">No</md-radio-button>
-          <md-radio-button class="flex-column" value="true">Yes</md-radio-button>
-        </md-radio-group>
+      <div class="row">
+        <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2"><input type="radio" name="RT"
+                                                                             id="RT_no"
+                                                                             [value]="false"
+                                                                             [(ngModel)]="isResponseMember">No</label>
+      </div>
+      <div class="row">
+        <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2"><input type="radio" name="RT"
+                                                                              id="RT_yes"
+                                                                              [value]="true"
+                                                                              [(ngModel)]="isResponseMember">Yes</label>
       </div>
 
       <div class="Form-submit__wrapper">
+        <button class="btn btn-primary" type="submit" (click)="validateForm()">SAVE NEW STAFF MEMBER</button>
         <button md-button class="btn btn-primary btn-ghost" (click)="cancel()">Cancel</button>
-        <button md-raised-button class="btn btn-primary" type="submit">SAVE NEW STAFF MEMBER</button>
       </div>
 
     </form>

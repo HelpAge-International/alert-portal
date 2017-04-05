@@ -1,46 +1,102 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {RxHelper} from "../../../utils/RxHelper";
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router, ActivatedRoute} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {PersonTitle} from "../../../utils/Enums";
+import {Country, PersonTitle, SkillType, UserType} from "../../../utils/Enums";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-edit-staff',
   templateUrl: 'create-edit-staff.component.html',
   styleUrls: ['create-edit-staff.component.css']
 })
-export class CreateEditStaffComponent implements OnInit,OnDestroy {
-  subscriptions: RxHelper;
+export class CreateEditStaffComponent implements OnInit, OnDestroy {
   PERSON_TITLE = Constants.PERSON_TITLE;
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
+  USER_TYPE = Constants.USER_TYPE;
+  USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
+  STAFF_POSITION = Constants.STAFF_POSITION;
+  STAFF_POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
+  OFFICE_TYPE = Constants.OFFICE_TYPE;
+  OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
+
+  Country = Country;
+
   title: number;
   firstName: string;
   lastName: string;
   userType: number;
   countryOffice: string;
+  region: string;
+  department: string;
   position: number;
   officeType: number;
   email: string;
   phone: string;
+  skills: string[] = [];
   trainingNeeds: string;
   notifications: number[] = [];
   isResponseMember: boolean;
 
+  hideRegion: boolean = true;
+  hideCountry: boolean = false;
+  private uid: string;
+  private countryList: FirebaseListObservable<any[]>;
+  private departmentList: Observable<any[]>;
+  private supportSkillList: FirebaseListObservable<any[]>;
+  private techSkillsList: FirebaseListObservable<any[]>;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = new RxHelper();
+
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
+    this.af.auth.subscribe(user => {
+      if (!user) {
+        this.router.navigateByUrl(Constants.LOGIN_PATH);
+        return;
+      }
+      this.uid = user.auth.uid;
+      this.initData();
+    });
+
+  }
+
+  private initData() {
+    this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+    this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+      .map(departments => {
+        let names = [];
+        departments.forEach(department => {
+          names.push(department.$key);
+        });
+        return names;
+      });
+    this.supportSkillList = this.af.database.list(Constants.APP_STATUS + "/skill", {
+      query: {
+        orderByChild: "type",
+        equalTo: SkillType.Support
+      }
+    });
+    this.techSkillsList = this.af.database.list(Constants.APP_STATUS + "/skill", {
+      query: {
+        orderByChild: "type",
+        equalTo: SkillType.Tech
+      }
+    });
   }
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
   }
 
+  validateForm() {
+    console.log("validate form");
+  }
+
   submit() {
-    console.log("submit")
+    console.log("submit");
   }
 
   cancel() {
