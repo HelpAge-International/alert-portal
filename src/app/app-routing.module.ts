@@ -93,7 +93,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
   {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
   {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
-  {path: 'agency-admin/settings/department', component: DepartmentComponent},
+  {path: 'agency-admin/settings/departments', component: DepartmentComponent},
   {path: 'agency-admin/settings/skills', component: SkillsComponent},
   {path: 'agency-admin/settings/modules', component: ModulesComponent},
   {path: 'agency-admin/settings/clock-settings', component: ClockSettingsComponent},
