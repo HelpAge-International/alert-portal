@@ -255,7 +255,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       console.log("user " + success.uid + " created successfully");
       let uid: string = success.uid;
       this.writeToFirebase(uid);
-      this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
+      // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
       this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
@@ -326,6 +326,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
           this.deleteAgency["/userPublic/" + this.adminId] = null;
           this.deleteAgency["/administratorAgency/" + this.adminId] = null;
           this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+          this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
           this.deleteAgency["/agency/" + this.agencyId] = null;
           this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
           this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
