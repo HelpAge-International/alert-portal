@@ -17,6 +17,7 @@ import {Observable} from "rxjs";
 export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private isFiltered: boolean = false;
   private actions: Observable<any>;
   private departments: Observable<any>;
   private ActionLevel = ActionLevel;
@@ -78,6 +79,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
     if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected == 'All departments') {
       //no filter. show all
+      this.isFiltered = false;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
@@ -86,6 +88,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
       });
     } else if (this.actionLevelSelected != ActionLevel.ALL && this.departmentSelected == 'All departments') {
       //filter only with mpa
+      this.isFiltered = true;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
@@ -103,6 +106,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
         });
     } else if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected != 'All departments') {
       //filter only with apa
+      this.isFiltered = true;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
@@ -120,6 +124,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
         });
     } else {
       // filter both action level and category
+      this.isFiltered = true;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",

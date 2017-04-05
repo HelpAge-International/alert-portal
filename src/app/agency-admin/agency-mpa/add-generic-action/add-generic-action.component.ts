@@ -26,6 +26,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private departments: Observable<any>;
   private ActionLevel = ActionLevel;
   private GenericActionCategory = GenericActionCategory;
+  private isFiltered: boolean = false;
   private actionSelected: boolean;
   private departmentSelected;
   private newDepartment;
@@ -110,6 +111,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   filter() {
     if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //no filter. show all
+      this.isFiltered = false;
       this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
         query: {
           orderByChild: "type",
@@ -118,6 +120,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       });
     } else if (this.actionLevelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //filter only with mpa
+      this.isFiltered = true;
       this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
         query: {
           orderByChild: "type",
@@ -135,6 +138,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
         });
     } else if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
       //filter only with apa
+      this.isFiltered = true;
       this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
         query: {
           orderByChild: "type",
@@ -152,6 +156,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
         });
     } else {
       // filter both action level and category
+      this.isFiltered = true;
       this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + Constants.SYSTEM_ADMIN_UID, {
         query: {
           orderByChild: "type",

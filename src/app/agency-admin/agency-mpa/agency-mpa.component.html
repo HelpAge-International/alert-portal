@@ -28,7 +28,8 @@
       </div>
     </div>
 
-    <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">{{"AGENCY_ADMIN.MANDATED_PA.NO_ACTIONS" | translate}}</div>
+    <div *ngIf="(actions | async)?.length == 0 && !isFiltered" class="Empty--ribbon">{{"AGENCY_ADMIN.MANDATED_PA.NO_ACTIONS" | translate}}</div>
+    <div *ngIf="(actions | async)?.length == 0 && isFiltered" class="Empty--ribbon">{{"GLOBAL.NO_FILTERED_RESULTS" | translate}}</div>
 
     <div class="Data--ribbon" *ngFor="let action of actions | async">
       <div class="col-sm-9 ">
