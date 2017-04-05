@@ -17,31 +17,50 @@ declare var jQuery: any;
 export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private uid: string;
+
   private errorInactive: boolean = true;
-  private errorMessage: string = "";
   private successInactive: boolean = true;
-  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
   private newDepartmentErrorInactive: boolean = true;
+  private errorMessage: string;
+  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
   private newDepartmentErrorMessage: string;
   private alerts = {};
+
   private genericActions: Observable<any>;
   private departments: Observable<any>;
+
   private ActionLevel = ActionLevel;
   private GenericActionCategory = GenericActionCategory;
+
   private isFiltered: boolean = false;
   private actionSelected: boolean;
-  private departmentSelected;
+
+  private departmentsPath: string;
+  private departmentSelected: string;
   private newDepartment;
+
+  private numOfDepartmentSelected: number = 0;
   private actionLevelSelected = 0;
   private categorySelected = 0;
+
+  private selectedActions: MandatedPreparednessAction[] = [];
+
+  private Category = Constants.CATEGORY;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
-  private Category = Constants.CATEGORY;
-  private categoriesList = [GenericActionCategory.ALL, GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
-    GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
-    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
-  private selectedActions: MandatedPreparednessAction[] = [];
-  private departmentsPath: string;
+  private categoriesList = [
+    GenericActionCategory.ALL,
+    GenericActionCategory.Category1,
+    GenericActionCategory.Category2,
+    GenericActionCategory.Category3,
+    GenericActionCategory.Category4,
+    GenericActionCategory.Category5,
+    GenericActionCategory.Category6,
+    GenericActionCategory.Category7,
+    GenericActionCategory.Category8,
+    GenericActionCategory.Category9,
+    GenericActionCategory.Category10
+  ];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -75,7 +94,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     let newMandatePA: MandatedPreparednessAction = new MandatedPreparednessAction();
     newMandatePA.task = genericAction.task;
     newMandatePA.type = ActionType.mandated;
-    newMandatePA.department = 'test dep';
+    newMandatePA.department = this.departmentSelected;
     newMandatePA.level = genericAction.level;
     newMandatePA.createdAt = genericAction.createdAt;
 
@@ -83,18 +102,24 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
     if (this.actionSelected) {
       this.selectedActions.push(newMandatePA);
+      this.numOfDepartmentSelected++;
     } else {
       this.selectedActions.splice(this.selectedActions.indexOf(newMandatePA), 1);
+      this.numOfDepartmentSelected--;
     }
 
-    console.log('selectedActionsCount ---- ' + this.selectedActions.length);
+    // console.log('Selected Actions Count        ---- ' + this.selectedActions.length);
+    // console.log('Number Of Department Selected ---- ' + this.numOfDepartmentSelected);
 
     this.actionSelected = null;
+    this.departmentSelected = '';
   }
 
   addSelectedActionsToAgency() {
 
-    if (!(this.selectedActions.length == 0)) {
+    console.log('this.departmentSelected ---- ' + this.departmentSelected);
+
+    if (this.validate()) {
       let agencyActionsPath: string = Constants.APP_STATUS + '/action/' + this.uid;
       this.selectedActions.forEach(action => {
         this.af.database.list(agencyActionsPath).push(action)
@@ -105,10 +130,27 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
           });
       });
     } else {
-      this.errorMessage = 'Please select generic action(s) to be added to mandated actions';
       this.showError();
     }
+  }
 
+  addNewDepartment() {
+
+    if (this.validateNewDepartment()) {
+      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
+        console.log('New department added');
+        jQuery("#add_department").modal("hide");
+        this.departmentSelected = this.newDepartment;
+        this.showDepartmentAlert(false);
+      })
+    } else {
+      this.showDepartmentAlert(true);
+    }
+  }
+
+  checkSelectedDepartment() {
+
+    console.log(this.departmentSelected);
   }
 
   filter() {
@@ -188,23 +230,6 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     }
   }
 
-  addNewDepartment() {
-
-    if (this.validateNewDepartment()) {
-      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
-        console.log('New department added');
-        jQuery("#add_department").modal("hide");
-        this.showDepartmentAlert(false);
-      })
-    } else {
-      this.showDepartmentAlert(true);
-    }
-  }
-
-  checkSelectedDepartment() {
-    console.log("Selected Department ---- " + this.departmentSelected);
-  }
-
   private getDepartments() {
 
     this.departments = this.af.database.list(this.departmentsPath)
@@ -241,6 +266,24 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       });
       this.subscriptions.add(subscription);
     }
+  }
+
+  /**
+   * Returns false and specific error messages-
+   * @returns {boolean}
+   */
+  private validate() {
+
+    this.alerts = {};
+    if (this.selectedActions.length == 0) {
+      this.errorMessage = 'Please select generic action(s) to be added to mandated actions';
+      return false;
+    } else if (this.selectedActions.length > this.numOfDepartmentSelected) {
+      this.alerts[this.departmentSelected] = true;
+      this.errorMessage = "Please select a department";
+      return false;
+    }
+    return true;
   }
 
   /**

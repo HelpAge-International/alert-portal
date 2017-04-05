@@ -9,22 +9,22 @@ function country_removed() {
     }
 }
 
-$("input[name=gpa_action]").change(function() {
-    var addActionButton = $("#add-action-btn");
-    if (this.checked) {
-        addActionButton.removeClass("disabled");
-        $(this).parent().parent().find(".gpa_action_department").show();
-    } else {
-        $(this).parent().parent().find(".gpa_action_department").hide();
-        var i = 0;
-        $("input[name=gpa_action]:checked").each(function() {
-            i++;
-        });
-        if (i < 1) {
-            addActionButton.addClass("disabled");
-        }
+function gpaActionChanged( element ) {
+  var addActionButton = $("#add-action-btn");
+  if (element.checked) {
+    addActionButton.removeClass("disabled");
+    $(element).parent().parent().find(".gpa_action_department").show();
+  } else {
+    $(element).parent().parent().find(".gpa_action_department").hide();
+    var i = 0;
+    $("input[name=gpa_action]:checked").each(function() {
+      i++;
+    });
+    if (i < 1) {
+      addActionButton.addClass("disabled");
     }
-});
+  }
+};
 
 function addDepartmentModal(select, modal_id) {
     if ($(select).find(":selected").hasClass("add-department")) {

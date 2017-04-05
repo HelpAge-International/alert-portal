@@ -14,7 +14,7 @@
     <div class="Back--button" routerLink="/agency-admin/agency-mpa">{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>Add generic preparedness actions</h1>
-      <button type="button" class="btn btn-primary" id="add-action-btn" (click)="addSelectedActionsToAgency()">{{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate | uppercase}}</button>
+      <button type="button" class="btn btn-primary disabled" id="add-action-btn" (click)="addSelectedActionsToAgency()">{{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate | uppercase}}</button>
       <!--<button type="button" class="btn btn-primary btn-ghost" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>-->
       <button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
@@ -37,31 +37,32 @@
 
     <div class="Data--ribbon row no-gutters Generic-action-item" *ngFor="let genericAction of genericActions | async">
       <div class="col-md-1 col-sm-1 col-1 text-center">
-        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_1" value="" [(ngModel)]="actionSelected" (change)="updateSelectedActions(genericAction)">
+        <input type="checkbox" class="form-check-input" name="gpa_action" value="" [(ngModel)]="actionSelected" (change)="updateSelectedActions(genericAction)" onclick="gpaActionChanged(this)">
       </div>
       <div class="col-md-11 col-sm-11 col-11">
         <div class="col-sm-12">
-          <label for="gpa_action_1" class="form-check-label"><p>{{genericAction.task}}</p>
+          <label class="form-check-label"><p>{{genericAction.task}}</p>
           </label>
         </div>
         <div class="Info--ribbon--wrap">
           <div class="col-md-4 col-sm-3 col-4">{{"GLOBAL.CATEGORY:" | translate}}<b>{{GenericActionCategory[genericAction.category]}}</b></div>
-          <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_1_department">
-            {{"GLOBAL.DEPARTMENT:" | translate}}
-            <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_1_select"
-                    onChange="addDepartmentModal(this, '#add_department')" [(ngModel)]="departmentSelected" (change)="checkSelectedDepartment()">
-              <option selected hidden disabled>Please select</option>
-              <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}</option>
+
+          <div class="col-md-6 col-sm-9 col-8 gpa_action_department"  [ngClass]="{'has-danger': alerts[departmentSelected]}">{{"GLOBAL.DEPARTMENT:" | translate}}
+            <select class="form-control form-control-sm" onChange="addDepartmentModal(this, '#add_department')" value="departmentSelected" (change)="checkSelectedDepartment()">
+              <!--<option selected hidden disabled>Please select</option>-->
+              <option *ngFor="let department of departments | async" value="department">{{department.toString()}}</option>
               <option class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_A_DEPARTMENT" | translate}}</option>
             </select>
           </div>
+
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
-<div class="modal fade" id="add-department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="Alert-error" [hidden]="newDepartmentErrorInactive">
     {{newDepartmentErrorMessage | translate}}
   </div>
@@ -81,7 +82,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="addNewDepartment()">{{"GLOBAL.SAVE" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL:" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
       </div>
     </div>
   </div>
