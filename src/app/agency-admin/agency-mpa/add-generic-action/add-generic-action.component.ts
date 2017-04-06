@@ -150,7 +150,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   checkSelectedDepartment() {
 
-    console.log(this.departmentSelected);
+    console.log("DepartmentSelected ==== " + this.departmentSelected);
   }
 
   filter() {

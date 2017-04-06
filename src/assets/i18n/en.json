@@ -21,6 +21,7 @@
     "CURRENCY": "Currency",
     "PLEASE_ENTER": "Please enter",
     "NO_CHANGES_MADE": "No changes made",
+    "SAVE_CHANGES": "Save changes",
     "CURRENT_PASSWORD": "Your current password",
     "CONFIRM_PASSWORD": "Confirm your new password",
     "NEW_PASSWORD": "New password",
@@ -35,8 +36,8 @@
     "NO_FILTERED_RESULTS": "There are no actions for the filters your have selected",
     "PREPAREDNESS_LEVEL": {
       "ALL": "All preparedness levels",
-      "MPA": "MPA",
-      "APA": "APA"
+      "MPA": "Minimum Preparedness",
+      "APA": "Advanced Preparedness"
     },
     "ACCOUNT_SETTING": "Account Settings",
     "LOGOUT": "Logout",
@@ -134,7 +135,7 @@
       "L_NAME_MISSING": "Please enter agency administrator's last name",
       "EMAIL_MISSING": "Please enter agency administrator's email address",
       "EMAIL_INVALID": "Please enter a correct email address",
-      "NO_AGENCY":"No agencies have been added to the Alert"
+      "NO_AGENCY":"No agencies have been added to the ALERT"
     },
     "GLOBAL_NETWORKS": {
       "GLOBAL_NETWORKS": "Global Networks",
@@ -161,7 +162,7 @@
       "SAVE_BUTTON_TEXT": "Save new action",
       "EDIT_BUTTON_TEXT": "Save changes",
       "NO_CONTENT_ERROR": "Please insert the action content",
-      "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to Alert",
+      "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
       "CHS_MPA": {
         "TITLE_TEXT": "CHS minimum preparedness actions",
         "NO_ACTIONS": "No CHS actions have been created",
@@ -216,8 +217,8 @@
       "LOOK_UP_ACTIONS": "LOOKUP GENERIC ACTIONS",
       "CREATE_NEW_ACTION": "Create new action",
       "ADD_NEW_ACTIONS": "Add new action(s)",
-      "NO_ACTIONS": "No mandated preparedness actions have been added to Alert",
-      "NO_GENERIC_ACTIONS": "No generic preparedness actions have been added to Alert",
+      "NO_ACTIONS": "No mandated preparedness actions have been added to ALERT",
+      "NO_GENERIC_ACTIONS": "No generic preparedness actions have been added to ALERT",
       "MANDATED": "Mandated",
       "CREATE_NEW_MANDATED_PA": "Create new mandated preparedness action",
       "MPA_OR_APA?": "Is this a minimum or adavanced preparedness action?",
