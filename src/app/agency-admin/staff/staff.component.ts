@@ -75,8 +75,8 @@ export class StaffComponent implements OnInit, OnDestroy {
           this.staff.id = item.$key;
           this.staff.position = item.position;
           this.staff.officeType = item.officeType;
-          this.staff.trainingNeeds = item.training;
-          this.staff.skills = item.skill;
+          this.staff.training = item.training;
+          this.staff.skill = item.skill;
 
           for (let item of this.staffs) {
             if (item.id == this.officeId) {

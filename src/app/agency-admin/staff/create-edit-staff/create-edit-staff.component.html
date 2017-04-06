@@ -51,14 +51,15 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideCountry">
           <label for="c-Office">Country Office</label>
-          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice" [required]="!hideCountry">
-            <option *ngFor="let country of countryList | async" [value]="country">{{Country[country.location]}}</option>
+          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
+                  [required]="!hideCountry">
+            <option *ngFor="let country of countryList | async" [ngValue]="country">{{Country[country.location]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">Department</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
-            <option *ngFor="let department of departmentList | async" [value]="department">{{department}}</option>
+            <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
           </select>
         </div>
         <!--</div>-->
@@ -92,13 +93,14 @@
       <label>Support Skills</label>
       <div class="row Spaced">
         <label *ngFor="let support of supportSkillList | async"
-               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">{{support.name}}</label>
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box
+                                                                          (change)="supportSkillCheck(support,box.checked)">{{support.name}}</label>
       </div>
 
       <label>Technical Skills</label>
       <div class="row Spaced">
         <label *ngFor="let tech of techSkillsList | async" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
-          type="checkbox">{{tech.name}}</label>
+          type="checkbox" #box (change)="techSkillCheck(tech,box.checked)">{{tech.name}}</label>
       </div>
 
       <div class="row Spaced">
@@ -112,7 +114,7 @@
       <label>Notifications</label>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
-               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox"
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
                                                                           [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
       </div>
 

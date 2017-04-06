@@ -6,6 +6,11 @@ import {Constants} from "../../../utils/Constants";
 import {Country, PersonTitle, SkillType, UserType} from "../../../utils/Enums";
 import {Observable} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
+import {ModelUserPublic} from "../../../model/user-public.model";
+import {firebaseConfig} from "../../../app.module";
+import {UUID} from "../../../utils/UUID";
+import * as firebase from "firebase";
+import {ModelStaff} from "../../../model/staff.model";
 
 @Component({
   selector: 'app-create-edit-staff',
@@ -29,7 +34,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   firstName: string;
   lastName: string;
   userType: number;
-  countryOffice: string;
+  countryOffice: any;
   region: string;
   department: string;
   position: number;
@@ -52,6 +57,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private techSkillsList: FirebaseListObservable<any[]>;
   private notificationList: FirebaseListObservable<any[]>;
   private notificationSettings: boolean[] = [];
+  private secondApp: firebase.app.App;
+  private skillsMap = new Map();
+  private staffSkills: string[] = [];
+  private notificationsMap = new Map();
+  private staffNotifications: string[] = [];
 
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
@@ -64,6 +74,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         return;
       }
       this.uid = user.auth.uid;
+      this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.initData();
     });
   }
@@ -96,6 +107,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+    this.secondApp.delete();
   }
 
   validateForm() {
@@ -174,7 +186,72 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       return;
     }
     console.log("submit");
+    this.collectData();
+  }
 
+  private collectData() {
+    this.skillsMap.forEach((value, key) => {
+      if (value) {
+        this.staffSkills.push(key);
+      }
+    });
+    console.log(this.staffSkills);
+    this.notificationsMap.forEach((value, key) => {
+      if (value) {
+        this.staffNotifications.push(key);
+      }
+    });
+    console.log(this.staffNotifications);
+    this.createNewUser();
+  }
+
+  private createNewUser() {
+    this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
+      console.log(newUser.uid + " was successfully created");
+      this.updateFirebase(newUser.uid);
+      this.secondApp.auth().signOut();
+    }, error => {
+      this.waringMessage = error.message;
+      this.showAlert();
+    });
+  }
+
+  private updateFirebase(uid) {
+    let staffData = {};
+    //user public
+    let user = new ModelUserPublic(this.firstName, this.lastName, this.title, this.email);
+    user.phone = this.phone;
+    user.country = -1;
+    user.addressLine1 = "";
+    user.addressLine2 = "";
+    user.addressLine3 = "";
+    user.city = "";
+    user.postCode = "";
+    staffData["/userPublic/" + uid + "/"] = user;
+    //staff extra info
+    let staff = new ModelStaff();
+    staff.userType = this.userType;
+    // if (!this.hideRegion) {
+    //   staff.region = this.region;
+    // }
+    // if (!this.hideCountry) {
+    //   staff.countryOffice = this.countryOffice.$key;
+    // }
+    staff.department = this.department;
+    staff.position = this.position;
+    staff.officeType = this.officeType;
+    staff.skill = this.staffSkills;
+    staff.training = this.trainingNeeds;
+    staff.notifications = this.staffNotifications;
+    staff.isResponseMember = this.isResponseMember;
+    staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
+
+    this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
+    }, error => {
+      this.waringMessage = error.message;
+      this.showAlert();
+    });
   }
 
   selectedUserType(userType) {
@@ -187,6 +264,25 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           this.notificationSettings.push(setting.usersNotified[userType]);
         });
       });
+  }
+
+  supportSkillCheck(skill, isCheck) {
+    this.skillsMap.set(skill.$key, isCheck);
+  }
+
+  techSkillCheck(skill, isCheck) {
+    this.skillsMap.set(skill.$key, isCheck);
+  }
+
+  notificationCheck(notification, isCheck) {
+    console.log(notification);
+    console.log(isCheck);
+    this.notificationsMap.set(notification.$key, isCheck);
+    console.log(this.notificationsMap);
+  }
+
+  countrySelected(country) {
+    console.log(country.$key)
   }
 
   cancel() {
