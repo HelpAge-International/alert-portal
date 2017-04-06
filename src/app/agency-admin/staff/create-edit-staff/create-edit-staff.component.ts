@@ -160,7 +160,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.showAlert();
       return;
     }
-    if (!this.isResponseMember) {
+    if (typeof (this.isResponseMember) == "undefined") {
       this.waringMessage = "Is response team must be selected!";
       this.showAlert();
       return;
@@ -168,7 +168,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   submit() {
+    if (!CustomerValidator.EmailValidator(this.email)) {
+      this.waringMessage = "Email address is not valid!";
+      this.showAlert();
+      return;
+    }
     console.log("submit");
+
   }
 
   selectedUserType(userType) {

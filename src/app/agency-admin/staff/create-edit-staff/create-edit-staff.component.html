@@ -26,38 +26,38 @@
         <div class="col-lg-4 col-md-6 form-group">
           <label for="f-Name">First Name</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
-                 placeholder="Please enter">
+                 placeholder="Please enter" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="l-Name">Last Name</label>
           <input type="text" class="form-control" id="l-Name" [(ngModel)]="lastName" name="lastName"
-                 placeholder="Please enter">
+                 placeholder="Please enter" required>
         </div>
       </div>
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
           <label for="User-Type">User Type</label>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
-                  (change)="selectedUserType(userType)">
+                  (change)="selectedUserType(userType)" required>
             <option *ngFor="let type of USER_TYPE_SELECTION" [value]="type">{{USER_TYPE[type]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
           <label for="region">Region</label>
-          <select class="form-control" id="region" [(ngModel)]="region" name="region">
+          <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion">
             <option value="D-val-1" hidden disabled selected>Please select</option>
             <option value="D-val-2">Option</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideCountry">
           <label for="c-Office">Country Office</label>
-          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice">
+          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice" [required]="!hideCountry">
             <option *ngFor="let country of countryList | async" [value]="country">{{Country[country.location]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">Department</label>
-          <select class="form-control" id="Department" [(ngModel)]="department" name="department">
+          <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option *ngFor="let department of departmentList | async" [value]="department">{{department}}</option>
           </select>
         </div>
@@ -66,26 +66,26 @@
         <!--<div class="row Spaced">-->
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">Position</label>
-          <select class="form-control" id="Position" [(ngModel)]="position" name="position">
+          <select class="form-control" id="Position" [(ngModel)]="position" name="position" required>
             <option *ngFor="let position of STAFF_POSITION_SELECTION" [value]="position">{{STAFF_POSITION[position]}}
             </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="o-Type">Office Type</label>
-          <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType">
+          <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
             <option *ngFor="let type of OFFICE_TYPE_SELECTION" [value]="type">{{OFFICE_TYPE[type]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">Email Address</label>
           <input type="text" class="form-control" id="e-Address" placeholder="Please enter" [(ngModel)]="email"
-                 name="email">
+                 name="email" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="telephone">Telephone Number</label>
           <input type="text" class="form-control" id="telephone" placeholder="Please enter" [(ngModel)]="phone"
-                 name="phone">
+                 name="phone" required>
         </div>
       </div>
 
@@ -105,7 +105,7 @@
         <div class="col-lg-8 col-md-10 form-group">
           <label for="n-Done">Training needs</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
-                    [(ngModel)]="trainingNeeds"></textarea>
+                    [(ngModel)]="trainingNeeds" required></textarea>
         </div>
       </div>
 
