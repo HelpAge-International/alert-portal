@@ -79,3 +79,12 @@ export enum SkillType {
   Support = 0,
   Tech = 1
 }
+
+export enum NotificationSettingEvents {
+  AlertLevelChanged = 0,
+  RedAlertRequest = 1,
+  UpdateHazard = 2,
+  ActionExpired = 3,
+  PlanExpired = 4,
+  PlanRejected = 5
+}

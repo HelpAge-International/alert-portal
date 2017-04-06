@@ -53,10 +53,11 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
       console.log("user data changed: " + userId);
     } else if (preData && !currData) {
       //delete user account
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
+      console.log("delete user");
+      // admin.auth().deleteUser(userId).then(() => {
+      //   console.log("successfully deleted user: " + userId);
+      // }, error => {
+      //   console.log(error.message);
+      // });
     }
   });

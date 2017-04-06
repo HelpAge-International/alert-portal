@@ -5,6 +5,7 @@ import {Router, ActivatedRoute} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Country, PersonTitle, SkillType, UserType} from "../../../utils/Enums";
 import {Observable} from "rxjs";
+import {CustomerValidator} from "../../../utils/CustomValidator";
 
 @Component({
   selector: 'app-create-edit-staff',
@@ -20,6 +21,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   STAFF_POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
   OFFICE_TYPE = Constants.OFFICE_TYPE;
   OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
+  NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
   Country = Country;
 
@@ -39,13 +41,17 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   notifications: number[] = [];
   isResponseMember: boolean;
 
+  hideWarning: boolean = true;
   hideRegion: boolean = true;
   hideCountry: boolean = false;
   private uid: string;
+  private waringMessage: string;
   private countryList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
   private supportSkillList: FirebaseListObservable<any[]>;
   private techSkillsList: FirebaseListObservable<any[]>;
+  private notificationList: FirebaseListObservable<any[]>;
+  private notificationSettings: boolean[] = [];
 
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
@@ -60,7 +66,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.initData();
     });
-
   }
 
   private initData() {
@@ -85,6 +90,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         equalTo: SkillType.Tech
       }
     });
+    this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
+
   }
 
   ngOnDestroy() {
@@ -93,13 +100,98 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   validateForm() {
     console.log("validate form");
+    if (!this.title) {
+      this.waringMessage = "Title cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.firstName) {
+      this.waringMessage = "First name cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.lastName) {
+      this.waringMessage = "Last name cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.userType) {
+      this.waringMessage = "User type cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.region && !this.hideRegion) {
+      this.waringMessage = "Region cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.countryOffice && !this.hideCountry) {
+      this.waringMessage = "Country office cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.department) {
+      this.waringMessage = "Department cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.position) {
+      this.waringMessage = "Position cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.officeType) {
+      this.waringMessage = "Office type cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.email) {
+      this.waringMessage = "User type cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.phone) {
+      this.waringMessage = "Phone number cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.trainingNeeds) {
+      this.waringMessage = "Training needs cannot be empty!";
+      this.showAlert();
+      return;
+    }
+    if (!this.isResponseMember) {
+      this.waringMessage = "Is response team must be selected!";
+      this.showAlert();
+      return;
+    }
   }
 
   submit() {
     console.log("submit");
   }
 
+  selectedUserType(userType) {
+    this.notificationSettings = [];
+    this.notificationList
+      .first()
+      .subscribe(settingList => {
+        console.log(settingList);
+        settingList.forEach(setting => {
+          this.notificationSettings.push(setting.usersNotified[userType]);
+        });
+      });
+  }
+
   cancel() {
     this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
+  }
+
+  private showAlert() {
+    this.hideWarning = false;
+    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      this.hideWarning = true;
+    });
+    this.subscriptions.add(subscribe);
   }
 }

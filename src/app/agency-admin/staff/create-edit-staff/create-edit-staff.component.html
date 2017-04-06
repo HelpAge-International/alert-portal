@@ -1,6 +1,8 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
@@ -35,7 +37,8 @@
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
           <label for="User-Type">User Type</label>
-          <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType">
+          <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
+                  (change)="selectedUserType(userType)">
             <option *ngFor="let type of USER_TYPE_SELECTION" [value]="type">{{USER_TYPE[type]}}</option>
           </select>
         </div>
@@ -108,15 +111,9 @@
 
       <label>Notifications</label>
       <div class="row Spaced">
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Amber alert
-          request</label>
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Red alert
-          request</label>
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Update hazard
-          indicator</label>
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">MPA/APA due</label>
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Response plan expired</label>
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox">Response plan rejected</label>
+        <label *ngFor="let notification of notificationList | async"
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox"
+                                                                          [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
       </div>
 
       <label>Is this staff member part of the response team?</label>

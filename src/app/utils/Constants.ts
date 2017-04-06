@@ -50,6 +50,8 @@ export class Constants {
 
   static OFFICE_TYPE = ["Field Office", "Lab Office"];
   static OFFICE_TYPE_SELECTION = [OfficeType.FieldOffice, OfficeType.LabOffice];
+
+  static NOTIFICATION_SETTINGS = ["Alert level changed", "Red alert request", "Update hazard indicator", "MPA/APA expired", "Response plan expired", "Response plan rejected"];
 }
 
 export enum FILE_SETTING {
