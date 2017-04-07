@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private errorMessage: string;
   private successInactive: Boolean = true;
   private successMessage: string;
+  private loaderInactive: Boolean = true;
   private alerts = {};
   private emailEntered: string;
   private subscriptions: RxHelper;
@@ -32,18 +33,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    /*// TODO - Remove if unnecessary
-     let loginSubscription = this.af.auth.subscribe(auth => {
-     if (auth) {
-     this.router.navigateByUrl("/login");
-     console.log("Logged In");
-     } else {
-     // user is not logged in - Login page is presented
-     this.router.navigateByUrl("/login");
-     console.log("Not Logged In");
-     }
-     });
-     this.subscriptions.add(loginSubscription);*/
 
     let subscription = this.route.params
       .subscribe((params: Params) => {
@@ -58,10 +47,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.loaderInactive = true;
     this.subscriptions.releaseAll();
   }
 
   onSubmit() {
+    this.loaderInactive = false;
     this.successInactive = true;
 
     if (this.validate()) {

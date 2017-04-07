@@ -19,10 +19,11 @@
     <div class="Agency-details__logo">
       <label>{{"AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO" | translate}}</label>
       <img src="{{agencyLogo}}" alt="" class="Agency-details__logo__preview">
-      <!--<input type='file' id="imgInp" class="Input-form"/>-->
-      <div><a href="#">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
-      <div><a href="#" >{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE" | translate}}</a></div>
-      <div><a href="#" class="Agency-details__logo__remove-logo text-danger" id="remove-logo">Remove image</a></div>
+      <label for="files" class="btn">Replace Image</label>
+      <input id="files" style="visibility:hidden; display: none;" type="file" (change)="replaceImage()">
+      <!--<input type='file' id="imgInp" class="Input-form" />-->
+      <!--<div><button (click)="replaceImage()">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE" | translate}}</button></div>-->
+      <div><button (click)="removeImage()">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</button></div>
       <div>{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
       <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
     </div>
