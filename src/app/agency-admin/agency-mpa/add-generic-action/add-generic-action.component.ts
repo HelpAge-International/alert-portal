@@ -73,7 +73,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
         this.departmentsPath = Constants.APP_STATUS+"/agency/" + this.uid + "/departments";
         let subscription = this.af.database.list(Constants.APP_STATUS+"/administratorAgency/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
           this.systemAdminUid = systemAdminIds[0].$key;
-          this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
+          this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.systemAdminUid, {
             query: {
               orderByChild: "type",
               equalTo: ActionType.mandated
