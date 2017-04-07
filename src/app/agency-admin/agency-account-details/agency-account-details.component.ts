@@ -6,7 +6,7 @@ import {Country, Currency} from "../../utils/Enums";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
-// import * as firebase from 'firebase';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-agency-account-details',
@@ -24,6 +24,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private alerts = {};
   private modalAgency: ModelAgency;
   private agencyLogo: string;
+  private newImage: string;
   private agencyAddressLine1: string;
   private agencyAddressLine2: string;
   private agencyAddressLine3: string;
@@ -39,12 +40,6 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
-    // const storageRef = firebase.storage().ref().child('/agency/bl9h4IN9QBhHwfsGuoHzrxtvSmz2/Debt-Recovery-Agency.jpg');
-    // storageRef.getDownloadURL().then(url => {
-    //     this.agencyLogo = url;
-    //     console.log(this.agencyLogo);
-    //   }
-    // );
   }
 
   ngOnInit() {
@@ -107,6 +102,35 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.showAlert(true);
     }
+  }
+
+  replaceImage() {
+    console.log('this.agencyLogo ====' + this.agencyLogo);
+
+    // this.newImage = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTGdJmgpV8qkAew3QvDqNi4ShFMYHSKxE5pE2EAJEy9J2LDy_CeEA';
+    // console.log('this.agencyLogo ====' + this.agencyLogo);
+    // console.log('this.newImage ====' + this.newImage);
+    //
+    // const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.newImage);
+    // storageRef.getDownloadURL().then(url => {
+    //     this.agencyLogo = url;
+    //     console.log(this.agencyLogo);
+    //   }
+    // );
+
+  }
+
+  removeImage() {
+
+    // Replace with the default Alert logo
+    const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.agencyLogo);
+    storageRef.delete().then(_ => {
+      this.agencyLogo = "";
+      console.log("Image removed from firebase storage");
+    }, error => {
+      console.log(error.message);
+    });
+
   }
 
   private loadAgencyData(uid) {
