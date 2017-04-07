@@ -11,6 +11,8 @@ import {CustomerValidator} from "../utils/CustomValidator";
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
+
+  private loaderInactive: Boolean = true;
   private inactive: Boolean = true;
   private errorMessage: string;
   private successInactive: Boolean = true;
@@ -37,10 +39,14 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(subscription);
   }
+
   ngOnDestroy() {
+    this.loaderInactive = true;
     this.subscriptions.releaseAll();
   }
+
   onSubmit() {
+    this.loaderInactive = false;
     this.successInactive = true;
     if (this.validate()) {
       this.af.auth.login({
