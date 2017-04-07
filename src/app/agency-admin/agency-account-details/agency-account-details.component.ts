@@ -90,7 +90,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           this.showAlert(true);
         } else {
 
-          this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
+          this.af.database.object('agency/' + this.uid).update(editedAgency).then(() => {
             this.showAlert(false)
           }, error => {
             this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -135,7 +135,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
   private loadAgencyData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).subscribe((agency: ModelAgency) => {
+    let subscription = this.af.database.object("agency/" + uid).subscribe((agency: ModelAgency) => {
 
       this.modalAgency = agency;
       this.agencyLogo = agency.logoPath;

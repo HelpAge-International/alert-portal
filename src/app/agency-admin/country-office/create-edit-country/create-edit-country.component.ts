@@ -73,8 +73,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private loadCountryInfo(countryOfficeId: string) {
     console.log("edit: " + countryOfficeId);
-    // this.af.database.object(Constants.APP_STATUS+"/countryOffice/"+this.uid+"/"+countryOfficeId+"/adminId")
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
+    let subscription = this.af.database.object("/countryOffice/" + this.uid + "/" + countryOfficeId)
       .do(result => {
         console.log(result);
         this.countryOfficeLocation = result.location;
@@ -82,7 +81,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
         this.tempAdminId = result.adminId;
       })
       .flatMap(result => {
-        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + result.adminId)
+        return this.af.database.object("/userPublic/" + result.adminId)
       })
       .subscribe(user => {
         console.log(user);
@@ -199,7 +198,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private validateLocation() {
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
+    let subscription = this.af.database.list("/countryOffice/" + this.uid, {
       query: {
         orderByChild: "location",
         equalTo: this.countryOfficeLocation
@@ -277,7 +276,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     updateAdminData["/group/systemadmin/allcountryadminsgroup/" + this.tempAdminId] = null;
     updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + this.tempAdminId] = null;
 
-    this.af.database.object(Constants.APP_STATUS).update(updateAdminData).then(() => {
+    this.af.database.object("/").update(updateAdminData).then(() => {
       this.backHome();
     }, error => {
       this.hideWarning = false;
@@ -311,7 +310,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/location/"] = this.countryOfficeLocation;
     this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/isActive/"] = true;
 
-    this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
+    this.af.database.object("/").update(this.countryData).then(() => {
       this.backHome();
     }, error => {
       console.log(error.message);
@@ -344,7 +343,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     countryOffice.isActive = true;
     this.countryData["/countryOffice/" + this.uid + "/" + countryId] = countryOffice;
 
-    this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
+    this.af.database.object("/").update(this.countryData).then(() => {
       this.backHome();
     }, error => {
       console.log(error.message);

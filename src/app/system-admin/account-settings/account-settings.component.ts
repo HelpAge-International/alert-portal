@@ -71,7 +71,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
           this.showAlert(true);
         } else {
           this.authState.auth.updateEmail(this.systemAdminEmail).then(_ => {
-            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
+            this.af.database.object('/userPublic/' + this.uid).update(editedUser).then(() => {
               this.showAlert(false)
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -88,7 +88,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
 
   private loadSystemAdminData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid).subscribe((systemAdmin: ModelUserPublic) => {
+    let subscription = this.af.database.object("/userPublic/" + uid).subscribe((systemAdmin: ModelUserPublic) => {
 
       this.userPublic = systemAdmin;
       this.systemAdminTitle = systemAdmin.title;
