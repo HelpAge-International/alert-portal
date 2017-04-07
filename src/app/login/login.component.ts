@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           method: AuthMethods.Password,
         })
         .then((success) => {
-          this.af.database.list(Constants.APP_STATUS+'/systemAdmin', {preserveSnapshot: true})
+          this.af.database.list(Constants.APP_STATUS+'/system', {preserveSnapshot: true})
               .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
