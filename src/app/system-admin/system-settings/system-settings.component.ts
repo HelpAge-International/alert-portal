@@ -70,7 +70,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   private initData(uid) {
-    this.af.database.object("/system/" + uid).subscribe(x => {
+    this.af.database.object(Constants.APP_STATUS+"/system/" + uid).subscribe(x => {
       this.modelSystem = new ModelSystem();
       this.modelSystem.advThreshold = x.advThreshold;
       this.modelSystem.minThreshold = x.minThreshold;
@@ -141,7 +141,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
     this.modelSystem.fileSize = this.fileSize;
     this.modelSystem.fileType = this.fileType;
 
-    this.af.database.object("/system/" + this.uid).set(this.modelSystem).then(_ => {
+    this.af.database.object(Constants.APP_STATUS+"/system/" + this.uid).set(this.modelSystem).then(_ => {
       this.showAlert();
     }, error => {
       console.log(error.message);

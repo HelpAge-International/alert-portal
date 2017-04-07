@@ -29,7 +29,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       if (auth) {
         this.uid = auth.uid;
 
-        let subscription = this.af.database.list('/administratorAgency/' + this.uid + '/sentmessages')
+        let subscription = this.af.database.list(Constants.APP_STATUS+'/administratorAgency/' + this.uid + '/sentmessages')
           .flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
@@ -39,7 +39,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             return Observable.from(tempList)
           })
           .flatMap(item => {
-            return this.af.database.object('/message/' + item.$key)
+            return this.af.database.object(Constants.APP_STATUS+'/message/' + item.$key)
           })
           .distinctUntilChanged()
           .subscribe(x => {
@@ -100,7 +100,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
                 this.msgData[msgRefPath + '/' + item.$key + '/' + key] = null;
               });
               if (this.groups.indexOf(group) == this.groups.length - 1) {
-                this.af.database.object("/").update(this.msgData).then(_ => {
+                this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
                   console.log("Message Ref successfully deleted from all nodes");
                 }).catch(error => {
                   console.log("Message deletion unsuccessful" + error);

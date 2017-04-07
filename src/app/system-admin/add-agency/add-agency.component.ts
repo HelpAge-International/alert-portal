@@ -87,14 +87,14 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    let subscription = this.af.database.object("/agency/" + agencyId).subscribe(agency => {
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/agency/" + agencyId).subscribe(agency => {
       this.agencyName = agency.name;
       this.preAgencyName = agency.name;
       this.adminId = agency.adminId;
       this.isDonor = agency.isDonor;
 
       //load from user public
-      let subscription = this.af.database.object("/userPublic/" + agency.adminId)
+      let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + agency.adminId)
         .subscribe(user => {
           this.userPublic = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
           this.userPublic.addressLine1 = user.addressLine1;
@@ -206,7 +206,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       updateData["/agency/" + this.agencyId + "/name"] = this.agencyName;
       updateData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
 
-      this.af.database.object("/").update(updateData).then(() => {
+      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         this.backToHome();
       }, error => {
         console.log(error.message);
@@ -224,7 +224,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       return;
     }
     console.log("validate agency name");
-    let subscription = this.af.database.list("/agency", {
+    let subscription = this.af.database.list(Constants.APP_STATUS+"/agency", {
       query: {
         orderByChild: "name",
         equalTo: this.agencyName
@@ -301,7 +301,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/agency/" + uid] = agency;
     }
 
-    this.af.database.object("/").update(agencyData).then(() => {
+    this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
       this.backToHome();
     }, error => {
       console.log(error.message);
@@ -329,13 +329,13 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
           this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
           this.deleteAgency["/agency/" + this.agencyId] = null;
           this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
-          this.af.database.list("/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
+          this.af.database.list(Constants.APP_STATUS+"/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
             result.forEach(item => {
               console.log(item.$key);
               this.deleteAgency["/message/" + item.$key] = null;
             });
             console.log(JSON.stringify(this.deleteAgency));
-            this.af.database.object("/").update(this.deleteAgency).then(() => {
+            this.af.database.object(Constants.APP_STATUS).update(this.deleteAgency).then(() => {
               this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
             }, error => {
               console.log(error.message);

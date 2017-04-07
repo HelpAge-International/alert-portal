@@ -73,7 +73,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     this.currentDateTimeInMilliseconds = new Date().getTime();
 
     let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
-    let messagePath = '/message';
+    let messagePath = Constants.APP_STATUS+'/message';
 
     this.af.database.list(messagePath).push(newMessage)
       .then(msgId => {
@@ -89,7 +89,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   // TODO
   /*private addMsgToMessageRef(key: string) {
 
-    let agencyGroupPath: string = '/group/agency/' + this.uid + '/';
+    let agencyGroupPath: string = Constants.APP_STATUS+'/group/agency/' + this.uid + '/';
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
     if (this.allUsersSelected) {

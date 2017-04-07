@@ -37,7 +37,7 @@ function sendWelcomeEmail(email) {
   });
 }
 
-exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
+exports.handleUserAccount = functions.database.ref('/test/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
     const userId = event.params.userId;

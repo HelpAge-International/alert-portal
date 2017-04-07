@@ -75,12 +75,12 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private loadNetworkInfo(networkId) {
-    let subscription = this.af.database.object("/network/" + networkId)
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/network/" + networkId)
       .flatMap(network => {
         this.preNetworkName = network.name;
         this.networkName = network.name;
         this.adminId = network.adminId;
-        return this.af.database.object("/userPublic/" + network.adminId)
+        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + network.adminId)
       })
       .subscribe(user => {
         //create model for later use
@@ -137,7 +137,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private validateNetworkName() {
-    let subscription = this.af.database.list("/network", {
+    let subscription = this.af.database.list(Constants.APP_STATUS+"/network", {
       query: {
         orderByChild: "name",
         equalTo: this.networkName
@@ -181,7 +181,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private findUidForExistingEmail(adminEmail: string) {
-    this.af.database.list("/userPublic/", {
+    this.af.database.list(Constants.APP_STATUS+"/userPublic/", {
       query: {
         orderByChild: "email",
         equalTo: adminEmail,
@@ -195,7 +195,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         }
       })
       .flatMap(users => {
-        return this.af.database.list("/adminNetwork/", {
+        return this.af.database.list(Constants.APP_STATUS+"/adminNetwork/", {
           query: {
             orderByKey: true,
             equalTo: users[0].$key
@@ -309,7 +309,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     }
 
     //actual update
-    this.af.database.object("/").update(networkData).then(() => {
+    this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
       this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
     }, error => {
       console.log(error.message);
@@ -351,7 +351,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     networkData["/userPublic/" + this.adminId + "/city"] = this.adminCity;
     networkData["/userPublic/" + this.adminId + "/postCode"] = this.adminPostcode;
 
-    this.af.database.object("/").update(networkData).then(() => {
+    this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
       this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
     }, error => {
       console.log(error.message);

@@ -38,8 +38,8 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       }
       console.log(user.auth.uid);
       this.uid = user.auth.uid;
-      this.countries = this.af.database.list("/countryOffice/" + this.uid);
-      this.regions = this.af.database.list("/region/" + this.uid);
+      this.countries = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid);
+      this.regions = this.af.database.list(Constants.APP_STATUS+"/region/" + this.uid);
       let subscription = this.regions
         .subscribe(regions => {
           regions.forEach(region => {
@@ -100,7 +100,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     console.log("do have other countries, fetch data!");
     let subscription = Observable.from(diff)
       .flatMap(id => {
-        return this.af.database.object("/countryOffice/" + this.uid + "/" + id);
+        return this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + id);
       })
       .subscribe(result => {
         console.log(result);
@@ -130,7 +130,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
           return;
         }
         this.otherCountries = [];
-        this.af.database.object("/countryOffice/" + this.uid + "/" + country.$key + "/isActive").set(state);
+        this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + country.$key + "/isActive").set(state);
       });
     this.subscriptions.add(subscription);
   }
@@ -149,7 +149,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.tempCountryIdList = [];
     for (let countryId in region.countries) {
       // console.log(countryId);
-      let subscription = this.af.database.object("/countryOffice/" + this.uid + "/" + countryId)
+      let subscription = this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + countryId)
         .first()
         .subscribe(country => {
           if (!this.tempCountryIdList.includes(country.location)) {
@@ -168,9 +168,9 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       return;
     }
     let name: string = "";
-    let subscription = this.af.database.object("/countryOffice/" + this.uid + "/" + key + "/adminId")
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + key + "/adminId")
       .flatMap(adminId => {
-        return this.af.database.object("/userPublic/" + adminId.$value)
+        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + adminId.$value)
       })
       .subscribe(user => {
         name = user.firstName + " " + user.lastName;

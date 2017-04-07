@@ -69,7 +69,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
     this.currentDateTimeInMilliseconds = new Date().getTime();
 
     let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
-    let messagePath = '/message';
+    let messagePath = Constants.APP_STATUS+'/message';
 
     this.af.database.list(messagePath).push(newMessage)
       .then(msgId => {
@@ -83,7 +83,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
 
   private addMsgToMessageRef(key: string) {
 
-    let systemAdminGroupPath: string = '/group/systemadmin/';
+    let systemAdminGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/';
     let systemAdminMessageRefPath: string = '/messageRef/systemadmin/';
 
     if (this.allUsersSelected) {
@@ -97,7 +97,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
             this.msgData[systemAdminAllUsersMessageRefPath + userId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
           });
 
-          this.af.database.object("/").update(this.msgData).then(_ => {
+          this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
             console.log("Message Ref successfully added to all nodes");
             this.router.navigate(['/system-admin/messages']);
           }).catch(error => {
@@ -124,7 +124,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
           });
 
           if (this.groups.indexOf(group) == this.groups.length - 1) {
-            this.af.database.object("/").update(this.msgData).then(_ => {
+            this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
               console.log("Message Ref successfully added to all nodes");
               this.router.navigate(['/system-admin/messages']);
             }).catch(error => {

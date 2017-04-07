@@ -28,7 +28,7 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   }
 
   private loadNetworks() {
-    this.networks = this.af.database.list("/network");
+    this.networks = this.af.database.list(Constants.APP_STATUS+"/network");
     console.log(this.networks)
   }
 
@@ -56,7 +56,7 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
     //       return
     //     }
     //     let newState = !network.isActive;
-    //     this.af.database.object("/network/" + network.$key + "/isActive").set(newState);
+    //     this.af.database.object(Constants.APP_STATUS+"/network/" + network.$key + "/isActive").set(newState);
     //   });
     // this.subscriptions.add(subscription);
   }

@@ -80,8 +80,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.countryList = this.af.database.list("/countryOffice/" + this.uid);
-    this.departmentList = this.af.database.list("/agency/" + this.uid + "/departments")
+    this.countryList = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid);
+    this.departmentList = this.af.database.list(Constants.APP_STATUS+"/agency/" + this.uid + "/departments")
       .map(departments => {
         let names = [];
         departments.forEach(department => {
@@ -89,19 +89,19 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
         return names;
       });
-    this.supportSkillList = this.af.database.list("/skill", {
+    this.supportSkillList = this.af.database.list(Constants.APP_STATUS+"/skill", {
       query: {
         orderByChild: "type",
         equalTo: SkillType.Support
       }
     });
-    this.techSkillsList = this.af.database.list("/skill", {
+    this.techSkillsList = this.af.database.list(Constants.APP_STATUS+"/skill", {
       query: {
         orderByChild: "type",
         equalTo: SkillType.Tech
       }
     });
-    this.notificationList = this.af.database.list("/agency/" + this.uid + "/notificationSetting");
+    this.notificationList = this.af.database.list(Constants.APP_STATUS+"/agency/" + this.uid + "/notificationSetting");
 
   }
 
@@ -246,7 +246,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staff.isResponseMember = this.isResponseMember;
     staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
 
-    this.af.database.object("/").update(staffData).then(() => {
+    this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
     }, error => {
       this.waringMessage = error.message;

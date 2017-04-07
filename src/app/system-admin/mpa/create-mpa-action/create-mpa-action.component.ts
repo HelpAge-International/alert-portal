@@ -40,7 +40,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        this.path = "/action/" + auth.uid;
+        this.path = Constants.APP_STATUS+"/action/" + auth.uid;
         console.log("uid: " + auth.uid);
       } else {
         console.log("Error occurred - User isn't logged in");

@@ -29,7 +29,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         // this.uid = auth.uid; //TODO remove comment
-        this.departments = this.af.database.list('/agency/' + this.uid + '/departments');
+        this.departments = this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/departments');
 
       } else {
         // user is not logged in
@@ -57,7 +57,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   addDepartment(event) {
   	console.log(this.departmentName);
-  	let department = this.af.database.object('/agency/' + this.uid + '/departments');
+  	let department = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments');
 
 	var newDepartment = {};
   	newDepartment[this.departmentName] = true;

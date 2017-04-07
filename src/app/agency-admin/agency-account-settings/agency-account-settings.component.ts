@@ -92,7 +92,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
           if (emailChanged) {
             this.authState.auth.updateEmail(this.agencyAdminEmail).then(_ => {
-              this.af.database.object('/userPublic/' + this.uid).update(editedUser).then(() => {
+              this.af.database.object(Constants.APP_STATUS+'/userPublic/' + this.uid).update(editedUser).then(() => {
                 this.showAlert(false);
               }, error => {
                 this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -101,7 +101,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
               });
             })
           } else {
-            this.af.database.object('/userPublic/' + this.uid).update(editedUser).then(() => {
+            this.af.database.object(Constants.APP_STATUS+'/userPublic/' + this.uid).update(editedUser).then(() => {
               this.showAlert(false)
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -118,7 +118,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   private loadAgencyAdminData(uid) {
 
-    let subscription = this.af.database.object("userPublic/" + uid).subscribe((agencyAdmin: ModelUserPublic) => {
+    let subscription = this.af.database.object(Constants.APP_STATUS+"userPublic/" + uid).subscribe((agencyAdmin: ModelUserPublic) => {
 
       this.userPublic = agencyAdmin;
       this.agencyAdminTitle = agencyAdmin.title;

@@ -43,12 +43,12 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.countryOffices = this.af.database.list("/countryOffice/" + this.uid);
+    this.countryOffices = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid);
     this.getStaffData();
   }
 
   private getStaffData() {
-    this.af.database.list("/countryOffice/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid)
       .do(list => {
         list.forEach(item => {
           this.staffDisplay = new ModelStaffDisplay();
@@ -67,7 +67,7 @@ export class StaffComponent implements OnInit, OnDestroy {
       })
       .flatMap(id => {
         this.officeId = id;
-        return this.af.database.list("/staff/" + id)
+        return this.af.database.list(Constants.APP_STATUS+"/staff/" + id)
       })
       .do(x => {
         x.forEach(item => {
@@ -100,7 +100,7 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   getStaffName(key): string {
     this.staffName = "";
-    this.af.database.object("/userPublic/" + key)
+    this.af.database.object(Constants.APP_STATUS+"/userPublic/" + key)
       .subscribe(user => {
         this.staffName = user.firstName + " " + user.lastName;
       });
@@ -114,7 +114,7 @@ export class StaffComponent implements OnInit, OnDestroy {
     }
     Observable.from(skillIds)
       .flatMap(id => {
-        return this.af.database.object("/skill/" + id);
+        return this.af.database.object(Constants.APP_STATUS+"/skill/" + id);
       })
       .distinct()
       .subscribe(skill => {

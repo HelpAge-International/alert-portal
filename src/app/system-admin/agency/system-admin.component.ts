@@ -28,7 +28,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
       if (x) {
         this.uid = x.auth.uid;
         console.log("uid: " + this.uid);
-        this.agencies = this.af.database.list("/agency");
+        this.agencies = this.af.database.list(Constants.APP_STATUS+"/agency");
         // this.test();
       } else {
         this.navigateToLogin();
@@ -52,7 +52,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
     //   if (result) {
     //     let state:boolean = !agency.isActive;
     //     console.log(agency.isActive);
-    //     this.af.database.object("/agency/" + agency.$key + "/isActive").set(state);
+    //     this.af.database.object(Constants.APP_STATUS+"/agency/" + agency.$key + "/isActive").set(state);
     //   }
     // });
     // console.log("trigger dialog");
