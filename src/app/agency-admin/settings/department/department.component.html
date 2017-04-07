@@ -1,7 +1,4 @@
-<div class="Header_bar">
-  <div class="Header_bar__wrap--inner">
-  </div>
-</div>
+<app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -11,11 +8,11 @@
 
         <div class="Sub-header-title__wrap">
         <h2>Departments</h2>
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteDepartments($event)">Cancel</button> 
-            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting">Delete</button>  
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteDepartments($event)">Cancel</button>
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting">Delete</button>
 
-            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)" *ngIf="!deleting">Delete Departments</button> 
-            <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!deleting">Edit Departments</button>  
+            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)" *ngIf="!deleting">Delete Departments</button>
+            <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!deleting">Edit Departments</button>
         </div>
 
         <div class="Departments">
@@ -25,7 +22,7 @@
                     </label>
                     <ng-container *ngIf="!deleting">
                         {{department.$key}}
-                    </ng-container>                
+                    </ng-container>
             </div>
             <div class="row Add-new-department no-gutters">
                 <div class="col-md-4 col-8">

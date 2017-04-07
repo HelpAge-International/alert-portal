@@ -60,7 +60,7 @@ export class MpaComponent implements OnInit, OnDestroy {
     // this.dialogService.createDialog("Delete Action?",
     //   "Are you sure you want to delete this action? This action cannot be undone.").subscribe(result => {
     //   if (result) {
-    //     this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + "/" + actionKey).remove();
+    //     this.af.database.object("/action/" + this.uid + "/" + actionKey).remove();
     //   }
     // });
   }
