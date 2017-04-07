@@ -3,4 +3,38 @@
   </div>
 </div>
 <app-agency-admin-menu></app-agency-admin-menu>
-<p>department works</p>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+
+		<app-settings-menu></app-settings-menu>
+
+        <div class="Sub-header-title__wrap">
+        <h2>Departments</h2>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteDepartments($event)">Cancel</button> 
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting">Delete</button>  
+
+            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)" *ngIf="!deleting">Delete Departments</button> 
+            <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!deleting">Edit Departments</button>  
+        </div>
+
+        <div class="Departments">
+            <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of departments | async">
+                    <label for="{{department.$key}}" *ngIf="deleting">
+                        <input class="form-check-input" type="checkbox" id="{{department.$key}}" value="{{department.$key}}"> {{department.$key}}
+                    </label>
+                    <ng-container *ngIf="!deleting">
+                        {{department.$key}}
+                    </ng-container>                
+            </div>
+            <div class="row Add-new-department no-gutters">
+                <div class="col-md-4 col-8">
+                    <input type="text" class="form-control" placeholder="Add a new department" [(ngModel)]="departmentName" #ctrl="ngModel" required>
+                </div>
+                <div class="col-md-8 col-4">
+                    <button type="button" class="btn btn-outline-primary" (click)="addDepartment($event)" >Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

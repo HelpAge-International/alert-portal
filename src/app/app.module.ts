@@ -70,6 +70,7 @@ import {RxHelper} from './utils/RxHelper';
 import {ModalModule} from "angular2-modal";
 import {BootstrapModalModule} from "angular2-modal/plugins/bootstrap";
 import {Modal} from 'angular2-modal/plugins/bootstrap';
+import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -147,7 +148,8 @@ const firebaseAuthConfig = {
     AddGenericActionComponent,
     AgencyAccountSettingsComponent,
     AgencyAccountDetailsComponent,
-    AgencyChangePasswordComponent
+    AgencyChangePasswordComponent,
+    AgencyAdminSettingsResponsePlanComponent
   ],
   imports: [
     BrowserModule,
