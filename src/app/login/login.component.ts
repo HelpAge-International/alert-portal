@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl(Constants.APP_STATUS+"/agency-admin/country-office");
+                  this.router.navigateByUrl("/agency-admin/country-office");
                 }
               });
             });
@@ -94,6 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
   private showAlert(error: boolean) {
+    this.loaderInactive = true;
     if (error) {
       this.inactive = false;
       let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {

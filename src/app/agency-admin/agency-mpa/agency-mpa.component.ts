@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionLevel, ActionType} from "../../utils/Enums";
 import {Router} from "@angular/router";

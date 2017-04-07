@@ -7,11 +7,11 @@ export class Constants {
   static TEMP_PASSWORD = "testtest";
   static ALERT_DURATION: number = 5000;
   /*PATHS*/
-  static APP_STATUS = "/uat";
+  static APP_STATUS = "/test";
 
   static LOGIN_PATH = "/login";
   //system admin
-  static SYSTEM_ADMIN_UID = "hoXTsvefEranzaSQTWbkhpBenLn2";
+  static SYSTEM_ADMIN_UID = "JVkYvWmiWSayrBC7lcsTeSdcwhR2";
   static DEFAULT_MPA_PATH = "/system-admin/mpa";
   static SYSTEM_ADMIN_HOME = "/system-admin/agency";
   static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
