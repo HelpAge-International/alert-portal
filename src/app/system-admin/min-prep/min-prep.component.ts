@@ -54,16 +54,16 @@ export class MinPrepComponent implements OnInit, OnDestroy {
   }
 
   deleteChsMinPrepAction(chsMinPrepAction) {
-    // let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
-    //   if (result) {
-    //     console.log("Delete button pressed");
-    //     this.af.database.object(this.path + "/" + chsMinPrepAction.$key).remove()
-    //       .then(_ =>
-    //         console.log("Chs action deleted")
-    //       );
-    //   }
-    // });
-    // this.subscriptions.add(subscription);
+    let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
+      if (result) {
+        console.log("Delete button pressed");
+        this.af.database.object(this.path + "/" + chsMinPrepAction.$key).remove()
+          .then(_ =>
+            console.log("Chs action deleted")
+          );
+      }
+    });
+    this.subscriptions.add(subscription);
   }
 
   private navigateToLogin() {

@@ -17,6 +17,7 @@ declare var jQuery: any;
 export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private systemAdminUid: string;
 
   private errorInactive: boolean = true;
   private successInactive: boolean = true;
@@ -70,13 +71,17 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       if (user) {
         this.uid = user.auth.uid;
         this.departmentsPath = Constants.APP_STATUS+"/agency/" + this.uid + "/departments";
-        this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
-          query: {
-            orderByChild: "type",
-            equalTo: ActionType.mandated
-          }
+        let subscription = this.af.database.list(Constants.APP_STATUS+"/administratorAgency/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
+          this.systemAdminUid = systemAdminIds[0].$key;
+          this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
+            query: {
+              orderByChild: "type",
+              equalTo: ActionType.mandated
+            }
+          });
+          this.getDepartments();
         });
-        this.getDepartments();
+        this.subscriptions.add(subscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
@@ -158,7 +163,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //no filter. show all
       this.isFiltered = false;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
+      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.systemAdminUid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -167,7 +172,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     } else if (this.actionLevelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //filter only with mpa
       this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
+      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.systemAdminUid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -185,7 +190,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     } else if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
       //filter only with apa
       this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
+      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.systemAdminUid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -203,7 +208,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     } else {
       // filter both action level and category
       this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + Constants.SYSTEM_ADMIN_UID, {
+      this.genericActions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.systemAdminUid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated

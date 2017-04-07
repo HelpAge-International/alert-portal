@@ -94,6 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
   private showAlert(error: boolean) {
+    this.loaderInactive = true;
     if (error) {
       this.inactive = false;
       let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
