@@ -17,7 +17,7 @@
       You have not added any country offices to your agency
     </div>
 
-    <table *ngIf="(regions | async)?.length == 0" class="table Table__v-spacing__mid Agency-table">
+    <table [hidden]="(regions | async)?.length == 0" class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>Country</th>
         <th>Country Administrator</th>
@@ -49,7 +49,8 @@
         <div class="row align-items-center">
           <div class="col-md-4 col-lg-4 col-sm-4"><h4>{{region.name}}</h4></div>
           <div class="col-md-5 col-lg-5 col-sm-5"><strong>Regional director:</strong> Unassigned</div>
-          <div class="col-md-2 col-lg-2 col-sm-2"><a href="agency-admin__office__region--edit.html" (click)="editRegion(region)">Edit section</a>
+          <div class="col-md-2 col-lg-2 col-sm-2"><a href="agency-admin__office__region--edit.html"
+                                                     (click)="editRegion(region)">Edit section</a>
           </div>
           <div class="col-md-1 col-lg-1 col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"
                                                      (click)="hideCountryList(region)"></i></div>
@@ -82,6 +83,46 @@
         </tr>
       </table>
     </div>
-  </div>
 
-</div>
+    <div [hidden]="hideOtherTab || (regions|async)?.length == 0">
+      <div class="Accordion Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+           aria-controls="collapseOne">
+        <div class="row align-items-center">
+          <div class="col-md-4 col-lg-4 col-sm-4"><h4>Other Countries</h4></div>
+          <div class="col-md-5 col-lg-5 col-sm-5"></div>
+          <div class="col-md-2 col-lg-2 col-sm-2"></div>
+          <div class="col-md-1 col-lg-1 col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"
+                                                     (click)="hideCountryList(null)"></i></div>
+        </div>
+        <table [hidden]="hideOtherCountries" class="table Table__v-spacing__mid Agency-table">
+          <tr>
+            <th>Country</th>
+            <th>Country Administrator</th>
+            <th></th>
+            <th>Status</th>
+          </tr>
+          <tr *ngFor="let country of otherCountries">
+            <td>{{countryNames[country?.location] | translate}}</td>
+            <td>{{getAdminName(country?.$key)}}</td>
+            <td></td>
+            <td *ngIf="country?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
+            <td *ngIf="!country?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
+            <td>
+              <div *ngIf="!country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">{{"GLOBAL.ACTIVATE"
+                |
+                translate}}
+              </div>
+              <div *ngIf="country?.isActive" class="btn btn-danger" (click)="toggleActive(country)">
+                {{"GLOBAL.DEACTIVATE"
+                |
+                translate}}
+              </div>
+              <div class="btn btn-primary" (click)="editCountry(country)">{{"GLOBAL.EDIT" | translate}}</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+
+  </div>

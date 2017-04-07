@@ -13,6 +13,7 @@ import {PersonTitle, Country} from "../../utils/Enums";
 import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
+import {UUID} from "../../utils/UUID";
 
 @Component({
   selector: 'app-add-agency',
@@ -20,7 +21,7 @@ import {Observable} from "rxjs";
   styleUrls: ['./add-agency.component.css']
 })
 
-export class AddAgencyComponent implements OnInit,OnDestroy {
+export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private errorMessage: string;
   private inactive: boolean = true;
@@ -61,7 +62,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.systemAdminUid = user.auth.uid;
-        this.secondApp = firebase.initializeApp(firebaseConfig, "second");
+        this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
         this.inactive = true;
         let subscription = this.route.params
           .subscribe((params: Params) => {
@@ -231,18 +232,18 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
     })
       .take(1)
       .subscribe(agencyList => {
-      if (agencyList.length == 0) {
-        if (this.isEdit) {
-          this.updateToFirebase();
+        if (agencyList.length == 0) {
+          if (this.isEdit) {
+            this.updateToFirebase();
+          } else {
+            console.log("create new user");
+            this.createNewUser();
+          }
         } else {
-          console.log("create new user");
-          this.createNewUser();
+          this.errorMessage = "SYSTEM_ADMIN.AGENCIES.NAME_DUPLICATE";
+          this.showAlert();
         }
-      } else {
-        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.NAME_DUPLICATE";
-        this.showAlert();
-      }
-    });
+      });
     this.rxhelper.add(subscription);
   }
 
@@ -254,6 +255,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       console.log("user " + success.uid + " created successfully");
       let uid: string = success.uid;
       this.writeToFirebase(uid);
+      // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
       this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
@@ -283,12 +285,14 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/administratorAgency/" + this.adminId] = null;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+      agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
 
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
+      agencyData["/group/systemadmin/allusersgroup/" + uid] = true;
       let agency = new ModelAgency(this.agencyName);
       agency.isDonor = this.isDonor;
       agency.isActive = true;
@@ -322,6 +326,7 @@ export class AddAgencyComponent implements OnInit,OnDestroy {
           this.deleteAgency["/userPublic/" + this.adminId] = null;
           this.deleteAgency["/administratorAgency/" + this.adminId] = null;
           this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+          this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
           this.deleteAgency["/agency/" + this.agencyId] = null;
           this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
           this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {

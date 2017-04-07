@@ -10,12 +10,10 @@ import {DialogService} from "../../dialog/dialog.service";
   templateUrl: 'global-networks.component.html',
   styleUrls: ['global-networks.component.css']
 })
-export class GlobalNetworksComponent implements OnInit,OnDestroy {
-  subscriptions: RxHelper;
+export class GlobalNetworksComponent implements OnInit, OnDestroy {
   networks: FirebaseListObservable<any[]>;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -64,8 +62,7 @@ export class GlobalNetworksComponent implements OnInit,OnDestroy {
   }
 
   edit(network) {
-    console.log(network.$key)
-    this.router.navigate([Constants.SYSTEM_ADMIN_ADD_NETWORK, {id: network.$key}])
+    this.router.navigate([Constants.SYSTEM_ADMIN_ADD_NETWORK, {id: network.$key}], {skipLocationChange: true});
   }
 
 }

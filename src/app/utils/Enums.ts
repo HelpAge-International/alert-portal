@@ -53,3 +53,38 @@ export enum Currency {
   EUR = 1,
   USD = 2
 }
+
+export enum StaffPosition {
+  OfficeDirector = 0,
+  OfficeStarff = 1
+}
+
+export enum UserType {
+  GlobalDirector = 0,
+  RegionalDirector = 1,
+  CountryDirector = 2,
+  ErtLeader = 3,
+  Ert = 4,
+  Donor = 5,
+  GlobalUser = 6,
+  CountryAdmin = 7
+}
+
+export enum OfficeType {
+  FieldOffice = 0,
+  LabOffice = 1
+}
+
+export enum SkillType {
+  Support = 0,
+  Tech = 1
+}
+
+export enum NotificationSettingEvents {
+  AlertLevelChanged = 0,
+  RedAlertRequest = 1,
+  UpdateHazard = 2,
+  ActionExpired = 3,
+  PlanExpired = 4,
+  PlanRejected = 5
+}

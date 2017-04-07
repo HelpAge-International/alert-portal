@@ -21,6 +21,11 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private regionCountries: any = [];
   private tempCountryIdList: string[] = [];
   private showRegionMap = new Map();
+  private hideOtherTab: boolean = true;
+  private countriesWithRegion: string [];
+  private allCountries: string[];
+  private otherCountries: any = [];
+  private hideOtherCountries: boolean;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
@@ -42,7 +47,66 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
           });
         });
       this.subscriptions.add(subscription);
+      this.checkAnyCountryNoRegion();
     });
+  }
+
+  private checkAnyCountryNoRegion() {
+    this.countriesWithRegion = [];
+    this.allCountries = [];
+    this.otherCountries = [];
+    let subscription = this.regions
+      .map(regions => {
+        let countries = new Set();
+        regions.forEach(region => {
+          Object.keys(region.countries).forEach(countryId => {
+            countries.add(countryId);
+          });
+        });
+        return Array.from(countries);
+      })
+      .first()
+      .subscribe(result => {
+        console.log(result);
+        this.countriesWithRegion = result;
+        let subscription = this.countries
+          .map(list => {
+            let countryids = [];
+            list.forEach(country => {
+              countryids.push(country.$key);
+            });
+            return countryids;
+          })
+          .first()
+          .subscribe(result => {
+            console.log(result);
+            this.allCountries = result;
+            let diff = this.allCountries.filter(x => {
+              return !this.countriesWithRegion.includes(x);
+            });
+            if (diff.length > 0) {
+              this.hideOtherTab = false;
+              this.retrieveOtherCountries(diff);
+            }
+          });
+        this.subscriptions.add(subscription);
+      });
+    this.subscriptions.add(subscription);
+
+
+  }
+
+  private retrieveOtherCountries(diff: string[]) {
+    console.log("do have other countries, fetch data!");
+    let subscription = Observable.from(diff)
+      .flatMap(id => {
+        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + id);
+      })
+      .subscribe(result => {
+        console.log(result);
+        this.otherCountries.push(result);
+      });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -65,6 +129,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         if (!result) {
           return;
         }
+        this.otherCountries = [];
         this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + country.$key + "/isActive").set(state);
       });
     this.subscriptions.add(subscription);
@@ -118,11 +183,15 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   hideCountryList(region) {
-    this.showRegionMap.set(region.$key, !this.showRegionMap.get(region.$key));
+    if (region) {
+      this.showRegionMap.set(region.$key, !this.showRegionMap.get(region.$key));
+    } else {
+      this.hideOtherCountries = !this.hideOtherCountries;
+    }
   }
 
   editRegion(region) {
-    this.router.navigate(['/agency-admin/country-office/create-edit-region', {id: region.$key}], {skipLocationChange:true});
+    this.router.navigate(['/agency-admin/country-office/create-edit-region', {id: region.$key}], {skipLocationChange: true});
   }
 
 }
