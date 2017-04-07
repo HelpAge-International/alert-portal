@@ -14,11 +14,12 @@ import Promise = firebase.Promise;
 })
 export class DepartmentComponent implements OnInit, OnDestroy {
 
-  private uid: string = "bl9h4IN9QBhHwfsGuoHzrxtvSmz2";//TODO remove hard coded agency ID
+  private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
   private departments: FirebaseListObservable<any>;
   private subscriptions: RxHelper;
   private deleting: boolean = false;
   private departmentName: string = "";
+  private deleteCandidates: any = {};
 
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
@@ -55,13 +56,30 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   	this.deleting = !this.deleting;	
   }
 
+  deleteSelectedDepartments(event){
+  	console.log("delete selected");
+
+  	for(var item in this.deleteCandidates)
+  		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item).remove();
+  }
+
+  onDepartmentSelected(department){
+  	if (department.$key in this.deleteCandidates)
+    	delete this.deleteCandidates[department.$key];
+	else
+		this.deleteCandidates[department.$key] = true;
+  		
+	
+	console.log(this.deleteCandidates);
+  }
+
   addDepartment(event) {
   	console.log(this.departmentName);
-  	let department = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
+  	let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
 
 	var newDepartment = {};
   	newDepartment[this.departmentName] = true;
-  	department.update(newDepartment);
+  	departments.update(newDepartment);
 
   	this.departmentName = "";
   }

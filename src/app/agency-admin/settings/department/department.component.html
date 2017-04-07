@@ -12,7 +12,7 @@
         <div class="Sub-header-title__wrap">
         <h2>Departments</h2>
             <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteDepartments($event)">Cancel</button> 
-            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting">Delete</button>  
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedDepartments($event)">Delete</button>  
 
             <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)" *ngIf="!deleting">Delete Departments</button> 
             <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!deleting">Edit Departments</button>  
@@ -21,7 +21,7 @@
         <div class="Departments">
             <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of departments | async">
                     <label for="{{department.$key}}" *ngIf="deleting">
-                        <input class="form-check-input" type="checkbox" id="{{department.$key}}" value="{{department.$key}}"> {{department.$key}}
+                        <input class="form-check-input" type="checkbox" id="{{department.$key}}" value="{{department.$key}}" (change)="onDepartmentSelected(department)"> {{department.$key}}
                     </label>
                     <ng-container *ngIf="!deleting">
                         {{department.$key}}
