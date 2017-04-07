@@ -26,7 +26,7 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     this.subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).subscribe(user => {
+        this.af.database.object("/userPublic/" + this.uid).subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });

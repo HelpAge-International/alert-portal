@@ -27,7 +27,7 @@ export class MinPrepComponent implements OnInit, OnDestroy {
 
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
+        this.path = "/action/" + auth.uid;
         this.chsMinPrepActions = this.af.database.list(this.path, {
           query: {
             orderByChild: 'type',

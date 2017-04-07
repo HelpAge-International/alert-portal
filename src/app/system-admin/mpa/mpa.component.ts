@@ -38,7 +38,7 @@ export class MpaComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        this.actions = this.af.database.list("/action/" + this.uid, {
           query: {
             orderByChild: "type",
             equalTo: ActionType.mandated
@@ -75,7 +75,7 @@ export class MpaComponent implements OnInit, OnDestroy {
       //no filter. show all
       this.isFiltered = false;
       console.log("show all results");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list("/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -85,7 +85,7 @@ export class MpaComponent implements OnInit, OnDestroy {
       //filter only with mpa
       this.isFiltered = true;
       console.log("show filter level");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list("/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -105,7 +105,7 @@ export class MpaComponent implements OnInit, OnDestroy {
       //filter only with apa
       this.isFiltered = true;
       console.log("show filter category");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list("/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -124,7 +124,7 @@ export class MpaComponent implements OnInit, OnDestroy {
       // filter both action level and category
       this.isFiltered = true;
       console.log("show both filtered");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list("/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated

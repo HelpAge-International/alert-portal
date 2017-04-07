@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           method: AuthMethods.Password,
         })
         .then((success) => {
-          this.af.database.list(Constants.APP_STATUS + '/systemAdmin', {preserveSnapshot: true})
+          this.af.database.list('/systemAdmin', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
+          this.af.database.list('/administratorAgency', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
@@ -81,7 +81,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
+          this.af.database.list('/administratorCountry', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {

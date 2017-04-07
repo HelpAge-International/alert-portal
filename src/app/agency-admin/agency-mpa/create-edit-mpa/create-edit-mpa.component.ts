@@ -45,8 +45,8 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       if (auth) {
 
         this.uid = auth.uid;
-        this.path = Constants.APP_STATUS + '/action/' + this.uid;
-        this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
+        this.path = '/action/' + this.uid;
+        this.departmentsPath = "/agency/" + this.uid + "/departments";
         console.log("uid: " + auth.uid);
         this.getDepartments();
       } else {
@@ -173,7 +173,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private getDepartments() {
 
-    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments/")
+    this.departments = this.af.database.list("/agency/" + this.uid + "/departments/")
       .map(list => {
         let tempList = [];
         for (let item of list) {

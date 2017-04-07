@@ -28,7 +28,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
       if (x) {
         this.uid = x.auth.uid;
         console.log("uid: " + this.uid);
-        this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
+        this.agencies = this.af.database.list("/agency");
         // this.test();
       } else {
         this.navigateToLogin();

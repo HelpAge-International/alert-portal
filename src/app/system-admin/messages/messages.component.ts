@@ -29,7 +29,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
       if (auth) {
         this.uid = auth.uid;
 
-        let subscription = this.af.database.list(Constants.APP_STATUS + '/systemAdmin/' + this.uid + '/sentmessages')
+        let subscription = this.af.database.list('/systemAdmin/' + this.uid + '/sentmessages')
           .flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
@@ -39,7 +39,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
             return Observable.from(tempList)
           })
           .flatMap(item => {
-            return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
+            return this.af.database.object('/message/' + item.$key)
           })
           .distinctUntilChanged()
           .subscribe(x => {
@@ -72,9 +72,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + key] = null;
         this.msgData['/message/' + key] = null;
 
-        let allUsersGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allusersgroup';
-        let allAgencyAdminsGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allagencyadminsgroup';
-        let allCountryAdminsGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allcountryadminsgroup';
+        let allUsersGroupPath: string = '/group/systemadmin/allusersgroup';
+        let allAgencyAdminsGroupPath: string = '/group/systemadmin/allagencyadminsgroup';
+        let allCountryAdminsGroupPath: string = '/group/systemadmin/allcountryadminsgroup';
 
         let allUsersMsgRefPath: string = '/messageRef/systemadmin/allusersgroup/';
         let allAgencyAdminsMsgRef: string = '/messageRef/systemadmin/allagencyadminsgroup/';
@@ -101,7 +101,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     })
                   })
                   .subscribe(() => {
-                    this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+                    this.af.database.object("/").update(this.msgData).then(_ => {
                       console.log('Message Ref successfully deleted from all nodes');
                     })
                   })
