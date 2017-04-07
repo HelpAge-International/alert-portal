@@ -5,35 +5,27 @@ import {Constants} from "../utils/Constants";
 import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-
 export class LoginComponent implements OnInit, OnDestroy {
-
   private inactive: Boolean = true;
   private errorMessage: string;
   private successInactive: Boolean = true;
   private successMessage: string;
-  private loaderInactive: Boolean = true;
   private alerts = {};
   private emailEntered: string;
   private subscriptions: RxHelper;
-
   private localUser = {
     userEmail: '',
     password: ''
   };
-
   constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper();
   }
-
   ngOnInit() {
-
     let subscription = this.route.params
       .subscribe((params: Params) => {
         if (params["emailEntered"]) {
@@ -45,16 +37,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(subscription);
   }
-
   ngOnDestroy() {
-    this.loaderInactive = true;
     this.subscriptions.releaseAll();
   }
-
   onSubmit() {
-    this.loaderInactive = false;
     this.successInactive = true;
-
     if (this.validate()) {
       this.af.auth.login({
           email: this.localUser.userEmail,
@@ -65,15 +52,15 @@ export class LoginComponent implements OnInit, OnDestroy {
           method: AuthMethods.Password,
         })
         .then((success) => {
-          this.af.database.list(Constants.APP_STATUS + '/systemAdmin', {preserveSnapshot: true})
-            .subscribe(snapshots => {
+          this.af.database.list('/systemAdmin', {preserveSnapshot: true})
+              .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
+          this.af.database.list('/administratorAgency', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
@@ -81,7 +68,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
+          this.af.database.list('/administratorCountry', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
@@ -99,11 +86,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     } else {
       this.showAlert(true);
     }
-
   }
-
   private showAlert(error: boolean) {
-
     if (error) {
       this.inactive = false;
       let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
@@ -118,7 +102,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     }
   }
-
   /**
    * Returns false and specific error messages-
    * if no input is entered,
@@ -127,7 +110,6 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @returns {boolean}
    */
   validate() {
-
     if ((!(this.localUser.userEmail)) && (!(this.localUser.password))) {
       this.alerts[this.localUser.userEmail] = true;
       this.alerts[this.localUser.password] = true;
@@ -147,7 +129,5 @@ export class LoginComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
-
   }
-
 }
