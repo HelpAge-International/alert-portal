@@ -2,13 +2,15 @@
  * Created by Fei on 21/03/2017.
  */
 export class ModelStaff {
-  public id:string;
+  public id: string;
   public userType: number;
-  public countryOffice: number;
+  public region: string;
+  public countryOffice: string;
+  public department: string;
   public position: number;
   public officeType: number;
-  public skills: any[];
-  public trainingNeeds: string
-  public notifications: number[];
-  public isResponseMember:boolean;
+  public skill: string[] =[];
+  public training: string
+  public notifications: string[] =[];
+  public isResponseMember: boolean;
 }

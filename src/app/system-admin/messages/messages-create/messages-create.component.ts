@@ -69,7 +69,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
     this.currentDateTimeInMilliseconds = new Date().getTime();
 
     let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
-    let messagePath = Constants.APP_STATUS + '/message';
+    let messagePath = Constants.APP_STATUS+'/message';
 
     this.af.database.list(messagePath).push(newMessage)
       .then(msgId => {
@@ -83,7 +83,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
 
   private addMsgToMessageRef(key: string) {
 
-    let systemAdminGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/';
+    let systemAdminGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/';
     let systemAdminMessageRefPath: string = '/messageRef/systemadmin/';
 
     if (this.allUsersSelected) {

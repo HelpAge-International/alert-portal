@@ -14,7 +14,9 @@ import {Observable} from "rxjs";
 })
 
 export class MpaComponent implements OnInit, OnDestroy {
+
   private uid: string;
+  private isFiltered: boolean = false;
   actions: Observable<any>;
   ActionType = ActionType;
   GenericActionCategory = GenericActionCategory;
@@ -36,7 +38,7 @@ export class MpaComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+        this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
           query: {
             orderByChild: "type",
             equalTo: ActionType.mandated
@@ -54,13 +56,13 @@ export class MpaComponent implements OnInit, OnDestroy {
   }
 
   deleteAction(actionKey) {
-    // console.log("action key: " + actionKey);
-    // this.dialogService.createDialog("Delete Action?",
-    //   "Are you sure you want to delete this action? This action cannot be undone.").subscribe(result => {
-    //   if (result) {
-    //     this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + "/" + actionKey).remove();
-    //   }
-    // });
+    console.log("action key: " + actionKey);
+    this.dialogService.createDialog("Delete Action?",
+      "Are you sure you want to delete this action? This action cannot be undone.").subscribe(result => {
+      if (result) {
+        this.af.database.object(Constants.APP_STATUS+"/action/" + this.uid + "/" + actionKey).remove();
+      }
+    });
   }
 
   edit(actionKey) {
@@ -71,8 +73,9 @@ export class MpaComponent implements OnInit, OnDestroy {
   filterData() {
     if (this.levelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //no filter. show all
+      this.isFiltered = false;
       console.log("show all results");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -80,8 +83,9 @@ export class MpaComponent implements OnInit, OnDestroy {
       });
     } else if (this.levelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
       //filter only with mpa
+      this.isFiltered = true;
       console.log("show filter level");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -99,8 +103,9 @@ export class MpaComponent implements OnInit, OnDestroy {
         });
     } else if (this.levelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
       //filter only with apa
+      this.isFiltered = true;
       console.log("show filter category");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -117,8 +122,9 @@ export class MpaComponent implements OnInit, OnDestroy {
         });
     } else {
       // filter both action level and category
+      this.isFiltered = true;
       console.log("show both filtered");
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated

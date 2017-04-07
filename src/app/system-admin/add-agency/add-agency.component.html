@@ -142,8 +142,8 @@
     </div>
 
     <div class="Form-submit__wrapper">
-      <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.AGENCIES.EDIT_AGENCY" |
-        translate}}
+      <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" |
+        translate | uppercase}}
       </button>
       <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.AGENCIES.SAVE_NEW_AGENCY" | translate | uppercase}}
       </button>

@@ -30,7 +30,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         // this.uid = auth.uid; //TODO remove comment
-        this.departments = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
+        this.departments = this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/departments');
 
       } else {
         // user is not logged in
@@ -41,7 +41,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    
+
   }
 
   private navigateToLogin() {
@@ -53,7 +53,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   cancelDeleteDepartments(event){
-  	this.deleting = !this.deleting;	
+  	this.deleting = !this.deleting;
   }
 
   deleteSelectedDepartments(event){

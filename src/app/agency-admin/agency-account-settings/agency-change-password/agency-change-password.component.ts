@@ -24,10 +24,8 @@ export class AgencyChangePasswordComponent implements OnInit, OnDestroy {
   private currentPasswordEntered: string;
   private newPasswordEntered: string;
   private confirmPasswordEntered: string;
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {

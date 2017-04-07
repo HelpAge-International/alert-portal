@@ -5,11 +5,10 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1>{{"AGENCY_MANDATED_PA.TITLE_TEXT"| translate}}</h1>
-      <a class="btn btn-outline-primary" (click)="lookUpGenericActionsPressed()">Lookup generic actions
-      </a>
-      <a routerLink="/agency-admin/agency-mpa/create-edit-mpa" class="btn btn-primary">{{"AGENCY_MANDATED_PA.CREATE_NEW_ACTION"|
-        translate}}</a>
+      <h1>{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT"| translate}}</h1>
+      <a class="btn btn-outline-primary" (click)="lookUpGenericActionsPressed()">{{"AGENCY_ADMIN.MANDATED_PA.LOOK_UP_ACTIONS"| translate | uppercase}}</a>
+      <a routerLink="/agency-admin/agency-mpa/create-edit-mpa" class="btn btn-primary">{{"AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_ACTION"|
+        translate | uppercase}}</a>
     </div>
 
     <div class="Filter-system__wrap row">
@@ -23,22 +22,21 @@
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
         <select class="form-control" [(ngModel)]="departmentSelected" (change)="filter()">
-          <option>All departments</option>
+          <option class="selected">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
           <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}</option>
         </select>
       </div>
     </div>
 
-    <div *ngIf="(actions | async)?.length == 0" class="Empty--ribbon">No mandated preparedness actions have been added
-      to Alert
-    </div>
+    <div *ngIf="(actions | async)?.length == 0 && !isFiltered" class="Empty--ribbon">{{"AGENCY_ADMIN.MANDATED_PA.NO_ACTIONS" | translate}}</div>
+    <div *ngIf="(actions | async)?.length == 0 && isFiltered" class="Empty--ribbon">{{"GLOBAL.NO_FILTERED_RESULTS" | translate}}</div>
 
     <div class="Data--ribbon" *ngFor="let action of actions | async">
       <div class="col-sm-9 ">
         <p>{{action.task}}</p>
         <div class="Info--ribbon--wrap">
           <div class="col-sm-4">{{"GLOBAL.TYPE"| translate}}<b>Mandated</b></div>
-          <div class="col-sm-5">{{"AGENCY_MANDATED_PA.DEPARTMENT"| translate}} <b>{{action.department}}</b>
+          <div class="col-sm-5">{{"GLOBAL.DEPARTMENT:"| translate}} <b>{{action.department}}</b>
           </div>
         </div>
       </div>

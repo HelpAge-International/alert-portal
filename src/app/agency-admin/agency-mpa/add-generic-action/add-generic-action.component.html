@@ -1,24 +1,25 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<div class="Alert-error" [hidden]="errorInactive">
+  {{errorMessage | translate}}
+</div>
+
 <div class="Alert-success" [hidden]="successInactive">
   {{successMessage | translate}}
 </div>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/agency-admin/agency-mpa">Mandated preparedness actions</div>
+    <div class="Back--button" routerLink="/agency-admin/agency-mpa">{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>Add generic preparedness actions</h1>
-      <!--<button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}-->
-      <!--</button>-->
-      <button type="button" class="btn btn-primary" id="add-action-btn">ADD NEW ACTION(S)</button>
-      <button type="button" class="btn btn-primary btn-ghost" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
+      <button type="button" class="btn btn-primary disabled" id="add-action-btn" (click)="addSelectedActionsToAgency()">{{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate | uppercase}}</button>
+      <!--<button type="button" class="btn btn-primary btn-ghost" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>-->
+      <button type="button" class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
     <div class="row align-items-center Filter-form System-admin--form-wrap">
-      <div class="col-lg-1 col-md-1 col-sm-1">
-        Filter:
-      </div>
+      <div class="col-lg-1 col-md-1 col-sm-1">{{"GLOBAL.FILTER" | translate}}</div>
       <div class="col-lg-3 col-md-4 col-sm-5">
         <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="filter()">
           <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
@@ -31,33 +32,33 @@
       </div>
     </div>
 
-    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0" >No generic preparedness actions have been added
-      to Alert
-    </div>
+    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && !isFiltered">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</div>
+    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && isFiltered">{{"GLOBAL.NO_FILTERED_RESULTS" | translate}}</div>
 
     <div class="Data--ribbon row no-gutters Generic-action-item" *ngFor="let genericAction of genericActions | async">
       <div class="col-md-1 col-sm-1 col-1 text-center">
-        <input type="checkbox" class="form-check-input" name="gpa_action" id="gpa_action_1" value="" [(ngModel)]="actionSelected" (change)="updateSelectedActions(genericAction)">
+        <input type="checkbox" class="form-check-input" name="gpa_action" value="" [(ngModel)]="actionSelected" (change)="updateSelectedActions(genericAction)" onclick="gpaActionChanged(this)">
       </div>
       <div class="col-md-11 col-sm-11 col-11">
         <div class="col-sm-12">
-          <label for="gpa_action_1" class="form-check-label"><p>{{genericAction.task}}</p>
+          <label class="form-check-label"><p>{{genericAction.task}}</p>
           </label>
         </div>
         <div class="Info--ribbon--wrap">
-          <div class="col-md-4 col-sm-3 col-4">Category: <b>{{GenericActionCategory[genericAction.category]}}</b></div>
-          <div class="col-md-6 col-sm-9 col-8 gpa_action_department" id="gpa_action_1_department">
-            Department:
-            <select name="gpa_action_select" class="form-control form-control-sm" id="gpa_action_1_select"
-                    onChange="addDepartmentModal(this, '#add_department')" [(ngModel)]="departmentSelected" (change)="checkSelectedDepartment()">
-              <option selected hidden disabled>Please select</option>
-              <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}</option>
-              <option class="add-department">+ Add a department</option>
+          <div class="col-md-4 col-sm-3 col-4">{{"GLOBAL.CATEGORY:" | translate}}<b>{{GenericActionCategory[genericAction.category]}}</b></div>
+
+          <div class="col-md-6 col-sm-9 col-8 gpa_action_department"  [ngClass]="{'has-danger': alerts[departmentSelected]}">{{"GLOBAL.DEPARTMENT:" | translate}}
+            <select class="form-control form-control-sm" onChange="addDepartmentModal(this, '#add_department')" value="departmentSelected" (change)="checkSelectedDepartment()">
+              <!--<option selected hidden disabled>Please select</option>-->
+              <option *ngFor="let department of departments | async" value="department">{{department.toString()}}</option>
+              <option class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_A_DEPARTMENT" | translate}}</option>
             </select>
           </div>
+
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -68,20 +69,20 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>Add new department</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.MANDATED_PA.ADD_DEPARTMENT_TITLE" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="form-group" [ngClass]="{'has-danger': alerts[newDepartment]}">
-          <label>Department Name</label>
-          <input type="text" class="form-control" id="Department-Name" placeholder="Please enter" [(ngModel)]="newDepartment">
+          <label>{{"AGENCY_ADMIN.MANDATED_PA.DEPARTMENT_NAME" | translate}}</label>
+          <input type="text" class="form-control" id="Department-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" [(ngModel)]="newDepartment">
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="addNewDepartment()">SAVE</button>
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addNewDepartment()">{{"GLOBAL.SAVE" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
       </div>
     </div>
   </div>

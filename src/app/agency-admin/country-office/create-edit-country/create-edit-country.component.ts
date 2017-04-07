@@ -73,8 +73,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private loadCountryInfo(countryOfficeId: string) {
     console.log("edit: " + countryOfficeId);
-    // this.af.database.object(Constants.APP_STATUS+"/countryOffice/"+this.uid+"/"+countryOfficeId+"/adminId")
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + countryOfficeId)
       .do(result => {
         console.log(result);
         this.countryOfficeLocation = result.location;
@@ -82,7 +81,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
         this.tempAdminId = result.adminId;
       })
       .flatMap(result => {
-        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + result.adminId)
+        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + result.adminId)
       })
       .subscribe(user => {
         console.log(user);
@@ -199,25 +198,27 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private validateLocation() {
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
+    let subscription = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid, {
       query: {
         orderByChild: "location",
         equalTo: this.countryOfficeLocation
       }
-    }).subscribe(result => {
-      if (result.length != 0) {
-        this.hideWarning = false;
-        this.waringMessage = "ERROR.COUNTRY_DUPLICATE";
-        return;
-      }
-      if (this.isEdit && this.isUserChange) {
-        this.createNewUser();
-      } else if (this.isEdit) {
-        this.updateFirebase(this.countryOfficeId);
-      } else {
-        this.createNewUser();
-      }
-    });
+    })
+      .take(1)
+      .subscribe(result => {
+        if (result.length != 0) {
+          this.hideWarning = false;
+          this.waringMessage = "ERROR.COUNTRY_DUPLICATE";
+          return;
+        }
+        if (this.isEdit && this.isUserChange) {
+          this.createNewUser();
+        } else if (this.isEdit) {
+          this.updateFirebase(this.countryOfficeId);
+        } else {
+          this.createNewUser();
+        }
+      });
     this.subscriptions.add(subscription);
   }
 
@@ -287,27 +288,27 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private updateData(countryId: string) {
     this.countryData = {};
 
-    this.countryData["/userPublic/" + countryId + "/firstName"] = this.countryAdminFirstName;
-    this.countryData["/userPublic/" + countryId + "/lastName"] = this.countryAdminLastName;
-    this.countryData["/userPublic/" + countryId + "/title"] = this.countryAdminTitle;
-    this.countryData["/userPublic/" + countryId + "/email"] = this.countryAdminEmail;
-    this.countryData["/userPublic/" + countryId + "/addressLine1"] = this.countryAdminAddress1;
-    this.countryData["/userPublic/" + countryId + "/addressLine2"] = this.countryAdminAddress2;
-    this.countryData["/userPublic/" + countryId + "/addressLine3"] = this.countryAdminAddress3;
-    this.countryData["/userPublic/" + countryId + "/country"] = this.countryAdminCountry;
-    this.countryData["/userPublic/" + countryId + "/city"] = this.countryAdminCity;
-    this.countryData["/userPublic/" + countryId + "/postCode"] = this.countryAdminPostcode;
+    this.countryData["/userPublic/" + countryId + "/firstName/"] = this.countryAdminFirstName;
+    this.countryData["/userPublic/" + countryId + "/lastName/"] = this.countryAdminLastName;
+    this.countryData["/userPublic/" + countryId + "/title/"] = this.countryAdminTitle;
+    this.countryData["/userPublic/" + countryId + "/email/"] = this.countryAdminEmail;
+    this.countryData["/userPublic/" + countryId + "/addressLine1/"] = this.countryAdminAddress1;
+    this.countryData["/userPublic/" + countryId + "/addressLine2/"] = this.countryAdminAddress2;
+    this.countryData["/userPublic/" + countryId + "/addressLine3/"] = this.countryAdminAddress3;
+    this.countryData["/userPublic/" + countryId + "/country/"] = this.countryAdminCountry;
+    this.countryData["/userPublic/" + countryId + "/city/"] = this.countryAdminCity;
+    this.countryData["/userPublic/" + countryId + "/postCode/"] = this.countryAdminPostcode;
 
 
     this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
-    this.countryData["/administratorCountry/" + countryId + "/countryId"] = countryId;
+    this.countryData["/administratorCountry/" + countryId + "/countryId/"] = countryId;
 
     this.countryData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
     this.countryData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
 
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/adminId"] = countryId;
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/location"] = this.countryOfficeLocation;
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/isActive"] = true;
+    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/adminId/"] = countryId;
+    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/location/"] = this.countryOfficeLocation;
+    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/isActive/"] = true;
 
     this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
       this.backHome();

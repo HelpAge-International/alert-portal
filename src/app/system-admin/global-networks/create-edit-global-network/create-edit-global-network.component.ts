@@ -9,6 +9,7 @@ import {firebaseConfig} from "../../../app.module";
 import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelNetwork} from "../../../model/network.model";
+import {UUID} from "../../../utils/UUID";
 
 @Component({
   selector: 'app-create-edit-global-network',
@@ -16,7 +17,6 @@ import {ModelNetwork} from "../../../model/network.model";
   styleUrls: ['create-edit-global-network.component.css']
 })
 export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
-  subscriptions: RxHelper;
 
   waringMessage: string;
   hideWarning: boolean = true;
@@ -46,9 +46,11 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private preNetworkName: string;
   private preEmail: string;
   private adminId: string;
+  private isUserExist: boolean;
+  private isAdminExist: boolean;
+  private uidUserExist: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -58,7 +60,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         return;
       }
       this.uid = user.auth.uid;
-      this.secondApp = firebase.initializeApp(firebaseConfig, "third");
+      this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       let subscription = this.route.params.subscribe((params: Params) => {
         console.log("load: " + params["id"]);
         if (params["id"]) {
@@ -73,12 +75,12 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private loadNetworkInfo(networkId) {
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/network/" + networkId)
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/network/" + networkId)
       .flatMap(network => {
         this.preNetworkName = network.name;
         this.networkName = network.name;
         this.adminId = network.adminId;
-        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + network.adminId)
+        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + network.adminId)
       })
       .subscribe(user => {
         //create model for later use
@@ -120,6 +122,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
   submit() {
     console.log("submit");
+    this.refreshData();
     if (!CustomerValidator.EmailValidator(this.adminEmail)) {
       this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
@@ -134,7 +137,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private validateNetworkName() {
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/network", {
+    let subscription = this.af.database.list(Constants.APP_STATUS+"/network", {
       query: {
         orderByChild: "name",
         equalTo: this.networkName
@@ -166,9 +169,60 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       this.secondApp.auth().signOut();
     }, error => {
       console.log(error.message);
+      if (error.message.includes("The email address is already in use by another account")) {
+        console.log("need to find email id");
+        this.findUidForExistingEmail(this.adminEmail);
+        return;
+      }
+
       this.waringMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
     });
+  }
+
+  private findUidForExistingEmail(adminEmail: string) {
+    this.af.database.list(Constants.APP_STATUS+"/userPublic/", {
+      query: {
+        orderByChild: "email",
+        equalTo: adminEmail,
+        limitToFirst: 1
+      }
+    })
+      .do(users => {
+        if (users.length > 0) {
+          this.isUserExist = true;
+          this.uidUserExist = users[0].$key;
+        }
+      })
+      .flatMap(users => {
+        return this.af.database.list(Constants.APP_STATUS+"/adminNetwork/", {
+          query: {
+            orderByKey: true,
+            equalTo: users[0].$key
+          }
+        });
+      })
+      .do(admins => {
+        if (admins.length > 0) {
+          this.isAdminExist = true;
+        }
+      })
+      .first()
+      .subscribe(() => {
+        if (this.isUserExist && !this.isAdminExist) {
+          console.log("user exist but not network admin, proceed to update database");
+          this.updateFirebase(this.uidUserExist);
+          return;
+        }
+        this.waringMessage = "GLOBAL.GENERAL_ERROR";
+        this.showAlert();
+
+        // if (users.length > 0) {
+        //   this.isUserExist = true;
+        //   console.log("found key: "+users[0].$key);
+        //   this.updateFirebase(users[0].$key);
+        // }
+      });
   }
 
   validate() {
@@ -209,17 +263,20 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private updateFirebase(uid: string) {
     let networkData = {};
 
-    //userPublic node
-    let newNetworkAdmin = new ModelUserPublic(this.adminFirstName, this.adminLastName,
-      this.adminTitle, this.adminEmail);
-    newNetworkAdmin.addressLine1 = this.adminAddressLine1 ? this.adminAddressLine1 : "";
-    newNetworkAdmin.addressLine2 = this.adminAddressLine2 ? this.adminAddressLine2 : "";
-    newNetworkAdmin.addressLine3 = this.adminAddressLine3 ? this.adminAddressLine3 : "";
-    newNetworkAdmin.city = this.adminCity ? this.adminCity : "";
-    newNetworkAdmin.country = this.adminCountry ? this.adminCountry : -1;
-    newNetworkAdmin.postCode = this.adminPostcode ? this.adminPostcode : "";
-    newNetworkAdmin.phone = "";
-    networkData["/userPublic/" + uid] = newNetworkAdmin;
+    if (!this.isUserExist) {
+      //userPublic node
+      let newNetworkAdmin = new ModelUserPublic(this.adminFirstName, this.adminLastName,
+        this.adminTitle, this.adminEmail);
+      newNetworkAdmin.addressLine1 = this.adminAddressLine1 ? this.adminAddressLine1 : "";
+      newNetworkAdmin.addressLine2 = this.adminAddressLine2 ? this.adminAddressLine2 : "";
+      newNetworkAdmin.addressLine3 = this.adminAddressLine3 ? this.adminAddressLine3 : "";
+      newNetworkAdmin.city = this.adminCity ? this.adminCity : "";
+      newNetworkAdmin.country = this.adminCountry ? this.adminCountry : -1;
+      newNetworkAdmin.postCode = this.adminPostcode ? this.adminPostcode : "";
+      newNetworkAdmin.phone = "";
+      networkData["/userPublic/" + uid] = newNetworkAdmin;
+
+    }
 
     //admin node
     if (this.isEdit) {
@@ -301,5 +358,11 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       this.waringMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
     });
+  }
+
+  private refreshData() {
+    this.isUserExist = false;
+    this.isAdminExist = false;
+    this.uidUserExist = "";
   }
 }

@@ -19,7 +19,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   uid: string;
   private subscription: Subscription;
 
-  constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
+  constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal, private dialogService: DialogService) {
     overlay.defaultViewContainer = vcRef;
   }
 
@@ -47,15 +47,14 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   }
 
   toggleActive(agency) {
-    alert("bug fixing in progress")
-    // this.dialogService.createDialog("DIALOG.TITLE", "DIALOG.CONTENT").subscribe(result => {
-    //   if (result) {
-    //     let state:boolean = !agency.isActive;
-    //     console.log(agency.isActive);
-    //     this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(state);
-    //   }
-    // });
-    // console.log("trigger dialog");
+    this.dialogService.createDialog("DIALOG.TITLE", "DIALOG.CONTENT").subscribe(result => {
+      if (result) {
+        let state: boolean = !agency.isActive;
+        console.log(agency.isActive);
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key + "/isActive").set(state);
+      }
+    });
+    console.log("trigger dialog");
     // this.modal.alert()
     //   .size('lg')
     //   .showClose(true)
@@ -71,8 +70,8 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
     //             <li>Close wth button click</li>
     //             <li>HTML content</li>
     //         </ul>`)
-    //   .open().then(_=> {
-    //     console.log("Here");
+    //   .open().then(_ => {
+    //   console.log("Here");
     // });
 
   }

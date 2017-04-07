@@ -13,17 +13,14 @@ import Promise = firebase.Promise;
   styleUrls: ['./agency-messages.component.css']
 })
 
-// TODO - Fix Bug
 export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private msgData = {};
   private groups: string[] = [];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper;
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -32,21 +29,24 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       if (auth) {
         this.uid = auth.uid;
 
-        let subscription = this.af.database.list(Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages')
+        let subscription = this.af.database.list(Constants.APP_STATUS+'/administratorAgency/' + this.uid + '/sentmessages')
           .flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
             list.forEach(x => {
-              tempList.push(x)
+              tempList.push(x);
             });
             return Observable.from(tempList)
           })
           .flatMap(item => {
-            return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
+            return this.af.database.object(Constants.APP_STATUS+'/message/' + item.$key)
           })
           .distinctUntilChanged()
           .subscribe(x => {
+            console.log("sentMessages Before ----" + this.sentMessages.length);
             this.sentMessages.push(x);
+            console.log("sentMessages After ----" + this.sentMessages.length);
+
           });
 
         this.subscriptions.add(subscription);
@@ -64,8 +64,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-
-  // TODO - Fix the subscription bug
+  // TODO - Fix the subscription bug - Navigates to Country office screen after deleting a message
   deleteMessage(sentMessage) {
 
     let subscription = this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
@@ -73,8 +72,8 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       if (result) {
 
         let key: string = sentMessage.$key;
-        this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + key] = null;
         this.msgData['/message/' + key] = null;
+        this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + key] = null;
 
         this.groups.push('agencyallusersgroup');
         this.groups.push('globaldirector');
@@ -87,7 +86,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
         this.groups.push('donor');
         this.groups.push('partner');
 
-        let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
+        let agencyGroupPath: string = '/group/agency/' + this.uid + '/';
         let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
         for (let group of this.groups) {
@@ -95,19 +94,20 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
           let groupPath = agencyGroupPath + group;
           let msgRefPath = agencyMessageRefPath + group;
 
-          this.af.database.list(groupPath)
+          let subscription = this.af.database.list(groupPath)
             .subscribe(list => {
               list.forEach(item => {
                 this.msgData[msgRefPath + '/' + item.$key + '/' + key] = null;
-            });
-            if (this.groups.indexOf(group) == this.groups.length-1) {
-              this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
-                console.log("Message Ref successfully deleted from all nodes");
-              }).catch(error => {
-                console.log("Message deletion unsuccessful" + error);
               });
-            }
-          });
+              if (this.groups.indexOf(group) == this.groups.length - 1) {
+                this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+                  console.log("Message Ref successfully deleted from all nodes");
+                }).catch(error => {
+                  console.log("Message deletion unsuccessful" + error);
+                });
+              }
+            });
+          this.subscriptions.add(subscription);
         }
       }
     });

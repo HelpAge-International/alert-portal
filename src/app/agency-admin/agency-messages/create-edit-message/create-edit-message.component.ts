@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from 'angularfire2';
+import {AngularFire} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Message} from '../../../model/message';
 import {Constants} from '../../../utils/Constants';
@@ -17,6 +17,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private uid: string;
   private inactive: Boolean = true;
   private errorMessage: any;
+  private alerts = {};
   private messageTitle: string;
   private messageContent: string;
   private allUsersSelected: Boolean;
@@ -32,10 +33,8 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private currentDateTimeInMilliseconds;
   private msgData = {};
   private groups: string[] = [];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper;
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -74,7 +73,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
     this.currentDateTimeInMilliseconds = new Date().getTime();
 
     let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
-    let messagePath = Constants.APP_STATUS + '/message';
+    let messagePath = Constants.APP_STATUS+'/message';
 
     this.af.database.list(messagePath).push(newMessage)
       .then(msgId => {
@@ -82,13 +81,15 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
         let sentMsgPath = '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
         this.msgData[sentMsgPath] = true;
-        this.addMsgToMessageRef(msgId.key);
+        // this.addMsgToMessageRef(msgId.key);
       });
   }
 
-  private addMsgToMessageRef(key: string) {
 
-    let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
+  // TODO
+  /*private addMsgToMessageRef(key: string) {
+
+    let agencyGroupPath: string = Constants.APP_STATUS+'/group/agency/' + this.uid + '/';
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
     if (this.allUsersSelected) {
@@ -160,7 +161,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         this.subscriptions.add(subscription);
       }
     }
-  }
+  }*/
 
   /**
    * Returns false and specific error messages-
@@ -170,9 +171,11 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private validate() {
 
     if (!Boolean(this.messageTitle)) {
+      this.alerts[this.messageTitle] = true;
       this.errorMessage = 'MESSAGES.NO_TITLE_ERROR';
       return false;
     } else if (!Boolean(this.messageContent)) {
+      this.alerts[this.messageContent] = true;
       this.errorMessage = 'MESSAGES.NO_CONTENT_ERROR';
       return false;
     } else if ((!this.allUsersSelected)

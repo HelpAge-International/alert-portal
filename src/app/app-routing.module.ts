@@ -86,6 +86,7 @@ const routes: Routes = [
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
   {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
   {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
+  {path: 'agency-admin/country-office/create-edit-region:id', component: CreateEditRegionComponent},
   {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
   {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
   {path: 'agency-admin/agency-mpa/add-generic-action', component: AddGenericActionComponent},

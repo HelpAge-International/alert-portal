@@ -6,6 +6,7 @@ import {Country, Currency} from "../../utils/Enums";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-agency-account-details',
@@ -19,10 +20,11 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private successInactive: boolean = true;
   private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
-  private errorMessage: string = 'No changes made!';
+  private errorMessage: string;
   private alerts = {};
   private modalAgency: ModelAgency;
   private agencyLogo: string;
+  private newImage: string;
   private agencyAddressLine1: string;
   private agencyAddressLine2: string;
   private agencyAddressLine3: string;
@@ -36,10 +38,8 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
   private Currency = Constants.CURRENCY;
   private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -86,10 +86,11 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           && editedAgency.currency == this.modalAgency.currency;
 
         if (noChanges) {
+          this.errorMessage = 'GLOBAL.NO_CHANGES_MADE';
           this.showAlert(true);
         } else {
 
-          this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
+          this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid).update(editedAgency).then(() => {
             this.showAlert(false)
           }, error => {
             this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -103,9 +104,38 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  replaceImage() {
+    console.log('this.agencyLogo ====' + this.agencyLogo);
+
+    // this.newImage = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTGdJmgpV8qkAew3QvDqNi4ShFMYHSKxE5pE2EAJEy9J2LDy_CeEA';
+    // console.log('this.agencyLogo ====' + this.agencyLogo);
+    // console.log('this.newImage ====' + this.newImage);
+    //
+    // const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.newImage);
+    // storageRef.getDownloadURL().then(url => {
+    //     this.agencyLogo = url;
+    //     console.log(this.agencyLogo);
+    //   }
+    // );
+
+  }
+
+  removeImage() {
+
+    // Replace with the default Alert logo
+    const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.agencyLogo);
+    storageRef.delete().then(_ => {
+      this.agencyLogo = "";
+      console.log("Image removed from firebase storage");
+    }, error => {
+      console.log(error.message);
+    });
+
+  }
+
   private loadAgencyData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).subscribe((agency: ModelAgency) => {
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/agency/" + uid).subscribe((agency: ModelAgency) => {
 
       this.modalAgency = agency;
       this.agencyLogo = agency.logoPath;
@@ -147,15 +177,15 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     this.alerts = {};
     if (!(this.agencyAddressLine1)) {
       this.alerts[this.agencyAddressLine1] = true;
-      this.errorMessage = 'Please enter address line 1';
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
     } else if (!(this.agencyCity)) {
       this.alerts[this.agencyCity] = true;
-      this.errorMessage = 'Please enter the name of the city';
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_CITY";
       return false;
     } else if (!(this.agencyPhone)) {
       this.alerts[this.agencyPhone] = true;
-      this.errorMessage = 'Please enter the phone number';
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_PHONE";
       return false;
     }
     return true;

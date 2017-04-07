@@ -8,8 +8,10 @@
       <button type="button" class="btn btn-primary" (click)="addNewStaff()">ADD NEW STAFF MEMBER</button>
     </div>
 
-    <div class="row Spacing-wrap">
-      <div class="col-lg-1 col-md-2">Filter:</div>
+    <div class="row align-items-center Filter-form System-admin--form-wrap">
+      <div class="col-lg-1 col-md-1">
+        Filter:
+      </div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control">
           <option>Position</option>
@@ -42,7 +44,7 @@
         <span class="Hide-all">Hide all</span>
       </div>
 
-      <div *ngIf="office?.staffs.length!=0" class="row Line-row Small-spaced Header">
+      <div [hidden]="office?.staffs.length==0" class="row Line-row Small-spaced Header">
         <div class="col-lg-2">Name</div>
         <div class="col-lg-1">Job Title</div>
         <div class="col-lg-2">Office Type</div>
@@ -64,40 +66,40 @@
     </div>
 
     <!--<div class="row Line-row Small-spaced">-->
-      <!--<div class="col-lg-2">Abigail Taylor</div>-->
-      <!--<div class="col-lg-1">ERT Lead</div>-->
-      <!--<div class="col-lg-2">Field Office</div>-->
-      <!--<div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>-->
-      <!--<div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non-->
-        <!--aliquet. Proin.-->
-      <!--</div>-->
-      <!--<div class="col-lg-1 col-md-3">-->
-        <!--<button class="btn btn-primary">Edit</button>-->
-      <!--</div>-->
+    <!--<div class="col-lg-2">Abigail Taylor</div>-->
+    <!--<div class="col-lg-1">ERT Lead</div>-->
+    <!--<div class="col-lg-2">Field Office</div>-->
+    <!--<div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>-->
+    <!--<div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non-->
+    <!--aliquet. Proin.-->
+    <!--</div>-->
+    <!--<div class="col-lg-1 col-md-3">-->
+    <!--<button class="btn btn-primary">Edit</button>-->
+    <!--</div>-->
     <!--</div>-->
 
     <!--<div class="row Line-row Small-spaced">-->
-      <!--<div class="col-lg-2">Abigail Taylor</div>-->
-      <!--<div class="col-lg-1">ERT Lead</div>-->
-      <!--<div class="col-lg-2">Field Office</div>-->
-      <!--<div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>-->
-      <!--<div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non-->
-        <!--aliquet. Proin.-->
-      <!--</div>-->
-      <!--<div class="col-lg-1 col-md-3">-->
-        <!--<button class="btn btn-primary">Edit</button>-->
-      <!--</div>-->
+    <!--<div class="col-lg-2">Abigail Taylor</div>-->
+    <!--<div class="col-lg-1">ERT Lead</div>-->
+    <!--<div class="col-lg-2">Field Office</div>-->
+    <!--<div class="col-lg-2">Coordination, Logistics, WaSh, Relief, Healthcare</div>-->
+    <!--<div class="col-lg-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elementum euismod turpis non-->
+    <!--aliquet. Proin.-->
+    <!--</div>-->
+    <!--<div class="col-lg-1 col-md-3">-->
+    <!--<button class="btn btn-primary">Edit</button>-->
+    <!--</div>-->
     <!--</div>-->
 
 
     <!--<div class="Sub-header-title__wrap">-->
-      <!--<h2>Malaysia</h2>-->
-      <!--<span class="Hide-all Hidden">Show all</span>-->
+    <!--<h2>Malaysia</h2>-->
+    <!--<span class="Hide-all Hidden">Show all</span>-->
     <!--</div>-->
 
     <!--<div class="Sub-header-title__wrap">-->
-      <!--<h2>Indonesia</h2>-->
-      <!--<span class="Hide-all Hidden">Show all</span>-->
+    <!--<h2>Indonesia</h2>-->
+    <!--<span class="Hide-all Hidden">Show all</span>-->
     <!--</div>-->
 
     <div class="Form-submit__wrapper">

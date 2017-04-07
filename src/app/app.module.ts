@@ -57,20 +57,20 @@ import {AgencyMpaComponent} from "./agency-admin/agency-mpa/agency-mpa.component
 import {AgencyMessagesComponent} from "./agency-admin/agency-messages/agency-messages.component";
 import {CreateEditMessageComponent} from "./agency-admin/agency-messages/create-edit-message/create-edit-message.component";
 import {AgencyAdminHeaderComponent} from "./agency-admin/agency-admin-header/agency-admin-header.component";
-import { AccountSettingsComponent } from './system-admin/account-settings/account-settings.component';
-import { ChangePasswordComponent } from './system-admin/account-settings/change-password/change-password.component';
-import { GlobalNetworksComponent } from './system-admin/global-networks/global-networks.component';
-import { CreateEditGlobalNetworkComponent } from './system-admin/global-networks/create-edit-global-network/create-edit-global-network.component';
-import { AddGenericActionComponent } from './agency-admin/agency-mpa/add-generic-action/add-generic-action.component';
-import { AgencyAccountSettingsComponent } from './agency-admin/agency-account-settings/agency-account-settings.component';
-import { AgencyAccountDetailsComponent } from './agency-admin/agency-account-details/agency-account-details.component';
-import { AgencyChangePasswordComponent } from './agency-admin/agency-account-settings/agency-change-password/agency-change-password.component';
-import { CreateEditRegionComponent } from './agency-admin/country-office/create-edit-region/create-edit-region.component';
+import {AccountSettingsComponent} from './system-admin/account-settings/account-settings.component';
+import {ChangePasswordComponent} from './system-admin/account-settings/change-password/change-password.component';
+import {GlobalNetworksComponent} from './system-admin/global-networks/global-networks.component';
+import {CreateEditGlobalNetworkComponent} from './system-admin/global-networks/create-edit-global-network/create-edit-global-network.component';
+import {AddGenericActionComponent} from './agency-admin/agency-mpa/add-generic-action/add-generic-action.component';
+import {AgencyAccountSettingsComponent} from './agency-admin/agency-account-settings/agency-account-settings.component';
+import {AgencyAccountDetailsComponent} from './agency-admin/agency-account-details/agency-account-details.component';
+import {AgencyChangePasswordComponent} from './agency-admin/agency-account-settings/agency-change-password/agency-change-password.component';
+import {CreateEditRegionComponent} from './agency-admin/country-office/create-edit-region/create-edit-region.component';
 import {RxHelper} from './utils/RxHelper';
 import {ModalModule} from "angular2-modal";
 import {BootstrapModalModule} from "angular2-modal/plugins/bootstrap";
-import { Modal } from 'angular2-modal/plugins/bootstrap';
-import { AgencyAdminSettingsResponsePlanComponent } from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
+import {Modal} from 'angular2-modal/plugins/bootstrap';
+import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);

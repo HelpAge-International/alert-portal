@@ -6,29 +6,38 @@
     "CONFIRM": "Confirm",
     "TITLE":"Title",
     "EDIT": "Edit",
+    "SAVE": "Save",
     "FROM": "From: ",
     "SENT_AT": "Sent At: ",
     "AT": "At: ",
-    "FILTER": "Filter",
+    "FILTER": "Filter: ",
     "ACTIVE": "Active",
     "DEACTIVE": "Deactive",
     "ACTIVATE": "Activate",
     "DEACTIVATE": "Deactivate",
+    "DEPARTMENT": "Department",
+    "DEPARTMENT:": "Department: ",
+    "CATEGORY:": "Category: ",
+    "CURRENCY": "Currency",
     "PLEASE_ENTER": "Please enter",
+    "NO_CHANGES_MADE": "No changes made",
+    "SAVE_CHANGES": "Save changes",
     "CURRENT_PASSWORD": "Your current password",
     "CONFIRM_PASSWORD": "Confirm your new password",
     "NEW_PASSWORD": "New password",
     "OPTIONAL": "Optional",
     "YES":"Yes",
     "NO":"No",
+    "PLEASE_ENTER": "Please enter",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "NAME_MISSING": "Name is missing!",
     "EMAIL_NOT_VALID": "Email is not valid!",
     "GENERAL_ERROR": "An error occurred. Please check and try again",
+    "NO_FILTERED_RESULTS": "There are no actions for the filters your have selected",
     "PREPAREDNESS_LEVEL": {
       "ALL": "All preparedness levels",
-      "MPA": "MPA",
-      "APA": "APA"
+      "MPA": "Minimum Preparedness",
+      "APA": "Advanced Preparedness"
     },
     "ACCOUNT_SETTING": "Account Settings",
     "LOGOUT": "Logout",
@@ -54,8 +63,9 @@
       "COUNTRY": "Country",
       "CITY": "City",
       "EMAIL_ADDRESS": "Email Address",
-      "POSTCODE": "Postcode",
-      "PHONE": "Phone Number"
+      "POSTCODE": "Postcode/Zip Code",
+      "PHONE": "Phone Number",
+      "WEB_ADDRESS": "Website address"
     },
     "ACCOUNT_SETTINGS": {
       "TITLE": "Account Settings",
@@ -79,6 +89,24 @@
       "NO_L_NAME" : "Please enter the last name",
       "NO_EMAIL" : "Please enter the email address"
     }
+  },
+  "LOGIN": {
+    "TITLE_TEXT": "Welcome to ALERT",
+    "WELCOME_INSTRUCTIONS": "Use your email address and password to login below",
+    "PASSWORD": "Password",
+    "LOGIN": "Login",
+    "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
+    "NO_DATA_ERROR": "Please enter your email address and password to login",
+    "NO_EMAIL_ERROR": "Please enter your email address",
+    "NO_PASSWORD_ERROR": "Please enter your password"
+  },
+  "FORGOT_PASSWORD": {
+    "TITLE_TEXT": "Forgot Password?",
+    "INSTRUCTIONS": "Enter your email address to reset your password",
+    "RESET_PASSWORD": "Reset Password",
+    "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?",
+    "NO_EMAIL_ERROR": "Please enter your email address",
+    "SUCCESS_MESSAGE": "Password reset email sent to "
   },
   "SYSTEM_ADMIN": {
     "MENU": {
@@ -107,7 +135,7 @@
       "L_NAME_MISSING": "Please enter agency administrator's last name",
       "EMAIL_MISSING": "Please enter agency administrator's email address",
       "EMAIL_INVALID": "Please enter a correct email address",
-      "NO_AGENCY":"No agencies have been added to the Alert Portal"
+      "NO_AGENCY":"No agencies have been added to the ALERT"
     },
     "GLOBAL_NETWORKS": {
       "GLOBAL_NETWORKS": "Global Networks",
@@ -132,9 +160,9 @@
       "CREATE_NEW_ACTION": "Create new action",
       "EDIT_CHS_ACTION": "Edit CHS action",
       "SAVE_BUTTON_TEXT": "Save new action",
-      "EDIT_BUTTON_TEXT": "Edit action",
+      "EDIT_BUTTON_TEXT": "Save changes",
       "NO_CONTENT_ERROR": "Please insert the action content",
-      "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to Alert",
+      "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
       "CHS_MPA": {
         "TITLE_TEXT": "CHS minimum preparedness actions",
         "NO_ACTIONS": "No CHS actions have been created",
@@ -181,25 +209,57 @@
       "SAVE": "Save Settings"
     }
   },
-  "LOGIN": {
-    "TITLE_TEXT": "Welcome to ALERT",
-    "WELCOME_INSTRUCTIONS": "Use your email address and password to login below",
-    "PASSWORD": "Password",
-    "LOGIN": "Login",
-    "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
-    "NO_DATA_ERROR": "Please enter your email address and password to login",
-    "NO_EMAIL_ERROR": "Please enter your email address",
-    "NO_PASSWORD_ERROR": "Please enter your password"
+  "AGENCY_ADMIN": {
+    "COUNTRY_OFFICES": {
+    },
+    "MANDATED_PA": {
+      "TITLE_TEXT": "Mandated preparedness actions",
+      "LOOK_UP_ACTIONS": "LOOKUP GENERIC ACTIONS",
+      "CREATE_NEW_ACTION": "Create new action",
+      "ADD_NEW_ACTIONS": "Add new action(s)",
+      "NO_ACTIONS": "No mandated preparedness actions have been added to ALERT",
+      "NO_GENERIC_ACTIONS": "No generic preparedness actions have been added to ALERT",
+      "MANDATED": "Mandated",
+      "CREATE_NEW_MANDATED_PA": "Create new mandated preparedness action",
+      "MPA_OR_APA?": "Is this a minimum or adavanced preparedness action?",
+      "ALL_DEPARTMENTS": "All departments",
+      "ADD_DEPARTMENT_TITLE": "Add new department",
+      "ADD_DEPARTMENT": "Add new department +",
+      "ADD_A_DEPARTMENT": "Add a department +",
+      "DEPARTMENT_NAME": "Department Name",
+      "NO_DEPARTMENT_NAME": "Please enter department name",
+      "NEW_DEPARTMENT_SUCCESS": "New department added",
+      "PREPAREDNESS_LEVEL": "Preparedness Level: ",
+      "SAVE_BUTTON_TEXT": "Save new action",
+      "EDIT_MANDATED_PA": "Edit mandated preparedness action",
+      "EDIT_BUTTON_TEXT": "Save changes",
+      "NO_DEPARTMENT_ERROR": "Please select a department",
+      "NO_CONTENT_ERROR": "Please insert the action content"
+    },
+    "STAFF": {
+    },
+    "MESSAGES": {
+      "TITLE_TEXT": "Agency Messages",
+      "GLOBAL_DIRECTOR": "Global Director",
+      "GLOBAL_USER": "Global User",
+      "REGIONAL_DIRECTOR": "Regional Director",
+      "COUNTRY_DIRECTORS": "Country Directors",
+      "ERT_LEAD": "ERT Lead",
+      "ERT": "ERT",
+      "DONOR": "Donor",
+      "PARTNER": "Partner"
+    },
+    "UPDATE_DETAILS": {
+      "AGENCY_LOGO": "Agency Logo",
+      "SUPPORTED_FORMATS": "Supported formats",
+      "REPLACE_IMAGE": "Replace image",
+      "REMOVE_IMAGE": "Remove image",
+      "NO_ADDRESS_1":"Please enter address line 1",
+      "NO_CITY":"Please enter the name of the city",
+      "NO_PHONE":"Please enter the phone number"
+    }
   },
-  "FORGOT_PASSWORD": {
-    "TITLE_TEXT": "Forgot Password?",
-    "INSTRUCTIONS": "Enter your email address to reset your password",
-    "RESET_PASSWORD": "Reset Password",
-    "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?",
-    "NO_EMAIL_ERROR": "Please enter your email address",
-    "SUCCESS_MESSAGE": "Password reset email sent to "
-  },
-  "DIALOG": {
+    "DIALOG": {
     "TITLE": "Alert",
     "CONTENT": "Are you sure you want to proceed this action?"
   },
@@ -225,27 +285,7 @@
     "NO_CONTENT_ERROR": "Please add some content to the message",
     "NO_RECIPIENTS_ERROR": "Please select the recipients group"
   },
-
-  "AGENCY_MANDATED_PA": {
-    "TITLE_TEXT": "Mandated preparedness actions",
-    "CREATE_NEW_ACTION": "Create new action",
-    "NO_ACTIONS": "No mandated preparedness actions have been added to Alert",
-    "MANDATED": "Mandated",
-    "CREATE_NEW_MANDATED_PA": "Create new mandated preparedness action",
-    "MPA_OR_APA?": "Is this a minimum or adavanced preparedness action?",
-    "DEPARTMENT": "Department: ",
-    "ADD_DEPARTMENT": "Add new department +",
-    "PREPAREDNESS_LEVEL": "Preparedness Level: ",
-    "SAVE_BUTTON_TEXT": "Save new action",
-    "EDIT_MANDATED_PA": "Edit mandated preparedness action",
-    "EDIT_BUTTON_TEXT": "Edit action",
-    "NO_DEPARTMENT_ERROR": "Please select a department",
-    "NO_CONTENT_ERROR": "Please insert the action content"
-  },
   "AGENCY_HOME": {
     "AGENCY_ADMIN": "Agency Admin"
-  },
-  "AGENCY_MESSAGES": {
-    "TITLE_TEXT": "Agency Messages"
   }
 }

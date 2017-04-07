@@ -5,7 +5,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"SYSTEM_ADMIN.AGENCIES.TITLE" | translate}}</h1>
-      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate}}</a>
+      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate | uppercase}}</a>
     </div>
 
     <div *ngIf="(agencies | async)?.length == 0" class="Empty--ribbon">

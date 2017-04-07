@@ -10,12 +10,10 @@ import {DialogService} from "../../dialog/dialog.service";
   templateUrl: 'global-networks.component.html',
   styleUrls: ['global-networks.component.css']
 })
-export class GlobalNetworksComponent implements OnInit,OnDestroy {
-  subscriptions: RxHelper;
+export class GlobalNetworksComponent implements OnInit, OnDestroy {
   networks: FirebaseListObservable<any[]>;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -30,7 +28,7 @@ export class GlobalNetworksComponent implements OnInit,OnDestroy {
   }
 
   private loadNetworks() {
-    this.networks = this.af.database.list(Constants.APP_STATUS + "/network");
+    this.networks = this.af.database.list(Constants.APP_STATUS+"/network");
     console.log(this.networks)
   }
 
@@ -43,29 +41,28 @@ export class GlobalNetworksComponent implements OnInit,OnDestroy {
   }
 
   toggleActive(network) {
-    // let title = "";
-    // let content = "";
-    // if (network.isActive) {
-    //   title = "GLOBAL.DEACTIVATE";
-    //   content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
-    // } else {
-    //   title = "GLOBAL.ACTIVATE";
-    //   content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
-    // }
-    // let subscription = this.dialogService.createDialog(title, content)
-    //   .subscribe(result => {
-    //     if (!result) {
-    //       return
-    //     }
-    //     let newState = !network.isActive;
-    //     this.af.database.object(Constants.APP_STATUS + "/network/" + network.$key + "/isActive").set(newState);
-    //   });
-    // this.subscriptions.add(subscription);
+    let title = "";
+    let content = "";
+    if (network.isActive) {
+      title = "GLOBAL.DEACTIVATE";
+      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
+    } else {
+      title = "GLOBAL.ACTIVATE";
+      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
+    }
+    let subscription = this.dialogService.createDialog(title, content)
+      .subscribe(result => {
+        if (!result) {
+          return
+        }
+        let newState = !network.isActive;
+        this.af.database.object(Constants.APP_STATUS + "/network/" + network.$key + "/isActive").set(newState);
+      });
+    this.subscriptions.add(subscription);
   }
 
   edit(network) {
-    console.log(network.$key)
-    this.router.navigate([Constants.SYSTEM_ADMIN_ADD_NETWORK, {id: network.$key}])
+    this.router.navigate([Constants.SYSTEM_ADMIN_ADD_NETWORK, {id: network.$key}], {skipLocationChange: true});
   }
 
 }

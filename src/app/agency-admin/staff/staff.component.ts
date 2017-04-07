@@ -14,8 +14,7 @@ import {ModelStaff} from "../../model/staff.model";
 })
 export class StaffComponent implements OnInit, OnDestroy {
   countries = Constants.COUNTRY;
-  subscriptions: RxHelper;
-  staffs: ModelStaffDisplay[];
+  staffs: ModelStaffDisplay[] = [];
   private uid: string;
   private staffDisplay: ModelStaffDisplay;
   countryOffices: FirebaseListObservable<any[]>;
@@ -25,9 +24,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   skillSet = new Set();
   private skillNames: string[] = [];
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
-    this.staffs = [];
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -45,6 +42,8 @@ export class StaffComponent implements OnInit, OnDestroy {
   private initData() {
     this.countryOffices = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
     this.getStaffData();
+
+    this.af.database.list(Constants.APP_STATUS + "/staff/");
   }
 
   private getStaffData() {
@@ -75,8 +74,8 @@ export class StaffComponent implements OnInit, OnDestroy {
           this.staff.id = item.$key;
           this.staff.position = item.position;
           this.staff.officeType = item.officeType;
-          this.staff.trainingNeeds = item.training;
-          this.staff.skills = item.skill;
+          this.staff.training = item.training;
+          this.staff.skill = item.skill;
 
           for (let item of this.staffs) {
             if (item.id == this.officeId) {
