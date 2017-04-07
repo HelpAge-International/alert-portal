@@ -7,7 +7,7 @@ export class Constants {
   static TEMP_PASSWORD = "testtest";
   static ALERT_DURATION: number = 5000;
   /*PATHS*/
-  static APP_STATUS = "/test";
+  static APP_STATUS = "/uat";
 
   static LOGIN_PATH = "/login";
   //system admin
