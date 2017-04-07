@@ -80,8 +80,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.countryList = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid);
-    this.departmentList = this.af.database.list(Constants.APP_STATUS+"/agency/" + this.uid + "/departments")
+    this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+    this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departments => {
         let names = [];
         departments.forEach(department => {
@@ -89,19 +89,19 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
         return names;
       });
-    this.supportSkillList = this.af.database.list(Constants.APP_STATUS+"/skill", {
+    this.supportSkillList = this.af.database.list(Constants.APP_STATUS + "/skill", {
       query: {
         orderByChild: "type",
         equalTo: SkillType.Support
       }
     });
-    this.techSkillsList = this.af.database.list(Constants.APP_STATUS+"/skill", {
+    this.techSkillsList = this.af.database.list(Constants.APP_STATUS + "/skill", {
       query: {
         orderByChild: "type",
         equalTo: SkillType.Tech
       }
     });
-    this.notificationList = this.af.database.list(Constants.APP_STATUS+"/agency/" + this.uid + "/notificationSetting");
+    this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
 
   }
 
@@ -195,13 +195,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.staffSkills.push(key);
       }
     });
-    console.log(this.staffSkills);
     this.notificationsMap.forEach((value, key) => {
       if (value) {
         this.staffNotifications.push(key);
       }
     });
-    console.log(this.staffNotifications);
     this.createNewUser();
   }
 
@@ -275,14 +273,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   notificationCheck(notification, isCheck) {
-    console.log(notification);
-    console.log(isCheck);
     this.notificationsMap.set(notification.$key, isCheck);
-    console.log(this.notificationsMap);
-  }
-
-  countrySelected(country) {
-    console.log(country.$key)
   }
 
   cancel() {

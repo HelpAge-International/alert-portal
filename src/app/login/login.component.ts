@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl(Constants.APP_STATUS+"/agency-admin/country-office");
+                  this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
                 }
               });
             });

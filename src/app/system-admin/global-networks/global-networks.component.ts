@@ -41,24 +41,24 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   }
 
   toggleActive(network) {
-    // let title = "";
-    // let content = "";
-    // if (network.isActive) {
-    //   title = "GLOBAL.DEACTIVATE";
-    //   content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
-    // } else {
-    //   title = "GLOBAL.ACTIVATE";
-    //   content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
-    // }
-    // let subscription = this.dialogService.createDialog(title, content)
-    //   .subscribe(result => {
-    //     if (!result) {
-    //       return
-    //     }
-    //     let newState = !network.isActive;
-    //     this.af.database.object(Constants.APP_STATUS+"/network/" + network.$key + "/isActive").set(newState);
-    //   });
-    // this.subscriptions.add(subscription);
+    let title = "";
+    let content = "";
+    if (network.isActive) {
+      title = "GLOBAL.DEACTIVATE";
+      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
+    } else {
+      title = "GLOBAL.ACTIVATE";
+      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
+    }
+    let subscription = this.dialogService.createDialog(title, content)
+      .subscribe(result => {
+        if (!result) {
+          return
+        }
+        let newState = !network.isActive;
+        this.af.database.object(Constants.APP_STATUS + "/network/" + network.$key + "/isActive").set(newState);
+      });
+    this.subscriptions.add(subscription);
   }
 
   edit(network) {
