@@ -29,7 +29,7 @@ function sendWelcomeEmail(email) {
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
                       \n You temporary password is "testtest", please login with your email address to update you credentials.
-                      \n https://alert-190fa.firebaseapp.com
+                      \n https://alert-uat.firebaseapp.com
                       \n Thanks
                       \n Your Alert team `;
   return mailTransport.sendMail(mailOptions).then(() => {
@@ -63,6 +63,31 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
   });
 
 exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId}')
+  .onWrite(event => {
+    console.log("agency node triggered");
+    const userId = event.params.userId;
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+    console.log(preData);
+    console.log(currData);
+    if (!preData && currData) {
+      //add user account
+      console.log("user added: " + userId);
+    } else if (preData && currData) {
+      //user account change
+      console.log("user data changed: " + userId);
+    } else if (preData && !currData) {
+      //delete user account
+      console.log("delete user: " + userId);
+      // admin.auth().deleteUser(userId).then(() => {
+      //   console.log("successfully deleted user: " + userId);
+      // }, error => {
+      //   console.log(error.message);
+      // });
+    }
+  });
+
+exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
     const userId = event.params.userId;

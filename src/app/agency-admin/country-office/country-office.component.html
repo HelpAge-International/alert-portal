@@ -13,7 +13,7 @@
       </button>
     </div>
 
-    <div *ngIf="(countries | async)?.length == 0" class="Empty--ribbon">
+    <div [hidden]="(countries | async)?.length != 0" class="Empty--ribbon">
       You have not added any country offices to your agency
     </div>
 
