@@ -14,7 +14,7 @@
 
     <table class="table Table__v-spacing__mid Agency-table">
       <tr *ngFor="let agency of agencies | async">
-        <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>
+        <td><div class="Agency-logo" [style.background-image]="agency?.logoPath ? 'url(' + agency?.logoPath + ')' : 'url(assets/images/alert_logo--grey.svg)'"></div></td>
         <td>{{agency?.name}}</td>
         <td></td>
         <td *ngIf="agency?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>

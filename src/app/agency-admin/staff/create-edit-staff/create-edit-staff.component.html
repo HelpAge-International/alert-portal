@@ -90,14 +90,14 @@
         </div>
       </div>
 
-      <label>Support Skills</label>
+      <div class="form-group"><label>Support Skills</label></div>
       <div class="row Spaced">
         <label *ngFor="let support of supportSkillList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box
                                                                           (change)="supportSkillCheck(support,box.checked)">{{support.name}}</label>
       </div>
 
-      <label>Technical Skills</label>
+      <div class="form-group"><label>Technical Skills</label></div>
       <div class="row Spaced">
         <label *ngFor="let tech of techSkillsList | async" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
           type="checkbox" #box (change)="techSkillCheck(tech,box.checked)">{{tech.name}}</label>
@@ -111,14 +111,14 @@
         </div>
       </div>
 
-      <label>Notifications</label>
+      <div class="form-group"><label>Notifications</label></div>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
                                                                           [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
       </div>
 
-      <label>Is this staff member part of the response team?</label>
+      <div class="form-group"><label>Is this staff member part of the response team?</label></div>
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2"><input type="radio" name="RT"
                                                                              id="RT_no"
