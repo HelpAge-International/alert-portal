@@ -71,6 +71,8 @@ import {ModalModule} from "angular2-modal";
 import {BootstrapModalModule} from "angular2-modal/plugins/bootstrap";
 import {Modal} from 'angular2-modal/plugins/bootstrap';
 import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
+import { KeysPipe } from './utils/pipes/keys.pipe';
+import { KeyValuesPipe } from './utils/pipes/key-values.pipe';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -149,7 +151,9 @@ const firebaseAuthConfig = {
     AgencyAccountSettingsComponent,
     AgencyAccountDetailsComponent,
     AgencyChangePasswordComponent,
-    AgencyAdminSettingsResponsePlanComponent
+    AgencyAdminSettingsResponsePlanComponent,
+    KeysPipe,
+    KeyValuesPipe
   ],
   imports: [
     BrowserModule,

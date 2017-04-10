@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../../utils/RxHelper';
+import {Subject} from 'rxjs/Subject';
 import Promise = firebase.Promise;
 
 
@@ -16,22 +17,33 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
   private departments: FirebaseListObservable<any>;
+  private nonDeletableDepartments: FirebaseListObservable<any>;
   private subscriptions: RxHelper;
   private deleting: boolean = false;
+  private editing: boolean = false;
   private departmentName: string = "";
   private deleteCandidates: any = {};
+  private depts: any = {};
+  private editDepts: any = {};
 
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
-
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         // this.uid = auth.uid; //TODO remove comment
-        this.departments = this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/departments');
 
+        let subject = new Subject();
+
+        let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments').subscribe(_ => {
+        	console.log(_);
+        	this.depts = _;
+        })
+        this.subscriptions.add(deptsSubscription);
+        
+		this.subscriptions.add(subscription);
       } else {
         // user is not logged in
         console.log('Error occurred - User is not logged in');
@@ -41,7 +53,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
+	this.subscriptions.releaseAll();
   }
 
   private navigateToLogin() {
@@ -54,6 +66,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   cancelDeleteDepartments(event){
   	this.deleting = !this.deleting;
+  	this.deleteCandidates = {};
   }
 
   deleteSelectedDepartments(event){
@@ -64,13 +77,50 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   onDepartmentSelected(department){
-  	if (department.$key in this.deleteCandidates)
-    	delete this.deleteCandidates[department.$key];
+  	if (department in this.deleteCandidates)
+    	delete this.deleteCandidates[department];
 	else
-		this.deleteCandidates[department.$key] = true;
-  		
-	
+		this.deleteCandidates[department] = true;
+
 	console.log(this.deleteCandidates);
+  }
+
+  editDepartments(event){
+  	this.editing = !this.editing;
+  }
+
+  cancelEditDepartments(event){
+  	this.editing = !this.editing;
+  	this.editDepts = {};
+  	this.deleteCandidates = {};
+  	let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments').subscribe(_ => {
+    	console.log(_);
+    	this.depts = _;
+    })
+    this.subscriptions.add(deptsSubscription);
+  }
+
+  saveEditedDepartments(event){
+  	this.editing = !this.editing;
+
+  	for (var dept in this.editDepts){
+  		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + dept).remove();
+
+  		let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
+
+		var newDepartment = {};
+	  	newDepartment[this.editDepts[dept]["new_key"]] = this.editDepts[dept]["value"];
+	  	departments.update(newDepartment);
+  	}
+  }
+
+  setDepartmentValue(prop, value){
+  	console.log(prop);
+  	this.editDepts[prop] = {
+  								"new_key": value,
+  								"value": this.depts[prop]
+  							};
+  	console.log(this.editDepts);
   }
 
   addDepartment(event) {
@@ -78,7 +128,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   	let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
 
 	var newDepartment = {};
-  	newDepartment[this.departmentName] = true;
+  	newDepartment[this.departmentName] = false;
   	departments.update(newDepartment);
 
   	this.departmentName = "";
