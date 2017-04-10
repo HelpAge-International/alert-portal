@@ -43,6 +43,9 @@ import {AgencyAccountDetailsComponent} from "./agency-admin/agency-account-detai
 import {AgencyAccountSettingsComponent} from "./agency-admin/agency-account-settings/agency-account-settings.component";
 import {AgencyChangePasswordComponent} from "./agency-admin/agency-account-settings/agency-change-password/agency-change-password.component";
 import {CreateEditRegionComponent} from "./agency-admin/country-office/create-edit-region/create-edit-region.component";
+import {SystemSettingsDocumentsComponent} from "./system-admin/system-settings/system-settings-documents/system-settings-documents.component";
+import {SystemSettingsPreparednessComponent} from "./system-admin/system-settings/system-settings-preparedness/system-settings-preparedness.component";
+import {SystemSettingsResponsePlansComponent} from "./system-admin/system-settings/system-settings-response-plans/system-settings-response-plans.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -57,7 +60,6 @@ const routes: Routes = [
   /**
    * System admin
    */
-  {path: 'system-admin/system-settings', component: SystemSettingsComponent},
   {path: 'system-admin/min-prep/create', component: CreateActionComponent},
   {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
   {path: 'system-admin/min-prep', component: MinPrepComponent},
@@ -74,8 +76,9 @@ const routes: Routes = [
   {path: 'system-admin/network', component: GlobalNetworksComponent},
   {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
   {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
-  {path: 'country-admin',  component: CountryAdminComponent},
-  //TODO: define needed routes here. see the example above
+  {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
+  {path: 'system-admin/system-settings/system-settings-preparedness', component: SystemSettingsPreparednessComponent},
+  {path: 'system-admin/system-settings/system-settings-response-plans', component: SystemSettingsResponsePlansComponent},
 
   /**
    * Agency admin
