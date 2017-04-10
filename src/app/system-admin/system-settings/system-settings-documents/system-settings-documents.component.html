@@ -1,3 +1,80 @@
-<p>
-  system-settings-documents works!
-</p>
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>System Settings</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-preparedness']">Preparedness</a></li>
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">Document upload settings</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">Response plans</a></li>
+    </ul>
+
+    <h3 class="System-admin__Sub-title--spaced">Document upload settings</h3>
+    <hr>
+
+    <label for="f-Format">File Format</label>
+
+    <div class="row">
+      <label for="PDF" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
+                                                                                  name="f-Format" id="PDF">PDF</label>
+      <label for="DOC" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
+                                                                                  name="f-Format" id="DOC">DOC</label>
+      <label for="DOCX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                   id="DOCX">DOCX</label>
+      <label for="RTF" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                  id="RTF">RTF</label>
+      <label for="JPEG" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                   id="JPEG">JPEG</label>
+      <label for="PNG" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                  id="PNG">PNG</label>
+      <label for="CSV" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
+                                                                                  name="f-Format" id="CSV">CSV</label>
+      <label for="XLS" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
+                                                                                  name="f-Format" id="XLS">XLS</label>
+      <label for="XLSX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                   id="XLSX">XLSX</label>
+      <label for="PPT" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                  id="PPT">PPT</label>
+      <label for="PPTX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                   id="PPTX">PPTX</label>
+      <label for="TXT" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                  id="TXT">TXT</label>
+      <label for="ODT" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                  id="ODT">ODT</label>
+      <label for="TSV" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
+                                                                                  id="TSV">TSV</label>
+    </div>
+
+    <div class="File-size--spaced">
+      <label for="f-Format">Maximum file size</label>
+      <div class="row">
+        <div class="col-lg-2 col-md-4 col-sm-4">
+          <select class="form-control">
+            <option>10</option>
+            <option>20</option>
+            <option>30</option>
+          </select>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+          <select class="form-control">
+            <option>KB</option>
+            <option selected>MB</option>
+            <option>GB</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-primary">Save settings</div>
+    </div>
+
+
+  </div>
+</div>

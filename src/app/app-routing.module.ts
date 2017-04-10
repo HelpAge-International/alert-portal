@@ -12,7 +12,6 @@ import {MinPrepComponent} from "./system-admin/min-prep/min-prep.component";
 import {MpaComponent} from "./system-admin/mpa/mpa.component";
 import {CreateActionComponent} from "./system-admin/min-prep/create-action/create-action.component";
 import {CreateMpaActionComponent} from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
-import {SystemSettingsComponent} from "./system-admin/system-settings/system-settings.component";
 import {CountryAdminComponent} from "./country-admin/country-admin.component";
 import {CreatePasswordComponent} from "./agency-admin/create-password/create-password.component";
 import {AgencyDetailsComponent} from "./agency-admin/agency-details/agency-details.component";

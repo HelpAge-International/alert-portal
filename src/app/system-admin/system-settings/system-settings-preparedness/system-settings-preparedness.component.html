@@ -1,3 +1,112 @@
-<p>
-  system-settings-preparedness works!
-</p>
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>System Settings</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-preparedness']">Preparedness</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">Document upload settings</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">Response plans</a></li>
+    </ul>
+
+    <h3 class="System-admin__Sub-title--spaced">Minimum preparedness threshold</h3>
+    <hr>
+
+    <div class="row Traffic--spaced">
+      <div class="col-lg-2 col-md-3">
+        <i class="Traffic--green"></i>Green
+      </div>
+      <div class="col-lg-2 col-md-3">
+        <select class="form-control">
+          <option>85%</option>
+          <option>75%</option>
+          <option>50%</option>
+          <option>25%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row Traffic--spaced">
+      <div class="col-lg-2 col-md-3">
+        <i class="Traffic--amber"></i>Amber
+      </div>
+      <div class="col-lg-2 col-md-3">
+        <select class="form-control">
+          <option>75%</option>
+          <option selected>70%</option>
+          <option>50%</option>
+          <option>25%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row Traffic--spaced">
+      <div class="col-lg-2 col-md-3">
+        <i class="Traffic--red"></i>Red
+      </div>
+      <div class="col-lg-2 col-md-3">
+        <select class="form-control">
+          <option>75%</option>
+          <option selected>60%</option>
+          <option>50%</option>
+          <option>25%</option>
+        </select>
+      </div>
+    </div>
+
+    <h3 class="System-admin__Sub-title--spaced">Advanced preparedness threshold</h3>
+    <hr>
+
+    <div class="row Traffic--spaced">
+      <div class="col-lg-2 col-md-3">
+        <i class="Traffic--green"></i>Green
+      </div>
+      <div class="col-lg-2 col-md-3">
+        <select class="form-control">
+          <option>85%</option>
+          <option>75%</option>
+          <option>50%</option>
+          <option>25%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row Traffic--spaced">
+      <div class="col-lg-2 col-md-3">
+        <i class="Traffic--amber"></i>Amber
+      </div>
+      <div class="col-lg-2 col-md-3">
+        <select class="form-control">
+          <option>75%</option>
+          <option selected>70%</option>
+          <option>50%</option>
+          <option>25%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row Traffic--spaced">
+      <div class="col-lg-2 col-md-3">
+        <i class="Traffic--red"></i>Red
+      </div>
+      <div class="col-lg-2 col-md-3">
+        <select class="form-control">
+          <option>75%</option>
+          <option selected>60%</option>
+          <option>50%</option>
+          <option>25%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-primary">Save settings</div>
+    </div>
+
+  </div>
+</div>

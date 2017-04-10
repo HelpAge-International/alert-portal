@@ -1,3 +1,36 @@
-<p>
-  system-settings-response-plans works!
-</p>
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>System Settings</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-preparedness']">Preparedness</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">Document upload settings</a></li>
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">Response plans</a></li>
+    </ul>
+
+    <div class="Sub-header-title__wrap">
+      <h2>Vulnerable groups</h2>
+      <button type="button" class="btn btn-outline-danger Inline-editable--enable">Delete Groups</button>
+      <button type="button" class="btn btn-outline-primary Inline-editable--enable">Edit Groups</button>
+    </div>
+    <div class="Groups">
+      <div class="row Editable-check-text Large-spacing-top">Group 1</div>
+      <div class="row Editable-check-text Large-spacing-top">Group 2</div>
+      <div class="row Editable-check-text Large-spacing-top">Group 3</div>
+      <div class="row Editable-check-text Large-spacing-top">Group 4</div>
+      <div class="row Add-new-department no-gutters">
+        <div class="col-md-4 col-8">
+          <input type="text" class="form-control" placeholder="Add a new group">
+        </div>
+        <div class="col-md-8 col-4">
+          <button type="button" class="btn btn-outline-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

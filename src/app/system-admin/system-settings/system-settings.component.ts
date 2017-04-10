@@ -12,6 +12,7 @@ import {RxHelper} from "../../utils/RxHelper";
   templateUrl: './system-settings.component.html',
   styleUrls: ['./system-settings.component.css']
 })
+
 export class SystemSettingsComponent implements OnInit, OnDestroy {
 
   minGreen: number;
