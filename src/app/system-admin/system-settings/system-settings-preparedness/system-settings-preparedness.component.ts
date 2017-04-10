@@ -56,10 +56,6 @@ export class SystemSettingsPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
-  back() {
-    this.router.navigateByUrl("/system-admin");
-  }
-
   private initData(uid) {
     this.af.database.object(Constants.APP_STATUS+"/system/" + uid).subscribe(x => {
       this.modelSystem = new ModelSystem();

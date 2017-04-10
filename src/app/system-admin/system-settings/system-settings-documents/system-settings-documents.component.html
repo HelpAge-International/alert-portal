@@ -1,80 +1,107 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
+<div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1>System Settings</h1>
+      <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
     </div>
 
     <ul class="section-nav">
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-preparedness']">Preparedness</a></li>
-      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">Document upload settings</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">Response plans</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-preparedness']">Preparedness</a>
+      </li>
+      <li class="section-nav__item active"><a
+        [routerLink]="['/system-admin/system-settings/system-settings-documents']">Document upload settings</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">Response
+        plans</a></li>
     </ul>
 
-    <h3 class="System-admin__Sub-title--spaced">Document upload settings</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.DOC_SETTING" | translate}}</h3>
     <hr>
 
-    <label for="f-Format">File Format</label>
+    <label>{{"SYSTEM_ADMIN.SETTING.FILE_FORMAT" | translate}}</label>
 
     <div class="row">
-      <label for="PDF" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
-                                                                                  name="f-Format" id="PDF">PDF</label>
-      <label for="DOC" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
-                                                                                  name="f-Format" id="DOC">DOC</label>
-      <label for="DOCX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                   id="DOCX">DOCX</label>
-      <label for="RTF" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                  id="RTF">RTF</label>
-      <label for="JPEG" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                   id="JPEG">JPEG</label>
-      <label for="PNG" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                  id="PNG">PNG</label>
-      <label for="CSV" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
-                                                                                  name="f-Format" id="CSV">CSV</label>
-      <label for="XLS" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" checked
-                                                                                  name="f-Format" id="XLS">XLS</label>
-      <label for="XLSX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                   id="XLSX">XLSX</label>
-      <label for="PPT" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                  id="PPT">PPT</label>
-      <label for="PPTX" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                   id="PPTX">PPTX</label>
-      <label for="TXT" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                  id="TXT">TXT</label>
-      <label for="ODT" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                  id="ODT">ODT</label>
-      <label for="TSV" class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4"><input type="checkbox" name="f-Format"
-                                                                                  id="TSV">TSV</label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPdf">
+        PDF
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isDoc">
+        DOC
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isDocx">
+        DOCX
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isRtf">
+        RTF
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isJpeg">
+        JPEG
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPng">
+        PNG
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isCsv">
+        CSV
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isXls">
+        XLS
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isXlsx">
+        XLSX
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPpt">
+        PPT
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isPptx">
+        PPTX
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isTxt">
+        TXT
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isOdt">
+        ODT
+      </label>
+      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
+        <input type="checkbox" name="f-Format" [(ngModel)]="isTsv">
+        TSV
+      </label>
     </div>
 
     <div class="File-size--spaced">
-      <label for="f-Format">Maximum file size</label>
+      <label>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}</label>
       <div class="row">
         <div class="col-lg-2 col-md-4 col-sm-4">
-          <select class="form-control">
-            <option>10</option>
-            <option>20</option>
-            <option>30</option>
+          <select class="form-control" [(ngModel)]="fileSize">
+            <option *ngFor="let value of thresholdValue" [ngValue]="value">{{value}}</option>
           </select>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-4">
-          <select class="form-control">
-            <option>KB</option>
-            <option selected>MB</option>
-            <option>GB</option>
+          <select class="form-control" [(ngModel)]="fileType">
+            <option *ngFor="let value of fileTypeList" [ngValue]="value">{{FileType[value]}}</option>
           </select>
         </div>
       </div>
     </div>
 
-
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary">Save settings</div>
+      <div class="btn btn-primary" (click)="saveSetting()">{{"SYSTEM_ADMIN.SETTING.SAVE" | translate | uppercase}}</div>
     </div>
-
 
   </div>
 </div>
