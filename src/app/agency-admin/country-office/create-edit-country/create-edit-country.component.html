@@ -8,39 +8,35 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <!--<div class="Back&#45;&#45;button">Home</div>-->
-
     <div class="Header-title__wrap">
-      <h1 *ngIf="!isEdit">Add New Country Office</h1>
-      <h1 *ngIf="isEdit">Edit Country Office</h1>
+      <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_NEW_COUNTRY_OFFICE" | translate | uppercase}}</h1>
+      <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.COUNTRY_OFFICES.EDIT_COUNTRY_OFFICE" | translate | uppercase}}</h1>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Country office details</h3>
+    <h3 class="System-admin__Sub-title--spaced">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRY_OFFICE_DETAILS" | translate}}</h3>
     <hr>
 
     <form #countryForm="ngForm" (ngSubmit)="submit()">
 
       <div class="row">
         <div class="col-lg-4 col-md-6">
-          <label for="CountryOffice">Country</label>
+          <label for="CountryOffice">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
           <select class="form-control" id="CountryOffice" required [(ngModel)]="countryOfficeLocation"
                   name="countryOfficeLocation">
             <option *ngFor="let country of countrySelections" [ngValue]="country">
               {{countryNames[country] | translate}}
             </option>
-            <!--<option value="C-val-2">Option 2</option>-->
-            <!--<option value="C-val-3">Option 3</option>-->
           </select>
         </div>
       </div>
 
-      <h3 class="System-admin__Sub-title--spaced">Country Administrator Details</h3>
+      <h3 class="System-admin__Sub-title--spaced">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRY_ADMIN_DETAILS" | translate}}</h3>
       <hr>
 
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Title">Title*</label>
+            <label for="Title">{{"GLOBAL.TITLE" | translate}}*</label>
             <select class="form-control" id="Title" required [(ngModel)]="countryAdminTitle"
                     name="countryAdminTitle">
               <option *ngFor="let title of titleSelections" [ngValue]="title">
@@ -51,22 +47,22 @@
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminFirstName]}">
-            <label for="f-Name">First Name*</label>
-            <input type="text" class="form-control" id="f-Name" required [(ngModel)]="countryAdminFirstName"
+            <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+            <input type="text" class="form-control" id="f-Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="countryAdminFirstName"
                    name="countryAdminFirstName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminLastName]}">
-            <label for="l-Name">Last Name*</label>
-            <input type="text" class="form-control" id="l-Name" required [(ngModel)]="countryAdminLastName"
+            <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME" | translate}}*</label>
+            <input type="text" class="form-control" id="l-Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="countryAdminLastName"
                    name="countryAdminLastName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminEmail]}">
-            <label for="Email">Email Address*</label>
-            <input type="text" class="form-control" id="Email" required [(ngModel)]="countryAdminEmail"
+            <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+            <input type="text" class="form-control" id="Email" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="countryAdminEmail"
                    name="countryAdminEmail">
           </div>
         </div>
@@ -75,22 +71,22 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-1">Address Line 1</label>
-            <input type="text" class="form-control" id="A-line-1" [(ngModel)]="countryAdminAddress1"
+            <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}</label>
+            <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="countryAdminAddress1"
                    name="countryAdminAddress1">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-2">Address Line 2</label>
-            <input type="text" class="form-control" id="A-line-2" [(ngModel)]="countryAdminAddress2"
+            <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
+            <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="countryAdminAddress2"
                    name="countryAdminAddress2">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-3">Address Line 3</label>
-            <input type="text" class="form-control" id="A-line-3" [(ngModel)]="countryAdminAddress3"
+            <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
+            <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="countryAdminAddress3"
                    name="countryAdminAddress3">
           </div>
         </div>
@@ -99,8 +95,7 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Country">Country</label>
-            <!--<input type="text" class="form-control" id="Country">-->
+            <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
             <div>
               <select class="form-control" id="Country" [(ngModel)]="countryAdminCountry" name="countryAdminCountry">
                 <option *ngFor="let country of countrySelections" [value]="country">{{countryNames[country] |
@@ -112,27 +107,25 @@
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="City">City</label>
-            <input type="text" class="form-control" id="City" [(ngModel)]="countryAdminCity" name="countryAdminCity">
+            <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+            <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="countryAdminCity" name="countryAdminCity">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Postcode">Postcode</label>
-            <input type="text" class="form-control" id="Postcode" [(ngModel)]="countryAdminPostcode"
+            <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
+            <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="countryAdminPostcode"
                    name="countryAdminPostcode">
           </div>
         </div>
       </div>
 
       <div class="Form-submit__wrapper">
-        <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="validate()">UPDATE COUNTRY
-          OFFICE
+        <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="validate()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.UPDATE_COUNTRY_OFFICE" | translate | uppercase}}
         </button>
-        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="validate()">SAVE NEW
-          COUNTRY OFFICE
+        <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="validate()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_NEW_COUNTRY_OFFICE" | translate | uppercase}}
         </button>
-        <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
+        <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>
       </div>
 
     </form>

@@ -1,10 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {RxHelper} from "../../utils/RxHelper";
-import {Router, RouterLinkActive, ActivatedRoute} from "@angular/router";
-import {Constants} from "../../utils/Constants";
-import {Observable} from "rxjs";
-import {DialogService} from "../../dialog/dialog.service";
+import {AngularFire, FirebaseListObservable} from 'angularfire2';
+import {RxHelper} from '../../utils/RxHelper';
+import {Router} from '@angular/router';
+import {Constants} from '../../utils/Constants';
+import {Observable} from 'rxjs';
+import {DialogService} from '../../dialog/dialog.service';
 
 @Component({
   selector: 'app-country-office',
@@ -38,8 +38,8 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       }
       console.log(user.auth.uid);
       this.uid = user.auth.uid;
-      this.countries = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid);
-      this.regions = this.af.database.list(Constants.APP_STATUS+"/region/" + this.uid);
+      this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid);
+      this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.uid);
       let subscription = this.regions
         .subscribe(regions => {
           regions.forEach(region => {
@@ -97,10 +97,10 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   private retrieveOtherCountries(diff: string[]) {
-    console.log("do have other countries, fetch data!");
+    console.log('do have other countries, fetch data!');
     let subscription = Observable.from(diff)
       .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + id);
+        return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + id);
       })
       .subscribe(result => {
         console.log(result);
@@ -115,14 +115,14 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   toggleActive(country) {
     let state: boolean = !country.isActive;
-    let title = "";
-    let content = "";
+    let title = '';
+    let content = '';
     if (country.isActive) {
-      title = "Deactivate?";
-      content = "Are you sure you want to deactivate this region? The associated regional director will no longer be able to approve response plans from the country offices within this region.";
+      title = 'GLOBAL.DEACTIVATE' + '?';
+      content = 'AGENCY_ADMIN.COUNTRY_OFFICES.ACTIVATE_ALERT';
     } else {
-      title = "Activate?";
-      content = "Are you sure you want to activate this region?";
+      title = 'Activate?';
+      content = 'AGENCY_ADMIN.COUNTRY_OFFICES.ACTIVATE_ALERT';
     }
     let subscription = this.dialogService.createDialog(title, content)
       .subscribe(result => {
@@ -130,13 +130,13 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
           return;
         }
         this.otherCountries = [];
-        this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + country.$key + "/isActive").set(state);
+        this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + country.$key + '/isActive').set(state);
       });
     this.subscriptions.add(subscription);
   }
 
   editCountry(country) {
-    this.router.navigate(["agency-admin/country-office/create-edit-country/", {id: country.$key}]);
+    this.router.navigate(['agency-admin/country-office/create-edit-country/', {id: country.$key}]);
   }
 
   getCountries(region): any {
@@ -148,8 +148,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.regionCountries = [];
     this.tempCountryIdList = [];
     for (let countryId in region.countries) {
-      // console.log(countryId);
-      let subscription = this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + countryId)
+      let subscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + countryId)
         .first()
         .subscribe(country => {
           if (!this.tempCountryIdList.includes(country.location)) {
@@ -163,17 +162,16 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   getAdminName(key): string {
-    // console.log(key)
     if (!key) {
       return;
     }
-    let name: string = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + key + "/adminId")
+    let name: string = '';
+    let subscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + key + '/adminId')
       .flatMap(adminId => {
-        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + adminId.$value)
+        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + adminId.$value)
       })
       .subscribe(user => {
-        name = user.firstName + " " + user.lastName;
+        name = user.firstName + ' ' + user.lastName;
       });
     this.subscriptions.add(subscription);
 

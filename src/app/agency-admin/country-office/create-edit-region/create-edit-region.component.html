@@ -9,14 +9,14 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap ">
-      <h1>{{pageTitle}}</h1>
-      <button *ngIf="isEdit" type="button" class="btn btn-danger">Delete Region</button>
+      <h1>{{pageTitle | translate}}</h1>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" | translate}}</button>
     </div>
 
     <div class="row System-admin--form-wrap">
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Region-Name">Region Name*</label>
+          <label for="Region-Name">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGION_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="Region-Name" placeholder="Please enter" required
                  [(ngModel)]="regionName" name="regionName">
         </div>
@@ -26,7 +26,7 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group countries_parent" id="countries_parent">
-          <label for="country">Countries*</label>
+          <label for="country">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRIES" | translate}}*</label>
 
           <select *ngFor="let selectCountry of countries" class="form-control"
                   [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
@@ -37,7 +37,7 @@
           </select>
         </div>
         <div class="form-group">
-          <a id="add-country" (click)="addCountrySelection()">+Add another country</a>
+          <a id="add-country" (click)="addCountrySelection()">+{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" | translate}}</a>
         </div>
       </div>
     </div>
@@ -45,9 +45,9 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="RegionalDirector">Regional Director</label>
+          <label for="RegionalDirector">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}</label>
           <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId">
-            <option>Unassigned</option>
+            <option>{{"AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED" | translate}}</option>
             <option>Forename Surname</option>
           </select>
         </div>
@@ -55,8 +55,8 @@
     </div>
 
     <div class="Form-submit__wrapper">
-      <button type="submit" class="btn btn-primary" (click)="submit()">{{submitText | uppercase}}</button>
-      <div class="btn btn-outline-secondary" (click)="cancel()">Cancel</div>
+      <button type="submit" class="btn btn-primary" (click)="submit()">{{submitText | translate | uppercase}}</button>
+      <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
   </div>
 </div>

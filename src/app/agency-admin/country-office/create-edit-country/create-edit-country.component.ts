@@ -124,28 +124,27 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     } else {
       this.createCountryOffice();
     }
-    // this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
   }
 
   validate() {
     console.log("validate form");
     if (this.countryOfficeLocation < 0) {
-      this.waringMessage = "Country can not be null!";
+      this.waringMessage = "AGENCY_ADMIN.COUNTRY_OFFICES.NAME_MISSING";
       this.showAlert();
       return;
     } else if (!this.countryAdminFirstName) {
       this.alerts[this.countryAdminFirstName] = true;
-      this.waringMessage = "First name can not be empty!";
+      this.waringMessage = "AGENCY_ADMIN.COUNTRY_OFFICES.F_NAME_MISSING";
       this.showAlert();
       return;
     } else if (!this.countryAdminLastName) {
       this.alerts[this.countryAdminLastName] = true;
-      this.waringMessage = "Last name can not be empty!";
+      this.waringMessage = "AGENCY_ADMIN.COUNTRY_OFFICES.L_NAME_MISSING";
       this.showAlert();
       return;
     } else if (!this.countryAdminEmail) {
       this.alerts[this.countryAdminEmail] = true;
-      this.waringMessage = "Email can not be empty!";
+      this.waringMessage = "AGENCY_ADMIN.COUNTRY_OFFICES.EMAIL_MISSING";
       this.showAlert();
       return;
     } else {
@@ -208,7 +207,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       .subscribe(result => {
         if (result.length != 0) {
           this.hideWarning = false;
-          this.waringMessage = "ERROR.COUNTRY_DUPLICATE";
+          this.waringMessage = "AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_DUPLICATE_COUNTRY";
           return;
         }
         if (this.isEdit && this.isUserChange) {
