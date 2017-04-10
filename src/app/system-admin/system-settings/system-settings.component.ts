@@ -33,6 +33,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     let subscription = this.af.auth.subscribe(x => {
       if (x) {
         this.uid = x.uid;
@@ -42,14 +43,15 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.add(subscription)
-
   }
 
   ngOnDestroy() {
+
     this.subscriptions.releaseAll();
   }
 
   saveSetting() {
+
     if (this.uid) {
       this.writeToFirebase();
     } else {
@@ -58,6 +60,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   private initData(uid) {
+
     this.af.database.object(Constants.APP_STATUS+"/system/" + uid).subscribe(x => {
       this.modelSystem = new ModelSystem();
       this.modelSystem.advThreshold = x.advThreshold;
@@ -74,6 +77,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   private writeToFirebase() {
+
     this.modelSystem.minThreshold[0] = this.minGreen;
     this.modelSystem.minThreshold[1] = this.minAmber;
     this.modelSystem.minThreshold[2] = this.minRed;
@@ -89,6 +93,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   private showAlert() {
+
     this.isSaved = true;
     let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
       this.isSaved = false;

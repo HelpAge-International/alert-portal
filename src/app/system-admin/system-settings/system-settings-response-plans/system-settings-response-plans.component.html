@@ -43,11 +43,11 @@
         <input type="text" class="form-control col-md-6" disabled value="Group 5">
       </div>
       <div class="row Add-new-department Add-new-inline-editable no-gutters">
-        <div class="col-md-4 col-8">
-          <input type="text" class="form-control" placeholder="Add a new group">
+        <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[newGroup]}">
+          <input type="text" class="form-control" placeholder="Add a new group" [(ngModel)]="newGroup">
         </div>
         <div class="col-md-8 col-4">
-          <button type="button" class="btn btn-outline-primary">Save</button>
+          <button type="button" class="btn btn-outline-primary" (click)="addGroup()">Save</button>
         </div>
       </div>
     </div>
