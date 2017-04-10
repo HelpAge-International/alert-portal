@@ -12,7 +12,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>System Settings</h1>
+      <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
     </div>
 
     <ul class="section-nav">
@@ -27,24 +27,27 @@
     </ul>
 
     <div class="Sub-header-title__wrap">
-      <h2>Vulnerable groups</h2>
-      <button type="button" class="btn btn-outline-primary Inline-editable--enable" onclick="editInlineEditable()">Edit
-        Groups
+      <h2>{{"SYSTEM_ADMIN.SETTING.VULNERABLE_GROUPS" | translate}}</h2>
+      <button type="button" class="btn btn-outline-primary Inline-editable--enable" onclick="editInlineEditable()">
+        {{"SYSTEM_ADMIN.SETTING.EDIT_GROUPS" | translate | uppercase}}
       </button>
-      <a href="#" class="btn btn-primary Edit-inline-action">Save</a>
-      <a href="#" class="btn btn-ghost Edit-inline-action" onclick="editInlineEditable()">Cancel</a>
+      <a class="btn btn-primary Edit-inline-action" (click)="editGroups(group)">{{"GLOBAL.SAVE" | translate |
+        uppercase}}</a>
+      <a class="btn btn-ghost Edit-inline-action" onclick="editInlineEditable()">{{"GLOBAL.CANCEL" | translate}}</a>
     </div>
     <div class="Groups">
       <div class="row Editable-check-text Large-spacing-top" *ngFor="let group of groups | async">
-        <input type="text" class="form-control col-md-6" disabled value={{group.$key}}>
+        <input type="text" class="form-control col-md-6" value="groupForEdit" disabled value={{group.$key}}>
       </div>
 
       <div class="row Add-new-department Add-new-inline-editable no-gutters">
         <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[newGroup]}">
-          <input type="text" class="form-control" placeholder="Add a new group" [(ngModel)]="newGroup">
+          <input type="text" class="form-control" placeholder="{{'SYSTEM_ADMIN.SETTING.ADD_NEW_GROUP' | translate}}"
+                 [(ngModel)]="newGroup">
         </div>
         <div class="col-md-8 col-4">
-          <button type="button" class="btn btn-outline-primary" (click)="addGroup()">Save</button>
+          <button type="button" class="btn btn-outline-primary" (click)="addGroup()">{{"GLOBAL.SAVE" | translate}}
+          </button>
         </div>
       </div>
     </div>

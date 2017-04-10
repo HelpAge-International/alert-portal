@@ -142,7 +142,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   addNewDepartment() {
 
     if (this.validateNewDepartment()) {
-      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
+      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(false).then(_ => {
         console.log('New department added');
         jQuery("#add_department").modal("hide");
         this.departmentSelected = this.newDepartment;

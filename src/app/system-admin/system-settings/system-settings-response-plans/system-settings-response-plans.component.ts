@@ -3,7 +3,6 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 import {Constants} from "../../../utils/Constants";
-import {ModelSystem} from "../../../model/system.model";
 import {RxHelper} from "../../../utils/RxHelper";
 
 @Component({
@@ -21,8 +20,8 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private errorInactive: boolean = true;
   private successInactive: boolean = true;
 
-  private groups: FirebaseListObservable<any> ;
-  private modelSystem: ModelSystem;
+  private groups: FirebaseListObservable<any>;
+  private groupForEdit: string;
   private newGroup: string;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
@@ -46,13 +45,20 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+  editGroups() {
+  console.log("groupForEdit ====" + this.groupForEdit);
+
+  }
+
   addGroup() {
 
     if (this.validateNewGroup() && this.newGroup) {
       this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + "/groups" + '/' + this.newGroup).set(true).then(_ => {
         console.log('New group added');
         this.newGroup = '';
-        this.successMessage = 'New group added';
+        this.successMessage = "SYSTEM_ADMIN.SETTING.SUCCESS_ADD_GROUP";
+        this.router.navigateByUrl('/system-admin/system-settings/system-settings-response-plans')
+
         this.showAlert(false);
       })
     } else {
@@ -85,7 +91,7 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
 
     if (!(this.newGroup)) {
       this.alerts[this.newGroup] = true;
-      this.errorMessage = "Please enter the group name to add the new group";
+      this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_GROUP_NAME";
       return false;
     }
     return true;

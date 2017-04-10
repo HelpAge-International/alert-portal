@@ -210,7 +210,12 @@
       "SAVE": "Save Settings",
       "PREPAREDNESS": "Preparedness",
       "DOC_SETTINGS": "Document upload settings",
-      "RESPONSE_PLANS": "Response plans"
+      "RESPONSE_PLANS": "Response plans",
+      "VULNERABLE_GROUPS": "Vulnerable groups",
+      "ADD_NEW_GROUP": "Add a new group",
+      "EDIT_GROUPS": "Edit groups",
+      "SUCCESS_ADD_GROUP": "New group added",
+      "ERROR_NO_GROUP_NAME": "Please enter the group name to add the new group"
     }
   },
   "AGENCY_ADMIN": {
