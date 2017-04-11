@@ -297,7 +297,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agency.isDonor = this.isDonor;
       agency.isActive = true;
       agency.adminId = uid;
-      agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
+      // agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
       agencyData["/agency/" + uid] = agency;
     }
 

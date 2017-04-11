@@ -21,6 +21,8 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private successInactive: boolean = true;
 
   private groups: FirebaseListObservable<any>;
+  private groupsToShow: string[] = [];
+
   private groupForEdit: string;
   private newGroup: string;
 
@@ -33,11 +35,23 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
       if (auth) {
         this.uid = auth.uid;
         this.groups = this.af.database.list(Constants.APP_STATUS + "/system/" + this.uid + '/groups');
+        this.storeGroups();
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH)
       }
     });
     this.subscriptions.add(subscription)
+  }
+
+  private storeGroups() {
+
+    this.groups.forEach(groupsList => {
+      this.groupsToShow = [];
+      groupsList.forEach(group => {
+        this.groupsToShow.push(group.$key);
+      });
+      return this.groupsToShow;
+    });
   }
 
   ngOnDestroy() {
@@ -46,7 +60,7 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   editGroups() {
-  console.log("groupForEdit ====" + this.groupForEdit);
+    console.log("groupForEdit ====" + this.groupForEdit);
 
   }
 
@@ -58,9 +72,9 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
         this.newGroup = '';
         this.successMessage = "SYSTEM_ADMIN.SETTING.SUCCESS_ADD_GROUP";
         this.router.navigateByUrl('/system-admin/system-settings/system-settings-response-plans')
-
         this.showAlert(false);
-      })
+      });
+      this.storeGroups();
     } else {
       this.showAlert(true);
     }

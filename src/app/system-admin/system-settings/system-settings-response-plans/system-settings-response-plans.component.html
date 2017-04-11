@@ -36,8 +36,8 @@
       <a class="btn btn-ghost Edit-inline-action" onclick="editInlineEditable()">{{"GLOBAL.CANCEL" | translate}}</a>
     </div>
     <div class="Groups">
-      <div class="row Editable-check-text Large-spacing-top" *ngFor="let group of groups | async">
-        <input type="text" class="form-control col-md-6" value="groupForEdit" disabled value={{group.$key}}>
+      <div class="row Editable-check-text Large-spacing-top" *ngFor="let group of groupsToShow">
+        <input type="text" class="form-control col-md-6" value="groupForEdit" disabled value={{group}}>
       </div>
 
       <div class="row Add-new-department Add-new-inline-editable no-gutters">
