@@ -312,6 +312,9 @@
     "TITLE": "Alert",
     "CONTENT": "Are you sure you want to delete this message?"
   },
+  "DELETE_AGENCY_DIALOG": {
+    "CONTENT": "Are you sure you want to delete this agency?"
+  },
   "MESSAGES": {
     "TITLE_TEXT": "System Messages",
     "CREATE_NEW_MESSAGE": "Create new message",

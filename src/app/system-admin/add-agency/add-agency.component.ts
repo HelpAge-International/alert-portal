@@ -14,6 +14,7 @@ import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {UUID} from "../../utils/UUID";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-add-agency',
@@ -52,6 +53,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private preAgencyName: string;
   private isDonor: boolean = true;
+  private agencyToDelete;
 
   constructor(private af: AngularFire, private router: Router,
               private route: ActivatedRoute, private dialogService: DialogService) {
@@ -87,14 +89,14 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    let subscription = this.af.database.object(Constants.APP_STATUS+"/agency/" + agencyId).subscribe(agency => {
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe(agency => {
       this.agencyName = agency.name;
       this.preAgencyName = agency.name;
       this.adminId = agency.adminId;
       this.isDonor = agency.isDonor;
 
       //load from user public
-      let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + agency.adminId)
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
         .subscribe(user => {
           this.userPublic = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
           this.userPublic.addressLine1 = user.addressLine1;
@@ -224,7 +226,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       return;
     }
     console.log("validate agency name");
-    let subscription = this.af.database.list(Constants.APP_STATUS+"/agency", {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency", {
       query: {
         orderByChild: "name",
         equalTo: this.agencyName
@@ -317,34 +319,39 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   }
 
   delete() {
-    console.log("delete");
+    jQuery("#delete-agency").modal("show");
+  }
+
+  deleteAgencyFromFirebase() {
+    console.log("Delete agency button pressed");
+
     if (this.agencyId && this.adminId) {
-      let subscription = this.dialogService.createDialog("test", "test test").subscribe(result => {
-        console.log(result);
-        //TODO delete agency (cant finish till whole system done)
-        if (result) {
-          this.deleteAgency["/userPublic/" + this.adminId] = null;
-          this.deleteAgency["/administratorAgency/" + this.adminId] = null;
-          this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
-          this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
-          this.deleteAgency["/agency/" + this.agencyId] = null;
-          this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
-          this.af.database.list(Constants.APP_STATUS+"/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
-            result.forEach(item => {
-              console.log(item.$key);
-              this.deleteAgency["/message/" + item.$key] = null;
-            });
-            console.log(JSON.stringify(this.deleteAgency));
-            this.af.database.object(Constants.APP_STATUS).update(this.deleteAgency).then(() => {
-              this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
-            }, error => {
-              console.log(error.message);
-            });
-          })
-        }
-      });
-      this.rxhelper.add(subscription);
+      //TODO delete agency (cant finish till whole system done)
+      this.deleteAgency["/userPublic/" + this.adminId] = null;
+      this.deleteAgency["/administratorAgency/" + this.adminId] = null;
+      this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+      this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
+      this.deleteAgency["/agency/" + this.agencyId] = null;
+      this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
+        result.forEach(item => {
+          console.log(item.$key);
+          this.deleteAgency["/message/" + item.$key] = null;
+        });
+        console.log(JSON.stringify(this.deleteAgency));
+        this.af.database.object(Constants.APP_STATUS).update(this.deleteAgency).then(() => {
+          console.log("Agency deleted");
+          jQuery("#delete-agency").modal("hide");
+          this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
+        }, error => {
+          console.log(error.message);
+        });
+      })
     }
+  }
+
+  closeModal() {
+    jQuery("#delete-agency").modal("hide");
   }
 
   private showAlert() {
