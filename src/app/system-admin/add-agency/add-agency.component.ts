@@ -53,7 +53,6 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private preAgencyName: string;
   private isDonor: boolean = true;
-  private agencyToDelete;
 
   constructor(private af: AngularFire, private router: Router,
               private route: ActivatedRoute, private dialogService: DialogService) {
@@ -318,41 +317,42 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     this.backToHome();
   }
 
-  delete() {
-    jQuery("#delete-agency").modal("show");
-  }
-
-  deleteAgencyFromFirebase() {
-    console.log("Delete agency button pressed");
-
-    if (this.agencyId && this.adminId) {
-      //TODO delete agency (cant finish till whole system done)
-      this.deleteAgency["/userPublic/" + this.adminId] = null;
-      this.deleteAgency["/administratorAgency/" + this.adminId] = null;
-      this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
-      this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
-      this.deleteAgency["/agency/" + this.agencyId] = null;
-      this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
-      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
-        result.forEach(item => {
-          console.log(item.$key);
-          this.deleteAgency["/message/" + item.$key] = null;
-        });
-        console.log(JSON.stringify(this.deleteAgency));
-        this.af.database.object(Constants.APP_STATUS).update(this.deleteAgency).then(() => {
-          console.log("Agency deleted");
-          jQuery("#delete-agency").modal("hide");
-          this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
-        }, error => {
-          console.log(error.message);
-        });
-      })
-    }
-  }
-
-  closeModal() {
-    jQuery("#delete-agency").modal("hide");
-  }
+  // Deletion of an agency is no longer needed for the client
+  // delete() {
+  //   jQuery("#delete-agency").modal("show");
+  // }
+  //
+  // deleteAgencyFromFirebase() {
+  //   console.log("Delete agency button pressed");
+  //
+  //   if (this.agencyId && this.adminId) {
+  //     //TODO delete agency (cant finish till whole system done)
+  //     this.deleteAgency["/userPublic/" + this.adminId] = null;
+  //     this.deleteAgency["/administratorAgency/" + this.adminId] = null;
+  //     this.deleteAgency["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+  //     this.deleteAgency["/group/systemadmin/allusersgroup/" + this.adminId] = null;
+  //     this.deleteAgency["/agency/" + this.agencyId] = null;
+  //     this.deleteAgency["/messageRef/agencygroup/" + this.agencyId] = null;
+  //     this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/sentmessages").subscribe(result => {
+  //       result.forEach(item => {
+  //         console.log(item.$key);
+  //         this.deleteAgency["/message/" + item.$key] = null;
+  //       });
+  //       console.log(JSON.stringify(this.deleteAgency));
+  //       this.af.database.object(Constants.APP_STATUS).update(this.deleteAgency).then(() => {
+  //         console.log("Agency deleted");
+  //         jQuery("#delete-agency").modal("hide");
+  //         this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
+  //       }, error => {
+  //         console.log(error.message);
+  //       });
+  //     })
+  //   }
+  // }
+  //
+  // closeModal() {
+  //   jQuery("#delete-agency").modal("hide");
+  // }
 
   private showAlert() {
     this.inactive = false;

@@ -8,9 +8,9 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate}}</h1>
       <h1 *ngIf="isEdit">{{"SYSTEM_ADMIN.AGENCIES.EDIT_AGENCY" | translate}}</h1>
-      <button *ngIf="isEdit" class="btn btn-danger" (click)="delete()">{{"SYSTEM_ADMIN.AGENCIES.DELETE_AGENCY" |
-        translate}}
-      </button>
+      <!--<button *ngIf="isEdit" class="btn btn-danger" (click)="delete()">{{"SYSTEM_ADMIN.AGENCIES.DELETE_AGENCY" |-->
+        <!--translate}}-->
+      <!--</button>-->
     </div>
 
     <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.AGENCIES.AGENCY_DETAIL" | translate}}</h3>
@@ -154,20 +154,20 @@
 
 </div>
 
-<div class="modal fade" id="delete-agency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>
-      </div>
-      <div class="modal-body">
-        <div class="text-center"><p>{{"DELETE_AGENCY_DIALOG.CONTENT" | translate}}</p></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="deleteAgencyFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!--<div class="modal fade" id="delete-agency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
+     <!--aria-hidden="true">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<div class="modal-content">-->
+      <!--<div class="modal-header">-->
+        <!--<h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>-->
+      <!--</div>-->
+      <!--<div class="modal-body">-->
+        <!--<div class="text-center"><p>{{"DELETE_AGENCY_DIALOG.CONTENT" | translate}}</p></div>-->
+      <!--</div>-->
+      <!--<div class="modal-footer">-->
+        <!--<button type="button" class="btn btn-primary" (click)="deleteAgencyFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}</button>-->
+        <!--<button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
