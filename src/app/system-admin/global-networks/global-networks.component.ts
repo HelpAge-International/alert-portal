@@ -4,6 +4,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router, ActivatedRoute} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {DialogService} from "../../dialog/dialog.service";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-global-networks',
@@ -12,6 +13,9 @@ import {DialogService} from "../../dialog/dialog.service";
 })
 export class GlobalNetworksComponent implements OnInit, OnDestroy {
   networks: FirebaseListObservable<any[]>;
+  private alertTitle: string;
+  private alertContent: string;
+  private networkToUpdate;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
   }
@@ -28,7 +32,7 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   }
 
   private loadNetworks() {
-    this.networks = this.af.database.list(Constants.APP_STATUS+"/network");
+    this.networks = this.af.database.list(Constants.APP_STATUS + "/network");
     console.log(this.networks)
   }
 
@@ -40,25 +44,29 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.SYSTEM_ADMIN_ADD_NETWORK);
   }
 
-  toggleActive(network) {
-    let title = "";
-    let content = "";
-    if (network.isActive) {
-      title = "GLOBAL.DEACTIVATE";
-      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
+  update(network) {
+    this.networkToUpdate = network;
+    if (this.networkToUpdate.isActive) {
+      this.alertTitle = "GLOBAL.DEACTIVATE";
+      this.alertContent = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.DEACTIVATE_CONTENT";
     } else {
-      title = "GLOBAL.ACTIVATE";
-      content = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
+      this.alertTitle = "GLOBAL.ACTIVATE";
+      this.alertContent = "SYSTEM_ADMIN.GLOBAL_NETWORKS.DIALOG.ACTIVATE_CONTENT";
     }
-    let subscription = this.dialogService.createDialog(title, content)
-      .subscribe(result => {
-        if (!result) {
-          return
-        }
-        let newState = !network.isActive;
-        this.af.database.object(Constants.APP_STATUS + "/network/" + network.$key + "/isActive").set(newState);
+    jQuery("#update-network").modal("show");
+  }
+
+  toggleActive() {
+    let newState = !this.networkToUpdate.isActive;
+    this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkToUpdate.$key + "/isActive").set(newState)
+      .then(_ => {
+        console.log("Network state updated");
+        jQuery("#update-network").modal("hide");
       });
-    this.subscriptions.add(subscription);
+  }
+
+  closeModal() {
+    jQuery("#update-network").modal("hide");
   }
 
   edit(network) {

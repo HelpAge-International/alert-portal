@@ -24,17 +24,35 @@
         <td *ngIf="!network.isActive">{{"GLOBAL.DEACTIVE" |translate}}</td>
         <td>
           <div *ngIf="network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
-               (click)="toggleActive(network)">
+               (click)="update(network)">
             {{"GLOBAL.DEACTIVATE" | translate}}
           </div>
-          <div *ngIf="!network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
-               (click)="toggleActive(network)">
+          <div *ngIf="!network.isActive" class="btn btn-success" data-toggle="modal" data-target="#deactivate_network"
+               (click)="update(network)">
             {{"GLOBAL.ACTIVATE" | translate}}
           </div>
           <div class="btn btn-primary" (click)="edit(network)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
       </tr>
     </table>
+  </div>
+</div>
+
+<div class="modal fade" id="update-network" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{alertTitle | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{alertContent | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="toggleActive()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
   </div>
 </div>
 
