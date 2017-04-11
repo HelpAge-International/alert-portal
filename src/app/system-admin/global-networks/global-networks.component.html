@@ -16,7 +16,8 @@
 
     <table class="table Table__v-spacing__mid Agency-table">
       <tr *ngFor="let network of networks | async">
-        <td><div class="Agency-logo" [style.background-image]="network.logoPath ? 'url(' + network.logoPath + ')' : 'url(assets/images/alert_logo--grey.svg)'"></div></td>
+        <!--<td><div class="Agency-logo" [style.background-image]="network.logoPath ? 'url(' + network.logoPath + ')' : 'url(assets/images/alert_logo&#45;&#45;grey.svg)'"></div></td>-->
+        <td><div class="Agency-logo" [style.background-image]="'url(assets/images/alert_logo--grey.svg)'"></div></td>
         <td>{{network.name}}</td>
         <td></td>
         <td *ngIf="network.isActive">{{"GLOBAL.ACTIVE" |translate}}</td>
