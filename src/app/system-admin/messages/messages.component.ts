@@ -65,7 +65,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   deleteMessage(sentMessage) {
     this.messageToDelete = sentMessage.$key;
-    jQuery("#delete-action").modal("show");
+    jQuery("#delete-message").modal("show");
   }
 
   deleteFromFirebase() {
@@ -103,7 +103,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                   .subscribe(() => {
                     this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
                       console.log('Message Ref successfully deleted from all nodes');
-                      jQuery("#delete-action").modal("hide");
+                      jQuery("#delete-message").modal("hide");
                       // this.router.navigate(['/system-admin/messages']);
                     })
                   })
@@ -113,7 +113,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   }
 
   closeModal() {
-    jQuery("#delete-action").modal("hide");
+    jQuery("#delete-message").modal("hide");
   }
 
   private navigateToLogin() {
