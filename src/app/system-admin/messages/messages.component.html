@@ -7,7 +7,7 @@
 
     <div class="Header-title__wrap">
       <h1>{{"MESSAGES.TITLE_TEXT" | translate}}</h1>
-      <a routerLink="/system-admin/messages/create" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</a>
+      <button routerLink="/system-admin/messages/create" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</button>
     </div>
 
     <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>

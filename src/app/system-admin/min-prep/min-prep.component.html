@@ -7,7 +7,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"SYSTEM_ADMIN.ACTIONS.CHS_MPA.TITLE_TEXT" | translate}}</h1>
-      <a routerLink="/system-admin/min-prep/create" class="btn btn-primary">{{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" | translate | uppercase}}</a>
+      <button routerLink="/system-admin/min-prep/create" class="btn btn-primary">{{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" | translate | uppercase}}</button>
     </div>
 
     <div *ngIf="(chsMinPrepActions | async)?.length == 0" class="Empty--ribbon">{{"SYSTEM_ADMIN.ACTIONS.CHS_MPA.NO_ACTIONS" | translate}}</div>
