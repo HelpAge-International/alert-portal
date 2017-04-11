@@ -6,6 +6,7 @@ import {DialogService} from '../../dialog/dialog.service';
 import Promise = firebase.Promise;
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../utils/RxHelper';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-messages',
@@ -17,6 +18,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   private uid: string;
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private msgData = {};
+  private messageToDelete;
   private subscriptions: RxHelper;
 
   constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
@@ -62,15 +64,13 @@ export class MessagesComponent implements OnInit, OnDestroy {
   }
 
   deleteMessage(sentMessage) {
+    this.messageToDelete = sentMessage.$key;
+    jQuery("#delete-action").modal("show");
+  }
 
-    let subscription = this.dialogService.createDialog('DELETE_MESSAGE_DIALOG.TITLE', 'DELETE_MESSAGE_DIALOG.CONTENT').subscribe(result => {
-
-      if (result) {
-
-        let key: string = sentMessage.$key;
-
-        this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + key] = null;
-        this.msgData['/message/' + key] = null;
+  deleteFromFirebase() {
+        this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
+        this.msgData['/message/' + this.messageToDelete] = null;
 
         let allUsersGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/allusersgroup';
         let allAgencyAdminsGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/allagencyadminsgroup';
@@ -83,35 +83,37 @@ export class MessagesComponent implements OnInit, OnDestroy {
         let subscription = this.af.database.list(allUsersGroupPath)
           .do(list => {
             list.forEach(item => {
-              this.msgData[allUsersMsgRefPath + item.$key + '/' + key] = null;
+              this.msgData[allUsersMsgRefPath + item.$key + '/' + this.messageToDelete] = null;
             })
           })
           .subscribe(() => {
             this.af.database.list(allAgencyAdminsGroupPath)
               .do(list => {
                 list.forEach(item => {
-                  this.msgData[allAgencyAdminsMsgRef + item.$key + '/' + key] = null;
+                  this.msgData[allAgencyAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
                 })
               })
               .subscribe(() => {
                 this.af.database.list(allCountryAdminsGroupPath)
                   .do(list => {
                     list.forEach(item => {
-                      this.msgData[allCountryAdminsMsgRef + item.$key + '/' + key] = null;
+                      this.msgData[allCountryAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
                     })
                   })
                   .subscribe(() => {
                     this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
                       console.log('Message Ref successfully deleted from all nodes');
-                      this.router.navigate(['/system-admin/messages']);
+                      jQuery("#delete-action").modal("hide");
+                      // this.router.navigate(['/system-admin/messages']);
                     })
                   })
               })
           });
         this.subscriptions.add(subscription);
-      }
-    });
-    this.subscriptions.add(subscription);
+  }
+
+  closeModal() {
+    jQuery("#delete-action").modal("hide");
   }
 
   private navigateToLogin() {
