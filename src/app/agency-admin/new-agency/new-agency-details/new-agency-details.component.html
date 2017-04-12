@@ -5,49 +5,47 @@
     </div>
   </div>
 
-
-  <!--Start Put page data-->
   <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
 
       <div class="Header-title__wrap">
-        <h1>Welcome, John</h1>
+        <h1>{{"GLOBAL.WELCOME" | translate}}, {{agencyAdminName}}</h1>
       </div>
-      <h3>Please fill in your agency details below</h3>
+      <h3>{{"AGENCY_ADMIN.PLEASE_FILL" | translate}}</h3>
 
       <div class="Agency-details__logo">
-        <div class="form-group"><label>Agency Logo</label></div>
+        <div class="form-group"><label>{{"AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO" | translate}}</label></div>
         <label for="imgInp" class="Agency-details__logo__preview"></label>
         <input type='file' id="imgInp" class="Input-form--hidden"/>
-        <div><a href="#" id="select-logo">Add an image</a></div>
-        <div><a href="#" id="replace-logo" class="Agency-details__logo__replace-logo">Replace image</a></div>
-        <div><a href="#" class="Agency-details__logo__remove-logo text-danger" id="remove-logo">Remove image</a></div>
-        <div>Supported formats: jpeg, png, gif</div>
-        <div>Maximum file size: 2MB</div>
+        <div><a href="#" id="select-logo">{{"GLOBAL.ADD_IMAGE" | translate}}</a></div>
+        <div><a href="#" id="replace-logo" class="Agency-details__logo__replace-logo">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE" | translate}}</a></div>
+        <div><a href="#" class="Agency-details__logo__remove-logo text-danger" id="remove-logo">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
+        <div>{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
+        <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
       </div>
 
       <div class="row">
         <div class="col-lg-4 col-md-6">
-          <div class="form-group">
-            <label for="A-line-1">Address Line 1*</label>
-            <input type="text" class="form-control" id="A-line-1" placeholder="Please enter" required>
+          <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAddressLine1]}">
+            <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}*</label>
+            <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyAddressLine1">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-2">Address Line 2</label>
-            <input type="text" class="form-control" id="A-line-2" placeholder="Optional">
+            <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
+            <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyAddressLine2">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-3">Address Line 3</label>
-            <input type="text" class="form-control" id="A-line-3" placeholder="Optional">
+            <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
+            <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyAddressLine3">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="Country">Country*</label>
+            <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
 
             <select name="Country" id="Country" class="form-control"
                     onChange="setFocusValue($(&#39;#T-number&#39;), &#39;+44&#39;)">

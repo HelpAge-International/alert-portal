@@ -24,6 +24,7 @@
     "CURRENCY": "Currency",
     "PLEASE_ENTER": "Please enter",
     "OPTIONAL": "Optional",
+    "ADD_IMAGE": "Add an image",
     "NO_CHANGES_MADE": "No changes made",
     "SAVE_CHANGES": "Save changes",
     "CREATE_PASSWORD": "Please create a password",
@@ -221,6 +222,7 @@
     }
   },
   "AGENCY_ADMIN": {
+    "PLEASE_FILL": "Please fill in your agency details below",
     "COUNTRY_OFFICES": {
       "TITLE_TEXT": "Country Offices",
       "REGION_NAME": "Region Name",
