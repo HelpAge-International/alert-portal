@@ -13,8 +13,6 @@ import {MpaComponent} from "./system-admin/mpa/mpa.component";
 import {CreateActionComponent} from "./system-admin/min-prep/create-action/create-action.component";
 import {CreateMpaActionComponent} from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
 import {CountryAdminComponent} from "./country-admin/country-admin.component";
-import {CreatePasswordComponent} from "./agency-admin/create-password/create-password.component";
-import {AgencyDetailsComponent} from "./agency-admin/agency-details/agency-details.component";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
 import {CreateEditCountryComponent} from "./agency-admin/country-office/create-edit-country/create-edit-country.component";
 import {AgencyMpaComponent} from "./agency-admin/agency-mpa/agency-mpa.component";
@@ -32,7 +30,6 @@ import {AgencyAdminSettingsResponsePlanComponent} from "./agency-admin/settings/
 import {DocumentsComponent} from "./agency-admin/settings/documents/documents.component";
 import {NotificationComponent} from "./agency-admin/settings/notification/notification.component";
 
-
 import {AccountSettingsComponent} from "./system-admin/account-settings/account-settings.component";
 import {ChangePasswordComponent} from "./system-admin/account-settings/change-password/change-password.component";
 import {GlobalNetworksComponent} from "./system-admin/global-networks/global-networks.component";
@@ -45,6 +42,8 @@ import {CreateEditRegionComponent} from "./agency-admin/country-office/create-ed
 import {SystemSettingsDocumentsComponent} from "./system-admin/system-settings/system-settings-documents/system-settings-documents.component";
 import {SystemSettingsResponsePlansComponent} from "./system-admin/system-settings/system-settings-response-plans/system-settings-response-plans.component";
 import {SystemSettingsComponent} from "./system-admin/system-settings/system-settings.component";
+import {NewAgencyPasswordComponent} from "./agency-admin/new-agency/new-agency-password/new-agency-password.component";
+import {NewAgencyDetailsComponent} from "./agency-admin/new-agency/new-agency-details/new-agency-details.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -83,8 +82,8 @@ const routes: Routes = [
    * Agency admin
    */
   {path: 'agency-admin', component: AgencyAdminComponent},
-  {path: 'agency-admin/create-password', component: CreatePasswordComponent},
-  {path: 'agency-admin/agency-details', component: AgencyDetailsComponent},
+  {path: 'agency-admin/new-agency/new-agency-password', component: NewAgencyPasswordComponent},
+  {path: 'agency-admin/new-agency/new-agency-details', component: NewAgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
   {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
   {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},

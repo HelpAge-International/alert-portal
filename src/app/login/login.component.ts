@@ -77,8 +77,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                     let firstLogin: boolean = value.$value;
                     console.log("Val ----" + firstLogin);
                     if (firstLogin) {
-                      // TODO - Navigate to password screen
-                      this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
+                      this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
                     } else {
                       this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
                     }

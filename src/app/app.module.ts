@@ -32,8 +32,6 @@ import "hammerjs";
 import {SystemAdminHeaderComponent} from "./system-admin/system-admin-header/system-admin-header.component";
 import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {CreatePasswordComponent} from "./agency-admin/create-password/create-password.component";
-import {AgencyDetailsComponent} from "./agency-admin/agency-details/agency-details.component";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
 import {CreateEditCountryComponent} from "./agency-admin/country-office/create-edit-country/create-edit-country.component";
 import {CreateEditMpaComponent} from "./agency-admin/agency-mpa/create-edit-mpa/create-edit-mpa.component";
@@ -118,8 +116,6 @@ const firebaseAuthConfig = {
     CreateMpaActionComponent,
     SystemSettingsComponent,
     SystemAdminHeaderComponent,
-    CreatePasswordComponent,
-    AgencyDetailsComponent,
     CountryOfficeComponent,
     CreateEditCountryComponent,
     CreateEditMpaComponent,
