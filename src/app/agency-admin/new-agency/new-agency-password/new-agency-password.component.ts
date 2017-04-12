@@ -39,9 +39,10 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
         this.authState = auth;
         this.uid = auth.uid;
         console.log('New agency admin uid: ' + this.uid);
-        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
+        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
           this.agencyAdminName = user.firstName;
         });
+        this.subscriptions.add(subscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
@@ -59,7 +60,7 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
     if (this.validate()) {
       this.authState.auth.updatePassword(this.passwordEntered).then(() => {
         this.successInactive = false;
-        let subscription = Observable.timer(1000).subscribe(() => {
+        let subscription = Observable.timer(1500).subscribe(() => {
           this.successInactive = true;
           this.router.navigateByUrl('/agency-admin/new-agency/new-agency-details');
         });

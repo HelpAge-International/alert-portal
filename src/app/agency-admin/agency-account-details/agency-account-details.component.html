@@ -50,7 +50,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
+          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
           <select name="Country" id="Country" class="form-control" [(ngModel)]="agencyCountry">
             <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
           </select>
