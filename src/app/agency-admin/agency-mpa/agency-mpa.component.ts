@@ -5,6 +5,7 @@ import {ActionLevel, ActionType} from "../../utils/Enums";
 import {Router} from "@angular/router";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-agency-mpa',
@@ -12,7 +13,6 @@ import {Observable} from "rxjs";
   styleUrls: ['./agency-mpa.component.css'],
 })
 
-// TODO - Double filter
 export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -24,6 +24,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private actionLevelSelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
+  private actionToDelete;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -50,14 +51,24 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  // TODO - Add model
   deleteAction(actionKey) {
-    let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + actionKey;
-    console.log(actionPath);
+    this.actionToDelete = actionKey;
+    jQuery("#delete-action").modal("show");
+  }
+
+  deleteMandatedAction() {
+    console.log("Delete button pressed");
+    let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + this.actionToDelete;
     this.af.database.object(actionPath).remove()
-      .then(_ =>
-        console.log("MPA deleted")
+      .then(_ => {
+          console.log("Mandated preparedness action deleted");
+          jQuery("#delete-action").modal("hide");
+        }
       );
+  }
+
+  closeModal() {
+    jQuery("#delete-action").modal("hide");
   }
 
   editAction(actionKey) {

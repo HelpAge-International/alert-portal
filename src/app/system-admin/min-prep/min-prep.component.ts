@@ -18,7 +18,6 @@ export class MinPrepComponent implements OnInit, OnDestroy {
   private path: string = '';
   private actionToDelete;
   private subscriptions: RxHelper;
-  // ActionType = ActionType;
 
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;

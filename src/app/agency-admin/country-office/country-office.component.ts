@@ -4,13 +4,16 @@ import {RxHelper} from '../../utils/RxHelper';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
 import {Observable} from 'rxjs';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-country-office',
   templateUrl: './country-office.component.html',
   styleUrls: ['./country-office.component.css']
 })
+
 export class CountryOfficeComponent implements OnInit, OnDestroy {
+
   private uid: string;
   private countries: FirebaseListObservable<any[]>;
   private countryNames: string [] = Constants.COUNTRY;
@@ -25,6 +28,10 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private allCountries: string[];
   private otherCountries: any = [];
   private hideOtherCountries: boolean;
+
+  private alertTitle: string;
+  private alertContent: string;
+  private countryToUpdate;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -112,21 +119,31 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  // TODO - Add model
-  toggleActive(country) {
-    let state: boolean = !country.isActive;
-    let title = '';
-    let content = '';
-    if (country.isActive) {
-      title = 'GLOBAL.DEACTIVATE' + '?';
-      content = 'AGENCY_ADMIN.COUNTRY_OFFICES.ACTIVATE_ALERT';
+  update(country) {
+    this.countryToUpdate = country;
+    if (this.countryToUpdate.isActive) {
+      this.alertTitle = "GLOBAL.DEACTIVATE";
+      this.alertContent = 'AGENCY_ADMIN.COUNTRY_OFFICES.DEACTIVATE_ALERT';
     } else {
-      title = 'Activate?';
-      content = 'AGENCY_ADMIN.COUNTRY_OFFICES.ACTIVATE_ALERT';
+      this.alertTitle = "GLOBAL.ACTIVATE";
+      this.alertContent = 'AGENCY_ADMIN.COUNTRY_OFFICES.ACTIVATE_ALERT';
     }
+    jQuery("#update-country").modal("show");
+  }
+
+  toggleActive() {
+    let state: boolean = !this.countryToUpdate.isActive;
 
     this.otherCountries = [];
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + country.$key + '/isActive').set(state);
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + this.countryToUpdate.$key + '/isActive').set(state)
+      .then(_ => {
+        console.log("Country state updated");
+        jQuery("#update-country").modal("hide");
+      });
+  }
+
+  closeModal() {
+    jQuery("#update-country").modal("hide");
   }
 
   editCountry(country) {
