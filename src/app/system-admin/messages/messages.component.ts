@@ -2,9 +2,9 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import Promise = firebase.Promise;
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../utils/RxHelper';
+import Promise = firebase.Promise;
 declare var jQuery: any;
 
 @Component({

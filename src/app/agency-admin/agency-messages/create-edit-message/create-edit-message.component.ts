@@ -81,13 +81,12 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
         let sentMsgPath = '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
         this.msgData[sentMsgPath] = true;
-        // this.addMsgToMessageRef(msgId.key);
+        this.addMsgToMessageRef(msgId.key);
       });
   }
 
 
-  // TODO
-  /*private addMsgToMessageRef(key: string) {
+  private addMsgToMessageRef(key: string) {
 
     let agencyGroupPath: string = Constants.APP_STATUS+'/group/agency/' + this.uid + '/';
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
@@ -161,7 +160,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         this.subscriptions.add(subscription);
       }
     }
-  }*/
+  }
 
   /**
    * Returns false and specific error messages-

@@ -5,6 +5,7 @@ import {Constants} from '../../utils/Constants';
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../utils/RxHelper';
 import Promise = firebase.Promise;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-agency-messages',
@@ -17,6 +18,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
   private uid: string;
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private msgData = {};
+  private messageToDelete;
   private groups: string[] = [];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
@@ -42,10 +44,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
           })
           .distinctUntilChanged()
           .subscribe(x => {
-            console.log("sentMessages Before ----" + this.sentMessages.length);
             this.sentMessages.push(x);
-            console.log("sentMessages After ----" + this.sentMessages.length);
-
           });
 
         this.subscriptions.add(subscription);
@@ -63,13 +62,16 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  // TODO - Fix the subscription bug - Navigates to Country office screen after deleting a message
-  // TODO - Ad model
+  // TODO - FIX - Message references dont get deleted from 'messageRef' node
   deleteMessage(sentMessage) {
+    this.messageToDelete = sentMessage.$key;
+    jQuery("#delete-message").modal("show");
+  }
 
-    let key: string = sentMessage.$key;
-    this.msgData['/message/' + key] = null;
-    this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + key] = null;
+  deleteFromFirebase() {
+
+    this.msgData['/message/' + this.messageToDelete] = null;
+    this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
 
     this.groups.push('agencyallusersgroup');
     this.groups.push('globaldirector');
@@ -93,11 +95,14 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       let subscription = this.af.database.list(groupPath)
         .subscribe(list => {
           list.forEach(item => {
-            this.msgData[msgRefPath + '/' + item.$key + '/' + key] = null;
+            console.log("this.messageToDelete" + this.messageToDelete);
+            this.msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
           });
           if (this.groups.indexOf(group) == this.groups.length - 1) {
+
             this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
               console.log("Message Ref successfully deleted from all nodes");
+              jQuery("#delete-message").modal("hide");
             }).catch(error => {
               console.log("Message deletion unsuccessful" + error);
             });
@@ -105,6 +110,10 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
         });
       this.subscriptions.add(subscription);
     }
+  }
+
+  closeModal() {
+    jQuery("#delete-message").modal("hide");
   }
 
   private navigateToLogin() {
