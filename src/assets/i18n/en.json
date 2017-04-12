@@ -1,5 +1,6 @@
 {
   "GLOBAL": {
+    "WELCOME": "Welcome",
     "TYPE": "Type: ",
     "DELETE": "Delete",
     "CANCEL": "Cancel",
@@ -25,8 +26,9 @@
     "OPTIONAL": "Optional",
     "NO_CHANGES_MADE": "No changes made",
     "SAVE_CHANGES": "Save changes",
+    "CREATE_PASSWORD": "Please create a password",
     "CURRENT_PASSWORD": "Your current password",
-    "CONFIRM_PASSWORD": "Confirm your new password",
+    "CONFIRM_PASSWORD": "Confirm your password",
     "NEW_PASSWORD": "New password",
     "YES":"Yes",
     "NO":"No",

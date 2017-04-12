@@ -75,7 +75,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                 if (snapshot.key == success.uid) {
                   let subscription = this.af.database.object(Constants.APP_STATUS+"/administratorAgency/" + snapshot.key + '/firstLogin').subscribe((value) => {
                     let firstLogin: boolean = value.$value;
-                    console.log("Val ----" + firstLogin);
                     if (firstLogin) {
                       this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
                     } else {
@@ -98,8 +97,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             });
           this.subscriptions.add(countryAdminLoginSubscription);
         })
-        .catch((err) => {
-          // err.message can't be used here as they won't be translated. A global message is shown here instead.
+        .catch((error) => {
+          // error.message can't be used here as they won't be translated. A global message is shown here instead.
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.showAlert(true);
         });
