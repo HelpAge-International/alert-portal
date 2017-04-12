@@ -2,9 +2,8 @@ import {Component, OnInit, OnDestroy, ViewContainerRef} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
-import {DialogService} from "../../dialog/dialog.service";
-import {Subscription, Observable} from "rxjs";
-import {Modal, BSModalContext} from "angular2-modal/plugins/bootstrap";
+import {Subscription} from "rxjs";
+import {Modal} from "angular2-modal/plugins/bootstrap";
 import {Overlay} from "angular2-modal";
 declare var jQuery: any;
 
@@ -21,7 +20,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   private agencyToUpdate;
   private subscription: Subscription;
 
-  constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal, private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
     overlay.defaultViewContainer = vcRef;
   }
 

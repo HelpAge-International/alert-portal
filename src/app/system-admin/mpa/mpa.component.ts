@@ -3,7 +3,6 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
 import {Router} from "@angular/router";
-import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 declare var jQuery: any;
@@ -32,7 +31,7 @@ export class MpaComponent implements OnInit, OnDestroy {
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
   private actionToDelete;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper();
   }
 

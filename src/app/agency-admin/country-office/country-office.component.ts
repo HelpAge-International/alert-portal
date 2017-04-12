@@ -4,7 +4,6 @@ import {RxHelper} from '../../utils/RxHelper';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
 import {Observable} from 'rxjs';
-import {DialogService} from '../../dialog/dialog.service';
 
 @Component({
   selector: 'app-country-office',
@@ -27,7 +26,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private otherCountries: any = [];
   private hideOtherCountries: boolean;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -113,6 +112,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+  // TODO - Add model
   toggleActive(country) {
     let state: boolean = !country.isActive;
     let title = '';
@@ -124,15 +124,9 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       title = 'Activate?';
       content = 'AGENCY_ADMIN.COUNTRY_OFFICES.ACTIVATE_ALERT';
     }
-    let subscription = this.dialogService.createDialog(title, content)
-      .subscribe(result => {
-        if (!result) {
-          return;
-        }
-        this.otherCountries = [];
-        this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + country.$key + '/isActive').set(state);
-      });
-    this.subscriptions.add(subscription);
+
+    this.otherCountries = [];
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + country.$key + '/isActive').set(state);
   }
 
   editCountry(country) {

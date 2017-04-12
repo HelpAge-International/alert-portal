@@ -3,7 +3,6 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
 import {ActionType} from '../../utils/Enums';
-import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 declare var jQuery: any;
 
@@ -21,7 +20,7 @@ export class MinPrepComponent implements OnInit, OnDestroy {
   private subscriptions: RxHelper;
   // ActionType = ActionType;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
 

@@ -28,13 +28,10 @@ import {CreateActionComponent} from "./system-admin/min-prep/create-action/creat
 import {CreateMpaActionComponent} from "./system-admin/mpa/create-mpa-action/create-mpa-action.component";
 import {SystemSettingsComponent} from "./system-admin/system-settings/system-settings.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {MaterialModule} from "@angular/material";
 import "hammerjs";
 import {SystemAdminHeaderComponent} from "./system-admin/system-admin-header/system-admin-header.component";
-import {DialogComponent} from "./dialog/dialog.component";
 import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {DialogService} from "./dialog/dialog.service";
 import {CreatePasswordComponent} from "./agency-admin/create-password/create-password.component";
 import {AgencyDetailsComponent} from "./agency-admin/agency-details/agency-details.component";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
@@ -119,7 +116,6 @@ const firebaseAuthConfig = {
     CreateMpaActionComponent,
     SystemSettingsComponent,
     SystemAdminHeaderComponent,
-    DialogComponent,
     CreatePasswordComponent,
     AgencyDetailsComponent,
     CountryOfficeComponent,
@@ -160,7 +156,6 @@ const firebaseAuthConfig = {
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    MaterialModule,
     AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
     NgbModule.forRoot(),
     TranslateModule.forRoot({
@@ -173,8 +168,7 @@ const firebaseAuthConfig = {
     ModalModule.forRoot(),
     BootstrapModalModule
   ],
-  entryComponents: [DialogComponent],
-  providers: [DialogService, RxHelper, Modal],
+  providers: [RxHelper, Modal],
   bootstrap: [AppComponent]
 })
 

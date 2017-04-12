@@ -2,7 +2,6 @@ import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
-import {MdDialog} from "@angular/material";
 import {TranslateService} from "@ngx-translate/core";
 import {Subscription} from "rxjs";
 
@@ -20,7 +19,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private counter: number = 0;
   private subscription: Subscription;
 
-  constructor(private af: AngularFire, private router: Router, public dialog: MdDialog, private translate: TranslateService) {
+  constructor(private af: AngularFire, private router: Router, private translate: TranslateService) {
   }
 
   ngOnInit() {

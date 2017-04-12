@@ -1,9 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Router, ActivatedRoute} from "@angular/router";
+import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {DialogService} from "../../dialog/dialog.service";
 declare var jQuery: any;
 
 @Component({
@@ -17,7 +16,7 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   private alertContent: string;
   private networkToUpdate;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {

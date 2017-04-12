@@ -2,7 +2,6 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import {DialogService} from '../../dialog/dialog.service';
 import Promise = firebase.Promise;
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../utils/RxHelper';
@@ -21,7 +20,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   private messageToDelete;
   private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
 

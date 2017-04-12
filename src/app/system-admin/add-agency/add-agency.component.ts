@@ -10,7 +10,6 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
 import {PersonTitle, Country} from "../../utils/Enums";
-import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {UUID} from "../../utils/UUID";
@@ -55,7 +54,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private isDonor: boolean = true;
 
   constructor(private af: AngularFire, private router: Router,
-              private route: ActivatedRoute, private dialogService: DialogService) {
+              private route: ActivatedRoute) {
     this.rxhelper = new RxHelper();
   }
 
@@ -292,6 +291,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
     } else {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
+      agencyData["/administratorAgency/" + uid + "/firstLogin"] = true;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
       agencyData["/group/systemadmin/allusersgroup/" + uid] = true;
       let agency = new ModelAgency(this.agencyName);
