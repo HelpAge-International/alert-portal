@@ -70,6 +70,8 @@ import {Modal} from 'angular2-modal/plugins/bootstrap';
 import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
 import {SystemSettingsResponsePlansComponent} from './system-admin/system-settings/system-settings-response-plans/system-settings-response-plans.component';
 import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/system-settings-documents/system-settings-documents.component';
+import { NewAgencyPasswordComponent } from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
+import { NewAgencyDetailsComponent } from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -149,7 +151,9 @@ const firebaseAuthConfig = {
     AgencyChangePasswordComponent,
     AgencyAdminSettingsResponsePlanComponent,
     SystemSettingsResponsePlansComponent,
-    SystemSettingsDocumentsComponent
+    SystemSettingsDocumentsComponent,
+    NewAgencyPasswordComponent,
+    NewAgencyDetailsComponent
   ],
   imports: [
     BrowserModule,

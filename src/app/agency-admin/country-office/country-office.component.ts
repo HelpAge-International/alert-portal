@@ -35,7 +35,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
-      console.log(user.auth.uid);
+      // console.log(user.auth.uid);
       this.uid = user.auth.uid;
       this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid);
       this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.uid);
@@ -66,7 +66,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       })
       .first()
       .subscribe(result => {
-        console.log(result);
+        // console.log(result);
         this.countriesWithRegion = result;
         let subscription = this.countries
           .map(list => {
@@ -78,7 +78,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
           })
           .first()
           .subscribe(result => {
-            console.log(result);
+            // console.log(result);
             this.allCountries = result;
             let diff = this.allCountries.filter(x => {
               return !this.countriesWithRegion.includes(x);
@@ -96,13 +96,13 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   private retrieveOtherCountries(diff: string[]) {
-    console.log('do have other countries, fetch data!');
+    // console.log('do have other countries, fetch data!');
     let subscription = Observable.from(diff)
       .flatMap(id => {
         return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + id);
       })
       .subscribe(result => {
-        console.log(result);
+        // console.log(result);
         this.otherCountries.push(result);
       });
     this.subscriptions.add(subscription);
