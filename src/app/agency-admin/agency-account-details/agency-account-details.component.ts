@@ -6,7 +6,6 @@ import {Country, Currency} from "../../utils/Enums";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
-import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-agency-account-details',
@@ -23,8 +22,6 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private errorMessage: string;
   private alerts = {};
   private modalAgency: ModelAgency;
-  private agencyLogo: string;
-  private newImage: string;
   private agencyAddressLine1: string;
   private agencyAddressLine2: string;
   private agencyAddressLine3: string;
@@ -104,41 +101,11 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  replaceImage() {
-    console.log('this.agencyLogo ====' + this.agencyLogo);
-
-    // this.newImage = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTGdJmgpV8qkAew3QvDqNi4ShFMYHSKxE5pE2EAJEy9J2LDy_CeEA';
-    // console.log('this.agencyLogo ====' + this.agencyLogo);
-    // console.log('this.newImage ====' + this.newImage);
-    //
-    // const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.newImage);
-    // storageRef.getDownloadURL().then(url => {
-    //     this.agencyLogo = url;
-    //     console.log(this.agencyLogo);
-    //   }
-    // );
-
-  }
-
-  removeImage() {
-
-    // Replace with the default Alert logo
-    const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.agencyLogo);
-    storageRef.delete().then(_ => {
-      this.agencyLogo = "";
-      console.log("Image removed from firebase storage");
-    }, error => {
-      console.log(error.message);
-    });
-
-  }
-
   private loadAgencyData(uid) {
 
     let subscription = this.af.database.object(Constants.APP_STATUS+"/agency/" + uid).subscribe((agency: ModelAgency) => {
 
       this.modalAgency = agency;
-      this.agencyLogo = agency.logoPath;
       this.agencyAddressLine1 = agency.addressLine1;
       this.agencyAddressLine2 = agency.addressLine2;
       this.agencyAddressLine3 = agency.addressLine3;
@@ -174,6 +141,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
    */
   private validate() {
 
+    // TODO - Check image size here (<2MB)
     this.alerts = {};
     if (!(this.agencyAddressLine1)) {
       this.alerts[this.agencyAddressLine1] = true;
