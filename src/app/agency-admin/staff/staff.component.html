@@ -4,36 +4,27 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>Agency Staff</h1>
-      <button type="button" class="btn btn-primary" (click)="addNewStaff()">ADD NEW STAFF MEMBER</button>
+      <h1>{{"AGENCY_ADMIN.STAFF.TITLE"| translate}}</h1>
+      <button type="button" class="btn btn-primary" (click)="addNewStaff()">{{"AGENCY_ADMIN.STAFF.ADD_NEW_STAFF"| translate | uppercase}}</button>
     </div>
 
     <div class="row align-items-center Filter-form System-admin--form-wrap">
       <div class="col-lg-1 col-md-1">
-        Filter:
+        {{"GLOBAL.FILTER"| translate}}
       </div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control">
-          <option>Position</option>
-          <option>MPA</option>
-          <option>APA</option>
-          <option>Response Plan</option>
+          <option *ngFor="let position of positionsList" [value]="position">{{Position[position] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control">
-          <option>User Type</option>
-          <option>MPA</option>
-          <option>APA</option>
-          <option>Response Plan</option>
+          <option *ngFor="let userType of userTypesList" [value]="userType">{{UserType[userType] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control">
-          <option>Office Type</option>
-          <option>MPA</option>
-          <option>APA</option>
-          <option>Response Plan</option>
+          <option *ngFor="let officeType of officeTypesList" [value]="officeType">{{OfficeType[officeType] | translate}}</option>
         </select>
       </div>
     </div>
@@ -41,15 +32,15 @@
     <div *ngFor="let office of staffs">
       <div class="Sub-header-title__wrap">
         <h2>{{countries[office?.country]|translate}}</h2>
-        <span class="Hide-all">Hide all</span>
+        <span class="Hide-all">{{"GLOBAL.HIDE_ALL"| translate}}</span>
       </div>
 
       <div [hidden]="office?.staffs.length==0" class="row Line-row Small-spaced Header">
-        <div class="col-lg-2">Name</div>
-        <div class="col-lg-1">Job Title</div>
-        <div class="col-lg-2">Office Type</div>
-        <div class="col-lg-2">Skills</div>
-        <div class="col-lg-3">Training Needs</div>
+        <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
+        <div class="col-lg-1">{{"AGENCY_ADMIN.STAFF.JOB_TITLE"| translate}}</div>
+        <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
+        <div class="col-lg-2">{{"GLOBAL.SKILLS"| translate}}</div>
+        <div class="col-lg-3">{{"AGENCY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</div>
         <div class="col-lg-1"></div>
       </div>
 
@@ -60,7 +51,7 @@
         <div class="col-lg-2">{{showSkills(staff.skills)}}</div>
         <div class="col-lg-3">{{staff.trainingNeeds}}</div>
         <div class="col-lg-1 col-md-3">
-          <button class="btn btn-primary">Edit</button>
+          <button class="btn btn-primary">{{"GLOBAL.EDIT"| translate}}</button>
         </div>
       </div>
     </div>
@@ -102,11 +93,10 @@
     <!--<span class="Hide-all Hidden">Show all</span>-->
     <!--</div>-->
 
-    <div class="Form-submit__wrapper">
-      <div class="btn btn-outline-secondary">Cancel</div>
-      <div class="btn btn-primary">Save settings</div>
-    </div>
-
+    <!--<div class="Form-submit__wrapper">-->
+      <!--<div class="btn btn-outline-secondary">{{"GLOBAL.CANCEL"| translate}}</div>-->
+      <!--<div class="btn btn-primary">{{"AGENCY_ADMIN.STAFF.SAVE_SETTINGS"| translate}}</div>-->
+    <!--</div>-->
 
   </div>
 </div>

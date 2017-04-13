@@ -84,9 +84,10 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       }
     } else {
       this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
         this.inactive = true;
-      })
+      });
+      this.subscriptions.add(subscription);
     }
   }
 

@@ -4,6 +4,7 @@ import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {Subscription} from "rxjs";
+import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-system-admin-header',
@@ -17,29 +18,28 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
   firstName: string = "";
   lastName: string = "";
   counter: number = 0;
-  private subscription: Subscription;
 
-  constructor(private af: AngularFire, private router: Router, private translate: TranslateService) {
+  constructor(private af: AngularFire, private router: Router, private translate: TranslateService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
-    this.subscription = this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
+        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
+        this.subscriptions.add(subscription)
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
+    this.subscriptions.add(subscription)
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscriptions.releaseAll();
   }
 
   logout() {

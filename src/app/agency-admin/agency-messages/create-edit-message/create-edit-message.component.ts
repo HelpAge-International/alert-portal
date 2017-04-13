@@ -33,21 +33,26 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private currentDateTimeInMilliseconds;
   private msgData = {};
   private groups: string[] = [];
+  private agencyGroupPath: string;
+  private agencyMessageRefPath: string;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
 
-    this.af.auth.subscribe(auth => {
+    let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
         console.log('uid: ' + this.uid);
+        this.agencyGroupPath = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
+        this.agencyMessageRefPath = '/messageRef/agency/' + this.uid + '/';
       } else {
         console.log("Error occurred - User isn't logged in");
         this.navigateToLogin();
       }
     });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -61,42 +66,44 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       this.createNewMessage();
       this.inactive = true;
     } else {
-      this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.inactive = true;
-      })
+      this.showAlert();
     }
   }
 
   private createNewMessage() {
 
-    this.currentDateTimeInMilliseconds = new Date().getTime();
+    let subscription = this.af.database.list(this.agencyGroupPath).subscribe(groups => {
+      if (groups.length == 0) {
+        this.errorMessage = "MESSAGES.NO_USERS_IN_GROUP";
+        this.showAlert();
+        return;
+      } else {
+        this.currentDateTimeInMilliseconds = new Date().getTime();
 
-    let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
-    let messagePath = Constants.APP_STATUS+'/message';
+        let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);
+        let messagePath = Constants.APP_STATUS + '/message';
 
-    this.af.database.list(messagePath).push(newMessage)
-      .then(msgId => {
-        console.log('New Message added to message node');
+        this.af.database.list(messagePath).push(newMessage)
+          .then(msgId => {
+            console.log('New Message added to message node');
 
-        let sentMsgPath = '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
-        this.msgData[sentMsgPath] = true;
-        this.addMsgToMessageRef(msgId.key);
-      });
+            let sentMsgPath = '/administratorAgency/' + this.uid + '/sentmessages/' + msgId.key;
+            this.msgData[sentMsgPath] = true;
+            this.addMsgToMessageRef(msgId.key);
+          });
+      }
+    });
+    this.subscriptions.add(subscription);
   }
-
 
   private addMsgToMessageRef(key: string) {
 
-    let agencyGroupPath: string = Constants.APP_STATUS+'/group/agency/' + this.uid + '/';
-    let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
-
     if (this.allUsersSelected) {
 
-      let agencyAllUsersSelected: string = agencyGroupPath + 'agencyallusersgroup/';
-      let agencyAllUsersMessageRefPath: string = agencyMessageRefPath + 'agencyallusersgroup/';
+      let agencyAllUsersSelected: string = this.agencyGroupPath + 'agencyallusersgroup/';
+      let agencyAllUsersMessageRefPath: string = this.agencyMessageRefPath + 'agencyallusersgroup/';
 
-      this.af.database.list(agencyAllUsersSelected)
+      let subscription = this.af.database.list(agencyAllUsersSelected)
         .subscribe(agencyAllUsersIds => {
           agencyAllUsersIds.forEach(agencyAllUsersId => {
             this.msgData[agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
@@ -109,6 +116,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
             console.log("Message creation unsuccessful" + error);
           });
         })
+      this.subscriptions.add(subscription);
 
     } else {
 
@@ -142,13 +150,13 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
       for (let group of this.groups) {
 
-        let path = agencyGroupPath + group;
+        let path = this.agencyGroupPath + group;
         let subscription = this.af.database.list(path).subscribe(list => {
           list.forEach(item => {
-            this.msgData[agencyMessageRefPath + group + '/' + item.$key + '/' + key] = this.currentDateTimeInMilliseconds;
+            this.msgData[this.agencyMessageRefPath + group + '/' + item.$key + '/' + key] = this.currentDateTimeInMilliseconds;
           });
 
-          if (this.groups.indexOf(group) == this.groups.length-1) {
+          if (this.groups.indexOf(group) == this.groups.length - 1) {
             this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
               console.log("Message Ref successfully added to all nodes");
               this.router.navigate(['/agency-admin/agency-messages']);
@@ -160,6 +168,14 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         this.subscriptions.add(subscription);
       }
     }
+  }
+
+  private showAlert() {
+    this.inactive = false;
+    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      this.inactive = true;
+    });
+    this.subscriptions.add(subscription);
   }
 
   /**

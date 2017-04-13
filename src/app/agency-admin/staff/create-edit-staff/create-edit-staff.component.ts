@@ -68,7 +68,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -77,6 +77,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.initData();
     });
+    this.subscriptions.add(subscription);
   }
 
   private initData() {
@@ -113,67 +114,67 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   validateForm() {
     console.log("validate form");
     if (!this.title) {
-      this.waringMessage = "Title cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_TITLE";
       this.showAlert();
       return;
     }
     if (!this.firstName) {
-      this.waringMessage = "First name cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_FIRST_NAME";
       this.showAlert();
       return;
     }
     if (!this.lastName) {
-      this.waringMessage = "Last name cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_LAST_NAME";
       this.showAlert();
       return;
     }
     if (!this.userType) {
-      this.waringMessage = "User type cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_USER_TYPE";
       this.showAlert();
       return;
     }
     if (!this.region && !this.hideRegion) {
-      this.waringMessage = "Region cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_REGION";
       this.showAlert();
       return;
     }
     if (!this.countryOffice && !this.hideCountry) {
-      this.waringMessage = "Country office cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_COUNTRY_OFFICE";
       this.showAlert();
       return;
     }
     if (!this.department) {
-      this.waringMessage = "Department cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_DEPARTMENT";
       this.showAlert();
       return;
     }
     if (!this.position) {
-      this.waringMessage = "Position cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_POSITION";
       this.showAlert();
       return;
     }
     if (!this.officeType) {
-      this.waringMessage = "Office type cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_OFFICE_TYPE";
       this.showAlert();
       return;
     }
     if (!this.email) {
-      this.waringMessage = "User type cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_EMAIL";
       this.showAlert();
       return;
     }
     if (!this.phone) {
-      this.waringMessage = "Phone number cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_PHONE";
       this.showAlert();
       return;
     }
     if (!this.trainingNeeds) {
-      this.waringMessage = "Training needs cannot be empty!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_TRAINING_NEEDS";
       this.showAlert();
       return;
     }
     if (typeof (this.isResponseMember) == "undefined") {
-      this.waringMessage = "Is response team must be selected!";
+      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_REPONSE_TEAM_ANSWER";
       this.showAlert();
       return;
     }
@@ -181,7 +182,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   submit() {
     if (!CustomerValidator.EmailValidator(this.email)) {
-      this.waringMessage = "Email address is not valid!";
+      this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
       return;
     }
@@ -254,7 +255,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   selectedUserType(userType) {
     this.notificationSettings = [];
-    this.notificationList
+    let subscription = this.notificationList
       .first()
       .subscribe(settingList => {
         console.log(settingList);
@@ -262,6 +263,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           this.notificationSettings.push(setting.usersNotified[userType]);
         });
       });
+    this.subscriptions.add(subscription);
   }
 
   supportSkillCheck(skill, isCheck) {

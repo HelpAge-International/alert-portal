@@ -1,17 +1,19 @@
 import {Component, OnInit, OnDestroy} from "@angular/core";
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
 import {Observable} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
+import {StaffPosition, UserType, OfficeType} from "../../utils/Enums";
 
 @Component({
   selector: 'app-staff',
   templateUrl: 'staff.component.html',
   styleUrls: ['staff.component.css']
 })
+
 export class StaffComponent implements OnInit, OnDestroy {
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
@@ -23,6 +25,13 @@ export class StaffComponent implements OnInit, OnDestroy {
   staffName: string;
   skillSet = new Set();
   private skillNames: string[] = [];
+  private Position = Constants.STAFF_POSITION;
+  private positionsList = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
+  private UserType = Constants.USER_TYPE;
+  private userTypesList = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
+    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin];
+  private OfficeType = Constants.OFFICE_TYPE;
+  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -47,7 +56,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private getStaffData() {
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
       .do(list => {
         list.forEach(item => {
           this.staffDisplay = new ModelStaffDisplay();
@@ -61,7 +70,7 @@ export class StaffComponent implements OnInit, OnDestroy {
         let ids = [];
         list.forEach(x => {
           ids.push(x.$key);
-        })
+        });
         return Observable.from(ids);
       })
       .flatMap(id => {
@@ -87,6 +96,7 @@ export class StaffComponent implements OnInit, OnDestroy {
       .subscribe(result => {
         console.log(result);
       });
+    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -99,10 +109,11 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   getStaffName(key): string {
     this.staffName = "";
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
       .subscribe(user => {
         this.staffName = user.firstName + " " + user.lastName;
       });
+    this.subscriptions.add(subscription);
     return this.staffName;
   }
 
@@ -111,7 +122,7 @@ export class StaffComponent implements OnInit, OnDestroy {
     for (let key in skillList) {
       skillIds.push(key);
     }
-    Observable.from(skillIds)
+    let subscription = Observable.from(skillIds)
       .flatMap(id => {
         return this.af.database.object(Constants.APP_STATUS + "/skill/" + id);
       })
@@ -121,7 +132,8 @@ export class StaffComponent implements OnInit, OnDestroy {
           this.skillNames.push(skill.name);
           this.skillSet.add(skill.$key);
         }
-      })
+      });
+    this.subscriptions.add(subscription);
     return this.skillNames;
   }
 

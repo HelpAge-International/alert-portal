@@ -61,7 +61,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
 
   private initData(uid) {
 
-    this.af.database.object(Constants.APP_STATUS+"/system/" + uid).subscribe(x => {
+    let subscription = this.af.database.object(Constants.APP_STATUS+"/system/" + uid).subscribe(x => {
       this.modelSystem = new ModelSystem();
       this.modelSystem.advThreshold = x.advThreshold;
       this.modelSystem.minThreshold = x.minThreshold;
@@ -74,6 +74,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
       this.advAmber = x.advThreshold[1];
       this.advRed = x.advThreshold[2];
     });
+    this.subscriptions.add(subscription);
   }
 
   private writeToFirebase() {

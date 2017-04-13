@@ -37,7 +37,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -56,6 +56,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         });
       this.subscriptions.add(subscription);
     });
+    this.subscriptions.add(subscription);
   }
 
   private fetchCountries() {
