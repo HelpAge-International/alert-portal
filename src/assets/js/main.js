@@ -54,7 +54,7 @@ function previewLogo(logoImage) {
 
 function triggerPreviewLogo(e) {
     e.preventDefault();
-    $("#imgInp").trigger("click");
+    $(".Agency-details__logo__preview").trigger("click");
 }
 
 function removeLogoPreview(e) {
@@ -62,8 +62,11 @@ function removeLogoPreview(e) {
     $("#replace-logo").hide();
     $("#remove-logo").hide();
     $("#select-logo").show();
-    $(".Agency-details__logo__preview").css("background-image", "none");
-    $(".Agency-details__logo__preview").removeClass("Selected");
+    $(".Agency-details__logo__preview").css("background-image", "initial");
+    if(placeholderImage == '')
+    {
+        $(".Agency-details__logo__preview").removeClass("Selected");
+    }
 }
 
 "use strict";
