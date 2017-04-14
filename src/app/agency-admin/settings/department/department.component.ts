@@ -4,7 +4,6 @@ import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../../utils/RxHelper';
-import {Subject} from 'rxjs/Subject';
 import Promise = firebase.Promise;
 
 
@@ -17,7 +16,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
   private departments: FirebaseListObservable<any>;
-  private nonDeletableDepartments: FirebaseListObservable<any>;
   private subscriptions: RxHelper;
   private deleting: boolean = false;
   private editing: boolean = false;
@@ -35,10 +33,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       if (auth) {
         // this.uid = auth.uid; //TODO remove comment
 
-        let subject = new Subject();
-
         let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments').subscribe(_ => {
-        	console.log(_);
         	this.depts = _;
         })
         this.subscriptions.add(deptsSubscription);
@@ -53,7 +48,12 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-	this.subscriptions.releaseAll();
+  	try{
+  		this.subscriptions.releaseAll();
+  	} catch(e){
+  		console.log('Unable to releaseAll');
+  	}
+	
   }
 
   private navigateToLogin() {
@@ -70,8 +70,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedDepartments(event){
-  	console.log("delete selected");
-
   	for(var item in this.deleteCandidates)
   		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item).remove();
   }
@@ -81,8 +79,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     	delete this.deleteCandidates[department];
 	else
 		this.deleteCandidates[department] = true;
-
-	console.log(this.deleteCandidates);
   }
 
   editDepartments(event){
@@ -94,7 +90,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   	this.editDepts = {};
   	this.deleteCandidates = {};
   	let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments').subscribe(_ => {
-    	console.log(_);
     	this.depts = _;
     })
     this.subscriptions.add(deptsSubscription);
@@ -115,16 +110,13 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   setDepartmentValue(prop, value){
-  	console.log(prop);
   	this.editDepts[prop] = {
   								"new_key": value,
   								"value": this.depts[prop]
   							};
-  	console.log(this.editDepts);
   }
 
   addDepartment(event) {
-  	console.log(this.departmentName);
   	let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
 
 	var newDepartment = {};
