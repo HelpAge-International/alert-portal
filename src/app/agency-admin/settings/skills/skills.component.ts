@@ -19,9 +19,10 @@ export class SkillsComponent implements OnInit, OnDestroy {
   private subscriptions: RxHelper;
   private deleting: boolean = false;
   private editing: boolean = false;
-  private skillName: string = "";
+  private skillName: string[] = [];
   private deleteCandidates: any = {};
   private skills: any = [];
+  private editedSkills: any = [];
   private SupportSkill = SkillType.Support;
   private TechSkill = SkillType.Tech;
 
@@ -114,30 +115,19 @@ export class SkillsComponent implements OnInit, OnDestroy {
   }
 
   saveEditedSkills(event){
-  // 	this.editing = !this.editing;
+  	this.editing = !this.editing;
 
-  // 	for (var dept in this.editDepts){
-  // 		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills/' + dept).remove();
-
-  // 		let skills = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills');
-
-		// var newSkill = {};
-	 //  	newSkill[this.editDepts[dept]["new_key"]] = this.editDepts[dept]["value"];
-	 //  	skills.update(newSkill);
-  // 	}
+  	for (let skill in this.editedSkills){
+  		this.af.database.object(Constants.APP_STATUS + '/skill/' + skill).update(this.editedSkills[skill]);	
+  	}
   }
 
   setSkillValue(prop, value){
-  	// this.editDepts[prop] = {
-  	// 							"new_key": value,
-  	// 							"value": this.depts[prop]
-  	// 						};
+  	this.editedSkills[prop] = {name: value};
   }
 
-  addSkill(event) {
-  	
-
-  	let skill = {name:this.skillName, type:0};
+  addSkill(event, type) {
+  	let skill = {name:this.skillName[type], type:type};
 
   	this.af.database.list(Constants.APP_STATUS + '/skill/').push(
 			skill
@@ -146,8 +136,6 @@ export class SkillsComponent implements OnInit, OnDestroy {
 		let agencySkills = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills/' + key).set(true);
 	});
 	
-  	this.skillName = "";
-
-  	
+  	this.skillName = []; 	
   }
 }

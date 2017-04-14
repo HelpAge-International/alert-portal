@@ -33,10 +33,10 @@
             </template>
             <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
-                    <input type="text" class="form-control" placeholder="Add a new support skill" [(ngModel)]="skillName">
+                    <input type="text" class="form-control" placeholder="Add a new support skill" [(ngModel)]="skillName[SupportSkill]">
                 </div>
                 <div class="col-md-8 col-4">
-                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event)">Save</button>
+                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, SupportSkill)">Save</button>
                 </div>
             </div>
         </div>
@@ -58,10 +58,10 @@
             
             <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
-                    <input type="text" class="form-control" placeholder="Add a new technical skill" [(ngModel)]="skillName">
+                    <input type="text" class="form-control" placeholder="Add a new technical skill" [(ngModel)]="skillName[TechSkill]">
                 </div>
                 <div class="col-md-8 col-4">
-                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event)">Save</button>
+                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, TechSkill)">Save</button>
                 </div>
             </div>
         </div>
