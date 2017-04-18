@@ -104,7 +104,13 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
 
         var newGroup = {};
         newGroup[this.editedGroups[group]["new_key"]] = this.editedGroups[group]["value"];
-        groups.update(newGroup);
+        groups.update(newGroup).then(_ => {
+          console.log("Editing successful");
+        }).catch(error => {
+          this.errorMessage = "GLOBAL.GENERAL_ERROR";
+          this.showAlert(true);
+          console.log("Editing unsuccessful");
+        });
       }
       this.isEditing = false;
     } else {
@@ -136,13 +142,12 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private validateEditedGroups() {
 
     for (var group in this.editedGroups) {
-
       if (!(this.editedGroups[group]["new_key"])) {
         this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_EDIT_GROUP_NAME";
         return false;
       }
-      return true;
     }
+    return true;
   }
 
   /**
@@ -153,6 +158,10 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
 
     if (!(this.newGroup)) {
       this.alerts[this.newGroup] = true;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.alerts[this.newGroup] = false;
+      });
+      this.subscriptions.add(subscription);
       this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_GROUP_NAME";
       return false;
     }
