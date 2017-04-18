@@ -8,44 +8,58 @@
 
 		<div class="Sub-header-title__wrap">
             <h2>Skills</h2>
-            <button type="button" class="btn btn-outline-danger Inline-editable--enable">Delete skills</button>
-            <button type="button" class="btn btn-outline-primary Inline-editable--enable">Edit skills</button>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteSkills($event)">Cancel</button> 
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedSkills($event)">Delete</button>  
+
+            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteSkills($event)" *ngIf="!deleting && !editing">Delete Skills</button>
+            <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="editSkills($event)" *ngIf="!deleting && !editing">Edit Skills</button>
+
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing" (click)="cancelEditSkills($event)">Cancel</button> 
+            <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing" (click)="saveEditedSkills($event)">Save</button>
         </div>
 
         <h4>Support Skills</h4>
         <div class="Agency-settings_skills">
-            <div class="row Editable-check-text Large-spacing-top">Coordination</div>
-            <div class="row Editable-check-text Large-spacing-top">Finance</div>
-            <div class="row Editable-check-text Large-spacing-top">HR</div>
-            <div class="row Editable-check-text Large-spacing-top">Logistics</div>
-            <div class="row Editable-check-text Large-spacing-top">Security</div>
-            <div class="row Editable-check-text Large-spacing-top">PR/Communications</div>
-            <div class="row Editable-check-text Large-spacing-top">Proposal Writing</div>
-            <div class="row Editable-check-text Large-spacing-top">Programme Management</div>
-            <div class="row Add-new-department no-gutters">
+            <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+              <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == SupportSkill">
+                    <label for="{{skillKey}}" *ngIf="deleting">
+                        <input class="form-check-input" type="checkbox" id="{{skillKey}}" [value]="skillKey" (change)="onSkillSelected(skillKey)"> {{skills[skillKey].name}}
+                    </label>
+                    <ng-container *ngIf="!deleting && !editing">
+                        {{skills[skillKey].name}}
+                    </ng-container>
+                    <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skills[skillKey].name"  (ngModelChange)="setSkillValue(skillKey, $event)">
+                </div>
+            </template>
+            <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
-                    <input type="text" class="form-control" placeholder="Add a new support skill">
+                    <input type="text" class="form-control" placeholder="Add a new support skill" [(ngModel)]="skillName[SupportSkill]">
                 </div>
                 <div class="col-md-8 col-4">
-                    <button type="button" class="btn btn-outline-primary">Save</button>
+                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, SupportSkill)">Save</button>
                 </div>
             </div>
         </div>
 
         <h4>Technical Skills</h4>
         <div class="Agency-settings_skills">
-            <div class="row Editable-check-text Large-spacing-top">Healthcare</div>
-            <div class="row Editable-check-text Large-spacing-top">Psychological Support</div>
-            <div class="row Editable-check-text Large-spacing-top">WaSh</div>
-            <div class="row Editable-check-text Large-spacing-top">Nutrition</div>
-            <div class="row Editable-check-text Large-spacing-top">Relief</div>
-            <div class="row Editable-check-text Large-spacing-top">Shelter</div>
-            <div class="row Add-new-department no-gutters">
+            <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+              <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == TechSkill">
+                    <label for="{{skillKey}}" *ngIf="deleting">
+                        <input class="form-check-input" type="checkbox" id="{{skillKey}}" [value]="skillKey" (change)="onSkillSelected(skillKey)"> {{skills[skillKey].name}}
+                    </label>
+                    <ng-container *ngIf="!deleting && !editing">
+                        {{skills[skillKey].name}}
+                    </ng-container>
+                    <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skills[skillKey].name"  (ngModelChange)="setSkillValue(skillKey, $event)">
+                </div>
+            </template>
+            <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
-                    <input type="text" class="form-control" placeholder="Add a new technical skill">
+                    <input type="text" class="form-control" placeholder="Add a new technical skill" [(ngModel)]="skillName[TechSkill]">
                 </div>
                 <div class="col-md-8 col-4">
-                    <button type="button" class="btn btn-outline-primary">Save</button>
+                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, TechSkill)">Save</button>
                 </div>
             </div>
         </div>

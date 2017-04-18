@@ -8,25 +8,29 @@
 
         <div class="Sub-header-title__wrap">
         <h2>Departments</h2>
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteDepartments($event)">Cancel</button>
-            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting">Delete</button>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteDepartments($event)">Cancel</button> 
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedDepartments($event)">Delete</button>  
 
-            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)" *ngIf="!deleting">Delete Departments</button>
-            <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!deleting">Edit Departments</button>
+            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)" *ngIf="!deleting && !editing">Delete Departments</button>
+            <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="editDepartments($event)" *ngIf="!deleting && !editing">Edit Departments</button>
+
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing" (click)="cancelEditDepartments($event)">Cancel</button> 
+            <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing" (click)="saveEditedDepartments($event)">Save</button>
         </div>
 
         <div class="Departments">
-            <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of departments | async">
-                    <label for="{{department.$key}}" *ngIf="deleting">
-                        <input class="form-check-input" type="checkbox" id="{{department.$key}}" value="{{department.$key}}"> {{department.$key}}
-                    </label>
-                    <ng-container *ngIf="!deleting">
-                        {{department.$key}}
-                    </ng-container>
+            <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts | keyValues">
+                <label for="{{department.key}}" *ngIf="deleting && !department.value">
+                    <input class="form-check-input" type="checkbox" id="{{department.key}}" [value]="department.key" (change)="onDepartmentSelected(department.key)"> {{department.key}}
+                </label>
+                <ng-container *ngIf="(!deleting || department.value) && !editing">
+                    {{department.key}}
+                </ng-container>
+                <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="department.key"  (ngModelChange)="setDepartmentValue(department.key, $event)">
             </div>
-            <div class="row Add-new-department no-gutters">
+            <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
-                    <input type="text" class="form-control" placeholder="Add a new department" [(ngModel)]="departmentName" #ctrl="ngModel" required>
+                    <input type="text" class="form-control" placeholder="Add a new department" [(ngModel)]="departmentName" required>
                 </div>
                 <div class="col-md-8 col-4">
                     <button type="button" class="btn btn-outline-primary" (click)="addDepartment($event)" >Save</button>
