@@ -15,12 +15,18 @@ import {StaffPosition, UserType, OfficeType} from "../../utils/Enums";
 })
 
 export class StaffComponent implements OnInit, OnDestroy {
+  POSITION = Constants.STAFF_POSITION;
+  POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
+  USER_TYPE = Constants.USER_TYPE;
+  USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
+  OFFICE_TYPE = Constants.OFFICE_TYPE;
+  OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
+
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
   private uid: string;
   private staffDisplay: ModelStaffDisplay;
-  countryOffices: FirebaseListObservable<any[]>;
-  private officeId: string;
+  private officeId: string [] = [];
   private staff: ModelStaff;
   staffName: string;
   skillSet = new Set();
@@ -32,6 +38,9 @@ export class StaffComponent implements OnInit, OnDestroy {
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin];
   private OfficeType = Constants.OFFICE_TYPE;
   private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private staffMap = new Map();
+  private dealedStaff: string[] = [];
+  private showCountryStaff = new Map();
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -49,13 +58,11 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.countryOffices = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
     this.getStaffData();
-
-    this.af.database.list(Constants.APP_STATUS + "/staff/");
   }
 
   private getStaffData() {
+    this.staffs = [];
     let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
       .do(list => {
         list.forEach(item => {
@@ -64,6 +71,7 @@ export class StaffComponent implements OnInit, OnDestroy {
           this.staffDisplay.country = item.location;
           this.staffDisplay.staffs = [];
           this.staffs.push(this.staffDisplay);
+          this.showCountryStaff.set(this.staffDisplay.id, false);
         })
       })
       .flatMap(list => {
@@ -73,29 +81,32 @@ export class StaffComponent implements OnInit, OnDestroy {
         });
         return Observable.from(ids);
       })
-      .flatMap(id => {
-        this.officeId = id;
-        return this.af.database.list(Constants.APP_STATUS + "/staff/" + id)
+      .map(id => {
+        this.officeId.push(id);
+        return this.staffMap.set(id, this.af.database.list(Constants.APP_STATUS + "/staff/" + id));
       })
-      .do(x => {
-        x.forEach(item => {
-          this.staff = new ModelStaff();
-          this.staff.id = item.$key;
-          this.staff.position = item.position;
-          this.staff.officeType = item.officeType;
-          this.staff.training = item.training;
-          this.staff.skill = item.skill;
-
-          for (let item of this.staffs) {
-            if (item.id == this.officeId) {
-              item.staffs.push(this.staff);
-            }
-          }
+      .do(() => {
+        this.officeId.forEach(id => {
+          let subscribe = this.staffMap.get(id)
+            .subscribe(x => {
+              x.forEach(item => {
+                if (!this.dealedStaff.includes(item.$key)) {
+                  this.staff = new ModelStaff();
+                  this.staff.id = item.$key;
+                  this.staff.position = item.position;
+                  this.staff.officeType = item.officeType;
+                  this.staff.userType = item.userType;
+                  this.staff.training = item.training;
+                  this.staff.skill = item.skill;
+                  this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
+                  this.dealedStaff.push(item.$key);
+                }
+              });
+            });
+          this.subscriptions.add(subscribe);
         });
       })
-      .subscribe(result => {
-        console.log(result);
-      });
+      .subscribe();
     this.subscriptions.add(subscription);
   }
 
@@ -135,6 +146,15 @@ export class StaffComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(subscription);
     return this.skillNames;
+  }
+
+  hideCountryStaff(office) {
+    let isHidden = this.showCountryStaff.get(office.id);
+    this.showCountryStaff.set(office.id, !isHidden);
+  }
+
+  editStaff(officeId, staffId) {
+    this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {id: staffId, officeId: officeId}]);
   }
 
 }

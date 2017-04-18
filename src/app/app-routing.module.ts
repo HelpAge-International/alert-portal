@@ -104,6 +104,7 @@ const routes: Routes = [
   {path: 'agency-admin/settings/notifications', component: NotificationComponent},
   {path: 'agency-admin/staff', component: StaffComponent},
   {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
+  {path: 'agency-admin/staff/create-edit-staff:id', component: CreateEditStaffComponent},
   {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
   {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
   {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},

@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {RxHelper} from "../../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Router, ActivatedRoute} from "@angular/router";
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Country, PersonTitle, SkillType, UserType} from "../../../utils/Enums";
 import {Observable} from "rxjs";
@@ -62,6 +62,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private staffSkills: string[] = [];
   private notificationsMap = new Map();
   private staffNotifications: string[] = [];
+  private selectedStaffId: string;
+  private isEdit: boolean;
+  private selectedOfficeId: string;
 
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
@@ -76,8 +79,55 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.initData();
+      let subscription = this.route.params.subscribe((params: Params) => {
+        if (params["id"]) {
+          this.selectedStaffId = params["id"];
+          this.selectedOfficeId = params["officeId"];
+          this.isEdit = true;
+          this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
+        }
+      });
+      this.subscriptions.add(subscription);
     });
     this.subscriptions.add(subscription);
+  }
+
+  private loadStaffInfo(staffId: string, officeId: string) {
+    console.log("load staff info: " + staffId + "/ " + officeId);
+    let subscriptionUser = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .subscribe(user => {
+        console.log(user);
+        this.title = user.title;
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.email = user.email;
+        this.phone = user.phone;
+      });
+    this.subscriptions.add(subscriptionUser);
+    let subscriptionStaff = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+      .subscribe(staff => {
+        console.log(staff);
+        this.userType = staff.userType;
+        this.department = staff.department;
+        this.position = staff.position;
+        this.officeType = staff.officeType;
+        for (let skill of staff.skill) {
+          this.skillsMap.set(skill, true);
+        }
+        this.trainingNeeds = staff.training;
+        this.isResponseMember = staff.isResponseMember;
+        for (let notification of staff.notification) {
+          this.notificationSettings[notification] = true;
+        }
+      });
+    this.subscriptions.add(subscriptionStaff);
+    this.countryOffice = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId);
+    // let subscriptionCountry = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId)
+    //   .subscribe(country => {
+    //     console.log(country);
+    //     this.countryOffice = country;
+    //   });
+    // this.subscriptions.add(subscriptionCountry);
   }
 
   private initData() {
@@ -201,7 +251,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.staffNotifications.push(key);
       }
     });
-    this.createNewUser();
+    if (!this.isEdit) {
+      this.createNewUser();
+    } else {
+      console.log("edit");
+    }
   }
 
   private createNewUser() {
