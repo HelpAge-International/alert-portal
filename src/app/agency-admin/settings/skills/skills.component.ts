@@ -21,7 +21,8 @@ export class SkillsComponent implements OnInit, OnDestroy {
   private editing: boolean = false;
   private skillName: string[] = [];
   private deleteCandidates: any = {};
-  private skills: any = [];
+  private skills: any = {};
+  private skillKeys: string[] = [];
   private editedSkills: any = [];
   private SupportSkill = SkillType.Support;
   private TechSkill = SkillType.Tech;
@@ -34,12 +35,8 @@ export class SkillsComponent implements OnInit, OnDestroy {
   ngOnInit() {
   	let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-      	// console.log(this.skills);
         // this.uid = auth.uid; //TODO remove comment
         let skillsSubscription = this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/skills').subscribe(_ => {
-        	// this.skills = _;
-        	
-        	this.skills = [];
         	_.filter(skill => skill.$value).map(skill => {
         		this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/skill/', {
 			      query: {
@@ -47,17 +44,17 @@ export class SkillsComponent implements OnInit, OnDestroy {
 			        equalTo: skill.$key
 			      }
 			    }).subscribe(_skill => {
-        			this.skills.push(_skill[0]);
-        			console.log(this.skills);
+			    	if (_skill[0] != undefined)
+	        			this.skills[_skill[0].$key] = _skill[0];
+			    	else
+			    		delete this.skills[skill.$key];
+
+			    	this.skillKeys = Object.keys(this.skills);
         		}));
         	});
-			Object.keys(_.filter(skl => skl.$value)).forEach((skill) => {
-				// console.log(skill);
-				
-			});        		
-        })
+        });
+
         this.subscriptions.add(skillsSubscription);
-        
 		this.subscriptions.add(subscription);
       } else {
         // user is not logged in
@@ -89,8 +86,10 @@ export class SkillsComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedSkills(event){
-  	for(var item in this.deleteCandidates)
+  	for(let item in this.deleteCandidates){
   		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills/' + item).remove();
+  		this.af.database.object(Constants.APP_STATUS + '/skill/' + item).remove();
+  	}
   }
 
   onSkillSelected(skill){
@@ -106,20 +105,15 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
   cancelEditSkills(event){
   	this.editing = !this.editing;
-  	// this.editDepts = {};
-  	// this.deleteCandidates = {};
-  	// let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/skills').subscribe(_ => {
-   //  	this.depts = _;
-   //  })
-   //  this.subscriptions.add(deptsSubscription);
+  	this.editedSkills = [];
+  	this.deleteCandidates = {};
   }
 
   saveEditedSkills(event){
   	this.editing = !this.editing;
 
-  	for (let skill in this.editedSkills){
+  	for (let skill in this.editedSkills)
   		this.af.database.object(Constants.APP_STATUS + '/skill/' + skill).update(this.editedSkills[skill]);	
-  	}
   }
 
   setSkillValue(prop, value){

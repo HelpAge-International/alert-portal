@@ -20,15 +20,15 @@
 
         <h4>Support Skills</h4>
         <div class="Agency-settings_skills">
-            <template ngFor let-skill [ngForOf]="skills" let-i="index">
-              <div class="row Editable-check-text Large-spacing-top" *ngIf="skill.type == SupportSkill">
-                    <label for="{{skill.$key}}" *ngIf="deleting">
-                        <input class="form-check-input" type="checkbox" id="{{skill.$key}}" [value]="skill.$key" (change)="onSkillSelected(skill.$key)"> {{skill.name}}
+            <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+              <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == SupportSkill">
+                    <label for="{{skillKey}}" *ngIf="deleting">
+                        <input class="form-check-input" type="checkbox" id="{{skillKey}}" [value]="skillKey" (change)="onSkillSelected(skillKey)"> {{skills[skillKey].name}}
                     </label>
                     <ng-container *ngIf="!deleting && !editing">
-                        {{skill.name}}
+                        {{skills[skillKey].name}}
                     </ng-container>
-                    <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skill.name"  (ngModelChange)="setSkillValue(skill.$key, $event)">
+                    <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skills[skillKey].name"  (ngModelChange)="setSkillValue(skillKey, $event)">
                 </div>
             </template>
             <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
@@ -43,19 +43,17 @@
 
         <h4>Technical Skills</h4>
         <div class="Agency-settings_skills">
-            <template ngFor let-skill [ngForOf]="skills" let-i="index">
-                <div class="row Editable-check-text Large-spacing-top" *ngIf="skill.type == TechSkill">
-                    <label for="{{skill.$key}}" *ngIf="deleting">
-                        <input class="form-check-input" type="checkbox" id="{{skill.$key}}" [value]="skill.$key" (change)="onSkillSelected(skill.$key)"> {{skill.name}}
+            <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+              <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == TechSkill">
+                    <label for="{{skillKey}}" *ngIf="deleting">
+                        <input class="form-check-input" type="checkbox" id="{{skillKey}}" [value]="skillKey" (change)="onSkillSelected(skillKey)"> {{skills[skillKey].name}}
                     </label>
                     <ng-container *ngIf="!deleting && !editing">
-                        {{skill.name}}
+                        {{skills[skillKey].name}}
                     </ng-container>
-                    <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skill.name"  (ngModelChange)="setSkillValue(skill.$key, $event)">
+                    <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skills[skillKey].name"  (ngModelChange)="setSkillValue(skillKey, $event)">
                 </div>
             </template>
-
-            
             <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
                     <input type="text" class="form-control" placeholder="Add a new technical skill" [(ngModel)]="skillName[TechSkill]">
