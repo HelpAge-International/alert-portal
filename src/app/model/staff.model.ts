@@ -11,6 +11,6 @@ export class ModelStaff {
   public officeType: number;
   public skill: string[] =[];
   public training: string
-  public notifications: string[] =[];
+  public notification: number[] =[];
   public isResponseMember: boolean;
 }

@@ -8,7 +8,9 @@
 
     <!--<div class="Back&#45;&#45;button">Agency Staff</div>-->
     <div class="Header-title__wrap">
-      <h1>{{"AGENCY_ADMIN.STAFF.TITLE"| translate}}</h1>
+      <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_ADD_STAFF"| translate}}</h1>
+      <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_EDIT_STAFF"| translate}}</h1>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteStaff()">{{"AGENCY_ADMIN.STAFF.DELETE_STAFF_MEMBER" | translate}}</button>
     </div>
 
     <form #addStaffForm (ngSubmit)="submit()">
@@ -37,7 +39,7 @@
           <label for="User-Type">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
-            <option *ngFor="let type of USER_TYPE_SELECTION" [value]="type">{{USER_TYPE[type] | translate}}</option>
+            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0" [value]="type">{{USER_TYPE[type] | translate}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
@@ -51,7 +53,8 @@
           <label for="c-Office">{{"AGENCY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
           <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
                   [required]="!hideCountry">
-            <option *ngFor="let country of countryList | async" [ngValue]="country">{{Country[country.location]}}
+            <option *ngFor="let country of countryList | async" [ngValue]="country"
+                    [selected]="country.location == countryOffice?.location">{{Country[country.location]}}
             </option>
           </select>
         </div>
@@ -135,13 +138,36 @@
       </div>
 
       <div class="Form-submit__wrapper">
-        <button class="btn btn-primary" type="submit" (click)="validateForm()">{{"AGENCY_ADMIN.STAFF.SAVE_NEW_STAFF" |
+        <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+          {{"AGENCY_ADMIN.STAFF.SAVE_NEW_STAFF" |
           translate | uppercase}}
         </button>
-        <button md-button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+          {{"AGENCY_ADMIN.STAFF.SAVE_CHANGES" |
+          translate | uppercase}}
+        </button>
+        <button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
 
     </form>
 
+  </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_TITLE" | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,9 +1,9 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {RxHelper} from "../../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Country, PersonTitle, SkillType, UserType} from "../../../utils/Enums";
+import {Country, SkillType} from "../../../utils/Enums";
 import {Observable} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {ModelUserPublic} from "../../../model/user-public.model";
@@ -11,6 +11,7 @@ import {firebaseConfig} from "../../../app.module";
 import {UUID} from "../../../utils/UUID";
 import * as firebase from "firebase";
 import {ModelStaff} from "../../../model/staff.model";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-staff',
@@ -61,10 +62,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private skillsMap = new Map();
   private staffSkills: string[] = [];
   private notificationsMap = new Map();
-  private staffNotifications: string[] = [];
+  private staffNotifications: number[] = [];
   private selectedStaffId: string;
   private isEdit: boolean;
   private selectedOfficeId: string;
+  private emailInDatabase: string;
+  private isUpdateOfficeOnly: boolean;
+  private isEmailChange: boolean;
 
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
@@ -96,38 +100,42 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     console.log("load staff info: " + staffId + "/ " + officeId);
     let subscriptionUser = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
       .subscribe(user => {
-        console.log(user);
+        // console.log(user);
         this.title = user.title;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.email = user.email;
+        this.emailInDatabase = user.email;
         this.phone = user.phone;
       });
     this.subscriptions.add(subscriptionUser);
     let subscriptionStaff = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
       .subscribe(staff => {
-        console.log(staff);
+        // console.log(staff);
         this.userType = staff.userType;
         this.department = staff.department;
         this.position = staff.position;
         this.officeType = staff.officeType;
-        for (let skill of staff.skill) {
-          this.skillsMap.set(skill, true);
+        if (staff.skill && staff.skill.length > 0) {
+          for (let skill of staff.skill) {
+            this.skillsMap.set(skill, true);
+          }
         }
         this.trainingNeeds = staff.training;
         this.isResponseMember = staff.isResponseMember;
-        for (let notification of staff.notification) {
-          this.notificationSettings[notification] = true;
+        if (staff.notification && staff.notification.length > 0) {
+          for (let notification of staff.notification) {
+            this.notificationSettings[Number(notification)] = true;
+            this.notificationsMap.set(Number(notification), true);
+          }
         }
       });
     this.subscriptions.add(subscriptionStaff);
-    this.countryOffice = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId);
-    // let subscriptionCountry = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId)
-    //   .subscribe(country => {
-    //     console.log(country);
-    //     this.countryOffice = country;
-    //   });
-    // this.subscriptions.add(subscriptionCountry);
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId)
+      .subscribe(x => {
+        this.countryOffice = x;
+      });
+    this.subscriptions.add(subscription);
   }
 
   private initData() {
@@ -153,7 +161,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       }
     });
     this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
-
   }
 
   ngOnDestroy() {
@@ -248,14 +255,38 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     });
     this.notificationsMap.forEach((value, key) => {
       if (value) {
-        this.staffNotifications.push(key);
+        this.staffNotifications.push(Number(key));
       }
     });
     if (!this.isEdit) {
       this.createNewUser();
     } else {
       console.log("edit");
+      if (this.emailInDatabase == this.email && this.countryOffice.$key == this.selectedOfficeId) {
+        this.updateNoEmailChange();
+      } else if (this.emailInDatabase == this.email && this.countryOffice.$key != this.selectedOfficeId) {
+        this.updateOfficeChange();
+      } else {
+        this.updateWithNewEmail();
+      }
     }
+  }
+
+  private updateOfficeChange() {
+    console.log("no new email but new office");
+    this.isUpdateOfficeOnly = true;
+    this.updateFirebase(this.selectedStaffId);
+  }
+
+  private updateWithNewEmail() {
+    console.log("new email new user");
+    this.isEmailChange = true;
+    this.createNewUser();
+  }
+
+  private updateNoEmailChange() {
+    console.log("no email change no office change");
+    this.updateFirebase(this.selectedStaffId);
   }
 
   private createNewUser() {
@@ -270,6 +301,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private updateFirebase(uid) {
+    console.log("update - country office:")
+    console.log(this.countryOffice);
     let staffData = {};
     //user public
     let user = new ModelUserPublic(this.firstName, this.lastName, this.title, this.email);
@@ -283,7 +316,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staffData["/userPublic/" + uid + "/"] = user;
     //staff extra info
     let staff = new ModelStaff();
-    staff.userType = this.userType;
+    staff.userType = Number(this.userType);
     // if (!this.hideRegion) {
     //   staff.region = this.region;
     // }
@@ -291,13 +324,21 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     //   staff.countryOffice = this.countryOffice.$key;
     // }
     staff.department = this.department;
-    staff.position = this.position;
-    staff.officeType = this.officeType;
+    staff.position = Number(this.position);
+    staff.officeType = Number(this.officeType);
     staff.skill = this.staffSkills;
     staff.training = this.trainingNeeds;
-    staff.notifications = this.staffNotifications;
+    staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
+    if (this.isUpdateOfficeOnly) {
+      staffData["/staff/" + this.selectedOfficeId + "/" + uid + "/"] = null;
+    }
     staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
+
+    if (this.isEmailChange) {
+      staffData["/userPublic/" + this.selectedStaffId + "/"] = null;
+      staffData["/staff/" + this.selectedOfficeId + "/" + this.selectedStaffId + "/"] = null;
+    }
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
@@ -329,7 +370,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   notificationCheck(notification, isCheck) {
-    this.notificationsMap.set(notification.$key, isCheck);
+    this.notificationsMap.set(Number(notification.$key), isCheck);
   }
 
   cancel() {
@@ -342,5 +383,27 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.hideWarning = true;
     });
     this.subscriptions.add(subscribe);
+  }
+
+  deleteStaff() {
+    console.log("delete staff:" + this.selectedOfficeId + "/" + this.selectedStaffId);
+    jQuery("#delete-action").modal("show");
+  }
+
+  closeModal() {
+    jQuery("#delete-action").modal("hide");
+  }
+
+  deleteAction() {
+    jQuery("#delete-action").modal("hide");
+    let delData = {};
+    delData["/userPublic/" + this.selectedStaffId + "/"] = null;
+    delData["/staff/" + this.selectedOfficeId + "/" + this.selectedStaffId + "/"] = null;
+    this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
+    }, error => {
+      this.waringMessage = error.message;
+      this.showAlert();
+    });
   }
 }
