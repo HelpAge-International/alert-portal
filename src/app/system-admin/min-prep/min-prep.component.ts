@@ -3,8 +3,8 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
 import {ActionType} from '../../utils/Enums';
-import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-min-prep',
@@ -16,10 +16,10 @@ export class MinPrepComponent implements OnInit, OnDestroy {
 
   private chsMinPrepActions: FirebaseListObservable<any>;
   private path: string = '';
+  private actionToDelete;
   private subscriptions: RxHelper;
-  // ActionType = ActionType;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
 
@@ -27,7 +27,7 @@ export class MinPrepComponent implements OnInit, OnDestroy {
 
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        this.path = Constants.APP_STATUS+"/action/" + auth.uid;
+        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
         this.chsMinPrepActions = this.af.database.list(this.path, {
           query: {
             orderByChild: 'type',
@@ -54,16 +54,21 @@ export class MinPrepComponent implements OnInit, OnDestroy {
   }
 
   deleteChsMinPrepAction(chsMinPrepAction) {
-    let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
-      if (result) {
-        console.log("Delete button pressed");
-        this.af.database.object(this.path + "/" + chsMinPrepAction.$key).remove()
-          .then(_ =>
-            console.log("Chs action deleted")
-          );
-      }
-    });
-    this.subscriptions.add(subscription);
+    this.actionToDelete = chsMinPrepAction;
+    jQuery("#delete-action").modal("show");
+  }
+
+  deleteAction() {
+    console.log("Delete button pressed");
+    this.af.database.object(this.path + "/" + this.actionToDelete.$key).remove()
+      .then(_ => {
+        console.log("Chs action deleted");
+        jQuery("#delete-action").modal("hide");
+      });
+  }
+
+  closeModal() {
+    jQuery("#delete-action").modal("hide");
   }
 
   private navigateToLogin() {

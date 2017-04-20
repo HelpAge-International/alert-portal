@@ -7,8 +7,9 @@ var Constants = (function () {
     function Constants() {
     }
     Constants.TEMP_PASSWORD = "testtest";
+    Constants.ALERT_DURATION = 5000;
     /*PATHS*/
-    Constants.APP_STATUS = "/sand";
+    Constants.APP_STATUS = "/test";
     Constants.LOGIN_PATH = "/login";
     //system admin
     Constants.DEFAULT_MPA_PATH = "/system-admin/mpa";
@@ -18,7 +19,6 @@ var Constants = (function () {
     //agency admin
     Constants.AGENCY_ADMIN_HOME = "/agency-admin/country-office";
     Constants.AGENCY_ADMIN_ADD_STARFF = "/agency-admin/staff/create-edit-staff";
-    Constants.ALERT_DURATION = 5000;
     Constants.AGENCY_ADMIN_STARFF = "/agency-admin/staff";
     /*LIST VALUES FRO TRANSLATION*/
     Constants.THRESHOLD_VALUE = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
@@ -32,6 +32,15 @@ var Constants = (function () {
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY5", "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY6", "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY7",
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY8", "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY9"];
     Constants.ACTION_LEVEL = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
+    Constants.CURRENCY = ["GBP", "EUR", "USD"];
+    Constants.CURRENCY_SELECTION = [Enums_1.Currency.GBP, Enums_1.Currency.EUR, Enums_1.Currency.USD];
+    Constants.USER_TYPE = ["Global Director", "Regional Director", "Country Director", "ERT Lead", "ERT", "Donor", "Global User", "Country Admin"];
+    Constants.USER_TYPE_SELECTION = [Enums_1.UserType.GlobalDirector, Enums_1.UserType.RegionalDirector, Enums_1.UserType.CountryDirector, Enums_1.UserType.ErtLeader, Enums_1.UserType.Ert, Enums_1.UserType.Donor, Enums_1.UserType.GlobalUser, Enums_1.UserType.CountryAdmin];
+    Constants.STAFF_POSITION = ["Office Director", "Office Staff"];
+    Constants.STAFF_POSITION_SELECTION = [Enums_1.StaffPosition.OfficeDirector, Enums_1.StaffPosition.OfficeStarff];
+    Constants.OFFICE_TYPE = ["Field Office", "Lab Office"];
+    Constants.OFFICE_TYPE_SELECTION = [Enums_1.OfficeType.FieldOffice, Enums_1.OfficeType.LabOffice];
+    Constants.NOTIFICATION_SETTINGS = ["Alert level changed", "Red alert request", "Update hazard indicator", "MPA/APA expired", "Response plan expired", "Response plan rejected"];
     return Constants;
 }());
 exports.Constants = Constants;

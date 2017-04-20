@@ -9,5 +9,6 @@ export class ModelSystem {
   public fileSettings: boolean[];
   public genericAction: any;
   public minThreshold: number[];
+  public groups: string[];
 }
 

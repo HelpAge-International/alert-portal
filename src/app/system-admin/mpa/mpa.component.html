@@ -9,9 +9,9 @@
       <h1>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.TITLE_TEXT" | translate}}</h1>
       <!--<i class="fa fa-question-circle fa-2x text-primary Tooltip" data-toggle="tooltip"-->
       <!--data-placement="top" title="Tooltip on top" aria-hidden="true"></i>-->
-      <a routerLink="/system-admin/mpa/create" class="btn btn-primary">{{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" |
+      <button routerLink="/system-admin/mpa/create" class="btn btn-primary">{{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" |
         translate
-        | uppercase}}</a>
+        | uppercase}}</button>
     </div>
 
     <div class="row align-items-center Filter-form System-admin--form-wrap">
@@ -44,10 +44,28 @@
         </p>
       </div>
       <div class="col-lg-3 Right-aligned">
-        <div class="btn btn-danger" (click)="deleteAction(action.$key)">{{"GLOBAL.DELETE" | translate}}</div>
+        <div class="btn btn-danger" (click)="deleteGenericAction(action.$key)">{{"GLOBAL.DELETE" | translate}}</div>
         <div class="btn btn-primary" (click)="edit(action.$key)">{{"GLOBAL.EDIT" | translate}}</div>
       </div>
     </div>
 
+  </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"DELETE_ACTION_DIALOG.CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
   </div>
 </div>

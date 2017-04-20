@@ -2,9 +2,8 @@ import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
-import {MdDialog} from "@angular/material";
 import {TranslateService} from "@ngx-translate/core";
-import {Subscription} from "rxjs";
+import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-agency-admin-header',
@@ -18,29 +17,28 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private firstName: string = "";
   private lastName: string = "";
   private counter: number = 0;
-  private subscription: Subscription;
 
-  constructor(private af: AngularFire, private router: Router, public dialog: MdDialog, private translate: TranslateService) {
+  constructor(private af: AngularFire, private router: Router, private translate: TranslateService, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
-    this.subscription = this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
+        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
+        this.subscriptions.add(subscription)
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
+    this.subscriptions.add(subscription)
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+      this.subscriptions.releaseAll();
   }
 
   logout() {

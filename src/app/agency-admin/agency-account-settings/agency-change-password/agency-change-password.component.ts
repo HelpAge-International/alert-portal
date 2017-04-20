@@ -15,7 +15,6 @@ import {CustomerValidator} from '../../../utils/CustomValidator';
 export class AgencyChangePasswordComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  authState: FirebaseAuthState;
   private successInactive: boolean = true;
   private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PASSWORD';
   private errorInactive: boolean = true;
@@ -24,6 +23,7 @@ export class AgencyChangePasswordComponent implements OnInit, OnDestroy {
   private currentPasswordEntered: string;
   private newPasswordEntered: string;
   private confirmPasswordEntered: string;
+  authState: FirebaseAuthState;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }

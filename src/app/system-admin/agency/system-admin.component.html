@@ -5,7 +5,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"SYSTEM_ADMIN.AGENCIES.TITLE" | translate}}</h1>
-      <a [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate | uppercase}}</a>
+      <button [routerLink]="['/system-admin/add-agency']" class="btn btn-primary">{{"SYSTEM_ADMIN.AGENCIES.ADD_NEW_AGENCY" | translate | uppercase}}</button>
     </div>
 
     <div *ngIf="(agencies | async)?.length == 0" class="Empty--ribbon">
@@ -14,18 +14,36 @@
 
     <table class="table Table__v-spacing__mid Agency-table">
       <tr *ngFor="let agency of agencies | async">
-        <td><img src="{{agency?.logoPath}}" alt="" class="Agency-logo"></td>
+        <td><div class="Agency-logo" [style.background-image]="agency?.logoPath ? 'url(' + agency?.logoPath + ')' : 'url(assets/images/alert_logo--grey.svg)'"></div></td>
         <td>{{agency?.name}}</td>
         <td></td>
         <td *ngIf="agency?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
         <td *ngIf="!agency?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
         <td>
-          <div *ngIf="!agency?.isActive" class="btn btn-success" (click)="toggleActive(agency)">{{"GLOBAL.ACTIVATE" | translate}}</div>
-          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="toggleActive(agency)">{{"GLOBAL.DEACTIVATE" | translate}}</div>
+          <div *ngIf="!agency?.isActive" class="btn btn-success" (click)="update(agency)">{{"GLOBAL.ACTIVATE" | translate}}</div>
+          <div *ngIf="agency?.isActive" class="btn btn-danger" (click)="update(agency)">{{"GLOBAL.DEACTIVATE" | translate}}</div>
           <div class="btn btn-primary" (click)="editAgency(agency)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
       </tr>
     </table>
   </div>
 
+</div>
+
+<div class="modal fade" id="update-agency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DIALOG.TITLE" | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"DIALOG.CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="toggleActive()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
+  </div>
 </div>

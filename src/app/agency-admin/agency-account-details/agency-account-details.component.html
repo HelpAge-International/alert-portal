@@ -17,13 +17,14 @@
     </div>
 
     <div class="Agency-details__logo">
-      <label>{{"AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO" | translate}}</label>
-      <img src="{{agencyLogo}}" alt="" class="Agency-details__logo__preview">
-      <label for="files" class="btn">Replace Image</label>
-      <input id="files" style="visibility:hidden; display: none;" type="file" (change)="replaceImage()">
-      <!--<input type='file' id="imgInp" class="Input-form" />-->
-      <!--<div><button (click)="replaceImage()">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE" | translate}}</button></div>-->
-      <div><button (click)="removeImage()">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</button></div>
+      <div class="form-group"><label>{{"AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO" | translate}}</label></div>
+      <label for="imgInp" class="Agency-details__logo__preview" [class.Selected]="agencyLogo" [style.background-image]="'url('+ agencyLogo + ')'"></label>
+      <input type='file' id="imgInp" (change) = "fileChange($event)" class="Input-form--hidden"/>
+      <div><a href="javascript:void(0);" *ngIf="!agencyLogo" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE" | translate}}</a></div>
+      <div><a href="javascript:void(0);" *ngIf="agencyLogo" onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE"
+        | translate}}</a></div>
+      <div><a href="javascript:void(0);" class="text-danger" (click)="removeLogoPreview()"
+              *ngIf="agencyLogo">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
       <div>{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
       <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
     </div>
@@ -32,25 +33,27 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAddressLine1]}">
           <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}*</label>
-          <input type="text" class="form-control" id="A-line-1" placeholder="Please enter" required
+          <input type="text" class="form-control" id="A-line-1" required
                  [(ngModel)]="agencyAddressLine1">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
-          <input type="text" class="form-control" id="A-line-2" placeholder="Optional" [(ngModel)]="agencyAddressLine2">
+          <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
+                 [(ngModel)]="agencyAddressLine2">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
-          <input type="text" class="form-control" id="A-line-3" placeholder="Optional" [(ngModel)]="agencyAddressLine3">
+          <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
+                 [(ngModel)]="agencyAddressLine3">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
+          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
           <select name="Country" id="Country" class="form-control" [(ngModel)]="agencyCountry">
             <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
           </select>
@@ -59,14 +62,15 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCity]}">
           <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}*</label>
-          <input type="text" class="form-control" id="City" placeholder="Please enter" required
+          <input type="text" class="form-control" id="City" required
                  [(ngModel)]="agencyCity">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
-          <input type="text" class="form-control" id="Postcode" placeholder="Optional" [(ngModel)]="agencyPostCode">
+          <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
+                 [(ngModel)]="agencyPostCode">
         </div>
       </div>
     </div>
@@ -75,14 +79,15 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyPhone]}">
           <label for="T-number">{{"GLOBAL.USER_INFO.PHONE" | translate}}*</label>
-          <input type="text" class="form-control" id="T-number" placeholder="Please enter" required
+          <input type="text" class="form-control" id="T-number" required
                  [(ngModel)]="agencyPhone">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="W-address">{{"GLOBAL.USER_INFO.WEB_ADDRESS" | translate}}</label>
-          <input type="text" class="form-control" id="W-address" placeholder="Optional" [(ngModel)]="agencyWebAddress">
+          <input type="text" class="form-control" id="W-address" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
+                 [(ngModel)]="agencyWebAddress">
         </div>
       </div>
       <div class="col-lg-4 col-md-6">

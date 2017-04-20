@@ -5,7 +5,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.GLOBAL_NETWORKS" | translate}}</h1>
-      <button type="button" class="btn btn-primary" (click)="addNetwork()">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.ADD_NEW_NETWORK" |
+      <button class="btn btn-primary" (click)="addNetwork()">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.ADD_NEW_NETWORK" |
         translate | uppercase}}
       </button>
     </div>
@@ -16,24 +16,43 @@
 
     <table class="table Table__v-spacing__mid Agency-table">
       <tr *ngFor="let network of networks | async">
-        <td><img src="{{network.logoPath}}" alt="" class="Agency-logo"></td>
+        <!--<td><div class="Agency-logo" [style.background-image]="network.logoPath ? 'url(' + network.logoPath + ')' : 'url(assets/images/alert_logo&#45;&#45;grey.svg)'"></div></td>-->
+        <td><div class="Agency-logo" [style.background-image]="'url(assets/images/alert_logo--grey.svg)'"></div></td>
         <td>{{network.name}}</td>
         <td></td>
         <td *ngIf="network.isActive">{{"GLOBAL.ACTIVE" |translate}}</td>
         <td *ngIf="!network.isActive">{{"GLOBAL.DEACTIVE" |translate}}</td>
         <td>
           <div *ngIf="network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
-               (click)="toggleActive(network)">
+               (click)="update(network)">
             {{"GLOBAL.DEACTIVATE" | translate}}
           </div>
-          <div *ngIf="!network.isActive" class="btn btn-danger" data-toggle="modal" data-target="#deactivate_network"
-               (click)="toggleActive(network)">
+          <div *ngIf="!network.isActive" class="btn btn-success" data-toggle="modal" data-target="#deactivate_network"
+               (click)="update(network)">
             {{"GLOBAL.ACTIVATE" | translate}}
           </div>
           <div class="btn btn-primary" (click)="edit(network)">{{"GLOBAL.EDIT" | translate}}</div>
         </td>
       </tr>
     </table>
+  </div>
+</div>
+
+<div class="modal fade" id="update-network" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{alertTitle | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{alertContent | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="toggleActive()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
   </div>
 </div>
 

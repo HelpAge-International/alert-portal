@@ -22,7 +22,7 @@
 
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
-          <p>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.MPA_OR_APA?" | translate}}</p>
+          <div class="form-group"><label>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.MPA_OR_APA?" | translate}}</label></div>
 
           <div class="Radio--ribbon">
             <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
@@ -36,11 +36,13 @@
 
           <div class="row System-admin--form-wrap">
             <div class="col-md-6" [ngClass]="{'has-danger': alerts[categorySelected]}">
-              <label for="Category">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORY" | translate}}</label>
-              <select class="form-control" id="Category" [(ngModel)]="categorySelected">
-                <!--<option value="" disabled selected hidden>Please select</option>-->
-                <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
-              </select>
+              <div class="form-group">
+                <label for="Category">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORY" | translate}}</label>
+                <select class="form-control" id="Category" [(ngModel)]="categorySelected">
+                  <!--<option value="" disabled selected hidden>Please select</option>-->
+                  <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
+                </select>
+              </div>
             </div>
           </div>
 

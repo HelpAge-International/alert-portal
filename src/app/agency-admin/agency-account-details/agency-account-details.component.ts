@@ -6,7 +6,7 @@ import {Country, Currency} from "../../utils/Enums";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
-import * as firebase from 'firebase';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-agency-account-details',
@@ -24,7 +24,6 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private alerts = {};
   private modalAgency: ModelAgency;
   private agencyLogo: string;
-  private newImage: string;
   private agencyAddressLine1: string;
   private agencyAddressLine2: string;
   private agencyAddressLine3: string;
@@ -38,6 +37,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
   private Currency = Constants.CURRENCY;
   private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
+  private logoFile: File;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -59,10 +59,27 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+  fileChange(event) {
+    if(event.target.files.length > 0) {
+        this.logoFile = event.target.files[0];
+        var reader = new FileReader();
+        reader.onload = (event:any) => {
+            this.setLogoPreview(event.target.result);
+        }
+        reader.readAsDataURL(this.logoFile);
+    }
+  }
+
+  removeLogoPreview()
+  {
+    this.setLogoPreview(this.agencyLogo);
+    this.logoFile = null; // remove the uploaded file
+  }
+
   onSubmit() {
 
     if (this.validate()) {
-
+      // TODO Upload logo to firebase
       if (this.modalAgency) {
         var editedAgency: ModelAgency = new ModelAgency(this.modalAgency.name);
         editedAgency.addressLine1 = this.agencyAddressLine1;
@@ -104,35 +121,6 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  replaceImage() {
-    console.log('this.agencyLogo ====' + this.agencyLogo);
-
-    // this.newImage = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTGdJmgpV8qkAew3QvDqNi4ShFMYHSKxE5pE2EAJEy9J2LDy_CeEA';
-    // console.log('this.agencyLogo ====' + this.agencyLogo);
-    // console.log('this.newImage ====' + this.newImage);
-    //
-    // const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.newImage);
-    // storageRef.getDownloadURL().then(url => {
-    //     this.agencyLogo = url;
-    //     console.log(this.agencyLogo);
-    //   }
-    // );
-
-  }
-
-  removeImage() {
-
-    // Replace with the default Alert logo
-    const storageRef = firebase.storage().ref().child('/agency/' + this.uid + '/' + this.agencyLogo);
-    storageRef.delete().then(_ => {
-      this.agencyLogo = "";
-      console.log("Image removed from firebase storage");
-    }, error => {
-      console.log(error.message);
-    });
-
-  }
-
   private loadAgencyData(uid) {
 
     let subscription = this.af.database.object(Constants.APP_STATUS+"/agency/" + uid).subscribe((agency: ModelAgency) => {
@@ -150,6 +138,16 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
       this.agencyCurrency = agency.currency;
     });
     this.subscriptions.add(subscription);
+  }
+
+  private setLogoPreview(logoImage: string){
+    jQuery(".Agency-details__logo__preview").css("background-image", "url(" + logoImage + ")");
+    if(logoImage)
+    {
+      jQuery(".Agency-details__logo__preview").addClass("Selected");
+    }else{
+      jQuery(".Agency-details__logo__preview").removeClass("Selected");
+    }
   }
 
   private showAlert(error: boolean) {
@@ -173,7 +171,6 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
    * @returns {boolean}
    */
   private validate() {
-
     this.alerts = {};
     if (!(this.agencyAddressLine1)) {
       this.alerts[this.agencyAddressLine1] = true;
@@ -187,7 +184,21 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.agencyPhone] = true;
       this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_PHONE";
       return false;
+    } else if ( this.logoFile ){
+        // Check for file size
+        if(this.logoFile.size > Constants.AGENCY_ADMIN_LOGO_MAX_SIZE)
+        {
+          this.errorMessage = "ERROR MESSAGE FILE SIZE EXCEEDED"; // Message to be added
+          return false;
+        }
+        // Check for file type
+        if( !(Constants.AGENCY_ADMIN_LOGO_FILE_TYPES.indexOf(this.logoFile.type) > -1 ) )
+        {
+          this.errorMessage = "ERROR MESSAGE INVALID FILE TYPE"; // Message to be added
+          return false;
+        }
     }
+
     return true;
   }
 

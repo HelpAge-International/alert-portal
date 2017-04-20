@@ -13,8 +13,9 @@ import {ModelRegion} from "../../../model/region.model";
   styleUrls: ['./create-edit-region.component.css']
 })
 export class CreateEditRegionComponent implements OnInit, OnDestroy {
-  private pageTitle: string = "Create new region";
-  private submitText: string = "Save new region";
+
+  private pageTitle: string = "AGENCY_ADMIN.COUNTRY_OFFICES.CREATE_NEW_REGION";
+  private submitText: string = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_NEW_REGION";
   private COUNTRY_NAMES: string[] = Constants.COUNTRY;
   private regionName: string;
   private counter: number = 0;
@@ -36,7 +37,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -48,13 +49,14 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           if (params["id"]) {
             this.regionId = params["id"];
             this.isEdit = true;
-            this.pageTitle = "Edit region";
-            this.submitText = "save region";
+            this.pageTitle = "AGENCY_ADMIN.COUNTRY_OFFICES.EDIT_REGION";
+            this.submitText = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_REGION";
           }
           this.fetchCountries();
         });
       this.subscriptions.add(subscription);
     });
+    this.subscriptions.add(subscription);
   }
 
   private fetchCountries() {
@@ -85,7 +87,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           this.countries.push(this.counter);
           this.selectedCountries.push(this.selectedCountries[0]);
         } else {
-          this.errorMessage = "No more countries can be selected!!";
+          this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_MAX_COUNTRIES';
           this.showAlert();
           return;
         }
@@ -96,21 +98,21 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   submit() {
     console.log("submit");
     if (!this.regionName) {
-      this.errorMessage = "Name can not be empty!";
+      this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_NO_NAME';
       this.showAlert();
       return;
     }
     if (this.selectedCountries.length == 0) {
-      this.errorMessage = "No country was selected for this region!";
+      this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_NO_COUNTRY';
       this.showAlert();
       return;
     }
     if (!this.checkCountries()) {
-      this.errorMessage = "Country can not be duplicate for the same region!";
+      this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_DUPLICATE_COUNTRY';
       this.showAlert();
       return;
     }
-    if (!this.regionalDirectorId || this.regionalDirectorId == "Unassigned") {
+    if (!this.regionalDirectorId || this.regionalDirectorId == 'AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED') {
       this.regionalDirectorId = "";
     }
     console.log(this.regionName);
@@ -132,7 +134,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         .first()
         .subscribe(result => {
           if (result.length != 0) {
-            this.errorMessage = "Name is duplicate!";
+            this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.DUPLICATE_NAME';
             this.showAlert();
             return;
           }

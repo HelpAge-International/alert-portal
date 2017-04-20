@@ -3,9 +3,9 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionLevel, ActionType} from "../../utils/Enums";
 import {Router} from "@angular/router";
-import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-agency-mpa',
@@ -13,7 +13,6 @@ import {Observable} from "rxjs";
   styleUrls: ['./agency-mpa.component.css'],
 })
 
-// TODO - Double filter
 export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -25,15 +24,16 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private actionLevelSelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
+  private actionToDelete;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
+        this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
           query: {
             orderByChild: "type",
             equalTo: ActionType.mandated
@@ -52,17 +52,23 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   deleteAction(actionKey) {
-    let subscription = this.dialogService.createDialog('DELETE_ACTION_DIALOG.TITLE', 'DELETE_ACTION_DIALOG.CONTENT').subscribe(result => {
-      if (result) {
-        let actionPath: string = Constants.APP_STATUS+'/action/' + this.uid + '/' + actionKey;
-        console.log(actionPath);
-        this.af.database.object(actionPath).remove()
-          .then(_ =>
-            console.log("MPA deleted")
-          );
-      }
-    });
-    this.subscriptions.add(subscription);
+    this.actionToDelete = actionKey;
+    jQuery("#delete-action").modal("show");
+  }
+
+  deleteMandatedAction() {
+    console.log("Delete button pressed");
+    let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + this.actionToDelete;
+    this.af.database.object(actionPath).remove()
+      .then(_ => {
+          console.log("Mandated preparedness action deleted");
+          jQuery("#delete-action").modal("hide");
+        }
+      );
+  }
+
+  closeModal() {
+    jQuery("#delete-action").modal("hide");
   }
 
   editAction(actionKey) {
@@ -80,7 +86,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected == 'All departments') {
       //no filter. show all
       this.isFiltered = false;
-      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -89,7 +95,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     } else if (this.actionLevelSelected != ActionLevel.ALL && this.departmentSelected == 'All departments') {
       //filter only with mpa
       this.isFiltered = true;
-      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -107,7 +113,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     } else if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected != 'All departments') {
       //filter only with apa
       this.isFiltered = true;
-      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -125,7 +131,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     } else {
       // filter both action level and category
       this.isFiltered = true;
-      this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
+      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
         query: {
           orderByChild: "type",
           equalTo: ActionType.mandated
@@ -154,7 +160,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private getDepartments() {
 
-    this.departments = this.af.database.list(Constants.APP_STATUS+"/agency/" + this.uid + "/departments")
+    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(list => {
         let tempList = [];
         for (let item of list) {

@@ -7,7 +7,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"SYSTEM_ADMIN.ACTIONS.CHS_MPA.TITLE_TEXT" | translate}}</h1>
-      <a routerLink="/system-admin/min-prep/create" class="btn btn-primary">{{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" | translate | uppercase}}</a>
+      <button routerLink="/system-admin/min-prep/create" class="btn btn-primary">{{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" | translate | uppercase}}</button>
     </div>
 
     <div *ngIf="(chsMinPrepActions | async)?.length == 0" class="Empty--ribbon">{{"SYSTEM_ADMIN.ACTIONS.CHS_MPA.NO_ACTIONS" | translate}}</div>
@@ -20,6 +20,24 @@
       <div class="col-lg-3 Right-aligned">
         <div class="btn btn-danger" (click)="deleteChsMinPrepAction(chsMinPrepAction)">{{"GLOBAL.DELETE" | translate}}</div>
         <div class="btn btn-primary" (click)="editChsMinPrepAction(chsMinPrepAction)">{{"GLOBAL.EDIT" | translate}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"DELETE_ACTION_DIALOG.CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
     </div>
   </div>

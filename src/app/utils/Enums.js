@@ -2,12 +2,6 @@
  * Created by Sanjaya on 07/03/2017.
  */
 "use strict";
-(function (UserType) {
-    UserType[UserType["systemAdmin"] = 0] = "systemAdmin";
-    UserType[UserType["agencyAdmin"] = 1] = "agencyAdmin";
-    UserType[UserType["countryAdmin"] = 2] = "countryAdmin";
-})(exports.UserType || (exports.UserType = {}));
-var UserType = exports.UserType;
 (function (ActionType) {
     ActionType[ActionType["chs"] = 0] = "chs";
     ActionType[ActionType["mandated"] = 1] = "mandated";
@@ -54,11 +48,44 @@ var FileType = exports.FileType;
     Country[Country["Germany"] = 2] = "Germany";
 })(exports.Country || (exports.Country = {}));
 var Country = exports.Country;
-(function (Department) {
-    Department[Department["Chs"] = 0] = "Chs";
-    Department[Department["Finance"] = 1] = "Finance";
-    Department[Department["Hr"] = 2] = "Hr";
-    Department[Department["Logistics"] = 3] = "Logistics";
-    Department[Department["Programme"] = 4] = "Programme";
-})(exports.Department || (exports.Department = {}));
-var Department = exports.Department;
+(function (Currency) {
+    Currency[Currency["GBP"] = 0] = "GBP";
+    Currency[Currency["EUR"] = 1] = "EUR";
+    Currency[Currency["USD"] = 2] = "USD";
+})(exports.Currency || (exports.Currency = {}));
+var Currency = exports.Currency;
+(function (StaffPosition) {
+    StaffPosition[StaffPosition["OfficeDirector"] = 0] = "OfficeDirector";
+    StaffPosition[StaffPosition["OfficeStarff"] = 1] = "OfficeStarff";
+})(exports.StaffPosition || (exports.StaffPosition = {}));
+var StaffPosition = exports.StaffPosition;
+(function (UserType) {
+    UserType[UserType["GlobalDirector"] = 0] = "GlobalDirector";
+    UserType[UserType["RegionalDirector"] = 1] = "RegionalDirector";
+    UserType[UserType["CountryDirector"] = 2] = "CountryDirector";
+    UserType[UserType["ErtLeader"] = 3] = "ErtLeader";
+    UserType[UserType["Ert"] = 4] = "Ert";
+    UserType[UserType["Donor"] = 5] = "Donor";
+    UserType[UserType["GlobalUser"] = 6] = "GlobalUser";
+    UserType[UserType["CountryAdmin"] = 7] = "CountryAdmin";
+})(exports.UserType || (exports.UserType = {}));
+var UserType = exports.UserType;
+(function (OfficeType) {
+    OfficeType[OfficeType["FieldOffice"] = 0] = "FieldOffice";
+    OfficeType[OfficeType["LabOffice"] = 1] = "LabOffice";
+})(exports.OfficeType || (exports.OfficeType = {}));
+var OfficeType = exports.OfficeType;
+(function (SkillType) {
+    SkillType[SkillType["Support"] = 0] = "Support";
+    SkillType[SkillType["Tech"] = 1] = "Tech";
+})(exports.SkillType || (exports.SkillType = {}));
+var SkillType = exports.SkillType;
+(function (NotificationSettingEvents) {
+    NotificationSettingEvents[NotificationSettingEvents["AlertLevelChanged"] = 0] = "AlertLevelChanged";
+    NotificationSettingEvents[NotificationSettingEvents["RedAlertRequest"] = 1] = "RedAlertRequest";
+    NotificationSettingEvents[NotificationSettingEvents["UpdateHazard"] = 2] = "UpdateHazard";
+    NotificationSettingEvents[NotificationSettingEvents["ActionExpired"] = 3] = "ActionExpired";
+    NotificationSettingEvents[NotificationSettingEvents["PlanExpired"] = 4] = "PlanExpired";
+    NotificationSettingEvents[NotificationSettingEvents["PlanRejected"] = 5] = "PlanRejected";
+})(exports.NotificationSettingEvents || (exports.NotificationSettingEvents = {}));
+var NotificationSettingEvents = exports.NotificationSettingEvents;

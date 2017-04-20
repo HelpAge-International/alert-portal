@@ -10,8 +10,13 @@
       <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.MIN" | translate}}</h3>
-    <hr>
+    <ul class="section-nav">
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS" | translate}}</a></li>
+    </ul>
+
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.MIN" | translate}}</h3><hr>
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
@@ -46,8 +51,7 @@
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.ADV" | translate}}</h3>
-    <hr>
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.ADV" | translate}}</h3><hr>
 
     <div class="row Traffic--spaced">
       <div class="col-lg-2 col-md-3">
@@ -82,92 +86,9 @@
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.DOC_SETTING" | translate}}</h3>
-    <hr>
-
-    <label>{{"SYSTEM_ADMIN.SETTING.FILE_FORMAT" | translate}}</label>
-
-    <div class="row">
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isPdf">
-        PDF
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isDoc">
-        DOC
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isDocx">
-        DOCX
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isRtf">
-        RTF
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isJpeg">
-        JPEG
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isPng">
-        PNG
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isCsv">
-        CSV
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isXls">
-        XLS
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isXlsx">
-        XLSX
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isPpt">
-        PPT
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isPptx">
-        PPTX
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isTxt">
-        TXT
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isOdt">
-        ODT
-      </label>
-      <label class="Checkbox--ribbon col-lg-2 col-md-3 col-sm-4">
-        <input type="checkbox" name="f-Format" [(ngModel)]="isTsv">
-        TSV
-      </label>
-    </div>
-
-    <div class="File-size--spaced">
-      <label>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}</label>
-      <div class="row">
-        <div class="col-lg-2 col-md-4 col-sm-4">
-          <select class="form-control" [(ngModel)]="fileSize">
-            <option *ngFor="let value of thresholdValue" [ngValue]="value">{{value}}</option>
-          </select>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-4">
-          <select class="form-control" [(ngModel)]="fileType">
-            <option *ngFor="let value of fileTypeList" [ngValue]="value">{{FileType[value]}}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-
     <div class="Form-submit__wrapper">
       <div class="btn btn-primary" (click)="saveSetting()">{{"SYSTEM_ADMIN.SETTING.SAVE" | translate | uppercase}}</div>
-      <div class="btn btn-outline-secondary" (click)="back()">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
-
 
   </div>
 </div>

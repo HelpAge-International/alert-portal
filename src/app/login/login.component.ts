@@ -57,8 +57,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           provider: AuthProviders.Password,
           method: AuthMethods.Password,
         })
+
         .then((success) => {
-          this.af.database.list(Constants.APP_STATUS+'/system', {preserveSnapshot: true})
+          let systemAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS+'/system', {preserveSnapshot: true})
               .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
@@ -66,15 +67,27 @@ export class LoginComponent implements OnInit, OnDestroy {
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS+'/administratorAgency', {preserveSnapshot: true})
+          this.subscriptions.add(systemAdminLoginSubscription);
+
+          let agencyAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS+'/administratorAgency', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+                  let subscription = this.af.database.object(Constants.APP_STATUS+"/administratorAgency/" + snapshot.key + '/firstLogin').subscribe((value) => {
+                    let firstLogin: boolean = value.$value;
+                    if (firstLogin) {
+                      this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
+                    } else {
+                      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+                    }
+                  });
+                  this.subscriptions.add(subscription);
                 }
               });
             });
-          this.af.database.list(Constants.APP_STATUS+'/administratorCountry', {preserveSnapshot: true})
+          this.subscriptions.add(agencyAdminLoginSubscription);
+
+          let countryAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS+'/administratorCountry', {preserveSnapshot: true})
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
@@ -82,9 +95,10 @@ export class LoginComponent implements OnInit, OnDestroy {
                 }
               });
             });
+          this.subscriptions.add(countryAdminLoginSubscription);
         })
-        .catch((err) => {
-          // err.message can't be used here as they won't be translated. A global message is shown here instead.
+        .catch((error) => {
+          // error.message can't be used here as they won't be translated. A global message is shown here instead.
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.showAlert(true);
         });

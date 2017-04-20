@@ -30,14 +30,16 @@
       </div>
     </div>
 
-    <label>{{"MESSAGES.RECIPIENTS" | translate}}</label>
+    <div class="form-group"><label>{{"MESSAGES.RECIPIENTS" | translate}}</label></div>
     <div class="row">
       <label for="All" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">{{"MESSAGES.ALL_USERS" | translate}}</label>
+        <input type="checkbox" name="f-Format" id="All" [(ngModel)]="allUsersSelected">{{"GLOBAL.USER_TYPE.ALL_USERS" | translate}}</label>
       <label for="Agency" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Agency" [(ngModel)]="agencyAdminsSelected">{{"MESSAGES.AGENCY_ADMINS" | translate}}</label>
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Agency" [(ngModel)]="agencyAdminsSelected">{{"GLOBAL.USER_TYPE.AGENCY_ADMINS" | translate}}</label>
       <label for="Country Administrators" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Country Administrators" [(ngModel)]="countryAdminsSelected">{{"MESSAGES.COUNTRY_ADMINS" | translate}}</label>
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Country Administrators" [(ngModel)]="countryAdminsSelected">{{"GLOBAL.USER_TYPE.COUNTRY_ADMINS" | translate}}</label>
+      <label for="Network Administrators" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input [hidden]="allUsersSelected" type="checkbox" name="f-Format" id="Network Administrators" [(ngModel)]="networkAdminsSelected">{{"GLOBAL.USER_TYPE.NETWORK_ADMINS" | translate}}</label>
     </div>
 
     <div class="Form-submit__wrapper">

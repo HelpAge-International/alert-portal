@@ -84,9 +84,10 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       }
     } else {
       this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
         this.inactive = true;
-      })
+      });
+      this.subscriptions.add(subscription);
     }
   }
 
@@ -130,8 +131,11 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
     this.af.database.list(this.path).push(newAction)
       .then(_ => {
-        console.log('New CHS action added');
-        this.router.navigateByUrl("/agency-admin/agency-mpa");
+        this.af.database.object(this.departmentsPath + '/' + this.departmentSelected).set(true)
+          .then(_ => {
+            console.log('Department updated');
+            this.router.navigateByUrl("/agency-admin/agency-mpa");
+          });
       });
   }
 
@@ -154,7 +158,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   addNewDepartment() {
 
     if (this.validateNewDepartment()) {
-      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(true).then(_ => {
+      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(false).then(_ => {
         console.log('New department added');
         jQuery("#add_department").modal("hide");
         this.departmentSelected = this.newDepartment;

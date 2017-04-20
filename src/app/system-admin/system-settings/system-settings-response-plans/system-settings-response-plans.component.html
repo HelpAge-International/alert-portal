@@ -1,0 +1,59 @@
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<div class="Alert-success" [hidden]="successInactive">
+  {{successMessage | translate}}
+</div>
+
+<div class="Alert-error" [hidden]="errorInactive">
+  {{errorMessage | translate}}
+</div>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a
+        [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS"
+        | translate}}</a></li>
+      <li class="section-nav__item active"><a
+        [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS"
+        | translate}}</a></li>
+    </ul>
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{"SYSTEM_ADMIN.SETTING.VULNERABLE_GROUPS" | translate}}</h2>
+      <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="editGroups($event)">
+        {{"SYSTEM_ADMIN.SETTING.EDIT_GROUPS" | translate | uppercase}}
+      </button>
+      <a class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups($event)">{{"GLOBAL.SAVE" | translate |
+        uppercase}}</a>
+      <a class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEditGroups($event)">{{"GLOBAL.CANCEL" | translate}}</a>
+    </div>
+
+    <div class="Groups">
+      <div class="row Editable-check-text Large-spacing-top" *ngFor="let group of groups | async">
+
+        <ng-container *ngIf="!isEditing">{{group.$key}}</ng-container>
+
+        <input type="text" class="form-control col-md-6" *ngIf="isEditing" [ngModel]="group.$key" (ngModelChange)="setGroupValue(group.$key, $event)">
+      </div>
+
+      <div class="row Add-new-department no-gutters" *ngIf="!isEditing">
+        <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[newGroup]}">
+          <input type="text" class="form-control" placeholder="{{'SYSTEM_ADMIN.SETTING.ADD_NEW_GROUP' | translate}}"
+                 [(ngModel)]="newGroup">
+        </div>
+        <div class="col-md-8 col-4">
+          <button type="button" class="btn btn-outline-primary" (click)="addGroup()">{{"GLOBAL.SAVE" | translate}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

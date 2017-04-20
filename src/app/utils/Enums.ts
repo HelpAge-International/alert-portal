@@ -55,24 +55,27 @@ export enum Currency {
 }
 
 export enum StaffPosition {
-  OfficeDirector = 0,
-  OfficeStarff = 1
+  All = 0,
+  OfficeDirector = 1,
+  OfficeStarff = 2
 }
 
 export enum UserType {
-  GlobalDirector = 0,
-  RegionalDirector = 1,
-  CountryDirector = 2,
-  ErtLeader = 3,
-  Ert = 4,
-  Donor = 5,
-  GlobalUser = 6,
-  CountryAdmin = 7
+  All = 0,
+  GlobalDirector = 1,
+  RegionalDirector = 2,
+  CountryDirector = 3,
+  ErtLeader = 4,
+  Ert = 5,
+  Donor = 6,
+  GlobalUser = 7,
+  CountryAdmin = 8
 }
 
 export enum OfficeType {
-  FieldOffice = 0,
-  LabOffice = 1
+  All = 0,
+  FieldOffice = 1,
+  LabOffice = 2
 }
 
 export enum SkillType {

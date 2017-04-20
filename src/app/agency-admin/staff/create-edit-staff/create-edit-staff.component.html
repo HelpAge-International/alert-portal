@@ -8,56 +8,55 @@
 
     <!--<div class="Back&#45;&#45;button">Agency Staff</div>-->
     <div class="Header-title__wrap">
-      <h1>Add staff member</h1>
-      <!--<button type="button" class="btn btn-primary">Add new staff member</button>-->
+      <h1>{{"AGENCY_ADMIN.STAFF.TITLE"| translate}}</h1>
     </div>
 
     <form #addStaffForm (ngSubmit)="submit()">
 
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Title">Title</label>
+          <label for="Title">{{"GLOBAL.TITLE"| translate}}</label>
           <select class="form-control" id="Title" [(ngModel)]="title" name="title" required>
             <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">{{PERSON_TITLE[title]|translate}}
             </option>
-            <!--<option value="D-val-2">Mrs</option>-->
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">First Name</label>
+          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
-                 placeholder="Please enter" required>
+                 placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="l-Name">Last Name</label>
+          <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME"| translate}}</label>
           <input type="text" class="form-control" id="l-Name" [(ngModel)]="lastName" name="lastName"
-                 placeholder="Please enter" required>
+                 placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
       </div>
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="User-Type">User Type</label>
+          <label for="User-Type">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
             <option *ngFor="let type of USER_TYPE_SELECTION" [value]="type">{{USER_TYPE[type]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
-          <label for="region">Region</label>
+          <label for="region">{{"AGENCY_ADMIN.STAFF.REGION"| translate}}</label>
           <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion">
             <option value="D-val-1" hidden disabled selected>Please select</option>
             <option value="D-val-2">Option</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideCountry">
-          <label for="c-Office">Country Office</label>
+          <label for="c-Office">{{"AGENCY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
           <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
                   [required]="!hideCountry">
-            <option *ngFor="let country of countryList | async" [ngValue]="country">{{Country[country.location]}}</option>
+            <option *ngFor="let country of countryList | async" [ngValue]="country">{{Country[country.location]}}
+            </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Position">Department</label>
+          <label for="Position">{{"GLOBAL.DEPARTMENT"| translate}}</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
           </select>
@@ -66,38 +65,38 @@
 
         <!--<div class="row Spaced">-->
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Position">Position</label>
+          <label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>
           <select class="form-control" id="Position" [(ngModel)]="position" name="position" required>
             <option *ngFor="let position of STAFF_POSITION_SELECTION" [value]="position">{{STAFF_POSITION[position]}}
             </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="o-Type">Office Type</label>
+          <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
             <option *ngFor="let type of OFFICE_TYPE_SELECTION" [value]="type">{{OFFICE_TYPE[type]}}</option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="e-Address">Email Address</label>
-          <input type="text" class="form-control" id="e-Address" placeholder="Please enter" [(ngModel)]="email"
+          <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
+          <input type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" [(ngModel)]="email"
                  name="email" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="telephone">Telephone Number</label>
-          <input type="text" class="form-control" id="telephone" placeholder="Please enter" [(ngModel)]="phone"
+          <label for="telephone">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
+          <input type="text" class="form-control" id="telephone" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" [(ngModel)]="phone"
                  name="phone" required>
         </div>
       </div>
 
-      <label>Support Skills</label>
+      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
         <label *ngFor="let support of supportSkillList | async"
-               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box
-                                                                          (change)="supportSkillCheck(support,box.checked)">{{support.name}}</label>
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+          <input type="checkbox" #box (change)="supportSkillCheck(support,box.checked)">{{support.name}}</label>
       </div>
 
-      <label>Technical Skills</label>
+      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
         <label *ngFor="let tech of techSkillsList | async" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
           type="checkbox" #box (change)="techSkillCheck(tech,box.checked)">{{tech.name}}</label>
@@ -105,36 +104,33 @@
 
       <div class="row Spaced">
         <div class="col-lg-8 col-md-10 form-group">
-          <label for="n-Done">Training needs</label>
+          <label for="n-Done">{{"AGENCY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
                     [(ngModel)]="trainingNeeds" required></textarea>
         </div>
       </div>
 
-      <label>Notifications</label>
+      <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
-               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
-                                                                          [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+          <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
+                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
       </div>
 
-      <label>Is this staff member part of the response team?</label>
+      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM?"| translate}}</label></div>
       <div class="row">
-        <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2"><input type="radio" name="RT"
-                                                                             id="RT_no"
-                                                                             [value]="false"
-                                                                             [(ngModel)]="isResponseMember">No</label>
+        <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">
+          <input type="radio" name="RT" id="RT_no" [value]="false" [(ngModel)]="isResponseMember">{{"GLOBAL.NO"| translate}}</label>
       </div>
       <div class="row">
-        <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2"><input type="radio" name="RT"
-                                                                              id="RT_yes"
-                                                                              [value]="true"
-                                                                              [(ngModel)]="isResponseMember">Yes</label>
+        <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
+          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"| translate}}</label>
       </div>
 
       <div class="Form-submit__wrapper">
-        <button class="btn btn-primary" type="submit" (click)="validateForm()">SAVE NEW STAFF MEMBER</button>
-        <button md-button class="btn btn-primary btn-ghost" (click)="cancel()">Cancel</button>
+        <button class="btn btn-primary" type="submit" (click)="validateForm()">{{"AGENCY_ADMIN.STAFF.SAVE_NEW_STAFF" | translate | uppercase}}</button>
+        <button md-button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
 
     </form>

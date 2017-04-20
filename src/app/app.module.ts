@@ -28,15 +28,10 @@ import {CreateActionComponent} from "./system-admin/min-prep/create-action/creat
 import {CreateMpaActionComponent} from "./system-admin/mpa/create-mpa-action/create-mpa-action.component";
 import {SystemSettingsComponent} from "./system-admin/system-settings/system-settings.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {MaterialModule} from "@angular/material";
 import "hammerjs";
 import {SystemAdminHeaderComponent} from "./system-admin/system-admin-header/system-admin-header.component";
-import {DialogComponent} from "./dialog/dialog.component";
 import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {DialogService} from "./dialog/dialog.service";
-import {CreatePasswordComponent} from "./agency-admin/create-password/create-password.component";
-import {AgencyDetailsComponent} from "./agency-admin/agency-details/agency-details.component";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
 import {CreateEditCountryComponent} from "./agency-admin/country-office/create-edit-country/create-edit-country.component";
 import {CreateEditMpaComponent} from "./agency-admin/agency-mpa/create-edit-mpa/create-edit-mpa.component";
@@ -71,6 +66,10 @@ import {ModalModule} from "angular2-modal";
 import {BootstrapModalModule} from "angular2-modal/plugins/bootstrap";
 import {Modal} from 'angular2-modal/plugins/bootstrap';
 import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
+import {SystemSettingsResponsePlansComponent} from './system-admin/system-settings/system-settings-response-plans/system-settings-response-plans.component';
+import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/system-settings-documents/system-settings-documents.component';
+import { NewAgencyPasswordComponent } from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
+import { NewAgencyDetailsComponent } from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
 import { KeysPipe } from './utils/pipes/keys.pipe';
 import { KeyValuesPipe } from './utils/pipes/key-values.pipe';
 
@@ -119,9 +118,6 @@ const firebaseAuthConfig = {
     CreateMpaActionComponent,
     SystemSettingsComponent,
     SystemAdminHeaderComponent,
-    DialogComponent,
-    CreatePasswordComponent,
-    AgencyDetailsComponent,
     CountryOfficeComponent,
     CreateEditCountryComponent,
     CreateEditMpaComponent,
@@ -152,6 +148,10 @@ const firebaseAuthConfig = {
     AgencyAccountDetailsComponent,
     AgencyChangePasswordComponent,
     AgencyAdminSettingsResponsePlanComponent,
+    SystemSettingsResponsePlansComponent,
+    SystemSettingsDocumentsComponent,
+    NewAgencyPasswordComponent,
+    NewAgencyDetailsComponent,
     KeysPipe,
     KeyValuesPipe
   ],
@@ -160,7 +160,6 @@ const firebaseAuthConfig = {
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    MaterialModule,
     AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
     NgbModule.forRoot(),
     TranslateModule.forRoot({
@@ -173,8 +172,7 @@ const firebaseAuthConfig = {
     ModalModule.forRoot(),
     BootstrapModalModule
   ],
-  entryComponents: [DialogComponent],
-  providers: [DialogService, RxHelper, Modal],
+  providers: [RxHelper, Modal],
   bootstrap: [AppComponent]
 })
 

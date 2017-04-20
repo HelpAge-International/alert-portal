@@ -3,9 +3,9 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
 import {Router} from "@angular/router";
-import {DialogService} from "../../dialog/dialog.service";
 import {RxHelper} from "../../utils/RxHelper";
 import {Observable} from "rxjs";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-mpa',
@@ -29,8 +29,9 @@ export class MpaComponent implements OnInit, OnDestroy {
     GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
+  private actionToDelete;
 
-  constructor(private af: AngularFire, private router: Router, private dialogService: DialogService) {
+  constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper();
   }
 
@@ -55,19 +56,23 @@ export class MpaComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  deleteAction(actionKey) {
-    console.log("action key: " + actionKey);
-    this.dialogService.createDialog("Delete Action?",
-      "Are you sure you want to delete this action? This action cannot be undone.").subscribe(result => {
-      if (result) {
-        this.af.database.object(Constants.APP_STATUS+"/action/" + this.uid + "/" + actionKey).remove();
-      }
-    });
-  }
-
   edit(actionKey) {
     console.log("navigate to edit");
     this.router.navigate(["/system-admin/mpa/create", {id: actionKey}]);
+  }
+
+  deleteGenericAction(actionKey) {
+    this.actionToDelete = actionKey;
+    jQuery("#delete-action").modal("show");
+  }
+
+  deleteAction() {
+    console.log("Delete button pressed");
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + "/" + this.actionToDelete).remove()
+      .then(_ => {
+        console.log("Generic action deleted");
+        jQuery("#delete-action").modal("hide");
+      });
   }
 
   filterData() {
@@ -149,5 +154,9 @@ export class MpaComponent implements OnInit, OnDestroy {
           return tempList;
         });
     }
+  }
+
+  closeModal() {
+    jQuery("#delete-action").modal("hide");
   }
 }
