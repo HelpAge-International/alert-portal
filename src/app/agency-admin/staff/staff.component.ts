@@ -1,12 +1,12 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
 import {Observable} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
-import {StaffPosition, UserType, OfficeType, SkillType, NotificationSettingEvents} from "../../utils/Enums";
+import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
 declare var jQuery: any;
 
 @Component({
@@ -25,7 +25,6 @@ export class StaffComponent implements OnInit, OnDestroy {
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
   SkillType = SkillType;
-  // NotificationSettingEvents = NotificationSettingEvents;
 
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
@@ -138,25 +137,25 @@ export class StaffComponent implements OnInit, OnDestroy {
     return this.staffName;
   }
 
-  showSkills(skillList): string[] {
-    let skillIds = [];
-    for (let key in skillList) {
-      skillIds.push(key);
-    }
-    let subscription = Observable.from(skillIds)
-      .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS + "/skill/" + id);
-      })
-      .distinct()
-      .subscribe(skill => {
-        if (!this.skillSet.has(skill.$key)) {
-          this.skillNames.push(skill.name);
-          this.skillSet.add(skill.$key);
-        }
-      });
-    this.subscriptions.add(subscription);
-    return this.skillNames;
-  }
+  // showSkills(skillList): string[] {
+  //   let skillIds = [];
+  //   for (let key in skillList) {
+  //     skillIds.push(key);
+  //   }
+  //   let subscription = Observable.from(skillIds)
+  //     .flatMap(id => {
+  //       return this.af.database.object(Constants.APP_STATUS + "/skill/" + id);
+  //     })
+  //     .distinct()
+  //     .subscribe(skill => {
+  //       if (!this.skillSet.has(skill.$key)) {
+  //         this.skillNames.push(skill.name);
+  //         this.skillSet.add(skill.$key);
+  //       }
+  //     });
+  //   this.subscriptions.add(subscription);
+  //   return this.skillNames;
+  // }
 
   hideCountryStaff(office) {
     let isHidden = this.showCountryStaff.get(office.id);

@@ -314,6 +314,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     user.city = "";
     user.postCode = "";
     staffData["/userPublic/" + uid + "/"] = user;
+    //add to group
+    staffData["/group/systemadmin/allusersgroup/" + uid + "/"] = true;
+    staffData["/group/agency/" + this.uid + "/agencyallusersgroup/" + uid + "/"] = true;
+    staffData["/group/agency/" + this.uid + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
     //staff extra info
     let staff = new ModelStaff();
     staff.userType = Number(this.userType);
@@ -360,6 +364,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
       });
     this.subscriptions.add(subscription);
+    console.log(this.userType);
   }
 
   supportSkillCheck(skill, isCheck) {
@@ -400,6 +405,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     let delData = {};
     delData["/userPublic/" + this.selectedStaffId + "/"] = null;
     delData["/staff/" + this.selectedOfficeId + "/" + this.selectedStaffId + "/"] = null;
+
+    delData["/group/systemadmin/allusersgroup/" + this.selectedStaffId + "/"] = null;
+    delData["/group/agency/" + this.uid + "/agencyallusersgroup/" + this.selectedStaffId + "/"] = null;
+    delData["/group/agency/" + this.uid + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + this.selectedStaffId + "/"] = null;
+
     this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
     }, error => {
