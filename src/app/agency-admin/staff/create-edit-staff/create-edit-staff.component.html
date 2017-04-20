@@ -10,7 +10,9 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_ADD_STAFF"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_EDIT_STAFF"| translate}}</h1>
-      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteStaff()">{{"AGENCY_ADMIN.STAFF.DELETE_STAFF_MEMBER" | translate}}</button>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteStaff()">
+        {{"AGENCY_ADMIN.STAFF.DELETE_STAFF_MEMBER" | translate}}
+      </button>
     </div>
 
     <form #addStaffForm (ngSubmit)="submit()">
@@ -39,7 +41,9 @@
           <label for="User-Type">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
-            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0" [value]="type">{{USER_TYPE[type] | translate}}</option>
+            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0" [value]="type">
+              {{USER_TYPE[type] | translate}}
+            </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
@@ -70,7 +74,8 @@
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>
           <select class="form-control" id="Position" [(ngModel)]="position" name="position" required>
-            <option *ngFor="let position of STAFF_POSITION_SELECTION" [value]="position">{{STAFF_POSITION[position] |
+            <option *ngFor="let position of STAFF_POSITION_SELECTION; let idx = index" [hidden]="idx==0"
+                    [value]="position">{{STAFF_POSITION[position] |
               translate}}
             </option>
           </select>
@@ -78,7 +83,9 @@
         <div class="col-lg-4 col-md-6 form-group">
           <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
-            <option *ngFor="let type of OFFICE_TYPE_SELECTION" [value]="type">{{OFFICE_TYPE[type] | translate}}</option>
+            <option *ngFor="let type of OFFICE_TYPE_SELECTION; let idx = index" [hidden]="idx==0" [value]="type">
+              {{OFFICE_TYPE[type] | translate}}
+            </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
@@ -122,7 +129,7 @@
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
-                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
+                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key] | translate}}</label>
       </div>
 
       <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM?"| translate}}</label></div>
@@ -159,14 +166,16 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_TITLE" | translate}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
       </div>
     </div>
   </div>

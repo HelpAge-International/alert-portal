@@ -15,6 +15,7 @@
     "AT": "At: ",
     "STATUS": "Status",
     "HIDE_ALL": "Hide all",
+    "SHOW_ALL": "Show all",
     "SKILLS": "Skills",
     "EDIT_SECTION": "Edit section",
     "FILTER": "Filter: ",
@@ -111,6 +112,14 @@
       "NO_F_NAME": "Please enter the first name",
       "NO_L_NAME": "Please enter the last name",
       "NO_EMAIL": "Please enter the email address"
+    },
+    "NOTIFICATION_SETTING": {
+      "ALERT_LEVEL_CHANGE": "Alert level changed",
+      "RED_ALERT_REQUEST": "Red alert request",
+      "UPDATE_HAZARD": "Update hazard indicator",
+      "ACTION_EXPIRE": "MPA/APA expired",
+      "RESPONSE_PLAN_EXPIRE": "Response plan expired",
+      "RESPONSE_PLAN_REJECT": "Response plan rejected"
     }
   },
   "LOGIN": {

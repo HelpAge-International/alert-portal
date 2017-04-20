@@ -6,7 +6,8 @@ import {RxHelper} from "../../utils/RxHelper";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
 import {Observable} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
-import {StaffPosition, UserType, OfficeType} from "../../utils/Enums";
+import {StaffPosition, UserType, OfficeType, SkillType, NotificationSettingEvents} from "../../utils/Enums";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-staff',
@@ -21,6 +22,10 @@ export class StaffComponent implements OnInit, OnDestroy {
   USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
   OFFICE_TYPE = Constants.OFFICE_TYPE;
   OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
+  NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
+
+  SkillType = SkillType;
+  // NotificationSettingEvents = NotificationSettingEvents;
 
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
@@ -41,6 +46,10 @@ export class StaffComponent implements OnInit, OnDestroy {
   private staffMap = new Map();
   private dealedStaff: string[] = [];
   private showCountryStaff = new Map();
+  private staffEmail: string;
+  private staffPhone: string;
+  private supportSkills: string[] = [];
+  private techSkills: string[] = [];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -98,6 +107,7 @@ export class StaffComponent implements OnInit, OnDestroy {
                   this.staff.userType = item.userType;
                   this.staff.training = item.training;
                   this.staff.skill = item.skill;
+                  this.staff.notification = item.notification;
                   this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
                   this.dealedStaff.push(item.$key);
                 }
@@ -154,7 +164,100 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   editStaff(officeId, staffId) {
-    this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {id: staffId, officeId: officeId}]);
+    this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {
+      id: staffId,
+      officeId: officeId
+    }], {skipLocationChange: true});
+  }
+
+  closeAdditionalInfo(staffId) {
+    jQuery("#" + staffId).collapse("hide");
+  }
+
+  showAdditionalInfo(officeId, staffId) {
+    console.log("show additional info");
+  }
+
+  getStaffEmail(staffId) {
+    this.staffEmail = "";
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .first()
+      .subscribe(user => {
+        this.staffEmail = user.email;
+      });
+    this.subscriptions.add(subscription);
+    return this.staffEmail;
+  }
+
+  getStaffPhone(staffId) {
+    this.staffPhone = "";
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .first()
+      .subscribe(user => {
+        this.staffPhone = user.phone;
+      });
+    this.subscriptions.add(subscription);
+    return this.staffPhone;
+  }
+
+  getSupportSkills(officeId, staffId) {
+    this.supportSkills = [];
+    if (officeId && staffId) {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+        .first()
+        .map(user => {
+          let userSkill = [];
+          if (user.skill) {
+            for (let skill of user.skill) {
+              userSkill.push(skill)
+            }
+          }
+          return userSkill;
+        })
+        .flatMap(skills => {
+          return Observable.from(skills);
+        })
+        .flatMap(skill => {
+          return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
+        })
+        .subscribe(skill => {
+          if (skill.type == SkillType.Support) {
+            this.supportSkills.push(skill.name);
+          }
+        });
+      this.subscriptions.add(subscription);
+    }
+    return this.supportSkills;
+  }
+
+  getTechSkills(officeId, staffId) {
+    this.techSkills = [];
+    if (officeId && staffId) {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+        .first()
+        .map(user => {
+          let userSkill = [];
+          if (user.skill) {
+            for (let skill of user.skill) {
+              userSkill.push(skill)
+            }
+          }
+          return userSkill;
+        })
+        .flatMap(skills => {
+          return Observable.from(skills);
+        })
+        .flatMap(skill => {
+          return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
+        })
+        .subscribe(skill => {
+          if (skill.type == SkillType.Tech) {
+            this.techSkills.push(skill.name);
+          }
+        });
+      this.subscriptions.add(subscription);
+    }
+    return this.techSkills;
   }
 
 }

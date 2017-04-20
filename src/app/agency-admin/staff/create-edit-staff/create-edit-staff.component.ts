@@ -349,13 +349,14 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   selectedUserType(userType) {
+    //userType-1 to ignore first all option
     this.notificationSettings = [];
     let subscription = this.notificationList
       .first()
       .subscribe(settingList => {
-        console.log(settingList);
         settingList.forEach(setting => {
-          this.notificationSettings.push(setting.usersNotified[userType]);
+          this.notificationSettings.push(setting.usersNotified[userType - 1]);
+          this.notificationsMap.set(Number(setting.$key), setting.usersNotified[userType - 1]);
         });
       });
     this.subscriptions.add(subscription);
