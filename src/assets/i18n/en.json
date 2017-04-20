@@ -343,6 +343,8 @@
     },
     "UPDATE_DETAILS": {
       "AGENCY_LOGO": "Agency Logo",
+      "AGENCY_LOGO_INVALID_FILETYPE": "The agency logo image type is invalid",
+      "AGENCY_LOGO_SIZE_EXCEEDED": "The agency logo image size is too large",
       "SUPPORTED_FORMATS": "Supported formats",
       "REPLACE_IMAGE": "Replace image",
       "REMOVE_IMAGE": "Remove image",
