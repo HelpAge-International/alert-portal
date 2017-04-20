@@ -288,12 +288,12 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
     this.alerts = {};
     if (this.getNumOfSelectedActions() == 0) {
-      this.errorMessage = 'Please select generic action(s) to be added to mandated actions';
+      this.errorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_ACTION_SELECTED";
       return false;
     }
     for (let action in this.actionsSelected) {
       if (this.actionsSelected[action].department == null) {
-        this.errorMessage = "Please select a department";
+        this.errorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR";
         return false;
       }
     }

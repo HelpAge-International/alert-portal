@@ -121,7 +121,8 @@
     "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
     "NO_DATA_ERROR": "Please enter your email address and password to login",
     "NO_EMAIL_ERROR": "Please enter your email address",
-    "NO_PASSWORD_ERROR": "Please enter your password"
+    "NO_PASSWORD_ERROR": "Please enter your password",
+    "UNRECOGNISED_ERROR": "This email address is not recognised"
   },
   "FORGOT_PASSWORD": {
     "TITLE_TEXT": "Forgot Password?",
@@ -299,7 +300,8 @@
       "EDIT_MANDATED_PA": "Edit mandated preparedness action",
       "EDIT_BUTTON_TEXT": "Save changes",
       "NO_DEPARTMENT_ERROR": "Please select a department",
-      "NO_CONTENT_ERROR": "Please insert the action content"
+      "NO_CONTENT_ERROR": "Please insert the action content",
+      "NO_ACTION_SELECTED": "Please select generic action(s) to be added to mandated actions"
     },
     "STAFF": {
       "TITLE": "Agency Staff",

@@ -17,9 +17,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private sentMessages: FirebaseObjectObservable<any>[] = [];
-  private msgData = {};
   private messageToDelete;
-  private groups: string[] = [];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -46,7 +44,6 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
           .subscribe(x => {
             this.sentMessages.push(x);
           });
-
         this.subscriptions.add(subscription);
 
       } else {
@@ -62,56 +59,72 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  // TODO - FIX - Message references dont get deleted from 'messageRef' node
   deleteMessage(sentMessage) {
     this.messageToDelete = sentMessage.$key;
     jQuery("#delete-message").modal("show");
   }
 
+  // TODO - FIX
   deleteFromFirebase() {
+    console.log("Here at 1");
+    let msgData = {};
+    let groups = [
+      'agencyallusersgroup',
+      'globaldirector',
+      'globaluser',
+      'regionaldirector',
+      'countryadmins',
+      'countrydirectors',
+      'ertleads',
+      'erts',
+      'donor',
+      'partner'];
 
-    this.msgData['/message/' + this.messageToDelete] = null;
-    this.msgData['/administratorAgency/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
+    console.log(groups.length);
+    msgData['/administratorAgency/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
+    msgData['/message/' + this.messageToDelete] = null;
 
-    this.groups.push('agencyallusersgroup');
-    this.groups.push('globaldirector');
-    this.groups.push('globaluser');
-    this.groups.push('regionaldirector');
-    this.groups.push('countryadmins');
-    this.groups.push('countrydirectors');
-    this.groups.push('ertleads');
-    this.groups.push('erts');
-    this.groups.push('donor');
-    this.groups.push('partner');
+    // this.groups.push('agencyallusersgroup');
+    // this.groups.push('globaldirector');
+    // this.groups.push('globaluser');
+    // this.groups.push('regionaldirector');
+    // this.groups.push('countryadmins');
+    // this.groups.push('countrydirectors');
+    // this.groups.push('ertleads');
+    // this.groups.push('erts');
+    // this.groups.push('donor');
+    // this.groups.push('partner');
 
-    let agencyGroupPath: string = Constants.APP_STATUS +'/group/agency/' + this.uid + '/';
+    let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
-    for (let group of this.groups) {
+    for (let group of groups) {
 
       let groupPath = agencyGroupPath + group;
       let msgRefPath = agencyMessageRefPath + group;
 
-      let subscription = this.af.database.list(groupPath).subscribe(list => {
-        console.log("list ----" + list.length);
-        console.log("groupPath ----" + groupPath);
-        list.forEach(item => {
-          console.log("this.messageToDelete ----" + this.messageToDelete);
-          console.log("item ----" + msgRefPath + '/' + item.$key + '/' + this.messageToDelete);
-          this.msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
-        });
-        if (this.groups.indexOf(group) == this.groups.length - 1) {
+      let subscription = this.af.database.list(groupPath)
+        .subscribe(list => {
+          // console.log("list ----" + list.length);
+          // console.log("groupPath ----" + groupPath);
+          list.forEach(item => {
+            // console.log("this.messageToDelete ----" + this.messageToDelete);
+            // console.log("item ----" + msgRefPath + '/' + item.$key + '/' + this.messageToDelete);
+            msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
+          });
 
-         this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
-         console.log("Message Ref successfully deleted from all nodes");
-         jQuery("#delete-message").modal("hide");
-         }).catch(error => {
-         console.log("Message deletion unsuccessful" + error);
-         });
-         }
-      });
+          if (groups.indexOf(group) == groups.length - 1) {
+            this.af.database.object(Constants.APP_STATUS).update(msgData).then(() => {
+              console.log("Message Ref successfully deleted from all nodes");
+              jQuery("#delete-message").modal("hide");
+            }).catch(error => {
+              console.log("Message deletion unsuccessful" + error);
+            });
+          }
+        });
       this.subscriptions.add(subscription);
     }
+
   }
 
   closeModal() {

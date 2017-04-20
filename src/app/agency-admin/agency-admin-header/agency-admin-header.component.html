@@ -6,17 +6,18 @@
         {{firstName+" "+lastName}}
       </li>
       <li class="Header_bar__country">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Oxfam</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{agencyName}}</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" routerLink="/agency-admin/agency-account-details">
-            Agency Details
+            {{"SYSTEM_ADMIN.AGENCIES.AGENCY_DETAIL" | translate}}
           </a>
           <a class="dropdown-item" routerLink="/agency-admin/agency-account-settings">
-            Account Settings
+            {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
           </a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
-          </a>        </div>
+          </a>
+        </div>
       </li>
       <li class="Header_bar__alert">
         <i class="fa fa-bell" aria-hidden="true"></i>
