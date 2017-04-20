@@ -57,6 +57,8 @@ import {CountryStaffComponent} from "./country-admin/country-staff/country-staff
 import {CountryAddEditPartnerComponent} from "./country-admin/country-staff/country-add-edit-partner/country-add-edit-partner.component";
 import {CountryAddEditStaffComponent} from "./country-admin/country-staff/country-add-edit-staff/country-add-edit-staff.component";
 import {ResponsePlansComponent} from "./response-plans/response-plans.component";
+import {CreateEditResponsePlanComponent} from "./response-plans/create-edit-response-plan/create-edit-response-plan.component";
+import {AddPartnerOrganisationComponent} from "./response-plans/add-partner-organisation/add-partner-organisation.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
 import {MapComponent} from "./map/map.component";
@@ -164,6 +166,8 @@ const routes: Routes = [
    * Response Plans
    */
   {path: 'response-plans', component: ResponsePlansComponent},
+  {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
+  {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
 
   /**
    * Maps

@@ -86,6 +86,8 @@ import { CountryAddExternalRecipientComponent } from './country-admin/settings/c
 import { CountryStaffComponent } from './country-admin/country-staff/country-staff.component';
 import { CountryAddEditPartnerComponent } from './country-admin/country-staff/country-add-edit-partner/country-add-edit-partner.component';
 import { CountryAddEditStaffComponent } from './country-admin/country-staff/country-add-edit-staff/country-add-edit-staff.component';
+import { CreateEditResponsePlanComponent } from './response-plans/create-edit-response-plan/create-edit-response-plan.component';
+import { AddPartnerOrganisationComponent } from './response-plans/add-partner-organisation/add-partner-organisation.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -181,7 +183,9 @@ const firebaseAuthConfig = {
     CountryAddExternalRecipientComponent,
     CountryStaffComponent,
     CountryAddEditPartnerComponent,
-    CountryAddEditStaffComponent
+    CountryAddEditStaffComponent,
+    CreateEditResponsePlanComponent,
+    AddPartnerOrganisationComponent
   ],
   imports: [
     BrowserModule,
