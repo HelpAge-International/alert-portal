@@ -26,8 +26,13 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   SkillType = SkillType;
 
+  filterPosition: number = 0;
+  filterUser: number = 0;
+  filterOffice: number = 0;
+
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
+  staffsBackup: ModelStaffDisplay[] = [];
   private uid: string;
   private staffDisplay: ModelStaffDisplay;
   private officeId: string [] = [];
@@ -49,6 +54,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private staffPhone: string;
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
+  private counter: number = 0;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -136,26 +142,6 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscription);
     return this.staffName;
   }
-
-  // showSkills(skillList): string[] {
-  //   let skillIds = [];
-  //   for (let key in skillList) {
-  //     skillIds.push(key);
-  //   }
-  //   let subscription = Observable.from(skillIds)
-  //     .flatMap(id => {
-  //       return this.af.database.object(Constants.APP_STATUS + "/skill/" + id);
-  //     })
-  //     .distinct()
-  //     .subscribe(skill => {
-  //       if (!this.skillSet.has(skill.$key)) {
-  //         this.skillNames.push(skill.name);
-  //         this.skillSet.add(skill.$key);
-  //       }
-  //     });
-  //   this.subscriptions.add(subscription);
-  //   return this.skillNames;
-  // }
 
   hideCountryStaff(office) {
     let isHidden = this.showCountryStaff.get(office.id);
@@ -257,6 +243,26 @@ export class StaffComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     }
     return this.techSkills;
+  }
+
+  filterStaff() {
+    if (this.counter == 0) {
+      this.staffsBackup = this.staffs.slice(0);
+    }
+    console.log("filter staff");
+    console.log(this.staffsBackup);
+    this.staffs = [];
+    this.staffs = this.staffsBackup.slice(0);
+    this.staffs.forEach(staff => {
+      staff.staffs.forEach(user => {
+        if (user.position != this.filterPosition) {
+          let index: number = staff.staffs.indexOf(user);
+          if (index !== -1) {
+            staff.staffs.splice(index, 1);
+          }
+        }
+      });
+    });
   }
 
 }

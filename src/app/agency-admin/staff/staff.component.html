@@ -15,17 +15,17 @@
         {{"GLOBAL.FILTER"| translate}}
       </div>
       <div class="col-lg-3 col-md-4">
-        <select class="form-control">
+        <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
           <option *ngFor="let position of positionsList" [value]="position">{{Position[position] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4">
-        <select class="form-control">
+        <select class="form-control" [(ngModel)]="filterUser" (change)="filterStaff()">
           <option *ngFor="let userType of userTypesList" [value]="userType">{{UserType[userType] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4">
-        <select class="form-control">
+        <select class="form-control" [(ngModel)]="filterOffice" (change)="filterStaff()">
           <option *ngFor="let officeType of officeTypesList" [value]="officeType">{{OfficeType[officeType] |
             translate}}
           </option>
