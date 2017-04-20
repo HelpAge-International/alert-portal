@@ -66,7 +66,6 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   // TODO - FIX
   deleteFromFirebase() {
-    console.log("Here at 1");
     let msgData = {};
     let groups = [
       'agencyallusersgroup',
@@ -84,17 +83,6 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     msgData['/administratorAgency/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
     msgData['/message/' + this.messageToDelete] = null;
 
-    // this.groups.push('agencyallusersgroup');
-    // this.groups.push('globaldirector');
-    // this.groups.push('globaluser');
-    // this.groups.push('regionaldirector');
-    // this.groups.push('countryadmins');
-    // this.groups.push('countrydirectors');
-    // this.groups.push('ertleads');
-    // this.groups.push('erts');
-    // this.groups.push('donor');
-    // this.groups.push('partner');
-
     let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
@@ -105,11 +93,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
       let subscription = this.af.database.list(groupPath)
         .subscribe(list => {
-          // console.log("list ----" + list.length);
-          // console.log("groupPath ----" + groupPath);
           list.forEach(item => {
-            // console.log("this.messageToDelete ----" + this.messageToDelete);
-            // console.log("item ----" + msgRefPath + '/' + item.$key + '/' + this.messageToDelete);
             msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
           });
 

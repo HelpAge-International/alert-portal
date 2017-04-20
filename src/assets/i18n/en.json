@@ -279,7 +279,7 @@
       "EMAIL_MISSING": "Please enter country administrator's email address"
     },
     "MANDATED_PA": {
-      "TITLE_TEXT": "Mandated preparedness actions",
+      "TITLE_TEXT": "Mandated Preparedness Actions",
       "LOOK_UP_ACTIONS": "LOOKUP GENERIC ACTIONS",
       "CREATE_NEW_ACTION": "Create new action",
       "ADD_NEW_ACTIONS": "Add new action(s)",
@@ -304,7 +304,7 @@
       "NO_ACTION_SELECTED": "Please select generic action(s) to be added to mandated actions"
     },
     "STAFF": {
-      "TITLE": "Agency Staff",
+      "TITLE_TEXT": "Agency Staff",
       "ADD_NEW_STAFF": "Add new staff member",
       "SAVE_SETTINGS": "Save settings",
       "JOB_TITLE": "Job Title",
@@ -353,6 +353,9 @@
       "NO_CITY": "Please enter the name of the city",
       "NO_PHONE": "Please enter the phone number",
       "NO_CURRENCY": "Please select a currency type"
+    },
+    "SETTINGS": {
+      "TITLE_TEXT": "Agency Settings"
     }
   },
   "DIALOG": {

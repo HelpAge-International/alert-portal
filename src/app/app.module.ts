@@ -6,13 +6,11 @@ import {AngularFireModule, AuthProviders, AuthMethods} from "angularfire2";
 import {AppComponent} from "./app.component";
 import {LoginComponent} from "./login/login.component";
 import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
-import {AgencyAdminComponent} from "./agency-admin/agency-admin.component";
-import {CountryAdminComponent} from "./country-admin/country-admin.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {ResponsePlansComponent} from "./response-plans/response-plans.component";
 import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
-import {CountryOfficeProfileComponent} from "./country-office-profile/country-office-profile.component";
+import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {MapComponent} from "./map/map.component";
 import {DirectorDashboardComponent} from "./director-dashboard/director-dashboard.component";
 import {DonorModuleComponent} from "./donor-module/donor-module.component";
@@ -72,6 +70,22 @@ import { NewAgencyPasswordComponent } from './agency-admin/new-agency/new-agency
 import { NewAgencyDetailsComponent } from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
 import { KeysPipe } from './utils/pipes/keys.pipe';
 import { KeyValuesPipe } from './utils/pipes/key-values.pipe';
+import { NewCountryDetailsComponent } from './country-admin/new-country/new-country-details/new-country-details.component';
+import { NewCountryPasswordComponent } from './country-admin/new-country/new-country-password/new-country-password.component';
+import { CountryAccountSettingsComponent } from './country-admin/country-account-settings/country-account-settings.component';
+import { CountryChangePasswordComponent } from './country-admin/country-account-settings/country-change-password/country-change-password.component';
+import { CountryAdminHeaderComponent } from './country-admin/country-admin-header/country-admin-header.component';
+import { CountryAdminMenuComponent } from './country-admin/country-admin-menu/country-admin-menu.component';
+import { CountryMessagesComponent } from './country-admin/country-messages/country-messages.component';
+import { CountryCreateEditMessageComponent } from './country-admin/country-messages/country-create-edit-message/country-create-edit-message.component';
+import { CountryPermissionSettingsComponent } from './country-admin/settings/country-permission-settings/country-permission-settings.component';
+import { CountryModulesSettingsComponent } from './country-admin/settings/country-modules-settings/country-modules-settings.component';
+import { CountryClockSettingsComponent } from './country-admin/settings/country-clock-settings/country-clock-settings.component';
+import { CountryNotificationSettingsComponent } from './country-admin/settings/country-notification-settings/country-notification-settings.component';
+import { CountryAddExternalRecipientComponent } from './country-admin/settings/country-notification-settings/country-add-external-recipient/country-add-external-recipient.component';
+import { CountryStaffComponent } from './country-admin/country-staff/country-staff.component';
+import { CountryAddEditPartnerComponent } from './country-admin/country-staff/country-add-edit-partner/country-add-edit-partner.component';
+import { CountryAddEditStaffComponent } from './country-admin/country-staff/country-add-edit-staff/country-add-edit-staff.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -97,8 +111,6 @@ const firebaseAuthConfig = {
     AppComponent,
     LoginComponent,
     SystemAdminComponent,
-    AgencyAdminComponent,
-    CountryAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,
     PreparednessComponent,
@@ -153,7 +165,23 @@ const firebaseAuthConfig = {
     NewAgencyPasswordComponent,
     NewAgencyDetailsComponent,
     KeysPipe,
-    KeyValuesPipe
+    KeyValuesPipe,
+    NewCountryDetailsComponent,
+    NewCountryPasswordComponent,
+    CountryAccountSettingsComponent,
+    CountryChangePasswordComponent,
+    CountryAdminHeaderComponent,
+    CountryAdminMenuComponent,
+    CountryMessagesComponent,
+    CountryCreateEditMessageComponent,
+    CountryPermissionSettingsComponent,
+    CountryModulesSettingsComponent,
+    CountryClockSettingsComponent,
+    CountryNotificationSettingsComponent,
+    CountryAddExternalRecipientComponent,
+    CountryStaffComponent,
+    CountryAddEditPartnerComponent,
+    CountryAddEditStaffComponent
   ],
   imports: [
     BrowserModule,
