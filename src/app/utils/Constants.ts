@@ -57,6 +57,14 @@ export class Constants {
   static OFFICE_TYPE_SELECTION = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
 
   static NOTIFICATION_SETTINGS = ["Alert level changed", "Red alert request", "Update hazard indicator", "MPA/APA expired", "Response plan expired", "Response plan rejected"];
+
+  static MODULE_NAME = [
+                        "Minimum preparedness actions", "Advanced preparedness actions", 
+                        "CHS preparedness actions", "Hazard prioritisation", 
+                        "Preparedness budget", "Seasonal calendar", 
+                        "Hazard indicator", "Country office profile",
+                        "Response planning", "Global maps"
+                        ];
 }
 
 export enum FILE_SETTING {

@@ -91,3 +91,9 @@ export enum NotificationSettingEvents {
   PlanExpired = 4,
   PlanRejected = 5
 }
+
+export enum Privacy {
+  Public = 0,
+  Private = 1,
+  Network = 2
+}
