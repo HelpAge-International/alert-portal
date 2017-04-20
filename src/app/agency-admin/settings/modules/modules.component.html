@@ -21,7 +21,7 @@
         </div>
         <template ngFor let-module [ngForOf]="modules" let-moduleIdx="index">
             <div class="row Line-row Small-spaced align-items-center">
-                <div class="col-lg-4 col-md-4 col-sm-12">{{MODULE_NAME[moduleIdx]}}</div>
+                <div class="col-lg-4 col-md-4 col-sm-12">{{MODULE_NAME[moduleIdx] | translate}}</div>
                 <div class="col-lg-5 col-md-5 col-sm-7">
                     <label for=""><div class="btn " [ngClass]="{'btn-primary': module.privacy == Public, 'btn-outline-primary': module.privacy != Public}" (click)="changePrivacy(moduleIdx, Public)">Public</div></label>
                     <label for=""><div class="btn " [ngClass]="{'btn-primary': module.privacy == Private, 'btn-outline-primary': module.privacy != Private}" (click)="changePrivacy(moduleIdx, Private)">Private</div></label>

@@ -3,7 +3,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-
+    	<div class="Notification-success">Clock Settings succesfully saved!</div>
 		<app-settings-menu></app-settings-menu>
 
 	    <div class="Sub-header-title__wrap">
@@ -16,19 +16,15 @@
 	    <div class="form-group">
 	        <label >Initially show log from the past:</label>
 	        <div class="row">
-	              <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>3</option>
-	                <option>6</option>
-	                <option>9</option>
-	              </select>
+              <div class="col-lg-2 col-md-3">
+				<select class="form-control" id="riskMonitorInitialDuration" [(ngModel)]="riskMonitorInitialDuration" name="riskMonitorInitialDuration" required>
+					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+				</select>
 	          </div>
-	              <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>Days</option>
-	                <option>Months</option>
-	                <option>Years</option>
-	              </select>
+              <div class="col-lg-2 col-md-3">
+				<select class="form-control" id="riskMonitorInitialDurationType" [(ngModel)]="riskMonitorInitialDurationType" name="riskMonitorInitialDurationType" required>
+					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+				</select>
 	          </div>
 	        </div>
 	    </div>
@@ -42,12 +38,10 @@
 	                <option>9</option>
 	              </select>
 	          </div>
-	              <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>Days</option>
-	                <option>Months</option>
-	                <option>Years</option>
-	              </select>
+              <div class="col-lg-2 col-md-3">
+				<select class="form-control" id="riskMonitorHazardDurationType" [(ngModel)]="riskMonitorHazardDurationType" name="riskMonitorHazardDurationType" required>
+					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+				</select>
 	          </div>
 	      </div>
 	    </div>
@@ -63,11 +57,9 @@
 	              </select>
 	          </div>
 	          <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>Days</option>
-	                <option>Months</option>
-	                <option>Years</option>
-	              </select>
+				<select class="form-control" id="preparednessDurationType" [(ngModel)]="preparednessDurationType" name="preparednessDurationType" required>
+					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+				</select>
 	          </div>
 	      </div>
 	    </div>
@@ -82,12 +74,10 @@
 	                <option>3</option>
 	              </select>
 	          </div>
-	              <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>Days</option>
-	                <option>Months</option>
-	                <option>Years</option>
-	              </select>
+              <div class="col-lg-2 col-md-3">
+				<select class="form-control" id="responsePlansDurationType" [(ngModel)]="responsePlansDurationType" name="responsePlansDurationType" required>
+					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+				</select>
 	          </div>
 	      </div>
 	    </div>
