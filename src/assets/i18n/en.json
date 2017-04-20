@@ -1,18 +1,21 @@
 {
   "GLOBAL": {
     "WELCOME": "Welcome",
+    "NAME": "Name",
     "TYPE": "Type: ",
     "DELETE": "Delete",
     "CANCEL": "Cancel",
     "CONFIRM": "Confirm",
     "CONTINUE": "Continue",
-    "TITLE":"Title",
+    "TITLE": "Title",
     "EDIT": "Edit",
     "SAVE": "Save",
     "FROM": "From: ",
     "SENT_AT": "Sent At: ",
     "AT": "At: ",
     "STATUS": "Status",
+    "HIDE_ALL": "Hide all",
+    "SKILLS": "Skills",
     "EDIT_SECTION": "Edit section",
     "FILTER": "Filter: ",
     "ACTIVE": "Active",
@@ -21,6 +24,7 @@
     "DEACTIVATE": "Deactivate",
     "DEPARTMENT": "Department",
     "DEPARTMENT:": "Department: ",
+    "NOTIFICATIONS": "Notifications",
     "CATEGORY:": "Category: ",
     "CURRENCY": "Currency",
     "PLEASE_ENTER": "Please enter",
@@ -32,11 +36,11 @@
     "CURRENT_PASSWORD": "Your current password",
     "CONFIRM_PASSWORD": "Confirm your password",
     "NEW_PASSWORD": "New password",
-    "YES":"Yes",
-    "NO":"No",
+    "YES": "Yes",
+    "NO": "No",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "NAME_MISSING": "Name is missing!",
-    "EMAIL_NOT_VALID": "Email is not valid!",
+    "EMAIL_NOT_VALID": "Email address is not valid!",
     "GENERAL_ERROR": "An error occurred. Please check and try again",
     "NO_FILTERED_RESULTS": "There are no actions for the filters your have selected",
     "PREPAREDNESS_LEVEL": {
@@ -58,7 +62,7 @@
       "FRANCE": "France",
       "GERMANY": "Germany"
     },
-    "USER_INFO":{
+    "USER_INFO": {
       "FIRST_NAME": "First Name",
       "LAST_NAME": "Last Name",
       "EMAIL": "Email Address",
@@ -72,6 +76,20 @@
       "PHONE": "Phone Number",
       "WEB_ADDRESS": "Website address"
     },
+    "USER_TYPE": {
+      "ALL_USERS": "All Users",
+      "NETWORK_ADMINS": "Network Administrators",
+      "AGENCY_ADMINS": "Agency Administrators",
+      "GLOBAL_DIRECTOR": "Global Directors",
+      "GLOBAL_USER": "Global Users",
+      "REGIONAL_DIRECTOR": "Regional Directors",
+      "COUNTRY_ADMINS": "Country Administrators",
+      "COUNTRY_DIRECTORS": "Country Directors",
+      "ERT_LEAD": "ERT Leaders",
+      "ERT": "ERTs",
+      "DONOR": "Donors",
+      "PARTNER": "Partners"
+    },
     "ACCOUNT_SETTINGS": {
       "TITLE": "Account Settings",
       "PROFILE": "Profile",
@@ -81,18 +99,18 @@
       "CONFIRM_PASSWORD": "Confirm Password",
       "UPDATE_PASSORD": "Update password",
       "SAVE": "Save changes",
-      "SUCCESS_PROFILE" : "Profile successfully updated!",
-      "SUCCESS_PASSWORD" : "Password successfully updated!",
-      "INCORRECT_CURRENT_PASSWORD" : "Current password is incorrect. Please re enter",
-      "NO_CURRENT_PASSWORD" : "Please enter your current password",
-      "NO_NEW_PASSWORD" : "Please enter a new password",
-      "NO_CONFIRM_PASSWORD" : "Please confirm your new password",
-      "SAME_PASSWORD" : "Please enter a new password. You have entered the same password",
-      "INVALID_PASSWORD" : "Password must be at 6-15 digits long with no symbols and should include at least one numeric digit",
-      "UNMATCHED_PASSWORD" : "Passwords don't match",
-      "NO_F_NAME" : "Please enter the first name",
-      "NO_L_NAME" : "Please enter the last name",
-      "NO_EMAIL" : "Please enter the email address"
+      "SUCCESS_PROFILE": "Profile successfully updated!",
+      "SUCCESS_PASSWORD": "Password successfully updated!",
+      "INCORRECT_CURRENT_PASSWORD": "Current password is incorrect. Please re enter",
+      "NO_CURRENT_PASSWORD": "Please enter your current password",
+      "NO_NEW_PASSWORD": "Please enter a new password",
+      "NO_CONFIRM_PASSWORD": "Please confirm your new password",
+      "SAME_PASSWORD": "Please enter a new password. You have entered the same password",
+      "INVALID_PASSWORD": "Password must be at 6-15 digits long with no symbols and should include at least one numeric digit",
+      "UNMATCHED_PASSWORD": "Passwords don't match",
+      "NO_F_NAME": "Please enter the first name",
+      "NO_L_NAME": "Please enter the last name",
+      "NO_EMAIL": "Please enter the email address"
     }
   },
   "LOGIN": {
@@ -140,7 +158,7 @@
       "L_NAME_MISSING": "Please enter agency administrator's last name",
       "EMAIL_MISSING": "Please enter agency administrator's email address",
       "EMAIL_INVALID": "Please enter a correct email address",
-      "NO_AGENCY":"No agencies have been added to the ALERT"
+      "NO_AGENCY": "No agencies have been added to the ALERT"
     },
     "GLOBAL_NETWORKS": {
       "GLOBAL_NETWORKS": "Global Networks",
@@ -156,9 +174,9 @@
       "NETWORK_ADMIN_FIRST_NAME": "Network admin first name can not be empty!",
       "NETWORK_ADMIN_LAST_NAME": "Network admin last name can not be empty!",
       "NETWORK_ADMIN_EMAIL": "Network admin email can not be empty!",
-      "DIALOG":{
-        "DEACTIVATE_CONTENT":"Are you sure you want to deactivate this network? The associated users will be unable to access the network page and all associated indicators, actions and response plans will be removed.",
-        "ACTIVATE_CONTENT":"Are you sure you want to activate this network? The associated users will be able to access the network page."
+      "DIALOG": {
+        "DEACTIVATE_CONTENT": "Are you sure you want to deactivate this network? The associated users will be unable to access the network page and all associated indicators, actions and response plans will be removed.",
+        "ACTIVATE_CONTENT": "Are you sure you want to activate this network? The associated users will be able to access the network page."
       }
     },
     "ACTIONS": {
@@ -186,7 +204,7 @@
         "ALL_CATEGORIES": "All categories",
         "CATEGORY": "Category",
         "CATEGORIES": {
-          "ALL":"All categories",
+          "ALL": "All categories",
           "CATEGORY0": "Category1",
           "CATEGORY1": "Category2",
           "CATEGORY2": "Category3",
@@ -219,7 +237,8 @@
       "ADD_NEW_GROUP": "Add a new group",
       "EDIT_GROUPS": "Edit groups",
       "SUCCESS_ADD_GROUP": "New group added",
-      "ERROR_NO_GROUP_NAME": "Please enter the group name to add the new group"
+      "ERROR_NO_GROUP_NAME": "Please enter the group name to add a new group",
+      "ERROR_NO_EDIT_GROUP_NAME": "Please enter the group name"
     }
   },
   "AGENCY_ADMIN": {
@@ -283,17 +302,42 @@
       "NO_CONTENT_ERROR": "Please insert the action content"
     },
     "STAFF": {
+      "TITLE": "Agency Staff",
+      "ADD_NEW_STAFF": "Add new staff member",
+      "SAVE_SETTINGS": "Save settings",
+      "JOB_TITLE": "Job Title",
+      "TRAINING_NEEDS": "Training Needs",
+      "USER_TYPE": "User Type",
+      "REGION": "Region",
+      "COUNTRY_OFFICE": "Country Office",
+      "ALL_OFFICES": "All offices",
+      "FIELD_OFFICE": "Field Office",
+      "LAB_OFFICE": "Lab Office",
+      "POSITION": "Position",
+      "ALL_POSITIONS": "All positions",
+      "OFFICE_DIRECTOR": "Office Director",
+      "OFFICE_STAFF": "Office Staff",
+      "OFFICE_TYPE": "Office Type",
+      "SUPPORT_SKILLS": "Support Skills",
+      "TECHNICAL_SKILLS": "Technical Skills",
+      "IS_PART_OF_RESPONSE_TEAM?": "Is this staff member part of the response team?",
+      "SAVE_NEW_STAFF": "Save new staff member",
+      "NO_TITLE": "Please select a title",
+      "NO_FIRST_NAME": "Please enter the first name of the staff",
+      "NO_LAST_NAME": "Please enter the last name of the staff",
+      "NO_USER_TYPE": "Please select a user type",
+      "NO_REGION": "Region cannot be empty",
+      "NO_COUNTRY_OFFICE": "Please select a country office",
+      "NO_DEPARTMENT": "Please select a department",
+      "NO_POSITION": "Please select a position",
+      "NO_OFFICE_TYPE": "Please select an office type",
+      "NO_EMAIL": "Please enter the email address of the staff",
+      "NO_PHONE": "Please enter the phone number of the staff",
+      "NO_TRAINING_NEEDS": "Please enter training needs",
+      "NO_REPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'"
     },
     "MESSAGES": {
-      "TITLE_TEXT": "Agency Messages",
-      "GLOBAL_DIRECTOR": "Global Director",
-      "GLOBAL_USER": "Global User",
-      "REGIONAL_DIRECTOR": "Regional Director",
-      "COUNTRY_DIRECTORS": "Country Directors",
-      "ERT_LEAD": "ERT Lead",
-      "ERT": "ERT",
-      "DONOR": "Donor",
-      "PARTNER": "Partner"
+      "TITLE_TEXT": "Agency Messages"
     },
     "UPDATE_DETAILS": {
       "AGENCY_LOGO": "Agency Logo",
@@ -302,14 +346,14 @@
       "SUPPORTED_FORMATS": "Supported formats",
       "REPLACE_IMAGE": "Replace image",
       "REMOVE_IMAGE": "Remove image",
-      "NO_ADDRESS_1":"Please enter address line 1",
-      "NO_COUNTRY":"Please select a country",
-      "NO_CITY":"Please enter the name of the city",
-      "NO_PHONE":"Please enter the phone number",
-      "NO_CURRENCY":"Please select a currency type"
+      "NO_ADDRESS_1": "Please enter address line 1",
+      "NO_COUNTRY": "Please select a country",
+      "NO_CITY": "Please enter the name of the city",
+      "NO_PHONE": "Please enter the phone number",
+      "NO_CURRENCY": "Please select a currency type"
     }
   },
-    "DIALOG": {
+  "DIALOG": {
     "TITLE": "Alert",
     "CONTENT": "Are you sure you want to proceed this action?"
   },
@@ -330,13 +374,11 @@
     "NO_MESSAGES": "No sent messages",
     "MESSAGE_CONTENT": "Message content",
     "RECIPIENTS": "Recipients",
-    "ALL_USERS": "All users",
-    "AGENCY_ADMINS": "Agency Administrators",
-    "COUNTRY_ADMINS": "Country Administrators",
     "SEND_MESSAGE": "Send message",
     "NO_TITLE_ERROR": "Please enter a title for the message",
     "NO_CONTENT_ERROR": "Please add some content to the message",
-    "NO_RECIPIENTS_ERROR": "Please select the recipients group"
+    "NO_RECIPIENTS_ERROR": "Please select the recipients group",
+    "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)"
   },
   "AGENCY_HOME": {
     "AGENCY_ADMIN": "Agency Admin"

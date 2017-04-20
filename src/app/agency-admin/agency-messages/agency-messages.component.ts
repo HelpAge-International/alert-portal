@@ -84,7 +84,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     this.groups.push('donor');
     this.groups.push('partner');
 
-    let agencyGroupPath: string = '/group/agency/' + this.uid + '/';
+    let agencyGroupPath: string = Constants.APP_STATUS +'/group/agency/' + this.uid + '/';
     let agencyMessageRefPath: string = '/messageRef/agency/' + this.uid + '/';
 
     for (let group of this.groups) {
@@ -92,22 +92,24 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       let groupPath = agencyGroupPath + group;
       let msgRefPath = agencyMessageRefPath + group;
 
-      let subscription = this.af.database.list(groupPath)
-        .subscribe(list => {
-          list.forEach(item => {
-            console.log("this.messageToDelete" + this.messageToDelete);
-            this.msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
-          });
-          if (this.groups.indexOf(group) == this.groups.length - 1) {
-
-            this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
-              console.log("Message Ref successfully deleted from all nodes");
-              jQuery("#delete-message").modal("hide");
-            }).catch(error => {
-              console.log("Message deletion unsuccessful" + error);
-            });
-          }
+      let subscription = this.af.database.list(groupPath).subscribe(list => {
+        console.log("list ----" + list.length);
+        console.log("groupPath ----" + groupPath);
+        list.forEach(item => {
+          console.log("this.messageToDelete ----" + this.messageToDelete);
+          console.log("item ----" + msgRefPath + '/' + item.$key + '/' + this.messageToDelete);
+          this.msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
         });
+        if (this.groups.indexOf(group) == this.groups.length - 1) {
+
+         this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+         console.log("Message Ref successfully deleted from all nodes");
+         jQuery("#delete-message").modal("hide");
+         }).catch(error => {
+         console.log("Message deletion unsuccessful" + error);
+         });
+         }
+      });
       this.subscriptions.add(subscription);
     }
   }

@@ -181,7 +181,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private findUidForExistingEmail(adminEmail: string) {
-    this.af.database.list(Constants.APP_STATUS+"/userPublic/", {
+    let subscription = this.af.database.list(Constants.APP_STATUS+"/userPublic/", {
       query: {
         orderByChild: "email",
         equalTo: adminEmail,
@@ -223,6 +223,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         //   this.updateFirebase(users[0].$key);
         // }
       });
+    this.subscriptions.add(subscription);
   }
 
   validate() {

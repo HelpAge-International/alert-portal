@@ -14,23 +14,31 @@ import Promise = firebase.Promise;
 })
 export class DepartmentComponent implements OnInit, OnDestroy {
 
-  private uid: string = "bl9h4IN9QBhHwfsGuoHzrxtvSmz2";//TODO remove hard coded agency ID
+  private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
   private departments: FirebaseListObservable<any>;
   private subscriptions: RxHelper;
   private deleting: boolean = false;
+  private editing: boolean = false;
   private departmentName: string = "";
+  private deleteCandidates: any = {};
+  private depts: any = {};
+  private editDepts: any = {};
 
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
-
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         // this.uid = auth.uid; //TODO remove comment
-        this.departments = this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/departments');
 
+        let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments').subscribe(_ => {
+        	this.depts = _;
+        })
+        this.subscriptions.add(deptsSubscription);
+        
+		this.subscriptions.add(subscription);
       } else {
         // user is not logged in
         console.log('Error occurred - User is not logged in');
@@ -40,7 +48,12 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
+  	try{
+  		this.subscriptions.releaseAll();
+  	} catch(e){
+  		console.log('Unable to releaseAll');
+  	}
+	
   }
 
   private navigateToLogin() {
@@ -53,15 +66,62 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   cancelDeleteDepartments(event){
   	this.deleting = !this.deleting;
+  	this.deleteCandidates = {};
+  }
+
+  deleteSelectedDepartments(event){
+  	for(var item in this.deleteCandidates)
+  		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item).remove();
+  }
+
+  onDepartmentSelected(department){
+  	if (department in this.deleteCandidates)
+    	delete this.deleteCandidates[department];
+	else
+		this.deleteCandidates[department] = true;
+  }
+
+  editDepartments(event){
+  	this.editing = !this.editing;
+  }
+
+  cancelEditDepartments(event){
+  	this.editing = !this.editing;
+  	this.editDepts = {};
+  	this.deleteCandidates = {};
+  	let deptsSubscription = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments').subscribe(_ => {
+    	this.depts = _;
+    })
+    this.subscriptions.add(deptsSubscription);
+  }
+
+  saveEditedDepartments(event){
+  	this.editing = !this.editing;
+
+  	for (var dept in this.editDepts){
+  		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + dept).remove();
+
+  		let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
+
+		var newDepartment = {};
+	  	newDepartment[this.editDepts[dept]["new_key"]] = this.editDepts[dept]["value"];
+	  	departments.update(newDepartment);
+  	}
+  }
+
+  setDepartmentValue(prop, value){
+  	this.editDepts[prop] = {
+  								"new_key": value,
+  								"value": this.depts[prop]
+  							};
   }
 
   addDepartment(event) {
-  	console.log(this.departmentName);
-  	let department = this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/departments');
+  	let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
 
 	var newDepartment = {};
-  	newDepartment[this.departmentName] = true;
-  	department.update(newDepartment);
+  	newDepartment[this.departmentName] = false;
+  	departments.update(newDepartment);
 
   	this.departmentName = "";
   }

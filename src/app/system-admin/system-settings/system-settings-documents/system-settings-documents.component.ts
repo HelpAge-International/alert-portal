@@ -66,7 +66,7 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
 
   private initData(uid) {
 
-    this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe(x => {
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe(x => {
       this.modelSystem = new ModelSystem();
       this.modelSystem.assignHazard = x.assignHazard;
       this.modelSystem.fileSettings = x.fileSettings;
@@ -92,6 +92,7 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
       this.fileSize = x.fileSize;
       this.fileType = x.fileType;
     });
+    this.subscriptions.add(subscription);
   }
 
   saveSetting() {

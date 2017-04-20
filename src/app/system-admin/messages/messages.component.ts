@@ -30,7 +30,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
       if (auth) {
         this.uid = auth.uid;
 
-        let subscription = this.af.database.list(Constants.APP_STATUS+'/systemAdmin/' + this.uid + '/sentmessages')
+        let subscription = this.af.database.list(Constants.APP_STATUS + '/systemAdmin/' + this.uid + '/sentmessages')
           .flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
@@ -40,7 +40,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
             return Observable.from(tempList)
           })
           .flatMap(item => {
-            return this.af.database.object(Constants.APP_STATUS+'/message/' + item.$key)
+            return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
           })
           .distinctUntilChanged()
           .subscribe(x => {
@@ -68,35 +68,44 @@ export class MessagesComponent implements OnInit, OnDestroy {
   }
 
   deleteFromFirebase() {
-        this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
-        this.msgData['/message/' + this.messageToDelete] = null;
+    this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
+    this.msgData['/message/' + this.messageToDelete] = null;
 
-        let allUsersGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/allusersgroup';
-        let allAgencyAdminsGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/allagencyadminsgroup';
-        let allCountryAdminsGroupPath: string = Constants.APP_STATUS+'/group/systemadmin/allcountryadminsgroup';
+    let allUsersGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allusersgroup';
+    let allAgencyAdminsGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allagencyadminsgroup';
+    let allCountryAdminsGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allcountryadminsgroup';
+    let allNetworkAdminsGroupPath: string = Constants.APP_STATUS + '/group/systemadmin/allnetworkadminsgroup';
 
-        let allUsersMsgRefPath: string = '/messageRef/systemadmin/allusersgroup/';
-        let allAgencyAdminsMsgRef: string = '/messageRef/systemadmin/allagencyadminsgroup/';
-        let allCountryAdminsMsgRef: string = '/messageRef/systemadmin/allcountryadminsgroup/';
+    let allUsersMsgRefPath: string = '/messageRef/systemadmin/allusersgroup/';
+    let allAgencyAdminsMsgRef: string = '/messageRef/systemadmin/allagencyadminsgroup/';
+    let allCountryAdminsMsgRef: string = '/messageRef/systemadmin/allcountryadminsgroup/';
+    let allNetworkAdminsMsgRef: string = '/messageRef/systemadmin/allnetworkadminsgroup/';
 
-        let subscription = this.af.database.list(allUsersGroupPath)
+    let subscription = this.af.database.list(allUsersGroupPath)
+      .do(list => {
+        list.forEach(item => {
+          this.msgData[allUsersMsgRefPath + item.$key + '/' + this.messageToDelete] = null;
+        })
+      })
+      .subscribe(() => {
+        this.af.database.list(allAgencyAdminsGroupPath)
           .do(list => {
             list.forEach(item => {
-              this.msgData[allUsersMsgRefPath + item.$key + '/' + this.messageToDelete] = null;
+              this.msgData[allAgencyAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
             })
           })
           .subscribe(() => {
-            this.af.database.list(allAgencyAdminsGroupPath)
+            this.af.database.list(allCountryAdminsGroupPath)
               .do(list => {
                 list.forEach(item => {
-                  this.msgData[allAgencyAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
+                  this.msgData[allCountryAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
                 })
               })
               .subscribe(() => {
-                this.af.database.list(allCountryAdminsGroupPath)
+                this.af.database.list(allNetworkAdminsGroupPath)
                   .do(list => {
                     list.forEach(item => {
-                      this.msgData[allCountryAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
+                      this.msgData[allNetworkAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
                     })
                   })
                   .subscribe(() => {
@@ -107,15 +116,17 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     })
                   })
               })
-          });
-        this.subscriptions.add(subscription);
+          })
+      });
+    this.subscriptions.add(subscription);
   }
 
   closeModal() {
     jQuery("#delete-message").modal("hide");
   }
 
-  private navigateToLogin() {
+  private
+  navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 

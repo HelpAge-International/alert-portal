@@ -10,6 +10,7 @@ import {RxHelper} from "../../../utils/RxHelper";
   templateUrl: './system-settings-response-plans.component.html',
   styleUrls: ['./system-settings-response-plans.component.css']
 })
+
 export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
 
   private uid: string;
@@ -20,10 +21,11 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private errorInactive: boolean = true;
   private successInactive: boolean = true;
 
+  private isEditing: boolean = false;
+  private editedGroups: any = [];
   private groups: FirebaseListObservable<any>;
   private groupsToShow: string[] = [];
 
-  private groupForEdit: string;
   private newGroup: string;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
@@ -59,11 +61,6 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
-  editGroups() {
-    console.log("groupForEdit ====" + this.groupForEdit);
-
-  }
-
   addGroup() {
 
     if (this.validateNewGroup() && this.newGroup) {
@@ -71,10 +68,51 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
         console.log('New group added');
         this.newGroup = '';
         this.successMessage = "SYSTEM_ADMIN.SETTING.SUCCESS_ADD_GROUP";
-        this.router.navigateByUrl('/system-admin/system-settings/system-settings-response-plans')
         this.showAlert(false);
       });
       this.storeGroups();
+    } else {
+      this.showAlert(true);
+    }
+  }
+
+  editGroups(event) {
+    this.isEditing = true;
+    console.log("isEditing : " + this.isEditing);
+  }
+
+  setGroupValue(prop, value) {
+
+    this.editedGroups[prop] = {
+      "new_key": value,
+      "value": true
+    };
+  }
+
+  cancelEditGroups(event) {
+
+    this.isEditing = false;
+    this.editedGroups = {};
+  }
+
+  saveEditedGroups(event) {
+    if (this.validateEditedGroups()) {
+      for (var group in this.editedGroups) {
+        this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + '/groups/' + group).remove();
+
+        let groups = this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + '/groups');
+
+        var newGroup = {};
+        newGroup[this.editedGroups[group]["new_key"]] = this.editedGroups[group]["value"];
+        groups.update(newGroup).then(_ => {
+          console.log("Editing successful");
+        }).catch(error => {
+          this.errorMessage = "GLOBAL.GENERAL_ERROR";
+          this.showAlert(true);
+          console.log("Editing unsuccessful");
+        });
+      }
+      this.isEditing = false;
     } else {
       this.showAlert(true);
     }
@@ -101,10 +139,29 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
    * Returns false and specific error messages-
    * @returns {boolean}
    */
+  private validateEditedGroups() {
+
+    for (var group in this.editedGroups) {
+      if (!(this.editedGroups[group]["new_key"])) {
+        this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_EDIT_GROUP_NAME";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Returns false and specific error messages-
+   * @returns {boolean}
+   */
   private validateNewGroup() {
 
     if (!(this.newGroup)) {
       this.alerts[this.newGroup] = true;
+      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+        this.alerts[this.newGroup] = false;
+      });
+      this.subscriptions.add(subscription);
       this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_GROUP_NAME";
       return false;
     }

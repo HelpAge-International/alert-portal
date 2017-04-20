@@ -37,7 +37,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -55,6 +55,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
       this.checkAnyCountryNoRegion();
     });
+    this.subscriptions.add(subscription);
   }
 
   private checkAnyCountryNoRegion() {
