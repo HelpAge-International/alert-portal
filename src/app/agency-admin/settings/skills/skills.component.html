@@ -7,18 +7,18 @@
 		<app-settings-menu></app-settings-menu>
 
 		<div class="Sub-header-title__wrap">
-            <h2>Skills</h2>
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteSkills($event)">Cancel</button> 
-            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedSkills($event)">Delete</button>  
+            <h2>{{"AGENCY_ADMIN.SETTINGS.SKILLS.TITLE_TEXT" | translate}}</h2>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteSkills($event)">{{"GLOBAL.CANCEL" | translate}}</button>
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedSkills($event)">{{"GLOBAL.DELETE" | translate}}</button>
 
-            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteSkills($event)" *ngIf="!deleting && !editing">Delete Skills</button>
-            <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="editSkills($event)" *ngIf="!deleting && !editing">Edit Skills</button>
+            <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteSkills($event)" *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.SKILLS.DELETE_SKILLS" | translate | uppercase}}</button>
+            <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="editSkills($event)" *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.SKILLS.EDIT_SKILLS" | translate | uppercase}}</button>
 
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing" (click)="cancelEditSkills($event)">Cancel</button> 
-            <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing" (click)="saveEditedSkills($event)">Save</button>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing" (click)="cancelEditSkills($event)">{{"GLOBAL.CANCEL" | translate}}</button>
+            <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing" (click)="saveEditedSkills($event)">{{"GLOBAL.SAVE" | translate | uppercase}}</button>
         </div>
 
-        <h4>Support Skills</h4>
+        <h4>{{"AGENCY_ADMIN.SETTINGS.SKILLS.SUPPORT_SKILLS" | translate}}</h4>
         <div class="Agency-settings_skills">
             <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
               <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == SupportSkill">
@@ -36,12 +36,12 @@
                     <input type="text" class="form-control" placeholder="Add a new support skill" [(ngModel)]="skillName[SupportSkill]">
                 </div>
                 <div class="col-md-8 col-4">
-                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, SupportSkill)">Save</button>
+                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, SupportSkill)">{{"GLOBAL.SAVE" | translate}}</button>
                 </div>
             </div>
         </div>
 
-        <h4>Technical Skills</h4>
+        <h4>{{"AGENCY_ADMIN.SETTINGS.SKILLS.TECHNICAL_SKILLS" | translate}}</h4>
         <div class="Agency-settings_skills">
             <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
               <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == TechSkill">
@@ -59,7 +59,7 @@
                     <input type="text" class="form-control" placeholder="Add a new technical skill" [(ngModel)]="skillName[TechSkill]">
                 </div>
                 <div class="col-md-8 col-4">
-                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, TechSkill)">Save</button>
+                    <button type="button" class="btn btn-outline-primary" (click)="addSkill($event, TechSkill)">{{"GLOBAL.SAVE" | translate}}</button>
                 </div>
             </div>
         </div>
