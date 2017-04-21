@@ -4,7 +4,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Route, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable} from "rxjs";
-import {Country} from "../../../utils/Enums";
+import {Country, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 
 @Component({
@@ -20,7 +20,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private regionName: string;
   private counter: number = 0;
   private countries: number[] = [this.counter];
-  private regionalDirectorId: string;
+  private regionalDirectorId: any;
   private uid: string;
   private hideWarning: boolean = true;
   private errorMessage: string;
@@ -32,6 +32,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private isEdit: boolean;
   private preRegionName: string;
   private isSubmitted: boolean;
+  private regionalDirectors: any[] = [];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper, private route: ActivatedRoute) {
   }
@@ -43,7 +44,40 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         return;
       }
       this.uid = user.auth.uid;
-      this.countrySelections = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid);
+      this.countrySelections = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+      //regional directors
+      let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+        .flatMap(countries => {
+          let countryIds = [];
+          countries.forEach(country => {
+            countryIds.push(country.$key)
+          });
+          return Observable.from(countryIds);
+        })
+        .flatMap(countryId => {
+          return this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {
+            query: {
+              orderByChild: "userType",
+              equalTo: UserType.RegionalDirector
+            }
+          });
+        })
+        .flatMap(staffs => {
+          let ids = [];
+          staffs.forEach(staff => {
+            ids.push(staff.$key);
+          });
+          return Observable.from(ids);
+        })
+        .flatMap(id => {
+            return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
+          }
+        )
+        .subscribe(x => {
+          this.regionalDirectors.push(x);
+        });
+      this.subscriptions.add(subscriptionDirector);
+      //check if edit mode
       let subscription = this.route.params
         .subscribe((params: Params) => {
           if (params["id"]) {
@@ -97,6 +131,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   submit() {
     console.log("submit");
+    console.log(this.regionalDirectorId);
     if (!this.regionName) {
       this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_NO_NAME';
       this.showAlert();
@@ -125,7 +160,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     if (this.isEdit && this.preRegionName == this.regionName) {
       this.retrieveCountryOffices();
     } else {
-      let subscription = this.af.database.list(Constants.APP_STATUS+"/region/" + this.uid, {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid, {
         query: {
           orderByChild: "name",
           equalTo: this.regionName
@@ -170,7 +205,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   private fetchOffice(country) {
     console.log("here: " + country);
-    return this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid, {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
       query: {
         orderByChild: "location",
         equalTo: Country[country]
@@ -190,7 +225,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         modelRegion.countries[office] = true;
       }
       modelRegion.directorId = this.regionalDirectorId;
-      this.af.database.list(Constants.APP_STATUS+"/region/" + this.uid).push(modelRegion).then(() => {
+      this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid).push(modelRegion).then(() => {
         this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
       }, error => {
         console.log(error.message);
@@ -200,7 +235,11 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       console.log("only update data");
       let regionData = {};
       regionData["/region/" + this.uid + "/" + this.regionId + "/name"] = this.regionName;
-      regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = this.regionalDirectorId;
+      if (this.regionalDirectorId instanceof String) {
+        regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = this.regionalDirectorId;
+      } else {
+        regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = this.regionalDirectorId.$key;
+      }
       let countriesData = {};
       for (let office of this.officeList) {
         countriesData[office] = true;
@@ -254,10 +293,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private loadRegionInfo(param: string) {
     this.selectedCountries = [];
     this.countries = [];
-    let subscription = this.af.database.object(Constants.APP_STATUS+"/region/" + this.uid + "/" + param)
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/region/" + this.uid + "/" + param)
       .do(region => {
         this.regionName = region.name;
         this.preRegionName = region.name;
+        console.log("***");
+        console.log(region.directorId);
+        console.log("***");
         this.regionalDirectorId = region.directorId;
 
         if (!this.isSubmitted) {
@@ -271,7 +313,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       })
       .flatMap(countryId => {
         console.log("country id: " + countryId);
-        return this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + countryId)
+        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryId)
       })
       .subscribe(country => {
         if (!this.isSubmitted) {
@@ -281,4 +323,5 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(subscription);
   }
+
 }
