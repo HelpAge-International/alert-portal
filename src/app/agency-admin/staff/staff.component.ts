@@ -24,15 +24,12 @@ export class StaffComponent implements OnInit, OnDestroy {
   OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
-  SkillType = SkillType;
-
   filterPosition: number = 0;
   filterUser: number = 0;
   filterOffice: number = 0;
 
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
-  staffsBackup: ModelStaffDisplay[] = [];
   private uid: string;
   private staffDisplay: ModelStaffDisplay;
   private officeId: string [] = [];
@@ -54,7 +51,6 @@ export class StaffComponent implements OnInit, OnDestroy {
   private staffPhone: string;
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
-  private counter: number = 0;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -77,6 +73,7 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private getStaffData() {
     this.staffs = [];
+    this.dealedStaff = [];
     let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
       .do(list => {
         list.forEach(item => {
@@ -105,16 +102,29 @@ export class StaffComponent implements OnInit, OnDestroy {
             .subscribe(x => {
               x.forEach(item => {
                 if (!this.dealedStaff.includes(item.$key)) {
-                  this.staff = new ModelStaff();
-                  this.staff.id = item.$key;
-                  this.staff.position = item.position;
-                  this.staff.officeType = item.officeType;
-                  this.staff.userType = item.userType;
-                  this.staff.training = item.training;
-                  this.staff.skill = item.skill;
-                  this.staff.notification = item.notification;
-                  this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
-                  this.dealedStaff.push(item.$key);
+                  if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == item.userType && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  }
                 }
               });
             });
@@ -123,6 +133,19 @@ export class StaffComponent implements OnInit, OnDestroy {
       })
       .subscribe();
     this.subscriptions.add(subscription);
+  }
+
+  private addStaff(item, id) {
+    this.staff = new ModelStaff();
+    this.staff.id = item.$key;
+    this.staff.position = item.position;
+    this.staff.officeType = item.officeType;
+    this.staff.userType = item.userType;
+    this.staff.training = item.training;
+    this.staff.skill = item.skill;
+    this.staff.notification = item.notification;
+    this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
+    this.dealedStaff.push(item.$key);
   }
 
   ngOnDestroy() {
@@ -157,10 +180,6 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   closeAdditionalInfo(staffId) {
     jQuery("#" + staffId).collapse("hide");
-  }
-
-  showAdditionalInfo(officeId, staffId) {
-    console.log("show additional info");
   }
 
   getStaffEmail(staffId) {
@@ -246,23 +265,8 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   filterStaff() {
-    if (this.counter == 0) {
-      this.staffsBackup = this.staffs.slice(0);
-    }
     console.log("filter staff");
-    console.log(this.staffsBackup);
-    this.staffs = [];
-    this.staffs = this.staffsBackup.slice(0);
-    this.staffs.forEach(staff => {
-      staff.staffs.forEach(user => {
-        if (user.position != this.filterPosition) {
-          let index: number = staff.staffs.indexOf(user);
-          if (index !== -1) {
-            staff.staffs.splice(index, 1);
-          }
-        }
-      });
-    });
+    this.getStaffData();
   }
 
 }
