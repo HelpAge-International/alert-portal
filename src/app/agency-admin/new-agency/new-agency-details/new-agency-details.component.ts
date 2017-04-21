@@ -95,7 +95,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       agencyData['/administratorAgency/' + this.uid + '/firstLogin'] = false;
 
       if (this.logoFile) {
-        
+
         console.log("With logo");
         this.uploadAgencyLogo().then(result => {
 

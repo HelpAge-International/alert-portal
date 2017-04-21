@@ -53,7 +53,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         console.log("Agency admin uid: " + this.uid);
         this.loadAgencyData(this.uid);
       } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
+        this.navigateToLogin();
       }
     });
     this.subscriptions.add(subscription);
@@ -70,7 +70,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         reader.onload = (event:any) => {
             this.showReplaceRemoveLinks = true;
             this.setLogoPreview(event.target.result);
-        }
+        };
         reader.readAsDataURL(this.logoFile);
     }
   }
@@ -83,7 +83,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
   onSubmit() {
 
-    if (this.validate()) {      
+    if (this.validate()) {
       if (this.modalAgency) {
         var editedAgency: ModelAgency = new ModelAgency(this.modalAgency.name);
         editedAgency.addressLine1 = this.agencyAddressLine1;
@@ -118,7 +118,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
                 this.agencyLogo =  result as string;
                 console.log(this.agencyLogo);
                 editedAgency.logoPath = this.agencyLogo;
-                
+
                 // remove the old logo from firebase
                 try
                 {
@@ -129,7 +129,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
                   }
                 }
                 catch(error) { /* Log error */  }
-              
+
                 this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid).update(editedAgency).then(() => {
                     this.showAlert(false)
                   }, error => {
@@ -165,7 +165,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
       this.agencyWebAddress = agency.website;
       this.agencyCountry = agency.country;
       this.agencyCurrency = agency.currency;
-      
+
       this.showReplaceRemoveLinks = !!this.agencyLogo;
     });
     this.subscriptions.add(subscription);
@@ -252,6 +252,10 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
     }
 
     return true;
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
 }
