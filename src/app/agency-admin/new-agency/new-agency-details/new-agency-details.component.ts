@@ -1,11 +1,12 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire} from "angularfire2";
+import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Country, Currency} from "../../../utils/Enums";
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
 import {ModelAgency} from "../../../model/agency.model";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-new-agency-details',
@@ -40,7 +41,13 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private Currency = Constants.CURRENCY;
   private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private agencyLogo: string;
+  private logoFile: File;
+  private showReplaceRemoveLinks: boolean = false;
+  firebase: any;
+
+  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+    this.firebase = firebaseApp;
   }
 
   ngOnInit() {
@@ -74,18 +81,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
     if (this.validate()) {
 
-      let agencyData = {}
-
-      var agency: ModelAgency = new ModelAgency(this.agencyName);
-      agency.addressLine1 = this.agencyAddressLine1;
-      agency.addressLine2 = this.agencyAddressLine2;
-      agency.addressLine3 = this.agencyAddressLine3;
-      agency.country = this.agencyCountry;
-      agency.city = this.agencyCity;
-      agency.postCode = this.agencyPostCode;
-      agency.phone = this.agencyPhone;
-      agency.website = this.agencyWebAddress;
-      agency.currency = this.agencyCurrency;
+      let agencyData = {};
 
       agencyData['/agency/' + this.uid + '/addressLine1'] = this.agencyAddressLine1;
       agencyData['/agency/' + this.uid + '/addressLine2'] = this.agencyAddressLine2;
@@ -98,22 +94,95 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       agencyData['/agency/' + this.uid + '/currency'] = this.agencyCurrency;
       agencyData['/administratorAgency/' + this.uid + '/firstLogin'] = false;
 
+      if (this.logoFile) {
+        
+        console.log("With logo");
+        this.uploadAgencyLogo().then(result => {
 
-      this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
-        this.successInactive = false;
-        let subscription = Observable.timer(1500).subscribe(() => {
-          this.successInactive = true;
-          this.router.navigateByUrl('/agency-admin/country-office');
+            this.agencyLogo = result as string;
+            agencyData['/agency/' + this.uid + '/logoPath'] = this.agencyLogo;
+
+            this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
+              this.successInactive = false;
+              let subscription = Observable.timer(1500).subscribe(() => {
+                this.successInactive = true;
+                this.router.navigateByUrl('/agency-admin/country-office');
+              });
+              this.subscriptions.add(subscription);
+            }, error => {
+              this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+              this.showAlert();
+              console.log(error.message);
+            });
+          },
+          error => {
+            this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+            this.showAlert();
+            console.log(error.message);
+          });
+      } else {
+
+        console.log("Without logo");
+        this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
+          this.successInactive = false;
+          let subscription = Observable.timer(1500).subscribe(() => {
+            this.successInactive = true;
+            this.router.navigateByUrl('/agency-admin/country-office');
+          });
+          this.subscriptions.add(subscription);
+        }, error => {
+          this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+          this.showAlert();
+          console.log(error.message);
         });
-        this.subscriptions.add(subscription);
-      }, error => {
-        this.errorMessage = 'GLOBAL.GENERAL_ERROR';
-        this.showAlert();
-        console.log(error.message);
-      });
+      }
+
     } else {
       this.showAlert();
     }
+  }
+
+  fileChange(event) {
+    if (event.target.files.length > 0) {
+      this.logoFile = event.target.files[0];
+      var reader = new FileReader();
+      reader.onload = (event: any) => {
+        this.showReplaceRemoveLinks = true;
+        this.setLogoPreview(event.target.result);
+      }
+      reader.readAsDataURL(this.logoFile);
+    }
+  }
+
+  removeLogoPreview() {
+    this.agencyLogo = '';
+    jQuery(".Agency-details__logo__preview").css("background-image", "url(" + this.agencyLogo + ")");
+    this.logoFile = null; // remove the uploaded file
+  }
+
+  private setLogoPreview(logoImage: string) {
+    jQuery(".Agency-details__logo__preview").css("background-image", "url(" + logoImage + ")");
+    if (logoImage) {
+      jQuery(".Agency-details__logo__preview").addClass("Selected");
+    } else {
+      this.showReplaceRemoveLinks = false;
+      jQuery(".Agency-details__logo__preview").removeClass("Selected");
+    }
+  }
+
+  private uploadAgencyLogo() {
+    let promise = new Promise((res, rej) => {
+      var storageRef = this.firebase.storage().ref().child('agency/' + this.uid + '/' + this.logoFile.name);
+      var uploadTask = storageRef.put(this.logoFile);
+      uploadTask.on('state_changed', function (snapshot) {
+      }, function (error) {
+        rej(error);
+      }, function () {
+        var downloadURL = uploadTask.snapshot.downloadURL;
+        res(downloadURL);
+      });
+    });
+    return promise;
   }
 
   private showAlert() {
@@ -153,6 +222,17 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.agencyCurrency] = true;
       this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_CURRENCY";
       return false;
+    } else if (this.logoFile) {
+      // Check for file size
+      if (this.logoFile.size > Constants.AGENCY_ADMIN_LOGO_MAX_SIZE) {
+        this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO_SIZE_EXCEEDED";
+        return false;
+      }
+      // Check for file type
+      if (!(Constants.AGENCY_ADMIN_LOGO_FILE_TYPES.indexOf(this.logoFile.type) > -1 )) {
+        this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO_INVALID_FILETYPE";
+        return false;
+      }
     }
     return true;
   }
