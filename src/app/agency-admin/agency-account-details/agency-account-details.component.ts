@@ -112,10 +112,24 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           this.showAlert(true);
         } else {
             this.uploadAgencyLogo().then( result => {
+                var oldLogo = this.agencyLogo;
+
                 // update the logo preview default placeholder and agency model
                 this.agencyLogo =  result as string;
+                console.log(this.agencyLogo);
                 editedAgency.logoPath = this.agencyLogo;
-
+                
+                // remove the old logo from firebase
+                try
+                {
+                  // check if the newly uploaded image is diferrent than the old one
+                  if(this.firebase.storage().refFromURL(oldLogo).location.path != this.firebase.storage().refFromURL(this.agencyLogo).location.path )
+                  {
+                    this.firebase.storage().refFromURL(oldLogo).delete();
+                  }
+                }
+                catch(error) { /* Log error */  }
+              
                 this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid).update(editedAgency).then(() => {
                     this.showAlert(false)
                   }, error => {
