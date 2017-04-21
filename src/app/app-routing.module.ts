@@ -121,6 +121,7 @@ const routes: Routes = [
   {path: 'agency-admin/settings/response-plans', component: AgencyAdminSettingsResponsePlanComponent},
   {path: 'agency-admin/settings/documents', component: DocumentsComponent},
   {path: 'agency-admin/settings/notifications', component: NotificationComponent},
+  {path: 'agency-admin/settings', redirectTo: 'agency-admin/settings/departments', pathMatch: 'full'},
   {path: 'agency-admin/staff', component: StaffComponent},
   {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
   {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},

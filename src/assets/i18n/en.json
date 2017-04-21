@@ -244,6 +244,25 @@
   },
   "AGENCY_ADMIN": {
     "PLEASE_FILL": "Please fill in your agency details below",
+    "SETTINGS": {
+      "MODULE_NAME": {
+        "MINIMUM_PREP_ACTIONS": "Minimum preparedness actions", 
+        "ADVANCED_PREP_ACTIONS": "Advanced preparedness actions", 
+        "CHS_PREP_ACTIONS": "CHS preparedness actions", 
+        "HAZAR_PRIORITISATION": "Hazard prioritisation", 
+        "PREP_BUDGET": "Preparedness budget", 
+        "SEASONAL_CALENDAR": "Seasonal calendar", 
+        "HAZARD_INDICATOR": "Hazard indicator", 
+        "COUNTRY_OFFICE_PROFILE": "Country office profile",
+        "RESPONSE_PLANNING": "Response planning", 
+        "GLOBAL_MAPS": "Global maps"
+      },
+      "DURATION_TYPE": {
+        "DAYS": "Days", 
+        "MONTHS": "Months", 
+        "YEARS": "Years"
+      }
+    },
     "COUNTRY_OFFICES": {
       "TITLE_TEXT": "Country Offices",
       "REGION_NAME": "Region Name",

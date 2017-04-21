@@ -97,3 +97,15 @@ export enum Privacy {
   Private = 1,
   Network = 2
 }
+
+export enum DurationType {
+  Week = 0,
+  Month = 1,
+  Year = 2
+}
+
+export enum Duration {
+  _3 = 3,
+  _6 = 6,
+  _9 = 9
+}

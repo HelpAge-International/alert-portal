@@ -1,4 +1,4 @@
-import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType} from "./Enums";
+import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType, DurationType} from "./Enums";
 /**
  * Created by Fei on 08/03/2017.
  */
@@ -59,12 +59,24 @@ export class Constants {
   static NOTIFICATION_SETTINGS = ["Alert level changed", "Red alert request", "Update hazard indicator", "MPA/APA expired", "Response plan expired", "Response plan rejected"];
 
   static MODULE_NAME = [
-                        "Minimum preparedness actions", "Advanced preparedness actions", 
-                        "CHS preparedness actions", "Hazard prioritisation", 
-                        "Preparedness budget", "Seasonal calendar", 
-                        "Hazard indicator", "Country office profile",
-                        "Response planning", "Global maps"
-                        ];
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MINIMUM_PREP_ACTIONS", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.ADVANCED_PREP_ACTIONS", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.CHS_PREP_ACTIONS", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.HAZAR_PRIORITISATION", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.SEASONAL_CALENDAR", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.HAZARD_INDICATOR", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.COUNTRY_OFFICE_PROFILE",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS"
+                      ];
+
+  static DURATION_TYPE = [
+                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.DAYS", 
+                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.MONTHS", 
+                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.YEARS"
+                      ];
+  static DURATION_TYPE_SELECTION = [DurationType.Week, DurationType.Month, DurationType.Year];
 }
 
 export enum FILE_SETTING {
