@@ -3,13 +3,16 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-    	<div class="Notification-success">Clock Settings succesfully saved!</div>
+	    <template [ngIf]="saved">
+	    	<div class="Notification-success">Clock Settings succesfully saved!</div>
+	    </template>
+    	
 		<app-settings-menu></app-settings-menu>
 
 	    <div class="Sub-header-title__wrap">
 	      <h2>Clock Settings</h2>
-	      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable">Cancel</button>
-	      <button type="button" class="btn btn-primary Inline-editable--enable">Save Clock Settings</button>
+	      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">Cancel</button>
+	      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">Save Clock Settings</button>
 	    </div>
 	    <p>These are the default clock settings for your agency however countries have the ability to make these more frequent if they wish</p>
 	    <h4 class="System-admin--form-wrap">Risk Monitoring</h4>
@@ -17,12 +20,12 @@
 	        <label >Initially show log from the past:</label>
 	        <div class="row">
               <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorInitialDuration" [(ngModel)]="riskMonitorInitialDuration" name="riskMonitorInitialDuration" required>
+				<select class="form-control" id="riskMonitorShowLogForFreq.value" [(ngModel)]="riskMonitorShowLogForFreq.value" name="riskMonitorShowLogForFreq.value" required>
 					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
 				</select>
 	          </div>
               <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorInitialDurationType" [(ngModel)]="riskMonitorInitialDurationType" name="riskMonitorInitialDurationType" required>
+				<select class="form-control" id="riskMonitorShowLogForFreq.type" [(ngModel)]="riskMonitorShowLogForFreq.type" name="riskMonitorShowLogForFreq.type" required>
 					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
 				</select>
 	          </div>
@@ -32,14 +35,12 @@
 	      <label >Hazards will remain valid for:</label>
 	      <div class="row">
 	          <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>3</option>
-	                <option>6</option>
-	                <option>9</option>
-	              </select>
+				<select class="form-control" id="riskMonitorHazardFreq.value" [(ngModel)]="riskMonitorHazardFreq.value" name="riskMonitorHazardFreq.value" required>
+					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+				</select>
 	          </div>
               <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorHazardDurationType" [(ngModel)]="riskMonitorHazardDurationType" name="riskMonitorHazardDurationType" required>
+				<select class="form-control" id="riskMonitorHazardFreq.type" [(ngModel)]="riskMonitorHazardFreq.type" name="riskMonitorHazardFreq.type" required>
 					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
 				</select>
 	          </div>
@@ -50,14 +51,12 @@
 	      <label >MPA's will remain green for:</label>
 	      <div class="row">
 	          <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>3</option>
-	                <option>6</option>
-	                <option>9</option>
-	              </select>
+				<select class="form-control" id="preparednessFreq.value" [(ngModel)]="preparednessFreq.value" name="preparednessFreq.value" required>
+					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+				</select>
 	          </div>
 	          <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="preparednessDurationType" [(ngModel)]="preparednessDurationType" name="preparednessDurationType" required>
+				<select class="form-control" id="preparednessFreq.type" [(ngModel)]="preparednessFreq.type" name="preparednessFreq.type" required>
 					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
 				</select>
 	          </div>
@@ -68,14 +67,12 @@
 	      <label>Response plans will remain in an approved state for:</label>
 	      <div class="row">
 	          <div class="col-lg-2 col-md-3">
-	              <select class="form-control">
-	                <option>1</option>
-	                <option>2</option>
-	                <option>3</option>
-	              </select>
+				<select class="form-control" id="responsePlansFreq.value" [(ngModel)]="responsePlansFreq.value" name="responsePlansFreq.value" required>
+					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+				</select>
 	          </div>
               <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="responsePlansDurationType" [(ngModel)]="responsePlansDurationType" name="responsePlansDurationType" required>
+				<select class="form-control" id="responsePlansFreq.type" [(ngModel)]="responsePlansFreq.type" name="responsePlansFreq.type" required>
 					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
 				</select>
 	          </div>

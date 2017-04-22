@@ -72,7 +72,7 @@ export class Constants {
                       ];
 
   static DURATION_TYPE = [
-                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.DAYS", 
+                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.WEEKS", 
                         "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.MONTHS", 
                         "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.YEARS"
                       ];

@@ -103,9 +103,3 @@ export enum DurationType {
   Month = 1,
   Year = 2
 }
-
-export enum Duration {
-  _3 = 3,
-  _6 = 6,
-  _9 = 9
-}

@@ -257,7 +257,7 @@
         "GLOBAL_MAPS": "Global maps"
       },
       "DURATION_TYPE": {
-        "DAYS": "Days", 
+        "WEEKS": "Weeks", 
         "MONTHS": "Months", 
         "YEARS": "Years"
       }
