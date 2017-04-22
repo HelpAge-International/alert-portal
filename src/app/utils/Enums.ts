@@ -103,3 +103,9 @@ export enum DurationType {
   Month = 1,
   Year = 2
 }
+
+export enum Location {
+  Philippines = 0,
+  Malaysia = 1,
+  Indonesia = 2
+}
