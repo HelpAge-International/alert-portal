@@ -51,7 +51,8 @@
           <div class="col-md-5 col-lg-5 col-sm-5">
             <strong>{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}:
             </strong>
-            {{"AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED" | translate}}
+            <!--{{"AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED" | translate}}-->
+            {{getDirectorName(region) | translate}}
           </div>
           <div class="col-md-2 col-lg-2 col-sm-2">
             <a href="agency-admin__office__region--edit.html" (click)="editRegion(region)">{{"GLOBAL.EDIT_SECTION" |

@@ -8,7 +8,11 @@
 
     <!--<div class="Back&#45;&#45;button">Agency Staff</div>-->
     <div class="Header-title__wrap">
-      <h1>{{"AGENCY_ADMIN.STAFF.TITLE"| translate}}</h1>
+      <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_ADD_STAFF"| translate}}</h1>
+      <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_EDIT_STAFF"| translate}}</h1>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteStaff()">
+        {{"AGENCY_ADMIN.STAFF.DELETE_STAFF_MEMBER" | translate}}
+      </button>
     </div>
 
     <form #addStaffForm (ngSubmit)="submit()">
@@ -37,7 +41,9 @@
           <label for="User-Type">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
-            <option *ngFor="let type of USER_TYPE_SELECTION" [value]="type">{{USER_TYPE[type]}}</option>
+            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0" [value]="type">
+              {{USER_TYPE[type] | translate}}
+            </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
@@ -51,7 +57,8 @@
           <label for="c-Office">{{"AGENCY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
           <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
                   [required]="!hideCountry">
-            <option *ngFor="let country of countryList | async" [ngValue]="country">{{Country[country.location]}}
+            <option *ngFor="let country of countryList | async" [ngValue]="country"
+                    [selected]="country.location == countryOffice?.location">{{Country[country.location]}}
             </option>
           </select>
         </div>
@@ -67,24 +74,30 @@
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>
           <select class="form-control" id="Position" [(ngModel)]="position" name="position" required>
-            <option *ngFor="let position of STAFF_POSITION_SELECTION" [value]="position">{{STAFF_POSITION[position]}}
+            <option *ngFor="let position of STAFF_POSITION_SELECTION; let idx = index" [hidden]="idx==0"
+                    [value]="position">{{STAFF_POSITION[position] |
+              translate}}
             </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
-            <option *ngFor="let type of OFFICE_TYPE_SELECTION" [value]="type">{{OFFICE_TYPE[type]}}</option>
+            <option *ngFor="let type of OFFICE_TYPE_SELECTION; let idx = index" [hidden]="idx==0" [value]="type">
+              {{OFFICE_TYPE[type] | translate}}
+            </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-          <input type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" [(ngModel)]="email"
+          <input type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+                 [(ngModel)]="email"
                  name="email" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="telephone">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
-          <input type="text" class="form-control" id="telephone" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" [(ngModel)]="phone"
+          <input type="text" class="form-control" id="telephone" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+                 [(ngModel)]="phone"
                  name="phone" required>
         </div>
       </div>
@@ -93,13 +106,14 @@
       <div class="row Spaced">
         <label *ngFor="let support of supportSkillList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-          <input type="checkbox" #box (change)="supportSkillCheck(support,box.checked)">{{support.name}}</label>
+          <input type="checkbox" #box (change)="supportSkillCheck(support,box.checked)"
+                 [checked]="skillsMap.get(support.$key)">{{support.name}}</label>
       </div>
 
       <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
         <label *ngFor="let tech of techSkillsList | async" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
-          type="checkbox" #box (change)="techSkillCheck(tech,box.checked)">{{tech.name}}</label>
+          type="checkbox" #box (change)="techSkillCheck(tech,box.checked)" [checked]="skillsMap.get(tech.$key)">{{tech.name}}</label>
       </div>
 
       <div class="row Spaced">
@@ -115,25 +129,54 @@
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
-                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key]}}</label>
+                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key] | translate}}</label>
       </div>
 
       <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM?"| translate}}</label></div>
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">
-          <input type="radio" name="RT" id="RT_no" [value]="false" [(ngModel)]="isResponseMember">{{"GLOBAL.NO"| translate}}</label>
+          <input type="radio" name="RT" id="RT_no" [value]="false" [(ngModel)]="isResponseMember">{{"GLOBAL.NO"|
+          translate}}</label>
       </div>
       <div class="row">
         <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
-          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"| translate}}</label>
+          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"|
+          translate}}</label>
       </div>
 
       <div class="Form-submit__wrapper">
-        <button class="btn btn-primary" type="submit" (click)="validateForm()">{{"AGENCY_ADMIN.STAFF.SAVE_NEW_STAFF" | translate | uppercase}}</button>
-        <button md-button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+          {{"AGENCY_ADMIN.STAFF.SAVE_NEW_STAFF" |
+          translate | uppercase}}
+        </button>
+        <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+          {{"AGENCY_ADMIN.STAFF.SAVE_CHANGES" |
+          translate | uppercase}}
+        </button>
+        <button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
 
     </form>
 
+  </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"AGENCY_ADMIN.STAFF.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
   </div>
 </div>

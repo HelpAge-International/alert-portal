@@ -281,6 +281,10 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
     if (this.isEdit) {
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
+      console.log(this.emailInDatabase + "/" + this.agencyAdminEmail)
+      if (this.emailInDatabase != this.agencyAdminEmail) {
+        agencyData["/administratorAgency/" + uid + "/firstLogin"] = true;
+      }
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/administratorAgency/" + this.adminId] = null;

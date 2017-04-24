@@ -32,6 +32,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private alertTitle: string;
   private alertContent: string;
   private countryToUpdate;
+  private directorName: string;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -202,6 +203,19 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   editRegion(region) {
     this.router.navigate(['/agency-admin/country-office/create-edit-region', {id: region.$key}], {skipLocationChange: true});
+  }
+
+  getDirectorName(director) {
+    this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
+    if (director.directorId) {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + director.directorId)
+        .subscribe(user => {
+          this.directorName = user.firstName + " " + user.lastName;
+        });
+      this.subscriptions.add(subscription);
+    }
+
+    return this.directorName;
   }
 
 }

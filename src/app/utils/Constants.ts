@@ -56,27 +56,30 @@ export class Constants {
   static OFFICE_TYPE = ["AGENCY_ADMIN.STAFF.ALL_OFFICES", "AGENCY_ADMIN.STAFF.FIELD_OFFICE", "AGENCY_ADMIN.STAFF.LAB_OFFICE"];
   static OFFICE_TYPE_SELECTION = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
 
-  static NOTIFICATION_SETTINGS = ["Alert level changed", "Red alert request", "Update hazard indicator", "MPA/APA expired", "Response plan expired", "Response plan rejected"];
-
   static MODULE_NAME = [
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MINIMUM_PREP_ACTIONS", 
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.ADVANCED_PREP_ACTIONS", 
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.CHS_PREP_ACTIONS", 
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.HAZAR_PRIORITISATION", 
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET", 
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.SEASONAL_CALENDAR", 
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.HAZARD_INDICATOR", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MINIMUM_PREP_ACTIONS",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.ADVANCED_PREP_ACTIONS",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.CHS_PREP_ACTIONS",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.HAZAR_PRIORITISATION",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.SEASONAL_CALENDAR",
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.HAZARD_INDICATOR",
                         "AGENCY_ADMIN.SETTINGS.MODULE_NAME.COUNTRY_OFFICE_PROFILE",
-                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING", 
+                        "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING",
                         "AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS"
                       ];
 
   static DURATION_TYPE = [
-                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.WEEKS", 
-                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.MONTHS", 
+                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.WEEKS",
+                        "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.MONTHS",
                         "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.YEARS"
                       ];
   static DURATION_TYPE_SELECTION = [DurationType.Week, DurationType.Month, DurationType.Year];
+  static NOTIFICATION_SETTINGS = ["GLOBAL.NOTIFICATION_SETTING.ALERT_LEVEL_CHANGE", "GLOBAL.NOTIFICATION_SETTING.RED_ALERT_REQUEST",
+    "GLOBAL.NOTIFICATION_SETTING.UPDATE_HAZARD", "GLOBAL.NOTIFICATION_SETTING.ACTION_EXPIRE",
+    "GLOBAL.NOTIFICATION_SETTING.RESPONSE_PLAN_EXPIRE", "GLOBAL.NOTIFICATION_SETTING.RESPONSE_PLAN_REJECT"];
+
+  static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins"];
 }
 
 export enum FILE_SETTING {

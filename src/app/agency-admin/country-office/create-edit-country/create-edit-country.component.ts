@@ -17,7 +17,6 @@ import {Observable} from "rxjs";
   styleUrls: ['./create-edit-country.component.css']
 })
 export class CreateEditCountryComponent implements OnInit, OnDestroy {
-  subscriptions: RxHelper;
   countryNames = Constants.COUNTRY;
   countrySelections = Constants.COUNTRY_SELECTION;
   titleNames = Constants.PERSON_TITLE;
@@ -47,8 +46,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private alerts = {};
 
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = new RxHelper();
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -73,7 +71,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private loadCountryInfo(countryOfficeId: string) {
     console.log("edit: " + countryOfficeId);
-    let subscription = this.af.database.object(Constants.APP_STATUS+"/countryOffice/" + this.uid + "/" + countryOfficeId)
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
       .do(result => {
         console.log(result);
         this.countryOfficeLocation = result.location;
@@ -81,7 +79,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
         this.tempAdminId = result.adminId;
       })
       .flatMap(result => {
-        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + result.adminId)
+        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + result.adminId)
       })
       .subscribe(user => {
         console.log(user);
@@ -197,7 +195,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private validateLocation() {
-    let subscription = this.af.database.list(Constants.APP_STATUS+"/countryOffice/" + this.uid, {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
       query: {
         orderByChild: "location",
         equalTo: this.countryOfficeLocation

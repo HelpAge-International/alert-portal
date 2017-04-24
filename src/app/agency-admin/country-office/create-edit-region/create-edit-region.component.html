@@ -10,7 +10,9 @@
 
     <div class="Header-title__wrap ">
       <h1>{{pageTitle | translate}}</h1>
-      <button *ngIf="isEdit" type="button" class="btn btn-danger">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" | translate}}</button>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
+        translate}}
+      </button>
     </div>
 
     <div class="row System-admin--form-wrap">
@@ -37,7 +39,8 @@
           </select>
         </div>
         <div class="form-group">
-          <a id="add-country" (click)="addCountrySelection()">+{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" | translate}}</a>
+          <a id="add-country" (click)="addCountrySelection()">+{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" |
+            translate}}</a>
         </div>
       </div>
     </div>
@@ -48,7 +51,9 @@
           <label for="RegionalDirector">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}</label>
           <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId">
             <option>{{"AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED" | translate}}</option>
-            <option>Forename Surname</option>
+            <option *ngFor="let director of regionalDirectors" [ngValue]="director"
+                    [selected]="director.id == regionalDirectorId">{{director.firstName+" "+director.lastName}}
+            </option>
           </select>
         </div>
       </div>

@@ -1,12 +1,13 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
 import {Observable} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
-import {StaffPosition, UserType, OfficeType} from "../../utils/Enums";
+import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-staff',
@@ -15,12 +16,23 @@ import {StaffPosition, UserType, OfficeType} from "../../utils/Enums";
 })
 
 export class StaffComponent implements OnInit, OnDestroy {
+  POSITION = Constants.STAFF_POSITION;
+  POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
+  USER_TYPE = Constants.USER_TYPE;
+  USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
+  OFFICE_TYPE = Constants.OFFICE_TYPE;
+  OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
+  NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
+
+  filterPosition: number = 0;
+  filterUser: number = 0;
+  filterOffice: number = 0;
+
   countries = Constants.COUNTRY;
   staffs: ModelStaffDisplay[] = [];
   private uid: string;
   private staffDisplay: ModelStaffDisplay;
-  countryOffices: FirebaseListObservable<any[]>;
-  private officeId: string;
+  private officeId: string [] = [];
   private staff: ModelStaff;
   staffName: string;
   skillSet = new Set();
@@ -32,6 +44,13 @@ export class StaffComponent implements OnInit, OnDestroy {
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin];
   private OfficeType = Constants.OFFICE_TYPE;
   private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private staffMap = new Map();
+  private dealedStaff: string[] = [];
+  private showCountryStaff = new Map();
+  private staffEmail: string;
+  private staffPhone: string;
+  private supportSkills: string[] = [];
+  private techSkills: string[] = [];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -49,13 +68,12 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.countryOffices = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
     this.getStaffData();
-
-    this.af.database.list(Constants.APP_STATUS + "/staff/");
   }
 
   private getStaffData() {
+    this.staffs = [];
+    this.dealedStaff = [];
     let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
       .do(list => {
         list.forEach(item => {
@@ -64,6 +82,7 @@ export class StaffComponent implements OnInit, OnDestroy {
           this.staffDisplay.country = item.location;
           this.staffDisplay.staffs = [];
           this.staffs.push(this.staffDisplay);
+          this.showCountryStaff.set(this.staffDisplay.id, false);
         })
       })
       .flatMap(list => {
@@ -73,30 +92,60 @@ export class StaffComponent implements OnInit, OnDestroy {
         });
         return Observable.from(ids);
       })
-      .flatMap(id => {
-        this.officeId = id;
-        return this.af.database.list(Constants.APP_STATUS + "/staff/" + id)
+      .map(id => {
+        this.officeId.push(id);
+        return this.staffMap.set(id, this.af.database.list(Constants.APP_STATUS + "/staff/" + id));
       })
-      .do(x => {
-        x.forEach(item => {
-          this.staff = new ModelStaff();
-          this.staff.id = item.$key;
-          this.staff.position = item.position;
-          this.staff.officeType = item.officeType;
-          this.staff.training = item.training;
-          this.staff.skill = item.skill;
-
-          for (let item of this.staffs) {
-            if (item.id == this.officeId) {
-              item.staffs.push(this.staff);
-            }
-          }
+      .do(() => {
+        this.officeId.forEach(id => {
+          let subscribe = this.staffMap.get(id)
+            .subscribe(x => {
+              x.forEach(item => {
+                if (!this.dealedStaff.includes(item.$key)) {
+                  if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                    this.addStaff(item, id);
+                  } else if (this.filterPosition == item.position && this.filterUser == item.userType && this.filterOffice == item.officeType) {
+                    this.addStaff(item, id);
+                  }
+                }
+              });
+            });
+          this.subscriptions.add(subscribe);
         });
       })
-      .subscribe(result => {
-        console.log(result);
-      });
+      .subscribe();
     this.subscriptions.add(subscription);
+  }
+
+  private addStaff(item, id) {
+    this.staff = new ModelStaff();
+    this.staff.id = item.$key;
+    this.staff.position = item.position;
+    this.staff.officeType = item.officeType;
+    this.staff.userType = item.userType;
+    this.staff.training = item.training;
+    this.staff.skill = item.skill;
+    this.staff.notification = item.notification;
+    this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
+    this.dealedStaff.push(item.$key);
   }
 
   ngOnDestroy() {
@@ -117,24 +166,107 @@ export class StaffComponent implements OnInit, OnDestroy {
     return this.staffName;
   }
 
-  showSkills(skillList): string[] {
-    let skillIds = [];
-    for (let key in skillList) {
-      skillIds.push(key);
-    }
-    let subscription = Observable.from(skillIds)
-      .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS + "/skill/" + id);
-      })
-      .distinct()
-      .subscribe(skill => {
-        if (!this.skillSet.has(skill.$key)) {
-          this.skillNames.push(skill.name);
-          this.skillSet.add(skill.$key);
-        }
+  hideCountryStaff(office) {
+    let isHidden = this.showCountryStaff.get(office.id);
+    this.showCountryStaff.set(office.id, !isHidden);
+  }
+
+  editStaff(officeId, staffId) {
+    this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {
+      id: staffId,
+      officeId: officeId
+    }], {skipLocationChange: true});
+  }
+
+  closeAdditionalInfo(staffId) {
+    jQuery("#" + staffId).collapse("hide");
+  }
+
+  getStaffEmail(staffId) {
+    this.staffEmail = "";
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .first()
+      .subscribe(user => {
+        this.staffEmail = user.email;
       });
     this.subscriptions.add(subscription);
-    return this.skillNames;
+    return this.staffEmail;
+  }
+
+  getStaffPhone(staffId) {
+    this.staffPhone = "";
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .first()
+      .subscribe(user => {
+        this.staffPhone = user.phone;
+      });
+    this.subscriptions.add(subscription);
+    return this.staffPhone;
+  }
+
+  getSupportSkills(officeId, staffId) {
+    this.supportSkills = [];
+    if (officeId && staffId) {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+        .first()
+        .map(user => {
+          let userSkill = [];
+          if (user.skill) {
+            for (let skill of user.skill) {
+              userSkill.push(skill)
+            }
+          }
+          return userSkill;
+        })
+        .flatMap(skills => {
+          return Observable.from(skills);
+        })
+        .flatMap(skill => {
+          return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
+        })
+        .subscribe(skill => {
+          if (skill.type == SkillType.Support) {
+            this.supportSkills.push(skill.name);
+          }
+        });
+      this.subscriptions.add(subscription);
+    }
+    return this.supportSkills;
+  }
+
+  getTechSkills(officeId, staffId) {
+    this.techSkills = [];
+    if (officeId && staffId) {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+        .first()
+        .map(user => {
+          let userSkill = [];
+          if (user.skill) {
+            for (let skill of user.skill) {
+              userSkill.push(skill)
+            }
+          }
+          return userSkill;
+        })
+        .flatMap(skills => {
+          return Observable.from(skills);
+        })
+        .flatMap(skill => {
+          return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
+        })
+        .subscribe(skill => {
+          if (skill.type == SkillType.Tech) {
+            this.techSkills.push(skill.name);
+          }
+        });
+      this.subscriptions.add(subscription);
+    }
+    return this.techSkills;
+  }
+
+  filterStaff() {
+    console.log("filter staff");
+    this.getStaffData();
   }
 
 }
