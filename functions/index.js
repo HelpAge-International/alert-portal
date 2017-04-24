@@ -25,6 +25,7 @@ function sendWelcomeEmail(email) {
     to: email
   };
 
+  // \n https://uat.portal.alertpreparedness.org
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.

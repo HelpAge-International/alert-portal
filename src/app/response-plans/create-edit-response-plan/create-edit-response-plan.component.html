@@ -1,6 +1,7 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
@@ -19,7 +20,7 @@
           <div class="Ribbon__header__number"><span>1</span>of 10</div>
           <h4 class="Ribbon__header__title">Plan Details</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -49,7 +50,7 @@
           </div>
         </div>
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -59,7 +60,7 @@
           <div class="Ribbon__header__number"><span>2</span>of 10</div>
           <h4 class="Ribbon__header__title">Plan Context</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -108,7 +109,7 @@
         </div>
         <a href="javascript:void(0)" class="Add__row__cta">Add bullet point (maximum 3)</a>
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -118,7 +119,7 @@
           <div class="Ribbon__header__number"><span>3</span>of 10</div>
           <h4 class="Ribbon__header__title">Basic Information</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -168,8 +169,7 @@
         <div class="Selection-row Selection-row--column Spaced">
           <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
                                                                                               onClick="multi_select_radioSelected(this)"
-                                                                                              name="prog-1"
-                                                                                              id="C-prog">Current
+                                                                                              name="prog-1" id="C-prog">Current
             Programmes</label>
           <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
                                                                                                 onClick="multi_select_radioSelected(this)"
@@ -178,8 +178,7 @@
             Partner</label>
           <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
                                                                                               onClick="multi_select_radioSelected(this)"
-                                                                                              name="prog-1"
-                                                                                              id="N-prog">No
+                                                                                              name="prog-1" id="N-prog">No
             Pre-existing presence</label>
         </div>
 
@@ -231,7 +230,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
 
       </div>
@@ -243,7 +242,7 @@
           <div class="Ribbon__header__number"><span>4</span>of 10</div>
           <h4 class="Ribbon__header__title">Activity Summary</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -274,7 +273,7 @@
           </div>
         </div>
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -284,7 +283,7 @@
           <div class="Ribbon__header__number"><span>5</span>of 10</div>
           <h4 class="Ribbon__header__title">Target population</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -324,8 +323,8 @@
         </div>
 
         <div class="row Spaced form-group">
-          <label class="Sub-header-label F-width">Explain how the target population is/will be involved in your
-            proposed intervention.</label>
+          <label class="Sub-header-label F-width">Explain how the target population is/will be involved in your proposed
+            intervention.</label>
           <div class="col-lg-8">
             <div class="input-group">
               <span class="input-group-addon">1</span>
@@ -336,7 +335,7 @@
         <a href="javascript:void(0)" class="Add__row__cta">Add bullet point (maximum 5)</a>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -347,21 +346,20 @@
           <div class="Ribbon__header__number"><span>6</span>of 10</div>
           <h4 class="Ribbon__header__title">Risk Management</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
         <div class="row Spaced">
           <div class="col-lg-8 col-md-10 col-sm-12">
             <div class="form-group">
-              <label for="R-success">Describe the risks to a successful response and how you are managing
-                them.</label>
+              <label for="R-success">Describe the risks to a successful response and how you are managing them.</label>
               <textarea id="R-success" cols="30" rows="5" class="form-control"></textarea>
             </div>
           </div>
         </div>
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -371,7 +369,7 @@
           <div class="Ribbon__header__number"><span>7</span>of 10</div>
           <h4 class="Ribbon__header__title">Activities</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content">
@@ -393,8 +391,8 @@
               <div class="row Outlined Spaced align-items-center">
                 <div class="col-sm-1 Small-spaced text-bold text-center">0</div>
                 <div class="col-sm-8 Small-spaced">Example: 500 kits distributed across 4 communities</div>
-                <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">View
-                  this activity</a></div>
+                <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">View this
+                  activity</a></div>
               </div>
 
               <div class="row Outlined Spaced align-items-center">
@@ -419,8 +417,7 @@
 
                 <div class="row col-lg-12">
                   <div class="col-lg-12 form-group">
-                    <label for="P-activity">Provide one indicator (KPI) to capture the effects of this
-                      activity.</label>
+                    <label for="P-activity">Provide one indicator (KPI) to capture the effects of this activity.</label>
                     <input type="text" class="form-control" id="P-activity">
                   </div>
                 </div>
@@ -516,7 +513,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -526,7 +523,7 @@
           <div class="Ribbon__header__number"><span>8</span>of 10</div>
           <h4 class="Ribbon__header__title">Monitoring, Accountability and Learning</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -576,7 +573,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -586,7 +583,7 @@
           <div class="Ribbon__header__number"><span>9</span>of 10</div>
           <h4 class="Ribbon__header__title">Adjust Beneficiaries for Double Counting</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Spaced">
@@ -685,7 +682,7 @@
           </div>
         </div>
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
@@ -695,7 +692,7 @@
           <div class="Ribbon__header__number"><span>10</span>of 10</div>
           <h4 class="Ribbon__header__title">Budget</h4>
           <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron"></div>
+          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
         </div>
       </div>
       <div class="Response__content Response__content--budget Spaced">
@@ -824,14 +821,13 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
         </div>
       </div>
 
     </div>
   </div>
 </div>
-
 
 <div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
@@ -883,4 +879,4 @@
       </div>
     </div>
   </div>
-</div>>
+</div>
