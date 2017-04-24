@@ -12,16 +12,15 @@ declare var jQuery: any;
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.css']
 })
+
 export class MessagesComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private msgData = {};
   private messageToDelete;
-  private subscriptions: RxHelper;
 
-  constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper;
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
 
   ngOnInit() {
@@ -46,7 +45,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
           .subscribe(x => {
             this.sentMessages.push(x);
           });
-
         this.subscriptions.add(subscription);
 
       } else {
@@ -68,6 +66,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
   }
 
   deleteFromFirebase() {
+
+    this.msgData = {};
+
     this.msgData['/systemAdmin/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
     this.msgData['/message/' + this.messageToDelete] = null;
 
@@ -109,7 +110,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     })
                   })
                   .subscribe(() => {
-                    this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
+                    this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(() => {
                       console.log('Message Ref successfully deleted from all nodes');
                       jQuery("#delete-message").modal("hide");
                       // this.router.navigate(['/system-admin/messages']);

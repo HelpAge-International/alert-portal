@@ -1,0 +1,886 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Back--button" (click)="goBack()">Response plans</div>
+
+    <div class="Header-title__wrap">
+      <h1>Create new scenario based response plan</h1>
+    </div>
+
+    <div class="Ribbon__section__wrap Spaced">
+
+
+      <!--Response Plan 1/10-->
+      <div class="Ribbon__response" id="Ribbon__response__1">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>1</span>of 10</div>
+          <h4 class="Ribbon__header__title">Plan Details</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="row Spaced">
+          <div class="col-lg-6 col-md-6">
+            <label for="P-name">Plan Name</label>
+            <input type="text" class="form-control" id="P-name" placeholder="Placeholder text">
+          </div>
+          <div class="col-lg-6 col-md-6">
+            <label for="G-location">Geographical Location (city, province)</label>
+            <input type="text" class="form-control" id="G-location" placeholder="Placeholder text">
+          </div>
+        </div>
+
+        <div class="row Spaced">
+          <div class="col-lg-6 col-md-6">
+            <label for="H-scen">Hazard Scenario</label>
+            <select class="form-control" id="H-scen">
+              <option hidden disabled selected>Placeholder text</option>
+            </select>
+          </div>
+          <div class="col-lg-6 col-md-6">
+            <label for="P-lead">Plan Lead</label>
+            <select class="form-control" id="P-lead">
+              <option hidden disabled selected>Placeholder text</option>
+            </select>
+          </div>
+        </div>
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 2/10-->
+      <div class="Ribbon__response" id="Ribbon__response__2">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>2</span>of 10</div>
+          <h4 class="Ribbon__header__title">Plan Context</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="row Spaced form-group">
+          <label class="Sub-header-label">Summarize the scenario crisis event and how is it likely to develop over the
+            first month.</label>
+          <div class="col-lg-8">
+            <div class="input-group">
+              <span class="input-group-addon">1</span>
+              <input type="text" class="form-control" placeholder="">
+            </div>
+          </div>
+        </div>
+        <a href="javascript:void(0)" class="Add__row__cta">Add bullet point (maximum 5)</a>
+
+        <div class="row Spaced form-group">
+          <label class="Sub-header-label F-width">Explain the impact of the crisis on people you want to help.</label>
+          <div class="col-lg-8">
+            <div class="input-group">
+              <span class="input-group-addon">1</span>
+              <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+            </div>
+          </div>
+        </div>
+        <a href="javascript:void(0)" class="Add__row__cta">Add bullet point (maximum 5)</a>
+
+        <div class="row Spaced form-group align-items-center">
+
+          <label class="Sub-header-label F-width">Explain the availability of funds your agency can access for this
+            crisis.</label>
+          <div class="col-lg-8">
+            <div class="input-group">
+              <span class="input-group-addon">1</span>
+              <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+            </div>
+          </div>
+          <div class="col-lg-8 Spaced-above">
+            <div class="input-group">
+              <span class="input-group-addon">2</span>
+              <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+            </div>
+          </div>
+          <div class="col-lg-4 Spaced-above">
+            <a href="javascript:void(0)" class="Remove__row__cta">Remove</a>
+          </div>
+        </div>
+        <a href="javascript:void(0)" class="Add__row__cta">Add bullet point (maximum 3)</a>
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 3/10-->
+      <div class="Ribbon__response" id="Ribbon__response__3">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>3</span>of 10</div>
+          <h4 class="Ribbon__header__title">Basic Information</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="form-group Spaced">
+          <label>What sectors will the intervention's activities most relate to?</label>
+        </div>
+        <div class="Selection-row">
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="water"></div>
+            <label>WaSH</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="health"></div>
+            <label>Health</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="shelter"></div>
+            <label>Shelter</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="nutrition"></div>
+            <label>Nutrition</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="food"></div>
+            <label>Food Security &amp; Livelihoods</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="protection"></div>
+            <label>Protection</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="education"></div>
+            <label>Education</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="camp"></div>
+            <label>Camp Management</label></div>
+          <div class="Item__selectable Icon__selectable">
+            <div onClick="$(this).toggleClass('Selected');" class="misc"></div>
+            <label>Other</label></div>
+        </div>
+
+        <div class="row Spaced subitem">
+          <div class="col-lg-6 col-md-6">
+            <label for="O-relate">Please Specify</label>
+            <input type="text" class="form-control" id="O-relate" placeholder="Type here">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Presence in the country before project</label>
+        </div>
+        <div class="Selection-row Selection-row--column Spaced">
+          <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
+                                                                                              onClick="multi_select_radioSelected(this)"
+                                                                                              name="prog-1"
+                                                                                              id="C-prog">Current
+            Programmes</label>
+          <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
+                                                                                                onClick="multi_select_radioSelected(this)"
+                                                                                                name="prog-1"
+                                                                                                id="Pre-prog">Pre-existing
+            Partner</label>
+          <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
+                                                                                              onClick="multi_select_radioSelected(this)"
+                                                                                              name="prog-1"
+                                                                                              id="N-prog">No
+            Pre-existing presence</label>
+        </div>
+
+        <div class="form-group">
+          <label>Method of implementation</label>
+        </div>
+        <div class="Selection-row Spaced">
+          <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"><input type="radio"
+                                                                                                  onClick="multi_select_radioSelected(this)"
+                                                                                                  name="imp"
+                                                                                                  id="imp-direct">Directly
+            through field staff</label>
+          <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"><input type="radio"
+                                                                                                onClick="multi_select_radioSelected(this)"
+                                                                                                name="imp"
+                                                                                                id="imp-part">Working
+            with partners</label>
+        </div>
+
+        <div class="row Spaced subitem">
+          <div class="col-lg-8 col-md-8">
+            <label for="O-relate">Partners</label>
+            <div class="row align-items-center Small-spaced">
+              <div class="col-sm-6">
+                <select class="form-control" id="P-lead">
+                  <option hidden disabled selected>Select a partner</option>
+                  <option>Partner Organisation 1</option>
+                  <option value="" class="text-primary">+ Add a partner organisation</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <a href="javascript:void(0)" class="text-danger">Remove from this plan</a>
+              </div>
+            </div>
+            <div class="row align-items-center Small-spaced">
+              <div class="col-sm-6">
+                <select class="form-control" id="P-lead">
+                  <option hidden disabled selected>Select a partner</option>
+                  <option>Partner Organisation 1</option>
+                  <option value="" class="text-primary">+ Add a partner organisation</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <a href="javascript:void(0)" class="text-danger">Remove from this plan</a>
+              </div>
+            </div>
+            <a href="javascript:void(0)" class=" Add__row__cta">Add another partner to this plan</a>
+          </div>
+        </div>
+
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+
+      </div>
+
+
+      <!--Response Plan 4/10-->
+      <div class="Ribbon__response" id="Ribbon__response__4">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>4</span>of 10</div>
+          <h4 class="Ribbon__header__title">Activity Summary</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="row Spaced">
+          <div class="col-lg-10 col-md-10 col-sm-12">
+            <div class="form-group">
+              <label for="n-exp-response">Explain your proposed response and why you have selected this particular
+                response to the crisis.</label>
+              <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row Spaced">
+          <div class="col-lg-10 col-md-10 col-sm-12">
+            <div class="form-group">
+              <label for="n-exp-act">Explain how you will start your activities in 7 days and finish within 45
+                days.</label>
+              <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row Spaced">
+          <div class="col-lg-10 col-md-10 col-sm-12">
+            <div class="form-group">
+              <label for="n-exp-coo">How are you co-ordinating and with whom?</label>
+              <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 5/10-->
+      <div class="Ribbon__response" id="Ribbon__response__5">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>5</span>of 10</div>
+          <h4 class="Ribbon__header__title">Target population</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="form-group">
+          <label>How many beneficiaries are you targeting?</label>
+        </div>
+        <div class="row Spaced align-items-center">
+          <div class="col-lg-1 col-md-1 col-sm-2 col-4"><input type="text" class="form-control" placeholder=""></div>
+          <div class="col-lg-2 col-md-3 col-sm-3 ">People per household</div>
+          <div class="col-lg-1 col-md-1 col-sm-1  text-bold">X</div>
+          <div class="col-lg-1 col-md-1 col-sm-2 col-4"><input type="text" class="form-control" placeholder=""></div>
+          <div class="col-lg-1 col-md-2 col-sm-2 ">Households</div>
+          <div class="col-lg-3 col-md-3 col-sm-2  text-bold">= <span>0</span> beneficiaries</div>
+        </div>
+        <a href="javascript:void(0)" class=" Add__row__cta">Add a note about how you calculated the number of
+          beneficiaires</a>
+
+        <div class="row Spaced">
+          <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="form-group">
+              <label for="n-Done">Which vulnerable groups are you specifically targeting?</label>
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control">
+                    <option hidden disabled selected>Please select</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <input type="text" class="form-control" placeholder="Please specify the group">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <a href="javascript:void(0)" class=" Add__row__cta">Add more groups to this plan</a>
+          </div>
+        </div>
+
+        <div class="row Spaced form-group">
+          <label class="Sub-header-label F-width">Explain how the target population is/will be involved in your
+            proposed intervention.</label>
+          <div class="col-lg-8">
+            <div class="input-group">
+              <span class="input-group-addon">1</span>
+              <input type="text" class="form-control" placeholder="">
+            </div>
+          </div>
+        </div>
+        <a href="javascript:void(0)" class="Add__row__cta">Add bullet point (maximum 5)</a>
+
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+
+      <!--Response Plan 6/10-->
+      <div class="Ribbon__response" id="Ribbon__response__6">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>6</span>of 10</div>
+          <h4 class="Ribbon__header__title">Risk Management</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="row Spaced">
+          <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="form-group">
+              <label for="R-success">Describe the risks to a successful response and how you are managing
+                them.</label>
+              <textarea id="R-success" cols="30" rows="5" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 7/10-->
+      <div class="Ribbon__response" id="Ribbon__response__7">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>7</span>of 10</div>
+          <h4 class="Ribbon__header__title">Activities</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content">
+        <div class="Ribbon__section__wrap Spaced">
+          <div class="Accordion Response-plans__activities">
+            <div class="row align-items-center">
+              <div class="col-md-3 col-lg-2 col-sm-4 col-4">
+                <div class="Icon__selectable">
+                  <div class="water"></div>
+                </div>
+              </div>
+              <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>WaSH activities</h4></div>
+              <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">2 activities</div>
+              <div class="col-sm-1 col-12 text-center" data-toggle="collapse" href="#Activity1" aria-expanded="true"
+                   aria-controls="Activity1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
+            </div>
+            <div class="Accordion__Content collapse" id="Activity1">
+
+              <div class="row Outlined Spaced align-items-center">
+                <div class="col-sm-1 Small-spaced text-bold text-center">0</div>
+                <div class="col-sm-8 Small-spaced">Example: 500 kits distributed across 4 communities</div>
+                <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">View
+                  this activity</a></div>
+              </div>
+
+              <div class="row Outlined Spaced align-items-center">
+                <div class="row Spaced col-lg-12 no-gutters">
+                  <div class="col-lg-12 text-right">
+                    <a href="javascript:void(0)" class="text-danger">Remove this activity</a>
+                  </div>
+                </div>
+                <div class="row col-lg-12">
+                  <div class="col-lg-12 form-group">
+                    <label for="P-activity">What is the planned activity?</label>
+                    <input type="text" class="form-control" id="P-activity">
+                  </div>
+                </div>
+
+                <div class="row col-lg-12">
+                  <div class="col-lg-12 form-group">
+                    <label for="P-activity">Planned outputs for this activity.</label>
+                    <input type="text" class="form-control" id="P-activity">
+                  </div>
+                </div>
+
+                <div class="row col-lg-12">
+                  <div class="col-lg-12 form-group">
+                    <label for="P-activity">Provide one indicator (KPI) to capture the effects of this
+                      activity.</label>
+                    <input type="text" class="form-control" id="P-activity">
+                  </div>
+                </div>
+                <div class="row col-lg-12 Spaced form-group">
+                  <label class="col-lg-12">Beneficiaries of this activity by age and gender</label>
+                  <div class="row no-gutters Demographic__text">
+                    <div class="col-lg-2 tier">
+                      <div class="row align-items-center">
+                        <div class="col-12">Female <br/> <18</div>
+                      </div>
+                      <div class="row align-items-center">
+                        <div class="col-12"><input type="text" class="form-control"></div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 tier">
+                      <div class="row align-items-center">
+                        <div class="col-12">Female <br/> 18-50</div>
+                      </div>
+                      <div class="row align-items-center">
+                        <div class="col-12"><input type="text" class="form-control"></div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 tier">
+                      <div class="row align-items-center">
+                        <div class="col-12">Female <br/> >50</div>
+                      </div>
+                      <div class="row align-items-center">
+                        <div class="col-12"><input type="text" class="form-control"></div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 tier">
+                      <div class="row align-items-center">
+                        <div class="col-12">Male <br/> <18</div>
+                      </div>
+                      <div class="row align-items-center">
+                        <div class="col-12"><input type="text" class="form-control"></div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 tier">
+                      <div class="row align-items-center">
+                        <div class="col-12">Male <br/> 18-50</div>
+                      </div>
+                      <div class="row align-items-center">
+                        <div class="col-12"><input type="text" class="form-control"></div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 tier">
+                      <div class="row align-items-center">
+                        <div class="col-12">Male <br/> >50</div>
+                      </div>
+                      <div class="row align-items-center">
+                        <div class="col-12"><input type="text" class="form-control"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a href="javascript:void(0)" class="Add__row__cta">Add another activity</a>
+
+              <div class="Spaced">
+                <div class="Selection-row no-gutters Spaced">
+                  <div class="form-group Small-spaced">
+                    <label>How are you planning to source your goods for this sector?</label>
+                  </div>
+                  <div class="row col-lg-12">
+                    <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-intern">Internationally</label>
+                    <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-region">Regionally/<br/>neightbouring
+                      country</label>
+                    <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">In
+                      country/locally</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row Spaced subitem">
+                <div class="col-lg-12 col-md-12">
+                  <label for="O-relate">Please explain in two bullet points</label>
+                  <div class="input-group Small-spaced">
+                    <span class="input-group-addon">1</span>
+                    <input type="text" class="form-control">
+                  </div>
+                  <div class="input-group Small-spaced">
+                    <span class="input-group-addon">2</span>
+                    <input type="text" class="form-control">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 8/10-->
+      <div class="Ribbon__response" id="Ribbon__response__8">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>8</span>of 10</div>
+          <h4 class="Ribbon__header__title">Monitoring, Accountability and Learning</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+        <div class="row Spaced">
+          <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="form-group">
+              <label for="T-success">Describe the monitoring, accountability and learning systems that you will employ
+                to ensure quality and accountability.</label>
+              <textarea id="T-success" cols="30" rows="5" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="Spaced">
+          <div class="Selection-row Selection-row--column Spaced">
+            <div class="form-group">
+              <label>Do you intend to visually document your response?</label>
+            </div>
+            <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2"><input type="radio"
+                                                                                               onClick="multi_select_radioSelected(this)"
+                                                                                               name="V-document"
+                                                                                               id="Y-vis">Yes</label>
+            <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2"><input type="radio"
+                                                                                               onClick="multi_select_radioSelected(this)"
+                                                                                               name="V-document"
+                                                                                               id="N-vis">No</label>
+          </div>
+        </div>
+
+        <div class="col-lg-8 Spaced subitem">
+          <label>What is the format of the documentation?</label>
+          <div class="Selection-row Selection-row--column Spaced">
+            <label for="P-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4"><input type="radio"
+                                                                                               onClick="multi_select_radioSelected(this)"
+                                                                                               name="F-document"
+                                                                                               id="P-doc">Photographic</label>
+            <label for="V-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4"><input type="radio"
+                                                                                               onClick="multi_select_radioSelected(this)"
+                                                                                               name="F-document"
+                                                                                               id="V-doc">Video</label>
+            <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4"><input type="radio"
+                                                                                                onClick="multi_select_radioSelected(this)"
+                                                                                                name="F-document"
+                                                                                                id="VP-doc">Photographic
+              and Video</label>
+          </div>
+        </div>
+
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 9/10-->
+      <div class="Ribbon__response" id="Ribbon__response__9">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>9</span>of 10</div>
+          <h4 class="Ribbon__header__title">Adjust Beneficiaries for Double Counting</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Spaced">
+
+        <div class="row no-gutters text-bold">
+          Please confirm or adjust the total number of beneficiaries to prevent double counting of individual
+          beneficiaries.
+        </div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="row Demographic__text">
+              <div class="col-lg-3">
+                <div class="row  align-items-center"></div>
+                <div class="row  align-items-center">Total beneficiaries</div>
+                <div class="row  align-items-center">Total adjusted for double counting</div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12">Female <br/> <18</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12">0</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"><input type="text" class="form-control"></div>
+                </div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12">Female <br/> 18-50</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12">0</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"><input type="text" class="form-control"></div>
+                </div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12">Female <br/> >50</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12">0</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"><input type="text" class="form-control"></div>
+                </div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12"></div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"></div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"></div>
+                </div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12">Male <br/> <18</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12">0</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"><input type="text" class="form-control"></div>
+                </div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12">Male <br/> 18-50</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12">0</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"><input type="text" class="form-control"></div>
+                </div>
+              </div>
+              <div class="col-lg-1 tier">
+                <div class="row align-items-center">
+                  <div class="col-12">Male <br/> >50</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12">0</div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-12"><input type="text" class="form-control"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+      <!--Response Plan 10/10-->
+      <div class="Ribbon__response" id="Ribbon__response__10">
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number"><span>10</span>of 10</div>
+          <h4 class="Ribbon__header__title">Budget</h4>
+          <div class="Ribbon__header__status text-primary">Incomplete</div>
+          <div class="Ribbon__header__chevron"></div>
+        </div>
+      </div>
+      <div class="Response__content Response__content--budget Spaced">
+        <div class="Spaced">
+          <div class="row Header Spaced">
+            <div class="col-lg-3 col-4">Budget Category</div>
+            <div class="col-lg-2 col-3">Budget (&pound;)</div>
+            <div class="col-lg-4 col-5">Budget Narrative</div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">A: Inputs</div>
+            <div class="col-lg-2 col-3">&pound; 0</div>
+            <div class="col-lg-4 col-5"></div>
+          </div>
+          <div class="row subitem Header Small-spaced">
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-1: WaSH</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-2: Health</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-3: Shelter</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-4: Camp Management</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-6: Education</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-7: Protection</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-8 Food Security & Livelihoods</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+            <div class="row Line-row col-lg-12">
+              <div class="col-lg-3 col-4">A-9 Other</div>
+              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+            </div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">B: Transport</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">C: Security</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">D: Logistics & overheads</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">E: Staffing & support</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">F: Monitoring & evaluation</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">G: Capital Items</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4">H: Management support</div>
+            <div class="col-lg-2 col-3"><input type="text" class="form-control" value="10%"> <br/> &pound; 0</div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Header Spaced">
+            <div class="col-lg-3 col-4 text-right">TOTAL</div>
+            <div class="col-lg-2 col-3">&pound; 0</div>
+            <div class="col-lg-4 col-5"></div>
+          </div>
+        </div>
+
+        <div class="Spaced">&nbsp;</div>
+
+        <div class="Selection-row Selection-row--column Spaced">
+          <div class="form-group">
+            <label>Do you have any capital items costing more than £1,000?</label>
+          </div>
+          <label for="N-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6"><input type="radio"
+                                                                                             onClick="multi_select_radioSelected(this)"
+                                                                                             name="C-cap" id="N-cap">No</label>
+          <label for="Y-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6"><input type="radio"
+                                                                                             onClick="multi_select_radioSelected(this)"
+                                                                                             name="C-cap" id="Y-cap">Yes</label>
+        </div>
+
+        <div class="col-lg-6 Spaced subitem">
+          <label>Please specify</label>
+          <div class="row Header Small-spaced">
+            <div class="col-lg-3 col-4">Budget (&pound;)</div>
+            <div class="col-lg-9 col-5">Description</div>
+          </div>
+          <div class="row Line-row Header Small-spaced">
+            <div class="col-lg-3 col-4"><input type="text" class="form-control"></div>
+            <div class="col-lg-9 col-8"><input type="text" class="form-control"></div>
+          </div>
+          <div class="row Line-row Small-spaced">
+            <a href="javascript:void(0)" class="Add__row__cta">Add item</a>
+          </div>
+        </div>
+
+        <div class="Form-submit__wrapper">
+          <div class="btn btn-primary btn-continue">Continue</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Export MPA Notes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+
+          <div class="col-lg-6">
+            <label>From</label>
+            <select class="form-control">
+              <option>15/02/2016</option>
+              <option>16/02/2016</option>
+              <option>17/02/2016</option>
+            </select>
+          </div>
+
+          <div class="col-lg-6">
+            <label>To</label>
+            <select class="form-control">
+              <option>15/02/2016</option>
+              <option>16/02/2016</option>
+              <option>17/02/2016</option>
+            </select>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <label>Email Address</label>
+            <input type="text" class="form-control" placeholder="Email Address">
+          </div>
+        </div>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>>

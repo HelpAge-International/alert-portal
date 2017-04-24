@@ -1,3 +1,376 @@
-<p>
-  response-plans works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>Scenario Based Response Plans</h1>
+      <button class="btn btn-primary" (click)="goToNewOrEditPlan()">Create new response plan</button>
+    </div>
+
+    <div class="Ribbon__section__wrap Spaced">
+
+      <div class="Accordion Plans-list">
+        <div class="row align-items-center Plans-list__item">
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">Typhoon</div>
+          <div class="col-md-3 col-sm-3">Rapid response health, shelter and cash project to 6,000 typhoon…</div>
+          <div class="col-md-3 col-sm-2 Plans-list__item--status">
+            <a href="#" class=" text-warning" data-toggle="collapse" data-target="#ribbon1" aria-expanded="false"
+               aria-controls="popover_content">
+                 <span class="fa-stack">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
+                </span>
+              In progress
+            </a>
+
+            <div id="ribbon1"
+                 class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
+
+            </div>
+
+          </div>
+          <div class="col-md-1 col-sm-2 Plans-list__item--progress">
+            <div>70%</div>
+            01/01/2017
+          </div>
+          <div class="col-sm-3">
+
+            <div class="btn-group btn-block">
+              <button type="button" class="btn btn-primary btn-block">Options</button>
+              <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">View plan</a>
+                <a class="dropdown-item" href="#">Edit PLAN</a>
+                <a class="dropdown-item" href="#">Submit for approval</a>
+                <a class="dropdown-item" href="#">Submit for partner validation</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="Accordion Plans-list">
+        <div class="row align-items-center Plans-list__item">
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">Conflict</div>
+          <div class="col-md-3 col-sm-3">Protection, shelter and food security relief to 2,500 displaced families in
+            Leyte prov...
+          </div>
+          <div class="col-md-3 col-sm-2 Plans-list__item--status">
+            <a href="#" class=" text-warning" data-toggle="collapse" data-target="#ribbon2" aria-expanded="false"
+               aria-controls="popover_content">
+                 <span class="fa-stack">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
+                </span>
+              In progress
+            </a>
+
+            <div id="ribbon2"
+                 class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
+
+            </div>
+
+          </div>
+          <div class="col-md-1 col-sm-2 Plans-list__item--progress">
+            <div>90%</div>
+            12/02/2017
+          </div>
+          <div class="col-sm-3">
+
+            <div class="btn-group btn-block">
+              <button type="button" class="btn btn-primary btn-block">Options</button>
+              <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">View plan</a>
+                <a class="dropdown-item" href="#">Edit PLAN</a>
+                <a class="dropdown-item" href="#">Submit for approval</a>
+                <a class="dropdown-item" href="#">Submit for partner validation</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="Accordion Plans-list">
+        <div class="row align-items-center Plans-list__item">
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">Floods</div>
+          <div class="col-md-3 col-sm-3">Rapid health, food security and livelihoods relief to 8,000 flood affected…
+          </div>
+          <div class="col-md-3 col-sm-2 Plans-list__item--status">
+            <a href="#" class=" text-danger" data-toggle="collapse" data-target="#ribbon3" aria-expanded="false"
+               aria-controls="popover_content">
+                 <span class="fa-stack">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-times fa-stack-1x fa-inverse"></i>
+                </span>
+              Needs reviewing
+            </a>
+
+            <div id="ribbon3"
+                 class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
+
+            </div>
+
+          </div>
+          <div class="col-md-1 col-sm-2 Plans-list__item--progress">
+            <div>100%</div>
+            25/04/2016
+          </div>
+          <div class="col-sm-3">
+
+            <div class="btn-group btn-block">
+              <button type="button" class="btn btn-primary btn-block">Options</button>
+              <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">View plan</a>
+                <a class="dropdown-item" href="#">Edit PLAN</a>
+                <a class="dropdown-item" href="#">Submit for approval</a>
+                <a class="dropdown-item" href="#">Submit for partner validation</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="Accordion Plans-list">
+        <div class="row align-items-center Plans-list__item">
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">Drought</div>
+          <div class="col-md-3 col-sm-3">Anticipatory cash intervention to 5,000 farmers/pastoralists protecting their
+            food...
+          </div>
+          <div class="col-md-3 col-sm-2 Plans-list__item--status">
+            <a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon4" aria-expanded="false"
+               aria-controls="popover_content">
+                 <span class="fa-stack">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-check fa-stack-1x fa-inverse"></i>
+                </span>
+              Waiting for approval
+            </a>
+
+            <div id="ribbon4"
+                 class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
+              <!-- Waiting approval -->
+              <div class="row  Spaced">
+                <div class="col-sm-10 col-8  text-left"><h4>Approval</h4></div>
+                <div class="col-sm-2 col-4 text-right"><a href="#"
+                                                          onclick="$(this).parent().parent().parent().collapse('hide')">Close</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <strong>Partners</strong>
+                  <div class="row no-gutters Small-spaced">
+                    <div class="col-6 text-left">Partner 1</div>
+                    <div class="col-6 text-right text-warning">Requires submission <i class="fa fa-exclamation-circle"
+                                                                                      aria-hidden="true"></i></div>
+                  </div>
+                  <div class="row no-gutters Line-row">
+                    <div class="col-6 text-left">Partner 2</div>
+                    <div class="col-6 text-right text-warning">Requires submission <i class="fa fa-exclamation-circle"
+                                                                                      aria-hidden="true"></i></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <strong>Directors</strong>
+                  <div class="row no-gutters Small-spaced">
+                    <div class="col-6 text-left">Country Director</div>
+                    <div class="col-md-6 text-right text-success">Approved <i class="fa fa-check-circle"
+                                                                              aria-hidden="true"></i></div>
+                  </div>
+                  <div class="row no-gutters Line-row">
+                    <div class="col-6 text-left">Regional Director</div>
+                    <div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"
+                                                                           aria-hidden="true"></i></div>
+                  </div>
+                  <div class="row no-gutters Line-row">
+                    <div class="col-6 text-left">Global Director</div>
+                    <div class="col-6 text-right text-muted">Waiting for approval <i class="fa fa-check-circle"
+                                                                                     aria-hidden="true"></i></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+          <div class="col-md-1 col-sm-2 Plans-list__item--progress">
+            <div>100%</div>
+            25/04/2016
+          </div>
+          <div class="col-sm-3">
+
+            <div class="btn-group btn-block">
+              <button type="button" class="btn btn-primary btn-block">Options</button>
+              <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">View plan</a>
+                <a class="dropdown-item" href="#">Edit PLAN</a>
+                <a class="dropdown-item" href="#">Submit for approval</a>
+                <a class="dropdown-item" href="#">Submit for partner validation</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="Accordion Plans-list">
+        <div class="row align-items-center Plans-list__item">
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">Earthquake</div>
+          <div class="col-md-3 col-sm-3">Rapid response protection, health, shelter and cash to 7,500 affected
+            households i…
+          </div>
+          <div class="col-md-3 col-sm-2 Plans-list__item--status">
+            <a href="#" class=" text-success" data-toggle="collapse" data-target="#ribbon5" aria-expanded="false"
+               aria-controls="popover_content">
+                 <span class="fa-stack">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-check fa-stack-1x fa-inverse"></i>
+                </span>
+              Approved
+            </a>
+
+            <div id="ribbon5"
+                 class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon--b-white Popover__ribbon--float">
+              <!-- Approved -->
+              <div class="row  Spaced">
+                <div class="col-sm-10 col-8  text-left"><h4>Approval</h4></div>
+                <div class="col-sm-2 col-4 text-right"><a href="#"
+                                                          onclick="$(this).parent().parent().parent().collapse('hide')">Close</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <strong>Directors</strong>
+                  <div class="row no-gutters Small-spaced">
+                    <div class="col-6 text-left">Country Director</div>
+                    <div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"
+                                                                           aria-hidden="true"></i></div>
+                  </div>
+                  <div class="row no-gutters Line-row">
+                    <div class="col-6 text-left">Regional Director</div>
+                    <div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"
+                                                                           aria-hidden="true"></i></div>
+                  </div>
+                  <div class="row no-gutters Line-row">
+                    <div class="col-6 text-left">Global Director</div>
+                    <div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"
+                                                                           aria-hidden="true"></i></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+          <div class="col-md-1 col-sm-2 Plans-list__item--progress">
+            <div>70%</div>
+            25/04/2016
+          </div>
+          <div class="col-sm-3">
+
+            <div class="btn-group btn-block">
+              <button type="button" class="btn btn-success btn-block">Options</button>
+              <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">View plan</a>
+                <a class="dropdown-item" href="#">Edit PLAN</a>
+                <a class="dropdown-item" href="#">Submit for approval</a>
+                <a class="dropdown-item" href="#">Submit for partner validation</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>
+                <a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="Ribbon__section__wrap Spaced">
+      <div class="Accordion--b-white Accordion__hide-links">
+        <div class="row align-items-center no-gutters">
+          <div class="col-sm-12">
+            <h2>Archived Plans</h2>
+            <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">Hide all</a>
+            <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all">Show all</a>
+          </div>
+        </div>
+      </div>
+      <div class="Accordion__Content collapse" id="collapseThree">
+
+        <div class="Accordion Plans-list">
+          <div class="row align-items-center Plans-list__item">
+            <div class="col-md-2 col-sm-2 Plans-list__item--type">Typhoon</div>
+            <div class="col-md-3 col-sm-3">Rapid response health, shelter and cash project to 6,000 typhoon…</div>
+            <div class="col-md-3 col-sm-2 Plans-list__item--status">
+              <a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon6" aria-expanded="false"
+                 aria-controls="popover_content">
+                 <span class="fa-stack">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-times fa-stack-1x fa-inverse"></i>
+                </span>
+                Archived
+              </a>
+
+              <div id="ribbon6"
+                   class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
+
+              </div>
+
+            </div>
+            <div class="col-md-1 col-sm-2 Plans-list__item--progress">
+              <div>70%</div>
+              01/01/2017
+            </div>
+            <div class="col-sm-3">
+
+              <a href="#" class="btn btn-block text-muted btn-outline-secondary">Re-activate</a>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -121,7 +121,8 @@
     "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
     "NO_DATA_ERROR": "Please enter your email address and password to login",
     "NO_EMAIL_ERROR": "Please enter your email address",
-    "NO_PASSWORD_ERROR": "Please enter your password"
+    "NO_PASSWORD_ERROR": "Please enter your password",
+    "UNRECOGNISED_ERROR": "This email address is not recognised"
   },
   "FORGOT_PASSWORD": {
     "TITLE_TEXT": "Forgot Password?",
@@ -243,6 +244,7 @@
   },
   "AGENCY_ADMIN": {
     "PLEASE_FILL": "Please fill in your agency details below",
+<<<<<<< HEAD
     "SETTINGS": {
       "MODULE_NAME": {
         "MINIMUM_PREP_ACTIONS": "Minimum preparedness actions", 
@@ -262,6 +264,8 @@
         "YEARS": "Years"
       }
     },
+=======
+>>>>>>> sanj-dev
     "COUNTRY_OFFICES": {
       "TITLE_TEXT": "Country Offices",
       "REGION_NAME": "Region Name",
@@ -297,7 +301,7 @@
       "EMAIL_MISSING": "Please enter country administrator's email address"
     },
     "MANDATED_PA": {
-      "TITLE_TEXT": "Mandated preparedness actions",
+      "TITLE_TEXT": "Mandated Preparedness Actions",
       "LOOK_UP_ACTIONS": "LOOKUP GENERIC ACTIONS",
       "CREATE_NEW_ACTION": "Create new action",
       "ADD_NEW_ACTIONS": "Add new action(s)",
@@ -318,10 +322,11 @@
       "EDIT_MANDATED_PA": "Edit mandated preparedness action",
       "EDIT_BUTTON_TEXT": "Save changes",
       "NO_DEPARTMENT_ERROR": "Please select a department",
-      "NO_CONTENT_ERROR": "Please insert the action content"
+      "NO_CONTENT_ERROR": "Please insert the action content",
+      "NO_ACTION_SELECTED": "Please select generic action(s) to be added to mandated actions"
     },
     "STAFF": {
-      "TITLE": "Agency Staff",
+      "TITLE_TEXT": "Agency Staff",
       "ADD_NEW_STAFF": "Add new staff member",
       "SAVE_SETTINGS": "Save settings",
       "JOB_TITLE": "Job Title",
@@ -360,6 +365,8 @@
     },
     "UPDATE_DETAILS": {
       "AGENCY_LOGO": "Agency Logo",
+      "AGENCY_LOGO_INVALID_FILETYPE": "The agency logo image type is invalid",
+      "AGENCY_LOGO_SIZE_EXCEEDED": "The agency logo image size is too large",
       "SUPPORTED_FORMATS": "Supported formats",
       "REPLACE_IMAGE": "Replace image",
       "REMOVE_IMAGE": "Remove image",
@@ -368,6 +375,38 @@
       "NO_CITY": "Please enter the name of the city",
       "NO_PHONE": "Please enter the phone number",
       "NO_CURRENCY": "Please select a currency type"
+    },
+    "SETTINGS": {
+      "TITLE_TEXT": "Agency Settings",
+      "DEPARTMENTS": {
+        "TITLE_TEXT": "Departments",
+        "DELETE_DEPARTMENTS": "Delete Departments",
+        "EDIT_DEPARTMENTS": "Edit Departments"
+      },
+      "SKILLS": {
+        "TITLE_TEXT": "Skills",
+        "SUPPORT_SKILLS": "Support Skills",
+        "TECHNICAL_SKILLS": "Technical Skills",
+        "DELETE_SKILLS": "Delete Skills",
+        "EDIT_SKILLS": "Edit Skills"
+      },
+      "MODULE_NAME": {
+        "MINIMUM_PREP_ACTIONS": "Minimum preparedness actions",
+        "ADVANCED_PREP_ACTIONS": "Advanced preparedness actions",
+        "CHS_PREP_ACTIONS": "CHS preparedness actions",
+        "HAZAR_PRIORITISATION": "Hazard prioritisation",
+        "PREP_BUDGET": "Preparedness budget",
+        "SEASONAL_CALENDAR": "Seasonal calendar",
+        "HAZARD_INDICATOR": "Hazard indicator",
+        "COUNTRY_OFFICE_PROFILE": "Country office profile",
+        "RESPONSE_PLANNING": "Response planning",
+        "GLOBAL_MAPS": "Global maps"
+      },
+      "DURATION_TYPE": {
+        "DAYS": "Days",
+        "MONTHS": "Months",
+        "YEARS": "Years"
+      }
     }
   },
   "DIALOG": {

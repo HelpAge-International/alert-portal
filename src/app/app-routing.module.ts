@@ -2,7 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from "./login/login.component";
-import {AgencyAdminComponent} from "./agency-admin/agency-admin.component";
 import {ForgotPasswordComponent} from "./login/forgot-password/forgot-password.component";
 import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
 import {AddAgencyComponent} from "./system-admin/add-agency/add-agency.component";
@@ -12,7 +11,6 @@ import {MinPrepComponent} from "./system-admin/min-prep/min-prep.component";
 import {MpaComponent} from "./system-admin/mpa/mpa.component";
 import {CreateActionComponent} from "./system-admin/min-prep/create-action/create-action.component";
 import {CreateMpaActionComponent} from './system-admin/mpa/create-mpa-action/create-mpa-action.component';
-import {CountryAdminComponent} from "./country-admin/country-admin.component";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
 import {CreateEditCountryComponent} from "./agency-admin/country-office/create-edit-country/create-edit-country.component";
 import {AgencyMpaComponent} from "./agency-admin/agency-mpa/agency-mpa.component";
@@ -44,6 +42,28 @@ import {SystemSettingsResponsePlansComponent} from "./system-admin/system-settin
 import {SystemSettingsComponent} from "./system-admin/system-settings/system-settings.component";
 import {NewAgencyPasswordComponent} from "./agency-admin/new-agency/new-agency-password/new-agency-password.component";
 import {NewAgencyDetailsComponent} from "./agency-admin/new-agency/new-agency-details/new-agency-details.component";
+import {NewCountryPasswordComponent} from "./country-admin/new-country/new-country-password/new-country-password.component";
+import {NewCountryDetailsComponent} from "./country-admin/new-country/new-country-details/new-country-details.component";
+import {CountryAccountSettingsComponent} from "./country-admin/country-account-settings/country-account-settings.component";
+import {CountryChangePasswordComponent} from "./country-admin/country-account-settings/country-change-password/country-change-password.component";
+import {CountryMessagesComponent} from "./country-admin/country-messages/country-messages.component";
+import {CountryCreateEditMessageComponent} from "./country-admin/country-messages/country-create-edit-message/country-create-edit-message.component";
+import {CountryNotificationSettingsComponent} from "./country-admin/settings/country-notification-settings/country-notification-settings.component";
+import {CountryPermissionSettingsComponent} from "./country-admin/settings/country-permission-settings/country-permission-settings.component";
+import {CountryModulesSettingsComponent} from "./country-admin/settings/country-modules-settings/country-modules-settings.component";
+import {CountryClockSettingsComponent} from "./country-admin/settings/country-clock-settings/country-clock-settings.component";
+import {CountryAddExternalRecipientComponent} from "./country-admin/settings/country-notification-settings/country-add-external-recipient/country-add-external-recipient.component";
+import {CountryStaffComponent} from "./country-admin/country-staff/country-staff.component";
+import {CountryAddEditPartnerComponent} from "./country-admin/country-staff/country-add-edit-partner/country-add-edit-partner.component";
+import {CountryAddEditStaffComponent} from "./country-admin/country-staff/country-add-edit-staff/country-add-edit-staff.component";
+import {ResponsePlansComponent} from "./response-plans/response-plans.component";
+import {CreateEditResponsePlanComponent} from "./response-plans/create-edit-response-plan/create-edit-response-plan.component";
+import {AddPartnerOrganisationComponent} from "./response-plans/add-partner-organisation/add-partner-organisation.component";
+import {DashboardComponent} from "./dashboard/dashboard.component";
+import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
+import {MapComponent} from "./map/map.component";
+import {PreparednessComponent} from "./preparedness/preparedness.component";
+import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -81,7 +101,6 @@ const routes: Routes = [
   /**
    * Agency admin
    */
-  {path: 'agency-admin', component: AgencyAdminComponent},
   {path: 'agency-admin/new-agency/new-agency-password', component: NewAgencyPasswordComponent},
   {path: 'agency-admin/new-agency/new-agency-details', component: NewAgencyDetailsComponent},
   {path: 'agency-admin/country-office', component: CountryOfficeComponent},
@@ -112,9 +131,51 @@ const routes: Routes = [
   /**
    * Country admin
    */
-  {path: 'country-admin',  component: CountryAdminComponent}
-  //TODO: define needed routes here. see the example above
+  {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
+  {path: 'country-admin/new-country/new-country-details', component: NewCountryDetailsComponent},
+  {path: 'country-admin/country-account-settings', component: CountryAccountSettingsComponent},
+  {path: 'country-admin/country-account-settings/country-change-password', component: CountryChangePasswordComponent},
+  {path: 'country-admin/country-messages', component: CountryMessagesComponent},
+  {path: 'country-admin/country-messages/country-create-edit-message', component: CountryCreateEditMessageComponent},
+  {path: 'country-admin/country-messages/country-create-edit-message/:id', component: CountryCreateEditMessageComponent},
+  {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
+  {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
+  {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
+  {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
+  {path: 'country-admin/settings/country-notification-settings/country-add-external-recipient', component: CountryAddExternalRecipientComponent},
+  {path: 'country-admin/country-staff', component: CountryStaffComponent},
+  {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
+  {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
+  {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
 
+  /**
+   * Dashboard
+   */
+  {path: 'dashboard', component: DashboardComponent},
+
+  /**
+   * Risk Monitoring
+   */
+  {path: 'risk-monitoring', component: RiskMonitoringComponent},
+
+  /**
+   * Preparedness
+   */
+  {path: 'preparedness', component: PreparednessComponent},
+
+  /**
+   * Response Plans
+   */
+  {path: 'response-plans', component: ResponsePlansComponent},
+  {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
+  {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
+
+  /**
+   * Maps
+   */
+  {path: 'map', component: MapComponent}
+
+  //TODO: define needed routes here. see the example above
 
 ];
 

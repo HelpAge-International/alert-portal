@@ -24,9 +24,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     userEmail: '',
     password: ''
   };
+
   constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute) {
     this.subscriptions = new RxHelper();
   }
+
   ngOnInit() {
     let subscription = this.route.params
       .subscribe((params: Params) => {
@@ -57,45 +59,47 @@ export class LoginComponent implements OnInit, OnDestroy {
           provider: AuthProviders.Password,
           method: AuthMethods.Password,
         })
-
         .then((success) => {
-          let systemAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS+'/system', {preserveSnapshot: true})
-              .subscribe(snapshots => {
+
+          let systemAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS + '/system', {preserveSnapshot: true})
+            .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
                 }
               });
-            });
-          this.subscriptions.add(systemAdminLoginSubscription);
-
-          let agencyAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS+'/administratorAgency', {preserveSnapshot: true})
-            .subscribe(snapshots => {
-              snapshots.forEach(snapshot => {
-                if (snapshot.key == success.uid) {
-                  let subscription = this.af.database.object(Constants.APP_STATUS+"/administratorAgency/" + snapshot.key + '/firstLogin').subscribe((value) => {
-                    let firstLogin: boolean = value.$value;
-                    if (firstLogin) {
-                      this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
-                    } else {
-                      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+              let agencyAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
+                .subscribe(snapshots => {
+                  snapshots.forEach(snapshot => {
+                    if (snapshot.key == success.uid) {
+                      let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + snapshot.key + '/firstLogin').subscribe((value) => {
+                        let firstLogin: boolean = value.$value;
+                        if (firstLogin) {
+                          this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
+                        } else {
+                          this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+                        }
+                      });
+                      this.subscriptions.add(subscription);
                     }
                   });
-                  this.subscriptions.add(subscription);
-                }
-              });
-            });
-          this.subscriptions.add(agencyAdminLoginSubscription);
+                  let countryAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
+                    .subscribe(snapshots => {
+                      snapshots.forEach(snapshot => {
+                        if (snapshot.key == success.uid) {
+                          this.router.navigateByUrl("/response-plans"); // TODO - UPDATE when Dashboard module is implemented
+                        }
+                      });
+                      this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
+                      this.showAlert(true);
+                    });
+                  this.subscriptions.add(countryAdminLoginSubscription);
 
-          let countryAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS+'/administratorCountry', {preserveSnapshot: true})
-            .subscribe(snapshots => {
-              snapshots.forEach(snapshot => {
-                if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl("/country-admin");
-                }
-              });
+                });
+              this.subscriptions.add(agencyAdminLoginSubscription);
+
             });
-          this.subscriptions.add(countryAdminLoginSubscription);
+          this.subscriptions.add(systemAdminLoginSubscription);
         })
         .catch((error) => {
           // error.message can't be used here as they won't be translated. A global message is shown here instead.
@@ -107,6 +111,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.showAlert(true);
     }
   }
+
   private showAlert(error: boolean) {
     this.loaderInactive = true;
     if (error) {
@@ -123,6 +128,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     }
   }
+
   /**
    * Returns false and specific error messages-
    * if no input is entered,

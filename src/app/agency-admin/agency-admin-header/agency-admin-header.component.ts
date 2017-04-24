@@ -16,6 +16,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private uid: string;
   private firstName: string = "";
   private lastName: string = "";
+  private agencyName: string = "";
   private counter: number = 0;
 
   constructor(private af: AngularFire, private router: Router, private translate: TranslateService, private subscriptions: RxHelper) {
@@ -25,11 +26,15 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
+        let userSubscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
-        this.subscriptions.add(subscription)
+        let agencySubscription = this.af.database.object(Constants.APP_STATUS+"/agency/" + this.uid).subscribe(agency => {
+          this.agencyName = agency.name;
+        });
+        this.subscriptions.add(userSubscription)
+        this.subscriptions.add(agencySubscription)
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }

@@ -31,9 +31,9 @@
       <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="editGroups($event)">
         {{"SYSTEM_ADMIN.SETTING.EDIT_GROUPS" | translate | uppercase}}
       </button>
-      <a class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups($event)">{{"GLOBAL.SAVE" | translate |
-        uppercase}}</a>
-      <a class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEditGroups($event)">{{"GLOBAL.CANCEL" | translate}}</a>
+      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups($event)">{{"GLOBAL.SAVE" | translate |
+        uppercase}}</button>
+      <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEditGroups($event)">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
 
     <div class="Groups">

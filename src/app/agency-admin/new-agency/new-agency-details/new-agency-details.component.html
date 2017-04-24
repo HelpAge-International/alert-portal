@@ -23,11 +23,13 @@
 
       <div class="Agency-details__logo">
         <div class="form-group"><label>{{"AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO" | translate}}</label></div>
-        <label for="imgInp" class="Agency-details__logo__preview"></label>
-        <input type='file' id="imgInp" onChange="previewLogo(this)" class="Input-form--hidden" />
-        <div><a href="#" id="select-logo" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE" | translate}}</a></div>
-        <div><a href="#" id="replace-logo" class="Agency-details__logo__replace-logo"  onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE" | translate}}</a></div>
-        <div><a href="#" class="Agency-details__logo__remove-logo text-danger" onClick="removeLogoPreview(event)" id="remove-logo">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
+        <label for="imgInp" class="Agency-details__logo__preview" [class.Selected]="agencyLogo" [style.background-image]="'url('+ agencyLogo + ')'"></label>
+        <input type='file' id="imgInp" (change) = "fileChange($event)" class="Input-form--hidden"/>
+        <div><a href="javascript:void(0);" *ngIf="!showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE" | translate}}</a></div>
+        <div><a href="javascript:void(0);" *ngIf="showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE"
+          | translate}}</a></div>
+        <div><a href="javascript:void(0);" class="text-danger" (click)="removeLogoPreview()"
+                *ngIf="showReplaceRemoveLinks">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
         <div>{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
         <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
       </div>
