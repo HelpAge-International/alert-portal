@@ -403,6 +403,18 @@
         "WEEKS": "Weeks",
         "MONTHS": "Months",
         "YEARS": "Years"
+      },
+      "RESPONSE_PLAN_SECTION_SETTINGS": {
+        "PLAN_DETAILS": "Plan Details",
+        "PLAN_CONTEXT": "Plan Context",
+        "BASIC_INFORMATION": "Basic Information",
+        "ACTIVITY_SUMMARY": "Activity Summary",
+        "TARGET_POPULATION": "Target Population",
+        "EXPECTED_RESULTS": "Expected Results",
+        "ACTIVITIES": "Activities",
+        "MONITORING_ACC_LEARNING": "Monitoring, Accountability and Learning",
+        "DOUBLE_COUNTING": "Adjust Beneficiaries for Double Counting",
+        "BUDGET": "Budget"
       }
     }
   },

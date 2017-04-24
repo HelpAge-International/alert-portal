@@ -1,0 +1,3 @@
+<div [ngClass]="{'Alert-success': success == true, 'Alert-error': success == false}" *ngIf="_show" (click)="cancelChanges()">
+  {{message}}
+</div>
