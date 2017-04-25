@@ -213,7 +213,6 @@
         "NO_CATEGORY_ERROR": "Please select a category",
         "ALL_CATEGORIES": "All categories",
         "CATEGORY": "Category",
-        // TODO - UPDATE
         "CATEGORIES": {
           "ALL": "All categories",
           "CATEGORY0": "Category1",
@@ -450,7 +449,6 @@
   },
   "RESPONSE_PLANS": {
     "TITLE_TEXT": "Response Plans",
-    // TODO - UPDATE
     "HAZARD_SCENARIOS": {
       "HAZARD_SCENARIO0": "Hazard Scenario 0",
       "HAZARD_SCENARIO1": "Hazard Scenario 1",
