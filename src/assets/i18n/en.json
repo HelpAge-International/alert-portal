@@ -213,6 +213,7 @@
         "NO_CATEGORY_ERROR": "Please select a category",
         "ALL_CATEGORIES": "All categories",
         "CATEGORY": "Category",
+        // TODO - UPDATE
         "CATEGORIES": {
           "ALL": "All categories",
           "CATEGORY0": "Category1",
@@ -324,7 +325,6 @@
       "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff?",
       "JOB_TITLE": "Job Title",
       "TRAINING_NEEDS": "Training Needs",
-      "USER_TYPE": "User Type",
       "REGION": "Region",
       "COUNTRY_OFFICE": "Country Office",
       "ALL_OFFICES": "All offices",
@@ -435,5 +435,22 @@
   },
   "AGENCY_HOME": {
     "AGENCY_ADMIN": "Agency Admin"
+  },
+  "RESPONSE_PLANS": {
+    "TITLE_TEXT": "Response Plans",
+    // TODO - UPDATE
+    "HAZARD_SCENARIOS": {
+      "HAZARD_SCENARIO0": "Hazard Scenario 0",
+      "HAZARD_SCENARIO1": "Hazard Scenario 1",
+      "HAZARD_SCENARIO2": "Hazard Scenario 2",
+      "HAZARD_SCENARIO3": "Hazard Scenario 3",
+      "HAZARD_SCENARIO4": "Hazard Scenario 4",
+      "HAZARD_SCENARIO5": "Hazard Scenario 5",
+      "HAZARD_SCENARIO6": "Hazard Scenario 6",
+      "HAZARD_SCENARIO7": "Hazard Scenario 7",
+      "HAZARD_SCENARIO8": "Hazard Scenario 8",
+      "HAZARD_SCENARIO9": "Hazard Scenario 9",
+      "HAZARD_SCENARIO10": "Hazard Scenario 10"
+    }
   }
 }

@@ -13,7 +13,6 @@
 
     <div class="Ribbon__section__wrap Spaced">
 
-
       <!--Response Plan 1/10-->
       <div class="Ribbon__response" id="Ribbon__response__1">
         <div class="Ribbon__header__wrap">
@@ -27,25 +26,31 @@
         <div class="row Spaced">
           <div class="col-lg-6 col-md-6">
             <label for="P-name">Plan Name</label>
-            <input type="text" class="form-control" id="P-name" placeholder="Placeholder text">
+            <input type="text" class="form-control" id="P-name" placeholder="Please enter" [(ngModel)]="planName">
           </div>
           <div class="col-lg-6 col-md-6">
             <label for="G-location">Geographical Location (city, province)</label>
-            <input type="text" class="form-control" id="G-location" placeholder="Placeholder text">
+            <input type="text" class="form-control" id="G-location" placeholder="Please enter"
+                   [(ngModel)]="geographicalLocation">
           </div>
         </div>
 
         <div class="row Spaced">
           <div class="col-lg-6 col-md-6">
             <label for="H-scen">Hazard Scenario</label>
-            <select class="form-control" id="H-scen">
-              <option hidden disabled selected>Placeholder text</option>
+            <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected" (change)="filterData()">
+              <!--<option hidden disabled selected>Please select</option>-->
+              <option *ngFor="let hazardScenario of hazardScenariosList" [value]="hazardScenario">
+                {{HazardScenario[hazardScenario] | translate}}
+              </option>
             </select>
           </div>
           <div class="col-lg-6 col-md-6">
             <label for="P-lead">Plan Lead</label>
-            <select class="form-control" id="P-lead">
-              <option hidden disabled selected>Placeholder text</option>
+            <select class="form-control" id="P-lead" [(ngModel)]="staffMemberSelected" (change)="staffSelected()">
+              <option hidden disabled selected>Please select</option>
+              <option *ngFor="let staffMember of staffMembers">{{staffMember.firstName + ' ' + staffMember.lastName}}
+              </option>
             </select>
           </div>
         </div>
@@ -159,7 +164,8 @@
         <div class="row Spaced subitem">
           <div class="col-lg-6 col-md-6">
             <label for="O-relate">Please Specify</label>
-            <input type="text" class="form-control" id="O-relate" placeholder="Type here">
+            <input type="text" class="form-control" id="O-relate" placeholder="Type here"
+                   [(ngModel)]="otherInterventionActivity">
           </div>
         </div>
 
@@ -167,35 +173,32 @@
           <label>Presence in the country before project</label>
         </div>
         <div class="Selection-row Selection-row--column Spaced">
-          <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
-                                                                                              onClick="multi_select_radioSelected(this)"
-                                                                                              name="prog-1" id="C-prog">Current
-            Programmes</label>
-          <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
-                                                                                                onClick="multi_select_radioSelected(this)"
-                                                                                                name="prog-1"
-                                                                                                id="Pre-prog">Pre-existing
-            Partner</label>
-          <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6"><input type="radio"
-                                                                                              onClick="multi_select_radioSelected(this)"
-                                                                                              name="prog-1" id="N-prog">No
-            Pre-existing presence</label>
+          <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog">
+            Current Programmes</label>
+          <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog">
+            Pre-existing Partner</label>
+          <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog">
+            No Pre-existing presence</label>
         </div>
 
         <div class="form-group">
           <label>Method of implementation</label>
         </div>
         <div class="Selection-row Spaced">
-          <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"><input type="radio"
-                                                                                                  onClick="multi_select_radioSelected(this)"
-                                                                                                  name="imp"
-                                                                                                  id="imp-direct">Directly
+          <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
+            <input type="radio"
+                   onClick="multi_select_radioSelected(this)"
+                   name="imp"
+                   id="imp-direct" [checked]="isDirectlyThroughFieldStaff"
+                   (change)="directMethodOfImplementationSelected()">Directly
             through field staff</label>
-          <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"><input type="radio"
-                                                                                                onClick="multi_select_radioSelected(this)"
-                                                                                                name="imp"
-                                                                                                id="imp-part">Working
-            with partners</label>
+          <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
+                   [checked]="!isDirectlyThroughFieldStaff" (change)="partnersMethodOfImplementationSelected()">
+            Working with partners</label>
         </div>
 
         <div class="row Spaced subitem">
@@ -251,7 +254,8 @@
             <div class="form-group">
               <label for="n-exp-response">Explain your proposed response and why you have selected this particular
                 response to the crisis.</label>
-              <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"></textarea>
+              <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
+                        [(ngModel)]="proposedResponseText"></textarea>
             </div>
           </div>
         </div>
@@ -260,7 +264,8 @@
             <div class="form-group">
               <label for="n-exp-act">Explain how you will start your activities in 7 days and finish within 45
                 days.</label>
-              <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"></textarea>
+              <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
+                        [(ngModel)]="progressOfActivitiesPlanText"></textarea>
             </div>
           </div>
         </div>
@@ -268,7 +273,8 @@
           <div class="col-lg-10 col-md-10 col-sm-12">
             <div class="form-group">
               <label for="n-exp-coo">How are you co-ordinating and with whom?</label>
-              <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"></textarea>
+              <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
+                        [(ngModel)]="coordinationPlanText"></textarea>
             </div>
           </div>
         </div>
@@ -291,12 +297,16 @@
           <label>How many beneficiaries are you targeting?</label>
         </div>
         <div class="row Spaced align-items-center">
-          <div class="col-lg-1 col-md-1 col-sm-2 col-4"><input type="text" class="form-control" placeholder=""></div>
+          <div class="col-lg-1 col-md-1 col-sm-2 col-4">
+            <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfPeoplePerHouseHold" (change)="calculateBeneficiaries()">
+          </div>
           <div class="col-lg-2 col-md-3 col-sm-3 ">People per household</div>
           <div class="col-lg-1 col-md-1 col-sm-1  text-bold">X</div>
-          <div class="col-lg-1 col-md-1 col-sm-2 col-4"><input type="text" class="form-control" placeholder=""></div>
+          <div class="col-lg-1 col-md-1 col-sm-2 col-4">
+            <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfHouseHolds" (change)="calculateBeneficiaries()">
+          </div>
           <div class="col-lg-1 col-md-2 col-sm-2 ">Households</div>
-          <div class="col-lg-3 col-md-3 col-sm-2  text-bold">= <span>0</span> beneficiaries</div>
+          <div class="col-lg-3 col-md-3 col-sm-2  text-bold">= <span>{{beneficiaries}}</span> beneficiaries</div>
         </div>
         <a href="javascript:void(0)" class=" Add__row__cta">Add a note about how you calculated the number of
           beneficiaires</a>
@@ -309,6 +319,7 @@
                 <div class="form-group col-sm-6">
                   <select class="form-control">
                     <option hidden disabled selected>Please select</option>
+                    <option  *ngFor="let group of groups | async">{{group.$key}}</option>
                   </select>
                 </div>
                 <div class="form-group col-sm-6">
@@ -484,13 +495,15 @@
                   </div>
                   <div class="row col-lg-12">
                     <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-intern">Internationally</label>
+                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-intern">
+                      Internationally</label>
                     <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-region">Regionally/<br/>neightbouring
+                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-region">
+                      Regionally/<br/>neightbouring
                       country</label>
                     <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">In
-                      country/locally</label>
+                      type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">
+                      In country/locally</label>
                   </div>
                 </div>
               </div>
@@ -542,33 +555,25 @@
             <div class="form-group">
               <label>Do you intend to visually document your response?</label>
             </div>
-            <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2"><input type="radio"
-                                                                                               onClick="multi_select_radioSelected(this)"
-                                                                                               name="V-document"
-                                                                                               id="Y-vis">Yes</label>
-            <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2"><input type="radio"
-                                                                                               onClick="multi_select_radioSelected(this)"
-                                                                                               name="V-document"
-                                                                                               id="N-vis">No</label>
+            <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="Y-vis">Yes</label>
+            <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="N-vis">No</label>
           </div>
         </div>
 
         <div class="col-lg-8 Spaced subitem">
           <label>What is the format of the documentation?</label>
           <div class="Selection-row Selection-row--column Spaced">
-            <label for="P-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4"><input type="radio"
-                                                                                               onClick="multi_select_radioSelected(this)"
-                                                                                               name="F-document"
-                                                                                               id="P-doc">Photographic</label>
-            <label for="V-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4"><input type="radio"
-                                                                                               onClick="multi_select_radioSelected(this)"
-                                                                                               name="F-document"
-                                                                                               id="V-doc">Video</label>
-            <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4"><input type="radio"
-                                                                                                onClick="multi_select_radioSelected(this)"
-                                                                                                name="F-document"
-                                                                                                id="VP-doc">Photographic
-              and Video</label>
+            <label for="P-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="P-doc">
+              Photographic</label>
+            <label for="V-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc">
+              Video</label>
+            <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc">
+              Photographic and Video</label>
           </div>
         </div>
 
@@ -797,12 +802,10 @@
           <div class="form-group">
             <label>Do you have any capital items costing more than £1,000?</label>
           </div>
-          <label for="N-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6"><input type="radio"
-                                                                                             onClick="multi_select_radioSelected(this)"
-                                                                                             name="C-cap" id="N-cap">No</label>
-          <label for="Y-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6"><input type="radio"
-                                                                                             onClick="multi_select_radioSelected(this)"
-                                                                                             name="C-cap" id="Y-cap">Yes</label>
+          <label for="N-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="N-cap">No</label>
+          <label for="Y-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="Y-cap">Yes</label>
         </div>
 
         <div class="col-lg-6 Spaced subitem">
