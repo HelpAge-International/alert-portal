@@ -150,7 +150,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       return;
     }
     if (!this.regionalDirectorId || this.regionalDirectorId == 'AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED') {
-      this.regionalDirectorId = "";
+      this.regionalDirectorId = "null";
     }
     console.log(this.regionName);
     console.log(this.selectedCountries);
@@ -247,10 +247,10 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       //     regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = "";
       //   }
       // }
-      if (this.regionalDirectorId) {
+      if (this.regionalDirectorId && this.regionalDirectorId != "null") {
         regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = this.regionalDirectorId;
       } else {
-        regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = "";
+        regionData["/region/" + this.uid + "/" + this.regionId + "/directorId"] = "null";
       }
 
       let countriesData = {};
