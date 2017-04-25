@@ -36,7 +36,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   lastName: string;
   userType: number;
   countryOffice: any;
-  region: string;
+  region: any;
   department: string;
   position: number;
   officeType: number;
@@ -344,12 +344,14 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (this.isUpdateOfficeOnly) {
       staffData["/staff/" + this.selectedOfficeId + "/" + uid + "/"] = null;
     }
+
     if (!this.hideCountry) {
       staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
     } else if (!this.hideRegion) {
-
+      staffData["/staff/globalUser/" + uid + "/"] = staff;
+      staffData["/region/" + this.uid + "/" + this.region.$key + "/directorId"] = uid;
     } else {
-
+      staffData["/staff/globalUser/" + uid + "/"] = staff;
     }
 
     if (this.isEmailChange) {
