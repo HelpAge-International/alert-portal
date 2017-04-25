@@ -3,7 +3,7 @@ import {RxHelper} from "../../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Country, SkillType} from "../../../utils/Enums";
+import {Country, SkillType, UserType} from "../../../utils/Enums";
 import {Observable} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {ModelUserPublic} from "../../../model/user-public.model";
@@ -53,6 +53,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private uid: string;
   private waringMessage: string;
   private countryList: FirebaseListObservable<any[]>;
+  private regionList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
   private supportSkillList: FirebaseListObservable<any[]>;
   private techSkillsList: FirebaseListObservable<any[]>;
@@ -140,6 +141,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private initData() {
     this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+    this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid)
     this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departments => {
         let names = [];
@@ -243,6 +245,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.showAlert();
       return;
     }
+    if (this.hideCountry) {
+      this.waringMessage = "Only staff with country office is working now, other type is still in progress"
+      this.showAlert();
+      return;
+    }
     console.log("submit");
     this.collectData();
   }
@@ -337,7 +344,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (this.isUpdateOfficeOnly) {
       staffData["/staff/" + this.selectedOfficeId + "/" + uid + "/"] = null;
     }
-    staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
+    if (!this.hideCountry) {
+      staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
+    } else if (!this.hideRegion) {
+
+    } else {
+
+    }
 
     if (this.isEmailChange) {
       staffData["/userPublic/" + this.selectedStaffId + "/"] = null;
@@ -365,6 +378,16 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(subscription);
     console.log(this.userType);
+    if (this.userType == UserType.RegionalDirector) {
+      this.hideCountry = true;
+      this.hideRegion = false;
+    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser) {
+      this.hideCountry = true;
+      this.hideRegion = true;
+    } else {
+      this.hideCountry = false;
+      this.hideRegion = true;
+    }
   }
 
   supportSkillCheck(skill, isCheck) {

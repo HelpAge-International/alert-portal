@@ -17,7 +17,8 @@
       {{"AGENCY_ADMIN.COUNTRY_OFFICES.NO_COUNTRY_OFFICES" | translate}}
     </div>
 
-    <table [hidden]="(regions | async)?.length != 0" class="table Table__v-spacing__mid Agency-table">
+    <table [hidden]="(regions | async)?.length != 0 && (countries | async)?.length != 0"
+           class="table Table__v-spacing__mid Agency-table">
       <tr>
         <th>{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</th>
         <th>{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRY_ADMINISTRATOR" | translate}}</th>

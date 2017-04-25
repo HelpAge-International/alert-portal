@@ -34,7 +34,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private preRegionName: string;
   private isSubmitted: boolean;
   private regionalDirectors: any[] = [null];
-  private directorIndex: number = 0;
+  private hideRemove: boolean = true;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper, private route: ActivatedRoute) {
   }
@@ -112,6 +112,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   addCountrySelection() {
     console.log("add new country selection");
+
     let subscription = this.countrySelections
       .first()
       .subscribe(result => {
@@ -126,6 +127,11 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_MAX_COUNTRIES';
           this.showAlert();
           return;
+        }
+
+        console.log(this.countries)
+        if (this.countries.length > 1) {
+          this.hideRemove = false;
         }
       });
     this.subscriptions.add(subscription);
@@ -317,6 +323,9 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         if (!this.isSubmitted) {
           for (let i = 0; i < Object.keys(region.countries).length; i++) {
             this.countries.push(i);
+            if (i != 0) {
+              this.counter++;
+            }
           }
         }
       })
@@ -352,5 +361,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     return name;
   }
 
+  removeCountry(country) {
+    if (this.countries.length > 1) {
+      this.countries = this.countries.filter(item => item !== country);
+    }
+    if (this.countries.length == 1) {
+      this.hideRemove = true;
+    }
+  }
 
 }
