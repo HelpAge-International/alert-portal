@@ -189,12 +189,9 @@
         </div>
         <div class="Selection-row Spaced">
           <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
-            <input type="radio"
-                   onClick="multi_select_radioSelected(this)"
-                   name="imp"
-                   id="imp-direct" [checked]="isDirectlyThroughFieldStaff"
-                   (change)="directMethodOfImplementationSelected()">Directly
-            through field staff</label>
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-direct"
+                   [checked]="isDirectlyThroughFieldStaff" (change)="directMethodOfImplementationSelected()">
+            Directly through field staff</label>
           <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
             <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
                    [checked]="!isDirectlyThroughFieldStaff" (change)="partnersMethodOfImplementationSelected()">
@@ -298,12 +295,14 @@
         </div>
         <div class="row Spaced align-items-center">
           <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-            <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfPeoplePerHouseHold" (change)="calculateBeneficiaries()">
+            <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfPeoplePerHouseHold"
+                   (change)="calculateBeneficiaries()">
           </div>
           <div class="col-lg-2 col-md-3 col-sm-3 ">People per household</div>
           <div class="col-lg-1 col-md-1 col-sm-1  text-bold">X</div>
           <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-            <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfHouseHolds" (change)="calculateBeneficiaries()">
+            <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfHouseHolds"
+                   (change)="calculateBeneficiaries()">
           </div>
           <div class="col-lg-1 col-md-2 col-sm-2 ">Households</div>
           <div class="col-lg-3 col-md-3 col-sm-2  text-bold">= <span>{{beneficiaries}}</span> beneficiaries</div>
@@ -319,7 +318,6 @@
                 <div class="form-group col-sm-6">
                   <select class="form-control">
                     <option hidden disabled selected>Please select</option>
-                    <option  *ngFor="let group of groups | async">{{group.$key}}</option>
                   </select>
                 </div>
                 <div class="form-group col-sm-6">
@@ -365,7 +363,8 @@
           <div class="col-lg-8 col-md-10 col-sm-12">
             <div class="form-group">
               <label for="R-success">Describe the risks to a successful response and how you are managing them.</label>
-              <textarea id="R-success" cols="30" rows="5" class="form-control"></textarea>
+              <textarea id="R-success" cols="30" rows="5" class="form-control"
+                        [(ngModel)]="riskManagementText"></textarea>
             </div>
           </div>
         </div>
@@ -545,7 +544,7 @@
             <div class="form-group">
               <label for="T-success">Describe the monitoring, accountability and learning systems that you will employ
                 to ensure quality and accountability.</label>
-              <textarea id="T-success" cols="30" rows="5" class="form-control"></textarea>
+              <textarea id="T-success" cols="30" rows="5" class="form-control" [(ngModel)]="mALSystemsText"></textarea>
             </div>
           </div>
         </div>
@@ -556,9 +555,11 @@
               <label>Do you intend to visually document your response?</label>
             </div>
             <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="Y-vis">Yes</label>
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="Y-vis"
+                     [checked]="doIntentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">Yes</label>
             <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="N-vis">No</label>
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="N-vis"
+                     [checked]="!doIntentToVisuallyDocument" (click)="noSelectedForVisualDocument()">No</label>
           </div>
         </div>
 
@@ -578,7 +579,8 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue
+          </div>
         </div>
       </div>
 
@@ -611,10 +613,11 @@
                   <div class="col-12">Female <br/> <18</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12">0</div>
+                  <div class="col-12">{{beneficiaries}}</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12"><input type="text" class="form-control"></div>
+                  <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemaleLessThan18">
+                  </div>
                 </div>
               </div>
               <div class="col-lg-1 tier">
@@ -622,10 +625,10 @@
                   <div class="col-12">Female <br/> 18-50</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12">0</div>
+                  <div class="col-12">{{beneficiaries}}</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12"><input type="text" class="form-control"></div>
+                  <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemale18To50"></div>
                 </div>
               </div>
               <div class="col-lg-1 tier">
@@ -633,10 +636,11 @@
                   <div class="col-12">Female <br/> >50</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12">0</div>
+                  <div class="col-12">{{beneficiaries}}</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12"><input type="text" class="form-control"></div>
+                  <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemalegreaterThan50">
+                  </div>
                 </div>
               </div>
               <div class="col-lg-1 tier">
@@ -655,10 +659,11 @@
                   <div class="col-12">Male <br/> <18</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12">0</div>
+                  <div class="col-12">{{beneficiaries}}</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12"><input type="text" class="form-control"></div>
+                  <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMaleLessThan18">
+                  </div>
                 </div>
               </div>
               <div class="col-lg-1 tier">
@@ -666,10 +671,10 @@
                   <div class="col-12">Male <br/> 18-50</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12">0</div>
+                  <div class="col-12">{{beneficiaries}}</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12"><input type="text" class="form-control"></div>
+                  <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMale18To50"></div>
                 </div>
               </div>
               <div class="col-lg-1 tier">
@@ -677,10 +682,11 @@
                   <div class="col-12">Male <br/> >50</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12">0</div>
+                  <div class="col-12">{{beneficiaries}}</div>
                 </div>
                 <div class="row align-items-center">
-                  <div class="col-12"><input type="text" class="form-control"></div>
+                  <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMalegreaterThan50">
+                  </div>
                 </div>
               </div>
             </div>
@@ -709,89 +715,122 @@
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">A: Inputs</div>
-            <div class="col-lg-2 col-3">&pound; 0</div>
+            <div class="col-lg-2 col-3">&pound; {{totalInputs}}</div>
             <div class="col-lg-4 col-5"></div>
           </div>
           <div class="row subitem Header Small-spaced">
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-1: WaSH</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget" [(ngModel)]="waSHBudget"
+                                                 (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="waSHNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-2: Health</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget" [(ngModel)]="healthBudget"
+                                                 (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="healthNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-3: Shelter</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget" [(ngModel)]="shelterBudget"
+                                                 (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="shelterNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-4: Camp Management</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget"
+                                                 [(ngModel)]="campManagementBudget" (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="campManagementNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-6: Education</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget" [(ngModel)]="educationBudget"
+                                                 (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="educationNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-7: Protection</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget"
+                                                 [(ngModel)]="protectionBudget" (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="protectionNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-8 Food Security & Livelihoods</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget"
+                                                 [(ngModel)]="foodSecAndLivelihoodsBudget" (change)="calculateBudget()">
+              </div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="foodSecAndLivelihoodsNarrative"></div>
             </div>
             <div class="row Line-row col-lg-12">
               <div class="col-lg-3 col-4">A-9 Other</div>
-              <div class="col-lg-2 col-3"><input type="text" class="form-control budget"></div>
-              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"></div>
+              <div class="col-lg-2 col-3"><input type="number" class="form-control budget" [(ngModel)]="otherBudget"
+                                                 (change)="calculateBudget()"></div>
+              <div class="col-lg-4 col-5"><input type="text" class="form-control budget-narrative"
+                                                 [(ngModel)]="otherNarrative"></div>
             </div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">B: Transport</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control" [(ngModel)]="transportBudget"
+                                               (change)="calculateBudget()"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control" [(ngModel)]="transportNarrative"></div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">C: Security</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control" [(ngModel)]="securityBudget"
+                                               (change)="calculateBudget()"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control" [(ngModel)]="securityNarrative"></div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">D: Logistics & overheads</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control"
+                                               [(ngModel)]="logisticsAndOverheadsBudget" (change)="calculateBudget()">
+            </div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"
+                                               [(ngModel)]="logisticsAndOverheadsNarrative"></div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">E: Staffing & support</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control" [(ngModel)]="staffingAndSupportBudget"
+                                               (change)="calculateBudget()"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"
+                                               [(ngModel)]="staffingAndSupportNarrative"></div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">F: Monitoring & evaluation</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control"
+                                               [(ngModel)]="monitoringAndEvolutionBudget" (change)="calculateBudget()">
+            </div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"
+                                               [(ngModel)]="monitoringAndEvolutionNarrative"></div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">G: Capital Items</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control"></div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control" [(ngModel)]="capitalItemsBudget"
+                                               (change)="calculateBudget()"></div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control" [(ngModel)]="capitalItemsNarrative">
+            </div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4">H: Management support</div>
-            <div class="col-lg-2 col-3"><input type="text" class="form-control" value="10%"> <br/> &pound; 0</div>
-            <div class="col-lg-4 col-5"><input type="text" class="form-control"></div>
+            <div class="col-lg-2 col-3"><input type="number" class="form-control" value="10%"
+                                               [(ngModel)]="managementSupportBudget" (change)="calculateBudget()">
+              <br/> &pound; {{totalBToH}}
+            </div>
+            <div class="col-lg-4 col-5"><input type="text" class="form-control"
+                                               [(ngModel)]="managementSupportNarrative"></div>
           </div>
           <div class="row Line-row Header Spaced">
             <div class="col-lg-3 col-4 text-right">TOTAL</div>
-            <div class="col-lg-2 col-3">&pound; 0</div>
+            <div class="col-lg-2 col-3">&pound; {{totalBudget}}</div>
             <div class="col-lg-4 col-5"></div>
           </div>
         </div>
@@ -802,13 +841,15 @@
           <div class="form-group">
             <label>Do you have any capital items costing more than £1,000?</label>
           </div>
-          <label for="N-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
-            <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="N-cap">No</label>
           <label for="Y-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
-            <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="Y-cap">Yes</label>
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="Y-cap"
+                   [checked]="capitalsExist" (click)="yesSelectedForCapitalsExist()">Yes</label>
+          <label for="N-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
+            <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="N-cap"
+                   [checked]="!capitalsExist" (click)="noSelectedForCapitalsExist()">No</label>
         </div>
 
-        <div class="col-lg-6 Spaced subitem">
+        <div class="col-lg-6 Spaced subitem" *ngIf="capitalsExist">
           <label>Please specify</label>
           <div class="row Header Small-spaced">
             <div class="col-lg-3 col-4">Budget (&pound;)</div>
@@ -824,7 +865,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Continue</div>
+          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">Finish</div>
         </div>
       </div>
 

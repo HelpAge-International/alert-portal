@@ -18,7 +18,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private agencyAdminUid: string;
   private systemAdminUid: string;
 
-  // Section 01
+  // Section 1/10
   private planName: string;
   private geographicalLocation: string;
   private staffMembers: FirebaseObjectObservable<any>[] = [];
@@ -39,54 +39,88 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     HazardScenario.HazardScenario10
   ];
 
-  // Section 02
+  // Section 2/10
 
-  // Section 03
+  // Section 3/10
 
   private otherInterventionActivity: string;
   private isDirectlyThroughFieldStaff: boolean = true;
 
-  // Section 04
+  // Section 4/10
 
   private proposedResponseText: string;
   private progressOfActivitiesPlanText: string;
   private coordinationPlanText: string;
 
-  // Section 05
+  // Section 5/10
 
   private numOfPeoplePerHouseHold: number = 0;
   private numOfHouseHolds: number = 0;
   private beneficiaries: number = 0;
-  private groups: FirebaseListObservable<any>;
 
-  // Section 06
+  // Section 6/10
 
-  // Section 07
+  private riskManagementText: string;
 
-  // Section 08
+  // Section 7/10
 
-  // Section 09
+  // Section 8/10
 
-  // Section 10
+  private mALSystemsText: string;
+  private doIntentToVisuallyDocument: boolean = true;
+
+  // Section 9/10
+
+  private adjustedFemaleLessThan18: number = 0;
+  private adjustedFemale18To50: number = 0;
+  private adjustedFemalegreaterThan50: number = 0;
+  private adjustedMaleLessThan18: number = 0;
+  private adjustedMale18To50: number = 0;
+  private adjustedMalegreaterThan50: number = 0;
+
+  // Section 10/10
+
+  private totalInputs: number = 0;
+  private totalBToH: number = 0;
+  private totalBudget: number = 0;
+
+  private waSHBudget: number = 0;
+  private healthBudget: number = 0;
+  private shelterBudget: number = 0;
+  private campManagementBudget: number = 0;
+  private educationBudget: number = 0;
+  private protectionBudget: number = 0;
+  private foodSecAndLivelihoodsBudget: number = 0;
+  private otherBudget: number = 0;
+
+  private waSHNarrative: string;
+  private healthNarrative: string;
+  private shelterNarrative: string;
+  private campManagementNarrative: string;
+  private educationNarrative: string;
+  private protectionNarrative: string;
+  private foodSecAndLivelihoodsNarrative: string;
+  private otherNarrative: string;
+
+  private transportBudget: number = 0;
+  private securityBudget: number = 0;
+  private logisticsAndOverheadsBudget: number = 0;
+  private staffingAndSupportBudget: number = 0;
+  private monitoringAndEvolutionBudget: number = 0;
+  private capitalItemsBudget: number = 0;
+  private managementSupportBudget: number = 0;
+
+  private transportNarrative: string;
+  private securityNarrative: string;
+  private logisticsAndOverheadsNarrative: string;
+  private staffingAndSupportNarrative: string;
+  private monitoringAndEvolutionNarrative: string;
+  private capitalItemsNarrative: string;
+  private managementSupportNarrative: string;
+
+  private capitalsExist: boolean = true;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
-  }
-
-  filterData() {
-    console.log("Hazard Scenario Selected");
-  }
-
-  staffSelected() {
-    console.log("Staff Member Selected");
-    console.log(this.planName);
-    console.log(this.geographicalLocation);
-    console.log(this.hazardScenarioSelected);
-    console.log(this.staffMemberSelected);
-  }
-
-  calculateBeneficiaries() {
-    this.beneficiaries = this.numOfPeoplePerHouseHold * this.numOfHouseHolds;
-    console.log("Beneficiaries ----" + this.beneficiaries);
   }
 
   ngOnInit() {
@@ -106,7 +140,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
             console.log(this.agencyAdminUid);
             console.log(this.systemAdminUid);
 
-            this.getGroups();
           });
           this.subscriptions.add(subscription);
         });
@@ -123,6 +156,30 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+  /**
+   * Section 1/10
+   */
+
+  filterData() {
+    console.log("Hazard Scenario Selected");
+  }
+
+  staffSelected() {
+    console.log("Staff Member Selected");
+    console.log(this.planName);
+    console.log(this.geographicalLocation);
+    console.log(this.hazardScenarioSelected);
+    console.log(this.staffMemberSelected);
+  }
+
+  /**
+   * Section 2/10
+   */
+
+  /**
+   * Section 3/10
+   */
+
   directMethodOfImplementationSelected() {
     this.isDirectlyThroughFieldStaff = true;
   }
@@ -131,11 +188,76 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.isDirectlyThroughFieldStaff = false;
   }
 
+  /**
+   * Section 4/10
+   */
+
+  /**
+   * Section 5/10
+   */
+
+  calculateBeneficiaries() {
+    this.beneficiaries = this.numOfPeoplePerHouseHold * this.numOfHouseHolds;
+    console.log("Beneficiaries ----" + this.beneficiaries);
+  }
+
+  /**
+   * Section 6/10
+   */
+
+  /**
+   * Section 7/10
+   */
+
+  /**
+   * Section 8/10
+   */
+
+  yesSelectedForVisualDocument() {
+    this.doIntentToVisuallyDocument = true;
+  }
+
+  noSelectedForVisualDocument() {
+    this.doIntentToVisuallyDocument = false;
+  }
+
+  /**
+   * Section 9/10
+   */
+
+  /**
+   * Section 10/10
+   */
+
+  calculateBudget() {
+
+    this.totalInputs = this.waSHBudget + this.healthBudget + this.shelterBudget + this.campManagementBudget + this.educationBudget + this.protectionBudget + this.foodSecAndLivelihoodsBudget + this.otherBudget;
+
+    this.totalBToH = this.transportBudget + this.securityBudget + this.logisticsAndOverheadsBudget + this.staffingAndSupportBudget + this.monitoringAndEvolutionBudget + this.capitalItemsBudget + this.managementSupportBudget;
+
+    this.totalBudget = this.totalInputs + this.totalBToH;
+  }
+
+  yesSelectedForCapitalsExist() {
+    this.capitalsExist = true;
+  }
+
+  noSelectedForCapitalsExist() {
+    this.capitalsExist = false;
+  }
+
+  /**
+   * Functions
+   */
+
   goBack() {
     // TODO - Update to go back to add Response Plan
     this.router.navigateByUrl('response-plans');
   }
 
+  /**
+   * Private functions
+   */
   private init() {
     this.getStaff();
   }
@@ -159,11 +281,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.staffMembers.push(x);
       });
     this.subscriptions.add(subscription);
-  }
-
-  private getGroups() {
-
-    this.groups = this.af.database.list(Constants.APP_STATUS + "/system/" + this.uid + '/groups');
   }
 
   private navigateToLogin() {
