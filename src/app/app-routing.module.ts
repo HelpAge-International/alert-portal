@@ -64,6 +64,7 @@ import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.compone
 import {MapComponent} from "./map/map.component";
 import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
+import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -128,6 +129,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
   {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
   {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
+  {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
 
   /**
    * Country admin

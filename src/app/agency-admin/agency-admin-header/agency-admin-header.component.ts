@@ -60,4 +60,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  goToNotifications() {
+    this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
+  }
+
 }
