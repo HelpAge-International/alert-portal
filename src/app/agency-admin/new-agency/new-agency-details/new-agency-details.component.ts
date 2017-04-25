@@ -149,15 +149,15 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       reader.onload = (event: any) => {
         this.showReplaceRemoveLinks = true;
         this.setLogoPreview(event.target.result);
-      }
+      };
       reader.readAsDataURL(this.logoFile);
     }
   }
 
   removeLogoPreview() {
     this.agencyLogo = '';
-    jQuery(".Agency-details__logo__preview").css("background-image", "url(" + this.agencyLogo + ")");
     this.logoFile = null; // remove the uploaded file
+    this.setLogoPreview(this.agencyLogo);
   }
 
   private setLogoPreview(logoImage: string) {
