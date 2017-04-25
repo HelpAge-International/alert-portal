@@ -23,7 +23,7 @@
       <div><a href="javascript:void(0);" *ngIf="!showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE" | translate}}</a></div>
       <div><a href="javascript:void(0);" *ngIf="showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE"
         | translate}}</a></div>
-      <div><a href="javascript:void(0);" class="text-danger" (click)="removeLogoPreview()"
+      <div><a href="javascript:void(0);" class="text-danger" (click)="removeLogo()"
               *ngIf="showReplaceRemoveLinks">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
       <div>{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
       <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
@@ -107,5 +107,23 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<div class="modal fade" id="delete-logo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"AGENCY_ADMIN.UPDATE_DETAILS.DELETE_LOGO_MODEL_TEXT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="removeLogoFromStorage()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
   </div>
 </div>

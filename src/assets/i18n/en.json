@@ -365,6 +365,7 @@
       "SUPPORTED_FORMATS": "Supported formats",
       "REPLACE_IMAGE": "Replace image",
       "REMOVE_IMAGE": "Remove image",
+      "DELETE_LOGO_MODEL_TEXT": "Are you sure you want to remove the logo of your agency?",
       "NO_ADDRESS_1": "Please enter address line 1",
       "NO_COUNTRY": "Please select a country",
       "NO_CITY": "Please enter the name of the city",
