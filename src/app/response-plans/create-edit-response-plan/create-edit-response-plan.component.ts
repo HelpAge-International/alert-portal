@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router} from "@angular/router";
-import {AngularFire, FirebaseObjectObservable, FirebaseListObservable} from "angularfire2";
+import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {HazardScenario} from "../../utils/Enums";
@@ -124,6 +124,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    // TODO - Check settings to show and hide sections
+
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;

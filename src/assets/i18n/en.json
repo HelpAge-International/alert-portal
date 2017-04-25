@@ -7,6 +7,10 @@
     "CANCEL": "Cancel",
     "CONFIRM": "Confirm",
     "CONTINUE": "Continue",
+    "COMPLETE": "Complete",
+    "INCOMPLETE": "Incomplete",
+    "MALE": "Male",
+    "FEMALE": "Female",
     "TITLE": "Title",
     "EDIT": "Edit",
     "SAVE": "Save",
@@ -30,6 +34,8 @@
     "CURRENCY": "Currency",
     "PLEASE_ENTER": "Please enter",
     "OPTIONAL": "Optional",
+    "MAXIMUM": "maximum",
+    "FINISH": "Finish",
     "ADD_IMAGE": "Add an image",
     "NO_CHANGES_MADE": "No changes made",
     "SAVE_CHANGES": "Save changes",
@@ -37,6 +43,8 @@
     "CURRENT_PASSWORD": "Your current password",
     "CONFIRM_PASSWORD": "Confirm your password",
     "NEW_PASSWORD": "New password",
+    "PLEASE_SPECIFY": "Please specify",
+    "DESCRIPTION": "Description",
     "YES": "Yes",
     "NO": "No",
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
@@ -450,6 +458,104 @@
   },
   "RESPONSE_PLANS": {
     "TITLE_TEXT": "Response Plans",
+    "ADD_BULLET_POINT": "Add bullet point",
+    "CREATE_NEW_RESPONSE_PLAN": {
+      "TITLE_TEXT": "Create new scenario based response plan",
+      "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
+      "PLAN_DETAILS": {
+        "TITLE_TEXT": "Plan Details",
+        "PLAN_NAME": "Plan name",
+        "GEO_LOCATION": "Geographical location (city, province)",
+        "HAZARD_SCENARIO": "Hazard scenario",
+        "PLAN_LEAD": "Plan lead"
+      },
+      "PLAN_CONTEXT": {
+        "TITLE_TEXT": "Plan Context",
+        "SUMMARIZE_SECNARIO_TEXT": "Summarize the scenario crisis event and how is it likely to develop over the first month",
+        "IMPACT_OF_CRISIS_TEXT": "Explain the impact of the crisis on people you want to help",
+        "AVAILABILITY_OF_FUNDS_TEXT": "Explain the availability of funds your agency can access for this crisis"
+      },
+      "BASIC_INFORMATION": {
+        "TITLE_TEXT": "Basic Information",
+        "WHAT_SECTORS?": "What sectors will the intervention’s activities most relate to?",
+        "PRESENCE_IN_THE_COUNTRY": "Presence in the country before project",
+        "CURRENT_PROGRAMMES": "Current programmes",
+        "PRE-EXISTING-PARTNER": "Pre-existing partner",
+        "NO_PRE-EXISTING_PRESENCE": "No pre-existing presence",
+        "METHOD_OF_IMPLEMENTATION": "Method of implementation",
+        "DIRECTLY_THROUGH_STAFF": "Directly through field staff",
+        "WORKING_WITH_PARTNERS": "Working with partners"
+      },
+      "ACTIVITY_SUMMARY": {
+        "TITLE_TEXT": "Activity Summary",
+        "EXPLAIN_PROPOSED_PLAN_TEXT": "Explain your proposed response and why you have selected this particular response to the crisis",
+        "EXPLAIN_ACTIVITIES_PLAN_TEXT": "Explain how you will start your activities in 7 days and finish within 45 days",
+        "EXPLAIN_COORDINATION_TEXT?": "How are you co-ordinating and with whom?"
+      },
+      "TARGET_POPULATION": {
+        "TITLE_TEXT": "Target Population",
+        "HOW_MANY_BENEFICIARIES?": "How many beneficiaries are you targeting?",
+        "PEOPLE_PER_HOUSEHOLD": "People per household",
+        "HOUSEHOLDS": "Households",
+        "BENEFICIARIES": "beneficiairies",
+        "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaires",
+        "WHICH_GROUPS_TEXT?": "Which vulnerable groups are you specifically targeting?",
+        "ADD_MORE_GROUPS": "Add more groups to this plan",
+        "EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT": "Explain how the target population is/will be involved in your proposed intervention"
+      },
+      "RISK_MANAGEMENT": {
+        "TITLE_TEXT": "Risk Management",
+        "DESCRIBE_THE_RISKS_TEXT": "Describe the risks to a successful response and how you are managing them"
+      },
+      "ACTIVITIES": {
+        "TITLE_TEXT": "Activities",
+        "PLANNED_ACTIVITY_TEXT?": "What is the planned activity?",
+        "PLANNED_OUTPUTS_TEXT": "Planned outputs for this activity",
+        "INDICATOR_TEXT?": "Provide one indicator (KPI) to capture the effects of this activity",
+        "BENEFICIARIES_OF_ACTIVITIES": "Beneficiaries of this activity by age and gender",
+        "ADD_ANOTHER_ACTIVITY": "Add another activity",
+        "SOURCE_PLAN?": "How are you planning to source your goods for this sector?",
+        "INTERNATIONALLY": "Internationally",
+        "REGIONALLY_COUNTRY": "Regionally/neighbouring country",
+        "IN_COUNTRY_LOCALLY": "In country/locally",
+        "PLEASE_EXPLAIN": "Please explain in two bullet points"
+      },
+      "MON_ACC_LEA": {
+        "TITLE_TEXT": "Monitoring, Accountability and Learning",
+        "DESCRIBE_MON_ACC_LEA": "Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",
+        "VISUALLY_DOCUMENT?": "Do you intend to visually document your response?",
+        "FORMAT_OF_DOCUMENTATION?": "What is the format of the documentation?",
+        "PHOTOGRAPHIC": "Photographic",
+        "VIDEO": "Video",
+        "PHOTOGRAPHIC_AND_VIDEO": "Photographic and Video"
+      },
+      "BENEFICIARIES": {
+        "TITLE_TEXT": "Adjust Beneficiaries for Double Counting",
+        "CONFIRM_BENEFICIARIES_TEXT": "Please confirm or adjust the total number of beneficiaries to prevent double counting of individual beneficiaries",
+        "TOTAL_BENEFICIARIES": "Total beneficiaries",
+        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting",
+        "PHOTOGRAPHIC": "Photographic",
+        "VIDEO": "Video"
+      },
+      "BUDGET": {
+        "TITLE_TEXT": "Budget",
+        "BUDGET_CATEGORY": "Budget Category",
+        "BUDGET_NARRATIVE": "Budget Narrative",
+        "INPUTS": "Inputs",
+        "ADD_ITEM": "Add item",
+        "DO_YOU_HAVE_CAPITAL_ITEMS?": "Do you have any capital items costing more than £1,000?",
+        "CATEGORY": {
+          "TRANSPORT": "Transport",
+          "SECURITY": "Security",
+          "LOGISTICS_AND_OVERHEADS": "Logistics & overheads",
+          "STAFFING_AND_SUPPORT": "Staffing & support",
+          "MON_AND_EVALUATION": "Monitoring & evaluation",
+          "CAPITAL_ITEMS": "Capital Items",
+          "MANAGEMENT_SUPPORT": "Management support",
+          "OTHER": "Other"
+        }
+      }
+    },
     "HAZARD_SCENARIOS": {
       "HAZARD_SCENARIO0": "Hazard Scenario 0",
       "HAZARD_SCENARIO1": "Hazard Scenario 1",
@@ -463,5 +569,16 @@
       "HAZARD_SCENARIO9": "Hazard Scenario 9",
       "HAZARD_SCENARIO10": "Hazard Scenario 10"
     }
+  },
+  "SECTORS": {
+    "WASH": "WaSH",
+    "HEALTH": "Health",
+    "SHELTER": "Shelter",
+    "NUTRITION": "Nutrition",
+    "FOOD_SEC_AND_LIVELIHOOD": "Food security & livelihoods",
+    "PROTECTION": "Protection",
+    "EDUCATION": "Education",
+    "CAMP MANAGEMENT": "Camp management",
+    "OTHER": "Other"
   }
 }
