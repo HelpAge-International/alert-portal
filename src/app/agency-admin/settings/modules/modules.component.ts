@@ -69,7 +69,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   private cancelChanges() {
-	this.ngOnInit();
+	  this.ngOnInit();
   }
 
   private saveChanges(){

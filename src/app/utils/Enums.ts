@@ -124,3 +124,16 @@ export enum Location {
   Malaysia = 1,
   Indonesia = 2
 }
+
+export enum ResponsePlanSesctionSettings {
+  PlanDetails = 0,
+  PlanContext = 1,
+  BasicInformation = 2,
+  ActivitySummary = 3,
+  TargetPopulation = 4,
+  ExpectedResults = 5,
+  Activities = 6,
+  MonitoringAccLearning = 7,
+  DoubleCounting = 8,
+  Budget = 9
+}
