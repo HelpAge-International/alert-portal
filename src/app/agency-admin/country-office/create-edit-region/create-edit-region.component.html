@@ -29,14 +29,22 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group countries_parent" id="countries_parent">
           <label for="country">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRIES" | translate}}*</label>
-
-          <select *ngFor="let selectCountry of countries" class="form-control"
-                  [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
-            <option *ngFor="let country of countrySelections | async"
-                    [selected]="country.location === selectedCountries[selectCountry]">{{COUNTRY_NAMES[country.location]
-              | translate}}
-            </option>
-          </select>
+          <div *ngFor="let selectCountry of countries" class="row no-gutters align-items-center">
+            <div class="col-10">
+              <select class="form-control"
+                      [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
+                <option *ngFor="let country of countrySelections | async"
+                        [selected]="country.location === selectedCountries[selectCountry]">
+                  {{COUNTRY_NAMES[country.location]
+                  | translate}}
+                </option>
+              </select>
+            </div>
+            <div class="col-2">
+              <a class="remove_field text-danger" [hidden]="hideRemove"
+                 (click)="removeCountry(selectCountry)">Remove</a>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <a id="add-country" (click)="addCountrySelection()">+{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" |
@@ -50,9 +58,9 @@
         <div class="form-group">
           <label for="RegionalDirector">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}</label>
           <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId">
-            <option>{{"AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED" | translate}}</option>
-            <option *ngFor="let director of regionalDirectors" [ngValue]="director"
-                    [selected]="director.id == regionalDirectorId">{{director.firstName+" "+director.lastName}}
+            <option *ngFor="let director of regionalDirectors" [value]="director?.$key"
+                    [selected]="director?.$key == regionalDirectorId">
+              {{showName(director)}}
             </option>
           </select>
         </div>
