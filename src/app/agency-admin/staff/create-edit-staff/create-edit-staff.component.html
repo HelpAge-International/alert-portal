@@ -71,15 +71,21 @@
         <!--</div>-->
 
         <!--<div class="row Spaced">-->
+        <!--<div class="col-lg-4 col-md-6 form-group">-->
+          <!--<label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>-->
+          <!--<select class="form-control" id="Position" [(ngModel)]="position" name="position" required>-->
+            <!--<option *ngFor="let position of STAFF_POSITION_SELECTION; let idx = index" [hidden]="idx==0"-->
+                    <!--[value]="position">{{STAFF_POSITION[position] |-->
+              <!--translate}}-->
+            <!--</option>-->
+          <!--</select>-->
+        <!--</div>-->
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>
-          <select class="form-control" id="Position" [(ngModel)]="position" name="position" required>
-            <option *ngFor="let position of STAFF_POSITION_SELECTION; let idx = index" [hidden]="idx==0"
-                    [value]="position">{{STAFF_POSITION[position] |
-              translate}}
-            </option>
-          </select>
+          <input type="text" class="form-control" id="Position" [(ngModel)]="position" name="position"
+                 placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
+
         <div class="col-lg-4 col-md-6 form-group">
           <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>

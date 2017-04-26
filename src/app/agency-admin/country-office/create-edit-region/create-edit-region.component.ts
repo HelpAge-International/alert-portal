@@ -50,7 +50,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       //regional directors
       let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
         .flatMap(countries => {
-          let countryIds = [];
+          let countryIds = ["globalUser"];
           countries.forEach(country => {
             countryIds.push(country.$key)
           });

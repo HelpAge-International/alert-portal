@@ -51,7 +51,7 @@
         <div *ngFor="let staff of office?.staffs" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
           <div class="col-lg-2">{{getStaffName(staff.id)}}</div>
-          <div class="col-lg-2">{{POSITION[staff.position] | translate}}</div>
+          <div class="col-lg-2">{{staff.position}}</div>
           <div class="col-lg-2">{{USER_TYPE[staff.userType] | translate}}</div>
           <div class="col-lg-2">{{OFFICE_TYPE[staff.officeType] | translate}}</div>
           <div class="col-lg-2 col-md-2 additional-info">
@@ -83,13 +83,17 @@
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">Support Skills</div>
               <div class="col-md-10 col-sm-6">
-                <li *ngFor="let skill of getSupportSkills(office.id, staff.id)"> {{skill}}</li>
+                <ul>
+                  <li *ngFor="let skill of getSupportSkills(office.id, staff.id)"> {{skill}}</li>
+                </ul>
               </div>
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">Technical Skills</div>
               <div class="col-md-10 col-sm-6">
-                <li *ngFor="let skill of getTechSkills(office.id, staff.id)"> {{skill}}</li>
+                <ul>
+                  <li *ngFor="let skill of getTechSkills(office.id, staff.id)"> {{skill}}</li>
+                </ul>
               </div>
             </div>
             <div class="row">
@@ -99,9 +103,11 @@
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">Notifications</div>
               <div class="col-md-10 col-sm-6">
-                <li *ngFor="let notification of staff.notification"> {{NOTIFICATION_SETTINGS[notification] |
-                  translate}}
-                </li>
+                <ul>
+                  <li *ngFor="let notification of staff.notification"> {{NOTIFICATION_SETTINGS[notification] |
+                    translate}}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

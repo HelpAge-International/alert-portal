@@ -38,7 +38,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   countryOffice: any;
   region: any;
   department: string;
-  position: number;
+  position: string;
   officeType: number;
   email: string;
   phone: string;
@@ -245,11 +245,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.showAlert();
       return;
     }
-    if (this.hideCountry) {
-      this.waringMessage = "Only staff with country office is working now, other type is still in progress"
-      this.showAlert();
-      return;
-    }
+    // if (this.hideCountry) {
+    //   this.waringMessage = "Only staff with country office is working now, other type is still in progress"
+    //   this.showAlert();
+    //   return;
+    // }
     console.log("submit");
     this.collectData();
   }
@@ -335,7 +335,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     //   staff.countryOffice = this.countryOffice.$key;
     // }
     staff.department = this.department;
-    staff.position = Number(this.position);
+    staff.position = this.position;
     staff.officeType = Number(this.officeType);
     staff.skill = this.staffSkills;
     staff.training = this.trainingNeeds;
@@ -348,10 +348,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (!this.hideCountry) {
       staffData["/staff/" + this.countryOffice.$key + "/" + uid + "/"] = staff;
     } else if (!this.hideRegion) {
-      staffData["/staff/globalUser/" + uid + "/"] = staff;
+      staffData["/staff/globalUser/" + this.uid + "/" + uid + "/"] = staff;
       staffData["/region/" + this.uid + "/" + this.region.$key + "/directorId"] = uid;
     } else {
-      staffData["/staff/globalUser/" + uid + "/"] = staff;
+      staffData["/staff/globalUser/" + this.uid + "/" + uid + "/"] = staff;
     }
 
     if (this.isEmailChange) {
