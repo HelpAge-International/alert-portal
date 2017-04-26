@@ -125,7 +125,7 @@ export enum Location {
   Indonesia = 2
 }
 
-export enum ResponsePlanSesctionSettings {
+export enum ResponsePlanSectionSettings {
   PlanDetails = 0,
   PlanContext = 1,
   BasicInformation = 2,

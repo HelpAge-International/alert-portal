@@ -1,4 +1,4 @@
-import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType, DurationType, ResponsePlanSesctionSettings} from "./Enums";
+import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType, DurationType} from "./Enums";
 /**
  * Created by Fei on 08/03/2017.
  */

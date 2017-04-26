@@ -3,7 +3,7 @@ import {Router} from "@angular/router";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
-import {HazardScenario} from "../../utils/Enums";
+import {HazardScenario, ResponsePlanSectionSettings} from "../../utils/Enums";
 import {Observable} from "rxjs";
 
 @Component({
@@ -17,6 +17,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyAdminUid: string;
   private systemAdminUid: string;
+
+  private responsePlanSettings = {};
+  private ResponsePlanSectionSettings = ResponsePlanSectionSettings;
 
   // Section 1/10
   private planName: string;
@@ -131,11 +134,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       if (auth) {
         this.uid = auth.uid;
         console.log("Admin uid: " + this.uid);
-
-        this.init();
+        this.getStaff();
 
         let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyAdminIds) => {
           this.agencyAdminUid = agencyAdminIds[0].$key;
+          this.getSettings();
 
           let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorAgency/" + this.agencyAdminUid + '/systemAdmin').subscribe((systemAdminIds) => {
             this.systemAdminUid = systemAdminIds[0].$key;
@@ -261,8 +264,18 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   /**
    * Private functions
    */
-  private init() {
-    this.getStaff();
+  private getSettings() {
+    if (this.agencyAdminUid) {
+      this.responsePlanSettings = {};
+      let subscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminUid + '/responsePlanSettings/sections')
+        .subscribe(list => {
+          list.forEach(item => {
+            this.responsePlanSettings[item.$key] = item.$value;
+          });
+        });
+      this.subscriptions.add(subscription);
+    }
+    console.log(this.responsePlanSettings);
   }
 
   private getStaff() {
