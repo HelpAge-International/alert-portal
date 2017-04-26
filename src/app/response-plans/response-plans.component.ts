@@ -15,6 +15,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private uid: string;
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
+  private notes: FirebaseListObservable<any[]>;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -62,10 +63,23 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
+
+    this.notes = this.af.database.list(Constants.APP_STATUS + "/note/" + id)
   }
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+  }
+
+  getName(id) {
+    let name = "";
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
+      .subscribe(user => {
+        name = user.firstName + " " + user.lastName;
+      });
+    this.subscriptions.add(subscription);
+
+    return name;
   }
 
   goToNewOrEditPlan() {

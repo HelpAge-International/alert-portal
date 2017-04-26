@@ -177,13 +177,13 @@
                   <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">Close</button>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" *ngFor="let note of notes | async">
                 <div class="col-3 text-left">
-                  13 May 2016
+                  {{note.time | date:'dd MMM yy'}}
                 </div>
                 <div class="col-9">
-                  <div>test content test content sdfsed fsdfsd fsdf sdf sdffs wefeswf esfsefes feswf</div>
-                  <div><b>by Person Name</b></div>
+                  <div>{{note.content}}</div>
+                  <div><b>by {{getName(note.uploadBy)}}</b></div>
                 </div>
               </div>
 
