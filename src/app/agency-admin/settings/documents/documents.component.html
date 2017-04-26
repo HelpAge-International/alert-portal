@@ -1,20 +1,45 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+<div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Export selected documents</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>You are about to export <strong>17 documents</strong> with a total size of <strong>24MB</strong> are you sure you wish to continue?</p></div>
+      </div>
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Confirm</button>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
 
     <app-settings-menu></app-settings-menu>
-    <div class="Sub-header-title__wrap">
+        <div class="Sub-header-title__wrap">
             <h2>Documents</h2>
-            <button type="button" class="btn btn-outline-primary Inline-editable--enable">Select documents</button>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable"  *ngIf="exporting" (click)="cancelExportDocuments($event)">Cancel</button>
+            <button type="button" class="btn btn-primary Inline-editable--enable" data-toggle="modal" data-target="#export_documents" *ngIf="exporting" (click)="exportSelectedDocuments($event)">Export selected documents</button>
+            <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!exporting" (click)="selectDocuments($event)">Select documents</button>
         </div>
         <div class="row align-items-center Filter-form System-admin--form-wrap">
             <div class="col-lg-1 col-md-1">
                 Filter:
             </div>
             <div class="col-lg-2 col-md-2">
-
+                
 <select name="Country" id="Country" class="form-control" onChange="">
     <option value="" disabled selected hidden>All countries</option>
   <option value="AF">Afghanistan</option>
@@ -269,9 +294,12 @@
 </select>
 
             </div>
+
+
             <div class="col-lg-2 col-md-3">
+
                 <select class="form-control" id="Documents">
-                    <option value="" disabled selected hidden>All documents</option>
+                   <option value="" disabled selected hidden>All documents</option>
                     <option value="MPA">MPA</option>
                     <option value="APA">APA</option>
                     <option value="Response Plan">Response Plan</option>
@@ -291,175 +319,49 @@
         </div>
 
         <div class="Ribbon__section__wrap Spaced">
-        <div class="Accordion--b-white Accordion__hide-links">
-            <div class="row align-items-center no-gutters">
-                <div class="col-sm-12">
-                    <h2>Phillipines</h2>
-                    <a data-toggle="collapse" href="#collapseOne" aria-expanded="false" class="Hide-all">Hide all</a>
-                    <a data-toggle="collapse" href="#collapseOne" aria-expanded="false" class="Show-all">Show all</a>
-                </div>
-            </div>
-        </div>
-        <div class="Accordion__Content collapse" id="collapseOne">
-                <div class="row Line-row Small-spaced Header">
-                <div class="col-lg-2 col-md-1">Module</div>
-                <div class="col-lg-3 col-md-3">Title</div>
-                <div class="col-lg-2 col-md-3">Name</div>
-                <div class="col-lg-1 col-md-1">Size</div>
-                <div class="col-lg-2 col-md-2">Uploaded By</div>
-                <div class="col-lg-1 col-md-2">Date</div>
-            </div>
+        <template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
+        
+          <div class="Accordion--b-white Accordion__hide-links" >
+              <div class="row align-items-center no-gutters">
+                  <div class="col-sm-1 text-center" *ngIf="exporting">
+                      <label class="form-check-label">
+                          <input class="form-check-input" type="checkbox" id="check_{{country.$key}}" (change)="countryDocsSelected(country.$key, $event.target)" value="">
+                      </label>
+                  </div>
+                  <div class="col-sm-11">
+                      <h2>{{country.$key}}</h2>
+                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all">Hide all</a>
+                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false"class="Show-all">Show all</a>
+                  </div>
+              </div>
+          </div>
+          <div class="Accordion__Content collapse" id="collapse{{country.$key}}">
+                  <div class="row Line-row Small-spaced Header">
+                  <div class="col-lg-1 col-md-1" *ngIf="exporting"></div>
+                  <div class="col-lg-1 col-md-1">Module</div>
+                  <div class="col-lg-3 col-md-3">Title</div>
+                  <div class="col-lg-2 col-md-2">Name</div>
+                  <div class="col-lg-1 col-md-1">Size</div>
+                  <div class="col-lg-2 col-md-2">Uploaded By</div>
+                  <div class="col-lg-1 col-md-2">Date</div>
+              </div>
 
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Establish Emergency Response Team/Structure (assign people…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Develop volunteer’s programme/framework on emergencies…</div>
-                <div class="col-lg-2 col-md-3">hurricaneresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">01/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">Response plan: Typhoon</div>
-                <div class="col-lg-3 col-md-3">Rapid response health, shelter and cash project to 6,000 typho…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Establish Emergency Response Team/Structure (assign people…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-        </div>
-
-        <div class="Ribbon__section__wrap Spaced">
-        <div class="Accordion--b-white Accordion__hide-links">
-            <div class="row align-items-center no-gutters">
-                <div class="col-sm-12">
-                    <h2>Malaysia</h2>
-                    <a data-toggle="collapse" href="#collapseTwo" aria-expanded="false" class="Hide-all">Hide all</a>
-                    <a data-toggle="collapse" href="#collapseTwo" aria-expanded="false" class="Show-all">Show all</a>
-                </div>
-            </div>
-        </div>
-        <div class="Accordion__Content collapse" id="collapseTwo">
-                <div class="row Line-row Small-spaced Header">
-                <div class="col-lg-2 col-md-1">Module</div>
-                <div class="col-lg-3 col-md-3">Title</div>
-                <div class="col-lg-2 col-md-3">Name</div>
-                <div class="col-lg-1 col-md-1">Size</div>
-                <div class="col-lg-2 col-md-2">Uploaded By</div>
-                <div class="col-lg-1 col-md-2">Date</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Establish Emergency Response Team/Structure (assign people…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Develop volunteer’s programme/framework on emergencies…</div>
-                <div class="col-lg-2 col-md-3">hurricaneresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">01/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">Response plan: Typhoon</div>
-                <div class="col-lg-3 col-md-3">Rapid response health, shelter and cash project to 6,000 typho…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Establish Emergency Response Team/Structure (assign people…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-        </div>
-
-
-        <div class="Ribbon__section__wrap Spaced">
-        <div class="Accordion--b-white Accordion__hide-links">
-            <div class="row align-items-center no-gutters">
-                <div class="col-sm-12">
-                    <h2>Indonesia</h2>
-                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">Hide all</a>
-                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all">Show all</a>
-                </div>
-            </div>
-        </div>
-        <div class="Accordion__Content collapse" id="collapseThree">
-                <div class="row Line-row Small-spaced Header">
-                <div class="col-lg-2 col-md-1">Module</div>
-                <div class="col-lg-3 col-md-3">Title</div>
-                <div class="col-lg-2 col-md-3">Name</div>
-                <div class="col-lg-1 col-md-1">Size</div>
-                <div class="col-lg-2 col-md-2">Uploaded By</div>
-                <div class="col-lg-1 col-md-2">Date</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Establish Emergency Response Team/Structure (assign people…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Develop volunteer’s programme/framework on emergencies…</div>
-                <div class="col-lg-2 col-md-3">hurricaneresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">01/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">Response plan: Typhoon</div>
-                <div class="col-lg-3 col-md-3">Rapid response health, shelter and cash project to 6,000 typho…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-
-            <div class="row Line-row Small-spaced">
-                <div class="col-lg-2 col-md-1">MPA</div>
-                <div class="col-lg-3 col-md-3">Establish Emergency Response Team/Structure (assign people…</div>
-                <div class="col-lg-2 col-md-3">typhoonresponse.pdf</div>
-                <div class="col-lg-1 col-md-1">PDF</div>
-                <div class="col-lg-2 col-md-2">Jack Thompson</div>
-                <div class="col-lg-2 col-md-2">02/02/2017</div>
-            </div>
-        </div>
+              <div class="row Line-row Small-spaced">
+                  <template ngFor let-doc [ngForOf]="country.docs" let-docIdx="index">  
+                    <div class="col-lg-1 col-md-1 text-center" *ngIf="exporting">
+                        <label class="form-check-label">
+                            <input class="form-check-input check_{{country.$key}}" name="" type="checkbox" id="" value="">
+                        </label>
+                    </div>
+                    <div class="col-lg-1 col-md-1">{{DOCUMENT_TYPE[doc.module] | translate}}</div>
+                    <div class="col-lg-3 col-md-3">{{doc.title}}</div>
+                    <div class="col-lg-2 col-md-2">{{doc.fileName}}</div>
+                    <div class="col-lg-1 col-md-1">{{doc.size}}</div>
+                    <div class="col-lg-2 col-md-2">{{doc.uploadedBy}}</div>
+                    <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>                    
+                  </template>
+              </div>
+          </div>
+        </template>
     </div>
 </div>
