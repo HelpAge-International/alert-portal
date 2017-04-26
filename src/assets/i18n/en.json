@@ -9,6 +9,8 @@
     "CONTINUE": "Continue",
     "COMPLETE": "Complete",
     "INCOMPLETE": "Incomplete",
+    "OF": "of",
+    "REMOVE": "Remove",
     "MALE": "Male",
     "FEMALE": "Female",
     "TITLE": "Title",
@@ -43,6 +45,7 @@
     "CURRENT_PASSWORD": "Your current password",
     "CONFIRM_PASSWORD": "Confirm your password",
     "NEW_PASSWORD": "New password",
+    "PLEASE_SELECT": "Please select",
     "PLEASE_SPECIFY": "Please specify",
     "DESCRIPTION": "Description",
     "YES": "Yes",
@@ -471,7 +474,7 @@
       },
       "PLAN_CONTEXT": {
         "TITLE_TEXT": "Plan Context",
-        "SUMMARIZE_SECNARIO_TEXT": "Summarize the scenario crisis event and how is it likely to develop over the first month",
+        "SUMMARIZE_SCENARIO_TEXT": "Summarize the scenario crisis event and how is it likely to develop over the first month",
         "IMPACT_OF_CRISIS_TEXT": "Explain the impact of the crisis on people you want to help",
         "AVAILABILITY_OF_FUNDS_TEXT": "Explain the availability of funds your agency can access for this crisis"
       },
@@ -480,11 +483,12 @@
         "WHAT_SECTORS?": "What sectors will the intervention’s activities most relate to?",
         "PRESENCE_IN_THE_COUNTRY": "Presence in the country before project",
         "CURRENT_PROGRAMMES": "Current programmes",
-        "PRE-EXISTING-PARTNER": "Pre-existing partner",
+        "PRE-EXISTING_PARTNER": "Pre-existing partner",
         "NO_PRE-EXISTING_PRESENCE": "No pre-existing presence",
         "METHOD_OF_IMPLEMENTATION": "Method of implementation",
         "DIRECTLY_THROUGH_STAFF": "Directly through field staff",
-        "WORKING_WITH_PARTNERS": "Working with partners"
+        "WORKING_WITH_PARTNERS": "Working with partners",
+        "REMOVE_FROM_THIS_PLAN": "Remove from this plan"
       },
       "ACTIVITY_SUMMARY": {
         "TITLE_TEXT": "Activity Summary",
@@ -509,6 +513,8 @@
       },
       "ACTIVITIES": {
         "TITLE_TEXT": "Activities",
+        "VIEW_THIS_ACTIVITY": "View this activity",
+        "REMOVE_THIS_ACTIVITY": "Remove this activity",
         "PLANNED_ACTIVITY_TEXT?": "What is the planned activity?",
         "PLANNED_OUTPUTS_TEXT": "Planned outputs for this activity",
         "INDICATOR_TEXT?": "Provide one indicator (KPI) to capture the effects of this activity",
@@ -533,9 +539,7 @@
         "TITLE_TEXT": "Adjust Beneficiaries for Double Counting",
         "CONFIRM_BENEFICIARIES_TEXT": "Please confirm or adjust the total number of beneficiaries to prevent double counting of individual beneficiaries",
         "TOTAL_BENEFICIARIES": "Total beneficiaries",
-        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting",
-        "PHOTOGRAPHIC": "Photographic",
-        "VIDEO": "Video"
+        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting"
       },
       "BUDGET": {
         "TITLE_TEXT": "Budget",
@@ -551,9 +555,13 @@
           "STAFFING_AND_SUPPORT": "Staffing & support",
           "MON_AND_EVALUATION": "Monitoring & evaluation",
           "CAPITAL_ITEMS": "Capital Items",
-          "MANAGEMENT_SUPPORT": "Management support",
-          "OTHER": "Other"
+          "MANAGEMENT_SUPPORT": "Management support"
         }
+      },
+      "ADD_PARTNER": {
+        "SELECT_A_PARTNER": "Select a partner",
+        "ADD_A_PARTNER_ORGANISATION": "Add a partner organisation",
+        "ADD_ANOTHER_PARTNER": "Add another partner to this plan"
       }
     },
     "HAZARD_SCENARIOS": {
@@ -578,7 +586,7 @@
     "FOOD_SEC_AND_LIVELIHOOD": "Food security & livelihoods",
     "PROTECTION": "Protection",
     "EDUCATION": "Education",
-    "CAMP MANAGEMENT": "Camp management",
+    "CAMP_MANAGEMENT": "Camp management",
     "OTHER": "Other"
   }
 }
