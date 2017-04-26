@@ -14,12 +14,12 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 	RESPONSE_PLANS_SECTION_SETTINGS = Constants.RESPONSE_PLANS_SECTION_SETTINGS;
 
 	private subscriptions: RxHelper;
-	private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
+	private uid: string = "";
 
 	private sections: any[] = [];
 	private approvals: any[] = [];
 	private saved: boolean = false;
-	private alertMessage: string = "Success message";
+	private alertMessage: string = "Message";
 	private alertSuccess: boolean = true;
 	private alertShow: boolean = false;
 
@@ -30,7 +30,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 	ngOnInit() {
 		let subscription = this.af.auth.subscribe(auth => {
 			if (auth) {
-				// this.uid = auth.uid; //TODO remove comment
+				this.uid = auth.uid;
 				this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/responsePlanSettings/sections').subscribe(_ => {
 					_.map(section => {
 						this.sections[section.$key] = section;
@@ -73,8 +73,15 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 	}
 
 	private cancelChanges() {
+		this.alertSuccess = false;
 		this.alertShow = true;
 	  this.ngOnInit();
+	}
+
+	onAlertHidden(hidden: boolean) {
+		this.alertShow = !hidden;
+  		this.alertSuccess = true;
+		this.alertMessage = "";
 	}
 
 	private saveChanges(){
@@ -88,7 +95,14 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 
 	  	this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/responsePlanSettings/sections')
 	  	.set(sectionItems)
-	  	.then(_ => this.saved = true)
+	  	.then(_ => {
+	  		if (!this.alertShow){
+		  		this.saved = true;
+		  		this.alertSuccess = true;
+				this.alertShow = true;
+				this.alertMessage = "Response Plan Settings succesfully saved!"	  			
+	  		}
+	  	})
 	  	.catch(err => console.log(err, 'You do not have access!'));
 
 	  	var approvalItems = {};
@@ -101,7 +115,14 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 
 	  	this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/responsePlanSettings/approvalHierachy')
 	  	.set(approvalItems)
-	  	.then(_ => this.saved = true)
+	  	.then(_ => {
+	  		if (!this.alertShow){
+		  		this.saved = true;
+		  		this.alertSuccess = true;
+				this.alertShow = true;
+				this.alertMessage = "Response Plan Settings succesfully saved!"	  			
+	  		}
+	  	})
 	  	.catch(err => console.log(err, 'You do not have access!'));
 	}
 

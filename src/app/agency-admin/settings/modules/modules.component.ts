@@ -18,10 +18,14 @@ export class ModulesComponent implements OnInit, OnDestroy {
   private Private = Privacy.Private;
   private Network = Privacy.Network;
 
-  private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
+  private uid: string = "";
   private subscriptions: RxHelper;
   private modules: any[] = [];
   private saved: boolean = false;
+
+  private alertMessage: string = "Message";
+  private alertSuccess: boolean = true;
+  private alertShow: boolean = false;
 
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
@@ -30,11 +34,10 @@ export class ModulesComponent implements OnInit, OnDestroy {
   ngOnInit() {
   	let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        // this.uid = auth.uid; //TODO remove comment
+        this.uid = auth.uid;
         let skillsSubscription = this.af.database.list(Constants.APP_STATUS+'/module/' + this.uid).subscribe(_ => {
         	this.modules = _;
         	_.map(module => {
-        		console.log(module.privacy);
         	});
         });
 
@@ -83,9 +86,22 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   	this.af.database.list(Constants.APP_STATUS+'/module/')
   	.update(this.uid, moduleItems)
-  	.then(_ => this.saved = true)
+  	.then(_ => {
+      if (!this.alertShow){
+        this.saved = true;
+        this.alertSuccess = true;
+        this.alertShow = true;
+        this.alertMessage = "Module Settings succesfully saved!"
+      }
+    })
   	.catch(err => console.log(err, 'You do not have access!'));
   }
 
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
+  }
 
 }

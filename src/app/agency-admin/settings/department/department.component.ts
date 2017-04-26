@@ -14,11 +14,12 @@ import Promise = firebase.Promise;
 })
 export class DepartmentComponent implements OnInit, OnDestroy {
 
-  private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
+  private uid: string = "";
   private departments: FirebaseListObservable<any>;
   private subscriptions: RxHelper;
   private deleting: boolean = false;
   private editing: boolean = false;
+  private saved: boolean = false;
   private departmentName: string = "";
   private deleteCandidates: any = {};
   private depts: any = {};
@@ -27,6 +28,10 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private newDepartmentErrorInactive: boolean = true;
   private newDepartmentErrorMessage: string;
 
+  private alertMessage: string = "Message";
+  private alertSuccess: boolean = true;
+  private alertShow: boolean = false;  
+
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
@@ -34,7 +39,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        this.uid = auth.uid; //TODO remove comment
+        this.uid = auth.uid;
 
         let deptsSubscription = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments').subscribe(_ => {
           this.depts = _;
@@ -56,7 +61,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.log('Unable to releaseAll');
     }
-
   }
 
   private navigateToLogin() {
@@ -73,8 +77,20 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedDepartments(event) {
+    this.deleting = !this.deleting;
+
     for (var item in this.deleteCandidates)
-      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item).remove();
+      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item)
+    .remove()
+    .then(_ => {
+      if (!this.alertShow){
+        this.saved = true;
+        this.alertSuccess = true;
+        this.alertShow = true;
+        this.alertMessage = "Departments succesfully removed!"
+      }
+    })
+    .catch(err => console.log(err, 'You do not have access!'));
   }
 
   onDepartmentSelected(department) {
@@ -108,7 +124,17 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
       var newDepartment = {};
       newDepartment[this.editDepts[dept]["new_key"]] = this.editDepts[dept]["value"];
-      departments.update(newDepartment);
+      departments
+      .update(newDepartment)
+      .then(_ => {
+        if (!this.alertShow){
+          this.saved = true;
+          this.alertSuccess = true;
+          this.alertShow = true;
+          this.alertMessage = "Departments succesfully saved!"
+        }
+      })
+      .catch(err => console.log(err, 'You do not have access!'));
     }
   }
 
@@ -126,7 +152,17 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
       var newDepartment = {};
       newDepartment[this.departmentName] = false;
-      departments.update(newDepartment);
+      departments
+      .update(newDepartment)
+      .then(_ => {
+        if (!this.alertShow){
+          this.saved = true;
+          this.alertSuccess = true;
+          this.alertShow = true;
+          this.alertMessage = "New department succesfully created!"
+        }
+      })
+      .catch(err => console.log(err, 'You do not have access!'));
       this.departmentName = "";
 
     } else {
@@ -153,10 +189,18 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
     if (!(this.departmentName)) {
       this.alerts[this.departmentName] = true;
-      this.newDepartmentErrorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_NAME";
+      this.alertSuccess = false;
+      this.alertShow = true;
+      this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_NAME";
       return false;
     }
     return true;
+  }
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
   }
 
 }
