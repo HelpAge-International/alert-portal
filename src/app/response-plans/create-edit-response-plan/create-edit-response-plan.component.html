@@ -185,7 +185,7 @@
             <div class="col-lg-6 col-md-6">
               <label for="O-relate">{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
               <input type="text" class="form-control" id="O-relate" placeholder="Type here"
-                     [(ngModel)]="otherInterventionActivity">
+                     [(ngModel)]="otherRelatedSector">
             </div>
           </div>
 
@@ -355,7 +355,7 @@
             <div class="col-lg-1 col-md-2 col-sm-2 ">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOUSEHOLDS" | translate}}
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-2  text-bold">= <span>{{beneficiaries}}</span>
+            <div class="col-lg-3 col-md-3 col-sm-2  text-bold">= <span>{{numOfBeneficiaries}}</span>
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.BENEFICIARIES" | translate}}
             </div>
           </div>
@@ -425,7 +425,7 @@
                 <label for="R-success">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.DESCRIBE_THE_RISKS_TEXT"
                   | translate}}</label>
                 <textarea id="R-success" cols="30" rows="5" class="form-control"
-                          [(ngModel)]="riskManagementText"></textarea>
+                          [(ngModel)]="riskManagementPlanText"></textarea>
               </div>
             </div>
           </div>
@@ -625,7 +625,7 @@
                 <label for="T-success">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.DESCRIBE_MON_ACC_LEA" |
                   translate}}</label>
                 <textarea id="T-success" cols="30" rows="5" class="form-control"
-                          [(ngModel)]="mALSystemsText"></textarea>
+                          [(ngModel)]="mALSystemsDescriptionText"></textarea>
               </div>
             </div>
           </div>
@@ -637,10 +637,10 @@
               </div>
               <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="Y-vis"
-                       [checked]="doIntentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">Yes</label>
+                       [checked]="intentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">Yes</label>
               <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="N-vis"
-                       [checked]="!doIntentToVisuallyDocument" (click)="noSelectedForVisualDocument()">No</label>
+                       [checked]="!intentToVisuallyDocument" (click)="noSelectedForVisualDocument()">No</label>
             </div>
           </div>
 
@@ -702,7 +702,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{beneficiaries}}</div>
+                    <div class="col-12">{{numOfBeneficiaries}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemaleLessThan18">
@@ -714,7 +714,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{beneficiaries}}</div>
+                    <div class="col-12">{{numOfBeneficiaries}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemale18To50">
@@ -726,7 +726,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{beneficiaries}}</div>
+                    <div class="col-12">{{numOfBeneficiaries}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control"
@@ -750,7 +750,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{beneficiaries}}</div>
+                    <div class="col-12">{{numOfBeneficiaries}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMaleLessThan18">
@@ -762,7 +762,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{beneficiaries}}</div>
+                    <div class="col-12">{{numOfBeneficiaries}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMale18To50"></div>
@@ -773,7 +773,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{beneficiaries}}</div>
+                    <div class="col-12">{{numOfBeneficiaries}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMalegreaterThan50">
@@ -1010,7 +1010,7 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.FINISH" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)" (click)="onSubmit()">{{"GLOBAL.FINISH" |
               translate}}
             </div>
           </div>

@@ -3,7 +3,10 @@ import {Router} from "@angular/router";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
-import {HazardScenario, ResponsePlanSectionSettings} from "../../utils/Enums";
+import {
+  HazardScenario, ResponsePlanSectionSettings, ResponsePlanSectors,
+  PresenceInTheCountry, MethodOfImplementation, MediaFormat
+} from "../../utils/Enums";
 import {Observable} from "rxjs";
 
 @Component({
@@ -20,6 +23,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private responsePlanSettings = {};
   private ResponsePlanSectionSettings = ResponsePlanSectionSettings;
+  private totalSections: number;
 
   // Section 1/10
   private planName: string;
@@ -43,37 +47,41 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   ];
 
   // Section 2/10
+  private scenarioCrisisList: string[] = [];
+  private impactOfCrisisList: string[] = [];
+  private availabilityOfFundsList: string[] = [];
 
   // Section 3/10
-
-  private otherInterventionActivity: string;
+  private sectorsRelatedTo: ResponsePlanSectors[] = [];
+  private otherRelatedSector: string;
+  private presenceInTheCountry: PresenceInTheCountry;
+  private methodOfImplementation: MethodOfImplementation;
   private isDirectlyThroughFieldStaff: boolean = true;
+  private partners: string[]; // TODO - Update to list of Partner Organisations
 
   // Section 4/10
-
   private proposedResponseText: string;
   private progressOfActivitiesPlanText: string;
   private coordinationPlanText: string;
 
   // Section 5/10
-
   private numOfPeoplePerHouseHold: number = 0;
   private numOfHouseHolds: number = 0;
-  private beneficiaries: number = 0;
+  private numOfBeneficiaries: number = 0;
+  private vulnerableGroups: string[] = [];
+  private targetPopulationInvolmentList: string[] = [];
 
   // Section 6/10
-
-  private riskManagementText: string;
+  private riskManagementPlanText: string;
 
   // Section 7/10
 
   // Section 8/10
-
-  private mALSystemsText: string;
-  private doIntentToVisuallyDocument: boolean = true;
+  private mALSystemsDescriptionText: string;
+  private intentToVisuallyDocument: boolean = true;
+  private mediaFormat: MediaFormat;
 
   // Section 9/10
-
   private adjustedFemaleLessThan18: number = 0;
   private adjustedFemale18To50: number = 0;
   private adjustedFemalegreaterThan50: number = 0;
@@ -82,7 +90,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private adjustedMalegreaterThan50: number = 0;
 
   // Section 10/10
-
   private totalInputs: number = 0;
   private totalBToH: number = 0;
   private totalBudget: number = 0;
@@ -128,8 +135,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    // TODO - Check settings to show and hide sections
-
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
@@ -160,6 +165,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+  }
+
+  onSubmit() {
+
+
   }
 
   /**
@@ -203,8 +213,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   calculateBeneficiaries() {
-    this.beneficiaries = this.numOfPeoplePerHouseHold * this.numOfHouseHolds;
-    console.log("Beneficiaries ----" + this.beneficiaries);
+    this.numOfBeneficiaries = this.numOfPeoplePerHouseHold * this.numOfHouseHolds;
+    console.log("Beneficiaries ----" + this.numOfBeneficiaries);
   }
 
   /**
@@ -220,11 +230,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   yesSelectedForVisualDocument() {
-    this.doIntentToVisuallyDocument = true;
+    this.intentToVisuallyDocument = true;
   }
 
   noSelectedForVisualDocument() {
-    this.doIntentToVisuallyDocument = false;
+    this.intentToVisuallyDocument = false;
   }
 
   /**
@@ -257,13 +267,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   goBack() {
-    // TODO - Update to go back to add Response Plan
     this.router.navigateByUrl('response-plans');
   }
 
   /**
    * Private functions
    */
+
   private getSettings() {
     if (this.agencyAdminUid) {
       this.responsePlanSettings = {};

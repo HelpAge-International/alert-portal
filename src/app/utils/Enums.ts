@@ -125,6 +125,9 @@ export enum Location {
   Indonesia = 2
 }
 
+/**
+ * Response Plans
+ */
 export enum ResponsePlanSectionSettings {
   PlanDetails = 0,
   PlanContext = 1,
@@ -136,4 +139,38 @@ export enum ResponsePlanSectionSettings {
   MonitoringAccLearning = 7,
   DoubleCounting = 8,
   Budget = 9
+}
+
+export enum ResponsePlanSectors {
+  wash = 0,
+  health = 1,
+  shelter = 2,
+  nurtrition = 3,
+  foodSecurityAndLivelihoods = 4,
+  protection = 5,
+  education = 6,
+  campManagement = 7,
+  other = 8,
+}
+
+export enum PresenceInTheCountry {
+  currentProgrammes = 0,
+  preExistingPartner = 1,
+  noPreExistingPresence = 2
+}
+
+export enum MethodOfImplementation {
+  fieldStaff = 0,
+  withPartner = 1,
+}
+
+export enum MediaFormat {
+  photographic = 0,
+  video = 1,
+  photographicAndVideo = 2,
+}
+
+export enum Gender {
+  male = 0,
+  feMale = 1,
 }
