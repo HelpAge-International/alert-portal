@@ -19,6 +19,7 @@ export class ModelAgency {
   public website:string;
   public remainApproved:number;
   public sentmessages:{};
+  public notificationSetting: any = [];
 
   constructor(name:string) {
     this.name = name;
