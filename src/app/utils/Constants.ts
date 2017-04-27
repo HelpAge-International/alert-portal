@@ -8,7 +8,7 @@ export class Constants {
   static ALERT_DURATION: number = 5000;
 
   /*PATHS*/
-  static APP_STATUS = "/sand";
+  static APP_STATUS = "/uat";
 
   static LOGIN_PATH = "/login";
   //system admin
@@ -121,7 +121,7 @@ export class Constants {
 
   static DOCUMENT_TYPE = [
     "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.MPA",
-    "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.APA",    
+    "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.APA",
     "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.RESPONSE_PLAN",
     "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.HAZARD_DOCUMENT"
   ];
