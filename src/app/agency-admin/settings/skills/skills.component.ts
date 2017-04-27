@@ -14,7 +14,7 @@ import {SkillType} from "../../../utils/Enums";
 })
 export class SkillsComponent implements OnInit, OnDestroy {
 
-  private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
+  private uid: string = "";
   private skillsObservable: FirebaseListObservable<any>;
   private subscriptions: RxHelper;
   private deleting: boolean = false;
@@ -27,6 +27,10 @@ export class SkillsComponent implements OnInit, OnDestroy {
   private SupportSkill = SkillType.Support;
   private TechSkill = SkillType.Tech;
 
+  private alertMessage: string = "Message";
+  private alertSuccess: boolean = true;
+  private alertShow: boolean = false;
+
   constructor(private af: AngularFire, private router: Router) {
     this.subscriptions = new RxHelper;
   }
@@ -35,7 +39,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
   ngOnInit() {
   	let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        // this.uid = auth.uid; //TODO remove comment
+        this.uid = auth.uid;
         let skillsSubscription = this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/skills').subscribe(_ => {
         	_.filter(skill => skill.$value).map(skill => {
         		this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/skill/', {
@@ -86,9 +90,19 @@ export class SkillsComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedSkills(event){
+    this.deleting = !this.deleting;
   	for(let item in this.deleteCandidates){
   		this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills/' + item).remove();
-  		this.af.database.object(Constants.APP_STATUS + '/skill/' + item).remove();
+  		this.af.database.object(Constants.APP_STATUS + '/skill/' + item)
+      .remove()
+      .then(_ => {
+        if (!this.alertShow){
+          this.alertSuccess = true;
+          this.alertShow = true;
+          this.alertMessage = "Skills succesfully removed!"
+        }
+      })
+      .catch(err => console.log(err, 'You do not have access!'));
   	}
   }
 
@@ -113,11 +127,26 @@ export class SkillsComponent implements OnInit, OnDestroy {
   	this.editing = !this.editing;
 
   	for (let skill in this.editedSkills)
-  		this.af.database.object(Constants.APP_STATUS + '/skill/' + skill).update(this.editedSkills[skill]);	
+  		this.af.database.object(Constants.APP_STATUS + '/skill/' + skill)
+        .update(this.editedSkills[skill])
+        .then(_ => {
+          if (!this.alertShow){
+            this.alertSuccess = true;
+            this.alertShow = true;
+            this.alertMessage = "Skills succesfully saved!"
+          }
+        })
+        .catch(err => console.log(err, 'You do not have access!'));
   }
 
   setSkillValue(prop, value){
   	this.editedSkills[prop] = {name: value};
+  }
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
   }
 
   addSkill(event, type) {
@@ -125,10 +154,19 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
   	this.af.database.list(Constants.APP_STATUS + '/skill/').push(
 			skill
-	).then((item) => { 
-		let key = item.key;
-		let agencySkills = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills/' + key).set(true);
-	});
+  	).then((item) => { 
+  		let key = item.key;
+  		let agencySkills = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/skills/' + key)
+      .set(true)
+      .then(_ => {
+        if (!this.alertShow){
+          this.alertSuccess = true;
+          this.alertShow = true;
+          this.alertMessage = "Skill succesfully added!"
+        }
+      })
+      .catch(err => console.log(err, 'You do not have access!'));
+  	});
 	
   	this.skillName = []; 	
   }

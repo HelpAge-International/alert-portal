@@ -423,7 +423,14 @@
         "MONITORING_ACC_LEARNING": "Monitoring, Accountability and Learning",
         "DOUBLE_COUNTING": "Adjust Beneficiaries for Double Counting",
         "BUDGET": "Budget"
+      },
+      "DOCUMENT_TYPE": {
+        "MPA": "MPA",
+        "APA": "APA",
+        "RESPONSE_PLAN": "Response Plan",
+        "HAZARD_DOCUMENT": "Hazard Document"
       }
+
     }
   },
   "DIALOG": {

@@ -17,11 +17,15 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
   private durations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-  private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
+  private uid: string = "";
   private subscriptions: RxHelper;
   private countryOfficesSubscriptions: RxHelper;
   private settings: any[] = [];
   private saved: boolean = false;
+
+  private alertMessage: string = "";
+  private alertSuccess: boolean = true;
+  private alertShow: boolean = false;  
 
   private riskMonitorShowLogForFreq: Frequency = new Frequency({value: -1, type: -1});
   private riskMonitorHazardFreq: Frequency = new Frequency({value: -1, type: -1});
@@ -36,7 +40,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
   	let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
-        // this.uid = auth.uid; //TODO remove comment
+        this.uid = auth.uid;
         this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/agency/' + this.uid + '/clockSettings/').subscribe(_ => {
         	_.map(setting => {
         		this.settings[setting.$key] = setting;
@@ -93,7 +97,12 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   	this.af.database.object(Constants.APP_STATUS+'/agency/' + this.uid + '/clockSettings/')
   	.set(this.settings)
   	.then(_ => {
-  		this.saved = true;
+  		if (!this.alertShow){
+        this.saved = true;
+        this.alertSuccess = true;
+        this.alertShow = true;
+        this.alertMessage = "Clock Settings succesfully saved!"          
+      }
   		try{
 	  		this.countryOfficesSubscriptions.releaseAll();
 	  	} catch(e){
@@ -102,6 +111,9 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   	})
   	.catch(err => {
   		console.log(err, 'Error occurred!');
+        this.alertSuccess = false;
+        this.alertShow = true;
+        this.alertMessage = "Error occurred!"          
   		try{
 	  		this.countryOfficesSubscriptions.releaseAll();
 	  	} catch(e){
@@ -110,6 +122,12 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   		
   	});
   	
+  }
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
   }
 
   private updateCountriesClockSettings() {

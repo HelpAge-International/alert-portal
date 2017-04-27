@@ -137,3 +137,10 @@ export enum ResponsePlanSesctionSettings {
   DoubleCounting = 8,
   Budget = 9
 }
+
+export enum DocumentType {
+  MPA = 0,
+  APA = 1,
+  ResponsePlan = 2,
+  Hazard = 3
+}

@@ -1,4 +1,4 @@
-import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType, DurationType, ResponsePlanSesctionSettings} from "./Enums";
+import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType, DurationType, ResponsePlanSesctionSettings, DocumentType} from "./Enums";
 /**
  * Created by Fei on 08/03/2017.
  */
@@ -117,6 +117,13 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING",
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.DOUBLE_COUNTING",
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET"
+  ];
+
+  static DOCUMENT_TYPE = [
+    "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.MPA",
+    "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.APA",    
+    "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.RESPONSE_PLAN",
+    "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.HAZARD_DOCUMENT"
   ];
 }
 

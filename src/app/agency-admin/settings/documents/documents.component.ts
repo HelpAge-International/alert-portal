@@ -11,9 +11,17 @@ import {RxHelper} from '../../../utils/RxHelper';
   styleUrls: ['./documents.component.css']
 })
 export class DocumentsComponent implements OnInit, OnDestroy {
+	MODULE_NAME = Constants.MODULE_NAME;
+	DOCUMENT_TYPE = Constants.DOCUMENT_TYPE;
 	private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
 	private subscriptions: RxHelper;
-	private saved: boolean = false;
+	private exporting: boolean = false;
+
+	private alertMessage: string = "Message";
+	private alertSuccess: boolean = true;
+	private alertShow: boolean = false;  	
+
+	private countries: any[] = [];
 
 	constructor(private af: AngularFire, private router: Router) {
 		this.subscriptions = new RxHelper;
@@ -23,10 +31,23 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 		let subscription = this.af.auth.subscribe(auth => {
 			if (auth) {
 			      // this.uid = auth.uid; //TODO remove comment
-			      this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/document/' + this.uid).subscribe(_ => {
-			      	_.map(doc => {
-			      		console.log(doc);
+			      this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/countryOffice/' + this.uid).subscribe(_ => {
+			      	this.countries = _;
+			      	Object.keys(this.countries).map(country => {
+			      		let key = this.countries[country].$key;
+			      		
+						this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/document/' + key).subscribe(_ => {
+							let docs = _;
+							Object.keys(docs).map(doc => {
+								let uploadedBy = docs[doc].uploadedBy;
+								this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/userPublic/' + uploadedBy).subscribe(_ => {
+									docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+								}));
+							});
+							this.countries[country]['docs'] = docs;
+						}));
 			      	});
+			      	
 			      }));
 
 			this.subscriptions.add(subscription);
@@ -55,5 +76,28 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 	}
 
 	private saveChanges(){
+	}
+
+	onAlertHidden(hidden: boolean) {
+		this.alertShow = !hidden;
+		this.alertSuccess = true;
+		this.alertMessage = "";
+	}
+
+	private cancelExportDocuments() {
+		this.exporting = !this.exporting;
+	}
+
+	private selectDocuments() {
+		this.exporting = !this.exporting;
+	}
+
+	private exportSelectedDocuments() {
+		this.exporting = !this.exporting;	
+	}
+
+	private countryDocsSelected(countryId, target) {
+		let id = target.id;
+  //   	$("." + id).prop("checked", this.checked);
 	}
 }
