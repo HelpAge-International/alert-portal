@@ -8,6 +8,7 @@ import {
   PresenceInTheCountry, MethodOfImplementation, MediaFormat
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
+import {ResponsePlan} from "../../model/responsePlan";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -23,14 +24,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private responsePlanSettings = {};
   private ResponsePlanSectionSettings = ResponsePlanSectionSettings;
-  private totalSections: number;
+  private totalSections: number = 0;
 
   // Section 1/10
-  private planName: string;
-  private geographicalLocation: string;
+  private planName: string = '';
+  private geographicalLocation: string = '';
   private staffMembers: FirebaseObjectObservable<any>[] = [];
-  private staffMemberSelected;
-  private hazardScenarioSelected = 0;
+  private staffMemberSelected: string = '';
+  private hazardScenarioSelected: number = 0;
   private HazardScenario = HazardScenario;
   private hazardScenariosList = [
     HazardScenario.HazardScenario0,
@@ -51,18 +52,33 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private impactOfCrisisList: string[] = [];
   private availabilityOfFundsList: string[] = [];
 
+  private MAX_BULLET_POINTS_VAL_1: number = 3;
+  private MAX_BULLET_POINTS_VAL_2: number = 5;
+
+  private summarizeScenarioBulletPointsCounter: number = 1;
+  private summarizeScenarioBulletPoints: number[] = [this.summarizeScenarioBulletPointsCounter];
+  private summarizeScenarioRemoveOptionInvisible: boolean = true;
+
+  private impactOfCrisisBulletPointsCounter: number = 1;
+  private impactOfCrisisBulletPoints: number[] = [this.impactOfCrisisBulletPointsCounter];
+  private impactOfCrisisRemoveOptionInvisible: boolean = true;
+
+  private availabilityOfFundsBulletPointsCounter: number = 1;
+  private availabilityOfFundsBulletPoints: number[] = [this.availabilityOfFundsBulletPointsCounter];
+  private availabilityOfFundsRemoveOptionInvisible: boolean = true;
+
   // Section 3/10
   private sectorsRelatedTo: ResponsePlanSectors[] = [];
-  private otherRelatedSector: string;
-  private presenceInTheCountry: PresenceInTheCountry;
-  private methodOfImplementation: MethodOfImplementation;
+  private otherRelatedSector: string = '';
+  private presenceInTheCountry: PresenceInTheCountry = PresenceInTheCountry.currentProgrammes;
+  private methodOfImplementation: MethodOfImplementation = MethodOfImplementation.fieldStaff;
   private isDirectlyThroughFieldStaff: boolean = true;
-  private partners: string[]; // TODO - Update to list of Partner Organisations
+  private partners: string[] = []; // TODO - Update to list of Partner Organisations
 
   // Section 4/10
-  private proposedResponseText: string;
-  private progressOfActivitiesPlanText: string;
-  private coordinationPlanText: string;
+  private proposedResponseText: string = '';
+  private progressOfActivitiesPlanText: string = '';
+  private coordinationPlanText: string = '';
 
   // Section 5/10
   private numOfPeoplePerHouseHold: number = 0;
@@ -72,14 +88,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private targetPopulationInvolmentList: string[] = [];
 
   // Section 6/10
-  private riskManagementPlanText: string;
+  private riskManagementPlanText: string = '';
 
   // Section 7/10
 
   // Section 8/10
-  private mALSystemsDescriptionText: string;
+  private mALSystemsDescriptionText: string = '';
   private intentToVisuallyDocument: boolean = true;
-  private mediaFormat: MediaFormat;
+  private mediaFormat: MediaFormat = MediaFormat.photographic;
 
   // Section 9/10
   private adjustedFemaleLessThan18: number = 0;
@@ -103,14 +119,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private foodSecAndLivelihoodsBudget: number = 0;
   private otherBudget: number = 0;
 
-  private waSHNarrative: string;
-  private healthNarrative: string;
-  private shelterNarrative: string;
-  private campManagementNarrative: string;
-  private educationNarrative: string;
-  private protectionNarrative: string;
-  private foodSecAndLivelihoodsNarrative: string;
-  private otherNarrative: string;
+  private waSHNarrative: string = '';
+  private healthNarrative: string = '';
+  private shelterNarrative: string = '';
+  private campManagementNarrative: string = '';
+  private educationNarrative: string = '';
+  private protectionNarrative: string = '';
+  private foodSecAndLivelihoodsNarrative: string = '';
+  private otherNarrative: string = '';
 
   private transportBudget: number = 0;
   private securityBudget: number = 0;
@@ -120,13 +136,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private capitalItemsBudget: number = 0;
   private managementSupportBudget: number = 0;
 
-  private transportNarrative: string;
-  private securityNarrative: string;
-  private logisticsAndOverheadsNarrative: string;
-  private staffingAndSupportNarrative: string;
-  private monitoringAndEvolutionNarrative: string;
-  private capitalItemsNarrative: string;
-  private managementSupportNarrative: string;
+  private transportNarrative: string = '';
+  private securityNarrative: string = '';
+  private logisticsAndOverheadsNarrative: string = '';
+  private staffingAndSupportNarrative: string = '';
+  private monitoringAndEvolutionNarrative: string = '';
+  private capitalItemsNarrative: string = '';
+  private managementSupportNarrative: string = '';
 
   private capitalsExist: boolean = true;
 
@@ -168,7 +184,52 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    console.log("Finish button pressed");
 
+    let newResponsePlan: ResponsePlan = new ResponsePlan;
+
+    newResponsePlan.planName = this.planName;
+    newResponsePlan.geographicalLocation = this.geographicalLocation;
+    newResponsePlan.planLead = this.staffMemberSelected;
+    newResponsePlan.hazardScenario = this.hazardScenarioSelected;
+
+    newResponsePlan.scenarioCrisisList = this.scenarioCrisisList;
+    newResponsePlan.impactOfCrisisList = this.impactOfCrisisList;
+    newResponsePlan.availabilityOfFundsList = this.availabilityOfFundsList;
+
+    newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
+    newResponsePlan.otherRelatedSector = this.otherRelatedSector;
+    newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
+    newResponsePlan.methodOfImplementation = this.methodOfImplementation;
+    newResponsePlan.partners = this.partners;
+
+    newResponsePlan.proposedResponse = this.proposedResponseText;
+    newResponsePlan.progressOfActivitiesPlan = this.progressOfActivitiesPlanText;
+    newResponsePlan.coordinationPlan = this.coordinationPlanText;
+
+    newResponsePlan.numOfBeneficiaries = this.numOfBeneficiaries;
+    newResponsePlan.vulnerableGroups = this.vulnerableGroups;
+    newResponsePlan.targetPopulationInvolmentList = this.targetPopulationInvolmentList;
+
+    newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
+
+    newResponsePlan.mALSystemsDescription = this.mALSystemsDescriptionText;
+    newResponsePlan.isMedia = this.intentToVisuallyDocument;
+    newResponsePlan.mediaFormat = this.mediaFormat;
+
+    newResponsePlan.totalSections = this.totalSections;
+
+    console.log("New Response Plan ----> " + newResponsePlan);
+
+
+    // If logged in as a Country admin
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.uid;
+
+    this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+      console.log("Response plan creation successful");
+    }).catch(error => {
+      console.log("Response plan creation unsuccessful with error --> " + error.message);
+    })
 
   }
 
@@ -195,6 +256,66 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   /**
    * Section 3/10
    */
+
+  addSummarizeScenarioBulletPoint() {
+
+    this.summarizeScenarioBulletPointsCounter++;
+    this.summarizeScenarioBulletPoints.push(this.summarizeScenarioBulletPointsCounter);
+    if (this.summarizeScenarioBulletPoints.length > 1) {
+      this.summarizeScenarioRemoveOptionInvisible = false;
+    }
+  }
+
+  removeSummarizeScenarioBulletPoint(bulletPoint) {
+
+    this.summarizeScenarioBulletPointsCounter--;
+    if (this.summarizeScenarioBulletPoints.length > 1) {
+      this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
+    }
+    if (this.summarizeScenarioBulletPoints.length == 1) {
+      this.summarizeScenarioRemoveOptionInvisible = true;
+    }
+  }
+
+  addImpactOfCrisisBulletPoint() {
+
+    this.impactOfCrisisBulletPointsCounter++;
+    this.impactOfCrisisBulletPoints.push(this.impactOfCrisisBulletPointsCounter);
+    if (this.impactOfCrisisBulletPoints.length > 1) {
+      this.impactOfCrisisRemoveOptionInvisible = false;
+    }
+  }
+
+  removeImpactOfCrisisBulletPoint(bulletPoint) {
+
+    this.impactOfCrisisBulletPointsCounter--;
+    if (this.impactOfCrisisBulletPoints.length > 1) {
+      this.impactOfCrisisBulletPoints = this.impactOfCrisisBulletPoints.filter(item => item !== bulletPoint);
+    }
+    if (this.impactOfCrisisBulletPoints.length == 1) {
+      this.impactOfCrisisRemoveOptionInvisible = true;
+    }
+  }
+
+  addAvailabilityOfFundsBulletPoint() {
+
+    this.availabilityOfFundsBulletPointsCounter++;
+    this.availabilityOfFundsBulletPoints.push(this.availabilityOfFundsBulletPointsCounter);
+    if (this.availabilityOfFundsBulletPoints.length > 1) {
+      this.availabilityOfFundsRemoveOptionInvisible = false;
+    }
+  }
+
+  removeAvailabilityOfFundsBulletPoint(bulletPoint) {
+
+    this.availabilityOfFundsBulletPointsCounter--;
+    if (this.availabilityOfFundsBulletPoints.length > 1) {
+      this.availabilityOfFundsBulletPoints = this.availabilityOfFundsBulletPoints.filter(item => item !== bulletPoint);
+    }
+    if (this.availabilityOfFundsBulletPoints.length == 1) {
+      this.availabilityOfFundsRemoveOptionInvisible = true;
+    }
+  }
 
   directMethodOfImplementationSelected() {
     this.isDirectlyThroughFieldStaff = true;

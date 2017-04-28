@@ -5,7 +5,6 @@ import {Constants} from "../../../utils/Constants";
 import {Country, Currency} from "../../../utils/Enums";
 import {RxHelper} from "../../../utils/RxHelper";
 import {Observable} from "rxjs";
-import {ModelAgency} from "../../../model/agency.model";
 declare var jQuery: any;
 
 @Component({
@@ -26,13 +25,13 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private errorMessage: string;
   private alerts = {};
 
-  private agencyAddressLine1: string;
-  private agencyAddressLine2: string;
-  private agencyAddressLine3: string;
-  private agencyCity: string;
-  private agencyPostCode: string;
-  private agencyPhone: string;
-  private agencyWebAddress: string;
+  private agencyAddressLine1: string = '';
+  private agencyAddressLine2: string = '';
+  private agencyAddressLine3: string = '';
+  private agencyCity: string = '';
+  private agencyPostCode: string = '';
+  private agencyPhone: string = '';
+  private agencyWebAddress: string = '';
   private agencyCountry: number;
   private agencyCurrency: number;
 
@@ -123,6 +122,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       } else {
 
         console.log("Without logo");
+        console.log("agencyData" + agencyData['/agency/' + this.uid + '/addressLine2']);
         this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
           this.successInactive = false;
           let subscription = Observable.timer(1500).subscribe(() => {
@@ -143,6 +143,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   }
 
   fileChange(event) {
+
     if (event.target.files.length > 0) {
       this.logoFile = event.target.files[0];
       var reader = new FileReader();

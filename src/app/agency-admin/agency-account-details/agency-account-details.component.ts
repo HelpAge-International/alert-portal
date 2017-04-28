@@ -23,14 +23,14 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private errorMessage: string;
   private alerts = {};
   private modalAgency: ModelAgency;
-  private agencyLogo: string;
-  private agencyAddressLine1: string;
-  private agencyAddressLine2: string;
-  private agencyAddressLine3: string;
-  private agencyCity: string;
-  private agencyPostCode: string;
-  private agencyPhone: string;
-  private agencyWebAddress: string;
+  private agencyLogo: string = '';
+  private agencyAddressLine1: string = '';
+  private agencyAddressLine2: string = '';
+  private agencyAddressLine3: string = '';
+  private agencyCity: string = '';
+  private agencyPostCode: string = '';
+  private agencyPhone: string = '';
+  private agencyWebAddress: string = '';
   private agencyCountry: number;
   private agencyCurrency: number;
   private Country = Constants.COUNTRY;
@@ -105,37 +105,50 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           this.errorMessage = 'GLOBAL.NO_CHANGES_MADE';
           this.showAlert(true);
         } else {
-          this.uploadAgencyLogo().then(result => {
-              var oldLogo = this.agencyLogo;
 
-              // update the logo preview default placeholder and agency model
-              this.agencyLogo = result as string;
-              console.log(this.agencyLogo);
-              editedAgency.logoPath = this.agencyLogo;
+          if (this.logoFile == null) {
 
-              // remove the old logo from firebase
-              try {
-                // check if the newly uploaded image is diferrent than the old one
-                if (this.firebase.storage().refFromURL(oldLogo).location.path != this.firebase.storage().refFromURL(this.agencyLogo).location.path) {
-                  this.firebase.storage().refFromURL(oldLogo).delete();
-                }
-              }
-              catch (error) { /* Log error */
-              }
-
-              this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
-                this.showAlert(false)
-              }, error => {
-                this.errorMessage = 'GLOBAL.GENERAL_ERROR';
-                this.showAlert(true);
-                console.log(error.message);
-              });
-            },
-            error => {
+            this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
+              this.showAlert(false)
+            }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
               this.showAlert(true);
               console.log(error.message);
             });
+          }
+          else {
+            this.uploadAgencyLogo().then(result => {
+                var oldLogo = this.agencyLogo;
+
+                // update the logo preview default placeholder and agency model
+                this.agencyLogo = result as string;
+                console.log(this.agencyLogo);
+                editedAgency.logoPath = this.agencyLogo;
+
+                // remove the old logo from firebase
+                try {
+                  // check if the newly uploaded image is diferrent than the old one
+                  if (this.firebase.storage().refFromURL(oldLogo).location.path != this.firebase.storage().refFromURL(this.agencyLogo).location.path) {
+                    this.firebase.storage().refFromURL(oldLogo).delete();
+                  }
+                }
+                catch (error) { /* Log error */
+                }
+
+                this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
+                  this.showAlert(false)
+                }, error => {
+                  this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+                  this.showAlert(true);
+                  console.log(error.message);
+                });
+              },
+              error => {
+                this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+                this.showAlert(true);
+                console.log(error.message);
+              });
+          }
         }
       }
     } else {

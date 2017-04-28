@@ -80,54 +80,66 @@
           </div>
         </div>
         <div class="Response__content Spaced">
+
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
-            <div class="col-lg-8">
+            <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">1</span>
-                <input type="text" class="form-control" placeholder="">
+                <span class="input-group-addon">{{summarizeScenarioBulletPointsCounter}}</span>
+                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <a href="javascript:void(0)" class="Remove__row__cta"
+                   (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
+                   [hidden]="summarizeScenarioBulletPointsCounter == 1">{{"GLOBAL.REMOVE"
+                  | translate}}</a>
               </div>
             </div>
           </div>
-          <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.ADD_BULLET_POINT" | translate}}
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addSummarizeScenarioBulletPoint()"
+             [hidden]="summarizeScenarioBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+            | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} 5)</a>
+
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
               | translate}}</label>
-            <div class="col-lg-8">
+            <div class="col-lg-8" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">1</span>
+                <span class="input-group-addon">{{impactOfCrisisBulletPointsCounter}}</span>
                 <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <a href="javascript:void(0)" class="Remove__row__cta"
+                   (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
+                   [hidden]="impactOfCrisisBulletPointsCounter == 1">{{"GLOBAL.REMOVE"
+                  | translate}}</a>
               </div>
             </div>
           </div>
-          <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.ADD_BULLET_POINT" | translate}}
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addImpactOfCrisisBulletPoint()"
+             [hidden]="impactOfCrisisBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+            | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} 5)</a>
 
           <div class="row Spaced form-group align-items-center">
-
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
               | translate}}</label>
-            <div class="col-lg-8">
+            <div class="col-lg-8" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">1</span>
+                <span class="input-group-addon">{{availabilityOfFundsBulletPointsCounter}}</span>
                 <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <a href="javascript:void(0)" class="Remove__row__cta"
+                   (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
+                   [hidden]="availabilityOfFundsBulletPointsCounter == 1">{{"GLOBAL.REMOVE"
+                  | translate}}</a>
               </div>
-            </div>
-            <div class="col-lg-8 Spaced-above">
-              <div class="input-group">
-                <span class="input-group-addon">2</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
-              </div>
-            </div>
-            <div class="col-lg-4 Spaced-above">
-              <a href="javascript:void(0)" class="Remove__row__cta">{{"GLOBAL.REMOVE" | translate}}</a>
             </div>
           </div>
-          <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.ADD_BULLET_POINT" | translate}}
+
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addAvailabilityOfFundsBulletPoint()"
+             [hidden]="availabilityOfFundsBulletPointsCounter == MAX_BULLET_POINTS_VAL_1">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+            | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} 3)</a>
+
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
               translate}}
@@ -1010,7 +1022,8 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)" (click)="onSubmit()">{{"GLOBAL.FINISH" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)" (click)="onSubmit()">
+              {{"GLOBAL.FINISH" |
               translate}}
             </div>
           </div>
