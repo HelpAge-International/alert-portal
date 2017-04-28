@@ -48,22 +48,12 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.countrySelections = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
       //regional directors
-      let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
-        .flatMap(countries => {
-          let countryIds = [];
-          countries.forEach(country => {
-            countryIds.push(country.$key)
-          });
-          return Observable.from(countryIds);
-        })
-        .flatMap(countryId => {
-          return this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {
-            query: {
-              orderByChild: "userType",
-              equalTo: UserType.RegionalDirector
-            }
-          });
-        })
+      let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
+        query: {
+          orderByChild: "userType",
+          equalTo: UserType.RegionalDirector
+        }
+      })
         .flatMap(staffs => {
           let ids = [];
           staffs.forEach(staff => {
@@ -79,6 +69,38 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           this.regionalDirectors.push(x);
         });
       this.subscriptions.add(subscriptionDirector);
+      // //regional directors
+      // let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+      //   .flatMap(countries => {
+      //     let countryIds = ["globalUser"];
+      //     countries.forEach(country => {
+      //       countryIds.push(country.$key)
+      //     });
+      //     return Observable.from(countryIds);
+      //   })
+      //   .flatMap(countryId => {
+      //     return this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {
+      //       query: {
+      //         orderByChild: "userType",
+      //         equalTo: UserType.RegionalDirector
+      //       }
+      //     });
+      //   })
+      //   .flatMap(staffs => {
+      //     let ids = [];
+      //     staffs.forEach(staff => {
+      //       ids.push(staff.$key);
+      //     });
+      //     return Observable.from(ids);
+      //   })
+      //   .flatMap(id => {
+      //       return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
+      //     }
+      //   )
+      //   .subscribe(x => {
+      //     this.regionalDirectors.push(x);
+      //   });
+      // this.subscriptions.add(subscriptionDirector);
       //check if edit mode
       let subscription = this.route.params
         .subscribe((params: Params) => {

@@ -7,7 +7,7 @@ export class ModelStaff {
   public region: string;
   public countryOffice: string;
   public department: string;
-  public position: number;
+  public position: string;
   public officeType: number;
   public skill: string[] =[];
   public training: string

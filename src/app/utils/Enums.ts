@@ -125,6 +125,13 @@ export enum Location {
   Indonesia = 2
 }
 
+export enum DocumentType {
+  MPA = 0,
+  APA = 1,
+  ResponsePlan = 2,
+  Hazard = 3
+}
+
 /**
  * Response Plans
  */
@@ -150,7 +157,7 @@ export enum ResponsePlanSectors {
   protection = 5,
   education = 6,
   campManagement = 7,
-  other = 8,
+  other = 8
 }
 
 export enum PresenceInTheCountry {
@@ -161,16 +168,16 @@ export enum PresenceInTheCountry {
 
 export enum MethodOfImplementation {
   fieldStaff = 0,
-  withPartner = 1,
+  withPartner = 1
 }
 
 export enum MediaFormat {
   photographic = 0,
   video = 1,
-  photographicAndVideo = 2,
+  photographicAndVideo = 2
 }
 
 export enum Gender {
   male = 0,
-  feMale = 1,
+  feMale = 1
 }

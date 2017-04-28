@@ -14,9 +14,15 @@
       <div class="col-lg-1 col-md-1">
         {{"GLOBAL.FILTER"| translate}}
       </div>
+      <!--<div class="col-lg-3 col-md-4">-->
+      <!--<select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">-->
+      <!--<option *ngFor="let position of positionsList" [value]="position">{{Position[position] | translate}}</option>-->
+      <!--</select>-->
+      <!--</div>-->
       <div class="col-lg-3 col-md-4">
         <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
-          <option *ngFor="let position of positionsList" [value]="position">{{Position[position] | translate}}</option>
+          <option *ngFor="let department of departments" [value]="department">{{department}}
+          </option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4">
@@ -43,7 +49,7 @@
       <div [hidden]="showCountryStaff.get(office.id)">
         <div [hidden]="office?.staffs.length==0" class="row Line-row Small-spaced Header">
           <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
-          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</div>
+          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.DEPARTMENT"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
           <div class="col-lg-1"></div>
@@ -51,7 +57,7 @@
         <div *ngFor="let staff of office?.staffs" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
           <div class="col-lg-2">{{getStaffName(staff.id)}}</div>
-          <div class="col-lg-2">{{POSITION[staff.position] | translate}}</div>
+          <div class="col-lg-2">{{staff.department}}</div>
           <div class="col-lg-2">{{USER_TYPE[staff.userType] | translate}}</div>
           <div class="col-lg-2">{{OFFICE_TYPE[staff.officeType] | translate}}</div>
           <div class="col-lg-2 col-md-2 additional-info">
@@ -83,13 +89,17 @@
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">Support Skills</div>
               <div class="col-md-10 col-sm-6">
-                <li *ngFor="let skill of getSupportSkills(office.id, staff.id)"> {{skill}}</li>
+                <ul>
+                  <li *ngFor="let skill of getSupportSkills(office.id, staff.id)"> {{skill}}</li>
+                </ul>
               </div>
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">Technical Skills</div>
               <div class="col-md-10 col-sm-6">
-                <li *ngFor="let skill of getTechSkills(office.id, staff.id)"> {{skill}}</li>
+                <ul>
+                  <li *ngFor="let skill of getTechSkills(office.id, staff.id)"> {{skill}}</li>
+                </ul>
               </div>
             </div>
             <div class="row">
@@ -99,9 +109,95 @@
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">Notifications</div>
               <div class="col-md-10 col-sm-6">
-                <li *ngFor="let notification of staff.notification"> {{NOTIFICATION_SETTINGS[notification] |
-                  translate}}
-                </li>
+                <ul>
+                  <li *ngFor="let notification of staff.notification"> {{NOTIFICATION_SETTINGS[notification] |
+                    translate}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div [hidden]="globalUsers.length==0">
+      <div class="Sub-header-title__wrap">
+        <h2>Global Users</h2>
+        <span class="Hide-all">{{"GLOBAL.HIDE_ALL"| translate}}</span>
+        <!--<span  class="Hide-all" >{{"GLOBAL.SHOW_ALL"| translate}}</span>-->
+      </div>
+
+      <div>
+        <div class="row Line-row Small-spaced Header">
+          <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
+          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.DEPARTMENT"| translate}}</div>
+          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
+          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
+          <div class="col-lg-1"></div>
+        </div>
+        <div *ngFor="let globalUser of globalUsers" class="row Line-row Small-spaced align-items-center"
+             style="position:relative;">
+          <div class="col-lg-2">{{getStaffName(globalUser.$key)}}</div>
+          <div class="col-lg-2">{{globalUser.department}}</div>
+          <div class="col-lg-2">{{USER_TYPE[globalUser.userType] | translate}}</div>
+          <div class="col-lg-2">{{OFFICE_TYPE[globalUser.officeType] | translate}}</div>
+          <div class="col-lg-2 col-md-2 additional-info">
+            <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
+            <a href="#" data-toggle="collapse" [attr.data-target]="'#'+globalUser.$key" aria-expanded="false"
+               aria-controls="popover_content">Additional Info</a>
+          </div>
+          <div class="col-lg-1 col-md-3">
+            <button class="btn btn-primary" (click)="editStaff(null, globalUser.$key)">{{"GLOBAL.EDIT"| translate}}
+            </button>
+          </div>
+
+          <div [attr.id]="globalUser.$key" class="Popover__ribbon prevent_parent_collapse collapse col-12">
+            <!-- Additional info -->
+            <div class="row  Spaced">
+              <div class="col-sm-10 col-8"><h4>Additional Information</h4></div>
+              <div class="col-sm-2 col-4 text-right">
+                <button class="btn-link" (click)="closeAdditionalInfo(globalUser.$key)">Close</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-sm-6 text-bold">Email Address</div>
+              <div class="col-md-10 col-sm-6">{{getStaffEmail(globalUser.$key)}}</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-sm-6 text-bold">Telephone Number</div>
+              <div class="col-md-10 col-sm-6">{{getStaffPhone(globalUser.$key)}}</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-sm-6 text-bold">Support Skills</div>
+              <div class="col-md-10 col-sm-6">
+                <ul>
+                  <li *ngFor="let skill of getSupportSkills(null, globalUser.$key)"> {{skill}}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-sm-6 text-bold">Technical Skills</div>
+              <div class="col-md-10 col-sm-6">
+                <ul>
+                  <li *ngFor="let skill of getTechSkills(null, globalUser.$key)"> {{skill}}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-sm-6 text-bold">Training Needs</div>
+              <div class="col-md-10 col-sm-6">{{globalUser.training}}</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-sm-6 text-bold">Notifications</div>
+              <div class="col-md-10 col-sm-6">
+                <ul>
+                  <li *ngFor="let notification of globalUser.notification"> {{NOTIFICATION_SETTINGS[notification] |
+                    translate}}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
