@@ -168,7 +168,9 @@
             "L_NAME_MISSING": "Please enter agency administrator's last name",
             "EMAIL_MISSING": "Please enter agency administrator's email address",
             "EMAIL_INVALID": "Please enter a correct email address",
-            "NO_AGENCY": "No agencies have been added to the ALERT"
+            "NO_AGENCY": "No agencies have been added to the ALERT",
+            "VIEW_ALL_NOTIFICATIONS" : "View all notifications",
+            "NO_UNREAD_MESSAGES" : "You have no unread messages"
         },
         "GLOBAL_NETWORKS": {
             "GLOBAL_NETWORKS": "Global Networks",
@@ -422,8 +424,12 @@
                 "SELECT_USER_TYPES": "Select user types",
                 "NOTIFICATION_PERMISSION": "Notification Permission",
                 "EVENT": "Event",
-                "NO_SELECTED_USER_TYPE" : "No user type has been selected!"
+                "NO_SELECTED_USER_TYPE": "No user type has been selected!"
             }
+        },
+        "NOTIFICATIONS": {
+            "TITLE_TEXT" : "Your notifications",
+            "RECEIVED" : "Received"
         }
     },
     "DIALOG": {

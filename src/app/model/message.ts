@@ -8,6 +8,7 @@ export class Message {
   public title: string;
   public content: string;
   public time: number;
+  public groupType: string;
 
   constructor(senderId: string, title: string, content: string, time: number) {
     this.senderId = senderId;
