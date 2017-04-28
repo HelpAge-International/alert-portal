@@ -1,6 +1,8 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+<div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
@@ -90,21 +92,25 @@
                 </div>
                 <div class="col-md-6">
                   <strong>Directors</strong>
-                  <div class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left">Country Director</div>
-                    <div class="col-md-6 text-right text-success">Approved <i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
+                  <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
+                    <div class="col-6 text-left" *ngIf="idx==0">Country Director</div>
+                    <div class="col-6 text-left" *ngIf="idx==1">Regional Director</div>
+                    <div class="col-6 text-left" *ngIf="idx==2">Global Director</div>
+                    <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
+                         [class.text-muted]="!getApproveStatus(approve)">
+                      {{getApproveStatus(approve)?'Approved':'Waiting for approval'}}
+                      <i class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
-                  <div class="row no-gutters Line-row">
-                    <div class="col-6 text-left">Regional Director</div>
-                    <div class="col-6 text-right text-success">Approved <i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
-                  </div>
-                  <div class="row no-gutters Line-row">
-                    <div class="col-6 text-left">Global Director</div>
-                    <div class="col-6 text-right text-muted">Waiting for approval <i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
-                  </div>
+                  <!--<div class="row no-gutters Line-row">-->
+                  <!--<div class="col-6 text-left">Regional Director</div>-->
+                  <!--<div class="col-6 text-right text-success">Approved <i-->
+                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
+                  <!--</div>-->
+                  <!--<div class="row no-gutters Line-row">-->
+                  <!--<div class="col-6 text-left">Global Director</div>-->
+                  <!--<div class="col-6 text-right text-muted">Waiting for approval <i-->
+                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
+                  <!--</div>-->
                 </div>
               </div>
 
@@ -178,10 +184,10 @@
                 </div>
               </div>
               <div class="row" *ngFor="let note of notes | async">
-                <div class="col-3 text-left">
+                <div class="col-sm-3 text-left">
                   {{note.time | date:'dd MMM yy'}}
                 </div>
-                <div class="col-9">
+                <div class="col-sm-9">
                   <div>{{note.content}}</div>
                   <div><b>by {{getName(note.uploadBy)}}</b></div>
                 </div>
@@ -195,10 +201,10 @@
             {{plan.startDate | date:'d/MM/y'}}
           </div>
           <div class="col-sm-3">
-
             <div class="btn-group btn-block">
               <button type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
-                      [class.btn-primary]="plan.status!=2">Options
+                      [class.btn-primary]="plan.status!=2" data-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false">Options
               </button>
               <button type="button" class="btn dropdown-toggle dropdown-toggle-split"
                       [class.btn-success]="plan.status==2" [class.btn-primary]="plan.status!=2"
@@ -206,13 +212,14 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">View plan</a>
-                <a class="dropdown-item" href="#">Edit PLAN</a>
-                <a class="dropdown-item" href="#">Submit for approval</a>
-                <a class="dropdown-item" href="#">Submit for partner validation</a>
-                <a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
-                <a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>
-                <a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>
+                <a class="dropdown-item">View plan</a>
+                <a class="dropdown-item">Edit plan</a>
+                <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
+                   (click)="submitForApproval(plan)">Submit for approval</a>
+                <a class="dropdown-item">Submit for partner validation</a>
+                <a class="dropdown-item">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
+                <a class="dropdown-item">Export for proposal <br/> Excel (.xls, 78Kb)</a>
+                <a class="dropdown-item">Export for proposal <br/> Word (.doc, 78Kb)</a>
               </div>
             </div>
 
@@ -536,4 +543,25 @@
     </div>
   </div>
 
+</div>
+
+<!--dialog modal-->
+<div class="modal fade" id="dialog-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{dialogTitle}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{dialogContent}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

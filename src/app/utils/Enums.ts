@@ -433,3 +433,10 @@ export enum Countries {
   ZM = 247,
   ZW = 248
 }
+
+export enum ApprovalStatus {
+  InProgress = 0,
+  WaitingApproval = 1,
+  Approved = 2,
+  NeedsReviewing = 3
+}
