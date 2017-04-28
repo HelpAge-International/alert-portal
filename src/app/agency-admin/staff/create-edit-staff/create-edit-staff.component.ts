@@ -382,6 +382,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       }
     }
 
+    if (this.userType == UserType.CountryDirector) {
+      staffData["/directorCountry/" + this.countryOffice.$key + "/"] = uid;
+    }
+
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
     }, error => {
