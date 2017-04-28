@@ -431,8 +431,5 @@ export enum Countries {
   EH = 245,
   YE = 246,
   ZM = 247,
-  ZW = 248,
-  YE = 249,
-  ZM = 250,
-  ZW = 251
+  ZW = 248
 }
