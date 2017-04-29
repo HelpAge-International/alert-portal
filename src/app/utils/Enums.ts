@@ -440,3 +440,8 @@ export enum ApprovalStatus {
   Approved = 2,
   NeedsReviewing = 3
 }
+
+export enum SizeType {
+  KB = 0,
+  MB = 1
+}

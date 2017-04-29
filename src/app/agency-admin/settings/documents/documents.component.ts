@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Countries, DocumentType} from "../../../utils/Enums";
+import {Countries, DocumentType, SizeType} from "../../../utils/Enums";
 import {Observable, Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {RxHelper} from '../../../utils/RxHelper';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-documents',
@@ -37,7 +38,12 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
 	private docFilterSubject: Subject<any>;
 	private docFilter: any = {};
-	
+
+	private exportDocs: any[] = [];
+	private docsCount = 0;
+	private docsSize = 0;
+	private firebase;
+
 
 	constructor(private af: AngularFire, private router: Router) {
 		this.subscriptions = new RxHelper;
@@ -85,6 +91,8 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 								}));
 							});
 							this.countries[country]['docs'] = docs;
+							this.countries[country]['docsfiltered'] = docs;
+							this.countries[country]['hasDocs'] = (docs.length > 0);
 						}));
 					});
 				}));
@@ -142,12 +150,61 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 	}
 
 	private exportSelectedDocuments() {
-		this.exporting = !this.exporting;	
+		this.exportDocs = [];
+		this.countries.map(country => {
+			country.docsfiltered.map(doc => {
+				if(doc.selected) {
+					this.exportDocs.push(doc);
+
+					if (doc.sizeType == SizeType.KB)
+						this.docsSize += doc.size * 0.001;
+					else
+						this.docsSize += doc.size;
+
+				}
+			})
+		});
+
+		this.docsCount = this.exportDocs.length;
+
+		//TODO size in MB
+		jQuery("#export_documents").modal("show");
 	}
 
-	private countryDocsSelected(countryId, target) {
-		let id = target.id;
-  //   	$("." + id).prop("checked", this.checked);
+	private closeExportModal() {
+		jQuery("#export_documents").modal("hide");
+	}
+
+	private export() {
+		this.exporting = !this.exporting;
+		jQuery("#export_documents").modal("hide");
+
+		let self = this;
+		this.exportDocs.map(doc => {
+			var xhr = new XMLHttpRequest();
+			xhr.responseType = 'blob';
+			xhr.onload = function(event) {
+				self.download(xhr.response, doc.fileName, xhr.getResponseHeader("Content-Type"));
+			};
+			xhr.open('GET', doc.filePath);
+			xhr.send();
+		});	
+	}
+
+	private download(data, name, type) {
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		var file = new Blob([data], {type: type});
+		a.href = URL.createObjectURL(file);
+		a.download = name;
+		a.click();
+	}
+
+	private countryDocsSelected(country, target) {	
+		country.docsfiltered = country.docsfiltered.map(doc => {
+			doc.selected = country.selected;
+			return doc;
+		});
 	}
 
 	private filter() {
@@ -158,4 +215,25 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 		
 		this.countriesFilterSubject.next(Countries[this.countrySelected]);
 	}
+
+	// Feel free to extend to other fields for filtering if needed
+	private searchByNameOrTitle(filter: string) {
+		filter = filter.toLowerCase();
+
+		this.countries.map(country => {
+			country['docsfiltered'] = country.docs.filter(doc => {
+				if (filter.length == 0)
+					return true;
+
+				let searchBy = doc.title + doc.fileName;
+				searchBy = searchBy.toLowerCase();
+
+				if(searchBy.search(filter) > -1)
+					return true;
+
+				return false;
+			});
+		});
+	}
+
 }
