@@ -60,6 +60,17 @@
       "MPA": "Minimum Preparedness",
       "APA": "Advanced Preparedness"
     },
+    "ACTION_STATUS": {
+      "EXPIRED": "Expired",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "INACTIVE": "Inactive"
+    },
+    "ACTION_TYPE": {
+      "CHS": "CHS",
+      "MANDATED": "Mandated",
+      "Custom": "Custom"
+    },
     "ACCOUNT_SETTING": "Account Settings",
     "LOGOUT": "Logout",
     "PERSON_TITLE": {

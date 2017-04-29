@@ -441,6 +441,13 @@ export enum ApprovalStatus {
   NeedsReviewing = 3
 }
 
+export enum ActionStatus {
+  Expired = 0,
+  InProgress = 1,
+  Completed = 2,
+  Inactive = 3
+}
+
 export enum SizeType {
   KB = 0,
   MB = 1
