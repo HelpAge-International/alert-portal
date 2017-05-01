@@ -18,9 +18,10 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private uid: string;
   private isFiltered: boolean = false;
   private actions: Observable<any>;
-  private departments: Observable<any>;
   private ActionLevel = ActionLevel;
-  private departmentSelected;
+  private departments: any[] = [];
+  private All_Department: string = "All departments";
+  private departmentSelected: string = this.All_Department;
   private actionLevelSelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
@@ -83,7 +84,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   filter() {
     console.log("Selected Department ---- " + this.departmentSelected);
 
-    if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected == 'All departments') {
+    if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected == this.All_Department) {
       //no filter. show all
       this.isFiltered = false;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
@@ -92,7 +93,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
           equalTo: ActionType.mandated
         }
       });
-    } else if (this.actionLevelSelected != ActionLevel.ALL && this.departmentSelected == 'All departments') {
+    } else if (this.actionLevelSelected != ActionLevel.ALL && this.departmentSelected == this.All_Department) {
       //filter only with mpa
       this.isFiltered = true;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
@@ -110,7 +111,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
           }
           return tempList;
         });
-    } else if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected != 'All departments') {
+    } else if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected != this.All_Department) {
       //filter only with apa
       this.isFiltered = true;
       this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
@@ -160,14 +161,18 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private getDepartments() {
 
-    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
-      .map(list => {
-        let tempList = [];
-        for (let item of list) {
-          tempList.push(item.$key);
-        }
-        return tempList;
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+      .map(departmentList => {
+        let departments = [this.All_Department];
+        departmentList.forEach(x => {
+          departments.push(x.$key);
+        });
+        return departments;
+      })
+      .subscribe(x => {
+        this.departments = x;
       });
+    this.subscriptions.add(subscription);
   }
 
 }

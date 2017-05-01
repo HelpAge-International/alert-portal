@@ -30,7 +30,7 @@ function sendWelcomeEmail(email) {
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
                       \n You temporary password is "testtest", please login with your email address to update you credentials.
-                      \n https://alert-uat.firebaseapp.com
+                      \n https://uat.portal.alertpreparedness.org
                       \n Thanks
                       \n Your Alert team `;
   return mailTransport.sendMail(mailOptions).then(() => {

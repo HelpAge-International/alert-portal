@@ -104,6 +104,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         .catch((error) => {
           // error.message can't be used here as they won't be translated. A global message is shown here instead.
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
+          console.log(error.message);
           this.showAlert(true);
         });
       this.inactive = true;

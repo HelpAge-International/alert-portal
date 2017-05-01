@@ -24,7 +24,8 @@ export class StaffComponent implements OnInit, OnDestroy {
   OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
-  filterPosition: number = 0;
+  All_Department: string = "All departments";
+  filterPosition: string = this.All_Department;
   filterUser: number = 0;
   filterOffice: number = 0;
 
@@ -51,6 +52,9 @@ export class StaffComponent implements OnInit, OnDestroy {
   private staffPhone: string;
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
+  private globalUsers: any[] = [];
+  private departments: any[] = [];
+
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -69,6 +73,18 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private initData() {
     this.getStaffData();
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+      .map(departmentList => {
+        let departments = [this.All_Department];
+        departmentList.forEach(x => {
+          departments.push(x.$key);
+        });
+        return departments;
+      })
+      .subscribe(x => {
+        this.departments = x;
+      });
+    this.subscriptions.add(subscription);
   }
 
   private getStaffData() {
@@ -102,27 +118,27 @@ export class StaffComponent implements OnInit, OnDestroy {
             .subscribe(x => {
               x.forEach(item => {
                 if (!this.dealedStaff.includes(item.$key)) {
-                  if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                  if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                  } else if (this.filterPosition == this.All_Department && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                  } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == item.officeType) {
+                  } else if (this.filterPosition == this.All_Department && this.filterUser == item.userType && this.filterOffice == item.officeType) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                  } else if (this.filterPosition == item.department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                  } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
+                  } else if (this.filterPosition == item.department && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == item.position && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+                  } else if (this.filterPosition == item.department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == StaffPosition.All && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                  } else if (this.filterPosition == this.All_Department && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == item.position && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
+                  } else if (this.filterPosition == item.department && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
-                  } else if (this.filterPosition == item.position && this.filterUser == item.userType && this.filterOffice == item.officeType) {
+                  } else if (this.filterPosition == item.department && this.filterUser == item.userType && this.filterOffice == item.officeType) {
                     this.addStaff(item, id);
                   }
                 }
@@ -133,12 +149,20 @@ export class StaffComponent implements OnInit, OnDestroy {
       })
       .subscribe();
     this.subscriptions.add(subscription);
+
+    // let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+    //   .subscribe(users => {
+    //     this.globalUsers = users;
+    //   });
+    // this.subscriptions.add(subscriptionGlobalUser);
+    this.filterGlobalUsers();
   }
 
   private addStaff(item, id) {
     this.staff = new ModelStaff();
     this.staff.id = item.$key;
     this.staff.position = item.position;
+    this.staff.department = item.department;
     this.staff.officeType = item.officeType;
     this.staff.userType = item.userType;
     this.staff.training = item.training;
@@ -178,6 +202,10 @@ export class StaffComponent implements OnInit, OnDestroy {
     }], {skipLocationChange: true});
   }
 
+  editGlobalUser(staffId) {
+    console.log("edit global user");
+  }
+
   closeAdditionalInfo(staffId) {
     jQuery("#" + staffId).collapse("hide");
   }
@@ -206,8 +234,10 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   getSupportSkills(officeId, staffId) {
     this.supportSkills = [];
-    if (officeId && staffId) {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+    if (staffId) {
+      let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
+        Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
+      let subscription = this.af.database.object(path)
         .first()
         .map(user => {
           let userSkill = [];
@@ -236,8 +266,10 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   getTechSkills(officeId, staffId) {
     this.techSkills = [];
-    if (officeId && staffId) {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId)
+    if (staffId) {
+      let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
+        Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
+      let subscription = this.af.database.object(path)
         .first()
         .map(user => {
           let userSkill = [];
@@ -267,6 +299,227 @@ export class StaffComponent implements OnInit, OnDestroy {
   filterStaff() {
     console.log("filter staff");
     this.getStaffData();
+    this.filterGlobalUsers();
+  }
+
+  private filterGlobalUsers() {
+    this.globalUsers = [];
+    let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+      .subscribe(users => {
+        if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+          this.globalUsers = users;
+        } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+          users.forEach(user => {
+            if (user.userType == this.filterUser) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
+          users.forEach(user => {
+            if (user.officeType == this.filterOffice) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
+          users.forEach(user => {
+            if (user.officeType == this.filterOffice && user.userType == this.filterUser) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        }
+        else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+          users.forEach(user => {
+            if (user.department == this.filterPosition) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
+          users.forEach(user => {
+            if (user.officeType == this.filterOffice) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
+          users.forEach(user => {
+            if (user.department == this.filterPosition && user.officeType == this.filterOffice) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+          users.forEach(user => {
+            if (user.department == this.filterPosition) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+          users.forEach(user => {
+            if (user.userType == this.filterUser) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+          users.forEach(user => {
+            if (user.department == this.filterPosition && user.userType == this.filterUser) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
+          users.forEach(user => {
+            if (user.department == this.filterPosition && user.userType == this.filterUser && user.officeType == this.filterOffice) {
+              let isDuplicate = false;
+              for (let item of this.globalUsers) {
+                if (item.$key == user.$key) {
+                  isDuplicate = true;
+                }
+              }
+              if (!isDuplicate) {
+                this.globalUsers.push(user);
+              }
+            }
+          });
+        }
+        console.log(this.globalUsers)
+      });
+    this.subscriptions.add(subscriptionGlobalUser);
+    // if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+    //     .subscribe(users => {
+    //       console.log(users)
+    //       this.globalUsers = users;
+    //     });
+    //   this.subscriptions.add(subscriptionGlobalUser);
+    // } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
+    //     query: {
+    //       orderByChild: "userType",
+    //       equalTo: this.filterUser
+    //     }
+    //   })
+    //     .subscribe(users => {
+    //       console.log(users)
+    //       this.globalUsers = users;
+    //     });
+    //   this.subscriptions.add(subscriptionGlobalUser);
+    // } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
+    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
+    //     query: {
+    //       orderByChild: "officeType",
+    //       equalTo: this.filterOffice
+    //     }
+    //   })
+    //     .subscribe(users => {
+    //       this.globalUsers = users;
+    //     });
+    //   this.subscriptions.add(subscriptionGlobalUser);
+    // } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
+    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
+    //     query: {
+    //       orderByChild: "officeType",
+    //       equalTo: this.filterOffice
+    //     }
+    //   })
+    //     .map(users => {
+    //       let staffs = [];
+    //       users.forEach(item => {
+    //         if (item.officeType == this.filterOffice) {
+    //           staffs.push(item);
+    //         }
+    //       });
+    //       return staffs;
+    //     })
+    //     .subscribe(users => {
+    //       this.globalUsers = users;
+    //     });
+    //   this.subscriptions.add(subscriptionGlobalUser);
+    // }
+    // else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+    //
+    // } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
+    //
+    // } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
+    //
+    // } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
+    //
+    // } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+    //
+    // } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+    //
+    // } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
+    //
+    // }
+
   }
 
 }

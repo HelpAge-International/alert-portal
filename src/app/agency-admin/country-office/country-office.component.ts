@@ -207,7 +207,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   getDirectorName(director) {
     this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
-    if (director.directorId) {
+    if (director && director.directorId && director.directorId != "null") {
       let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + director.directorId)
         .subscribe(user => {
           this.directorName = user.firstName + " " + user.lastName;

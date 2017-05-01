@@ -6,9 +6,9 @@
 
     <div class="Header-title__wrap">
       <h1>{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT"| translate}}</h1>
-      <a class="btn btn-outline-primary" (click)="lookUpGenericActionsPressed()">{{"AGENCY_ADMIN.MANDATED_PA.LOOK_UP_ACTIONS"| translate | uppercase}}</a>
-      <a routerLink="/agency-admin/agency-mpa/create-edit-mpa" class="btn btn-primary">{{"AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_ACTION"|
-        translate | uppercase}}</a>
+      <button class="btn btn-outline-primary" (click)="lookUpGenericActionsPressed()">{{"AGENCY_ADMIN.MANDATED_PA.LOOK_UP_ACTIONS"| translate | uppercase}}</button>
+      <button routerLink="/agency-admin/agency-mpa/create-edit-mpa" class="btn btn-primary">{{"AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_ACTION"|
+        translate | uppercase}}</button>
     </div>
 
     <div class="Filter-system__wrap row">
@@ -22,8 +22,7 @@
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
         <select class="form-control" [(ngModel)]="departmentSelected" (change)="filter()">
-          <option class="selected">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
-          <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}</option>
+          <option *ngFor="let department of departments" [value]="department">{{department}}</option>
         </select>
       </div>
     </div>
