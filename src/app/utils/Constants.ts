@@ -93,6 +93,10 @@ export class Constants {
   /*
    * Response Plans
    */
+
+  static MAX_BULLET_POINTS_VAL_1: number = 3;
+  static MAX_BULLET_POINTS_VAL_2: number = 5;
+
   static HAZARD_SCENARIOS: string[] = [
     "RESPONSE_PLANS.HAZARD_SCENARIO0.HAZARD_SCENARIO0",
     "RESPONSE_PLANS.HAZARD_SCENARIO1.HAZARD_SCENARIO1",
