@@ -29,12 +29,12 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group countries_parent" id="countries_parent">
           <label for="country">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRIES" | translate}}*</label>
-          <div *ngFor="let selectCountry of countries" class="row no-gutters align-items-center">
+          <div *ngFor="let selectCountry of countries; let i = index" class="row no-gutters align-items-center">
             <div class="col-10 form-group">
               <select class="form-control"
                       [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
                 <option *ngFor="let country of countrySelections | async"
-                        [selected]="country.location === selectedCountries[selectCountry]">
+                        [selected]="country.location === selectedCountries[i]">
                   {{COUNTRY_NAMES[country.location]
                   | translate}}
                 </option>

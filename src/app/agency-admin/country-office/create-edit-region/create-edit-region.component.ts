@@ -386,7 +386,9 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   removeCountry(country) {
     if (this.countries.length > 1) {
+      this.selectedCountries.splice(country, 1);
       this.countries = this.countries.filter(item => item !== country);
+      this.counter--;
     }
     if (this.countries.length == 1) {
       this.hideRemove = true;
