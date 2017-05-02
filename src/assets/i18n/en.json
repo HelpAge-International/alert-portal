@@ -100,7 +100,8 @@
       "ERT_LEAD": "ERT Leaders",
       "ERT": "ERTs",
       "DONOR": "Donors",
-      "PARTNER": "Partners"
+      "PARTNER": "Partners",
+      "NON_ALERT": "Non-Alert User"
     },
     "ACCOUNT_SETTINGS": {
       "TITLE": "Account Settings",

@@ -285,7 +285,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       }
     });
     if (!this.isEdit) {
-      this.createNewUser();
+      if (this.userType != UserType.NonAlert) {
+        this.createNewUser();
+      } else {
+        this.createNonAlertUser();
+      }
     } else {
       console.log("edit");
       if (this.emailInDatabase == this.email) {
@@ -296,6 +300,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.updateWithNewEmail();
       }
     }
+  }
+
+  private createNonAlertUser() {
+    let key = firebase.database().ref(Constants.APP_STATUS).push().key;
+    console.log("Non-alert user key: " + key);
+    this.updateFirebase(key);
   }
 
   private updateOfficeChange() {
