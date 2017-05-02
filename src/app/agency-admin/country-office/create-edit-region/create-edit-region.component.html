@@ -25,12 +25,12 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row Spaced">
       <div class="col-lg-4 col-md-6">
         <div class="form-group countries_parent" id="countries_parent">
           <label for="country">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRIES" | translate}}*</label>
           <div *ngFor="let selectCountry of countries" class="row no-gutters align-items-center">
-            <div class="col-10">
+            <div class="col-10 form-group">
               <select class="form-control"
                       [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
                 <option *ngFor="let country of countrySelections | async"
@@ -40,15 +40,15 @@
                 </option>
               </select>
             </div>
-            <div class="col-2">
-              <a class="remove_field text-danger" [hidden]="hideRemove"
+            <div class="col-2 form-group">
+              <a class="remove_field text-danger" href="javascript:void(0)" [hidden]="hideRemove"
                  (click)="removeCountry(selectCountry)">Remove</a>
             </div>
           </div>
-        </div>
-        <div class="form-group">
-          <a id="add-country" (click)="addCountrySelection()">+{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" |
-            translate}}</a>
+          <div class="row no-gutters">
+            <a id="add-country" href="javascript:void(0)" class="Add__row__cta" (click)="addCountrySelection()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" |
+              translate}}</a>
+          </div>
         </div>
       </div>
     </div>

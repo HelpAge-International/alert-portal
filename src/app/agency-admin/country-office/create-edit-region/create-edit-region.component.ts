@@ -349,6 +349,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
               this.counter++;
             }
           }
+          this.hideRemove = !( this.counter > 0 );
         }
       })
       .do(region => {
