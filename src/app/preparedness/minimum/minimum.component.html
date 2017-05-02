@@ -100,7 +100,7 @@
                     </div>
                     <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
                         
-                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover" aria-expanded="false" aria-controls="notes_popover">
+                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'notes_popover_' + action.key">
                             <div class="fa-stack">
                                 <i class="fa fa-comment fa-stack-2x"></i>
                                 <i class="fa fa-stack-1x fa-inverse">2</i>
@@ -111,12 +111,30 @@
                     </div>
                     <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
                         
+                        <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#documents_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'documents_popover_' + action.key" *ngIf="action.docsCount > 0">
+                            <div class="fa-stack">
+                                <i class="fa fa-file fa-stack-2x"></i>
+                                <i class="fa fa-stack-1x fa-inverse">{{action.docsCount}}</i>
+                            </div>
+                            <span>Doc</span>
+                        </a>
+                        
                     </div>
                     <div class="col-md-3 col-sm-4 btn-block">
-                        
-                            <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
-                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
-                        
+                        	<template [ngIf]="action.actionStatus == actionStatus.InProgress">
+		                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+		                            class="btn btn-outline-primary btn-block ">Mark as complete</a>	
+                        	</template>
+                        	<template [ngIf]="action.actionStatus == actionStatus.Expired">
+		                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+                                	class="btn btn-outline-primary btn-block ">Assign this action</a>
+                        	</template>
+                        	<template [ngIf]="action.actionStatus == actionStatus.Inactive">
+		                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+                                	class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
+                        	</template>
+                        	
+                            
                         <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
                     </div>
                 </div>
@@ -129,7 +147,7 @@
                 </div>
             </div>
             
-			<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+			<div id="notes_popover_{{action.key}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
 				<!-- Notes --> 
 			<div class="row Spaced">
 			    <div class="col-md-2"></div>
@@ -187,6 +205,33 @@
 			    </div>
 			</div>
 
+			</div>
+
+			<div id="documents_popover_{{action.key}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+				<!-- Documents --> 
+				<div class="row Spaced">
+				    <div class="col-md-2"></div>
+				    <div class="col-md-10">
+				        <div class="row Spaced align-items-center">
+				            <div class="col-sm-6 col-8">
+				                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
+				            </div>
+				            <div class="col-sm-6 col-4 text-right">
+				                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
+				            </div>
+				        </div>
+				        <div class="row documents-popover__item">
+				            <div class="col-12">
+				                <p>
+				                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+				                </p>
+				                <p>
+				                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+				                </p>
+				            </div>
+				        </div>
+				    </div>
+				</div>
 			</div>
 
             

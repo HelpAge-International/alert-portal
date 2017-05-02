@@ -18,7 +18,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	ACTION_LEVEL = Constants.ACTION_LEVEL;
 	ACTION_TYPE = Constants.ACTION_TYPE;
 	private subscriptions: RxHelper;
-	private uid: string = "";
+	private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";
 	private actions: any[] = [];
 	private users: any[] = [];
 	private actionStatus = ActionStatus;
@@ -37,9 +37,25 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 						let agencyId = actions.$key
 						Object.keys(actions).map(action => {
 							actions[action].key = action;
+							actions[action].docsCount = 0;
 							let userKey = actions[action].assignee;
+							try {
+								actions[action].docsCount = Object.keys(actions[action].documents).length;
+							} catch(e){
+								console.log('No docs');
+							}
+							
+
 							this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/userPublic/' + userKey).subscribe(_ => {
-								this.users[userKey] = _.firstName + " " + _.lastName;
+								if (_.$exists()){
+									this.users[userKey] = _.firstName + " " + _.lastName;
+									actions[action].assigned = true;
+								}
+								else{
+									this.users[userKey] = "Unassigned";//TODO translate somehow
+									actions[action].assigned = false;
+								}
+
 							}));
 
 							if (actions[action].level == ActionLevel.MPA){
@@ -48,8 +64,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 						});
 					});
 				}));
-
-				console.log(this.actions.length);
 
 			    this.subscriptions.add(subscription);
 			} else {

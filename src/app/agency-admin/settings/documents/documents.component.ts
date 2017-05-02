@@ -18,7 +18,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 	COUNTRIES = Constants.COUNTRIES;
 	private CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
 	private DocTypeEnum = Object.keys(DocumentType).map(k => DocumentType[k]).filter(v => typeof v === "string") as string[];
-	private uid: string = "qbyONHp4xqZy2eUw0kQHU7BAcov1";//TODO remove hard coded agency ID
+	private uid: string;
 	private subscriptions: RxHelper;
 	private exporting: boolean = false;
 
@@ -70,7 +70,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 		this.docFilterSubject.next();
 		let subscription = this.af.auth.subscribe(auth => {
 			if (auth) {
-				// this.uid = auth.uid; //TODO remove comment
+				this.uid = auth.uid;
 				this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/countryOffice/' + this.uid, this.countriesFilter).subscribe(_ => {
 					this.countries = _;
 					Object.keys(this.countries).map(country => {
