@@ -5,7 +5,8 @@ import {RxHelper} from "../utils/RxHelper";
 import {Constants} from "../utils/Constants";
 import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Observable} from "rxjs/Observable";
-declare var jQuery: any;
+import set = Reflect.set;
+declare const jQuery: any;
 
 @Component({
   selector: 'app-response-plans',
@@ -20,11 +21,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private uid: string;
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
-  private notes: FirebaseListObservable<any[]>;
+  // private notes: FirebaseListObservable<any[]>;
   private planToApproval: any;
   private userType: number = -1;
   private hideWarning: boolean = true;
   private waringMessage: string;
+  private countryId: string;
+  private notes: any [] = [];
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -47,6 +50,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(admin => {
         if (admin.countryId) {
           this.userType = UserType.CountryAdmin;
+          this.countryId = admin.countryId;
           this.getResponsePlans(admin.countryId);
         } else {
           console.log("check other user types!")
@@ -74,7 +78,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.notes = this.af.database.list(Constants.APP_STATUS + "/note/" + id)
+    // this.notes = this.af.database.list(Constants.APP_STATUS + "/note/" + id)
   }
 
   ngOnDestroy() {
@@ -111,14 +115,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       let agencyId = "";
       let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
         .flatMap(countryAdmin => {
-          console.log(countryAdmin)
+          // console.log(countryAdmin);
           countryId = countryAdmin.countryId;
           agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
           return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
         })
         .do(director => {
-          if (director) {
-            // console.log(director);
+          if (director && director.$value) {
+            console.log("country director");
+            console.log(director);
             // console.log(this.planToApproval);
             // console.log("country id: " + countryId);
             // console.log(agencyId);
@@ -140,16 +145,46 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           });
           return setting;
         })
+        .first()
         .subscribe(approvalSettings => {
-          console.log("***");
-          console.log(approvalSettings)
-          console.log(approvalData);
+          // console.log("***");
+          // console.log(approvalSettings);
+          // console.log(approvalData);
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
+            approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
+            approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
             this.af.database.object(Constants.APP_STATUS).update(approvalData);
+          } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
+            console.log("regional enabled");
+            this.updateWithRegionalApproval(countryId, approvalData);
+          } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
+            console.log("global enabled")
+          } else {
+            console.log("both directors enabled")
           }
         });
       this.subscriptions.add(subscription);
     }
+  }
+
+  private updateWithRegionalApproval(countryId: string, approvalData) {
+
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
+      .subscribe(id => {
+        // console.log(id);
+        if (id && id.$value) {
+          approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
+          // console.log("*****approve data*****");
+          // console.log(approvalData);
+          // console.log("*****approve data*****");
+          this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
+            console.log("success");
+          }, error => {
+            console.log(error.message);
+          });
+        }
+      });
+    this.subscriptions.add(subscription);
   }
 
   closeModal() {
@@ -174,9 +209,63 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   getApproveStatus(approve) {
     let list = Object.keys(approve).map(key => approve[key]);
-    if (list[0] == ApprovalStatus.Approved) {
-      return true;
-    }
-    return false;
+    return list[0] == ApprovalStatus.Approved;
   }
+
+  activatePlan(plan) {
+    if (this.userType == UserType.CountryAdmin) {
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
+        .map(list => {
+          let newList = [];
+          list.forEach(item => {
+            let data = {};
+            data[item.$key] = Object.keys(item)[0];
+            newList.push(data);
+          });
+          return newList;
+        })
+        .first()
+        .subscribe(approvalList => {
+          for (let approval of approvalList) {
+            console.log(approval);
+            if (approval["countryDirector"]) {
+              this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
+                .set(ApprovalStatus.NeedsReviewing);
+            }
+            if (approval["regionDirector"]) {
+              this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
+                .set(ApprovalStatus.NeedsReviewing);
+            }
+            if (approval["globalDirector"]) {
+              this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
+                .set(ApprovalStatus.NeedsReviewing);
+            }
+          }
+        });
+      this.subscriptions.add(subscription);
+    }
+  }
+
+  getNotes(plan) {
+    // console.log(plan);
+    // let notes = [];
+    // if (plan.status == ApprovalStatus.NeedsReviewing) {
+    //   let subscription = this.af.database.list(Constants.APP_STATUS + "/note/" + plan.$key)
+    //     .first()
+    //     .subscribe(list => {
+    //       console.log(list);
+    //       list.forEach(item => {
+    //         if (!this.notes.includes(item)) {
+    //           this.notes.push(item);
+    //         }
+    //       });
+    //     });
+    //   this.subscriptions.add(subscription);
+    // }
+    // return this.notes;
+  }
+
+
 }

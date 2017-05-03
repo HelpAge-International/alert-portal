@@ -21,7 +21,7 @@
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Title">{{"GLOBAL.TITLE"| translate}}</label>
           <select class="form-control" id="Title" [(ngModel)]="title" name="title" required #selectTitle>
-            <!--<option value="null" [disabled]="true" [selected]="true" hidden>Placeholder</option>-->
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">{{PERSON_TITLE[title]|translate}}
             </option>
           </select>
@@ -42,6 +42,7 @@
           <label for="User-Type">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0" [value]="type">
               {{USER_TYPE[type] | translate}}
             </option>
@@ -50,6 +51,7 @@
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
           <label for="region">{{"AGENCY_ADMIN.STAFF.REGION"| translate}}</label>
           <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let region of regionList | async" [ngValue]="region">{{region.name}}</option>
           </select>
         </div>
@@ -57,14 +59,16 @@
           <label for="c-Office">{{"AGENCY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
           <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
                   [required]="!hideCountry">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let country of countryList | async" [ngValue]="country"
                     [selected]="country.location == countryOffice?.location">{{Country[country.location]}}
             </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Position">{{"GLOBAL.DEPARTMENT"| translate}}</label>
+          <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
           </select>
         </div>
@@ -89,6 +93,7 @@
         <div class="col-lg-4 col-md-6 form-group">
           <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let type of OFFICE_TYPE_SELECTION; let idx = index" [hidden]="idx==0" [value]="type">
               {{OFFICE_TYPE[type] | translate}}
             </option>
@@ -126,7 +131,7 @@
         <div class="col-lg-8 col-md-10 form-group">
           <label for="n-Done">{{"AGENCY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
-                    [(ngModel)]="trainingNeeds" required></textarea>
+                    [(ngModel)]="trainingNeeds"></textarea>
         </div>
       </div>
 

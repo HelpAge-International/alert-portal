@@ -42,7 +42,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private positionsList = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
   private UserType = Constants.USER_TYPE;
   private userTypesList = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
-    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin];
+    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
   private OfficeType = Constants.OFFICE_TYPE;
   private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
   private staffMap = new Map();
@@ -365,20 +365,6 @@ export class StaffComponent implements OnInit, OnDestroy {
               }
             }
           });
-        } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
-          users.forEach(user => {
-            if (user.officeType == this.filterOffice) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
         } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
           users.forEach(user => {
             if (user.department == this.filterPosition && user.officeType == this.filterOffice) {
@@ -393,35 +379,8 @@ export class StaffComponent implements OnInit, OnDestroy {
               }
             }
           });
-        } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-          users.forEach(user => {
-            if (user.department == this.filterPosition) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
-          users.forEach(user => {
-            if (user.userType == this.filterUser) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
+        }
+        else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
           users.forEach(user => {
             if (user.department == this.filterPosition && user.userType == this.filterUser) {
               let isDuplicate = false;
@@ -453,73 +412,6 @@ export class StaffComponent implements OnInit, OnDestroy {
         console.log(this.globalUsers)
       });
     this.subscriptions.add(subscriptionGlobalUser);
-    // if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
-    //     .subscribe(users => {
-    //       console.log(users)
-    //       this.globalUsers = users;
-    //     });
-    //   this.subscriptions.add(subscriptionGlobalUser);
-    // } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
-    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
-    //     query: {
-    //       orderByChild: "userType",
-    //       equalTo: this.filterUser
-    //     }
-    //   })
-    //     .subscribe(users => {
-    //       console.log(users)
-    //       this.globalUsers = users;
-    //     });
-    //   this.subscriptions.add(subscriptionGlobalUser);
-    // } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
-    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
-    //     query: {
-    //       orderByChild: "officeType",
-    //       equalTo: this.filterOffice
-    //     }
-    //   })
-    //     .subscribe(users => {
-    //       this.globalUsers = users;
-    //     });
-    //   this.subscriptions.add(subscriptionGlobalUser);
-    // } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
-    //   let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
-    //     query: {
-    //       orderByChild: "officeType",
-    //       equalTo: this.filterOffice
-    //     }
-    //   })
-    //     .map(users => {
-    //       let staffs = [];
-    //       users.forEach(item => {
-    //         if (item.officeType == this.filterOffice) {
-    //           staffs.push(item);
-    //         }
-    //       });
-    //       return staffs;
-    //     })
-    //     .subscribe(users => {
-    //       this.globalUsers = users;
-    //     });
-    //   this.subscriptions.add(subscriptionGlobalUser);
-    // }
-    // else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-    //
-    // } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
-    //
-    // } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
-    //
-    // } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-    //
-    // } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
-    //
-    // } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
-    //
-    // } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
-    //
-    // }
-
   }
 
 }

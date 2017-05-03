@@ -87,7 +87,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                     .subscribe(snapshots => {
                       snapshots.forEach(snapshot => {
                         if (snapshot.key == success.uid) {
-                          this.router.navigateByUrl("/response-plans"); // TODO - UPDATE when Dashboard module is implemented
+                          this.router.navigateByUrl("/dashboard");
                         }
                       });
                       this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
