@@ -191,7 +191,7 @@
                   <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">Close</button>
                 </div>
               </div>
-              <div class="row" *ngFor="let note of notes | async">
+              <div class="row" *ngFor="let note of getNotes(plan)">
                 <div class="col-sm-3 text-left">
                   {{note.time | date:'dd MMM yy'}}
                 </div>
