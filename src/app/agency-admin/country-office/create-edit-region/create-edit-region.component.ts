@@ -284,6 +284,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       let countriesData = {};
       for (let office of this.officeList) {
         countriesData[office] = true;
+        //update group
+        regionData["/directorRegion/" + office + "/"] = this.regionalDirectorId;
       }
       regionData["/region/" + this.uid + "/" + this.regionId + "/countries"] = countriesData;
       this.af.database.object(Constants.APP_STATUS).update(regionData).then(() => {
