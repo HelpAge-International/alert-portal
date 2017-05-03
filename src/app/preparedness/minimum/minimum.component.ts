@@ -6,6 +6,7 @@ import {ActionType, ActionLevel, ActionStatus} from "../../utils/Enums";
 import {Observable} from 'rxjs';
 import {RxHelper} from '../../utils/RxHelper';
 import {Frequency} from "../../utils/Frequency";
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-minimum',
@@ -36,6 +37,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 					_.map(actions => {
 						let agencyId = actions.$key
 						Object.keys(actions).map(action => {
+							if (typeof actions[action] !== 'object')
+								return;
+
+							actions[action].agencyId = agencyId;
 							actions[action].key = action;
 							actions[action].docsCount = 0;
 							let userKey = actions[action].assignee;
@@ -48,6 +53,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 							this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/userPublic/' + userKey).subscribe(_ => {
 								if (_.$exists()){
+									console.log(_);
 									this.users[userKey] = _.firstName + " " + _.lastName;
 									actions[action].assigned = true;
 								}
@@ -56,6 +62,30 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 									actions[action].assigned = false;
 								}
 
+							}));							
+
+							this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/note/' + action, {
+								query: {
+									orderByChild: "time"
+								}
+							}).subscribe(_ => {
+								actions[action].notesCount = _.length;
+								actions[action].notes = _;
+								actions[action].notes.map(note => {
+									let uploadByUser = note.uploadBy;
+									console.log(note);
+									this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/userPublic/' + uploadByUser).subscribe(_ => {
+										if (_.$exists()){
+											note.uploadByUser = _.firstName + " " + _.lastName;
+										}
+										else{
+											note.uploadByUser = "N/A";
+										}
+
+										return note;
+									}));
+								});
+								
 							}));
 
 							if (actions[action].level == ActionLevel.MPA){
@@ -85,6 +115,27 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 	private navigateToLogin() {
 		this.router.navigateByUrl(Constants.LOGIN_PATH);
+	}
+
+	private addNote(action){
+
+		let note = {
+			content: action.note,
+			time: firebase.database.ServerValue.TIMESTAMP,
+			uploadBy: this.uid
+		};
+
+		action.note = "";
+
+		this.af.database.list(Constants.APP_STATUS+'/note/' + action.key).push(note);
+	}
+
+	private editNote(note, action){
+
+	}
+
+	private deleteNote(note, action){
+		this.af.database.list(Constants.APP_STATUS+'/note/' + action.key + '/' + note.$key).remove();
 	}
 
 }

@@ -70,7 +70,8 @@
     <div class="Ribbon__section__wrap Spaced">
         <h2>Actions assigned to me</h2>
 
-    <div class="Accordion Preparedness-list" *ngFor="let action of actions">
+    <template ngFor let-action [ngForOf]="actions">
+	<div class="Accordion Preparedness-list" *ngIf="action.assignee == uid">
         <div class="row Preparedness-list__item">
             <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate | date:"d MMM ''yy"}}</strong></div>
             <div class="col-md-10 col-sm-10">
@@ -103,7 +104,7 @@
                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'notes_popover_' + action.key">
                             <div class="fa-stack">
                                 <i class="fa fa-comment fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">2</i>
+                                <i class="fa fa-stack-1x fa-inverse">{{action.notesCount}}</i>
                             </div>
                             <span>Notes</span>
                         </a>
@@ -159,48 +160,30 @@
 			        </div>
 			        <div class="row">
 			            <div class="col-12 form-group">
-			                <textarea name="confirm_complete" cols="40" rows="4" class="form-control" placeholder="Add a completion note here"></textarea>
+			                <textarea name="confirm_complete" cols="40" rows="4" class="form-control" placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
 			            </div>
 			        </div>
-			        <div class="row notes-popover__item Small-spaced">
-			            <div class="col-sm-3">13 May 2016</div>
+			        <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
+			            <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
 			            <div class="col-sm-9">
 			                <div class="row">
 			                    <div class="col-12">
-			                        This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in everyone’s calendar.
+			                        {{note.content}}
 			                    </div>
 			                </div>
 			                <div class="row align-items-center">
 			                    <div class="col-6 text-bold Small-spaced">
-			                        by Andrew Collodel
+			                        by {{note.uploadByUser}}
 			                    </div>
-			                    <div class="col-6 text-bold text-right">
-			                        <a href="#" class="text-primary">Edit</a> | <a href="#" class="text-danger">Delete</a> 
-			                    </div>
-			                </div>
-			            </div>
-			        </div>
-			        <div class="row notes-popover__item Small-spaced">
-			            <div class="col-sm-3">13 May 2016</div>
-			            <div class="col-sm-9">
-			                <div class="row">
-			                    <div class="col-12">
-			                        This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in everyone’s calendar.
-			                    </div>
-			                </div>
-			                <div class="row align-items-center">
-			                    <div class="col-6 text-bold Small-spaced">
-			                        by Andrew Collodel
-			                    </div>
-			                    <div class="col-6 text-bold text-right">
-			                        <a href="#" class="text-primary">Edit</a> | <a href="#" class="text-danger">Delete</a> 
+			                    <div class="col-6 text-bold text-right" *ngIf="note.uploadBy == uid">
+			                        <a href="javascript:void(0);" class="text-primary" (click)="editNote(note, action)">Edit</a> | <a href="javascript:void(0);" class="text-danger" (click)="deleteNote(note, action)">Delete</a> 
 			                    </div>
 			                </div>
 			            </div>
 			        </div>
 			    </div>
 			    <div class="col-md-3 btn-block">
-			        <a href="javascript:void(0)" class="btn btn-primary btn-block">ADD NOTE</a>
+			        <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="addNote(action)">ADD NOTE</a>
 			        <a href="javascript:void(0)" class="btn btn-block" onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
 			    </div>
 			</div>
@@ -233,10 +216,9 @@
 				    </div>
 				</div>
 			</div>
-
-            
         </div>
     </div>
+    </template>
     
 	<div id="popover_content3" class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
 		<!-- Mark as complete --> 
@@ -276,225 +258,7 @@
 		    </div>
 		</div>
 	</div>
-
-
-        
-    <div class="Accordion Preparedness-list">
-        <div class="row Preparedness-list__item">
-            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>29 sept '16</strong></div>
-            <div class="col-md-10 col-sm-10">
-                <div class="row">
-                    <div class="col-md-5 col-sm-4">Develop volunteer’s programme/framework on emergencies</div>
-                    <div class="col-md-2 col-sm-2 text-warning">
-                        <span class="fa-stack">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
-                        </span> 
-                        In Progress
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover" aria-expanded="false" aria-controls="notes_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-comment fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">0</i>
-                            </div>
-                            <span>Notes</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                    </div>
-                    <div class="col-md-3 col-sm-4 btn-block">
-                        
-                            <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
-                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
-                        
-                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="subrow-line">Budget: <strong>&pound;100</strong></div>
-                    <div class="subrow-line">Type: <strong>Mandated</strong></div>
-                    <div class="subrow-line">Department: <strong>HR</strong></div>
-                    <div class="subrow-line">Assigned to: <strong>Andrew Collodel</strong></div>
-                    
-                </div>
-            </div>
-            
-<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-	
-</div>
-
-            
-        </div>
-    </div>
-    
-<div id="popover_content3" class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
-	
-</div>
-
-
-
-        
-    <div class="Accordion Preparedness-list">
-        <div class="row Preparedness-list__item">
-            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Expires <strong>13 may '16</strong></div>
-            <div class="col-md-10 col-sm-10">
-                <div class="row">
-                    <div class="col-md-5 col-sm-4">Organise regular quarterly meeting of ERT</div>
-                    <div class="col-md-2 col-sm-2 text-success">
-                        <span class="fa-stack">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-check fa-stack-1x fa-inverse"></i>
-                        </span> 
-                        Completed
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover" aria-expanded="false" aria-controls="notes_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-comment fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">2</i>
-                            </div>
-                            <span>Notes</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                        <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#documents_popover" aria-expanded="false" aria-controls="documents_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-file fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">2</i>
-                            </div>
-                            <span>Doc</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-3 col-sm-4 btn-block">
-                        
-                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="subrow-line">Budget: <strong>&pound;0</strong></div>
-                    <div class="subrow-line">Type: <strong>Custom</strong></div>
-                    <div class="subrow-line">Department: <strong>HR</strong></div>
-                    <div class="subrow-line">Assigned to: <strong>Andrew Collodel</strong></div>
-                    
-                </div>
-            </div>
-            
-<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-	
-</div>
-
-            
-                
-<div id="documents_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
-	<!-- Documents --> 
-<div class="row Spaced">
-    <div class="col-md-2"></div>
-    <div class="col-md-10">
-        <div class="row Spaced align-items-center">
-            <div class="col-sm-6 col-8">
-                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
-            </div>
-            <div class="col-sm-6 col-4 text-right">
-                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
-            </div>
-        </div>
-        <div class="row documents-popover__item">
-            <div class="col-12">
-                <p>
-                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
-                </p>
-                <p>
-                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-</div>
-
-            
-        </div>
-    </div>
-    
-<div id="popover_content3" class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
-	
-</div>
-
-
-
-        
-    <div class="Accordion Preparedness-list">
-        <div class="row Preparedness-list__item">
-            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Expires <strong>29 aug '16</strong></div>
-            <div class="col-md-10 col-sm-10">
-                <div class="row">
-                    <div class="col-md-5 col-sm-4">Identify a key communication staff member to work on Completed communication/media outputs when there is an emergency. If this is an existing staff member, ensure this is agreed with their line manager and included in their JD.</div>
-                    <div class="col-md-2 col-sm-2 text-success">
-                        <span class="fa-stack">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-check fa-stack-1x fa-inverse"></i>
-                        </span> 
-                        Completed
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover" aria-expanded="false" aria-controls="notes_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-comment fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">2</i>
-                            </div>
-                            <span>Notes</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                        <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#documents_popover" aria-expanded="false" aria-controls="documents_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-file fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">2</i>
-                            </div>
-                            <span>Doc</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-3 col-sm-4 btn-block">
-                        
-                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="subrow-line">Budget: <strong>&pound;100</strong></div>
-                    <div class="subrow-line">Type: <strong>Mandated</strong></div>
-                    <div class="subrow-line">Department: <strong>Logistics</strong></div>
-                    <div class="subrow-line">Assigned to: <strong>Andrew Collodel</strong></div>
-                    
-                </div>
-            </div>
-            
-<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-	
-</div>
-
-            
-        </div>
-    </div>
-    
-<div id="popover_content3" class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
-	
-</div>
-
-
-     </div>
+	 </div>
 
      <div class="Ribbon__section__wrap Spaced">
         <div class="Accordion--b-white Accordion__hide-links">
@@ -507,64 +271,155 @@
             </div>
         </div>
         <div class="Accordion__Content collapse" id="collapseTwo">
-            
-    <div class="Accordion Preparedness-list">
-        <div class="row Preparedness-list__item">
-            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Expired on <strong>29 sept '16</strong></div>
-            <div class="col-md-10 col-sm-10">
-                <div class="row">
-                    <div class="col-md-5 col-sm-4">Develop volunteer’s programme/framework on emergencies</div>
-                    <div class="col-md-2 col-sm-2 text-danger">
-                        <span class="fa-stack">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-times fa-stack-1x fa-inverse"></i>
-                        </span> 
-                        Expired
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover" aria-expanded="false" aria-controls="notes_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-comment fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">0</i>
-                            </div>
-                            <span>Notes</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                    </div>
-                    <div class="col-md-3 col-sm-4 btn-block">
-                        
-                            <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
-                                class="btn btn-outline-primary btn-block ">Assign this action</a>
-                        
-                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="subrow-line">Budget: <strong>&pound;100</strong></div>
-                    <div class="subrow-line">Type: <strong>Mandated</strong></div>
-                    <div class="subrow-line">Department: <strong>Logistics</strong></div>
-                    <div class="subrow-line">Assigned to: <strong>Unassigned</strong></div>
-                    
-                </div>
-            </div>
-            
-<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-	
-</div>
+		    <template ngFor let-action [ngForOf]="actions">
+			<div class="Accordion Preparedness-list" *ngIf="action.assignee == udefined || action.assignee == null">
+		        <div class="row Preparedness-list__item">
+		            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate | date:"d MMM ''yy"}}</strong></div>
+		            <div class="col-md-10 col-sm-10">
+		                <div class="row">
+		                    <div class="col-md-5 col-sm-4">{{action.task}}</div>
+		                    <div class="col-md-2 col-sm-2"
+		                    				[ngClass]="
+		                            		{
+		                            		'text-danger': action.actionStatus == actionStatus.Expired,
+		                            		'text-warning': action.actionStatus == actionStatus.InProgress,
+		                            		'text-success': action.actionStatus == actionStatus.Completed,
+		                            		'text-muted': action.actionStatus == actionStatus.Inactive
+		                            		}
+		                            		">
+		                        <span class="fa-stack">
+		                            <i class="fa fa-circle fa-stack-2x"></i>
+		                            <i class="fa fa-stack-1x fa-inverse" 
+		                            	[ngClass]="
+		                            		{
+		                            		'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
+		                            		'fa-check': action.actionStatus == actionStatus.Completed,
+		                            		'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
+		                            		}
+		                            		"></i>
+		                        </span> 
+		                        {{ACTION_STATUS[action.actionStatus] | translate}}
+		                    </div>
+		                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+		                        
+		                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'notes_popover_' + action.key">
+		                            <div class="fa-stack">
+		                                <i class="fa fa-comment fa-stack-2x"></i>
+		                                <i class="fa fa-stack-1x fa-inverse">{{action.notesCount}}</i>
+		                            </div>
+		                            <span>Notes</span>
+		                        </a>
+		                        
+		                    </div>
+		                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+		                        
+		                        <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#documents_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'documents_popover_' + action.key" *ngIf="action.docsCount > 0">
+		                            <div class="fa-stack">
+		                                <i class="fa fa-file fa-stack-2x"></i>
+		                                <i class="fa fa-stack-1x fa-inverse">{{action.docsCount}}</i>
+		                            </div>
+		                            <span>Doc</span>
+		                        </a>
+		                        
+		                    </div>
+		                    <div class="col-md-3 col-sm-4 btn-block">
+		                        	<template [ngIf]="action.actionStatus == actionStatus.InProgress">
+				                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+				                            class="btn btn-outline-primary btn-block ">Mark as complete</a>	
+		                        	</template>
+		                        	<template [ngIf]="action.actionStatus == actionStatus.Expired">
+				                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+		                                	class="btn btn-outline-primary btn-block ">Assign this action</a>
+		                        	</template>
+		                        	<template [ngIf]="action.actionStatus == actionStatus.Inactive">
+				                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+		                                	class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
+		                        	</template>
+		                        	
+		                            
+		                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
+		                    </div>
+		                </div>
+		                <div class="row">
+		                    <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
+		                    <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+		                    <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
+		                    <div class="subrow-line">Assigned to: <strong>{{users[action.assignee]}}</strong></div>
+		                    
+		                </div>
+		            </div>
+		            
+					<div id="notes_popover_{{action.key}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+						<!-- Notes --> 
+					<div class="row Spaced">
+					    <div class="col-md-2"></div>
+					    <div class="col-md-7">
+					        <div class="row">
+					            <div class="col-12">
+					                <h4>Notes</h4>
+					            </div>
+					        </div>
+					        <div class="row">
+					            <div class="col-12 form-group">
+					                <textarea name="confirm_complete" cols="40" rows="4" class="form-control" placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
+					            </div>
+					        </div>
+					        <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
+					            <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
+					            <div class="col-sm-9">
+					                <div class="row">
+					                    <div class="col-12">
+					                        {{note.content}}
+					                    </div>
+					                </div>
+					                <div class="row align-items-center">
+					                    <div class="col-6 text-bold Small-spaced">
+					                        by {{note.uploadByUser}}
+					                    </div>
+					                    <div class="col-6 text-bold text-right" *ngIf="note.uploadBy == uid">
+					                        <a href="javascript:void(0);" class="text-primary" (click)="editNote(note, action)">Edit</a> | <a href="javascript:void(0);" class="text-danger" (click)="deleteNote(note, action)">Delete</a> 
+					                    </div>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-md-3 btn-block">
+					        <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="addNote(action)">ADD NOTE</a>
+					        <a href="javascript:void(0)" class="btn btn-block" onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
+					    </div>
+					</div>
 
-            
-        </div>
-    </div>
-    
-<div id="popover_content3" class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
-	
-</div>
+					</div>
 
-
+					<div id="documents_popover_{{action.key}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+						<!-- Documents --> 
+						<div class="row Spaced">
+						    <div class="col-md-2"></div>
+						    <div class="col-md-10">
+						        <div class="row Spaced align-items-center">
+						            <div class="col-sm-6 col-8">
+						                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
+						            </div>
+						            <div class="col-sm-6 col-4 text-right">
+						                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
+						            </div>
+						        </div>
+						        <div class="row documents-popover__item">
+						            <div class="col-12">
+						                <p>
+						                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+						                </p>
+						                <p>
+						                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+						                </p>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+					</div>
+		        </div>
+		    </div>
+		    </template>
         </div>
   </div>
 
@@ -579,63 +434,155 @@
             </div>
         </div>
         <div class="Accordion__Content collapse" id="collapseThree">
-            
-    <div class="Accordion Preparedness-list">
-        <div class="row Preparedness-list__item">
-            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>-</strong></div>
-            <div class="col-md-10 col-sm-10">
-                <div class="row">
-                    <div class="col-md-5 col-sm-4">Archived action title</div>
-                    <div class="col-md-2 col-sm-2 text-muted">
-                        <span class="fa-stack">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-times fa-stack-1x fa-inverse"></i>
-                        </span> 
-                        Inactive
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover" aria-expanded="false" aria-controls="notes_popover">
-                            <div class="fa-stack">
-                                <i class="fa fa-comment fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">0</i>
-                            </div>
-                            <span>Notes</span>
-                        </a>
-                        
-                    </div>
-                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-                        
-                    </div>
-                    <div class="col-md-3 col-sm-4 btn-block">
-                        
-                            <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
-                                class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
-                        
-                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="subrow-line">Budget: <strong>&pound;100</strong></div>
-                    <div class="subrow-line">Type: <strong>Mandated</strong></div>
-                    <div class="subrow-line">Department: <strong>Logistics</strong></div>
-                    <div class="subrow-line">Assigned to: <strong>Unassigned</strong></div>
-                    
-                </div>
-            </div>
-            
-<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-	
-</div>
+        <template ngFor let-action [ngForOf]="actions">
+			<div class="Accordion Preparedness-list" *ngIf="action.actionStatus == actionStatus.Inactive">
+		        <div class="row Preparedness-list__item">
+		            <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate | date:"d MMM ''yy"}}</strong></div>
+		            <div class="col-md-10 col-sm-10">
+		                <div class="row">
+		                    <div class="col-md-5 col-sm-4">{{action.task}}</div>
+		                    <div class="col-md-2 col-sm-2"
+		                    				[ngClass]="
+		                            		{
+		                            		'text-danger': action.actionStatus == actionStatus.Expired,
+		                            		'text-warning': action.actionStatus == actionStatus.InProgress,
+		                            		'text-success': action.actionStatus == actionStatus.Completed,
+		                            		'text-muted': action.actionStatus == actionStatus.Inactive
+		                            		}
+		                            		">
+		                        <span class="fa-stack">
+		                            <i class="fa fa-circle fa-stack-2x"></i>
+		                            <i class="fa fa-stack-1x fa-inverse" 
+		                            	[ngClass]="
+		                            		{
+		                            		'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
+		                            		'fa-check': action.actionStatus == actionStatus.Completed,
+		                            		'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
+		                            		}
+		                            		"></i>
+		                        </span> 
+		                        {{ACTION_STATUS[action.actionStatus] | translate}}
+		                    </div>
+		                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+		                        
+		                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'notes_popover_' + action.key">
+		                            <div class="fa-stack">
+		                                <i class="fa fa-comment fa-stack-2x"></i>
+		                                <i class="fa fa-stack-1x fa-inverse">{{action.notesCount}}</i>
+		                            </div>
+		                            <span>Notes</span>
+		                        </a>
+		                        
+		                    </div>
+		                    <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+		                        
+		                        <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#documents_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'documents_popover_' + action.key" *ngIf="action.docsCount > 0">
+		                            <div class="fa-stack">
+		                                <i class="fa fa-file fa-stack-2x"></i>
+		                                <i class="fa fa-stack-1x fa-inverse">{{action.docsCount}}</i>
+		                            </div>
+		                            <span>Doc</span>
+		                        </a>
+		                        
+		                    </div>
+		                    <div class="col-md-3 col-sm-4 btn-block">
+		                        	<template [ngIf]="action.actionStatus == actionStatus.InProgress">
+				                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+				                            class="btn btn-outline-primary btn-block ">Mark as complete</a>	
+		                        	</template>
+		                        	<template [ngIf]="action.actionStatus == actionStatus.Expired">
+				                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+		                                	class="btn btn-outline-primary btn-block ">Assign this action</a>
+		                        	</template>
+		                        	<template [ngIf]="action.actionStatus == actionStatus.Inactive">
+				                    	<a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
+		                                	class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
+		                        	</template>
+		                        	
+		                            
+		                        <a href="javascript:void(0)" class="btn btn-block">Edit action</a>
+		                    </div>
+		                </div>
+		                <div class="row">
+		                    <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
+		                    <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+		                    <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
+		                    <div class="subrow-line">Assigned to: <strong>{{users[action.assignee]}}</strong></div>
+		                    
+		                </div>
+		            </div>
+		            
+					<div id="notes_popover_{{action.key}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+						<!-- Notes --> 
+					<div class="row Spaced">
+					    <div class="col-md-2"></div>
+					    <div class="col-md-7">
+					        <div class="row">
+					            <div class="col-12">
+					                <h4>Notes</h4>
+					            </div>
+					        </div>
+					        <div class="row">
+					            <div class="col-12 form-group">
+					                <textarea name="confirm_complete" cols="40" rows="4" class="form-control" placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
+					            </div>
+					        </div>
+					        <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
+					            <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
+					            <div class="col-sm-9">
+					                <div class="row">
+					                    <div class="col-12">
+					                        {{note.content}}
+					                    </div>
+					                </div>
+					                <div class="row align-items-center">
+					                    <div class="col-6 text-bold Small-spaced">
+					                        by {{note.uploadByUser}}
+					                    </div>
+					                    <div class="col-6 text-bold text-right" *ngIf="note.uploadBy == uid">
+					                        <a href="javascript:void(0);" class="text-primary" (click)="editNote(note, action)">Edit</a> | <a href="javascript:void(0);" class="text-danger" (click)="deleteNote(note, action)">Delete</a> 
+					                    </div>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-md-3 btn-block">
+					        <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="addNote(action)">ADD NOTE</a>
+					        <a href="javascript:void(0)" class="btn btn-block" onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
+					    </div>
+					</div>
 
-            
-        </div>
-    </div>
-    
-<div id="popover_content3" class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
-	
-</div>
+					</div>
 
+					<div id="documents_popover_{{action.key}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+						<!-- Documents --> 
+						<div class="row Spaced">
+						    <div class="col-md-2"></div>
+						    <div class="col-md-10">
+						        <div class="row Spaced align-items-center">
+						            <div class="col-sm-6 col-8">
+						                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
+						            </div>
+						            <div class="col-sm-6 col-4 text-right">
+						                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
+						            </div>
+						        </div>
+						        <div class="row documents-popover__item">
+						            <div class="col-12">
+						                <p>
+						                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+						                </p>
+						                <p>
+						                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+						                </p>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+					</div>
+		        </div>
+		    </div>
+		    </template>
 
         </div>
   </div>
