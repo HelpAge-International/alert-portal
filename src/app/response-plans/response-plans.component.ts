@@ -21,13 +21,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private uid: string;
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
-  // private notes: FirebaseListObservable<any[]>;
   private planToApproval: any;
   private userType: number = -1;
   private hideWarning: boolean = true;
   private waringMessage: string;
   private countryId: string;
-  private notes: any [] = [];
+  private notesMap = new Map();
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -77,8 +76,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
-
-    // this.notes = this.af.database.list(Constants.APP_STATUS + "/note/" + id)
   }
 
   ngOnDestroy() {
@@ -249,22 +246,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   getNotes(plan) {
-    // console.log(plan);
-    // let notes = [];
-    // if (plan.status == ApprovalStatus.NeedsReviewing) {
-    //   let subscription = this.af.database.list(Constants.APP_STATUS + "/note/" + plan.$key)
-    //     .first()
-    //     .subscribe(list => {
-    //       console.log(list);
-    //       list.forEach(item => {
-    //         if (!this.notes.includes(item)) {
-    //           this.notes.push(item);
-    //         }
-    //       });
-    //     });
-    //   this.subscriptions.add(subscription);
-    // }
-    // return this.notes;
+    if (plan.status == ApprovalStatus.NeedsReviewing) {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/note/" + plan.$key)
+        .first()
+        .subscribe(list => {
+          this.notesMap.set(plan.$key, list);
+        });
+      this.subscriptions.add(subscription);
+    }
+    return this.notesMap.get(plan.$key);
   }
 
 
