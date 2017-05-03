@@ -160,7 +160,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private initData() {
     this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
-    this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid)
+    this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid);
     this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departments => {
         let names = [];
@@ -246,11 +246,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.showAlert();
       return;
     }
-    if (!this.trainingNeeds) {
-      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_TRAINING_NEEDS";
-      this.showAlert();
-      return;
-    }
     if (typeof (this.isResponseMember) == "undefined") {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_REPONSE_TEAM_ANSWER";
       this.showAlert();
@@ -259,16 +254,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   submit() {
+
     if (!CustomerValidator.EmailValidator(this.email)) {
       this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
       return;
     }
-    // if (this.hideCountry) {
-    //   this.waringMessage = "Only staff with country office is working now, other type is still in progress"
-    //   this.showAlert();
-    //   return;
-    // }
     console.log("submit");
     this.collectData();
   }
@@ -367,7 +358,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staff.position = this.position;
     staff.officeType = Number(this.officeType);
     staff.skill = this.staffSkills;
-    staff.training = this.trainingNeeds;
+    staff.training = this.trainingNeeds ? this.trainingNeeds : "None";
     staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
     if (this.isUpdateOfficeOnly) {
