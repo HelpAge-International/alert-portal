@@ -29,8 +29,13 @@ function gpaActionChanged(element) {
 function addDepartmentModal(select, modal_id) {
     if ($(select).find(":selected").hasClass("add-department")) {
         $(modal_id).modal("show");
+        
+        $('#add_department').on('hidden.bs.modal', function (e) {
+            $(select).find("option").first().prop('selected', true);
+        })
     }
 }
+
 
 "use strict";
 
