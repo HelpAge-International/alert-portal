@@ -45,10 +45,10 @@
                 </span>
               In progress
             </a>
-            <div id="{{plan.$key}}"
-                 class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
-              check this out
-            </div>
+            <!--<div id="{{plan.$key}}"-->
+            <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
+            <!--check this out-->
+            <!--</div>-->
           </div>
 
           <div *ngIf="plan?.status==1" class="col-md-3 col-sm-2 Plans-list__item--status">
@@ -143,21 +143,29 @@
               <div class="row">
                 <div class="col-md-12">
                   <strong>Directors</strong>
-                  <div class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left">Country Director</div>
-                    <div class="col-6 text-right text-success">Approved <i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
+                  <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
+                    <div class="col-6 text-left" *ngIf="idx==0">Country Director</div>
+                    <div class="col-6 text-left" *ngIf="idx==1">Regional Director</div>
+                    <div class="col-6 text-left" *ngIf="idx==2">Global Director</div>
+                    <div class="col-md-6 text-right text-success">
+                      Approved
+                      <i class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
-                  <div class="row no-gutters Line-row">
-                    <div class="col-6 text-left">Regional Director</div>
-                    <div class="col-6 text-right text-success">Approved <i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
-                  </div>
-                  <div class="row no-gutters Line-row">
-                    <div class="col-6 text-left">Global Director</div>
-                    <div class="col-6 text-right text-success">Approved <i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
-                  </div>
+                  <!--<div class="row no-gutters Small-spaced">-->
+                  <!--<div class="col-6 text-left">Country Director</div>-->
+                  <!--<div class="col-6 text-right text-success">Approved <i-->
+                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
+                  <!--</div>-->
+                  <!--<div class="row no-gutters Line-row">-->
+                  <!--<div class="col-6 text-left">Regional Director</div>-->
+                  <!--<div class="col-6 text-right text-success">Approved <i-->
+                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
+                  <!--</div>-->
+                  <!--<div class="row no-gutters Line-row">-->
+                  <!--<div class="col-6 text-left">Global Director</div>-->
+                  <!--<div class="col-6 text-right text-success">Approved <i-->
+                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
+                  <!--</div>-->
                 </div>
               </div>
 
@@ -183,7 +191,7 @@
                   <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">Close</button>
                 </div>
               </div>
-              <div class="row" *ngFor="let note of notes | async">
+              <div class="row" *ngFor="let note of getNotes(plan)">
                 <div class="col-sm-3 text-left">
                   {{note.time | date:'dd MMM yy'}}
                 </div>
@@ -509,8 +517,8 @@
 
         <div class="Accordion Plans-list">
           <div class="row align-items-center Plans-list__item">
-            <div class="col-md-2 col-sm-2 Plans-list__item--type">Typhoon</div>
-            <div class="col-md-3 col-sm-3">Rapid response health, shelter and cash project to 6,000 typhoon…</div>
+            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{plan?.hazardScenario}}</div>
+            <div class="col-md-3 col-sm-3">{{plan?.name}}</div>
             <div class="col-md-3 col-sm-2 Plans-list__item--status">
               <a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon6" aria-expanded="false"
                  aria-controls="popover_content">
@@ -521,19 +529,19 @@
                 Archived
               </a>
 
-              <div id="ribbon6"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
-
-              </div>
+              <!--<div id="ribbon6"-->
+              <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
+              <!--Archived-->
+              <!--</div>-->
 
             </div>
             <div class="col-md-1 col-sm-2 Plans-list__item--progress">
-              <div>70%</div>
-              01/01/2017
+              <div>{{plan?.sectionCompleted / plan?.totalSections * 100}}%</div>
+              {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
 
-              <a href="#" class="btn btn-block text-muted btn-outline-secondary">Re-activate</a>
+              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">Re-activate</a>
 
             </div>
           </div>
