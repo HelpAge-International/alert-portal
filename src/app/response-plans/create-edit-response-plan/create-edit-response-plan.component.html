@@ -44,17 +44,17 @@
               <label for="H-scen">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
                 translate}}</label>
               <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected" (change)="filterData()">
-                <!--<option hidden disabled selected>Please select</option>-->
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let hazardScenario of hazardScenariosList" [value]="hazardScenario">
                   {{HazardScenario[hazardScenario] | translate}}
                 </option>
               </select>
             </div>
             <div class="col-lg-6 col-md-6">
-              <label for="P-lead">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
+              <label for="P-lead1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
                 translate}}</label>
-              <select class="form-control" id="P-lead" [(ngModel)]="staffMemberSelected" (change)="staffSelected()">
-                <option hidden disabled selected>Please select</option>
+              <select class="form-control" id="P-lead1" [(ngModel)]="staffMemberSelected" (change)="staffSelected()">
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let staffMember of staffMembers">{{staffMember.firstName + ' ' + staffMember.lastName}}
                 </option>
               </select>
@@ -83,24 +83,35 @@
         </div>
         <div class="Response__content Spaced">
 
+
+
+
+
+
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1" (change)="addToSummarizeScenarioList()">
+                <span class="input-group-addon">{{bulletPoint + 1}}</span>
+                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1"
+                       (change)="addToSummarizeScenarioList(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
+                   [hidden]="bulletPoint == 0">{{"GLOBAL.REMOVE"
                   | translate}}</a>
               </div>
             </div>
           </div>
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addSummarizeScenarioBulletPoint()"
-             [hidden]="summarizeScenarioBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+             [hidden]="summarizeScenarioBulletPointsCounter+1 == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
+
+
+
+
+
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
