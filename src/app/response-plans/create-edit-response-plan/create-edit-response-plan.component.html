@@ -84,10 +84,6 @@
         <div class="Response__content Spaced">
 
 
-
-
-
-
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
@@ -107,10 +103,6 @@
              [hidden]="summarizeScenarioBulletPointsCounter+1 == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
-
-
-
-
 
 
           <div class="row Spaced form-group">
@@ -476,151 +468,172 @@
         <div class="Response__content">
           <div class="Ribbon__section__wrap Spaced">
             <div class="Accordion Response-plans__activities">
-              <div class="row align-items-center">
-                <div class="col-md-3 col-lg-2 col-sm-4 col-4">
-                  <div class="Icon__selectable">
-                    <div class="water"></div>
+              <div *ngFor="let sector of sectorsRelatedTo; index as i">
+                <div class="row align-items-center">
+                  <div class="col-md-3 col-lg-2 col-sm-4 col-4">
+                    <div class="Icon__selectable">
+                      <div class="water"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{"SECTORS.WASH" | translate}}
+                    {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
+                  </div>
+                  <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
+                    {{activityMap.get(i)?activityMap.get(i)?.length:0}}
+                    {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
+                  </div>
+                  <div class="col-sm-1 col-12 text-center" data-toggle="collapse" [attr.href]="'#Activity'+sector"
+                       aria-expanded="true"
+                       [attr.aria-controls]="'Activity'+sector"><i class="fa fa-caret-down text-primary"
+                                                                   aria-hidden="true"></i>
                   </div>
                 </div>
-                <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{"SECTORS.WASH" | translate}}
-                  {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4></div>
-                <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">2
-                  {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
-                </div>
-                <div class="col-sm-1 col-12 text-center" data-toggle="collapse" href="#Activity1" aria-expanded="true"
-                     aria-controls="Activity1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
-              </div>
-              <div class="Accordion__Content collapse" id="Activity1">
+                <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
-                <div class="row Outlined Spaced align-items-center">
-                  <div class="col-sm-1 Small-spaced text-bold text-center">0</div>
-                  <div class="col-sm-8 Small-spaced">Example: 500 kits distributed across 4 communities</div>
-                  <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
-                    | translate}}</a></div>
-                </div>
-
-                <div class="row Outlined Spaced align-items-center">
-                  <div class="row Spaced col-lg-12 no-gutters">
-                    <div class="col-lg-12 text-right">
-                      <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
-                        | translate}}</a>
-                    </div>
-                  </div>
-                  <div class="row col-lg-12">
-                    <div class="col-lg-12 form-group">
-                      <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
-                        | translate}}</label>
-                      <input type="text" class="form-control" id="P-activity">
+                  <div *ngIf="activityMap.get(i)?.length > 0">
+                    <div *ngFor="let activity of activityMap.get(i); index as i"
+                         class="row Outlined Spaced align-items-center">
+                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i}}</div>
+                      <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
+                      <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
+                        | translate}}</a></div>
                     </div>
                   </div>
 
-                  <div class="row col-lg-12">
-                    <div class="col-lg-12 form-group">
-                      <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
-                        | translate}}</label>
-                      <input type="text" class="form-control" id="P-activity">
-                    </div>
-                  </div>
-
-                  <div class="row col-lg-12">
-                    <div class="col-lg-12 form-group">
-                      <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
-                        translate}}</label>
-                      <input type="text" class="form-control" id="P-activity">
-                    </div>
-                  </div>
-                  <div class="row col-lg-12 Spaced form-group">
-                    <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-                      | translate}}</label>
-                    <div class="row no-gutters Demographic__text">
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
+                  <div class="row Outlined Spaced align-items-center">
+                    <div class="row Spaced col-lg-12 no-gutters">
+                      <div class="col-lg-12 text-right">
+                        <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
+                          | translate}}</a>
                       </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-                  | translate}}</a>
-
-                <div class="Spaced">
-                  <div class="Selection-row no-gutters Spaced">
-                    <div class="form-group Small-spaced">
-                      <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.SOURCE_PLAN?" | translate}}</label>
                     </div>
                     <div class="row col-lg-12">
-                      <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                        type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-intern">
-                        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
-                      <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                        type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-region">
-                        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" | translate}}</label>
-                      <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                        type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">
-                        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" | translate}}</label>
+                      <div class="col-lg-12 form-group">
+                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
+                          | translate}}</label>
+                        <input type="text" class="form-control" id="P-activity">
+                      </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                      <div class="col-lg-12 form-group">
+                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
+                          | translate}}</label>
+                        <input type="text" class="form-control" id="P-activity">
+                      </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                      <div class="col-lg-12 form-group">
+                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+                          translate}}</label>
+                        <input type="text" class="form-control" id="P-activity">
+                      </div>
+                    </div>
+                    <div class="row col-lg-12 Spaced form-group">
+                      <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
+                        | translate}}</label>
+                      <div class="row no-gutters Demographic__text">
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="text" class="form-control"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="text" class="form-control"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="text" class="form-control"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="text" class="form-control"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="text" class="form-control"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="text" class="form-control"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row col-lg-12">
+                        <div class="col-lg-10"></div>
+                        <div class="col-lg-2">
+                          <button class="btn btn-secondary">Save</button>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
-                </div>
-                <div class="row Spaced subitem">
-                  <div class="col-lg-12 col-md-12">
-                    <label for="O-relate">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLEASE_EXPLAIN" |
-                      translate}}</label>
-                    <div class="input-group Small-spaced">
-                      <span class="input-group-addon">1</span>
-                      <input type="text" class="form-control">
+                  <!--<a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"-->
+                    <!--| translate}}</a>-->
+                  <a href="javascript:void(0)" class="Add__row__cta">Add another activity</a>
+
+                  <div class="Spaced">
+                    <div class="Selection-row no-gutters Spaced">
+                      <div class="form-group Small-spaced">
+                        <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.SOURCE_PLAN?" | translate}}</label>
+                      </div>
+                      <div class="row col-lg-12">
+                        <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods"
+                          id="source-intern">
+                          {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
+                        <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods"
+                          id="source-region">
+                          {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" |
+                          translate}}</label>
+                        <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">
+                          {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" |
+                          translate}}</label>
+                      </div>
                     </div>
-                    <div class="input-group Small-spaced">
-                      <span class="input-group-addon">2</span>
-                      <input type="text" class="form-control">
+                  </div>
+                  <div class="row Spaced subitem">
+                    <div class="col-lg-12 col-md-12">
+                      <label for="O-relate">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLEASE_EXPLAIN" |
+                        translate}}</label>
+                      <div class="input-group Small-spaced">
+                        <span class="input-group-addon">1</span>
+                        <input type="text" class="form-control">
+                      </div>
+                      <div class="input-group Small-spaced">
+                        <span class="input-group-addon">2</span>
+                        <input type="text" class="form-control">
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 

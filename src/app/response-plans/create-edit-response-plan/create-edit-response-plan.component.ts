@@ -9,6 +9,7 @@ import {
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
+import {ModelPlanActivity} from "../../model/plan-activity.model";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -72,7 +73,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section2Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 3/10
-  private sectorsRelatedTo: ResponsePlanSectors[] = [];
+  private sectorsRelatedTo: ResponsePlanSectors[] = [0, 1];
   private otherRelatedSector: string = '';
   private presenceInTheCountry: PresenceInTheCountry = PresenceInTheCountry.currentProgrammes;
   private methodOfImplementation: MethodOfImplementation = MethodOfImplementation.fieldStaff;
@@ -111,6 +112,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // Section 7/10
 
   private section7Status: string = "GLOBAL.INCOMPLETE";
+  private activityMap = new Map();
 
   // Section 8/10
   private mALSystemsDescriptionText: string = '';
@@ -179,6 +181,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    //test only
+    let benificiaryList = [{"age": 1, "gender": 0, "value": 10}]
+    let activity = new ModelPlanActivity("plan", "training", "KPI", benificiaryList);
+    let activityList = [activity];
+    this.activityMap.set(0, activityList);
 
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
