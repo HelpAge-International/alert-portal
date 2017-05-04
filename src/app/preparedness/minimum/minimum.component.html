@@ -22,44 +22,42 @@
             Filter:
         </div>
         <div class="col-lg-2 col-md-2 col-sm-6">
-            <select class="form-control" id="ActionStatusFilter">
-                <option value="" disabled selected hidden>Action Status</option>
-                <option value="Expired">Expired</option>
-                <option value="In progress">In progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Inactive">Inactive</option>
+            <select class="form-control" id="ActionStatusFilter" [(ngModel)]="statusSelected" (change)="filter()">
+				<option value="-1" selected>Action Status</option>
+				<template ngFor let-status [ngForOf]="ActionStatusEnum" let-statusIdx="index">
+					<option value="{{status}}">{{ACTION_STATUS[statusIdx] | translate}}</option>
+				</template>
             </select>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-6 ">
-            <select class="form-control" id="DepartmentsFilter">
-                <option value="" disabled selected hidden>All departments</option>
-                <option value="CHS">CHS</option>
-                <option value="Finance">Finance</option>
-                <option value="HR">HR</option>
-                <option value="Logistics">Logistics</option>
-                <option value="Programme">Programme</option>
-                <option value="Security">Security</option>
+            <select class="form-control" id="DepartmentsFilter" [(ngModel)]="departmentSelected" (change)="filter()">
+                <option value="-1" selected>All departments</option>
+				<template ngFor let-department [ngForOf]="departments" let-departmentIdx="index">
+					<option value="{{department}}">{{department}}</option>
+				</template>
             </select>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-6 ">
-            <select class="form-control" id="TypesFilter">
-                <option value="" disabled selected hidden>All types</option>
-                <option value="Custom-actions">Custom actions</option>
-                <option value="Mandated-actions">Mandated actions</option>
-                <option value="CHS-actions">CHS actions</option>
+            <select class="form-control" id="TypesFilter" [(ngModel)]="typeSelected" (change)="filter()">
+                <option value="-1" selected>All types</option>
+				<template ngFor let-type [ngForOf]="ActionTypeEnum" let-typeIdx="index">
+					<option value="{{type}}">{{ACTION_TYPE[typeIdx] | translate}}</option>
+				</template>
             </select>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-6 ">
-            <select class="form-control" id="AssignedFilter">
-                <option value="" disabled selected hidden>Assigned to me</option>
-                <option value="A-Anyone">Assigned to Anyone</option>
-                <option value="A-me">Assigned to Me</option>
-                <option value="A-N-S">Assigned to Name Surname</option>
+            <select class="form-control" id="AssignedFilter" [(ngModel)]="userSelected" (change)="filter()">
+                <option value="-1">Assigned to me</option>
+                <option value="0">Assigned to Anyone</option>
+                <template ngFor let-assignedToUser [ngForOf]="assignedToUsers" let-assignedToUserIdx="index">
+					<option value="{{assignedToUser.$key}}">{{assignedToUser.fullName}}</option>
+				</template>
+                <!-- <option value="A-N-S">Assigned to Name Surname</option> -->
             </select>
         </div>
         <div class="col-lg-3 col-md-3 col-sm-6 ">
-            <select class="form-control" id="AgencyNetworkFilter">
-                <option value="" disabled selected hidden>Agency & Network</option>
+            <select class="form-control" id="AgencyNetworkFilter" [(ngModel)]="agencyNetworkSelected" (change)="filter()">
+                <option value="-1" disabled selected hidden>Agency & Network</option>
                 <option value="Agency-Only">Agency Only</option>
                 <option value="All-Networks">All Networks</option>
                 <option value="Start-Network">Start Network</option>
@@ -68,10 +66,11 @@
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
-        <h2>Actions assigned to me</h2>
+    <h2>Actions assigned to {{assignedToUser}}</h2>
 
     <template ngFor let-action [ngForOf]="actions">
-	<div class="Accordion Preparedness-list" *ngIf="action.assignee == uid">
+	<div class="Accordion Preparedness-list" *ngIf="(action.assignee == assignedToUserKey || (assignedToAnyone && action.assignee)) && action.actionStatus != actionStatus.Inactive
+							">
         <div class="row Preparedness-list__item">
             <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate | date:"d MMM ''yy"}}</strong></div>
             <div class="col-md-10 col-sm-10">
@@ -428,8 +427,8 @@
             <div class="row align-items-center no-gutters">
                 <div class="col-sm-12">
                     <h2>Archived Actions</h2>
-                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">Hide all</a>
-                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all">Show all</a>
+                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all" *ngIf="allArchived" (click)="showAllArchived(0)">Hide all</a>
+                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all" *ngIf="!allArchived" (click)="showAllArchived(1)">Show all</a>
                 </div>
             </div>
         </div>

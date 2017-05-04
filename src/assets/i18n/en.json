@@ -71,7 +71,7 @@
     "ACTION_TYPE": {
       "CHS": "CHS",
       "MANDATED": "Mandated",
-      "Custom": "Custom"
+      "CUSTOM": "Custom"
     },
     "ACCOUNT_SETTING": "Account Settings",
     "LOGOUT": "Logout",
