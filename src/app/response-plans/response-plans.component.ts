@@ -100,8 +100,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   submitForApproval(plan) {
     this.planToApproval = plan;
     jQuery("#dialog-action").modal("show");
-    this.dialogTitle = "Submit without partner validation";
-    this.dialogContent = "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?";
+    this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
+    this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
   }
 
   confirmDialog() {
@@ -127,7 +127,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
           } else {
-            this.waringMessage = "No country director, can not submit for approval!";
+            this.waringMessage = "ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
           }
