@@ -6,11 +6,13 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>Scenario Based Response Plans</h1>
-      <button class="btn btn-primary" (click)="goToNewOrEditPlan()">Create new response plan</button>
+      <h1>{{"RESPONSE_PLANS.HOME.TITLE" | translate}}</h1>
+      <button class="btn btn-primary" (click)="goToNewOrEditPlan()">
+        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
+      </button>
     </div>
 
-    <div class="Empty--ribbon" [hidden]="activePlans?.length!=0">There are no response plans for this country office.
+    <div class="Empty--ribbon" [hidden]="activePlans?.length!=0">{{"RESPONSE_PLANS.HOME.EMPTY_LIST" | translate}}
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
@@ -19,22 +21,6 @@
         <div class="row align-items-center Plans-list__item">
           <div class="col-md-2 col-sm-2 Plans-list__item--type">{{plan.hazardScenario}}</div>
           <div class="col-md-3 col-sm-3">{{plan.name}}</div>
-
-          <!--<div class="Accordion Plans-list">-->
-          <!--<div class="row align-items-center Plans-list__item">-->
-          <!--<div class="col-md-2 col-sm-2 Plans-list__item&#45;&#45;type">Floods</div>-->
-          <!--<div class="col-md-3 col-sm-3">Rapid health, food security and livelihoods relief to 8,000 flood affected…-->
-          <!--</div>-->
-          <!--<div class="col-md-3 col-sm-2 Plans-list__item&#45;&#45;status">-->
-          <!--<a href="#" class=" text-danger" data-toggle="collapse" data-target="#ribbon3" aria-expanded="false"-->
-          <!--aria-controls="popover_content">-->
-          <!--<span class="fa-stack">-->
-          <!--<i class="fa fa-circle fa-stack-2x"></i>-->
-          <!--<i class="fa fa-times fa-stack-1x fa-inverse"></i>-->
-          <!--</span>-->
-          <!--Needs reviewing-->
-          <!--</a>-->
-
           <div *ngIf="plan.status==0" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-warning" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
                aria-expanded="false"
@@ -43,12 +29,8 @@
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
                 </span>
-              In progress
+              {{"RESPONSE_PLANS.HOME.IN_PROGRESS" | translate}}
             </a>
-            <!--<div id="{{plan.$key}}"-->
-            <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-            <!--check this out-->
-            <!--</div>-->
           </div>
 
           <div *ngIf="plan?.status==1" class="col-md-3 col-sm-2 Plans-list__item--status">
@@ -59,58 +41,53 @@
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
                 </span>
-              Waiting for approval
+              {{"RESPONSE_PLANS.HOME.WAITING_APPROVAL" | translate}}
             </a>
-            <!--<div id="{{plan.$key}}"-->
-            <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-            <!--check this out-->
-            <!--</div>-->
             <div id="{{plan.$key}}"
                  class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon--b-white Popover__ribbon--float">
               <!-- Waiting approval -->
               <div class="row  Spaced">
-                <div class="col-sm-10 col-8  text-left"><h4>Approval</h4></div>
+                <div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>
                 <div class="col-sm-2 col-4 text-right">
                   <button class="btn-link"
-                          onclick="$(this).parent().parent().parent().collapse('hide')">Close
+                          onclick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" | translate}}
                   </button>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6">
-                  <strong>Partners</strong>
+                  <strong>{{"RESPONSE_PLANS.HOME.PARTNERS" | translate}}</strong>
                   <div class="row no-gutters Small-spaced">
                     <div class="col-6 text-left">Partner 1</div>
-                    <div class="col-6 text-right text-warning">Requires submission <i
-                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                    <div class="col-6 text-right text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                      translate}}<i
+                        class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
                   </div>
                   <div class="row no-gutters Line-row">
                     <div class="col-6 text-left">Partner 2</div>
-                    <div class="col-6 text-right text-warning">Requires submission <i
-                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                    <div class="col-6 text-right text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                      translate}}<i
+                        class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <strong>Directors</strong>
+                  <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left" *ngIf="idx==0">Country Director</div>
-                    <div class="col-6 text-left" *ngIf="idx==1">Regional Director</div>
-                    <div class="col-6 text-left" *ngIf="idx==2">Global Director</div>
+                    <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                      translate}}
+                    </div>
+                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTORS_SINGLE" |
+                      translate}}
+                    </div>
+                    <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTORS_SINGLE" |
+                      translate}}
+                    </div>
                     <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
                          [class.text-muted]="!getApproveStatus(approve)">
-                      {{getApproveStatus(approve)?'Approved':'Waiting for approval'}}
+                      {{getApproveStatus(approve)?'RESPONSE_PLANS.HOME.APPROVED':'RESPONSE_PLANS.HOME.WAITING_APPROVAL'
+                      | translate}}
                       <i class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
-                  <!--<div class="row no-gutters Line-row">-->
-                  <!--<div class="col-6 text-left">Regional Director</div>-->
-                  <!--<div class="col-6 text-right text-success">Approved <i-->
-                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
-                  <!--</div>-->
-                  <!--<div class="row no-gutters Line-row">-->
-                  <!--<div class="col-6 text-left">Global Director</div>-->
-                  <!--<div class="col-6 text-right text-muted">Waiting for approval <i-->
-                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
-                  <!--</div>-->
                 </div>
               </div>
 
@@ -125,47 +102,36 @@
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
                 </span>
-              Approved
+              {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
             </a>
-            <!--<div id="{{plan.$key}}"-->
-            <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-            <!--check this out-->
-            <!--</div>-->
             <div id="{{plan.$key}}"
                  class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon--b-white Popover__ribbon--float">
               <!-- Approved -->
               <div class="row  Spaced">
-                <div class="col-sm-10 col-8  text-left"><h4>Approval</h4></div>
+                <div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>
                 <div class="col-sm-2 col-4 text-right">
-                  <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">Close</button>
+                  <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">
+                    {{"GLOBAL.CLOSE" | translate}}
+                  </button>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12">
-                  <strong>Directors</strong>
+                  <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left" *ngIf="idx==0">Country Director</div>
-                    <div class="col-6 text-left" *ngIf="idx==1">Regional Director</div>
-                    <div class="col-6 text-left" *ngIf="idx==2">Global Director</div>
+                    <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                      translate}}
+                    </div>
+                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTORS_SINGLE" |
+                      translate}}
+                    </div>
+                    <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTORS_SINGLE" |
+                      translate}}
+                    </div>
                     <div class="col-md-6 text-right text-success">
-                      Approved
+                      {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
                       <i class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
-                  <!--<div class="row no-gutters Small-spaced">-->
-                  <!--<div class="col-6 text-left">Country Director</div>-->
-                  <!--<div class="col-6 text-right text-success">Approved <i-->
-                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
-                  <!--</div>-->
-                  <!--<div class="row no-gutters Line-row">-->
-                  <!--<div class="col-6 text-left">Regional Director</div>-->
-                  <!--<div class="col-6 text-right text-success">Approved <i-->
-                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
-                  <!--</div>-->
-                  <!--<div class="row no-gutters Line-row">-->
-                  <!--<div class="col-6 text-left">Global Director</div>-->
-                  <!--<div class="col-6 text-right text-success">Approved <i-->
-                  <!--class="fa fa-check-circle" aria-hidden="true"></i></div>-->
-                  <!--</div>-->
                 </div>
               </div>
 
@@ -180,15 +146,18 @@
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
                 </span>
-              Needs reviewing
+              {{"RESPONSE_PLANS.HOME.NEEDS_REVIEWING" | translate}}
             </a>
             <div id="{{plan.$key}}"
                  class="Popover__ribbon prevent_parent_collapse collapse col-md-7 Popover__ribbon--b-white Popover__ribbon--float">
               <!-- Approved -->
               <div class="row">
-                <div class="col-sm-10 col-10  text-left"><h4>Review notes</h4></div>
+                <div class="col-sm-10 col-10  text-left"><h4>{{"RESPONSE_PLANS.HOME.REVIEW_NOTES" | translate}}</h4>
+                </div>
                 <div class="col-sm-2 col-2 text-right">
-                  <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">Close</button>
+                  <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">
+                    {{"GLOBAL.CLOSE" | translate}}
+                  </button>
                 </div>
               </div>
               <div class="row" *ngFor="let note of getNotes(plan)">
@@ -212,7 +181,7 @@
             <div class="btn-group btn-block">
               <button type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
                       [class.btn-primary]="plan.status!=2" data-toggle="dropdown" aria-haspopup="true"
-                      aria-expanded="false">Options
+                      aria-expanded="false">{{"RESPONSE_PLANS.HOME.OPTIONS" | translate}}
               </button>
               <button type="button" class="btn dropdown-toggle dropdown-toggle-split"
                       [class.btn-success]="plan.status==2" [class.btn-primary]="plan.status!=2"
@@ -220,14 +189,17 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item">View plan</a>
-                <a class="dropdown-item">Edit plan</a>
+                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.VIEW_PLAN" | translate}}</a>
+                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" | translate}}</a>
                 <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
-                   (click)="submitForApproval(plan)">Submit for approval</a>
-                <a class="dropdown-item">Submit for partner validation</a>
-                <a class="dropdown-item">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>
-                <a class="dropdown-item">Export for proposal <br/> Excel (.xls, 78Kb)</a>
-                <a class="dropdown-item">Export for proposal <br/> Word (.doc, 78Kb)</a>
+                   (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
+                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" | translate}}</a>
+                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Start Fund
+                  (.doc, 78Kb)</a>
+                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
+                  78Kb)</a>
+                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Word (.doc,
+                  78Kb)</a>
               </div>
             </div>
 
@@ -235,281 +207,17 @@
         </div>
       </div>
 
-
-      <!--<div class="Accordion Plans-list">-->
-      <!--<div class="row align-items-center Plans-list__item">-->
-      <!--<div class="col-md-2 col-sm-2 Plans-list__item&#45;&#45;type">Conflict</div>-->
-      <!--<div class="col-md-3 col-sm-3">Protection, shelter and food security relief to 2,500 displaced families in-->
-      <!--Leyte prov...-->
-      <!--</div>-->
-      <!--<div class="col-md-3 col-sm-2 Plans-list__item&#45;&#45;status">-->
-      <!--<a href="#" class=" text-warning" data-toggle="collapse" data-target="#ribbon2" aria-expanded="false"-->
-      <!--aria-controls="popover_content">-->
-      <!--<span class="fa-stack">-->
-      <!--<i class="fa fa-circle fa-stack-2x"></i>-->
-      <!--<i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>-->
-      <!--</span>-->
-      <!--In progress-->
-      <!--</a>-->
-
-      <!--<div id="ribbon2"-->
-      <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--<div class="col-md-1 col-sm-2 Plans-list__item&#45;&#45;progress">-->
-      <!--<div>90%</div>-->
-      <!--12/02/2017-->
-      <!--</div>-->
-      <!--<div class="col-sm-3">-->
-
-      <!--<div class="btn-group btn-block">-->
-      <!--<button type="button" class="btn btn-primary btn-block">Options</button>-->
-      <!--<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"-->
-      <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-      <!--<span class="sr-only">Toggle Dropdown</span>-->
-      <!--</button>-->
-      <!--<div class="dropdown-menu">-->
-      <!--<a class="dropdown-item" href="#">View plan</a>-->
-      <!--<a class="dropdown-item" href="#">Edit PLAN</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for approval</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for partner validation</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-
-
-      <!--<div class="Accordion Plans-list">-->
-      <!--<div class="row align-items-center Plans-list__item">-->
-      <!--<div class="col-md-2 col-sm-2 Plans-list__item&#45;&#45;type">Floods</div>-->
-      <!--<div class="col-md-3 col-sm-3">Rapid health, food security and livelihoods relief to 8,000 flood affected…-->
-      <!--</div>-->
-      <!--<div class="col-md-3 col-sm-2 Plans-list__item&#45;&#45;status">-->
-      <!--<a href="#" class=" text-danger" data-toggle="collapse" data-target="#ribbon3" aria-expanded="false"-->
-      <!--aria-controls="popover_content">-->
-      <!--<span class="fa-stack">-->
-      <!--<i class="fa fa-circle fa-stack-2x"></i>-->
-      <!--<i class="fa fa-times fa-stack-1x fa-inverse"></i>-->
-      <!--</span>-->
-      <!--Needs reviewing-->
-      <!--</a>-->
-
-      <!--<div id="ribbon3"-->
-      <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--<div class="col-md-1 col-sm-2 Plans-list__item&#45;&#45;progress">-->
-      <!--<div>100%</div>-->
-      <!--25/04/2016-->
-      <!--</div>-->
-      <!--<div class="col-sm-3">-->
-
-      <!--<div class="btn-group btn-block">-->
-      <!--<button type="button" class="btn btn-primary btn-block">Options</button>-->
-      <!--<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"-->
-      <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-      <!--<span class="sr-only">Toggle Dropdown</span>-->
-      <!--</button>-->
-      <!--<div class="dropdown-menu">-->
-      <!--<a class="dropdown-item" href="#">View plan</a>-->
-      <!--<a class="dropdown-item" href="#">Edit PLAN</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for approval</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for partner validation</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-
-
-      <!--<div class="Accordion Plans-list">-->
-      <!--<div class="row align-items-center Plans-list__item">-->
-      <!--<div class="col-md-2 col-sm-2 Plans-list__item&#45;&#45;type">Drought</div>-->
-      <!--<div class="col-md-3 col-sm-3">Anticipatory cash intervention to 5,000 farmers/pastoralists protecting their-->
-      <!--food...-->
-      <!--</div>-->
-      <!--<div class="col-md-3 col-sm-2 Plans-list__item&#45;&#45;status">-->
-      <!--<a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon4" aria-expanded="false"-->
-      <!--aria-controls="popover_content">-->
-      <!--<span class="fa-stack">-->
-      <!--<i class="fa fa-circle fa-stack-2x"></i>-->
-      <!--<i class="fa fa-check fa-stack-1x fa-inverse"></i>-->
-      <!--</span>-->
-      <!--Waiting for approval-->
-      <!--</a>-->
-
-      <!--<div id="ribbon4"-->
-      <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-      <!--&lt;!&ndash; Waiting approval &ndash;&gt;-->
-      <!--<div class="row  Spaced">-->
-      <!--<div class="col-sm-10 col-8  text-left"><h4>Approval</h4></div>-->
-      <!--<div class="col-sm-2 col-4 text-right"><a href="#"-->
-      <!--onclick="$(this).parent().parent().parent().collapse('hide')">Close</a>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div class="row">-->
-      <!--<div class="col-md-6">-->
-      <!--<strong>Partners</strong>-->
-      <!--<div class="row no-gutters Small-spaced">-->
-      <!--<div class="col-6 text-left">Partner 1</div>-->
-      <!--<div class="col-6 text-right text-warning">Requires submission <i class="fa fa-exclamation-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--<div class="row no-gutters Line-row">-->
-      <!--<div class="col-6 text-left">Partner 2</div>-->
-      <!--<div class="col-6 text-right text-warning">Requires submission <i class="fa fa-exclamation-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div class="col-md-6">-->
-      <!--<strong>Directors</strong>-->
-      <!--<div class="row no-gutters Small-spaced">-->
-      <!--<div class="col-6 text-left">Country Director</div>-->
-      <!--<div class="col-md-6 text-right text-success">Approved <i class="fa fa-check-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--<div class="row no-gutters Line-row">-->
-      <!--<div class="col-6 text-left">Regional Director</div>-->
-      <!--<div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--<div class="row no-gutters Line-row">-->
-      <!--<div class="col-6 text-left">Global Director</div>-->
-      <!--<div class="col-6 text-right text-muted">Waiting for approval <i class="fa fa-check-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--<div class="col-md-1 col-sm-2 Plans-list__item&#45;&#45;progress">-->
-      <!--<div>100%</div>-->
-      <!--25/04/2016-->
-      <!--</div>-->
-      <!--<div class="col-sm-3">-->
-
-      <!--<div class="btn-group btn-block">-->
-      <!--<button type="button" class="btn btn-primary btn-block">Options</button>-->
-      <!--<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"-->
-      <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-      <!--<span class="sr-only">Toggle Dropdown</span>-->
-      <!--</button>-->
-      <!--<div class="dropdown-menu">-->
-      <!--<a class="dropdown-item" href="#">View plan</a>-->
-      <!--<a class="dropdown-item" href="#">Edit PLAN</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for approval</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for partner validation</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-
-
-      <!--<div class="Accordion Plans-list">-->
-      <!--<div class="row align-items-center Plans-list__item">-->
-      <!--<div class="col-md-2 col-sm-2 Plans-list__item&#45;&#45;type">Earthquake</div>-->
-      <!--<div class="col-md-3 col-sm-3">Rapid response protection, health, shelter and cash to 7,500 affected-->
-      <!--households i…-->
-      <!--</div>-->
-      <!--<div class="col-md-3 col-sm-2 Plans-list__item&#45;&#45;status">-->
-      <!--<a href="#" class=" text-success" data-toggle="collapse" data-target="#ribbon5" aria-expanded="false"-->
-      <!--aria-controls="popover_content">-->
-      <!--<span class="fa-stack">-->
-      <!--<i class="fa fa-circle fa-stack-2x"></i>-->
-      <!--<i class="fa fa-check fa-stack-1x fa-inverse"></i>-->
-      <!--</span>-->
-      <!--Approved-->
-      <!--</a>-->
-
-      <!--<div id="ribbon5"-->
-      <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-      <!--&lt;!&ndash; Approved &ndash;&gt;-->
-      <!--<div class="row  Spaced">-->
-      <!--<div class="col-sm-10 col-8  text-left"><h4>Approval</h4></div>-->
-      <!--<div class="col-sm-2 col-4 text-right"><a href="#"-->
-      <!--onclick="$(this).parent().parent().parent().collapse('hide')">Close</a>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div class="row">-->
-      <!--<div class="col-md-12">-->
-      <!--<strong>Directors</strong>-->
-      <!--<div class="row no-gutters Small-spaced">-->
-      <!--<div class="col-6 text-left">Country Director</div>-->
-      <!--<div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--<div class="row no-gutters Line-row">-->
-      <!--<div class="col-6 text-left">Regional Director</div>-->
-      <!--<div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--<div class="row no-gutters Line-row">-->
-      <!--<div class="col-6 text-left">Global Director</div>-->
-      <!--<div class="col-6 text-right text-success">Approved <i class="fa fa-check-circle"-->
-      <!--aria-hidden="true"></i></div>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--<div class="col-md-1 col-sm-2 Plans-list__item&#45;&#45;progress">-->
-      <!--<div>70%</div>-->
-      <!--25/04/2016-->
-      <!--</div>-->
-      <!--<div class="col-sm-3">-->
-
-      <!--<div class="btn-group btn-block">-->
-      <!--<button type="button" class="btn btn-success btn-block">Options</button>-->
-      <!--<button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"-->
-      <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-      <!--<span class="sr-only">Toggle Dropdown</span>-->
-      <!--</button>-->
-      <!--<div class="dropdown-menu">-->
-      <!--<a class="dropdown-item" href="#">View plan</a>-->
-      <!--<a class="dropdown-item" href="#">Edit PLAN</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for approval</a>-->
-      <!--<a class="dropdown-item" href="#">Submit for partner validation</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Start Fund (.doc, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Excel (.xls, 78Kb)</a>-->
-      <!--<a class="dropdown-item" href="#">Export for proposal <br/> Word (.doc, 78Kb)</a>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
       <div class="Accordion--b-white Accordion__hide-links">
         <div class="row align-items-center no-gutters">
           <div class="col-sm-12">
-            <h2>Archived Plans</h2>
-            <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">Hide all</a>
-            <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all">Show all</a>
+            <h2>{{"RESPONSE_PLANS.HOME.ARCHIVED_PLANS" | translate}}</h2>
+            <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">{{"GLOBAL.HIDE_ALL" |
+              translate}}</a>
+            <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all">{{"GLOBAL.SHOW_ALL" |
+              translate}}</a>
           </div>
         </div>
       </div>
@@ -526,13 +234,8 @@
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i class="fa fa-times fa-stack-1x fa-inverse"></i>
                 </span>
-                Archived
+                {{"RESPONSE_PLANS.HOME.ARCHIVED" | translate}}
               </a>
-
-              <!--<div id="ribbon6"-->
-              <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-5 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-              <!--Archived-->
-              <!--</div>-->
 
             </div>
             <div class="col-md-1 col-sm-2 Plans-list__item--progress">
@@ -540,9 +243,8 @@
               {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
-
-              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">Re-activate</a>
-
+              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
+                | translate}}</a>
             </div>
           </div>
         </div>
@@ -559,10 +261,10 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{dialogTitle}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{dialogTitle | translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{dialogContent}}</p></div>
+        <div class="text-center"><p>{{dialogContent | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}

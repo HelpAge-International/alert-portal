@@ -21,13 +21,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private uid: string;
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
-  // private notes: FirebaseListObservable<any[]>;
   private planToApproval: any;
   private userType: number = -1;
   private hideWarning: boolean = true;
   private waringMessage: string;
   private countryId: string;
-  private notes: any [] = [];
+  private notesMap = new Map();
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -77,8 +76,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
-
-    // this.notes = this.af.database.list(Constants.APP_STATUS + "/note/" + id)
   }
 
   ngOnDestroy() {
@@ -103,8 +100,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   submitForApproval(plan) {
     this.planToApproval = plan;
     jQuery("#dialog-action").modal("show");
-    this.dialogTitle = "Submit without partner validation";
-    this.dialogContent = "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?";
+    this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
+    this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
   }
 
   confirmDialog() {
@@ -130,7 +127,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
           } else {
-            this.waringMessage = "No country director, can not submit for approval!";
+            this.waringMessage = "ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
           }
@@ -249,22 +246,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   getNotes(plan) {
-    // console.log(plan);
-    // let notes = [];
-    // if (plan.status == ApprovalStatus.NeedsReviewing) {
-    //   let subscription = this.af.database.list(Constants.APP_STATUS + "/note/" + plan.$key)
-    //     .first()
-    //     .subscribe(list => {
-    //       console.log(list);
-    //       list.forEach(item => {
-    //         if (!this.notes.includes(item)) {
-    //           this.notes.push(item);
-    //         }
-    //       });
-    //     });
-    //   this.subscriptions.add(subscription);
-    // }
-    // return this.notes;
+    if (plan.status == ApprovalStatus.NeedsReviewing) {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/note/" + plan.$key)
+        .first()
+        .subscribe(list => {
+          this.notesMap.set(plan.$key, list);
+        });
+      this.subscriptions.add(subscription);
+    }
+    return this.notesMap.get(plan.$key);
   }
 
 
