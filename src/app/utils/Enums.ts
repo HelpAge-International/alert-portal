@@ -35,7 +35,23 @@ export enum HazardScenario {
   HazardScenario7 = 7,
   HazardScenario8 = 8,
   HazardScenario9 = 9,
-  HazardScenario10 = 10
+  HazardScenario10 = 10,
+  HazardScenario11 = 11,
+  HazardScenario12 = 12,
+  HazardScenario13 = 13,
+  HazardScenario14 = 14,
+  HazardScenario15 = 15,
+  HazardScenario16 = 16,
+  HazardScenario17 = 17,
+  HazardScenario18 = 18,
+  HazardScenario19 = 19,
+  HazardScenario20 = 20,
+  HazardScenario21 = 21,
+  HazardScenario22 = 22,
+  HazardScenario23 = 23,
+  HazardScenario24 = 24,
+  HazardScenario25 = 25,
+  HazardScenario26 = 26,
 }
 
 export enum ActionLevel {

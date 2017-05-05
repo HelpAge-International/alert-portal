@@ -49,7 +49,23 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     HazardScenario.HazardScenario7,
     HazardScenario.HazardScenario8,
     HazardScenario.HazardScenario9,
-    HazardScenario.HazardScenario10
+    HazardScenario.HazardScenario10,
+    HazardScenario.HazardScenario11,
+    HazardScenario.HazardScenario12,
+    HazardScenario.HazardScenario13,
+    HazardScenario.HazardScenario14,
+    HazardScenario.HazardScenario15,
+    HazardScenario.HazardScenario16,
+    HazardScenario.HazardScenario17,
+    HazardScenario.HazardScenario18,
+    HazardScenario.HazardScenario19,
+    HazardScenario.HazardScenario20,
+    HazardScenario.HazardScenario21,
+    HazardScenario.HazardScenario22,
+    HazardScenario.HazardScenario23,
+    HazardScenario.HazardScenario24,
+    HazardScenario.HazardScenario25,
+    HazardScenario.HazardScenario26,
   ];
   private section1Status: string = "GLOBAL.INCOMPLETE";
 

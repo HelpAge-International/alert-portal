@@ -4,6 +4,15 @@ import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {RxHelper} from "../utils/RxHelper";
 import {} from '@types/googlemaps';
+import {ModelAdministratorCountry} from "../model/administrator.country.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
+import {ModelHazard} from "../model/hazard.model";
+import {HazardScenario} from "../utils/Enums";
+import {HazardImages} from "../utils/HazardImages";
+import Marker = google.maps.Marker;
+import {MarkerHolder, SuperMapComponents} from "../utils/MapSuper";
+import {unescapeIdentifier} from "@angular/compiler";
+import {Subscription} from "rxjs/Subscription";
 declare var jQuery: any;
 
 @Component({
@@ -13,38 +22,38 @@ declare var jQuery: any;
 })
 
 export class MapComponent implements OnInit, OnDestroy {
-
-  private uid: string;
+  public uid: string;
+  public markers: Map<String, MarkerHolder>;
+  public mapHelper: SuperMapComponents;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+    this.markers = new Map<String,MarkerHolder>();
+    this.mapHelper = SuperMapComponents.init(af, subscriptions);
   }
 
   ngOnInit() {
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        console.log(this.uid);
 
         // Query firebase for country information
-        this.initMap(["GB"], ["FR"], ["DE"]);
+        this.initMap(["GB", "RO"], ["FR", "MD"], ["DE", "LU"]);
+        this.mapHelper.markersForAgencyAdmin(this.uid, "administratorCountry", (holder) => {
+
+        });
 
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
     this.subscriptions.add(subscription);
-
   }
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
   }
 
-  public initMap(red, yellow, green) {
-    // require('google-maps')('AIzaSyD1Bc3slcPsdbH2EhAxyhyoJlrrBs6_P_M', function(maps) {
-    //   console.log("inside initmaps");
-    //   console.log(maps);
-    // });
+  public initMap(red, yellow, green,) {
     let uluru = {lat: 33.443861, lng: 105.891683};
     let map = new google.maps.Map(document.getElementById("global-map"), {
       zoom: 4,
@@ -403,18 +412,11 @@ export class MapComponent implements OnInit, OnDestroy {
         }
       ]
     });
-
-    var marker = new google.maps.Marker({
-        position: uluru,
-        icon: "https://lh4.ggpht.com/Tr5sntMif9qOPrKV_UVl7K8A_V3xQDgA7Sw_qweLUFlg76d_vGFA7q1xIKZ6IcmeGqg=w300",
-        map: map
-    });
     this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", map);
   }
 
   /** Function for where **/
   public doneWithEmbeddedStyles(red, redCol, yellow, yellowCol, green, greenCol, map) {
-    console.log(this.arrayToQuote(red.concat(yellow.concat(green))));
     let layer = new google.maps.FusionTablesLayer({
       query: {
         select: '*',
@@ -423,10 +425,10 @@ export class MapComponent implements OnInit, OnDestroy {
       },
       styles: [
         {
-           polygonOptions: {
-             fillColor: '#f00ff9',
-             strokeOpacity: 0.0
-           }
+          polygonOptions: {
+            fillColor: '#f00ff9',
+            strokeOpacity: 0.0
+          }
         },
         {
           where: this.arrayToQuote(red),
@@ -447,7 +449,7 @@ export class MapComponent implements OnInit, OnDestroy {
           polygonOptions: {
             fillColor: yellowCol,
             fillOpacity: 1.0,
-             strokeOpacity: 0.0,
+            strokeOpacity: 0.0,
             strokeColor: "#FFFFFF"
           },
           polylineOptions: {
@@ -461,7 +463,7 @@ export class MapComponent implements OnInit, OnDestroy {
           polygonOptions: {
             fillColor: greenCol,
             fillOpacity: 1.0,
-             strokeOpacity: 0.0,
+            strokeOpacity: 0.0,
             strokeColor: "#FFFFFF"
           },
           polylineOptions: {
@@ -473,11 +475,10 @@ export class MapComponent implements OnInit, OnDestroy {
       ]
     });
     layer.setMap(map);
-    google.maps.event.addListener(layer, 'click', function(e) {
+    google.maps.event.addListener(layer, 'click', function (e) {
       e.infoWindowHtml = e.row['ISO_2DIGIT'].value + "<br/>";
       e.infoWindowHtml += "Clicked!";
     });
-    console.log(layer);
   }
 
   /** Configure colour string **/
@@ -504,11 +505,10 @@ export class MapComponent implements OnInit, OnDestroy {
         s += "'" + array[i] + "',";
       }
       if (array.length != 0) {
-        s = s.substring(0, s.length-1);
+        s = s.substring(0, s.length - 1);
       }
       s += ")";
       return s;
     }
   }
-
 }
