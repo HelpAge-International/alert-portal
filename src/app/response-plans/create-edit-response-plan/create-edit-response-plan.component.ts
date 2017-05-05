@@ -35,8 +35,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private planName: string = '';
   private geographicalLocation: string = '';
   private staffMembers: FirebaseObjectObservable<any>[] = [];
-  private staffMemberSelected: string = '';
-  private hazardScenarioSelected: number = 0;
+  private staffMemberSelected: string;
+  private hazardScenarioSelected: number;
   private HazardScenario = HazardScenario;
   private hazardScenariosList = [
     HazardScenario.HazardScenario0,
@@ -54,13 +54,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section1Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 2/10
-  private scenarioCrisisList: string[] = [];
+  private scenarioCrisisList: {};
   private impactOfCrisisList: string[] = [];
   private availabilityOfFundsList: string[] = [];
 
-  private summarizeScenarioBulletPointsCounter: number = 1;
+  private summarizeScenarioBulletPointsCounter: number = 0;
   private summarizeScenarioBulletPoints: number[] = [this.summarizeScenarioBulletPointsCounter];
-  // private summarizeScenarioRemoveOptionInvisible: boolean = true;
 
   private impactOfCrisisBulletPointsCounter: number = 1;
   private impactOfCrisisBulletPoints: number[] = [this.impactOfCrisisBulletPointsCounter];
@@ -236,7 +235,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.planLead = this.staffMemberSelected;
     newResponsePlan.hazardScenario = this.hazardScenarioSelected;
 
-    newResponsePlan.scenarioCrisisList = this.scenarioCrisisList;
+    // TODO ----
+    // newResponsePlan.scenarioCrisisList = this.scenarioCrisisList;
     newResponsePlan.impactOfCrisisList = this.impactOfCrisisList;
     newResponsePlan.availabilityOfFundsList = this.availabilityOfFundsList;
 
@@ -311,18 +311,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Section 2/10
    */
 
-  addToSummarizeScenarioList() {
-    console.log("Editing");
+  addToSummarizeScenarioList(bulletPoint, textEntered) {
+
+    this.scenarioCrisisList[bulletPoint] = textEntered;
+    console.log("scenarioCrisisList ---- " + this.scenarioCrisisList);
   }
-
-  continueButtonPressedOnSection2() {
-
-    // TODO - Check the status of completion here
-  }
-
-  /**
-   * Section 3/10
-   */
 
   addSummarizeScenarioBulletPoint() {
     this.summarizeScenarioBulletPointsCounter++;
@@ -334,6 +327,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     console.log('summarizeScenarioBulletPointsCounter ----' + this.summarizeScenarioBulletPointsCounter + 'bulletPoint ----' + bulletPoint);
     this.summarizeScenarioBulletPointsCounter--;
     this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
+
+    // Removing bullet point from list
+    if (this.scenarioCrisisList[bulletPoint]) {
+
+      delete this.scenarioCrisisList[bulletPoint];
+      console.log(this.scenarioCrisisList)
+    }
   }
 
   addImpactOfCrisisBulletPoint() {
@@ -356,6 +356,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.availabilityOfFundsBulletPoints = this.availabilityOfFundsBulletPoints.filter(item => item !== bulletPoint);
   }
 
+  continueButtonPressedOnSection2() {
+
+    // TODO - Check the status of completion here
+  }
+
+  /**
+   * Section 3/10
+   */
+
   directMethodOfImplementationSelected() {
     this.isDirectlyThroughFieldStaff = true;
   }
@@ -364,13 +373,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.isDirectlyThroughFieldStaff = false;
   }
 
-  // TODO
-  continueButtonPressedOnSection3() {
-  }
-
-  /**
-   * Section 4/10
-   */
 
   addPartnersDropDown() {
     this.partnersDropDownsCounter++;
@@ -381,6 +383,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.partnersDropDownsCounter--;
     this.partnersDropDowns = this.partnersDropDowns.filter(item => item !== dropDown);
   }
+
+  // TODO
+  continueButtonPressedOnSection3() {
+  }
+
+
+  /**
+   * Section 4/10
+   */
 
   continueButtonPressedOnSection4() {
 
