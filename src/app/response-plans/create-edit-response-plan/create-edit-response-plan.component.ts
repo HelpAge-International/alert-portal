@@ -5,11 +5,12 @@ import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
   HazardScenario, ResponsePlanSectionSettings, ResponsePlanSectors,
-  PresenceInTheCountry, MethodOfImplementation, MediaFormat
+  PresenceInTheCountry, MethodOfImplementation, MediaFormat, Gender
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
+import {validate} from "codelyzer/walkerFactory/walkerFn";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -113,6 +114,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private section7Status: string = "GLOBAL.INCOMPLETE";
   private activityMap = new Map();
+  private addActivityToggleMap = new Map();
+  private activityInfoMap = new Map();
 
   // Section 8/10
   private mALSystemsDescriptionText: string = '';
@@ -182,8 +185,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     //test only
-    let benificiaryList = [{"age": 1, "gender": 0, "value": 10}]
-    let activity = new ModelPlanActivity("plan", "training", "KPI", benificiaryList);
+    let beneficiaryList = [{"age": 1, "gender": 0, "value": 10}];
+    let activity = new ModelPlanActivity("plan", "training", "KPI", beneficiaryList);
     let activityList = [activity];
     this.activityMap.set(0, activityList);
 
@@ -599,6 +602,76 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.staffMembers.push(x);
       });
     this.subscriptions.add(subscription);
+  }
+
+  saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
+    console.log(sector);
+    console.log(name.value + "/" + output.value + "/" + indicator.value + "/" +
+      femaleRange1.value + "/" + femaleRange2.value + "/" + femaleRange3.value + "/" +
+      maleRange1.value + "/" + maleRange2.value + "/" + maleRange3.value);
+    if (this.validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)) {
+      console.log("valid");
+      let beneficiaryList = [];
+      for (let i = 0; i < 6; i++) {
+        let beneData = {};
+        beneData["age"] = i;
+        if (i < 3) {
+          beneData["gender"] = Gender.feMale;
+        } else {
+          beneData["gender"] = Gender.male;
+        }
+        if (i == 0) {
+          beneData["value"] = femaleRange1.value;
+        } else if (i == 1) {
+          beneData["value"] = femaleRange2.value;
+        } else if (i == 2) {
+          beneData["value"] = femaleRange3.value;
+        } else if (i == 3) {
+          beneData["value"] = maleRange1.value;
+        } else if (i == 4) {
+          beneData["value"] = maleRange2.value;
+        } else if (i == 5) {
+          beneData["value"] = maleRange3.value;
+        }
+        beneficiaryList.push(beneData);
+      }
+      let activity = new ModelPlanActivity(name.value, output.value, indicator.value, beneficiaryList);
+      if (this.activityMap.get(sector)) {
+        this.activityMap.get(sector).push(activity);
+      } else {
+        let activityList = [activity];
+        this.activityMap.set(sector, activityList);
+      }
+      this.addActivityToggleMap.set(sector, true);
+      name.value = "";
+      output.value = "";
+      indicator.value = "";
+      femaleRange1.value = 0;
+      femaleRange2.value = 0;
+      femaleRange3.value = 0;
+      maleRange1.value = 0;
+      maleRange2.value = 0;
+      maleRange3.value = 0;
+    } else {
+      console.log("not valid");
+    }
+  }
+
+  private validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
+    if (name.value == "" || output.value == "" || indicator.value == "" || femaleRange1.value < 0 || femaleRange2.value < 0 || femaleRange3 < 0 || maleRange1.value < 0 || maleRange2.value < 0 || maleRange3 < 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  addActivity(sector) {
+    let isHidden = this.addActivityToggleMap.get(sector);
+    this.addActivityToggleMap.set(sector, !isHidden);
+  }
+
+  selectInternationa(sector, value) {
+    console.log(sector + "/" + value);
   }
 
   private navigateToLogin() {

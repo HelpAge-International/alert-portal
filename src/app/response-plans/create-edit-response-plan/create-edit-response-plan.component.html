@@ -500,7 +500,7 @@
                     </div>
                   </div>
 
-                  <div class="row Outlined Spaced align-items-center">
+                  <div [hidden]="addActivityToggleMap.get(sector)" class="row Outlined Spaced align-items-center">
                     <div class="row Spaced col-lg-12 no-gutters">
                       <div class="col-lg-12 text-right">
                         <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
@@ -511,7 +511,7 @@
                       <div class="col-lg-12 form-group">
                         <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
                           | translate}}</label>
-                        <input type="text" class="form-control" id="P-activity">
+                        <input type="text" class="form-control" #name>
                       </div>
                     </div>
 
@@ -519,7 +519,7 @@
                       <div class="col-lg-12 form-group">
                         <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
                           | translate}}</label>
-                        <input type="text" class="form-control" id="P-activity">
+                        <input type="text" class="form-control" #output>
                       </div>
                     </div>
 
@@ -527,7 +527,7 @@
                       <div class="col-lg-12 form-group">
                         <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
                           translate}}</label>
-                        <input type="text" class="form-control" id="P-activity">
+                        <input type="text" class="form-control" #indicator>
                       </div>
                     </div>
                     <div class="row col-lg-12 Spaced form-group">
@@ -539,7 +539,8 @@
                             <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
                           </div>
                           <div class="row align-items-center">
-                            <div class="col-12"><input type="text" class="form-control"></div>
+                            <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
+                                                       value="0"></div>
                           </div>
                         </div>
                         <div class="col-lg-2 tier">
@@ -547,7 +548,8 @@
                             <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
                           </div>
                           <div class="row align-items-center">
-                            <div class="col-12"><input type="text" class="form-control"></div>
+                            <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
+                                                       value="0"></div>
                           </div>
                         </div>
                         <div class="col-lg-2 tier">
@@ -555,7 +557,8 @@
                             <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
                           </div>
                           <div class="row align-items-center">
-                            <div class="col-12"><input type="text" class="form-control"></div>
+                            <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
+                                                       value="0"></div>
                           </div>
                         </div>
                         <div class="col-lg-2 tier">
@@ -563,7 +566,8 @@
                             <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
                           </div>
                           <div class="row align-items-center">
-                            <div class="col-12"><input type="text" class="form-control"></div>
+                            <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0">
+                            </div>
                           </div>
                         </div>
                         <div class="col-lg-2 tier">
@@ -571,7 +575,8 @@
                             <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
                           </div>
                           <div class="row align-items-center">
-                            <div class="col-12"><input type="text" class="form-control"></div>
+                            <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0">
+                            </div>
                           </div>
                         </div>
                         <div class="col-lg-2 tier">
@@ -579,22 +584,27 @@
                             <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
                           </div>
                           <div class="row align-items-center">
-                            <div class="col-12"><input type="text" class="form-control"></div>
+                            <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0">
+                            </div>
                           </div>
                         </div>
                       </div>
                       <div class="row col-lg-12">
                         <div class="col-lg-10"></div>
                         <div class="col-lg-2">
-                          <button class="btn btn-secondary">Save</button>
+                          <button class="btn btn-secondary"
+                                  (click)="saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)">
+                            Save
+                          </button>
                         </div>
                       </div>
 
                     </div>
                   </div>
                   <!--<a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"-->
-                    <!--| translate}}</a>-->
-                  <a href="javascript:void(0)" class="Add__row__cta">Add another activity</a>
+                  <!--| translate}}</a>-->
+                  <a href="javascript:void(0)" class="Add__row__cta" (click)="addActivity(sector)">
+                    Add another activity</a>
 
                   <div class="Spaced">
                     <div class="Selection-row no-gutters Spaced">
@@ -603,16 +613,17 @@
                       </div>
                       <div class="row col-lg-12">
                         <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods"
-                          id="source-intern">
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" value="0" #radio0
+                          id="source-intern" (click)="selectInternationa(sector, radio0.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
                         <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods"
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" value="1" #radio1
                           id="source-region">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" |
                           translate}}</label>
                         <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" value="2" #radio2
+                          id="source-local">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" |
                           translate}}</label>
                       </div>

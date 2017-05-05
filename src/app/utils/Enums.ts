@@ -179,8 +179,8 @@ export enum MediaFormat {
 }
 
 export enum Gender {
-  male = 0,
-  feMale = 1
+  feMale = 1,
+  male = 0
 }
 
 export enum Countries {
