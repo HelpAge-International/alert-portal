@@ -699,6 +699,15 @@
       "NO_COUNTRY": "Please select a country",
       "NO_CITY": "Please enter the name of the city",
       "NO_PHONE": "Please enter the phone number"
+    },
+    "STAFF": {
+      "TITLE_TEXT": "Country Office Staff"
+    },
+    "SETTINGS": {
+      "TITLE_TEXT": "Country Office Settings"
+    },
+    "MESSAGES": {
+      "TITLE_TEXT": "Country Office Messages"
     }
   },
   "DIALOG": {

@@ -23,7 +23,14 @@
       <a routerLink="/map">Global Map</a> <!--TODO - Go to Global Maps-->
     </li>
     <li class="" routerLinkActive="active">
-      <a routerLink="/country-admin/settings/country-permission-settings">Country Administrator</a> <!--TODO - Go to Country Office Profile-->
+        <div class="dropdown">
+            <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Country Administrator</a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" routerLink="/country-admin/country-staff">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" | translate}}</a>
+                <a class="dropdown-item" routerLink="/country-admin/settings/country-permission-settings">{{"COUNTRY_ADMIN.SETTINGS.TITLE_TEXT" | translate}}</a>
+                <a class="dropdown-item" routerLink="/country-admin/country-messages">{{"COUNTRY_ADMIN.MESSAGES.TITLE_TEXT" | translate}}</a>
+            </div>
+        </div>
     </li>
   </ul>
 </div>
