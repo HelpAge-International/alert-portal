@@ -1,11 +1,11 @@
 import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
-import {AngularFire, FirebaseApp} from "angularfire2";
-import {Router} from "@angular/router";
-import {Constants} from "../../../utils/Constants";
-import {Country, PhonePrefix} from "../../../utils/Enums";
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
-import {CountryOfficeAddressModel} from "../../../model/countryoffice.address.model";
+import {AngularFire, FirebaseApp} from 'angularfire2';
+import {Router} from '@angular/router';
+import {Constants} from '../../../utils/Constants';
+import {Country, Countries, PhonePrefix} from '../../../utils/Enums';
+import {RxHelper} from '../../../utils/RxHelper';
+import {Observable} from 'rxjs';
+import {CountryOfficeAddressModel} from '../../../model/countryoffice.address.model';
 
 @Component({
   selector: 'app-new-country-details',
@@ -16,20 +16,20 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryAdminName: string;
-  private countryAdminCountryId: string = '';
+  private countryAdminCountryId = '';
   private agencyAdminId: string;
 
-  private successInactive: boolean = true;
-  private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
-  private errorInactive: boolean = true;
+  private successInactive = true;
+  private successMessage = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
+  private errorInactive = true;
   private errorMessage: string;
   private alerts = {};
 
   private CountryOfficeAddressModel: CountryOfficeAddressModel = new CountryOfficeAddressModel();
-  
+
   private Country = Constants.COUNTRY;
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
-  
+
   firebase: any;
 
   constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
@@ -44,21 +44,22 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
         let userPublicSubscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).subscribe(user => {
           this.countryAdminName = user.firstName;
         });
-        let countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid).subscribe(countryAdmin => {
-          // Get the country administrator id and agency administrator id
-          this.countryAdminCountryId = countryAdmin.countryId;
-          this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
-          
-          let countryOfficeSubscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + "/" + this.countryAdminCountryId).subscribe(countryOffice => {
-            // Get the country office location to prepopulate the country select
-            this.CountryOfficeAddressModel.location = countryOffice.location;
+        let countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
+              .subscribe(countryAdmin => {
+                  // Get the country administrator id and agency administrator id
+                  this.countryAdminCountryId = countryAdmin.countryId;
+                  this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
 
-            //Set the phone prefix
-            console.log(PhonePrefix[Country[countryOffice.location]]);
-            this.CountryOfficeAddressModel.phone = "+" + PhonePrefix[Country[countryOffice.location]];
-          });
-          // If there are any errors raised by firebase, the Country select will not be disabled and will allow user input  
-        });
+                  let countryOfficeSubscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + "/" + this.countryAdminCountryId)
+                        .subscribe(countryOffice => {
+                            // Get the country office location to pre populate the country select
+                            this.CountryOfficeAddressModel.location = countryOffice.location;
+
+                            // Set the phone prefix
+                            this.CountryOfficeAddressModel.phone = '+' + PhonePrefix[Countries[countryOffice.location]];
+                        });
+                  // If there are any errors raised by firebase, the Country select will not be disabled and will allow user input
+              });
         this.subscriptions.add(userPublicSubscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
@@ -72,7 +73,7 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    if (this.validate()) {      
+    if (this.validate()) {
       this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + '/' + this.countryAdminCountryId + '/')
             .update(this.CountryOfficeAddressModel).then(() => {
 
