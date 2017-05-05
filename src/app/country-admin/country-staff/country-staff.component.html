@@ -1,6 +1,122 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<p>
-  country-staff works!
-</p>
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Header-title__wrap">
+            <h1>{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" | translate}}</h1>
+            <button type="button" class="btn btn-primary" (click)="this.router.navigateByUrl('/country-admin/country-staff/country-add-edit-staff');">{{"COUNTRY_ADMIN.STAFF.ADD_NEW_STAFF" | translate}}</button>
+        </div>
+        <div class="row align-items-center Filter-form System-admin--form-wrap">
+            <div class="col-lg-1 col-md-1">
+                {{"GLOBAL.FILTER"| translate}}
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
+                <option *ngFor="let department of departments" [value]="department">{{department}}</option>
+              </select>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <select class="form-control" [(ngModel)]="filterUser" (change)="filterStaff()">
+                  <option *ngFor="let userType of userTypesList" [value]="userType">{{UserType[userType] | translate}}</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <select class="form-control" [(ngModel)]="filterOffice" (change)="filterStaff()">
+                  <option *ngFor="let officeType of officeTypesList" [value]="officeType">{{OfficeType[officeType] |
+                    translate}}
+                  </option>
+                </select>
+            </div>
+        </div>
+        <div class="row Line-row Small-spaced Header">
+            <div class="col-lg-2 col-md-2">Name</div>
+            <div class="col-lg-2 col-md-2">Department</div>
+            <div class="col-lg-2 col-md-2">User Type</div>
+            <div class="col-lg-2 col-md-2">Office Type</div>
+            <div class="col-lg-2 col-md-2"></div>
+            <div class="col-lg-2 col-md-2"></div>
+        </div>
+        <div class="row Line-row Small-spaced">
+            <div class="col-lg-2 col-md-2">Abigail Taylor</div>
+            <div class="col-lg-2 col-md-2">Logistics</div>
+            <div class="col-lg-2 col-md-2">ERT Lead</div>
+            <div class="col-lg-2 col-md-2">Field Office</div>
+            <div class="col-lg-2 col-md-2"><img src="assets/images/table_icon/additional_info.svg" alt="" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false"></div>
+            <div class="col-lg-2 col-md-2"><a href="javascript:void(0)" (click) = "editStaff('zqPJp1dpVefmSs8wr8k6LiQUSR13', 'SLtjFHU0g1N6SIML5s6fn4x2F9g1')" class="btn btn-primary">Edit</a></div>
+        </div>
+        <div class="Tooltip__bubble Blue collapse" id="collapseExample">
+            <div class="row Small-spaced">
+                <div class="col-lg-12">
+                    <h6>Additional Information</h6>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Position</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <p>Lead Logistician</p>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Email Address</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <p>a.taylor@gmail.com</p>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Telephone Number</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <p>+447229223451</p>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Support Skills</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <ul>
+                        <li>Coordination</li>
+                        <li>Finance</li>
+                        <li>HR</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Technical Skills</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <p>None</p>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Training Needs</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem unde non voluptates facilis pariatur est magnam error, neque quibusdam, expedita, totam esse dolorum soluta repellat, rem in! Itaque, doloribus, laborum!</p>
+                </div>
+            </div>
+            <div class="row Spaced">
+                <div class="col-lg-3">
+                    <p><b>Notification Settings</b></p>
+                </div>
+                <div class="col-lg-9">
+                    <ul>
+                        <li>Amber alert request</li>
+                        <li>Update hazard indicator</li>
+                        <li>MPA/APA due</li>
+                        <li>Response plan expired</li>
+                        <li>Response plan rejected</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+  </div>
+</div>

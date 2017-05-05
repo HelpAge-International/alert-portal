@@ -701,7 +701,37 @@
       "NO_PHONE": "Please enter the phone number"
     },
     "STAFF": {
-      "TITLE_TEXT": "Country Office Staff"
+      "TITLE_TEXT": "Country Office Staff",
+      "ADD_NEW_STAFF": "Add new staff member",
+      "TITLE_ADD_STAFF": "Add staff member",
+      "TITLE_EDIT_STAFF": "Edit staff member",
+      "TITLE_DELETE_STAFF": "Delete staff member",
+      "COUNTRY_OFFICE": "Country Office",
+      "USER_TYPE": "User Type",
+      "POSITION": "Position",
+      "OFFICE_TYPE": "Office Type",
+      "SUPPORT_SKILLS": "Support Skills",
+      "TECHNICAL_SKILLS": "Technical Skills",
+      "TRAINING_NEEDS": "Training needs",
+      "IS_PART_OF_RESPONSE_TEAM": "Is this staff member part of the response team?",
+      "SAVE_NEW_STAFF": "Save new staff member",
+      "SAVE_CHANGES": "Save changes",
+      "NO_TITLE": "Please select a title",
+      "NO_FIRST_NAME": "Please enter the first name of the staff",
+      "NO_LAST_NAME": "Please enter the last name of the staff",
+      "NO_USER_TYPE": "Please select a user type",
+      "NO_REGION": "Region cannot be empty",
+      "NO_COUNTRY_OFFICE": "Please select a country office",
+      "NO_DEPARTMENT": "Please select a department",
+      "NO_POSITION": "Please select a position",
+      "NO_OFFICE_TYPE": "Please select an office type",
+      "NO_EMAIL": "Please enter the email address of the staff",
+      "NO_PHONE": "Please enter the phone number of the staff",
+      "NO_TRAINING_NEEDS": "Please enter training needs",
+      "NO_RESPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
+      "SUCCESS_STAFF_MEMBER_ADDED": "Staff member successfully saved",
+      "DELETE_DIALOG_TITLE": "Delete Staff",
+      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff?"
     },
     "SETTINGS": {
       "TITLE_TEXT": "Country Office Settings"

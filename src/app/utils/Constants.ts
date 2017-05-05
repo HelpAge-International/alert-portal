@@ -38,6 +38,11 @@ export class Constants {
 
   // country administrator
   static COUNTRY_ADMIN_HOME = "/dashboard";
+  static COUNTRY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS",  "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS",
+                                    "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
+  static COUNTRY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.CountryDirector,
+                                              UserType.ErtLeader, UserType.Ert];
+
 
   /*LIST VALUES FOR TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
