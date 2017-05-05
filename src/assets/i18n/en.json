@@ -382,6 +382,18 @@
             "YE": "Yemen",
             "ZM": "Zambia",
             "ZW": "Zimbabwe"
+        },
+        "DEPARTMENT": {
+            "CHS": "CHS",
+            "FINANCE": "Finance",
+            "HR": "HR",
+            "LOGISTICS": "Logistics",
+            "PROGRAMME": "Programme"
+        },
+        "HAZARD_CATEGORY": {
+            "EARTHQUAKE": "Earthquake",
+            "TSUNAMI": "Tsunami",
+            "DROUGHT": "Drought"
         }
     },
     "LOGIN": {
@@ -860,5 +872,37 @@
         "EDUCATION": "Education",
         "CAMP_MANAGEMENT": "Camp management",
         "OTHER": "Other"
+    },
+    "PREPAREDNESS": {
+        "ASSIGN_TO": "Assign to",
+        "ADD_A_DEPARTMENT": "+ Add a department",
+        "TITLE_TEXT_CREATE_PAGE": "Create new mandated preparedness action",
+        "TITLE_TEXT_EDIT_PAGE": "Edit preparedness action",
+        "BACK_BUTTON": "Preparedness actions",
+        "TASK": "What needs to be done?",
+        "ACTION_SELECT_TEXT": "Is this a minimum or advanced preparedness action?",
+        "HAZARD_SELECT_TEXT": "Hazzard association",
+        "DEPARTMENT_SELECT_TEXT": "Department",
+        "DUE_DATE": "Due date",
+        "FREQUENCY": "Frequency",
+        "BUDGET": "Budget",
+        "DOCUMENT_REQUIRED_COMPLETION": "Is a document required for completion",
+        "SAVE_NEW_ACTION": "Save new action",
+        "ERRORS": {
+            "REQUIRED_TASK": "Task field is required"
+        },
+        "DELETE_ACTION_BUTTON": "Delete action",
+        "COPY_ACTION_BUTTON": "Copy action",
+        "ARCHIVE_ACTION_BUTTON": "Archive action",
+        "NO_TASK": "Task is required",
+        "NO_LEVEL": "Level is required",
+        "NO_DEPARTMENT": "Department is required",
+        "NO_DUE_DATE": "Due Date is required",
+        "NO_BUDJET": "Budjet is required",
+        "NO_REQUIRE_DOC": "Require Doc is required",
+        "ALL_HAZARDS": "All Hazards",
+        "UNASSIGNED": "Unassigned",
+        "EVERY": "Every",
+        "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs"
     }
 }

@@ -19,4 +19,6 @@ export class Action {
   public requireDoc: Boolean;
   public task: string;
   public type: ActionType;
+  public assignHazard: any = [];
+  public asignee: string;
 }

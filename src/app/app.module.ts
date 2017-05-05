@@ -91,6 +91,7 @@ import { AddPartnerOrganisationComponent } from './response-plans/add-partner-or
 import { OrdinalPipe } from './utils/pipes/ordinal.pipe';
 import { StatusAlertComponent } from './commons/status-alert/status-alert.component';
 import { AgencyNotificationsComponent } from './agency-admin/agency-notifications/agency-notifications.component';
+import { DatepickerModule } from 'angular2-material-datepicker'
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -208,7 +209,8 @@ const firebaseAuthConfig = {
       }
     }),
     ModalModule.forRoot(),
-    BootstrapModalModule
+    BootstrapModalModule,
+    DatepickerModule
   ],
   providers: [RxHelper, Modal],
   bootstrap: [AppComponent]
