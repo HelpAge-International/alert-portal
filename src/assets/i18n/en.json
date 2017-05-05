@@ -687,6 +687,15 @@
       }
     }
   },
+  "COUNTRY_ADMIN": {
+    "PLEASE_FILL": "Please fill in your country office details below.",
+    "UPDATE_DETAILS": {
+      "NO_ADDRESS_1": "Please enter address line 1",
+      "NO_COUNTRY": "Please select a country",
+      "NO_CITY": "Please enter the name of the city",
+      "NO_PHONE": "Please enter the phone number"
+    }
+  },
   "DIALOG": {
     "TITLE": "Alert",
     "CONTENT": "Are you sure you want to proceed this action?"

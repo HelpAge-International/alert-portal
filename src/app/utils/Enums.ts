@@ -183,6 +183,11 @@ export enum Gender {
   feMale = 1
 }
 
+export enum PhonePrefix{
+  GB = 44,
+  FR = 33
+}
+
 export enum Countries {
   GB = 0,
   FR = 1,
