@@ -2,13 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {ActionType, ActionLevel, ActionStatus, SizeType} from "../../utils/Enums";
+import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType} from "../../utils/Enums";
 import {Observable, Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {RxHelper} from '../../utils/RxHelper';
 import {Frequency} from "../../utils/Frequency";
 import * as firebase from 'firebase';
 declare var jQuery: any;
+
 
 @Component({
   selector: 'app-minimum',
@@ -50,6 +51,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	private docFilterSubject: Subject<any>;
 	private docFilter: any = {};
 
+	private attachments: any[] = [];
+
+	firebase: any;
 
 	constructor(private af: AngularFire, private router: Router) {
 		this.subscriptions = new RxHelper;
@@ -197,6 +201,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	}
 
 	private addNote(action){
+		if (action.note == undefined)
+			return;
 
 		let note = {
 			content: action.note,
@@ -318,6 +324,101 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 	private deleteDocument(action, docId){
 
+	}
+
+	private fileChange(event, action){
+
+		if (event.target.files.length > 0) {
+	      let file = event.target.files[0];
+	      
+	      jQuery('#docUpload').val("");
+
+	      file.actionId = action.key;
+	      let exists = false;
+
+	      if (action.attachments == undefined)
+	      	action.attachments = [];
+
+	      action.attachments.map(attachment => {
+	      	if (attachment.name == file.name && attachment.actionId == file.actionId) {
+	      		exists = true;
+	      		console.log("exists");
+	      	}
+	      });
+
+	      if (!exists)
+  		  	action.attachments.push(file);
+	    }
+
+	    console.log(this.actions);
+	}
+
+	private removeAttachment(action, file){
+		action.attachments = action.attachments.filter(attachment => {
+	      	if (attachment.name == file.name && attachment.actionId == file.actionId)
+	      		return false;
+
+	      	return true;
+	      });
+	}
+
+	private completeAction(action) {
+		//TODO check if there are any documents attached. Prevent completion without documents.
+		// action.actionStatus = ActionStatus.Completed;
+		// action.isCompleted = true;
+
+		if (action.attachments != undefined){
+			action.attachments.map(file => {
+				
+				this.uploadFile(action, file);
+			});			
+		}
+
+	}
+
+	private uploadFile(action, file) {
+		console.log(action);			
+		console.log(file);
+		let document = {
+			fileName: file.name,
+			filePath: "", //this needs to be updated once the file is uploaded
+			module: DocumentType.MPA,
+			size: file.size * 0.001,
+			sizeType: SizeType.KB,
+			title: file.name, //TODO, what's with the title?
+			time: firebase.database.ServerValue.TIMESTAMP,
+			uploadedBy: this.uid
+
+		};
+
+		let docPromise = this.af.database.list(Constants.APP_STATUS+'/document/' + action.agencyId).push(document);
+		docPromise
+			.then(_ => {
+				//TODO update the action reference
+				let doc = {};
+				doc[_.key] = true;
+
+				this.af.database.list(Constants.APP_STATUS+'/action/' + action.agencyId + '/' + action.key + '/documents').push(doc);
+			})
+  			.catch(err => console.log(err, 'You do not have access!'));
+
+		//TODO make a reference in the Database, then upload file
+		//TODO if upload has failed, delete the Database reference.
+
+
+
+		// let promise = new Promise((res, rej) => {
+		//   var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + this.logoFile.name);
+		//   var uploadTask = storageRef.put(this.logoFile);
+		//   uploadTask.on('state_changed', function (snapshot) {
+		//   }, function (error) {
+		//     rej(error);
+		//   }, function () {
+		//     var downloadURL = uploadTask.snapshot.downloadURL;
+		//     res(downloadURL);
+		//   });
+		// });
+		// return promise;
 	}
 
 }
