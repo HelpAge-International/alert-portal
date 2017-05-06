@@ -6,6 +6,7 @@ import {RxHelper} from '../../utils/RxHelper';
 import {ModelStaffDisplay} from '../../model/staff-display.model';
 import {Observable} from 'rxjs';
 import {ModelStaff} from '../../model/staff.model';
+import {ModelUserPublic} from '../../model/user-public.model';
 import {OfficeType, SkillType, StaffPosition, UserType} from '../../utils/Enums';
 declare var jQuery: any;
 @Component({
@@ -14,46 +15,32 @@ declare var jQuery: any;
   styleUrls: ['./country-staff.component.css']
 })
 export class CountryStaffComponent implements OnInit, OnDestroy {
-
-  POSITION = Constants.STAFF_POSITION;
-  POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
-  USER_TYPE = Constants.USER_TYPE;
-  USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
-  OFFICE_TYPE = Constants.OFFICE_TYPE;
-  OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
-  NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
-
-  All_Department: string = "All departments";
-  filterPosition: string = this.All_Department;
-  filterUser: number = 0;
-  filterOffice: number = 0;
-
-  countries = Constants.COUNTRY;
-  staffs: ModelStaffDisplay[] = [];
+  private agencyAdminId: string;
+  private countryId: any;
   private uid: string;
-  private staffDisplay: ModelStaffDisplay;
-  private officeId: string [] = [];
-  private staff: ModelStaff;
-  staffName: string;
-  skillSet = new Set();
-  private skillNames: string[] = [];
+
   private Position = Constants.STAFF_POSITION;
-  private positionsList = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
   private UserType = Constants.USER_TYPE;
   private userTypesList = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
   private OfficeType = Constants.OFFICE_TYPE;
   private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private notificationSettings = Constants.NOTIFICATION_SETTINGS;
+
+  All_Department = 'All departments';
+  filterPosition: string = this.All_Department;
+  filterUser = 0;
+  filterOffice = 0;
+
+  private staff: ModelStaff;
+  private staffPublicUser: ModelUserPublic[] = [];
+  private staffList: ModelStaff[] = [];
+  private skillSet = new Set();
+  private skillNames: string[] = [];
   private staffMap = new Map();
-  private dealedStaff: string[] = [];
-  private showCountryStaff = new Map();
-  private staffEmail: string;
-  private staffPhone: string;
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
-  private globalUsers: any[] = [];
   private departments: any[] = [];
-
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {  }
 
@@ -64,14 +51,20 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
         return;
       }
       this.uid = user.auth.uid;
-      this.initData();
+      const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
+            .subscribe(countryAdmin => {
+                // Get the country id and agency administrator id
+                this.countryId = countryAdmin.countryId;
+                this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
+                this.initData();
+            });
     });
     this.subscriptions.add(subscription);
   }
 
   private initData() {
     this.getStaffData();
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+    const subscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
       .map(departmentList => {
         let departments = [this.All_Department];
         departmentList.forEach(x => {
@@ -86,77 +79,18 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   private getStaffData() {
-    this.staffs = [];
-    this.dealedStaff = [];
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+    const staffSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
       .do(list => {
         list.forEach(item => {
-          this.staffDisplay = new ModelStaffDisplay();
-          this.staffDisplay.id = item.$key;
-          this.staffDisplay.country = item.location;
-          this.staffDisplay.staffs = [];
-          this.staffs.push(this.staffDisplay);
-          this.showCountryStaff.set(this.staffDisplay.id, false);
-        })
-      })
-      .flatMap(list => {
-        let ids = [];
-        list.forEach(x => {
-          ids.push(x.$key);
-        });
-        return Observable.from(ids);
-      })
-      .map(id => {
-        this.officeId.push(id);
-        return this.staffMap.set(id, this.af.database.list(Constants.APP_STATUS + "/staff/" + id));
-      })
-      .do(() => {
-        this.officeId.forEach(id => {
-          let subscribe = this.staffMap.get(id)
-            .subscribe(x => {
-              x.forEach(item => {
-                if (!this.dealedStaff.includes(item.$key)) {
-                  if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == this.All_Department && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == this.All_Department && this.filterUser == item.userType && this.filterOffice == item.officeType) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == item.department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == item.department && this.filterUser == UserType.All && this.filterOffice == item.officeType) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == item.department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == this.All_Department && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == item.department && this.filterUser == item.userType && this.filterOffice == OfficeType.All) {
-                    this.addStaff(item, id);
-                  } else if (this.filterPosition == item.department && this.filterUser == item.userType && this.filterOffice == item.officeType) {
-                    this.addStaff(item, id);
-                  }
-                }
-              });
-            });
-          this.subscriptions.add(subscribe);
+          this.staffList.push(this.addStaff(item));
+          this.getStaffPublicUser(item.$key);
         });
       })
       .subscribe();
-    this.subscriptions.add(subscription);
-
-    // let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
-    //   .subscribe(users => {
-    //     this.globalUsers = users;
-    //   });
-    // this.subscriptions.add(subscriptionGlobalUser);
-    this.filterGlobalUsers();
+    this.subscriptions.add(staffSubscription);
   }
 
-  private addStaff(item, id) {
+  private addStaff(item) {
     this.staff = new ModelStaff();
     this.staff.id = item.$key;
     this.staff.position = item.position;
@@ -166,8 +100,8 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.staff.training = item.training;
     this.staff.skill = item.skill;
     this.staff.notification = item.notification;
-    this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
-    this.dealedStaff.push(item.$key);
+
+    return this.staff;
   }
 
   ngOnDestroy() {
@@ -175,22 +109,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   addNewStaff() {
-    this.router.navigateByUrl(Constants.AGENCY_ADMIN_ADD_STARFF);
-  }
-
-  getStaffName(key): string {
-    this.staffName = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
-      .subscribe(user => {
-        this.staffName = user.firstName + " " + user.lastName;
-      });
-    this.subscriptions.add(subscription);
-    return this.staffName;
-  }
-
-  hideCountryStaff(office) {
-    let isHidden = this.showCountryStaff.get(office.id);
-    this.showCountryStaff.set(office.id, !isHidden);
+    this.router.navigateByUrl('/country-admin/country-staff/country-add-edit-staff');
   }
 
   editStaff(officeId, staffId) {
@@ -200,48 +119,30 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     }], {skipLocationChange: true});
   }
 
-  editGlobalUser(staffId) {
-    console.log("edit global user");
+  getStaffPublicUser(userId){
+    const staffPublicUserSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
+              .subscribe(userPublic => {
+                this.staffPublicUser[userId] =
+                    new ModelUserPublic(userPublic.firstName, userPublic.lastName, userPublic.title, userPublic.email);
+
+                this.staffPublicUser[userId].phone = userPublic.phone;
+              });
   }
 
   closeAdditionalInfo(staffId) {
-    jQuery("#" + staffId).collapse("hide");
+    jQuery('#' + staffId).collapse('hide');
   }
-
-  getStaffEmail(staffId) {
-    this.staffEmail = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
-      .first()
-      .subscribe(user => {
-        this.staffEmail = user.email;
-      });
-    this.subscriptions.add(subscription);
-    return this.staffEmail;
-  }
-
-  getStaffPhone(staffId) {
-    this.staffPhone = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
-      .first()
-      .subscribe(user => {
-        this.staffPhone = user.phone;
-      });
-    this.subscriptions.add(subscription);
-    return this.staffPhone;
-  }
-
   getSupportSkills(officeId, staffId) {
     this.supportSkills = [];
     if (staffId) {
-      let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
-        Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
+      let path = Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId;
       let subscription = this.af.database.object(path)
         .first()
         .map(user => {
           let userSkill = [];
           if (user.skill) {
             for (let skill of user.skill) {
-              userSkill.push(skill)
+              userSkill.push(skill);
             }
           }
           return userSkill;
@@ -265,8 +166,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   getTechSkills(officeId, staffId) {
     this.techSkills = [];
     if (staffId) {
-      let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
-        Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
+      let path = Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId;
       let subscription = this.af.database.object(path)
         .first()
         .map(user => {
@@ -292,123 +192,5 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     }
     return this.techSkills;
-  }
-
-  filterStaff() {
-    console.log("filter staff");
-    this.getStaffData();
-    this.filterGlobalUsers();
-  }
-
-  private filterGlobalUsers() {
-    this.globalUsers = [];
-    let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
-      .subscribe(users => {
-        if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-          this.globalUsers = users;
-        } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
-          users.forEach(user => {
-            if (user.userType == this.filterUser) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        } else if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
-          users.forEach(user => {
-            if (user.officeType == this.filterOffice) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
-          users.forEach(user => {
-            if (user.officeType == this.filterOffice && user.userType == this.filterUser) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        }
-        else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
-          users.forEach(user => {
-            if (user.department == this.filterPosition) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        } else if (this.filterPosition != this.All_Department && this.filterUser == UserType.All && this.filterOffice != OfficeType.All) {
-          users.forEach(user => {
-            if (user.department == this.filterPosition && user.officeType == this.filterOffice) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        }
-        else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {
-          users.forEach(user => {
-            if (user.department == this.filterPosition && user.userType == this.filterUser) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        } else if (this.filterPosition != this.All_Department && this.filterUser != UserType.All && this.filterOffice != OfficeType.All) {
-          users.forEach(user => {
-            if (user.department == this.filterPosition && user.userType == this.filterUser && user.officeType == this.filterOffice) {
-              let isDuplicate = false;
-              for (let item of this.globalUsers) {
-                if (item.$key == user.$key) {
-                  isDuplicate = true;
-                }
-              }
-              if (!isDuplicate) {
-                this.globalUsers.push(user);
-              }
-            }
-          });
-        }
-        console.log(this.globalUsers)
-      });
-    this.subscriptions.add(subscriptionGlobalUser);
   }
 }

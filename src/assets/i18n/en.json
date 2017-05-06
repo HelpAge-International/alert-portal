@@ -731,7 +731,8 @@
       "NO_RESPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
       "SUCCESS_STAFF_MEMBER_ADDED": "Staff member successfully saved",
       "DELETE_DIALOG_TITLE": "Delete Staff",
-      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff?"
+      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff?",
+      "ADDITIONAL_INFO": "Additional Info"
     },
     "SETTINGS": {
       "TITLE_TEXT": "Country Office Settings"
