@@ -1,6 +1,28 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+<div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Export selected documents</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>You are about to export <strong>{{docsCount}} document(s)</strong> with a total size of <strong>{{docsSize | number:'1.0-2'}}MB</strong> are you sure you wish to continue?</p></div>
+      </div>
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
@@ -196,7 +218,7 @@
 				    <div class="col-md-10">
 				        <div class="row Spaced align-items-center">
 				            <div class="col-sm-6 col-8">
-				                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
+				                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap" (click)="exportSelectedDocuments(action)">Download all</a>
 				            </div>
 				            <div class="col-sm-6 col-4 text-right">
 				                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
@@ -204,11 +226,8 @@
 				        </div>
 				        <div class="row documents-popover__item">
 				            <div class="col-12">
-				                <p>
-				                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
-				                </p>
-				                <p>
-				                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+				            	<p *ngFor="let doc of action.documents | keyValues"> 
+				                    <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a href="javascript:void(0);" class="text-danger"  (click)="deleteDocument(action, doc.key)">Delete</a></span>
 				                </p>
 				            </div>
 				        </div>
@@ -264,8 +283,8 @@
             <div class="row align-items-center no-gutters">
                 <div class="col-sm-12">
                     <h2>Unassigned Actions</h2>
-                    <a data-toggle="collapse" href="#collapseTwo" aria-expanded="false" class="Hide-all">Hide all</a>
-                    <a data-toggle="collapse" href="#collapseTwo" aria-expanded="false" class="Show-all">Show all</a>
+                    <a data-toggle="collapse" href="#collapseTwo" [attr.aria-expanded]="allUnassigned" class="Hide-all" [ngStyle]="{'display': allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(false)">Hide all</a>
+                    <a data-toggle="collapse" href="#collapseTwo" [attr.aria-expanded]="allUnassigned" class="Show-all" [ngStyle]="{'display': !allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(true)">Show all</a>
                 </div>
             </div>
         </div>
@@ -397,7 +416,7 @@
 						    <div class="col-md-10">
 						        <div class="row Spaced align-items-center">
 						            <div class="col-sm-6 col-8">
-						                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
+						                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap" (click)="exportSelectedDocuments(action)">Download all</a>
 						            </div>
 						            <div class="col-sm-6 col-4 text-right">
 						                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
@@ -405,11 +424,8 @@
 						        </div>
 						        <div class="row documents-popover__item">
 						            <div class="col-12">
-						                <p>
-						                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
-						                </p>
-						                <p>
-						                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+						            	<p *ngFor="let doc of action.documents | keyValues"> 
+						                    <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a href="javascript:void(0);" class="text-danger"  (click)="deleteDocument(action, doc.key)">Delete</a></span>
 						                </p>
 						            </div>
 						        </div>
@@ -427,8 +443,8 @@
             <div class="row align-items-center no-gutters">
                 <div class="col-sm-12">
                     <h2>Archived Actions</h2>
-                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all" *ngIf="allArchived" (click)="showAllArchived(0)">Hide all</a>
-                    <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all" *ngIf="!allArchived" (click)="showAllArchived(1)">Show all</a>
+                    <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Hide-all" [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">Hide all</a>
+                    <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Show-all" [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">Show all</a>
                 </div>
             </div>
         </div>
@@ -560,7 +576,7 @@
 						    <div class="col-md-10">
 						        <div class="row Spaced align-items-center">
 						            <div class="col-sm-6 col-8">
-						                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap">Download all</a>
+						                <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap" (click)="exportSelectedDocuments(action)">Download all</a>
 						            </div>
 						            <div class="col-sm-6 col-4 text-right">
 						                <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
@@ -568,11 +584,8 @@
 						        </div>
 						        <div class="row documents-popover__item">
 						            <div class="col-12">
-						                <p>
-						                    <strong>ERT meetings plan2017.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
-						                </p>
-						                <p>
-						                    <strong>ERT meetings plan 2016.doc</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);">Download</a> | <a href="javascript:void(0);" class="text-danger">Delete</a></span>
+						            	<p *ngFor="let doc of action.documents | keyValues"> 
+						                    <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a href="javascript:void(0);" class="text-danger"  (click)="deleteDocument(action, doc.key)">Delete</a></span>
 						                </p>
 						            </div>
 						        </div>

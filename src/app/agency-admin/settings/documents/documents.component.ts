@@ -167,7 +167,6 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
 		this.docsCount = this.exportDocs.length;
 
-		//TODO size in MB
 		jQuery("#export_documents").modal("show");
 	}
 

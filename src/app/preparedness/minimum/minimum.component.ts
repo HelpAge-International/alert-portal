@@ -2,11 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {ActionType, ActionLevel, ActionStatus} from "../../utils/Enums";
-import {Observable} from 'rxjs';
+import {ActionType, ActionLevel, ActionStatus, SizeType} from "../../utils/Enums";
+import {Observable, Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {RxHelper} from '../../utils/RxHelper';
 import {Frequency} from "../../utils/Frequency";
 import * as firebase from 'firebase';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-minimum',
@@ -39,15 +41,56 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	private assignedToAnyone = false;
 
 	private allArchived = false;
+	private allUnassigned = false;
+
+	private exportDocs: any[] = [];
+	private docsCount = 0;
+	private docsSize = 0;
+
+	private docFilterSubject: Subject<any>;
+	private docFilter: any = {};
+
 
 	constructor(private af: AngularFire, private router: Router) {
 		this.subscriptions = new RxHelper;
+
+		this.docFilterSubject = new BehaviorSubject(undefined);
+		this.docFilter = {
+			query: {
+	          orderByChild: "module",
+	          equalTo: this.docFilterSubject
+	        }
+		}
 	}
 
 	ngOnInit() {
 		let subscription = this.af.auth.subscribe(auth => {
 			if (auth) {
 				//this.uid = auth.uid; TODO remove comment
+				this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
+					if (country.$exists()) {
+						this.countryId = country.$value
+
+						this.assignedToUsers = [];
+						this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/staff/' + this.countryId).subscribe(staff => {
+							this.assignedToUsers = staff.map(member => {
+								let userId = member.$key;
+								this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/userPublic/' + userId).subscribe(_ => {
+									if (_.$exists()){
+										member.fullName = _.firstName + " " + _.lastName;
+									}
+									else{
+										member.fullName = "";
+									}
+								}));
+
+								return member;
+							});
+						
+						}));
+					}
+				}));
+
 				this.assignedToUserKey = this.uid;
 				this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/action/').subscribe(_ => {
 					this.actions = [];
@@ -63,6 +106,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 							let userKey = actions[action].assignee;
 							try {
 								actions[action].docsCount = Object.keys(actions[action].documents).length;
+
+								Object.keys(actions[action].documents).map(docId => {
+									this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/document/' + this.countryId + '/' + docId).subscribe(_ => {
+										actions[action].documents[docId] = _;
+									}));
+								});
 							} catch(e){
 								console.log('No docs');
 							}
@@ -123,29 +172,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 				}));
 
-				this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
-					if (country.$exists()) {
-						this.countryId = country.$value
-console.log(this.countryId);
-						this.assignedToUsers = [];
-						this.subscriptions.add(this.af.database.list(Constants.APP_STATUS+'/staff/' + this.countryId).subscribe(staff => {
-							this.assignedToUsers = staff.map(member => {
-								let userId = member.$key;
-								this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/userPublic/' + userId).subscribe(_ => {
-									if (_.$exists()){
-										member.fullName = _.firstName + " " + _.lastName;
-									}
-									else{
-										member.fullName = "";
-									}
-								}));
-
-								return member;
-							});
-						
-						}));
-					}
-				}));				
+				
 
 			    this.subscriptions.add(subscription);
 			} else {
@@ -219,7 +246,78 @@ console.log(this.countryId);
 
 	private showAllArchived(show){
 		this.allArchived = show;
-		console.log(this.allArchived);
+	}
+
+	private showAllUnassigned(show){
+		this.allUnassigned = show;
+	}
+
+	private exportSelectedDocuments(action) {
+		this.exportDocs = [];
+		this.docsSize = 0;
+		
+		for(let docId in action.documents) {
+			let doc = action.documents[docId];
+			this.exportDocs.push(doc);
+
+			if (doc.sizeType == SizeType.KB)
+				this.docsSize += doc.size * 0.001;
+			else
+				this.docsSize += doc.size;
+		}
+
+		this.docsCount = this.exportDocs.length;
+
+		jQuery("#export_documents").modal("show");
+	}
+
+	private exportDocument(action, docId) {
+		this.exportDocs = [];
+		this.docsSize = 0;
+		
+		let doc = action.documents[docId];
+		this.exportDocs.push(doc);
+
+		if (doc.sizeType == SizeType.KB)
+			this.docsSize += doc.size * 0.001;
+		else
+			this.docsSize += doc.size;
+
+		this.docsCount = this.exportDocs.length;
+
+		jQuery("#export_documents").modal("show");
+	}
+
+	private closeExportModal() {
+		jQuery("#export_documents").modal("hide");
+	}
+
+	private download(data, name, type) {
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		var file = new Blob([data], {type: type});
+		a.href = URL.createObjectURL(file);
+		a.download = name;
+		a.click();
+	}
+
+	private export() {
+		jQuery("#export_documents").modal("hide");
+
+		let self = this;
+		this.exportDocs.map(doc => {
+			var xhr = new XMLHttpRequest();
+			xhr.responseType = 'blob';
+			xhr.onload = function(event) {
+				self.download(xhr.response, doc.fileName, xhr.getResponseHeader("Content-Type"));
+			};
+			xhr.open('GET', doc.filePath);
+			xhr.send();
+		});	
+	}
+
+	private deleteDocument(action, docId){
+
 	}
 
 }

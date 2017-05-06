@@ -64,6 +64,8 @@ import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.compone
 import {MapComponent} from "./map/map.component";
 import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {MinimumPreparednessComponent} from "./preparedness/minimum/minimum.component";
+import {AdvancedPreparednessComponent} from "./preparedness/advanced/advanced.component";
+import {BudgetPreparednessComponent} from "./preparedness/budget/budget.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
 
@@ -166,6 +168,8 @@ const routes: Routes = [
    * Preparedness
    */
   {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
+  {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
+  {path: 'preparedness/budget', component: BudgetPreparednessComponent},
   {path: 'preparedness', component: PreparednessComponent},
 
   /**
