@@ -183,6 +183,12 @@ export enum Gender {
   male = 0
 }
 
+export enum AgeRange {
+  Less18 = 0,
+  Between18To50 = 1,
+  More50 = 2
+}
+
 export enum Countries {
   GB = 0,
   FR = 1,
@@ -440,4 +446,15 @@ export enum ApprovalStatus {
   WaitingApproval = 1,
   Approved = 2,
   NeedsReviewing = 3
+}
+
+export enum BudgetCategory {
+  Inputs = 0,
+  Transport = 1,
+  Security = 2,
+  Logistics = 3,
+  Staffing = 4,
+  Monitoring = 5,
+  CapitalItems = 6,
+  ManagementSupport = 7
 }

@@ -475,7 +475,7 @@
                       <div class="water"></div>
                     </div>
                   </div>
-                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{"SECTORS.WASH" | translate}}
+                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{SECTORS[sector] | translate}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
@@ -612,18 +612,24 @@
                         <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.SOURCE_PLAN?" | translate}}</label>
                       </div>
                       <div class="row col-lg-12">
-                        <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" value="0" #radio0
-                          id="source-intern" (click)="selectInternationa(sector, radio0.value)">
+                        <label for="source-intern{{sector}}"
+                               class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
+                          value="0" #radio0
+                          id="source-intern{{sector}}" (click)="selectInternationa(sector, radio0.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
-                        <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" value="1" #radio1
-                          id="source-region">
+                        <label for="source-region{{sector}}"
+                               class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
+                          value="1" #radio1
+                          id="source-region{{sector}}" (click)="selectNeighbour(sector, radio1.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" |
                           translate}}</label>
-                        <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" value="2" #radio2
-                          id="source-local">
+                        <label for="source-local{{sector}}"
+                               class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
+                          value="2" #radio2
+                          id="source-local{{sector}}" (click)="selectLocal(sector, radio2.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" |
                           translate}}</label>
                       </div>
@@ -635,11 +641,13 @@
                         translate}}</label>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">1</span>
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" #pointOne
+                               (change)="getBulletOne(sector, pointOne.value)">
                       </div>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">2</span>
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" #pointTwo
+                               (change)="getBulletTwo(sector, pointTwo.value)">
                       </div>
                     </div>
                   </div>
@@ -697,18 +705,21 @@
             </div>
           </div>
 
-          <div class="col-lg-8 Spaced subitem">
+          <div *ngIf="intentToVisuallyDocument" class="col-lg-8 Spaced subitem">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.FORMAT_OF_DOCUMENTATION?" |
               translate}}</label>
             <div class="Selection-row Selection-row--column Spaced">
               <label for="P-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
-                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="P-doc">
+                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="P-doc" value="0"
+                       [(ngModel)]="mediaFormat">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC" | translate}}</label>
               <label for="V-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
-                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc">
+                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc" value="1"
+                       [(ngModel)]="mediaFormat">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO" | translate}}</label>
               <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
-                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc">
+                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc" value="2"
+                       [(ngModel)]="mediaFormat">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO" | translate}}</label>
             </div>
           </div>
@@ -731,7 +742,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -757,7 +768,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberFemaleLessThan18}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemaleLessThan18">
@@ -769,7 +780,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberFemale18To50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemale18To50">
@@ -781,7 +792,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberFemalegreaterThan50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control"
@@ -805,7 +816,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberMaleLessThan18}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMaleLessThan18">
@@ -817,7 +828,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberMale18To50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMale18To50"></div>
@@ -828,7 +839,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberMalegreaterThan50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMalegreaterThan50">
@@ -876,90 +887,90 @@
               <div class="col-lg-2 col-3">&pound; {{totalInputs}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>
-            <div class="row subitem Header Small-spaced">
-
+            <div *ngIf="sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
               <!--TODO - The list of sectors selected in secrion 3 should be shown here-->
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-1: {{"SECTORS.WASH" | translate}}</div>
+              <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
+                <div class="col-lg-3 col-4">A-{{i+1}}: {{SECTORS[sector] | translate}}</div>
                 <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="waSHBudget"
-                         (change)="calculateBudget()"></div>
+                  <input type="number" class="form-control budget" #budget min="0"
+                         (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative" [(ngModel)]="waSHNarrative"></div>
+                  <input type="text" class="form-control budget-narrative" #narrative
+                         (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-2: {{"SECTORS.HEALTH" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="healthBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative" [(ngModel)]="healthNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-3: {{"SECTORS.SHELTER" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="shelterBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative" [(ngModel)]="shelterNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-4: {{"SECTORS.CAMP_MANAGEMENT" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="campManagementBudget" (change)="calculateBudget()">
-                </div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="campManagementNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-6: {{"SECTORS.EDUCATION" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="educationBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="educationNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-7: {{"SECTORS.PROTECTION" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="protectionBudget" (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="protectionNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-8 {{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="foodSecAndLivelihoodsBudget"
-                         (change)="calculateBudget()">
-                </div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="foodSecAndLivelihoodsNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-9 {{"SECTORS.OTHER" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="otherBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="otherNarrative"></div>
-              </div>
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-2: {{"SECTORS.HEALTH" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget" [(ngModel)]="healthBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative" [(ngModel)]="healthNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-3: {{"SECTORS.SHELTER" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget" [(ngModel)]="shelterBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative" [(ngModel)]="shelterNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-4: {{"SECTORS.CAMP_MANAGEMENT" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="campManagementBudget" (change)="calculateBudget()">-->
+              <!--</div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="campManagementNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-6: {{"SECTORS.EDUCATION" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="educationBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="educationNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-7: {{"SECTORS.PROTECTION" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="protectionBudget" (change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="protectionNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-8 {{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="foodSecAndLivelihoodsBudget"-->
+              <!--(change)="calculateBudget()">-->
+              <!--</div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="foodSecAndLivelihoodsNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-9 {{"SECTORS.OTHER" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget" [(ngModel)]="otherBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="otherNarrative"></div>-->
+              <!--</div>-->
             </div>
             <div class="row Line-row Header Spaced">
               <div class="col-lg-3 col-4">B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
                 translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="transportBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="transportBudget" min="0"
+                       (change)="calculateBudget(null,null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="transportNarrative">
               </div>
@@ -969,8 +980,8 @@
                 translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="securityBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="securityBudget" min="0"
+                       (change)="calculateBudget(null, null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="securityNarrative"></div>
             </div>
@@ -979,8 +990,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.LOGISTICS_AND_OVERHEADS" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="logisticsAndOverheadsBudget"
-                       (change)="calculateBudget()">
+                <input type="number" class="form-control" [(ngModel)]="logisticsAndOverheadsBudget" min="0"
+                       (change)="calculateBudget(null, null, false)">
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="logisticsAndOverheadsNarrative"></div>
@@ -990,8 +1001,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.STAFFING_AND_SUPPORT" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="staffingAndSupportBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="staffingAndSupportBudget" min="0"
+                       (change)="calculateBudget(null, null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="staffingAndSupportNarrative"></div>
             </div>
@@ -1000,8 +1011,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MON_AND_EVALUATION" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="monitoringAndEvolutionBudget"
-                       (change)="calculateBudget()">
+                <input type="number" class="form-control" [(ngModel)]="monitoringAndEvolutionBudget" min="0"
+                       (change)="calculateBudget(null, null, false)">
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="monitoringAndEvolutionNarrative"></div>
@@ -1011,8 +1022,8 @@
                 translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="capitalItemsBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="capitalItemsBudget" min="0"
+                       (change)="calculateBudget(null, null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="capitalItemsNarrative">
               </div>
@@ -1022,8 +1033,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage"
-                       (change)="calculateBudget()">
+                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage" min="0"
+                       (change)="calculateBudget(null, null, false)">
                 <br/> &pound; {{totalOfAllCosts}}
               </div>
               <div class="col-lg-4 col-5">
@@ -1059,13 +1070,13 @@
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
-              <div class="col-lg-3 col-4"><input type="text" class="form-control">
+              <div class="col-lg-3 col-4"><input type="text" class="form-control" #budget (change)="budgetOverThousand(capitalItemSection, budget.value)">
                 <br/>
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeCapitalItemSection(capitalItemSection)"
                    [hidden]="capitalItemSection == 1">{{"GLOBAL.REMOVE" | translate}}</a>
               </div>
-              <div class="col-lg-9 col-8"><input type="text" class="form-control"></div>
+              <div class="col-lg-9 col-8"><input type="text" class="form-control" #desc (change)="budgetOverThousandDesc(capitalItemSection, desc.value)"></div>
             </div>
             <div class="row Line-row Small-spaced">
               <a href="javascript:void(0)" class="Add__row__cta" (click)="addCapitalItemSection()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.ADD_ITEM"

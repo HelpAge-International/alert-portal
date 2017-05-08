@@ -5,7 +5,7 @@ import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
   HazardScenario, ResponsePlanSectionSettings, ResponsePlanSectors,
-  PresenceInTheCountry, MethodOfImplementation, MediaFormat, Gender
+  PresenceInTheCountry, MethodOfImplementation, MediaFormat, Gender, AgeRange
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -19,6 +19,8 @@ import {validate} from "codelyzer/walkerFactory/walkerFn";
 })
 
 export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
+
+  SECTORS = Constants.RESPONSE_PLANS_SECTORS;
 
   private uid: string;
   private countryId: string;
@@ -74,7 +76,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section2Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 3/10
-  private sectorsRelatedTo: ResponsePlanSectors[] = [0, 1];
+  private sectorsRelatedTo: ResponsePlanSectors[] = [ResponsePlanSectors.wash, ResponsePlanSectors.health];
   private otherRelatedSector: string = '';
   private presenceInTheCountry: PresenceInTheCountry = PresenceInTheCountry.currentProgrammes;
   private methodOfImplementation: MethodOfImplementation = MethodOfImplementation.fieldStaff;
@@ -119,12 +121,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   // Section 8/10
   private mALSystemsDescriptionText: string = '';
-  private intentToVisuallyDocument: boolean = true;
-  private mediaFormat: MediaFormat = MediaFormat.photographic;
+  private intentToVisuallyDocument: boolean = false;
+  // private mediaFormat: MediaFormat = MediaFormat.photographic;
+  private mediaFormat: number;
 
   private section8Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 9/10
+  private numberFemaleLessThan18: number = 0;
+  private numberFemale18To50: number = 0;
+  private numberFemalegreaterThan50: number = 0;
+  private numberMaleLessThan18: number = 0;
+  private numberMale18To50: number = 0;
+  private numberMalegreaterThan50: number = 0;
+
   private adjustedFemaleLessThan18: number = 0;
   private adjustedFemale18To50: number = 0;
   private adjustedFemalegreaterThan50: number = 0;
@@ -135,6 +145,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section9Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 10/10
+  private sectorBudget = new Map();
+  private sectorNarrative = new Map();
+  private budgetOver1000 = new Map();
+  private budgetOver1000Desc = new Map();
+
+
   private totalInputs: number = 0;
   private totalOfAllCosts: number = 0;
   private totalBudget: number = 0;
@@ -185,7 +201,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     //test only
-    let beneficiaryList = [{"age": 1, "gender": 0, "value": 10}];
+    let beneficiaryList = [{
+      "age": AgeRange.Less18,
+      "gender": Gender.feMale,
+      "value": 10
+    }, {"age": AgeRange.Between18To50, "gender": Gender.feMale, "value": 10}, {
+      "age": AgeRange.More50,
+      "gender": Gender.feMale,
+      "value": 10
+    },
+      {"age": AgeRange.Less18, "gender": Gender.male, "value": 10}, {
+        "age": AgeRange.Between18To50,
+        "gender": Gender.male,
+        "value": 10
+      }, {"age": AgeRange.More50, "gender": Gender.male, "value": 10}];
     let activity = new ModelPlanActivity("plan", "training", "KPI", beneficiaryList);
     let activityList = [activity];
     this.activityMap.set(0, activityList);
@@ -233,60 +262,61 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Finish Button press on section 10
    */
   onSubmit() {
+    console.log(this.capitalItemSections);
 
     // TODO - Check if section 10 is completed
 
-    console.log("Finish button pressed");
-
-    let newResponsePlan: ResponsePlan = new ResponsePlan;
-
-    newResponsePlan.planName = this.planName;
-    newResponsePlan.geographicalLocation = this.geographicalLocation;
-    newResponsePlan.planLead = this.staffMemberSelected;
-    newResponsePlan.hazardScenario = this.hazardScenarioSelected;
-
-    // TODO ----
-    // newResponsePlan.scenarioCrisisList = this.scenarioCrisisList;
-    newResponsePlan.impactOfCrisisList = this.impactOfCrisisList;
-    newResponsePlan.availabilityOfFundsList = this.availabilityOfFundsList;
-
-    newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
-    newResponsePlan.otherRelatedSector = this.otherRelatedSector;
-    newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
-    newResponsePlan.methodOfImplementation = this.methodOfImplementation;
-    newResponsePlan.partners = this.partners;
-
-    newResponsePlan.proposedResponse = this.proposedResponseText;
-    newResponsePlan.progressOfActivitiesPlan = this.progressOfActivitiesPlanText;
-    newResponsePlan.coordinationPlan = this.coordinationPlanText;
-
-    newResponsePlan.numOfBeneficiaries = this.numOfBeneficiaries;
-    newResponsePlan.vulnerableGroups = this.vulnerableGroups;
-    newResponsePlan.targetPopulationInvolvementList = this.targetPopulationInvolvementList;
-
-    newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
-
-    newResponsePlan.mALSystemsDescription = this.mALSystemsDescriptionText;
-    newResponsePlan.isMedia = this.intentToVisuallyDocument;
-    newResponsePlan.mediaFormat = this.mediaFormat;
-
-    // newResponsePlan.sectionsCompleted = this.
-    newResponsePlan.totalSections = this.totalSections;
-
-    newResponsePlan.isActive = true;
-
-    console.log("New Response Plan ----> " + newResponsePlan);
-
-    // TODO - For other users such as ERT and ERT Lead, get the country admin's id which the user is under. This has to be done when other users are implemeneted
-
-    // If logged in as a Country admin
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
-
-    this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
-      console.log("Response plan creation successful");
-    }).catch(error => {
-      console.log("Response plan creation unsuccessful with error --> " + error.message);
-    })
+    // console.log("Finish button pressed");
+    //
+    // let newResponsePlan: ResponsePlan = new ResponsePlan;
+    //
+    // newResponsePlan.planName = this.planName;
+    // newResponsePlan.geographicalLocation = this.geographicalLocation;
+    // newResponsePlan.planLead = this.staffMemberSelected;
+    // newResponsePlan.hazardScenario = this.hazardScenarioSelected;
+    //
+    // // TODO ----
+    // // newResponsePlan.scenarioCrisisList = this.scenarioCrisisList;
+    // newResponsePlan.impactOfCrisisList = this.impactOfCrisisList;
+    // newResponsePlan.availabilityOfFundsList = this.availabilityOfFundsList;
+    //
+    // newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
+    // newResponsePlan.otherRelatedSector = this.otherRelatedSector;
+    // newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
+    // newResponsePlan.methodOfImplementation = this.methodOfImplementation;
+    // newResponsePlan.partners = this.partners;
+    //
+    // newResponsePlan.proposedResponse = this.proposedResponseText;
+    // newResponsePlan.progressOfActivitiesPlan = this.progressOfActivitiesPlanText;
+    // newResponsePlan.coordinationPlan = this.coordinationPlanText;
+    //
+    // newResponsePlan.numOfBeneficiaries = this.numOfBeneficiaries;
+    // newResponsePlan.vulnerableGroups = this.vulnerableGroups;
+    // newResponsePlan.targetPopulationInvolvementList = this.targetPopulationInvolvementList;
+    //
+    // newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
+    //
+    // newResponsePlan.mALSystemsDescription = this.mALSystemsDescriptionText;
+    // newResponsePlan.isMedia = this.intentToVisuallyDocument;
+    // newResponsePlan.mediaFormat = this.mediaFormat;
+    //
+    // // newResponsePlan.sectionsCompleted = this.
+    // newResponsePlan.totalSections = this.totalSections;
+    //
+    // newResponsePlan.isActive = true;
+    //
+    // console.log("New Response Plan ----> " + newResponsePlan);
+    //
+    // // TODO - For other users such as ERT and ERT Lead, get the country admin's id which the user is under. This has to be done when other users are implemeneted
+    //
+    // // If logged in as a Country admin
+    // let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+    //
+    // this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+    //   console.log("Response plan creation successful");
+    // }).catch(error => {
+    //   console.log("Response plan creation unsuccessful with error --> " + error.message);
+    // })
 
   }
 
@@ -469,6 +499,132 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   continueButtonPressedOnSection7() {
   }
 
+  saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
+    console.log(sector);
+    console.log(name.value + "/" + output.value + "/" + indicator.value + "/" +
+      femaleRange1.value + "/" + femaleRange2.value + "/" + femaleRange3.value + "/" +
+      maleRange1.value + "/" + maleRange2.value + "/" + maleRange3.value);
+    if (this.validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)) {
+      console.log("valid");
+      let beneficiaryList = [];
+      for (let i = 0; i < 6; i++) {
+        let beneData = {};
+        if (i < 3) {
+          beneData["age"] = i;
+          beneData["gender"] = Gender.feMale;
+        } else {
+          beneData["age"] = i - 3;
+          beneData["gender"] = Gender.male;
+        }
+        if (i == 0) {
+          beneData["value"] = femaleRange1.value;
+        } else if (i == 1) {
+          beneData["value"] = femaleRange2.value;
+        } else if (i == 2) {
+          beneData["value"] = femaleRange3.value;
+        } else if (i == 3) {
+          beneData["value"] = maleRange1.value;
+        } else if (i == 4) {
+          beneData["value"] = maleRange2.value;
+        } else if (i == 5) {
+          beneData["value"] = maleRange3.value;
+        }
+        beneficiaryList.push(beneData);
+      }
+      let activity = new ModelPlanActivity(name.value, output.value, indicator.value, beneficiaryList);
+      if (this.activityMap.get(sector)) {
+        this.activityMap.get(sector).push(activity);
+      } else {
+        let activityList = [activity];
+        this.activityMap.set(sector, activityList);
+      }
+      this.addActivityToggleMap.set(sector, true);
+      name.value = "";
+      output.value = "";
+      indicator.value = "";
+      femaleRange1.value = 0;
+      femaleRange2.value = 0;
+      femaleRange3.value = 0;
+      maleRange1.value = 0;
+      maleRange2.value = 0;
+      maleRange3.value = 0;
+    } else {
+      console.log("not valid");
+    }
+  }
+
+  private validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
+    if (name.value == "" || output.value == "" || indicator.value == "" || femaleRange1.value < 0 || femaleRange2.value < 0 || femaleRange3 < 0 || maleRange1.value < 0 || maleRange2.value < 0 || maleRange3 < 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  addActivity(sector) {
+    console.log("sector: " + sector)
+    let isHidden = this.addActivityToggleMap.get(sector);
+    this.addActivityToggleMap.set(sector, !isHidden);
+  }
+
+  selectInternationa(sector, value) {
+    console.log(sector + "/" + value);
+    this.checkActivityInfo(sector, value, 0, -1);
+  }
+
+  selectNeighbour(sector, value) {
+    console.log(sector + "/" + value);
+    this.checkActivityInfo(sector, value, 0, -1);
+  }
+
+  selectLocal(sector, value) {
+    console.log(sector + "/" + value);
+    this.checkActivityInfo(sector, value, 0, -1);
+  }
+
+  getBulletOne(sector, value) {
+    console.log("1: " + sector + "/" + value);
+    this.checkActivityInfo(sector, value, 1, 0);
+    console.log(this.activityInfoMap);
+  }
+
+  getBulletTwo(sector, value) {
+    console.log("2: " + sector + "/" + value);
+    this.checkActivityInfo(sector, value, 1, 1);
+    console.log(this.activityInfoMap);
+  }
+
+  //type 0 = sourcePlan, 1 = bulletPoint
+  //bulletNo 0 = bullet1, 1 = bullet2
+  private checkActivityInfo(sector, value, type, bulletNo) {
+    let info = this.activityInfoMap.get(sector);
+    if (info) {
+      if (type == 0) {
+        info["sourcePlan"] = value;
+      } else {
+        if (bulletNo == 0) {
+          info["bullet1"] = value;
+        } else {
+          info["bullet2"] = value;
+        }
+      }
+      this.activityInfoMap.set(sector, info);
+    } else {
+      let data = {};
+      if (type == 0) {
+        data["sourcePlan"] = value;
+      } else {
+        if (bulletNo == 0) {
+          data["bullet1"] = value;
+        } else {
+          data["bullet2"] = value;
+        }
+      }
+      this.activityInfoMap.set(sector, data);
+    }
+    console.log(this.activityInfoMap);
+  }
+
   /**
    * Section 8/10
    */
@@ -499,38 +655,88 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   continueButtonPressedOnSection9() {
   }
 
+  doublerCounting() {
+    console.log("double counting");
+    //reset count
+    this.numberFemaleLessThan18 = 0;
+    this.numberFemale18To50 = 0;
+    this.numberFemalegreaterThan50 = 0;
+    this.numberMaleLessThan18 = 0;
+    this.numberMale18To50 = 0;
+    this.numberMalegreaterThan50 = 0;
+
+    let modelPlanList: ModelPlanActivity [] = [];
+    this.activityMap.forEach((v, k) => {
+      modelPlanList = modelPlanList.concat(v);
+    });
+    let beneficiaryList = [];
+    modelPlanList.forEach(modelPlan => {
+      beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
+    });
+    console.log(beneficiaryList);
+    beneficiaryList.forEach(item => {
+      if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+        this.numberFemaleLessThan18 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+        this.numberFemale18To50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+        this.numberFemalegreaterThan50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+        this.numberMaleLessThan18 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+        this.numberMale18To50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+        this.numberMalegreaterThan50 += Number(item["value"]);
+      }
+    });
+
+    this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
+    this.adjustedFemale18To50 = this.numberFemale18To50;
+    this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
+    this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
+    this.adjustedMale18To50 = this.numberMale18To50;
+    this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+  }
+
   /**
    * Section 10/10
    */
 
-  calculateBudget() {
-
-    this.totalInputs =
-      this.waSHBudget +
-      this.healthBudget +
-      this.shelterBudget +
-      this.campManagementBudget +
-      this.educationBudget +
-      this.protectionBudget
-      + this.foodSecAndLivelihoodsBudget +
-      this.otherBudget;
-
-    if (this.managementSupportPercentage == null) {
-      this.totalOfAllCosts = 0;
-      this.totalBudget = 0;
+  calculateBudget(sector, budget, isSector) {
+    if (isSector) {
+      if (budget < 0) {
+        console.log("Budget can not be under 0!!");
+        return;
+      }
+      console.log(budget);
+      this.sectorBudget.set(sector, budget);
+      this.totalInputs = 0;
+      this.sectorBudget.forEach((v, k) => {
+        this.totalInputs += Number(v);
+      });
     } else {
+      if (this.managementSupportPercentage == null) {
+        this.totalOfAllCosts = 0;
+        this.totalBudget = 0;
+      } else {
 
-      let totalOfSectionsBToG: number =
-        this.transportBudget +
-        this.securityBudget +
-        this.logisticsAndOverheadsBudget +
-        this.staffingAndSupportBudget +
-        this.monitoringAndEvolutionBudget +
-        this.capitalItemsBudget;
+        let totalOfSectionsBToG: number =
+          this.transportBudget +
+          this.securityBudget +
+          this.logisticsAndOverheadsBudget +
+          this.staffingAndSupportBudget +
+          this.monitoringAndEvolutionBudget +
+          this.capitalItemsBudget;
 
-      this.totalOfAllCosts = ((this.totalInputs + totalOfSectionsBToG) * this.managementSupportPercentage) / 100;
-      this.totalBudget = this.totalInputs + totalOfSectionsBToG + this.totalOfAllCosts;
+        this.totalOfAllCosts = ((this.totalInputs + totalOfSectionsBToG) * this.managementSupportPercentage) / 100;
+        this.totalBudget = this.totalInputs + totalOfSectionsBToG + this.totalOfAllCosts;
+      }
     }
+  }
+
+  recordNarrative(sector, narrative) {
+    console.log(narrative);
+    this.sectorNarrative.set(sector, narrative);
   }
 
   yesSelectedForCapitalsExist() {
@@ -547,8 +753,23 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   removeCapitalItemSection(capitalItemSection) {
+    console.log(capitalItemSection);
     this.capitalItemSectionSectionsCounter--;
     this.capitalItemSections = this.capitalItemSections.filter(item => item !== capitalItemSection);
+    this.budgetOver1000.delete(capitalItemSection);
+    this.budgetOver1000Desc.delete(capitalItemSection);
+  }
+
+  budgetOverThousand(selection, value) {
+    console.log(selection);
+    console.log(value);
+    this.budgetOver1000.set(selection, value);
+  }
+
+  budgetOverThousandDesc(selection, value) {
+    console.log(selection);
+    console.log(value);
+    this.budgetOver1000Desc.set(selection, value);
   }
 
   /**
@@ -602,76 +823,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.staffMembers.push(x);
       });
     this.subscriptions.add(subscription);
-  }
-
-  saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
-    console.log(sector);
-    console.log(name.value + "/" + output.value + "/" + indicator.value + "/" +
-      femaleRange1.value + "/" + femaleRange2.value + "/" + femaleRange3.value + "/" +
-      maleRange1.value + "/" + maleRange2.value + "/" + maleRange3.value);
-    if (this.validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)) {
-      console.log("valid");
-      let beneficiaryList = [];
-      for (let i = 0; i < 6; i++) {
-        let beneData = {};
-        beneData["age"] = i;
-        if (i < 3) {
-          beneData["gender"] = Gender.feMale;
-        } else {
-          beneData["gender"] = Gender.male;
-        }
-        if (i == 0) {
-          beneData["value"] = femaleRange1.value;
-        } else if (i == 1) {
-          beneData["value"] = femaleRange2.value;
-        } else if (i == 2) {
-          beneData["value"] = femaleRange3.value;
-        } else if (i == 3) {
-          beneData["value"] = maleRange1.value;
-        } else if (i == 4) {
-          beneData["value"] = maleRange2.value;
-        } else if (i == 5) {
-          beneData["value"] = maleRange3.value;
-        }
-        beneficiaryList.push(beneData);
-      }
-      let activity = new ModelPlanActivity(name.value, output.value, indicator.value, beneficiaryList);
-      if (this.activityMap.get(sector)) {
-        this.activityMap.get(sector).push(activity);
-      } else {
-        let activityList = [activity];
-        this.activityMap.set(sector, activityList);
-      }
-      this.addActivityToggleMap.set(sector, true);
-      name.value = "";
-      output.value = "";
-      indicator.value = "";
-      femaleRange1.value = 0;
-      femaleRange2.value = 0;
-      femaleRange3.value = 0;
-      maleRange1.value = 0;
-      maleRange2.value = 0;
-      maleRange3.value = 0;
-    } else {
-      console.log("not valid");
-    }
-  }
-
-  private validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
-    if (name.value == "" || output.value == "" || indicator.value == "" || femaleRange1.value < 0 || femaleRange2.value < 0 || femaleRange3 < 0 || maleRange1.value < 0 || maleRange2.value < 0 || maleRange3 < 0) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  addActivity(sector) {
-    let isHidden = this.addActivityToggleMap.get(sector);
-    this.addActivityToggleMap.set(sector, !isHidden);
-  }
-
-  selectInternationa(sector, value) {
-    console.log(sector + "/" + value);
   }
 
   private navigateToLogin() {
