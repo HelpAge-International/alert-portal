@@ -228,7 +228,11 @@ private initData() {
       }
     });
     if (!this.isEdit) {
+      if (this.userType != UserType.NonAlert) {
         this.createNewUser();
+      } else {
+        this.createNonAlertUser();
+      }
     } else {
       if (this.emailInDatabase === this.email && this.countryOffice && this.countryOffice.$key !== this.selectedOfficeId) {
         this.updateOfficeChange();
@@ -238,6 +242,12 @@ private initData() {
         this.updateWithNewEmail();
       }
     }
+  }
+
+  private createNonAlertUser() {
+    let key = firebase.database().ref(Constants.APP_STATUS).push().key;
+    console.log("Non-alert user key: " + key);
+    this.updateFirebase(key);
   }
 
   supportSkillCheck(skill, isCheck) {
@@ -297,6 +307,7 @@ private initData() {
 
     // staff extra info
     let staff = new ModelStaff();
+    console.log(this.userType);
     staff.userType = Number(this.userType);
 
     staff.department = this.department;
@@ -313,6 +324,12 @@ private initData() {
 
     if (!this.hideCountry) {
       staffData['/staff/' + this.countryOffice.$key + '/' + uid + '/'] = staff;
+    }else if (!this.hideRegion) {
+      staffData['/staff/globalUser/' + this.agencyAdminId + '/' + uid + '/'] = staff;
+      //staffData['/region/' + this.uid + '/' + this.region.$key + '/directorId'] = uid;
+    } else {
+      staffData['/staff/' + this.countryOffice.$key + '/' + uid + '/'] = staff;
+      staffData['/staff/globalUser/' + this.agencyAdminId + '/' + uid + '/'] = staff;
     }
 
     if (this.isEmailChange) {
@@ -353,7 +370,9 @@ private initData() {
       });
     this.subscriptions.add(subscriptionUser);
 
-    let path = Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId;
+    let path = officeId !== 'null'
+          ? Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId
+          : Constants.APP_STATUS + '/staff/globalUser/' + this.agencyAdminId + '/' + staffId;
 
     let subscriptionStaff = this.af.database.object(path)
       .subscribe(staff => {

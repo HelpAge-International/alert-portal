@@ -38,9 +38,9 @@ export class Constants {
 
   // country administrator
   static COUNTRY_ADMIN_HOME = "/dashboard";
-  static COUNTRY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS",  "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS",
+  static COUNTRY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS",  "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.COUNTRY_USER",
                                     "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
-  static COUNTRY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.CountryDirector,
+  static COUNTRY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.GlobalUser,
                                               UserType.ErtLeader, UserType.Ert];
 
 

@@ -40,7 +40,7 @@
         <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced">
             <div class="col-lg-2 col-md-2">{{ staffPublicUser[staff?.id]?.firstName }} {{ staffPublicUser[staff?.id]?.lastName }}</div>
             <div class="col-lg-2 col-md-2">{{ staff.department }}</div>
-            <div class="col-lg-2 col-md-2">{{UserType[staff.userType] | translate}}</div>
+            <div class="col-lg-2 col-md-2">{{ getStaffUserType(staff.userType) | translate}}</div>
             <div class="col-lg-2 col-md-2">{{OfficeType[staff.officeType] | translate}}</div>
             <div class="col-lg-2 col-md-2 additional-info">
                 <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
