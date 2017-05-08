@@ -21,41 +21,42 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	ACTION_STATUS = Constants.ACTION_STATUS;
 	ACTION_LEVEL = Constants.ACTION_LEVEL;
 	ACTION_TYPE = Constants.ACTION_TYPE;
-	private subscriptions: RxHelper;
-	private uid: string = "C1T4Mx2gZFTFSq8CTxSEsyJDr2j2"; // Country Admin TODO remove
-	private actions: any[] = [];
-	private users: any[] = [];
-	private assignedToUsers: any[] = [];
-	private departments: any[] = [];
-	private countryId = null;
-	private actionStatus = ActionStatus;
-	private ActionStatusEnum = Object.keys(ActionStatus).map(k => ActionStatus[k]).filter(v => typeof v === "string") as string[];
-	private ActionTypeEnum = Object.keys(ActionType).map(k => ActionType[k]).filter(v => typeof v === "string") as string[];
+	protected actionLevel = ActionLevel.MPA;
+	protected subscriptions: RxHelper;
+	protected uid: string = "C1T4Mx2gZFTFSq8CTxSEsyJDr2j2"; // Country Admin TODO remove
+	protected actions: any[] = [];
+	protected users: any[] = [];
+	protected assignedToUsers: any[] = [];
+	protected departments: any[] = [];
+	protected countryId = null;
+	protected actionStatus = ActionStatus;
+	protected ActionStatusEnum = Object.keys(ActionStatus).map(k => ActionStatus[k]).filter(v => typeof v === "string") as string[];
+	protected ActionTypeEnum = Object.keys(ActionType).map(k => ActionType[k]).filter(v => typeof v === "string") as string[];
 
-	private statusSelected = "-1";
-	private departmentSelected = "-1";
-	private typeSelected = "-1";
-	private userSelected = "-1";
-	private agencyNetworkSelected = "-1";
-	private assignedToUser = "me";
-	private assignedToUserKey;
-	private assignedToAnyone = false;
+	protected statusSelected = "-1";
+	protected departmentSelected = "-1";
+	protected typeSelected = "-1";
+	protected userSelected = "-1";
+	protected agencyNetworkSelected = "-1";
+	protected assignedToUser = "me";
+	protected assignedToUserKey;
+	protected assignedToAnyone = false;
 
-	private allArchived = false;
-	private allUnassigned = false;
+	protected allArchived = false;
+	protected allUnassigned = false;
 
-	private exportDocs: any[] = [];
-	private docsCount = 0;
-	private docsSize = 0;
+	protected exportDocs: any[] = [];
+	protected docsCount = 0;
+	protected docsSize = 0;
 
-	private docFilterSubject: Subject<any>;
-	private docFilter: any = {};
+	protected docFilterSubject: Subject<any>;
+	protected docFilter: any = {};
 
-	private attachments: any[] = [];
+	protected attachments: any[] = [];
 
 	firebase: any;
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  	constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router) {
 		this.subscriptions = new RxHelper;
 		this.firebase = firebaseApp;
 
@@ -159,7 +160,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 							
 
-							if (actions[action].level == ActionLevel.MPA){
+							if (actions[action].level == this.actionLevel){
 								this.actions.push(actions[action]);
 							}
 						});
@@ -197,11 +198,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private navigateToLogin() {
+	protected navigateToLogin() {
 		this.router.navigateByUrl(Constants.LOGIN_PATH);
 	}
 
-	private addNote(action){
+	protected addNote(action){
 		if (action.note == undefined)
 			return;
 
@@ -216,15 +217,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		this.af.database.list(Constants.APP_STATUS+'/note/' + action.key).push(note);
 	}
 
-	private editNote(note, action){
+	protected editNote(note, action){
 
 	}
 
-	private deleteNote(note, action){
+	protected deleteNote(note, action){
 		this.af.database.list(Constants.APP_STATUS+'/note/' + action.key + '/' + note.$key).remove();
 	}
 
-	private filter() {
+	protected filter() {
 		if (this.userSelected == "-1"){
 			this.assignedToUser = "me";
 			this.assignedToUserKey = this.uid;
@@ -251,15 +252,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		// console.log(this.agencyNetworkSelected);
 	}
 
-	private showAllArchived(show){
+	protected showAllArchived(show){
 		this.allArchived = show;
 	}
 
-	private showAllUnassigned(show){
+	protected showAllUnassigned(show){
 		this.allUnassigned = show;
 	}
 
-	private exportSelectedDocuments(action) {
+	protected exportSelectedDocuments(action) {
 		this.exportDocs = [];
 		this.docsSize = 0;
 		
@@ -278,7 +279,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		jQuery("#export_documents").modal("show");
 	}
 
-	private exportDocument(action, docId) {
+	protected exportDocument(action, docId) {
 		this.exportDocs = [];
 		this.docsSize = 0;
 		
@@ -295,11 +296,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		jQuery("#export_documents").modal("show");
 	}
 
-	private closeExportModal() {
+	protected closeExportModal() {
 		jQuery("#export_documents").modal("hide");
 	}
 
-	private download(data, name, type) {
+	protected download(data, name, type) {
 		var a = document.createElement("a");
 		document.body.appendChild(a);
 		var file = new Blob([data], {type: type});
@@ -308,7 +309,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		a.click();
 	}
 
-	private export() {
+	protected export() {
 		jQuery("#export_documents").modal("hide");
 
 		let self = this;
@@ -323,11 +324,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		});	
 	}
 
-	private deleteDocument(action, docId){
+	protected deleteDocument(action, docId){
 
 	}
 
-	private fileChange(event, action){
+	protected fileChange(event, action){
 
 		if (event.target.files.length > 0) {
 	      let file = event.target.files[0];
@@ -352,7 +353,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	    }
 	}
 
-	private removeAttachment(action, file){
+	protected removeAttachment(action, file){
 		action.attachments = action.attachments.filter(attachment => {
 	      	if (attachment.name == file.name && attachment.actionId == file.actionId)
 	      		return false;
@@ -361,7 +362,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	      });
 	}
 
-	private completeAction(action) {
+	protected completeAction(action) {
 		if (action.attachments != undefined){
 			if (action.attachments.length > 0){
 				action.attachments.map(file => {				
@@ -382,7 +383,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private uploadFile(action, file) {
+	protected uploadFile(action, file) {
 		let document = {
 			fileName: file.name,
 			filePath: "", //this needs to be updated once the file is uploaded
@@ -435,7 +436,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 	}
 
-	private purgeDocumentReference(action, docKey){
+	protected purgeDocumentReference(action, docKey){
 		this.af.database.object(Constants.APP_STATUS+'/action/' + action.agencyId + '/' + action.key + '/documents/' + docKey).remove();
 		this.af.database.object(Constants.APP_STATUS+'/document/' + action.agencyId + '/' + docKey).remove();
 	}
