@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType} from "../../utils/Enums";
@@ -55,8 +55,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 	firebase: any;
 
-	constructor(private af: AngularFire, private router: Router) {
+  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
 		this.subscriptions = new RxHelper;
+		this.firebase = firebaseApp;
 
 		this.docFilterSubject = new BehaviorSubject(undefined);
 		this.docFilter = {
@@ -112,7 +113,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 								actions[action].docsCount = Object.keys(actions[action].documents).length;
 
 								Object.keys(actions[action].documents).map(docId => {
-									this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/document/' + this.countryId + '/' + docId).subscribe(_ => {
+									this.subscriptions.add(this.af.database.object(Constants.APP_STATUS+'/document/' + agencyId + '/' + docId).subscribe(_ => {
 										actions[action].documents[docId] = _;
 									}));
 								});
@@ -349,8 +350,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	      if (!exists)
   		  	action.attachments.push(file);
 	    }
-
-	    console.log(this.actions);
 	}
 
 	private removeAttachment(action, file){
@@ -377,8 +376,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	}
 
 	private uploadFile(action, file) {
-		console.log(action);			
-		console.log(file);
 		let document = {
 			fileName: file.name,
 			filePath: "", //this needs to be updated once the file is uploaded
@@ -391,34 +388,49 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 		};
 
-		let docPromise = this.af.database.list(Constants.APP_STATUS+'/document/' + action.agencyId).push(document);
-		docPromise
+		this.af.database.list(Constants.APP_STATUS+'/document/' + action.agencyId).push(document)
 			.then(_ => {
-				//TODO update the action reference
+				let docKey = _.key;
 				let doc = {};
-				doc[_.key] = true;
+				doc[docKey] = true;
 
-				this.af.database.list(Constants.APP_STATUS+'/action/' + action.agencyId + '/' + action.key + '/documents').push(doc);
+				this.af.database.object(Constants.APP_STATUS+'/action/' + action.agencyId + '/' + action.key + '/documents').update(doc)
+					.then(_ => {
+						new Promise((res, rej) => {
+						  var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
+						  var uploadTask = storageRef.put(file);
+						  uploadTask.on('state_changed', function (snapshot) {
+						  }, function (error) {
+						    rej(error);
+						  }, function () {
+						    var downloadURL = uploadTask.snapshot.downloadURL;
+						    res(downloadURL);
+						  });
+						})
+						.then(result => {
+							document.filePath = "" + result;
+
+							this.af.database.object(Constants.APP_STATUS+'/document/' + action.agencyId + '/' + docKey).set(document);
+						})
+						.catch(err => {
+							console.log(err, 'You do not have access!');
+							this.purgeDocumentReference(action, docKey);
+						});
+					})
+		  			.catch(err => {
+						console.log(err, 'You do not have access!');
+						this.purgeDocumentReference(action, docKey);
+					});
 			})
-  			.catch(err => console.log(err, 'You do not have access!'));
+  			.catch(err => {
+				console.log(err, 'You do not have access!');
+			});
 
-		//TODO make a reference in the Database, then upload file
-		//TODO if upload has failed, delete the Database reference.
+	}
 
-
-
-		// let promise = new Promise((res, rej) => {
-		//   var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + this.logoFile.name);
-		//   var uploadTask = storageRef.put(this.logoFile);
-		//   uploadTask.on('state_changed', function (snapshot) {
-		//   }, function (error) {
-		//     rej(error);
-		//   }, function () {
-		//     var downloadURL = uploadTask.snapshot.downloadURL;
-		//     res(downloadURL);
-		//   });
-		// });
-		// return promise;
+	private purgeDocumentReference(action, docKey){
+		this.af.database.object(Constants.APP_STATUS+'/action/' + action.agencyId + '/' + action.key + '/documents/' + docKey).remove();
+		this.af.database.object(Constants.APP_STATUS+'/document/' + action.agencyId + '/' + docKey).remove();
 	}
 
 }
