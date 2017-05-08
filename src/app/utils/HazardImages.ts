@@ -1,7 +1,7 @@
 export class HazardImages {
   public static red_ending: string = "_red.svg";
   public static yellow_ending: string = "_amber.svg";
-  public static info: string = "/assets/images/hazards/markers/";
+  public static info: string = "/assets/images/hazards/marker/";
 
   public getMap() {
     let map = new Map<number, string>();
