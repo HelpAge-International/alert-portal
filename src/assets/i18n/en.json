@@ -37,6 +37,8 @@
     "CATEGORY:": "Category: ",
     "CURRENCY": "Currency",
     "PLEASE_ENTER": "Please enter",
+    "SUMMARY": "Summary",
+    "TYPE_HERE": "Type here",
     "OPTIONAL": "Optional",
     "MAXIMUM": "maximum",
     "FINISH": "Finish",
@@ -789,10 +791,12 @@
         "PEOPLE_PER_HOUSEHOLD": "People per household",
         "HOUSEHOLDS": "Households",
         "BENEFICIARIES": "beneficiairies",
-        "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaires",
+        "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaries",
         "WHICH_GROUPS_TEXT?": "Which vulnerable groups are you specifically targeting?",
         "ADD_MORE_GROUPS": "Add more groups to this plan",
-        "EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT": "Explain how the target population is/will be involved in your proposed intervention"
+        "EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT": "Explain how the target population is/will be involved in your proposed intervention",
+        "HOW_BENEFICIARIES_CALCULATED": "How number of beneficiaries are calculated",
+        "OTHER_GROUP_PLEASE_SPECIFY": "Other Group - Please specify"
       },
       "RISK_MANAGEMENT": {
         "TITLE_TEXT": "Risk Management",

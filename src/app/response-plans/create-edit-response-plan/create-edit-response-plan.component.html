@@ -29,12 +29,14 @@
             <div class="col-lg-6 col-md-6">
               <label for="P-name">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_NAME" |
                 translate}}</label>
-              <input type="text" class="form-control" id="P-name" placeholder="Please enter" [(ngModel)]="planName">
+              <input type="text" class="form-control" id="P-name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+                     [(ngModel)]="planName">
             </div>
             <div class="col-lg-6 col-md-6">
               <label for="G-location">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.GEO_LOCATION" |
                 translate}}</label>
-              <input type="text" class="form-control" id="G-location" placeholder="Please enter"
+              <input type="text" class="form-control" id="G-location"
+                     placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="geographicalLocation">
             </div>
           </div>
@@ -83,43 +85,38 @@
         </div>
         <div class="Response__content Spaced">
 
-
-
-
-
-
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
+
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{bulletPoint + 1}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1"
-                       (change)="addToSummarizeScenarioList(bulletPoint, $event.target.value)">
+                <span class="input-group-addon">{{bulletPoint}}</span>
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       aria-describedby="basic-addon1"
+                       (change)="addToSummarizeScenarioObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 0">{{"GLOBAL.REMOVE"
+                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
                   | translate}}</a>
               </div>
             </div>
           </div>
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addSummarizeScenarioBulletPoint()"
-             [hidden]="summarizeScenarioBulletPointsCounter+1 == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+             [hidden]="summarizeScenarioBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
-
-
-
-
-
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
               | translate}}</label>
+
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       aria-describedby="basic-addon1"
+                       (change)="addToImpactOfCrisisObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
@@ -135,10 +132,13 @@
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
               | translate}}</label>
+
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       aria-describedby="basic-addon1"
+                       (change)="addToAvailabilityOfFundsObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a>
@@ -178,38 +178,43 @@
           </div>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="water"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="water" (click)="isWaSHSectorSelected()"></div>
               <label>{{"SECTORS.WASH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="health"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="health" (click)="isHealthSectorSelected()"></div>
               <label>{{"SECTORS.HEALTH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="shelter"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="shelter" (click)="isShelterSectorSelected()"></div>
               <label>{{"SECTORS.SHELTER" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="nutrition"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="nutrition"
+                   (click)="isNutritionSectorSelected()"></div>
               <label>{{"SECTORS.NUTRITION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="food"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="food"
+                   (click)="isFoodSecAndLivelihoodsSectorSelected()"></div>
               <label>{{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="protection"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="protection"
+                   (click)="isProtectionSectorSelected()"></div>
               <label>{{"SECTORS.PROTECTION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="education"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="education"
+                   (click)="isEducationSectorSelected()"></div>
               <label>{{"SECTORS.EDUCATION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="camp"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="camp"
+                   (click)="isCampManagementSectorSelected()"></div>
               <label>{{"SECTORS.CAMP_MANAGEMENT" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="misc"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="misc" (click)="isOtherSectorSelected()"></div>
               <label>{{"SECTORS.OTHER" | translate}}</label></div>
           </div>
 
-          <div class="row Spaced subitem">
+          <div class="row Spaced subitem" *ngIf="otherSectorSelected">
             <div class="col-lg-6 col-md-6">
               <label for="O-relate">{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
-              <input type="text" class="form-control" id="O-relate" placeholder="Type here"
+              <input type="text" class="form-control" id="O-relate" placeholder="{{'GLOBAL.TYPE_HERE' | translate}}"
                      [(ngModel)]="otherRelatedSector">
             </div>
           </div>
@@ -220,13 +225,16 @@
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog"
+                     (click)="currentProgrammesSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.CURRENT_PROGRAMMES" | translate}}</label>
             <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog"
+                     (click)="preExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRE-EXISTING_PARTNER" | translate}}</label>
             <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog"
+                     (click)="noPreExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.NO_PRE-EXISTING_PRESENCE" |
               translate}}</label>
           </div>
@@ -238,15 +246,15 @@
           <div class="Selection-row Spaced">
             <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-direct"
-                     [checked]="isDirectlyThroughFieldStaff" (change)="directMethodOfImplementationSelected()">
+                     (change)="methodOfImplementationSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
             <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
-                     [checked]="!isDirectlyThroughFieldStaff" (change)="partnersMethodOfImplementationSelected()">
+                     (change)="methodOfImplementationSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
           </div>
 
-          <div class="row Spaced subitem">
+          <div class="row Spaced subitem" *ngIf="!isDirectlyThroughFieldStaff">
             <div class="col-lg-8 col-md-8">
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
               <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
@@ -353,7 +361,7 @@
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-              <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfPeoplePerHouseHold"
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="numOfPeoplePerHouseHold"
                      (change)="calculateBeneficiaries()">
             </div>
             <div class="col-lg-2 col-md-3 col-sm-3 ">
@@ -361,7 +369,7 @@
             </div>
             <div class="col-lg-1 col-md-1 col-sm-1  text-bold">X</div>
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-              <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfHouseHolds"
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="numOfHouseHolds"
                      (change)="calculateBeneficiaries()">
             </div>
             <div class="col-lg-1 col-md-2 col-sm-2 ">
@@ -371,8 +379,17 @@
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.BENEFICIARIES" | translate}}
             </div>
           </div>
-          <a href="javascript:void(0)" class=" Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_A_NOTE_ABOUT_BENEFICIARIES"
+
+          <div class="col-lg-8" *ngIf="showBeneficiariesTextEntry">
+            <input type="text" class="form-control"
+                   placeholder="{{'RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_BENEFICIARIES_CALCULATED' | translate}}"
+                   [(ngModel)]="howBeneficiariesCalculatedText">
+          </div>
+
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addShowBeneficiariesTextEntry()"
+             [hidden]="showBeneficiariesTextEntry">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_A_NOTE_ABOUT_BENEFICIARIES"
             | translate}}</a>
+
 
           <div class="row Spaced">
             <div class="col-lg-8 col-md-10 col-sm-12">
@@ -381,8 +398,10 @@
                   translate}}</label>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
                   <div class="form-group col-sm-6">
-                    <select class="form-control">
+                    <select class="form-control" id="ff"
+                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
                       <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                      <option *ngFor="let group of groups">{{group | translate}}</option>
                     </select>
                   </div>
                   <a href="javascript:void(0)" class="Remove__row__cta"
@@ -391,11 +410,13 @@
                     | translate}}</a>
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Please specify the group">
+                  <input type="text" class="form-control"
+                         placeholder="{{'RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.OTHER_GROUP_PLEASE_SPECIFY' | translate}}"
+                         [(ngModel)]="otherGroup" (change)="updateOtherGroupToGroups()">
                 </div>
               </div>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-8" [hidden]="vulnerableGroupsDropDownsCounter == groups.length">
               <a href="javascript:void(0)" class=" Add__row__cta" (click)="addVulnerableGroupDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_MORE_GROUPS"
                 | translate}}</a>
             </div>
@@ -407,7 +428,9 @@
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="">
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       (change)="addToTargetPopulationObject(bulletPoint, $event.target.value)">
+
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeTargetPopulationBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
@@ -1100,7 +1123,7 @@
         <div class="row">
           <div class="col-lg-12">
             <label>Email Address</label>
-            <input type="text" class="form-control" placeholder="Email Address">
+            <input type="text" class="form-control" placeholder="{{'GLOBAL.USER_INFO.EMAIL' | translate}}">
           </div>
         </div>
 

@@ -54,11 +54,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section1Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 2/10
-  private scenarioCrisisList: {};
-  private impactOfCrisisList: string[] = [];
-  private availabilityOfFundsList: string[] = [];
+  private scenarioCrisisObject: {} = {};
+  private impactOfCrisisObject: {} = {};
+  private availabilityOfFundsObject: {} = {};
 
-  private summarizeScenarioBulletPointsCounter: number = 0;
+  private summarizeScenarioBulletPointsCounter: number = 1;
   private summarizeScenarioBulletPoints: number[] = [this.summarizeScenarioBulletPointsCounter];
 
   private impactOfCrisisBulletPointsCounter: number = 1;
@@ -74,9 +74,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // Section 3/10
   private sectorsRelatedTo: ResponsePlanSectors[] = [];
   private otherRelatedSector: string = '';
-  private presenceInTheCountry: PresenceInTheCountry = PresenceInTheCountry.currentProgrammes;
+
+  private waSHSectorSelected: boolean = false;
+  private healthSectorSelected: boolean = false;
+  private shelterSectorSelected: boolean = false;
+  private nutritionSectorSelected: boolean = false;
+  private foodSecAndLivelihoodsSectorSelected: boolean = false;
+  private protectionSectorSelected: boolean = false;
+  private educationSectorSelected: boolean = false;
+  private campManagementSectorSelected: boolean = false;
+  private otherSectorSelected: boolean = false;
+
+  private presenceInTheCountry: PresenceInTheCountry;
   private methodOfImplementation: MethodOfImplementation = MethodOfImplementation.fieldStaff;
-  private isDirectlyThroughFieldStaff: boolean = true;
+  private isDirectlyThroughFieldStaff: boolean;
   private partnersDropDownsCounter: number = 1;
   private partnersDropDowns: number[] = [this.partnersDropDownsCounter];
   private partners: string[] = []; // TODO - Update to list of Partner Organisations
@@ -91,15 +102,25 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section4Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 5/10
-  private numOfPeoplePerHouseHold: number = 0;
-  private numOfHouseHolds: number = 0;
+  private numOfPeoplePerHouseHold: number;
+  private numOfHouseHolds: number;
   private numOfBeneficiaries: number = 0;
+
+  private showBeneficiariesTextEntry: boolean = false;
+  private howBeneficiariesCalculatedText: string;
+
+  private groups: any[] = [];
+  private Other: string = "Other";
+  private otherGroup: string = '';
+  private selectedVulnerableGroups = {};
+
   private vulnerableGroupsDropDownsCounter: number = 1;
   private vulnerableGroupsDropDowns: number[] = [this.vulnerableGroupsDropDownsCounter];
   private vulnerableGroups: string[] = [];
+
   private targetPopulationBulletPointsCounter: number = 1;
   private targetPopulationBulletPoints: number[] = [this.targetPopulationBulletPointsCounter];
-  private targetPopulationInvolvementList: string[] = [];
+  private targetPopulationInvolvementObject: {} = {};
 
   private section5Status: string = "GLOBAL.INCOMPLETE";
 
@@ -185,21 +206,21 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.uid = auth.uid;
         console.log("Admin uid: " + this.uid);
 
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryId) => {
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + "/countryId").subscribe((countryId) => {
           this.countryId = countryId.$value;
-          console.log("Country uid: " + this.countryId);
-
           this.getStaff();
 
           let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyAdminIds) => {
             this.agencyAdminUid = agencyAdminIds[0].$key;
             this.getSettings();
 
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorAgency/" + this.agencyAdminUid + '/systemAdmin').subscribe((systemAdminIds) => {
+            let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
               this.systemAdminUid = systemAdminIds[0].$key;
+              this.getGroups();
 
-              console.log(this.agencyAdminUid);
               console.log(this.systemAdminUid);
+              console.log(this.agencyAdminUid);
+              console.log(this.countryId);
 
             });
             this.subscriptions.add(subscription);
@@ -236,9 +257,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.hazardScenario = this.hazardScenarioSelected;
 
     // TODO ----
-    // newResponsePlan.scenarioCrisisList = this.scenarioCrisisList;
-    newResponsePlan.impactOfCrisisList = this.impactOfCrisisList;
-    newResponsePlan.availabilityOfFundsList = this.availabilityOfFundsList;
+    // newResponsePlan.scenarioCrisisList = this.scenarioCrisisObject;
+    // newResponsePlan.impactOfCrisisList = this.impactOfCrisisObject;
+    // newResponsePlan.availabilityOfFundsList = this.availabilityOfFundsObject;
 
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
@@ -252,7 +273,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     newResponsePlan.numOfBeneficiaries = this.numOfBeneficiaries;
     newResponsePlan.vulnerableGroups = this.vulnerableGroups;
-    newResponsePlan.targetPopulationInvolvementList = this.targetPopulationInvolvementList;
+    // newResponsePlan.targetPopulationInvolvementList = this.targetPopulationInvolvementList;
 
     newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
 
@@ -311,10 +332,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Section 2/10
    */
 
-  addToSummarizeScenarioList(bulletPoint, textEntered) {
-
-    this.scenarioCrisisList[bulletPoint] = textEntered;
-    console.log("scenarioCrisisList ---- " + this.scenarioCrisisList);
+  addToSummarizeScenarioObject(bulletPoint, textEntered) {
+    if (textEntered) {
+      this.scenarioCrisisObject[bulletPoint] = textEntered;
+    } else {
+      if (this.scenarioCrisisObject[bulletPoint]) {
+        delete this.scenarioCrisisObject[bulletPoint];
+      }
+    }
   }
 
   addSummarizeScenarioBulletPoint() {
@@ -328,11 +353,22 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.summarizeScenarioBulletPointsCounter--;
     this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
 
-    // Removing bullet point from list
-    if (this.scenarioCrisisList[bulletPoint]) {
+    // Removing bullet point from list if exists
+    if (this.scenarioCrisisObject[bulletPoint]) {
+      delete this.scenarioCrisisObject[bulletPoint];
+    } else {
+      console.log("Bullet point not in list");
+    }
+    console.log(this.scenarioCrisisObject);
+  }
 
-      delete this.scenarioCrisisList[bulletPoint];
-      console.log(this.scenarioCrisisList)
+  addToImpactOfCrisisObject(bulletPoint, textEntered) {
+    if (textEntered) {
+      this.impactOfCrisisObject[bulletPoint] = textEntered;
+    } else {
+      if (this.impactOfCrisisObject[bulletPoint]) {
+        delete this.impactOfCrisisObject[bulletPoint];
+      }
     }
   }
 
@@ -344,6 +380,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   removeImpactOfCrisisBulletPoint(bulletPoint) {
     this.impactOfCrisisBulletPointsCounter--;
     this.impactOfCrisisBulletPoints = this.impactOfCrisisBulletPoints.filter(item => item !== bulletPoint);
+
+    // Removing bullet point from list if exists
+    if (this.impactOfCrisisObject[bulletPoint]) {
+      delete this.impactOfCrisisObject[bulletPoint];
+    } else {
+      console.log("Bullet point not in list");
+    }
+    console.log(this.impactOfCrisisObject);
+  }
+
+  addToAvailabilityOfFundsObject(bulletPoint, textEntered) {
+    if (textEntered) {
+      this.availabilityOfFundsObject[bulletPoint] = textEntered;
+    } else {
+      if (this.availabilityOfFundsObject[bulletPoint]) {
+        delete this.availabilityOfFundsObject[bulletPoint];
+      }
+    }
   }
 
   addAvailabilityOfFundsBulletPoint() {
@@ -354,26 +408,101 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   removeAvailabilityOfFundsBulletPoint(bulletPoint) {
     this.availabilityOfFundsBulletPointsCounter--;
     this.availabilityOfFundsBulletPoints = this.availabilityOfFundsBulletPoints.filter(item => item !== bulletPoint);
+
+    // Removing bullet point from list if exists
+    if (this.availabilityOfFundsObject[bulletPoint]) {
+      delete this.availabilityOfFundsObject[bulletPoint];
+    } else {
+      console.log("Bullet point not in list");
+    }
+    console.log(this.availabilityOfFundsObject);
   }
 
   continueButtonPressedOnSection2() {
 
-    // TODO - Check the status of completion here
+    let numOfScenarioCrisisPoints: number = Object.keys(this.scenarioCrisisObject).length;
+    let numOfImpactOfCrisisPoints: number = Object.keys(this.impactOfCrisisObject).length;
+    let numOfAvailabilityOfFundsBulletPoints: number = Object.keys(this.availabilityOfFundsObject).length;
+
+    if ((numOfScenarioCrisisPoints == 0) || (numOfImpactOfCrisisPoints == 0) || (numOfAvailabilityOfFundsBulletPoints == 0)) {
+      this.section2Status = "GLOBAL.INCOMPLETE";
+      this.numberOfCompletedSections--;
+    } else if ((numOfScenarioCrisisPoints != 0) && (numOfImpactOfCrisisPoints != 0) && (numOfAvailabilityOfFundsBulletPoints!= 0)) {
+      this.section2Status = "GLOBAL.COMPLETE";
+      this.numberOfCompletedSections++;
+    }
+    console.log(numOfScenarioCrisisPoints + numOfImpactOfCrisisPoints + numOfAvailabilityOfFundsBulletPoints);
   }
 
   /**
    * Section 3/10
    */
 
-  directMethodOfImplementationSelected() {
-    this.isDirectlyThroughFieldStaff = true;
+  // COMPLETED EXCEPT PARTNERS
+
+  isWaSHSectorSelected() {
+    this.waSHSectorSelected = !this.waSHSectorSelected;
+    console.log('this.waSHSectorSelected = ' + this.waSHSectorSelected);
   }
 
-  partnersMethodOfImplementationSelected() {
-    this.isDirectlyThroughFieldStaff = false;
+  isHealthSectorSelected() {
+    this.healthSectorSelected = !this.healthSectorSelected;
+    console.log('this.healthSectorSelected = ' + this.healthSectorSelected);
   }
 
+  isShelterSectorSelected() {
+    this.shelterSectorSelected = !this.shelterSectorSelected;
+    console.log('this.shelterSectorSelected = ' + this.shelterSectorSelected);
+  }
 
+  isNutritionSectorSelected() {
+    this.nutritionSectorSelected = !this.nutritionSectorSelected;
+    console.log('this.nutritionSectorSelected = ' + this.nutritionSectorSelected);
+  }
+
+  isFoodSecAndLivelihoodsSectorSelected() {
+    this.foodSecAndLivelihoodsSectorSelected = !this.foodSecAndLivelihoodsSectorSelected;
+    console.log('this.foodSecAndLivelihoodsSectorSelected = ' + this.foodSecAndLivelihoodsSectorSelected);
+  }
+
+  isProtectionSectorSelected() {
+    this.protectionSectorSelected = !this.protectionSectorSelected;
+    console.log('this.protectionSectorSelected = ' + this.protectionSectorSelected);
+  }
+
+  isEducationSectorSelected() {
+    this.educationSectorSelected = !this.educationSectorSelected;
+    console.log('this.educationSectorSelected = ' + this.educationSectorSelected);
+  }
+
+  isCampManagementSectorSelected() {
+    this.campManagementSectorSelected = !this.campManagementSectorSelected;
+    console.log('this.campManagementSectorSelected = ' + this.campManagementSectorSelected);
+  }
+
+  isOtherSectorSelected() {
+    this.otherSectorSelected = !this.otherSectorSelected;
+    console.log('this.otherSectorSelected = ' + this.otherSectorSelected);
+  }
+
+  currentProgrammesSelected() {
+    this.presenceInTheCountry = PresenceInTheCountry.currentProgrammes;
+  }
+
+  preExistingPartnerSelected() {
+    this.presenceInTheCountry = PresenceInTheCountry.preExistingPartner;
+  }
+
+  noPreExistingPartnerSelected() {
+    this.presenceInTheCountry = PresenceInTheCountry.noPreExistingPresence;
+  }
+
+  methodOfImplementationSelected() {
+    this.isDirectlyThroughFieldStaff = !this.isDirectlyThroughFieldStaff;
+    console.log('this.isDirectlyThroughFieldStaff = ' + this.isDirectlyThroughFieldStaff);
+  }
+
+  // TODO - Partners final functionality
   addPartnersDropDown() {
     this.partnersDropDownsCounter++;
     this.partnersDropDowns.push(this.partnersDropDownsCounter);
@@ -386,8 +515,18 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO
   continueButtonPressedOnSection3() {
-  }
+    // console.log('this.waSHSectorSelected = ' + this.waSHSectorSelected);
+    // console.log('this.healthSectorSelected = ' + this.healthSectorSelected);
+    // console.log('this.shelterSectorSelected = ' + this.shelterSectorSelected);
+    // console.log('this.nutritionSectorSelected = ' + this.nutritionSectorSelected);
+    // console.log('this.foodSecAndLivelihoodsSectorSelected = ' + this.foodSecAndLivelihoodsSectorSelected);
+    // console.log('this.protectionSectorSelected = ' + this.protectionSectorSelected);
+    // console.log('this.educationSectorSelected = ' + this.educationSectorSelected);
+    // console.log('this.campManagementSectorSelected = ' + this.campManagementSectorSelected);
+    // console.log('this.otherSectorSelected = ' + this.otherSectorSelected);
 
+    console.log('this.presenceInTheCountry = ' + this.presenceInTheCountry);
+  }
 
   /**
    * Section 4/10
@@ -409,18 +548,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   calculateBeneficiaries() {
-    this.numOfBeneficiaries = this.numOfPeoplePerHouseHold * this.numOfHouseHolds;
+    if (this.numOfPeoplePerHouseHold && this.numOfHouseHolds) {
+      this.numOfBeneficiaries = this.numOfPeoplePerHouseHold * this.numOfHouseHolds;
+    } else {
+      this.numOfBeneficiaries = 0;
+    }
     console.log("Beneficiaries ----" + this.numOfBeneficiaries);
   }
 
-  addTargetPopulationBulletPoint() {
-    this.targetPopulationBulletPointsCounter++;
-    this.targetPopulationBulletPoints.push(this.targetPopulationBulletPointsCounter);
-  }
-
-  removeTargetPopulationBulletPoint(bulletPoint) {
-    this.targetPopulationBulletPointsCounter--;
-    this.targetPopulationBulletPoints = this.targetPopulationBulletPoints.filter(item => item !== bulletPoint);
+  addShowBeneficiariesTextEntry() {
+    this.showBeneficiariesTextEntry = true;
   }
 
   addVulnerableGroupDropDown() {
@@ -431,10 +568,62 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   removeVulnerableGroupDropDown(vulnerableGroupDropDown) {
     this.vulnerableGroupsDropDownsCounter--;
     this.vulnerableGroupsDropDowns = this.vulnerableGroupsDropDowns.filter(item => item !== vulnerableGroupDropDown);
+    delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  // TODO
+  setGroup(groupSelected, vulnerableGroupsDropDown) {
+    this.selectedVulnerableGroups[vulnerableGroupsDropDown] = groupSelected;
+  }
+
+  updateOtherGroupToGroups() {
+    if (this.otherGroup != '') {
+      this.selectedVulnerableGroups['other'] = this.otherGroup;
+    } else {
+      delete this.selectedVulnerableGroups['other'];
+    }
+  }
+
+  addToTargetPopulationObject(bulletPoint, textEntered) {
+    if (textEntered) {
+      this.targetPopulationInvolvementObject[bulletPoint] = textEntered;
+    } else {
+      if (this.targetPopulationInvolvementObject[bulletPoint]) {
+        delete this.targetPopulationInvolvementObject[bulletPoint];
+      }
+    }
+  }
+
+  addTargetPopulationBulletPoint() {
+    this.targetPopulationBulletPointsCounter++;
+    this.targetPopulationBulletPoints.push(this.targetPopulationBulletPointsCounter);
+  }
+
+  removeTargetPopulationBulletPoint(bulletPoint) {
+    this.targetPopulationBulletPointsCounter--;
+    this.targetPopulationBulletPoints = this.targetPopulationBulletPoints.filter(item => item !== bulletPoint);
+
+    // Removing bullet point from list if exists
+    if (this.targetPopulationInvolvementObject[bulletPoint]) {
+      delete this.targetPopulationInvolvementObject[bulletPoint];
+    } else {
+      console.log("Bullet point not in list");
+    }
+    console.log(this.targetPopulationInvolvementObject);
+  }
+
   continueButtonPressedOnSection5() {
+
+    let numOfTargetPopulationInvolvementPoints: number = Object.keys(this.targetPopulationInvolvementObject).length;
+    let numOfSelectedVulnerableGroups: number = Object.keys(this.selectedVulnerableGroups).length;
+
+    if ((this.numOfBeneficiaries == 0) || (numOfTargetPopulationInvolvementPoints == 0) || (numOfSelectedVulnerableGroups == 0 && this.otherGroup == '')) {
+      this.section5Status = "GLOBAL.INCOMPLETE";
+      this.numberOfCompletedSections--;
+    } else if ((this.numOfBeneficiaries != 0) && (numOfTargetPopulationInvolvementPoints != 0) && (numOfSelectedVulnerableGroups != 0 || this.otherGroup != '')) {
+      this.section5Status = "GLOBAL.COMPLETE";
+      this.numberOfCompletedSections++;
+    }
+    console.log(this.otherGroup);
   }
 
   /**
@@ -592,6 +781,27 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.staffMembers.push(x);
       });
     this.subscriptions.add(subscription);
+  }
+
+  private getGroups() {
+
+    if (this.systemAdminUid) {
+
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
+        .map(groupList => {
+          let groups = [];
+          groupList.forEach(x => {
+            groups.push(x.$key);
+          });
+          // groups.push(this.Other);
+          return groups;
+        })
+        .subscribe(x => {
+          this.groups = x;
+        });
+      this.subscriptions.add(subscription);
+    }
+    console.log(this.groups);
   }
 
   private navigateToLogin() {
