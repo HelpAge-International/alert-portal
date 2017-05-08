@@ -362,17 +362,24 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	}
 
 	private completeAction(action) {
-		//TODO check if there are any documents attached. Prevent completion without documents.
-		// action.actionStatus = ActionStatus.Completed;
-		// action.isCompleted = true;
-
 		if (action.attachments != undefined){
-			action.attachments.map(file => {
-				
-				this.uploadFile(action, file);
-			});			
-		}
+			if (action.attachments.length > 0){
+				action.attachments.map(file => {				
+					this.uploadFile(action, file);
+				});		
 
+				this.af.database.object(Constants.APP_STATUS+'/action/' + action.agencyId + '/' + action.key)
+				.update({
+					actionStatus: ActionStatus.Completed,
+					isCompleted: true
+				});
+
+				this.addNote(action);
+
+			} else {
+				//TODO please attach documents popup
+			}
+		}
 	}
 
 	private uploadFile(action, file) {
