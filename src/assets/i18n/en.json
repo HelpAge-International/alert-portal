@@ -129,7 +129,10 @@
       "UNMATCHED_PASSWORD": "Passwords don't match",
       "NO_F_NAME": "Please enter the first name",
       "NO_L_NAME": "Please enter the last name",
-      "NO_EMAIL": "Please enter the email address"
+      "NO_EMAIL": "Please enter the email address",
+      "NO_CITY": "Please enter the the city",
+      "NO_PHONE": "Please enter the phone number",
+      "NO_COUNTRY": "Please select a country"
     },
     "NOTIFICATION_SETTING": {
       "ALERT_LEVEL_CHANGE": "Alert level changed",
@@ -741,7 +744,12 @@
       "TITLE_EDIT_PARTNER": "Edit partner user",
       "TITLE_DELETE_PARTNER": "Delete partner user",
       "PARTNER_ORGANISATION": "Partner Organisation",
-      "SAVE_NEW_PARTNER": "Save new partner user"
+      "SAVE_NEW_PARTNER": "Save new partner user",
+      "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
+      "NO_PARTNER_ORGANISATION": "Please select a partner organisation",
+      "NO_POSITION":"Please select a position",
+      "NO_VALIDATION_PERMISSION":"Please specify if you would like to grant the user partner & response plan validation permission",
+      "SUCCESS_SAVED":"Partner user successfully saved"
     },
     "SETTINGS": {
       "TITLE_TEXT": "Country Office Settings"

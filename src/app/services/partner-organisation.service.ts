@@ -14,13 +14,19 @@ export class PartnerOrganisationService {
   getPartnerOrganisations(): Observable<PartnerOrganisationModel[]> {
 
     const partnerOrganisationSubscription = this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation')
-      .map(items => 
-        { 
+      .map(items =>
+        {
             let partnerOrganisations: PartnerOrganisationModel[] = [];
-            items.forEach(item => { partnerOrganisations.push(item as PartnerOrganisationModel)});
+            items.forEach(item => { 
+              // Add the organisation ID
+              let partnerOrganisation = item as PartnerOrganisationModel;
+              partnerOrganisation.id = item.$key;
+
+              partnerOrganisations.push(item as PartnerOrganisationModel);
+            });
             return partnerOrganisations;
         });
-      
+
     return partnerOrganisationSubscription;
   }
 }

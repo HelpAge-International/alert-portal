@@ -446,3 +446,8 @@ export enum ApprovalStatus {
   Approved = 2,
   NeedsReviewing = 3
 }
+
+export enum AlertMessageType {
+  Error = 0,
+  Success = 1
+}
