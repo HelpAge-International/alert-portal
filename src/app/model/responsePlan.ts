@@ -26,15 +26,18 @@ export class ResponsePlan {
   public otherRelatedSector: string;
   public presenceInTheCountry: PresenceInTheCountry;
   public methodOfImplementation: MethodOfImplementation;
-  public partners: string[]; // TODO - Update to list of Partner Organisations
+  public partnerOrganisations: string[];
 
   // Section 4/10
-  public proposedResponse: string;
-  public progressOfActivitiesPlan: string;
-  public coordinationPlan: string;
+  // public proposedResponse: string;
+  // public progressOfActivitiesPlan: string;
+  // public coordinationPlan: string;
+  public activitySummary = {};
 
   // Section 5/10
-  public numOfBeneficiaries: number;
+  public peoplePerHousehold: number;
+  public numOfHouseholds: number;
+  public beneficiariesNote: string;
   public vulnerableGroups: string[];
   public targetPopulationInvolvementList: string[];
 
@@ -43,22 +46,23 @@ export class ResponsePlan {
 
   // Section 7/10
   // TODO - Add Section 7 attributes
-  public activities: ModelPlanActivity[];
+  public activities = {};
 
   // Section 8/10
   public mALSystemsDescription: string;
   public isMedia: boolean;
-  public mediaFormat: MediaFormat;
+  public mediaFormat: number;
 
   // Section 9/10
   // TODO - Add Section 9 attributes
-  public doubleCounting: any[];
+  public doubleCounting = {};
 
   // Section 10/10
   // TODO - Add Section 10 attributes
-  public isOver1000: boolean;
-  public item: any[];
-  public itemOver1000: ModelBudgetItem[];
+  public budget = {};
+  // public isOver1000: boolean;
+  // public item: any[];
+  // public itemOver1000: ModelBudgetItem[];
 
   // Other
   public sectionsCompleted: number;

@@ -5,12 +5,14 @@ import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
   HazardScenario, ResponsePlanSectionSettings, ResponsePlanSectors,
-  PresenceInTheCountry, MethodOfImplementation, MediaFormat, Gender, AgeRange
+  PresenceInTheCountry, MethodOfImplementation, MediaFormat, Gender, AgeRange, BudgetCategory
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {validate} from "codelyzer/walkerFactory/walkerFn";
+import {isUndefined} from "util";
+import {ModelBudgetItem} from "../../model/budget-item.model";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -111,7 +113,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private numOfBeneficiaries: number = 0;
 
   private showBeneficiariesTextEntry: boolean = false;
-  private howBeneficiariesCalculatedText: string;
+  private howBeneficiariesCalculatedText: string = '';
 
   private groups: any[] = [];
   private Other: string = "Other";
@@ -287,6 +289,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   onSubmit() {
 
     // TODO - Check if section 10 is completed
+    // this.checkSection10Status();
 
     console.log("Finish button pressed");
 
@@ -310,27 +313,136 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
     newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
-    newResponsePlan.methodOfImplementation = this.methodOfImplementation;
-    newResponsePlan.partners = this.partners;
+    newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
+    // TODO - UPDATE WHEN PARTNERS SECTION IS COMPLETED
+    newResponsePlan.partnerOrganisations = this.partners;
 
-    newResponsePlan.proposedResponse = this.proposedResponseText;
-    newResponsePlan.progressOfActivitiesPlan = this.progressOfActivitiesPlanText;
-    newResponsePlan.coordinationPlan = this.coordinationPlanText;
+    //section 4
+    newResponsePlan.activitySummary["q1"] = this.proposedResponseText;
+    newResponsePlan.activitySummary["q2"] = this.progressOfActivitiesPlanText;
+    newResponsePlan.activitySummary["q3"] = this.coordinationPlanText;
 
-    newResponsePlan.numOfBeneficiaries = this.numOfBeneficiaries;
-    newResponsePlan.vulnerableGroups = this.vulnerableGroups;
-    // newResponsePlan.targetPopulationInvolvementList = this.targetPopulationInvolvementList;
+    //section 5
+    newResponsePlan.peoplePerHousehold = this.numOfPeoplePerHouseHold;
+    newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
+    newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText;
+    newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
+    newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
+    //section 6
     newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
 
+    //section 7
+    newResponsePlan.activities = this.activityMap;
+    // this.activityMap.forEach((v,k) =>{
+    // });
+
+
+    //section 8
     newResponsePlan.mALSystemsDescription = this.mALSystemsDescriptionText;
-    newResponsePlan.isMedia = this.intentToVisuallyDocument;
-    newResponsePlan.mediaFormat = this.mediaFormat;
+    if (this.mediaFormat != null) {
+      newResponsePlan.mediaFormat = this.mediaFormat;
+      newResponsePlan.isMedia = true;
+    } else {
+      this.intentToVisuallyDocument = false;
+      newResponsePlan.isMedia = false;
+    }
+
+    //section 9
+    let doubleCounting = {};
+
+
+    for (let i = 0; i < 6; i++) {
+      let data = {};
+      if (i < 3) {
+        data["gender"] = Gender.feMale;
+        if (i == 0) {
+          data["value"] = this.adjustedFemaleLessThan18;
+        } else if (i == 1) {
+          data["value"] = this.adjustedFemale18To50;
+        } else {
+          data["value"] = this.adjustedFemalegreaterThan50;
+        }
+      } else {
+        data["gender"] = Gender.male;
+        if (i == 3) {
+          data["value"] = this.adjustedMaleLessThan18;
+        } else if (i == 4) {
+          data["value"] = this.adjustedMale18To50;
+        } else {
+          data["value"] = this.adjustedMalegreaterThan50;
+        }
+      }
+      if (i == 0 || i == 3) {
+        data["age"] = AgeRange.Less18;
+      } else if (i == 1 || i == 4) {
+        data["age"] = AgeRange.Between18To50;
+      } else {
+        data["age"] = AgeRange.More50;
+      }
+
+      doubleCounting[i] = data;
+    }
+
+    newResponsePlan.doubleCounting = doubleCounting;
+
+    //section 10
+    let budgetData = {};
+    let inputs = [];
+    this.sectorBudget.forEach((v, k) => {
+      let item = new ModelBudgetItem();
+      item.budget = v;
+      item.narrative = this.sectorNarrative.get(k);
+      inputs.push(item);
+    });
+    let allBudgetValues = {};
+    allBudgetValues[1] = this.transportBudget;
+    allBudgetValues[2] = this.securityBudget;
+    allBudgetValues[3] = this.logisticsAndOverheadsBudget;
+    allBudgetValues[4] = this.staffingAndSupportBudget;
+    allBudgetValues[5] = this.monitoringAndEvolutionBudget;
+    allBudgetValues[6] = this.capitalItemsBudget;
+    allBudgetValues[7] = this.managementSupportPercentage;
+
+    let allBudgetNarratives = {};
+    allBudgetNarratives[1] = this.transportNarrative;
+    allBudgetNarratives[2] = this.securityNarrative;
+    allBudgetNarratives[3] = this.logisticsAndOverheadsNarrative;
+    allBudgetNarratives[4] = this.staffingAndSupportNarrative;
+    allBudgetNarratives[5] = this.monitoringAndEvolutionNarrative;
+    allBudgetNarratives[6] = this.capitalItemsNarrative;
+    allBudgetNarratives[7] = this.managementSupportNarrative;
+
+    for (let i = 0; i < 8; i++) {
+      if (i == 0) {
+        budgetData[0] = inputs;
+      } else {
+        let tempItem = new ModelBudgetItem();
+        tempItem.budget = allBudgetValues[i];
+        tempItem.narrative = allBudgetNarratives[i];
+        budgetData[i] = tempItem;
+      }
+    }
+
+    if (this.capitalsExist) {
+      newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
+      let itemsOver1000 = [];
+      this.budgetOver1000.forEach((v, k) => {
+        let tempItem = new ModelBudgetItem();
+        tempItem.budget = v;
+        tempItem.narrative = this.budgetOver1000Desc.get(k);
+        itemsOver1000.push(tempItem);
+      });
+      newResponsePlan.budget["itemsOver1000"] = itemsOver1000;
+    } else {
+      newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
+    }
+
 
     // newResponsePlan.sectionsCompleted = this.
     newResponsePlan.totalSections = this.totalSections;
-
     newResponsePlan.isActive = true;
+
 
     console.log("New Response Plan ----> " + newResponsePlan);
 
@@ -345,6 +457,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       console.log("Response plan creation unsuccessful with error --> " + error.message);
     })
 
+    this.printAllResults(newResponsePlan);
+  }
+
+  // TODO -
+  checkSection10Status() {
+
+  }
+
+  printAllResults(newResponsePlan) {
+    console.log(newResponsePlan);
+    console.log(newResponsePlan);
   }
 
   /**
@@ -531,8 +654,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.presenceInTheCountry = PresenceInTheCountry.noPreExistingPresence;
   }
 
-  methodOfImplementationSelected() {
-    this.isDirectlyThroughFieldStaff = !this.isDirectlyThroughFieldStaff;
+  methodOfImplementationSelectedDirect() {
+    this.isDirectlyThroughFieldStaff = true;
+    console.log('this.isDirectlyThroughFieldStaff = ' + this.isDirectlyThroughFieldStaff);
+  }
+
+  methodOfImplementationSelectedWithPartners() {
+    this.isDirectlyThroughFieldStaff = false;
     console.log('this.isDirectlyThroughFieldStaff = ' + this.isDirectlyThroughFieldStaff);
   }
 
@@ -678,10 +806,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   /**
    * Section 7/10
    */
-  // TODO
-  continueButtonPressedOnSection7() {
-  }
-
   saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
     console.log(sector);
     console.log(name.value + "/" + output.value + "/" + indicator.value + "/" +
@@ -806,6 +930,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.activityInfoMap.set(sector, data);
     }
     console.log(this.activityInfoMap);
+  }
+
+  continueButtonPressedOnSection7() {
+    let numOfActivities: number = this.activityMap.size;
+    if (numOfActivities != 0) {
+      this.section7Status = "GLOBAL.COMPLETE";
+      this.numberOfCompletedSections++;
+    } else {
+      this.section7Status = "GLOBAL.INCOMPLETE";
+      this.numberOfCompletedSections--;
+    }
   }
 
   /**
@@ -962,6 +1097,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Functions
    */
 
+  checkAllSections() {
+    this.continueButtonPressedOnSection1();
+    this.continueButtonPressedOnSection2();
+    this.continueButtonPressedOnSection3();
+    this.continueButtonPressedOnSection4();
+    this.continueButtonPressedOnSection5();
+    this.continueButtonPressedOnSection6();
+    this.continueButtonPressedOnSection7();
+    this.continueButtonPressedOnSection8();
+    this.continueButtonPressedOnSection9();
+    this.checkSection10Status();
+  }
+
   goBack() {
     this.router.navigateByUrl('response-plans');
   }
@@ -1050,7 +1198,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       if (this.sectorsRelatedTo.includes(sectorEnum)) {
         let index: number = this.sectorsRelatedTo.indexOf(sectorEnum);
         if (index > -1) {
-          this.sectorsRelatedTo.slice(index,1)
+          this.sectorsRelatedTo.slice(index, 1)
         }
       }
     }

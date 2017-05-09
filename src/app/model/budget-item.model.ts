@@ -5,4 +5,9 @@
 export class ModelBudgetItem {
   public budget: number;
   public narrative: string;
+
+  // constructor(budget, narrative) {
+  //   this.budget = budget;
+  //   this.narrative = narrative;
+  // }
 }

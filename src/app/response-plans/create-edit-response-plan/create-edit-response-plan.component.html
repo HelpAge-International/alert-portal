@@ -21,7 +21,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section1Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -80,7 +80,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -169,7 +169,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -246,11 +246,11 @@
           <div class="Selection-row Spaced">
             <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-direct"
-                     (change)="methodOfImplementationSelected()">
+                     (click)="methodOfImplementationSelectedDirect()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
             <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
-                     (change)="methodOfImplementationSelected()">
+                     (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
           </div>
 
@@ -299,7 +299,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -351,7 +351,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section5Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -461,7 +461,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section6Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -493,7 +493,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content">
@@ -705,7 +705,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -773,7 +773,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -898,7 +898,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Response__content--budget Spaced">
