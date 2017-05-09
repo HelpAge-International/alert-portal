@@ -134,6 +134,29 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET"
   ];
 
+  static RESPONSE_PLANS_SECTORS = [
+    "WaSH",
+    "Health",
+    "Shelter",
+    "Nutrition",
+    "Food security & livelihoods",
+    "Protections",
+    "Education",
+    "Camp management",
+    "Other"
+  ];
+
+  static RESPONSE_PLANS_BUDGET_CATEGORY = [
+    "Inputs",
+    "Transport",
+    "Security",
+    "Logistics & overheads",
+    "Staffing & support",
+    "Monitoring & evaluation",
+    "Capital Items",
+    "Management support"
+  ];
+
   static DOCUMENT_TYPE = [
     "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.MPA",
     "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.APA",
