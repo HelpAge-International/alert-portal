@@ -2,6 +2,8 @@ import {
   HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation,
   MediaFormat
 } from "../utils/Enums";
+import {ModelPlanActivity} from "./plan-activity.model";
+import {ModelBudgetItem} from "./budget-item.model";
 /**
  * Created by Sanjaya on 27/04/2017.
  */
@@ -41,6 +43,7 @@ export class ResponsePlan {
 
   // Section 7/10
   // TODO - Add Section 7 attributes
+  public activities: ModelPlanActivity[];
 
   // Section 8/10
   public mALSystemsDescription: string;
@@ -49,9 +52,13 @@ export class ResponsePlan {
 
   // Section 9/10
   // TODO - Add Section 9 attributes
+  public doubleCounting: any[];
 
   // Section 10/10
   // TODO - Add Section 10 attributes
+  public isOver1000: boolean;
+  public item: any[];
+  public itemOver1000: ModelBudgetItem[];
 
   // Other
   public sectionsCompleted: number;

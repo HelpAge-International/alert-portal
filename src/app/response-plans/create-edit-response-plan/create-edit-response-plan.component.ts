@@ -142,6 +142,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private adjustedMale18To50: number = 0;
   private adjustedMalegreaterThan50: number = 0;
 
+  private isDoubleCountingDone: boolean = false;
   private section9Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 10/10
@@ -195,6 +196,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private capitalItemSections: number[] = [this.capitalItemSectionSectionsCounter];
 
   private section10Status: string = "GLOBAL.INCOMPLETE";
+
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -653,6 +655,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
   // TODO
   continueButtonPressedOnSection9() {
+    this.isDoubleCountingDone = true;
   }
 
   doublerCounting() {
@@ -690,12 +693,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
-    this.adjustedFemale18To50 = this.numberFemale18To50;
-    this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
-    this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
-    this.adjustedMale18To50 = this.numberMale18To50;
-    this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+    if (!this.isDoubleCountingDone) {
+      this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
+      this.adjustedFemale18To50 = this.numberFemale18To50;
+      this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
+      this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
+      this.adjustedMale18To50 = this.numberMale18To50;
+      this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+    }
   }
 
   /**
