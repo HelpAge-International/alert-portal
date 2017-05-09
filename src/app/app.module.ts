@@ -91,6 +91,9 @@ import { AddPartnerOrganisationComponent } from './response-plans/add-partner-or
 import { OrdinalPipe } from './utils/pipes/ordinal.pipe';
 import { StatusAlertComponent } from './commons/status-alert/status-alert.component';
 import { AgencyNotificationsComponent } from './agency-admin/agency-notifications/agency-notifications.component';
+import { MinimumPreparednessComponent } from './preparedness/minimum/minimum.component';
+import { AdvancedPreparednessComponent } from './preparedness/advanced/advanced.component';
+import { BudgetPreparednessComponent } from './preparedness/budget/budget.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -191,7 +194,10 @@ const firebaseAuthConfig = {
     AddPartnerOrganisationComponent,
     OrdinalPipe,
     StatusAlertComponent,
-    AgencyNotificationsComponent
+    AgencyNotificationsComponent,
+    MinimumPreparednessComponent,
+    AdvancedPreparednessComponent,
+    BudgetPreparednessComponent
   ],
   imports: [
     BrowserModule,

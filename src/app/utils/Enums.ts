@@ -458,3 +458,15 @@ export enum BudgetCategory {
   CapitalItems = 6,
   ManagementSupport = 7
 }
+
+export enum ActionStatus {
+  Expired = 0,
+  InProgress = 1,
+  Completed = 2,
+  Inactive = 3
+}
+
+export enum SizeType {
+  KB = 0,
+  MB = 1
+}
