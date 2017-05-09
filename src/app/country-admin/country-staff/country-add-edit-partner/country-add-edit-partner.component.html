@@ -1,3 +1,69 @@
-<p>
-  country-add-edit-partner works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div (click) = "this.router.navigateByUrl('/country-admin/country-staff');" class="Back--button">
+        {{"COUNTRY_ADMIN.STAFF.TITLE_TEXT"| translate}}</div>
+        <div class="Header-title__wrap">
+            <h1 *ngIf="!isEdit">{{"COUNTRY_ADMIN.PARTNER.TITLE_ADD_PARTNER"| translate}}</h1>
+            <h1 *ngIf="isEdit">{{"COUNTRY_ADMIN.PARTNER.TITLE_EDIT_PARTNER"| translate}}</h1>
+            <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePARTNER()">
+              {{"COUNTRY_ADMIN.PARTNER.TITLE_DELETE_PARTNER" | translate}}
+            </button>
+        </div>
+        <div class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="partner-org">{{"COUNTRY_ADMIN.PARTNER.PARTNER_ORGANISATION"| translate}}</label>
+                <select class="form-control" id="partner-org">
+                    <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations">{{ partnerOrganisation.projectName }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="Title">{{"GLOBAL.TITLE"| translate}}</label>
+                <select class="form-control" id="Title" [(ngModel)]="title" name="title" required #selectTitle>
+                  <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                  <option *ngFor="let title of userTitleSelection" [value]="title">{{userTitle[title]|translate}}
+                  </option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
+                <input type="text" class="form-control" id="f-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME"| translate}}</label>
+                <input type="text" class="form-control" id="l-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+        </div>
+        <div class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="Position">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
+                <input type="text" class="form-control" id="Position" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
+                <input type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="l-Name">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
+                <input type="text" class="form-control" id="l-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+        </div>
+        
+        <div class="Form-submit__wrapper">
+          <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+            {{"COUNTRY_ADMIN.PARTNER.SAVE_NEW_PARTNER" | translate | uppercase}}
+          </button>
+          <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+            {{"COUNTRY_ADMIN.GLOBAL.SAVE_CHANGES" | translate | uppercase}}
+          </button>
+          <button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
+
+</div>
+

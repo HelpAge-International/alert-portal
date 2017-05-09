@@ -111,6 +111,9 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/country-admin/country-staff/country-add-edit-staff');
   }
 
+  addNewPartner() {
+    this.router.navigateByUrl('/country-admin/country-staff/country-add-edit-partner');
+  }
   getStaffUserType(userType){
     for (let i = 0; i < this.userTypesList.length; i++) {
       if(this.userTypesList[i] === userType){

@@ -732,8 +732,16 @@
       "NO_RESPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
       "SUCCESS_STAFF_MEMBER_ADDED": "Staff member successfully saved",
       "DELETE_DIALOG_TITLE": "Delete Staff",
-      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff?",
+      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff? Any assigned indicators and MPAs will be marked as unassigned",
       "ADDITIONAL_INFO": "Additional Info"
+    },
+    "PARTNER": {
+      "ADD_NEW_PARTNER": "Add new new partner user",
+      "TITLE_ADD_PARTNER": "Add partner user",
+      "TITLE_EDIT_PARTNER": "Edit partner user",
+      "TITLE_DELETE_PARTNER": "Delete partner user",
+      "PARTNER_ORGANISATION": "Partner Organisation",
+      "SAVE_NEW_PARTNER": "Save new partner user"
     },
     "SETTINGS": {
       "TITLE_TEXT": "Country Office Settings"
