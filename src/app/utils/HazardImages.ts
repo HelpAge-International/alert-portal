@@ -1,6 +1,5 @@
 export class HazardImages {
-  public static red_ending: string = "_red.svg";
-  public static yellow_ending: string = "_amber.svg";
+  public static ending: string = "_red.svg";
   public static info: string = "/assets/images/hazards/marker/";
 
   public getMap() {
@@ -39,7 +38,7 @@ export class HazardImages {
     return new HazardImages();
   }
 
-  public get(int: number, isRed: boolean) {
-    return HazardImages.info + this.getMap().get(int) + (isRed ? HazardImages.red_ending : HazardImages.yellow_ending);
+  public get(int: number) {
+    return HazardImages.info + this.getMap().get(int) + HazardImages.ending;
   }
 }

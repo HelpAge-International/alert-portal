@@ -10,7 +10,7 @@ import {ModelHazard} from "../model/hazard.model";
 import {HazardScenario} from "../utils/Enums";
 import {HazardImages} from "../utils/HazardImages";
 import Marker = google.maps.Marker;
-import {MarkerHolder, SuperMapComponents} from "../utils/MapSuper";
+import {SuperMapComponents} from "../utils/MapSuper";
 import {unescapeIdentifier} from "@angular/compiler";
 import {Subscription} from "rxjs/Subscription";
 declare var jQuery: any;

@@ -17,6 +17,7 @@ import Geocoder = google.maps.Geocoder;
 import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {current} from "codelyzer/util/syntaxKind";
+import {ModelSystem} from "../model/system.model";
 /**
  * Created by jordan on 05/05/2017.
  */
@@ -42,23 +43,14 @@ export class SuperMapComponents {
    *   Get the list of countries to highlight on the map based on the folder
    */
   public highlightedCountriesAgencyAdmin(uid: string, folder: string, funct: (red: string[], yellow: string[], green: string[]) => void) {
-    let sub = this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid + "/")
-      .map((result: AgencyAdminPlaceholder) => {
-        let s: string;
-        for (let key in result.agencyAdmin) {
-          s = key;
-        }
-        return s;
-      })
-      .flatMap((agencyAdmin: string) => {
-        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyAdmin);
-      })
-      .subscribe((countryIds: Map<string, ModelCountryOffice>) => {
+    let sub = this
+      .getCountryOffice(uid, folder)
+      .subscribe((countryIds) => {
         let red: string[] = [];
         let yellow: string[] = [];
         let green: string[] = [];
         for (let obj in countryIds) {
-          red.push(Countries[countryIds[obj].location]);
+          green.push(Countries[countryIds[obj].location]);
         }
         funct(red, yellow, green);
       });
@@ -71,9 +63,88 @@ export class SuperMapComponents {
    *    Markers for the map based on a node (ie. administratorCountry, administratorAdmin, etc.
    */
   private markersForAgencyAdminMap: Map<string, number> = new Map<string, number>();
-
   public markersForAgencyAdmin(uid: string, folder: string, funct: (holder: google.maps.Marker) => void) {
-    let sub = this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
+    let sub = this
+      .getCountryOffice(uid, folder)
+      .flatMap((countryOffice) => {
+        console.log(countryOffice);
+        for (let key of countryOffice) {
+          this.markersForAgencyAdminMap.set(key.$key, key.location);
+          console.log(key.$key);
+          return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key);
+        }
+      })
+      .subscribe((result) => {
+        console.log(result);
+        console.log(result.$key);
+        for (let key in result) {
+          // TODO: Re-look at this! Ideal solution is to return a pair with the firebase database.object call and the key / location above.
+          //   Don't want to re-query the database to find the key that this object would have been under
+          //   list returns a ModelHazard[], no access to the key/location
+          //   object returns the objects complete with $key and $exists. Cannot cleanly iterate through the actual firebase result
+          //   current solution requires structure of firebase object to remain constant. Is not dynamic enough for our purpose
+          if (key != '$key' && key != '$exists') {
+            this.geocoder.geocode({"address": Countries[this.markersForAgencyAdminMap.get(result.$key)]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+              if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+                let marker = new google.maps.Marker({
+                  position: geoResult[0].geometry.location,
+                  icon: HazardImages.init().get(result[key].category)
+                });
+                funct(marker);
+              }
+            })
+          }
+        }
+      });
+
+    this.handler.add(sub);
+  };
+
+
+  /**
+   * Get the system information
+   */
+  public getSystemInfo(uid: string, folder:string, funct: (red: number, yellow: number, green: number) => void) {
+    let sub = this.getSystemAdminId(uid, folder)
+      .flatMap((systemAdmin) => {
+        return this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdmin);
+      })
+      .subscribe((model: ModelSystem) => {
+        let red: number = model.minThreshold[0];
+        let yellow: number = model.minThreshold[1];
+        let green: number = model.minThreshold[2];
+        funct(red, yellow, green);
+      });
+    this.handler.add(sub);
+  }
+
+
+  /**
+   * Get the list of departments for the country
+   */
+  public departmentBreakdownForCountry(uid: string, folder: string, country: number, funct: () => void) {
+    let sub = this.getAgency(uid, folder)
+      .subscribe((result) => {
+
+      });
+    this.handler.add(sub);
+  }
+
+
+  /**
+   * Get the country office
+   */
+  private getAgency(uid: string, agencyAdminRefFolder: string) {
+    return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
+  }
+  private getCountryOffice(uid: string, agencyAdminRefFolder: string) {
+    return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
+  }
+  private getAdministratorAgency(uid: string, agencyAdminRefFolder: string) {
+    return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
+  }
+  private getObjectBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
+    return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
         for (let key in result.agencyAdmin) {
@@ -82,40 +153,39 @@ export class SuperMapComponents {
         return s;
       })
       .flatMap((agencyAdmin: string) => {
-        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyAdmin)
-      })
-      .flatMap((countryIds: Map<string, ModelCountryOffice>) => {
-        for (let key in countryIds) {
-          this.markersForAgencyAdminMap.set(key, countryIds[key].location);
-          return this.af.database.list(Constants.APP_STATUS + "/hazard/" + key);
-        }
-      })
-      .subscribe((result: ModelHazard[]) => {
-        console.log(result);
-        for (let i = 0; i < result.length; i++) {
-          let cur = result[i];
-          this.geocoder.geocode({"address": Countries[0]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-              console.log("Adding marker at " + geoResult[0].geometry.location);
-              let marker = new google.maps.Marker({
-                position: geoResult[0].geometry.location,
-                icon: HazardImages.init().get(cur.category, true)
-              });
-              funct(marker);
-            }
-          });
-        }
+        return this.af.database.list(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin)
       });
+  }
 
-    this.handler.add(sub);
-    ;
-  };
+
+  /**
+   * Get system admin id
+   */
+  private getSystemAdminId(uid: string, folder: string) {
+    return this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
+      .map((result: AgencyAdminPlaceholder) => {
+        let s: string;
+        for (let key in result.agencyAdmin) {
+          s = key;
+        }
+        return s;
+      })
+      .flatMap((agencyAdminId: string) => {
+        return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId);
+      })
+      .flatMap((agency: ModelAgency) => {
+        let s: string;
+        for (let key in agency.systemAdmin) {
+          s = key;
+        }
+        return s;
+      });
+  }
 
 
   /**
    * Utility methods for initialising the map and handling colouring and theming of it
    */
-
   public initBlankMap(elementId: string) {
     let uluru = {lat: 33.443861, lng: 105.891683};
     this.map = new google.maps.Map(document.getElementById(elementId), {
@@ -571,23 +641,18 @@ export class SuperMapComponents {
   }
 }
 
-export class Holder<T, S> {
-  private t: T;
-  private s: S;
+export class Holder {
+  private t: string;
+  private s: ModelHazard[];
 
-  public init(t: T, s: S) {
+  public init(t: string, s: ModelHazard[]) {
     this.t = t;
     this.s = s;
   }
 }
 
-export class MarkerHolder {
-  public i: string;
-  public p;
-
-  constructor(private icon: string, private position) {
-    this.i = icon;
-  }
+export class AgencyDepartmentPlaceholder {
+  public departments: Map<string, boolean>;
 }
 
 export class AgencyAdminPlaceholder {

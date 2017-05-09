@@ -14,6 +14,7 @@ export class ModelAgency {
   public isActive:boolean;
   public isDonor:boolean;
   public logoPath:string;
+  public systemAdmin: Map<string, boolean>;
   public phone:string;
   public postCode:string;
   public website:string;
