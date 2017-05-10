@@ -1,6 +1,6 @@
 import {
   HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation,
-  MediaFormat
+  MediaFormat, ApprovalStatus
 } from "../utils/Enums";
 import {ModelPlanActivity} from "./plan-activity.model";
 import {ModelBudgetItem} from "./budget-item.model";
@@ -46,7 +46,7 @@ export class ResponsePlan {
 
   // Section 7/10
   // TODO - Add Section 7 attributes
-  public activities = {};
+  public sectors = {};
 
   // Section 8/10
   public mALSystemsDescription: string;
@@ -68,4 +68,5 @@ export class ResponsePlan {
   public sectionsCompleted: number;
   public totalSections: number;
   public isActive: boolean;
+  public status: ApprovalStatus;
 }
