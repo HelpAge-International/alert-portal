@@ -22,6 +22,7 @@ import {ModelBudgetItem} from "../../model/budget-item.model";
 
 export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
+  private USER_TYPE: string = 'administratorCountry';
   SECTORS = Constants.RESPONSE_PLANS_SECTORS;
 
   private uid: string;
@@ -92,11 +93,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private otherSectorSelected: boolean = false;
 
   private presenceInTheCountry: PresenceInTheCountry;
-  private methodOfImplementation: MethodOfImplementation = MethodOfImplementation.fieldStaff;
   private isDirectlyThroughFieldStaff: boolean;
+
   private partnersDropDownsCounter: number = 1;
   private partnersDropDowns: number[] = [this.partnersDropDownsCounter];
-  private partners: string[] = []; // TODO - Update to list of Partner Organisations
+  private partnerOrganisations: FirebaseObjectObservable<any>[] = [];
+  private partnerOrganisationsSelected = {};
 
   private section3Status: string = "GLOBAL.INCOMPLETE";
 
@@ -122,7 +124,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private vulnerableGroupsDropDownsCounter: number = 1;
   private vulnerableGroupsDropDowns: number[] = [this.vulnerableGroupsDropDownsCounter];
-  private vulnerableGroups: string[] = [];
 
   private targetPopulationBulletPointsCounter: number = 1;
   private targetPopulationBulletPoints: number[] = [this.targetPopulationBulletPointsCounter];
@@ -145,7 +146,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // Section 8/10
   private mALSystemsDescriptionText: string = '';
   private intentToVisuallyDocument: boolean = false;
-  // private mediaFormat: MediaFormat = MediaFormat.photographic;
   private mediaFormat: number;
 
   private section8Status: string = "GLOBAL.INCOMPLETE";
@@ -249,23 +249,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.uid = auth.uid;
         console.log("Admin uid: " + this.uid);
 
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + "/countryId").subscribe((countryId) => {
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").subscribe((countryId) => {
           this.countryId = countryId.$value;
           this.getStaff();
 
-          let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyAdminIds) => {
+          let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').subscribe((agencyAdminIds) => {
             this.agencyAdminUid = agencyAdminIds[0].$key;
             this.getSettings();
+            this.getPartners();
 
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
+            let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
               this.systemAdminUid = systemAdminIds[0].$key;
               this.getGroups();
-
-              console.log(this.systemAdminUid);
-              console.log(this.agencyAdminUid);
-              console.log(this.countryId);
-
             });
+
             this.subscriptions.add(subscription);
           });
           this.subscriptions.add(subscription);
@@ -302,9 +299,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.hazardScenario = this.hazardScenarioSelected;
 
     //section 2
-    // TODO ----
-    // newResponsePlan.scenarioCrisisList = this.scenarioCrisisObject;
-
     newResponsePlan.scenarioCrisisList = this.convertTolist(this.scenarioCrisisObject);
     newResponsePlan.impactOfCrisisList = this.convertTolist(this.impactOfCrisisObject);
     newResponsePlan.availabilityOfFundsList = this.convertTolist(this.availabilityOfFundsObject);
@@ -314,8 +308,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
     newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
     newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
-    // TODO - UPDATE WHEN PARTNERS SECTION IS COMPLETED
-    newResponsePlan.partnerOrganisations = this.partners;
+    newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
 
     //section 4
     newResponsePlan.activitySummary["q1"] = this.proposedResponseText;
@@ -337,7 +330,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     // this.activityMap.forEach((v,k) =>{
     // });
 
-
     //section 8
     newResponsePlan.mALSystemsDescription = this.mALSystemsDescriptionText;
     if (this.mediaFormat != null) {
@@ -350,7 +342,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     //section 9
     let doubleCounting = {};
-
 
     for (let i = 0; i < 6; i++) {
       let data = {};
@@ -438,36 +429,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
     }
 
-
     // newResponsePlan.sectionsCompleted = this.
     newResponsePlan.totalSections = this.totalSections;
     newResponsePlan.isActive = true;
 
-
-    console.log("New Response Plan ----> " + newResponsePlan);
-
-    // TODO - For other users such as ERT and ERT Lead, get the country admin's id which the user is under. This has to be done when other users are implemeneted
-
-    // If logged in as a Country admin
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
-
-    this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
-      console.log("Response plan creation successful");
-    }).catch(error => {
-      console.log("Response plan creation unsuccessful with error --> " + error.message);
-    })
-
-    this.printAllResults(newResponsePlan);
+    this.saveToFirebase(newResponsePlan);
   }
 
   // TODO -
   checkSection10Status() {
 
-  }
-
-  printAllResults(newResponsePlan) {
-    console.log(newResponsePlan);
-    console.log(newResponsePlan);
   }
 
   /**
@@ -502,11 +473,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   addSummarizeScenarioBulletPoint() {
     this.summarizeScenarioBulletPointsCounter++;
     this.summarizeScenarioBulletPoints.push(this.summarizeScenarioBulletPointsCounter);
-    console.log('summarizeScenarioBulletPointsCounter ----' + this.summarizeScenarioBulletPointsCounter);
   }
 
   removeSummarizeScenarioBulletPoint(bulletPoint) {
-    console.log('summarizeScenarioBulletPointsCounter ----' + this.summarizeScenarioBulletPointsCounter + 'bulletPoint ----' + bulletPoint);
     this.summarizeScenarioBulletPointsCounter--;
     this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
 
@@ -544,7 +513,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       console.log("Bullet point not in list");
     }
-    console.log(this.impactOfCrisisObject);
   }
 
   addToAvailabilityOfFundsObject(bulletPoint, textEntered) {
@@ -572,7 +540,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       console.log("Bullet point not in list");
     }
-    console.log(this.availabilityOfFundsObject);
   }
 
   continueButtonPressedOnSection2() {
@@ -588,14 +555,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section2Status = "GLOBAL.COMPLETE";
       this.numberOfCompletedSections++;
     }
-    console.log(numOfScenarioCrisisPoints + numOfImpactOfCrisisPoints + numOfAvailabilityOfFundsBulletPoints);
   }
 
   /**
    * Section 3/10
    */
 
-  // COMPLETED EXCEPT PARTNERS
+  // TODO - Wait for Lucian to complete Add Partener Organisations in Country Admin
 
   isWaSHSectorSelected() {
     this.waSHSectorSelected = !this.waSHSectorSelected;
@@ -639,7 +605,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   isOtherSectorSelected() {
     this.otherSectorSelected = !this.otherSectorSelected;
-    console.log('this.otherSectorSelected = ' + this.otherSectorSelected);
   }
 
   currentProgrammesSelected() {
@@ -656,15 +621,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   methodOfImplementationSelectedDirect() {
     this.isDirectlyThroughFieldStaff = true;
-    console.log('this.isDirectlyThroughFieldStaff = ' + this.isDirectlyThroughFieldStaff);
   }
 
   methodOfImplementationSelectedWithPartners() {
     this.isDirectlyThroughFieldStaff = false;
-    console.log('this.isDirectlyThroughFieldStaff = ' + this.isDirectlyThroughFieldStaff);
   }
 
-  // TODO - Partners final functionality
   addPartnersDropDown() {
     this.partnersDropDownsCounter++;
     this.partnersDropDowns.push(this.partnersDropDownsCounter);
@@ -673,6 +635,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   removePartnersDropDown(dropDown) {
     this.partnersDropDownsCounter--;
     this.partnersDropDowns = this.partnersDropDowns.filter(item => item !== dropDown);
+    delete this.partnerOrganisationsSelected[dropDown];
+    console.log(this.partnerOrganisationsSelected);
+  }
+
+  setPartnerOrganisation(partnerOrganisationSelected, dropDown) {
+    console.log(partnerOrganisationSelected);
+    if (partnerOrganisationSelected == 'addNewPartnerOrganisation') {
+      this.router.navigateByUrl('response-plans/add-partner-organisation');
+    } else {
+      this.partnerOrganisationsSelected[dropDown] = partnerOrganisationSelected;
+    }
   }
 
   // TODO
@@ -686,8 +659,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     // console.log('this.educationSectorSelected = ' + this.educationSectorSelected);
     // console.log('this.campManagementSectorSelected = ' + this.campManagementSectorSelected);
     // console.log('this.otherSectorSelected = ' + this.otherSectorSelected);
-
-    console.log('this.presenceInTheCountry = ' + this.presenceInTheCountry);
   }
 
   /**
@@ -715,7 +686,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       this.numOfBeneficiaries = 0;
     }
-    console.log("Beneficiaries ----" + this.numOfBeneficiaries);
   }
 
   addShowBeneficiariesTextEntry() {
@@ -770,7 +740,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       console.log("Bullet point not in list");
     }
-    console.log(this.targetPopulationInvolvementObject);
   }
 
   continueButtonPressedOnSection5() {
@@ -785,7 +754,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section5Status = "GLOBAL.COMPLETE";
       this.numberOfCompletedSections++;
     }
-    console.log(this.otherGroup);
   }
 
   /**
@@ -1131,7 +1099,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
               this.totalSections++;
             }
           });
-          console.log(this.totalSections);
         });
       this.subscriptions.add(subscription);
     }
@@ -1159,6 +1126,31 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscription);
   }
 
+  private getPartners() {
+
+    let subscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
+      .flatMap(list => {
+        this.partnerOrganisations = [];
+        let tempList = [];
+        list.forEach(x => {
+          tempList.push(x);
+        });
+        return Observable.from(tempList)
+      })
+      .flatMap(item => {
+        return this.af.database.object(Constants.APP_STATUS + '/partner/' + item.$key + '/partnerOrganisationId')
+      })
+      .flatMap(item => {
+        return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
+      })
+      .distinctUntilChanged()
+      .subscribe(x => {
+        this.partnerOrganisations.push(x);
+        console.log(x.organisationName);
+      });
+    this.subscriptions.add(subscription);
+  }
+
   private getGroups() {
 
     if (this.systemAdminUid) {
@@ -1177,7 +1169,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         });
       this.subscriptions.add(subscription);
     }
-    console.log(this.groups);
   }
 
   private convertTolist(object) {
@@ -1202,6 +1193,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  private saveToFirebase(newResponsePlan: ResponsePlan) {
+
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+    this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+      console.log("Response plan creation successful");
+      console.log(newResponsePlan);
+    }).catch(error => {
+      console.log("Response plan creation unsuccessful with error --> " + error.message);
+    });
   }
 
   private navigateToLogin() {
