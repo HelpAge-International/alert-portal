@@ -61,7 +61,7 @@ export class Constants {
   static ACTION_LEVEL: string[] = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
   static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.INACTIVE"];
   static ACTION_TYPE: string[] = ["GLOBAL.ACTION_TYPE.CHS", "GLOBAL.ACTION_TYPE.MANDATED", "GLOBAL.ACTION_TYPE.CUSTOM"];
-  
+
   static CURRENCY: string[] = ["GBP", "EUR", "USD"];
   static CURRENCY_SELECTION = [Currency.GBP, Currency.EUR, Currency.USD];
 
@@ -137,26 +137,15 @@ export class Constants {
   ];
 
   static RESPONSE_PLANS_SECTORS = [
-    "WaSH",
-    "Health",
-    "Shelter",
-    "Nutrition",
-    "Food security & livelihoods",
-    "Protections",
-    "Education",
-    "Camp management",
-    "Other"
-  ];
-
-  static RESPONSE_PLANS_BUDGET_CATEGORY = [
-    "Inputs",
-    "Transport",
-    "Security",
-    "Logistics & overheads",
-    "Staffing & support",
-    "Monitoring & evaluation",
-    "Capital Items",
-    "Management support"
+    "SECTORS.WASH",
+    "SECTORS.HEALTH",
+    "SECTORS.SHELTER",
+    "SECTORS.NUTRITION",
+    "SECTORS.FOOD_SEC_AND_LIVELIHOOD",
+    "SECTORS.PROTECTION",
+    "SECTORS.EDUCATION",
+    "SECTORS.CAMP_MANAGEMENT",
+    "SECTORS.OTHER"
   ];
 
   static DOCUMENT_TYPE = [
