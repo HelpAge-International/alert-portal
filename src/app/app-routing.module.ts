@@ -63,138 +63,145 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
 import {MapComponent} from "./map/map.component";
 import {PreparednessComponent} from "./preparedness/preparedness.component";
-import {PreparednessBudgetComponent} from "./preparedness-budget/preparedness-budget.component";
-import {PreparednessSelectComponent} from "./preparedness-select/preparedness-select.component";
+import {MinimumPreparednessComponent} from "./preparedness/minimum/minimum.component";
+import {AdvancedPreparednessComponent} from "./preparedness/advanced/advanced.component";
+import {BudgetPreparednessComponent} from "./preparedness/budget/budget.component";
+import {SelectPreparednessComponent} from "./preparedness/select/select.component";
+import {CreateEditPreparednessComponent} from "./preparedness/create-edit/create-edit.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: '/login', pathMatch: 'full'},
+    {path: '', redirectTo: '/login', pathMatch: 'full'},
 
-  /**
-   * Login
-   */
-  {path: 'forgot-password', component: ForgotPasswordComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'login/:emailEntered', component: LoginComponent},
+    /**
+     * Login
+     */
+    {path: 'forgot-password', component: ForgotPasswordComponent},
+    {path: 'login', component: LoginComponent},
+    {path: 'login/:emailEntered', component: LoginComponent},
 
-  /**
-   * System admin
-   */
-  {path: 'system-admin/min-prep/create', component: CreateActionComponent},
-  {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
-  {path: 'system-admin/min-prep', component: MinPrepComponent},
-  {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
-  {path: 'system-admin/mpa/create/:id', component: CreateMpaActionComponent},
-  {path: 'system-admin/mpa', component: MpaComponent},
-  {path: 'system-admin/add-agency', component: AddAgencyComponent},
-  {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
-  {path: 'system-admin/messages/create', component: MessagesCreateComponent},
-  {path: 'system-admin/messages', component: MessagesComponent},
-  {path: 'system-admin/agency', component: SystemAdminComponent},
-  {path: 'system-admin/account-settings', component: AccountSettingsComponent},
-  {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
-  {path: 'system-admin/network', component: GlobalNetworksComponent},
-  {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
-  {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
-  {path: 'system-admin/system-settings', component: SystemSettingsComponent},
-  {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
-  {path: 'system-admin/system-settings/system-settings-response-plans', component: SystemSettingsResponsePlansComponent},
+    /**
+     * System admin
+     */
+    {path: 'system-admin/min-prep/create', component: CreateActionComponent},
+    {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
+    {path: 'system-admin/min-prep', component: MinPrepComponent},
+    {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
+    {path: 'system-admin/mpa/create/:id', component: CreateMpaActionComponent},
+    {path: 'system-admin/mpa', component: MpaComponent},
+    {path: 'system-admin/add-agency', component: AddAgencyComponent},
+    {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
+    {path: 'system-admin/messages/create', component: MessagesCreateComponent},
+    {path: 'system-admin/messages', component: MessagesComponent},
+    {path: 'system-admin/agency', component: SystemAdminComponent},
+    {path: 'system-admin/account-settings', component: AccountSettingsComponent},
+    {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
+    {path: 'system-admin/network', component: GlobalNetworksComponent},
+    {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
+    {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
+    {path: 'system-admin/system-settings', component: SystemSettingsComponent},
+    {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
+    {path: 'system-admin/system-settings/system-settings-response-plans', component: SystemSettingsResponsePlansComponent},
 
-  /**
-   * Agency admin
-   */
-  {path: 'agency-admin/new-agency/new-agency-password', component: NewAgencyPasswordComponent},
-  {path: 'agency-admin/new-agency/new-agency-details', component: NewAgencyDetailsComponent},
-  {path: 'agency-admin/country-office', component: CountryOfficeComponent},
-  {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
-  {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
-  {path: 'agency-admin/country-office/create-edit-region:id', component: CreateEditRegionComponent},
-  {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
-  {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
-  {path: 'agency-admin/agency-mpa/add-generic-action', component: AddGenericActionComponent},
-  {path: 'agency-admin/country-office/create-edit-country/:id', component: CreateEditCountryComponent},
-  {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
-  {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
-  {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
-  {path: 'agency-admin/settings/departments', component: DepartmentComponent},
-  {path: 'agency-admin/settings/skills', component: SkillsComponent},
-  {path: 'agency-admin/settings/modules', component: ModulesComponent},
-  {path: 'agency-admin/settings/clock-settings', component: ClockSettingsComponent},
-  {path: 'agency-admin/settings/response-plans', component: AgencyAdminSettingsResponsePlanComponent},
-  {path: 'agency-admin/settings/documents', component: DocumentsComponent},
-  {path: 'agency-admin/settings/notifications', component: NotificationComponent},
-  {path: 'agency-admin/settings', redirectTo: 'agency-admin/settings/departments', pathMatch: 'full'},
-  {path: 'agency-admin/staff', component: StaffComponent},
-  {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
-  {path: 'agency-admin/staff/create-edit-staff:id', component: CreateEditStaffComponent},
-  {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
-  {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
-  {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
-  {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
+    /**
+     * Agency admin
+     */
+    {path: 'agency-admin/new-agency/new-agency-password', component: NewAgencyPasswordComponent},
+    {path: 'agency-admin/new-agency/new-agency-details', component: NewAgencyDetailsComponent},
+    {path: 'agency-admin/country-office', component: CountryOfficeComponent},
+    {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
+    {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
+    {path: 'agency-admin/country-office/create-edit-region:id', component: CreateEditRegionComponent},
+    {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
+    {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
+    {path: 'agency-admin/agency-mpa/add-generic-action', component: AddGenericActionComponent},
+    {path: 'agency-admin/country-office/create-edit-country/:id', component: CreateEditCountryComponent},
+    {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
+    {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
+    {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
+    {path: 'agency-admin/settings/departments', component: DepartmentComponent},
+    {path: 'agency-admin/settings/skills', component: SkillsComponent},
+    {path: 'agency-admin/settings/modules', component: ModulesComponent},
+    {path: 'agency-admin/settings/clock-settings', component: ClockSettingsComponent},
+    {path: 'agency-admin/settings/response-plans', component: AgencyAdminSettingsResponsePlanComponent},
+    {path: 'agency-admin/settings/documents', component: DocumentsComponent},
+    {path: 'agency-admin/settings/notifications', component: NotificationComponent},
+    {path: 'agency-admin/settings', redirectTo: 'agency-admin/settings/departments', pathMatch: 'full'},
+    {path: 'agency-admin/staff', component: StaffComponent},
+    {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
+    {path: 'agency-admin/staff/create-edit-staff:id', component: CreateEditStaffComponent},
+    {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
+    {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
+    {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
+    {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
 
-  /**
-   * Country admin
-   */
-  {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
-  {path: 'country-admin/new-country/new-country-details', component: NewCountryDetailsComponent},
-  {path: 'country-admin/country-account-settings', component: CountryAccountSettingsComponent},
-  {path: 'country-admin/country-account-settings/country-change-password', component: CountryChangePasswordComponent},
-  {path: 'country-admin/country-messages', component: CountryMessagesComponent},
-  {path: 'country-admin/country-messages/country-create-edit-message', component: CountryCreateEditMessageComponent},
-  {path: 'country-admin/country-messages/country-create-edit-message/:id', component: CountryCreateEditMessageComponent},
-  {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
-  {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
-  {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
-  {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
-  {path: 'country-admin/settings/country-notification-settings/country-add-external-recipient', component: CountryAddExternalRecipientComponent},
-  {path: 'country-admin/country-staff', component: CountryStaffComponent},
-  {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
-  {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
-  {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
+    /**
+     * Country admin
+     */
+    {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
+    {path: 'country-admin/new-country/new-country-details', component: NewCountryDetailsComponent},
+    {path: 'country-admin/country-account-settings', component: CountryAccountSettingsComponent},
+    {path: 'country-admin/country-account-settings/country-change-password', component: CountryChangePasswordComponent},
+    {path: 'country-admin/country-messages', component: CountryMessagesComponent},
+    {path: 'country-admin/country-messages/country-create-edit-message', component: CountryCreateEditMessageComponent},
+    {path: 'country-admin/country-messages/country-create-edit-message/:id', component: CountryCreateEditMessageComponent},
+    {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
+    {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
+    {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
+    {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
+    {path: 'country-admin/settings/country-notification-settings/country-add-external-recipient', component: CountryAddExternalRecipientComponent},
+    {path: 'country-admin/country-staff', component: CountryStaffComponent},
+    {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
+    {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
+    {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
 
-  /**
-   * Dashboard
-   */
-  {path: 'dashboard', component: DashboardComponent},
+    /**
+     * Dashboard
+     */
+    {path: 'dashboard', component: DashboardComponent},
 
-  /**
-   * Risk Monitoring
-   */
-  {path: 'risk-monitoring', component: RiskMonitoringComponent},
+    /**
+     * Risk Monitoring
+     */
+    {path: 'risk-monitoring', component: RiskMonitoringComponent},
 
-  /**
-   * Preparedness
-   */
-  {path: 'preparedness', component: PreparednessComponent},
-  {path: 'preparedness-budget', component: PreparednessBudgetComponent},
-  {path: 'preparedness-select', component: PreparednessSelectComponent},
+    /**
+     * Preparedness
+     */
+    {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
+    {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/budget', component: BudgetPreparednessComponent},
+    {path: 'preparedness/select', component: SelectPreparednessComponent},
+    {path: 'preparedness/create-edit-preparedness', component: CreateEditPreparednessComponent},
+    {path: 'preparedness/create-edit-preparedness/:id', component: CreateEditPreparednessComponent},
+    {path: 'preparedness', component: PreparednessComponent},
 
-  /**
-   * Response Plans
-   */
-  {path: 'response-plans', component: ResponsePlansComponent},
-  {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
-  {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
+    /**
+     * Response Plans
+     */
+    {path: 'response-plans', component: ResponsePlansComponent},
+    {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
+    {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
 
-  /**
-   * Maps
-   */
-  {path: 'map', component: MapComponent}
+    /**
+     * Maps
+     */
+    {path: 'map', component: MapComponent}
 
-  //TODO: define needed routes here. see the example above
+    //TODO: define needed routes here. see the example above
 
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forRoot(routes)
-  ],
-  exports: [
-    RouterModule
-  ],
-  declarations: []
+    imports: [
+        CommonModule,
+        RouterModule.forRoot(routes)
+    ],
+    exports: [
+        RouterModule
+    ],
+    declarations: []
 })
 export class AppRoutingModule {
 }

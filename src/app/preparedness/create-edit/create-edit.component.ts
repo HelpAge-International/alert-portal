@@ -1,27 +1,32 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {RxHelper} from "../utils/RxHelper";
-import {Router} from "@angular/router";
-import {Constants} from "../utils/Constants";
-import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from "../utils/Enums";
-import {Action} from "../model/action";
-import {ModelUserPublic} from "../model/user-public.model";
-
+import {RxHelper} from "../../utils/RxHelper";
+import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from "../../utils/Enums";
+import {Action} from "../../model/action";
+import {ModelUserPublic} from "../../model/user-public.model";
+import {LocalStorageService} from 'angular-2-local-storage';
 declare var jQuery: any;
 @Component({
     selector: 'app-preparedness',
-    templateUrl: './preparedness-create-edit.component.html',
-    styleUrls: ['./preparedness-create-edit.component.css']
+    templateUrl: './create-edit.component.html',
+    styleUrls: ['./create-edit.component.css']
 })
-export class PreparednessCreateEditComponent implements OnInit {
+export class CreateEditPreparednessComponent implements OnInit {
 
     submitted = false;
 
     private uid: string;
 
     private actionID: string;
+    private modalID: string;
+
+    private actionSelected: any = {};
+    private copyActionData: any = {};
 
     private countryID: string;
+    private agencyID: string;
     private actionData: Action;
     private dueDate: any;
 
@@ -47,13 +52,38 @@ export class PreparednessCreateEditComponent implements OnInit {
     private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
     private allowedDurationList: number[] = [];
 
-    constructor(private af: AngularFire, private subscriptions: RxHelper, private router: Router) {
+    constructor(private af: AngularFire, private subscriptions: RxHelper, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService) {
         this.actionData = new Action();
-        this.actionData.type = 2;
-        this.actionData.frequencyBase = 0;
-        this.actionData.frequencyValue = 1;
+        this.setDefaultActionDataValue();
+        /* if selected generic action */
+        this.actionSelected = this.storage.get('selectedAction');
+        if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
+            this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+            this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
+            this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+            this.storage.remove('selectedAction');
+            this.actionSelected = {};
+        }
 
-        this.actionID = '-KjISAZw6zOsD0pGtFwp';
+        /* if copy action */
+        this.copyActionData = this.storage.get('copyActionData');
+        if (this.copyActionData && typeof (this.copyActionData) != 'undefined') {
+            this.actionData = this.copyActionData;
+            this.level = this.copyActionData.level + 1;
+            this.dueDate = this._convertTimestampToDate(this.copyActionData.dueDate);
+            this.storage.remove('copyActionData');
+            this.copyActionData = {};
+            this.setDefaultActionDataValue();
+        }
+
+        let subscription = this.route.params.subscribe((params: Params) => {
+            if (params['id']) {
+                /* TODO remove hardcode actionID */
+                //this.actionID = params['id'];
+                this.actionID = '-Kjlzy5gJ_xeTajzL7ty';
+            }
+        });
+        this.subscriptions.add(subscription);
 
     }
 
@@ -62,13 +92,23 @@ export class PreparednessCreateEditComponent implements OnInit {
             if (auth) {
                 this.uid = auth.uid;
                 this._defaultHazardCategoryValue();
-                this.getUsersForAssign();
                 this.processPage();
             } else {
                 this.navigateToLogin();
             }
         });
         this.subscriptions.add(subscription);
+    }
+
+    setDefaultActionDataValue() {
+        this.actionData.type = 2;
+        this.actionData.isComplete = false;
+        this.actionData.isActive = true;
+        this.actionData.actionStatus = 1;
+        if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
+            this.actionData.frequencyBase = 0;
+            this.actionData.frequencyValue = 1;
+        }
     }
 
     saveAction(isValid: boolean) {
@@ -84,6 +124,10 @@ export class PreparednessCreateEditComponent implements OnInit {
             }
         }
 
+        if (typeof (this.actionData.level) == 'undefined') {
+            this.actionData.level = this.level - 1;
+        }
+
         if (!this.actionData.level) {
             this._defaultHazardCategoryValue();
         }
@@ -96,7 +140,7 @@ export class PreparednessCreateEditComponent implements OnInit {
         var dataToSave = this.actionData;
 
         if (!this.actionID) {
-            this.af.database.list(Constants.APP_STATUS + '/action/' + this.uid)
+            this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
                 .push(dataToSave)
                 .then(() => {
                     console.log('success save data');
@@ -104,7 +148,7 @@ export class PreparednessCreateEditComponent implements OnInit {
                     console.log(error, 'You do not have access!')
                 });
         } else {
-            this.af.database.object(Constants.APP_STATUS + '/action/' + this.uid + '/' + this.actionID)
+            this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
                 .set(dataToSave)
                 .then(() => {
                     console.log('success update');
@@ -117,17 +161,17 @@ export class PreparednessCreateEditComponent implements OnInit {
 
     processPage() {
         this.getCountryID().then(() => {
-            this._getPreparednessFrequency().then(() => {
-                if (this.actionID) {
-                    this.getActionData().then(() => {
-                        this._parseSelectParams();
-                        if (this.frequencyDefaultSettings.type != this.actionData.frequencyBase && this.frequencyDefaultSettings.value != this.actionData.frequencyValue) {
-                            this.frequencyActive = true;
-                        }
-                    });
-                } else {
+            this.getUsersForAssign();
+            this.getAgencyID().then(() => {
+                this._getPreparednessFrequency().then(() => {
+                    if (this.actionID) {
+                        this.getActionData().then(() => {
+
+                        });
+                    }
                     this._parseSelectParams();
-                }
+                    this._frequencyIsActive();
+                });
             });
         });
     }
@@ -163,7 +207,10 @@ export class PreparednessCreateEditComponent implements OnInit {
     selectFrequencyBase(event: any) {
         var frequencyBase = event.target.value;
         this.actionData.frequencyBase = parseInt(frequencyBase);
-        this.frequency = new Array(this.allowedFrequencyValue[frequencyBase]);
+
+        if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
+            this.frequency = new Array(this.allowedFrequencyValue[frequencyBase]);
+        }
         return true;
     }
 
@@ -191,8 +238,8 @@ export class PreparednessCreateEditComponent implements OnInit {
     }
 
     getUsersForAssign() {
-        var uid = 'wRptKhnORhTud5B0jjEA7P2uMb03';
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + uid).subscribe((data: any) => {
+        /* TODO if user ERT OR Partner, assign only me */
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
             for (let userID in data) {
                 this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
                     var userToPush = {userID: userID, firstName: user.firstName};
@@ -219,23 +266,42 @@ export class PreparednessCreateEditComponent implements OnInit {
         return promise;
     }
 
-    _getPreparednessFrequency() {
+    getAgencyID() {
         let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + '/' + this.countryID + '/clockSettings/preparedness').subscribe((frequencySetting: any) => {
-                this.frequencyDefaultSettings.type = frequencySetting.durationType;
-                this.frequencyDefaultSettings.value = frequencySetting.value;
+            let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyIDs: any) => {
+                this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
                 res(true);
             });
-
             this.subscriptions.add(subscription);
-
         });
         return promise;
     }
 
+    copyAction() {
+        /* added route for create action page */
+        this.storage.set('copyActionData', this.actionData);
+        this.router.navigate(["/preparedness/create-edit-preparedness"]);
+        this.closeModal();
+    }
+
+    archiveAction() {
+        console.log('archive');
+        this.closeModal();
+        this.actionData.isActive = false;
+
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
+            .set(this.actionData)
+            .then(() => {
+                console.log('success update archive');
+            }).catch((error: any) => {
+                console.log(error, 'You do not have access!')
+            });
+
+    }
+
     getActionData() {
         let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.uid + '/' + this.actionID).subscribe((action: Action) => {
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).subscribe((action: Action) => {
                 this.actionData = action;
                 this.level = action.level + 1;
                 this.dueDate = this._convertTimestampToDate(action.dueDate);
@@ -246,43 +312,62 @@ export class PreparednessCreateEditComponent implements OnInit {
         return promise;
     }
 
-    deleteActionConfirm() {
-        jQuery("#delete-action").modal("show");
+    showActionConfirm(modalID: string) {
+        this.modalID = modalID;
+        jQuery("#" + this.modalID).modal("show");
     }
 
     deleteAction() {
-        console.log(this.actionID);
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.uid + '/' + this.actionID).remove();
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID).remove();
         this.closeModal();
+        this.router.navigate(['/preparedness/minimum']);
     }
 
     closeModal() {
-        jQuery("#delete-action").modal("hide");
+        jQuery("#" + this.modalID).modal("hide");
     }
-
-    copyAction() {
-        /* added route for create action page */
-        console.log(this.actionData);
-    }
-
-    archiveAction() {
-        console.log('archive action');
+    
+    backButtonAction() {
+        /* TODO get last route and implemented this functionality */
+        console.log('back button');
     }
 
     _parseSelectParams() {
+
         this.allowedFrequencyValue = [];
-        let multipliers: any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
 
-        multipliers[this.frequencyDefaultSettings.type].forEach((val, key) => {
-            var result = Math.trunc(val * this.frequencyDefaultSettings.value);
-            if (result) {
-                this.allowedDurationList.push(this.durationTypeList[key]);
-                this.allowedFrequencyValue.push(Math.min(100, result));
-            }
+        if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
+            let multipliers: any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
+            multipliers[this.frequencyDefaultSettings.type].forEach((val, key) => {
+                var result = Math.trunc(val * this.frequencyDefaultSettings.value);
+                if (result) {
+                    this.allowedDurationList.push(this.durationTypeList[key]);
+                    this.allowedFrequencyValue.push(Math.min(100, result));
+                }
+            });
+
+            var frequencyBaseKey = this.actionID ? this.actionData.frequencyBase : 0;
+            this.frequency = new Array(this.allowedFrequencyValue[frequencyBaseKey]);
+        } else {
+            this.allowedDurationList = this.durationTypeList;
+        }
+
+    }
+
+    _getPreparednessFrequency() {
+        let promise = new Promise((res, rej) => {
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + '/' + this.countryID + '/clockSettings/preparedness').subscribe((frequencySetting: any) => {
+                if (typeof (frequencySetting.durationType) != 'undefined' && typeof (frequencySetting.value) != 'undefined') {
+                    this.frequencyDefaultSettings.type = frequencySetting.durationType;
+                    this.frequencyDefaultSettings.value = frequencySetting.value;
+                }
+                res(true);
+            });
+
+            this.subscriptions.add(subscription);
+
         });
-
-        var frequencyBaseKey = this.actionID ? this.actionData.frequencyBase : 0;
-        this.frequency = new Array(this.allowedFrequencyValue[frequencyBaseKey]);
+        return promise;
     }
 
     _convertDateToTimestamp(date: any) {
@@ -309,6 +394,14 @@ export class PreparednessCreateEditComponent implements OnInit {
             return false;
         }
         return true;
+    }
+
+    _frequencyIsActive() {
+        if (this.actionID || this.copyActionData) {
+            if (this.frequencyDefaultSettings.type != this.actionData.frequencyBase && this.frequencyDefaultSettings.value != this.actionData.frequencyValue) {
+                this.frequencyActive = true;
+            }
+        }
     }
 
     private navigateToLogin() {

@@ -1,20 +1,22 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {RxHelper} from "../utils/RxHelper";
-import {Router} from "@angular/router";
-import {Constants} from "../utils/Constants";
-import {Department, ActionType, ActionLevel, GenericActionCategory} from "../utils/Enums";
-import {Action} from "../model/action";
-import {ModelUserPublic} from "../model/user-public.model";
+import {RxHelper} from "../../utils/RxHelper";
+import {Router, NavigationExtras} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Department, ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
+import {Action} from "../../model/action";
+import {ModelUserPublic} from "../../model/user-public.model";
 import {Observable} from "rxjs";
+
+import { LocalStorageService } from 'angular-2-local-storage';
 
 declare var jQuery: any;
 @Component({
     selector: 'app-preparedness',
-    templateUrl: './preparedness-select.component.html',
-    styleUrls: ['./preparedness-select.component.css']
+    templateUrl: './select.component.html',
+    styleUrls: ['./select.component.css']
 })
-export class PreparednessSelectComponent implements OnInit {
+export class SelectPreparednessComponent implements OnInit {
 
     private uid: string;
     private systemAdminUid: string;
@@ -47,7 +49,7 @@ export class PreparednessSelectComponent implements OnInit {
     ];
 
 
-    constructor(private af: AngularFire, private subscriptions: RxHelper, private router: Router) {
+    constructor(private af: AngularFire, private subscriptions: RxHelper, private router: Router, private storage: LocalStorageService) {
 
 
     }
@@ -90,8 +92,9 @@ export class PreparednessSelectComponent implements OnInit {
     }
 
     continueEvent() {
-        console.log(this.actionSelected);
-
+        
+        this.storage.set('selectedAction', this.actionSelected);
+        this.router.navigate(["/preparedness/create-edit-preparedness"]);
     }
 
 

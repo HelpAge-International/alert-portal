@@ -37,6 +37,8 @@
         "CATEGORY:": "Category: ",
         "CURRENCY": "Currency",
         "PLEASE_ENTER": "Please enter",
+        "SUMMARY": "Summary",
+        "TYPE_HERE": "Type here",
         "OPTIONAL": "Optional",
         "MAXIMUM": "maximum",
         "FINISH": "Finish",
@@ -53,7 +55,7 @@
         "YES": "Yes",
         "NO": "No",
         "TOTAL": "TOTAL",
-        "GRAND_TOTAL" : "GRAND TOTAL",
+        "GRAND_TOTAL": "GRAND TOTAL",
         "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
         "NAME_MISSING": "Name is missing!",
         "EMAIL_NOT_VALID": "Email address is not valid!",
@@ -63,6 +65,17 @@
             "ALL": "All preparedness levels",
             "MPA": "Minimum Preparedness",
             "APA": "Advanced Preparedness"
+        },
+        "ACTION_STATUS": {
+            "EXPIRED": "Expired",
+            "IN_PROGRESS": "In Progress",
+            "COMPLETED": "Completed",
+            "INACTIVE": "Inactive"
+        },
+        "ACTION_TYPE": {
+            "CHS": "CHS",
+            "MANDATED": "Mandated",
+            "CUSTOM": "Custom"
         },
         "ACCOUNT_SETTING": "Account Settings",
         "LOGOUT": "Logout",
@@ -450,9 +463,7 @@
             "L_NAME_MISSING": "Please enter agency administrator's last name",
             "EMAIL_MISSING": "Please enter agency administrator's email address",
             "EMAIL_INVALID": "Please enter a correct email address",
-            "NO_AGENCY": "No agencies have been added to the ALERT",
-            "VIEW_ALL_NOTIFICATIONS": "View all notifications",
-            "NO_UNREAD_MESSAGES": "You have no unread messages"
+            "NO_AGENCY": "No agencies have been added to the ALERT"
         },
         "GLOBAL_NETWORKS": {
             "GLOBAL_NETWORKS": "Global Networks",
@@ -705,20 +716,7 @@
                 "APA": "APA",
                 "RESPONSE_PLAN": "Response Plan",
                 "HAZARD_DOCUMENT": "Hazard Document"
-            },
-            "NOTIFICATIONS": {
-                "EVENTS": "Events",
-                "USERS_NOTIFIED": "Users Notified",
-                "ACTIONS": "Actions",
-                "SELECT_USER_TYPES": "Select user types",
-                "NOTIFICATION_PERMISSION": "Notification Permission",
-                "EVENT": "Event",
-                "NO_SELECTED_USER_TYPE": "No user type has been selected!"
             }
-        },
-        "NOTIFICATIONS": {
-            "TITLE_TEXT": "Your notifications",
-            "RECEIVED": "Received"
         }
     },
     "DIALOG": {
@@ -818,10 +816,12 @@
                 "PEOPLE_PER_HOUSEHOLD": "People per household",
                 "HOUSEHOLDS": "Households",
                 "BENEFICIARIES": "beneficiairies",
-                "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaires",
+                "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaries",
                 "WHICH_GROUPS_TEXT?": "Which vulnerable groups are you specifically targeting?",
                 "ADD_MORE_GROUPS": "Add more groups to this plan",
-                "EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT": "Explain how the target population is/will be involved in your proposed intervention"
+                "EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT": "Explain how the target population is/will be involved in your proposed intervention",
+                "HOW_BENEFICIARIES_CALCULATED": "How number of beneficiaries are calculated",
+                "OTHER_GROUP_PLEASE_SPECIFY": "Other Group - Please specify"
             },
             "RISK_MANAGEMENT": {
                 "TITLE_TEXT": "Risk Management",
@@ -934,14 +934,14 @@
         "EVERY": "Every",
         "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs",
         "SELECT_GENERIC_ACTION": "Select a generic preparedness action",
-        "BUDGET_NARRATIVE" : "Budget Narrative"
-    },
-    "COPY_ACTION_DIALOG": {
-        "TITLE": "Alert",
-        "CONTENT": "Are you sure you want to copy action?"
+        "BUDGET_NARRATIVE": "Budget Narrative"
     },
     "ARCHIVE_ACTION_DIALOG": {
         "TITLE": "Alert",
         "CONTENT": "Are you sure you want to archive action?"
+    },
+    "COPY_ACTION_DIALOG": {
+        "TITLE": "Alert",
+        "CONTENT": "Are you sure you want to copy action?"
     }
 }

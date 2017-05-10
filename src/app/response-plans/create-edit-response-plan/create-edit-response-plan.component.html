@@ -21,7 +21,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section1Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -29,12 +29,14 @@
             <div class="col-lg-6 col-md-6">
               <label for="P-name">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_NAME" |
                 translate}}</label>
-              <input type="text" class="form-control" id="P-name" placeholder="Please enter" [(ngModel)]="planName">
+              <input type="text" class="form-control" id="P-name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+                     [(ngModel)]="planName">
             </div>
             <div class="col-lg-6 col-md-6">
               <label for="G-location">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.GEO_LOCATION" |
                 translate}}</label>
-              <input type="text" class="form-control" id="G-location" placeholder="Please enter"
+              <input type="text" class="form-control" id="G-location"
+                     placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="geographicalLocation">
             </div>
           </div>
@@ -43,7 +45,7 @@
             <div class="col-lg-6 col-md-6">
               <label for="H-scen">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
                 translate}}</label>
-              <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected" (change)="filterData()">
+              <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected">
                 <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let hazardScenario of hazardScenariosList" [value]="hazardScenario">
                   {{HazardScenario[hazardScenario] | translate}}
@@ -53,9 +55,9 @@
             <div class="col-lg-6 col-md-6">
               <label for="P-lead1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
                 translate}}</label>
-              <select class="form-control" id="P-lead1" [(ngModel)]="staffMemberSelected" (change)="staffSelected()">
+              <select class="form-control" id="P-lead1" [(ngModel)]="staffMemberSelected">
                 <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                <option *ngFor="let staffMember of staffMembers">{{staffMember.firstName + ' ' + staffMember.lastName}}
+                <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember">{{staffMember.firstName + ' ' + staffMember.lastName}}
                 </option>
               </select>
             </div>
@@ -78,48 +80,43 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
 
-
-
-
-
-
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
+
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{bulletPoint + 1}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1"
-                       (change)="addToSummarizeScenarioList(bulletPoint, $event.target.value)">
+                <span class="input-group-addon">{{bulletPoint}}</span>
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       aria-describedby="basic-addon1"
+                       (change)="addToSummarizeScenarioObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 0">{{"GLOBAL.REMOVE"
+                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
                   | translate}}</a>
               </div>
             </div>
           </div>
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addSummarizeScenarioBulletPoint()"
-             [hidden]="summarizeScenarioBulletPointsCounter+1 == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+             [hidden]="summarizeScenarioBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
-
-
-
-
-
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
               | translate}}</label>
+
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       aria-describedby="basic-addon1"
+                       (change)="addToImpactOfCrisisObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
@@ -135,10 +132,13 @@
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
               | translate}}</label>
+
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       aria-describedby="basic-addon1"
+                       (change)="addToAvailabilityOfFundsObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a>
@@ -169,7 +169,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -178,38 +178,43 @@
           </div>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="water"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="water" (click)="isWaSHSectorSelected()"></div>
               <label>{{"SECTORS.WASH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="health"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="health" (click)="isHealthSectorSelected()"></div>
               <label>{{"SECTORS.HEALTH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="shelter"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="shelter" (click)="isShelterSectorSelected()"></div>
               <label>{{"SECTORS.SHELTER" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="nutrition"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="nutrition"
+                   (click)="isNutritionSectorSelected()"></div>
               <label>{{"SECTORS.NUTRITION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="food"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="food"
+                   (click)="isFoodSecAndLivelihoodsSectorSelected()"></div>
               <label>{{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="protection"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="protection"
+                   (click)="isProtectionSectorSelected()"></div>
               <label>{{"SECTORS.PROTECTION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="education"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="education"
+                   (click)="isEducationSectorSelected()"></div>
               <label>{{"SECTORS.EDUCATION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="camp"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="camp"
+                   (click)="isCampManagementSectorSelected()"></div>
               <label>{{"SECTORS.CAMP_MANAGEMENT" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="misc"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="misc" (click)="isOtherSectorSelected()"></div>
               <label>{{"SECTORS.OTHER" | translate}}</label></div>
           </div>
 
-          <div class="row Spaced subitem">
+          <div class="row Spaced subitem" *ngIf="otherSectorSelected">
             <div class="col-lg-6 col-md-6">
               <label for="O-relate">{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
-              <input type="text" class="form-control" id="O-relate" placeholder="Type here"
+              <input type="text" class="form-control" id="O-relate" placeholder="{{'GLOBAL.TYPE_HERE' | translate}}"
                      [(ngModel)]="otherRelatedSector">
             </div>
           </div>
@@ -220,13 +225,16 @@
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog"
+                     (click)="currentProgrammesSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.CURRENT_PROGRAMMES" | translate}}</label>
             <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog"
+                     (click)="preExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRE-EXISTING_PARTNER" | translate}}</label>
             <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog"
+                     (click)="noPreExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.NO_PRE-EXISTING_PRESENCE" |
               translate}}</label>
           </div>
@@ -238,15 +246,15 @@
           <div class="Selection-row Spaced">
             <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-direct"
-                     [checked]="isDirectlyThroughFieldStaff" (change)="directMethodOfImplementationSelected()">
+                     (click)="methodOfImplementationSelectedDirect()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
             <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
-                     [checked]="!isDirectlyThroughFieldStaff" (change)="partnersMethodOfImplementationSelected()">
+                     (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
           </div>
 
-          <div class="row Spaced subitem">
+          <div class="row Spaced subitem" *ngIf="!isDirectlyThroughFieldStaff">
             <div class="col-lg-8 col-md-8">
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
               <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
@@ -291,7 +299,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -343,7 +351,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section5Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -353,7 +361,7 @@
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-              <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfPeoplePerHouseHold"
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="numOfPeoplePerHouseHold"
                      (change)="calculateBeneficiaries()">
             </div>
             <div class="col-lg-2 col-md-3 col-sm-3 ">
@@ -361,7 +369,7 @@
             </div>
             <div class="col-lg-1 col-md-1 col-sm-1  text-bold">X</div>
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-              <input type="text" class="form-control" placeholder="" [(ngModel)]="numOfHouseHolds"
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="numOfHouseHolds"
                      (change)="calculateBeneficiaries()">
             </div>
             <div class="col-lg-1 col-md-2 col-sm-2 ">
@@ -371,8 +379,17 @@
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.BENEFICIARIES" | translate}}
             </div>
           </div>
-          <a href="javascript:void(0)" class=" Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_A_NOTE_ABOUT_BENEFICIARIES"
+
+          <div class="col-lg-8" *ngIf="showBeneficiariesTextEntry">
+            <input type="text" class="form-control"
+                   placeholder="{{'RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_BENEFICIARIES_CALCULATED' | translate}}"
+                   [(ngModel)]="howBeneficiariesCalculatedText">
+          </div>
+
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addShowBeneficiariesTextEntry()"
+             [hidden]="showBeneficiariesTextEntry">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_A_NOTE_ABOUT_BENEFICIARIES"
             | translate}}</a>
+
 
           <div class="row Spaced">
             <div class="col-lg-8 col-md-10 col-sm-12">
@@ -381,8 +398,10 @@
                   translate}}</label>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
                   <div class="form-group col-sm-6">
-                    <select class="form-control">
+                    <select class="form-control" id="ff"
+                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
                       <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                      <option *ngFor="let group of groups">{{group | translate}}</option>
                     </select>
                   </div>
                   <a href="javascript:void(0)" class="Remove__row__cta"
@@ -391,11 +410,13 @@
                     | translate}}</a>
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Please specify the group">
+                  <input type="text" class="form-control"
+                         placeholder="{{'RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.OTHER_GROUP_PLEASE_SPECIFY' | translate}}"
+                         [(ngModel)]="otherGroup" (change)="updateOtherGroupToGroups()">
                 </div>
               </div>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-8" [hidden]="vulnerableGroupsDropDownsCounter == groups.length">
               <a href="javascript:void(0)" class=" Add__row__cta" (click)="addVulnerableGroupDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_MORE_GROUPS"
                 | translate}}</a>
             </div>
@@ -407,7 +428,9 @@
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
-                <input type="text" class="form-control" placeholder="">
+                <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       (change)="addToTargetPopulationObject(bulletPoint, $event.target.value)">
+
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeTargetPopulationBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
@@ -438,7 +461,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section6Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -470,157 +493,197 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content">
           <div class="Ribbon__section__wrap Spaced">
             <div class="Accordion Response-plans__activities">
-              <div class="row align-items-center">
-                <div class="col-md-3 col-lg-2 col-sm-4 col-4">
-                  <div class="Icon__selectable">
-                    <div class="water"></div>
+              <div *ngFor="let sector of sectorsRelatedTo; index as i">
+                <div class="row align-items-center">
+                  <div class="col-md-3 col-lg-2 col-sm-4 col-4">
+                    <div class="Icon__selectable">
+                      <div class="water"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{SECTORS[sector] | translate}}
+                    {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
+                  </div>
+                  <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
+                    {{activityMap.get(i)?activityMap.get(i)?.length:0}}
+                    {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
+                  </div>
+                  <div class="col-sm-1 col-12 text-center" data-toggle="collapse" [attr.href]="'#Activity'+sector"
+                       aria-expanded="true"
+                       [attr.aria-controls]="'Activity'+sector"><i class="fa fa-caret-down text-primary"
+                                                                   aria-hidden="true"></i>
                   </div>
                 </div>
-                <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{"SECTORS.WASH" | translate}}
-                  {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4></div>
-                <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">2
-                  {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
-                </div>
-                <div class="col-sm-1 col-12 text-center" data-toggle="collapse" href="#Activity1" aria-expanded="true"
-                     aria-controls="Activity1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
-              </div>
-              <div class="Accordion__Content collapse" id="Activity1">
+                <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
-                <div class="row Outlined Spaced align-items-center">
-                  <div class="col-sm-1 Small-spaced text-bold text-center">0</div>
-                  <div class="col-sm-8 Small-spaced">Example: 500 kits distributed across 4 communities</div>
-                  <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
-                    | translate}}</a></div>
-                </div>
-
-                <div class="row Outlined Spaced align-items-center">
-                  <div class="row Spaced col-lg-12 no-gutters">
-                    <div class="col-lg-12 text-right">
-                      <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
-                        | translate}}</a>
-                    </div>
-                  </div>
-                  <div class="row col-lg-12">
-                    <div class="col-lg-12 form-group">
-                      <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
-                        | translate}}</label>
-                      <input type="text" class="form-control" id="P-activity">
+                  <div *ngIf="activityMap.get(i)?.length > 0">
+                    <div *ngFor="let activity of activityMap.get(i); index as i"
+                         class="row Outlined Spaced align-items-center">
+                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i}}</div>
+                      <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
+                      <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
+                        | translate}}</a></div>
                     </div>
                   </div>
 
-                  <div class="row col-lg-12">
-                    <div class="col-lg-12 form-group">
-                      <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
-                        | translate}}</label>
-                      <input type="text" class="form-control" id="P-activity">
-                    </div>
-                  </div>
-
-                  <div class="row col-lg-12">
-                    <div class="col-lg-12 form-group">
-                      <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
-                        translate}}</label>
-                      <input type="text" class="form-control" id="P-activity">
-                    </div>
-                  </div>
-                  <div class="row col-lg-12 Spaced form-group">
-                    <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-                      | translate}}</label>
-                    <div class="row no-gutters Demographic__text">
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
+                  <div [hidden]="addActivityToggleMap.get(sector)" class="row Outlined Spaced align-items-center">
+                    <div class="row Spaced col-lg-12 no-gutters">
+                      <div class="col-lg-12 text-right">
+                        <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
+                          | translate}}</a>
                       </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 tier">
-                        <div class="row align-items-center">
-                          <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
-                        </div>
-                        <div class="row align-items-center">
-                          <div class="col-12"><input type="text" class="form-control"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-                  | translate}}</a>
-
-                <div class="Spaced">
-                  <div class="Selection-row no-gutters Spaced">
-                    <div class="form-group Small-spaced">
-                      <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.SOURCE_PLAN?" | translate}}</label>
                     </div>
                     <div class="row col-lg-12">
-                      <label for="source-intern" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                        type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-intern">
-                        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
-                      <label for="source-region" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                        type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-region">
-                        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" | translate}}</label>
-                      <label for="source-local" class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
-                        type="radio" onClick="multi_select_radioSelected(this)" name="source-goods" id="source-local">
-                        {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" | translate}}</label>
+                      <div class="col-lg-12 form-group">
+                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
+                          | translate}}</label>
+                        <input type="text" class="form-control" #name>
+                      </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                      <div class="col-lg-12 form-group">
+                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
+                          | translate}}</label>
+                        <input type="text" class="form-control" #output>
+                      </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                      <div class="col-lg-12 form-group">
+                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+                          translate}}</label>
+                        <input type="text" class="form-control" #indicator>
+                      </div>
+                    </div>
+                    <div class="row col-lg-12 Spaced form-group">
+                      <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
+                        | translate}}</label>
+                      <div class="row no-gutters Demographic__text">
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
+                                                       value="0"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
+                                                       value="0"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
+                                                       value="0"></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 tier">
+                          <div class="row align-items-center">
+                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row col-lg-12">
+                        <div class="col-lg-10"></div>
+                        <div class="col-lg-2">
+                          <button class="btn btn-secondary"
+                                  (click)="saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)">
+                            Save
+                          </button>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
-                </div>
-                <div class="row Spaced subitem">
-                  <div class="col-lg-12 col-md-12">
-                    <label for="O-relate">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLEASE_EXPLAIN" |
-                      translate}}</label>
-                    <div class="input-group Small-spaced">
-                      <span class="input-group-addon">1</span>
-                      <input type="text" class="form-control">
+                  <!--<a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"-->
+                  <!--| translate}}</a>-->
+                  <a href="javascript:void(0)" class="Add__row__cta" (click)="addActivity(sector)">
+                    Add another activity</a>
+
+                  <div class="Spaced">
+                    <div class="Selection-row no-gutters Spaced">
+                      <div class="form-group Small-spaced">
+                        <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.SOURCE_PLAN?" | translate}}</label>
+                      </div>
+                      <div class="row col-lg-12">
+                        <label for="source-intern{{sector}}"
+                               class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
+                          value="0" #radio0
+                          id="source-intern{{sector}}" (click)="selectInternationa(sector, radio0.value)">
+                          {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
+                        <label for="source-region{{sector}}"
+                               class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
+                          value="1" #radio1
+                          id="source-region{{sector}}" (click)="selectNeighbour(sector, radio1.value)">
+                          {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" |
+                          translate}}</label>
+                        <label for="source-local{{sector}}"
+                               class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
+                          type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
+                          value="2" #radio2
+                          id="source-local{{sector}}" (click)="selectLocal(sector, radio2.value)">
+                          {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" |
+                          translate}}</label>
+                      </div>
                     </div>
-                    <div class="input-group Small-spaced">
-                      <span class="input-group-addon">2</span>
-                      <input type="text" class="form-control">
+                  </div>
+                  <div class="row Spaced subitem">
+                    <div class="col-lg-12 col-md-12">
+                      <label for="O-relate">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLEASE_EXPLAIN" |
+                        translate}}</label>
+                      <div class="input-group Small-spaced">
+                        <span class="input-group-addon">1</span>
+                        <input type="text" class="form-control" #pointOne
+                               (change)="getBulletOne(sector, pointOne.value)">
+                      </div>
+                      <div class="input-group Small-spaced">
+                        <span class="input-group-addon">2</span>
+                        <input type="text" class="form-control" #pointTwo
+                               (change)="getBulletTwo(sector, pointTwo.value)">
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -642,7 +705,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -673,18 +736,21 @@
             </div>
           </div>
 
-          <div class="col-lg-8 Spaced subitem">
+          <div *ngIf="intentToVisuallyDocument" class="col-lg-8 Spaced subitem">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.FORMAT_OF_DOCUMENTATION?" |
               translate}}</label>
             <div class="Selection-row Selection-row--column Spaced">
               <label for="P-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
-                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="P-doc">
+                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="P-doc" value="0"
+                       [(ngModel)]="mediaFormat">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC" | translate}}</label>
               <label for="V-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
-                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc">
+                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc" value="1"
+                       [(ngModel)]="mediaFormat">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO" | translate}}</label>
               <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
-                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc">
+                <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc" value="2"
+                       [(ngModel)]="mediaFormat">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO" | translate}}</label>
             </div>
           </div>
@@ -707,7 +773,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -733,7 +799,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberFemaleLessThan18}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemaleLessThan18">
@@ -745,7 +811,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberFemale18To50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedFemale18To50">
@@ -757,7 +823,7 @@
                     <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberFemalegreaterThan50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control"
@@ -781,7 +847,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberMaleLessThan18}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMaleLessThan18">
@@ -793,7 +859,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberMale18To50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMale18To50"></div>
@@ -804,7 +870,7 @@
                     <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12">{{numOfBeneficiaries}}</div>
+                    <div class="col-12">{{numberMalegreaterThan50}}</div>
                   </div>
                   <div class="row align-items-center">
                     <div class="col-12"><input type="text" class="form-control" [(ngModel)]="adjustedMalegreaterThan50">
@@ -832,7 +898,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Response__content--budget Spaced">
@@ -852,90 +918,90 @@
               <div class="col-lg-2 col-3">&pound; {{totalInputs}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>
-            <div class="row subitem Header Small-spaced">
-
+            <div *ngIf="sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
               <!--TODO - The list of sectors selected in secrion 3 should be shown here-->
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-1: {{"SECTORS.WASH" | translate}}</div>
+              <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
+                <div class="col-lg-3 col-4">A-{{i+1}}: {{SECTORS[sector] | translate}}</div>
                 <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="waSHBudget"
-                         (change)="calculateBudget()"></div>
+                  <input type="number" class="form-control budget" #budget min="0"
+                         (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative" [(ngModel)]="waSHNarrative"></div>
+                  <input type="text" class="form-control budget-narrative" #narrative
+                         (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-2: {{"SECTORS.HEALTH" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="healthBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative" [(ngModel)]="healthNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-3: {{"SECTORS.SHELTER" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="shelterBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative" [(ngModel)]="shelterNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-4: {{"SECTORS.CAMP_MANAGEMENT" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="campManagementBudget" (change)="calculateBudget()">
-                </div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="campManagementNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-6: {{"SECTORS.EDUCATION" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="educationBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="educationNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-7: {{"SECTORS.PROTECTION" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="protectionBudget" (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="protectionNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-8 {{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget"
-                         [(ngModel)]="foodSecAndLivelihoodsBudget"
-                         (change)="calculateBudget()">
-                </div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="foodSecAndLivelihoodsNarrative"></div>
-              </div>
-              <div class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-9 {{"SECTORS.OTHER" | translate}}</div>
-                <div class="col-lg-2 col-3">
-                  <input type="number" class="form-control budget" [(ngModel)]="otherBudget"
-                         (change)="calculateBudget()"></div>
-                <div class="col-lg-4 col-5">
-                  <input type="text" class="form-control budget-narrative"
-                         [(ngModel)]="otherNarrative"></div>
-              </div>
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-2: {{"SECTORS.HEALTH" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget" [(ngModel)]="healthBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative" [(ngModel)]="healthNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-3: {{"SECTORS.SHELTER" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget" [(ngModel)]="shelterBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative" [(ngModel)]="shelterNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-4: {{"SECTORS.CAMP_MANAGEMENT" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="campManagementBudget" (change)="calculateBudget()">-->
+              <!--</div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="campManagementNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-6: {{"SECTORS.EDUCATION" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="educationBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="educationNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-7: {{"SECTORS.PROTECTION" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="protectionBudget" (change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="protectionNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-8 {{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget"-->
+              <!--[(ngModel)]="foodSecAndLivelihoodsBudget"-->
+              <!--(change)="calculateBudget()">-->
+              <!--</div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="foodSecAndLivelihoodsNarrative"></div>-->
+              <!--</div>-->
+              <!--<div class="row Line-row col-lg-12">-->
+              <!--<div class="col-lg-3 col-4">A-9 {{"SECTORS.OTHER" | translate}}</div>-->
+              <!--<div class="col-lg-2 col-3">-->
+              <!--<input type="number" class="form-control budget" [(ngModel)]="otherBudget"-->
+              <!--(change)="calculateBudget()"></div>-->
+              <!--<div class="col-lg-4 col-5">-->
+              <!--<input type="text" class="form-control budget-narrative"-->
+              <!--[(ngModel)]="otherNarrative"></div>-->
+              <!--</div>-->
             </div>
             <div class="row Line-row Header Spaced">
               <div class="col-lg-3 col-4">B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
                 translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="transportBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="transportBudget" min="0"
+                       (change)="calculateBudget(null,null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="transportNarrative">
               </div>
@@ -945,8 +1011,8 @@
                 translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="securityBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="securityBudget" min="0"
+                       (change)="calculateBudget(null, null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="securityNarrative"></div>
             </div>
@@ -955,8 +1021,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.LOGISTICS_AND_OVERHEADS" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="logisticsAndOverheadsBudget"
-                       (change)="calculateBudget()">
+                <input type="number" class="form-control" [(ngModel)]="logisticsAndOverheadsBudget" min="0"
+                       (change)="calculateBudget(null, null, false)">
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="logisticsAndOverheadsNarrative"></div>
@@ -966,8 +1032,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.STAFFING_AND_SUPPORT" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="staffingAndSupportBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="staffingAndSupportBudget" min="0"
+                       (change)="calculateBudget(null, null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="staffingAndSupportNarrative"></div>
             </div>
@@ -976,8 +1042,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MON_AND_EVALUATION" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="monitoringAndEvolutionBudget"
-                       (change)="calculateBudget()">
+                <input type="number" class="form-control" [(ngModel)]="monitoringAndEvolutionBudget" min="0"
+                       (change)="calculateBudget(null, null, false)">
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="monitoringAndEvolutionNarrative"></div>
@@ -987,8 +1053,8 @@
                 translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" [(ngModel)]="capitalItemsBudget"
-                       (change)="calculateBudget()"></div>
+                <input type="number" class="form-control" [(ngModel)]="capitalItemsBudget" min="0"
+                       (change)="calculateBudget(null, null, false)"></div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="capitalItemsNarrative">
               </div>
@@ -998,8 +1064,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage"
-                       (change)="calculateBudget()">
+                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage" min="0"
+                       (change)="calculateBudget(null, null, false)">
                 <br/> &pound; {{totalOfAllCosts}}
               </div>
               <div class="col-lg-4 col-5">
@@ -1035,13 +1101,13 @@
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
-              <div class="col-lg-3 col-4"><input type="text" class="form-control">
+              <div class="col-lg-3 col-4"><input type="text" class="form-control" #budget (change)="budgetOverThousand(capitalItemSection, budget.value)">
                 <br/>
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeCapitalItemSection(capitalItemSection)"
                    [hidden]="capitalItemSection == 1">{{"GLOBAL.REMOVE" | translate}}</a>
               </div>
-              <div class="col-lg-9 col-8"><input type="text" class="form-control"></div>
+              <div class="col-lg-9 col-8"><input type="text" class="form-control" #desc (change)="budgetOverThousandDesc(capitalItemSection, desc.value)"></div>
             </div>
             <div class="row Line-row Small-spaced">
               <a href="javascript:void(0)" class="Add__row__cta" (click)="addCapitalItemSection()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.ADD_ITEM"
@@ -1100,7 +1166,7 @@
         <div class="row">
           <div class="col-lg-12">
             <label>Email Address</label>
-            <input type="text" class="form-control" placeholder="Email Address">
+            <input type="text" class="form-control" placeholder="{{'GLOBAL.USER_INFO.EMAIL' | translate}}">
           </div>
         </div>
 

@@ -92,8 +92,13 @@ import { OrdinalPipe } from './utils/pipes/ordinal.pipe';
 import { StatusAlertComponent } from './commons/status-alert/status-alert.component';
 import { AgencyNotificationsComponent } from './agency-admin/agency-notifications/agency-notifications.component';
 import { DatepickerModule } from 'angular2-material-datepicker';
-import {PreparednessBudgetComponent} from "./preparedness-budget/preparedness-budget.component";
-import {PreparednessSelectComponent} from "./preparedness-select/preparedness-select.component";
+import { MinimumPreparednessComponent } from './preparedness/minimum/minimum.component';
+import { AdvancedPreparednessComponent } from './preparedness/advanced/advanced.component';
+import { BudgetPreparednessComponent } from './preparedness/budget/budget.component';
+import { SelectPreparednessComponent } from './preparedness/select/select.component';
+import { CreateEditPreparednessComponent } from './preparedness/create-edit/create-edit.component';
+
+import { LocalStorageModule } from 'angular-2-local-storage';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -195,8 +200,11 @@ const firebaseAuthConfig = {
     OrdinalPipe,
     StatusAlertComponent,
     AgencyNotificationsComponent,
-    PreparednessBudgetComponent,
-    PreparednessSelectComponent
+    MinimumPreparednessComponent,
+    AdvancedPreparednessComponent,
+    BudgetPreparednessComponent,
+    SelectPreparednessComponent,
+    CreateEditPreparednessComponent
   ],
   imports: [
     BrowserModule,
@@ -214,7 +222,11 @@ const firebaseAuthConfig = {
     }),
     ModalModule.forRoot(),
     BootstrapModalModule,
-    DatepickerModule
+    DatepickerModule,
+    LocalStorageModule.withConfig({
+            prefix: 'my-app',
+            storageType: 'localStorage'
+        })
   ],
   providers: [RxHelper, Modal],
   bootstrap: [AppComponent]

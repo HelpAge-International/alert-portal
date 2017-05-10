@@ -76,16 +76,16 @@ export enum StaffPosition {
 }
 
 export enum UserType {
-  All = 0,
-  GlobalDirector = 1,
-  RegionalDirector = 2,
-  CountryDirector = 3,
-  ErtLeader = 4,
-  Ert = 5,
-  Donor = 6,
-  GlobalUser = 7,
-  CountryAdmin = 8,
-  NonAlert = 9
+    All = 0,
+    GlobalDirector = 1,
+    RegionalDirector = 2,
+    CountryDirector = 3,
+    ErtLeader = 4,
+    Ert = 5,
+    Donor = 6,
+    GlobalUser = 7,
+    CountryAdmin = 8,
+    NonAlert = 9
 }
 
 export enum OfficeType {
@@ -179,8 +179,14 @@ export enum MediaFormat {
 }
 
 export enum Gender {
-    male = 0,
-    feMale = 1
+    feMale = 1,
+    male = 0
+}
+
+export enum AgeRange {
+    Less18 = 0,
+    Between18To50 = 1,
+    More50 = 2
 }
 
 export enum Countries {
@@ -456,9 +462,25 @@ export enum HazardCategory {
     Drought = 2
 }
 
+export enum BudgetCategory {
+    Inputs = 0,
+    Transport = 1,
+    Security = 2,
+    Logistics = 3,
+    Staffing = 4,
+    Monitoring = 5,
+    CapitalItems = 6,
+    ManagementSupport = 7
+}
+
 export enum ActionStatus {
-    expired = 0,
-    inProgress = 1,
+    Expired = 0,
+    InProgress = 1,
     Completed = 2,
     Inactive = 3
+}
+
+export enum SizeType {
+    KB = 0,
+    MB = 1
 }

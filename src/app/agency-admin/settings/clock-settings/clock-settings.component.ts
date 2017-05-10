@@ -53,7 +53,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
 
         }));
 
-		this.subscriptions.add(subscription);
+		    this.subscriptions.add(subscription);
       } else {
         // user is not logged in
         console.log('Error occurred - User is not logged in');

@@ -1,19 +1,19 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {RxHelper} from "../utils/RxHelper";
+import {RxHelper} from "../../utils/RxHelper";
 import {Router} from "@angular/router";
-import {Constants} from "../utils/Constants";
-import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from "../utils/Enums";
-import {Action} from "../model/action";
-import {ModelUserPublic} from "../model/user-public.model";
+import {Constants} from "../../utils/Constants";
+import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from "../../utils/Enums";
+import {Action} from "../../model/action";
+import {ModelUserPublic} from "../../model/user-public.model";
 
 declare var jQuery: any;
 @Component({
-    selector: 'app-preparedness',
-    templateUrl: './preparedness-budget.component.html',
-    styleUrls: ['./preparedness-budget.component.css']
+    selector: 'app-budget',
+    templateUrl: './budget.component.html',
+    styleUrls: ['./budget.component.css']
 })
-export class PreparednessBudgetComponent implements OnInit {
+export class BudgetPreparednessComponent implements OnInit {
 
     private uid: string;
     private countryID: string;
@@ -176,4 +176,5 @@ export class PreparednessBudgetComponent implements OnInit {
     private navigateToLogin() {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
     }
+
 }

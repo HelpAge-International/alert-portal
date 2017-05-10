@@ -21,4 +21,5 @@ export class Action {
   public type: ActionType;
   public assignHazard: any = [];
   public asignee: string;
+  public actionStatus: number;
 }
