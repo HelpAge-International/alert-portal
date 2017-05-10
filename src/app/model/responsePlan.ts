@@ -2,7 +2,10 @@
  * Created by Sanjaya on 27/04/2017.
  */
 
-import {HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation} from "../utils/Enums";
+import {
+  HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation,
+  ApprovalStatus
+} from "../utils/Enums";
 
 export class ResponsePlan {
 
@@ -38,7 +41,7 @@ export class ResponsePlan {
   public riskManagementPlan: string;
 
   // Section 7/10
-  public activities = {};
+  public sectors = {};
 
   // Section 8/10
   public monAccLearning = {};
@@ -53,4 +56,5 @@ export class ResponsePlan {
   public sectionsCompleted: number;
   public totalSections: number;
   public isActive: boolean;
+  public status: ApprovalStatus;
 }

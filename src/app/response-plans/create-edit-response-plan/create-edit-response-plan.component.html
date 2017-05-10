@@ -515,7 +515,7 @@
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
-                    {{activityMap.get(i)?activityMap.get(i)?.length:0}}
+                    {{activityMap.get(sector)?activityMap.get(sector)?.length:0}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
                   </div>
                   <div class="col-sm-1 col-12 text-center" data-toggle="collapse" [attr.href]="'#Activity'+sector"
@@ -526,8 +526,8 @@
                 </div>
                 <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
-                  <div *ngIf="activityMap.get(i)?.length > 0">
-                    <div *ngFor="let activity of activityMap.get(i); index as i"
+                  <div *ngIf="activityMap.get(sector)?.length > 0">
+                    <div *ngFor="let activity of activityMap.get(sector); index as i"
                          class="row Outlined Spaced align-items-center">
                       <div class="col-sm-1 Small-spaced text-bold text-center">{{i}}</div>
                       <div class="col-sm-8 Small-spaced">{{activity.output}}</div>

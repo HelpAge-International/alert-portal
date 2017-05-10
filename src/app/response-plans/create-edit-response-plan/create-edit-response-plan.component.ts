@@ -1,11 +1,17 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
-  HazardScenario, ResponsePlanSectionSettings, ResponsePlanSectors,
-  PresenceInTheCountry, MethodOfImplementation, Gender, AgeRange
+  AgeRange,
+  ApprovalStatus,
+  Gender,
+  HazardScenario,
+  MethodOfImplementation,
+  PresenceInTheCountry,
+  ResponsePlanSectionSettings,
+  ResponsePlanSectors
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -35,6 +41,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private MAX_BULLET_POINTS_VAL_1: number = Constants.MAX_BULLET_POINTS_VAL_1;
   private MAX_BULLET_POINTS_VAL_2: number = Constants.MAX_BULLET_POINTS_VAL_2;
+
+  private sectionsCompleted = new Map<string, boolean>();
+  private sections: string[] = ["section1", "section2", "section3", "section4",
+    "section5", "section6", "section7", "section8", "section9", "section10"];
 
   // Section 1/10
   private planName: string = '';
@@ -195,12 +205,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private foodSecAndLivelihoodsNarrative: string = '';
   private otherNarrative: string = '';
 
-  private transportBudget: number = 0;
-  private securityBudget: number = 0;
-  private logisticsAndOverheadsBudget: number = 0;
-  private staffingAndSupportBudget: number = 0;
-  private monitoringAndEvolutionBudget: number = 0;
-  private capitalItemsBudget: number = 0;
+  private transportBudget: number;
+  private securityBudget: number;
+  private logisticsAndOverheadsBudget: number;
+  private staffingAndSupportBudget: number;
+  private monitoringAndEvolutionBudget: number;
+  private capitalItemsBudget: number;
   private managementSupportPercentage: number;
 
   private transportNarrative: string = '';
@@ -211,7 +221,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private capitalItemsNarrative: string = '';
   private managementSupportNarrative: string = '';
 
-  private capitalsExist: boolean = true;
+  private capitalsExist: boolean = false;
 
   private capitalItemSectionSectionsCounter: number = 1;
   private capitalItemSections: number[] = [this.capitalItemSectionSectionsCounter];
@@ -223,24 +233,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    //test only
-    let beneficiaryList = [{
-      "age": AgeRange.Less18,
-      "gender": Gender.feMale,
-      "value": 10
-    }, {"age": AgeRange.Between18To50, "gender": Gender.feMale, "value": 10}, {
-      "age": AgeRange.More50,
-      "gender": Gender.feMale,
-      "value": 10
-    },
-      {"age": AgeRange.Less18, "gender": Gender.male, "value": 10}, {
-        "age": AgeRange.Between18To50,
-        "gender": Gender.male,
-        "value": 10
-      }, {"age": AgeRange.More50, "gender": Gender.male, "value": 10}];
-    let activity = new ModelPlanActivity("plan", "training", "KPI", beneficiaryList);
-    let activityList = [activity];
-    this.activityMap.set(0, activityList);
 
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
@@ -282,8 +274,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Finish Button press on section 10
    */
   onSubmit() {
-
-    // this.checkSection10Status();
 
     console.log("Finish button pressed");
 
@@ -346,7 +336,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
 
     //section 7
-    newResponsePlan.activities = this.activityMap;
+    this.activityMap.forEach((v, k) => {
+      let sectorInfo = {};
+      sectorInfo["sourcePlan"] = 1;
+      sectorInfo["bullet1"] = "bullet one";
+      sectorInfo["bullet2"] = "bullet two";
+      sectorInfo["activities"] = v;
+      newResponsePlan.sectors[k] = sectorInfo;
+    });
+
 
     //section 8
     newResponsePlan.monAccLearning['mALSystemsDescription'] = this.mALSystemsDescriptionText;
@@ -394,10 +392,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       } else {
         data["age"] = AgeRange.More50;
       }
-
       doubleCounting[i] = data;
     }
-
     newResponsePlan.doubleCounting = doubleCounting;
 
     //section 10
@@ -405,8 +401,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let inputs = [];
     this.sectorBudget.forEach((v, k) => {
       let item = new ModelBudgetItem();
-      item.budget = v;
-      item.narrative = this.sectorNarrative.get(k);
+      item.budget = this.sectorBudget && this.sectorBudget.get(v) ? this.sectorBudget.get(v) : 0;
+      item.narrative = this.sectorNarrative && this.sectorNarrative.get(k) ? this.sectorNarrative.get(k) : "";
       inputs.push(item);
     });
     let allBudgetValues = {};
@@ -437,6 +433,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         budgetData[i] = tempItem;
       }
     }
+    newResponsePlan.budget["item"] = budgetData;
 
     if (this.capitalsExist) {
       newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
@@ -444,7 +441,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.budgetOver1000.forEach((v, k) => {
         let tempItem = new ModelBudgetItem();
         tempItem.budget = v;
-        tempItem.narrative = this.budgetOver1000Desc.get(k);
+        tempItem.narrative = this.budgetOver1000Desc && this.budgetOver1000Desc.get(k) ? this.budgetOver1000Desc.get(k) : "";
         itemsOver1000.push(tempItem);
       });
       newResponsePlan.budget["itemsOver1000"] = itemsOver1000;
@@ -452,16 +449,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
     }
 
-    // newResponsePlan.sectionsCompleted = this.
     newResponsePlan.totalSections = this.totalSections;
     newResponsePlan.isActive = true;
+    newResponsePlan.status = ApprovalStatus.InProgress;
+    newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
 
     this.saveToFirebase(newResponsePlan);
-  }
-
-  // TODO -
-  checkSection10Status() {
-
   }
 
   /**
@@ -472,10 +465,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (this.planName != '' && this.geographicalLocation != '' && this.hazardScenarioSelected != null && this.staffMemberSelected != '') {
       this.section1Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++
+      this.sectionsCompleted.set(this.sections[0], true);
     } else {
       this.section1Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[0], false);
     }
   }
 
@@ -573,10 +566,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if ((numOfScenarioCrisisPoints == 0) || (numOfImpactOfCrisisPoints == 0) || (numOfAvailabilityOfFundsBulletPoints == 0)) {
       this.section2Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[1], false);
     } else if ((numOfScenarioCrisisPoints != 0) && (numOfImpactOfCrisisPoints != 0) && (numOfAvailabilityOfFundsBulletPoints != 0)) {
       this.section2Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++;
+      this.sectionsCompleted.set(this.sections[1], true);
     }
   }
 
@@ -681,8 +674,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (sectionsSelected && presenceSelected && methodOfImplementationSelected) {
       this.section3Status = "GLOBAL.COMPLETE";
+      this.sectionsCompleted.set(this.sections[2], true);
     } else {
       this.section3Status = "GLOBAL.INCOMPLETE";
+      this.sectionsCompleted.set(this.sections[2], false);
     }
   }
 
@@ -694,10 +689,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (this.proposedResponseText != '' && this.progressOfActivitiesPlanText != '' && this.coordinationPlanText != '') {
       this.section4Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++;
+      this.sectionsCompleted.set(this.sections[3], true);
     } else {
       this.section4Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[3], false);
     }
   }
 
@@ -774,10 +769,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if ((this.numOfBeneficiaries == 0) || (numOfTargetPopulationInvolvementPoints == 0) || (numOfSelectedVulnerableGroups == 0 && this.otherGroup == '')) {
       this.section5Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[4], false);
     } else if ((this.numOfBeneficiaries != 0) && (numOfTargetPopulationInvolvementPoints != 0) && (numOfSelectedVulnerableGroups != 0 || this.otherGroup != '')) {
       this.section5Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++;
+      this.sectionsCompleted.set(this.sections[4], true);
     }
   }
 
@@ -789,10 +784,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (this.riskManagementPlanText != '') {
       this.section6Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++;
+      this.sectionsCompleted.set(this.sections[5], true);
     } else {
       this.section6Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[5], false);
     }
   }
 
@@ -862,7 +857,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   addActivity(sector) {
-    console.log("sector: " + sector)
     let isHidden = this.addActivityToggleMap.get(sector);
     this.addActivityToggleMap.set(sector, !isHidden);
   }
@@ -927,12 +921,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection7() {
     let numOfActivities: number = this.activityMap.size;
-    if (numOfActivities != 0) {
+    if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++;
+      this.sectionsCompleted.set(this.sections[6], true);
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[6], false);
     }
   }
 
@@ -950,20 +944,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection8() {
 
-    if (this.mALSystemsDescriptionText != '' && this.mediaFormat != null) {
+    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument && this.mediaFormat != null ||
+      this.mALSystemsDescriptionText != '' && !this.intentToVisuallyDocument) {
       this.section8Status = "GLOBAL.COMPLETE";
-      this.numberOfCompletedSections++;
+      this.sectionsCompleted.set(this.sections[7], true);
     } else {
       this.section8Status = "GLOBAL.INCOMPLETE";
-      this.numberOfCompletedSections--;
+      this.sectionsCompleted.set(this.sections[7], false);
     }
   }
 
   /**
    * Section 9/10
    */
-  // TODO
   continueButtonPressedOnSection9() {
+    if (!this.isDoubleCountingDone) {
+      this.section9Status = "GLOBAL.COMPLETE";
+      this.sectionsCompleted.set(this.sections[8], true);
+    }
     this.isDoubleCountingDone = true;
   }
 
@@ -978,14 +976,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.numberMalegreaterThan50 = 0;
 
     let modelPlanList: ModelPlanActivity [] = [];
-    this.activityMap.forEach((v, k) => {
+    this.activityMap.forEach((v,) => {
       modelPlanList = modelPlanList.concat(v);
     });
     let beneficiaryList = [];
     modelPlanList.forEach(modelPlan => {
       beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
     });
-    console.log(beneficiaryList);
     beneficiaryList.forEach(item => {
       if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
         this.numberFemaleLessThan18 += Number(item["value"]);
@@ -1025,7 +1022,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       console.log(budget);
       this.sectorBudget.set(sector, budget);
       this.totalInputs = 0;
-      this.sectorBudget.forEach((v, k) => {
+      this.sectorBudget.forEach((v,) => {
         this.totalInputs += Number(v);
       });
     } else {
@@ -1086,6 +1083,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.budgetOver1000Desc.set(selection, value);
   }
 
+  checkSection10Status() {
+    if (this.transportBudget && this.securityBudget && this.logisticsAndOverheadsBudget &&
+      this.staffingAndSupportBudget && this.monitoringAndEvolutionBudget &&
+      this.capitalItemsBudget && this.managementSupportPercentage && this.checkInputsBudget()) {
+      this.section10Status = "GLOBAL.COMPLETE";
+      this.sectionsCompleted.set(this.sections[9], true);
+    } else {
+      this.section10Status = "GLOBAL.INCOMPLETE";
+      this.sectionsCompleted.set(this.sections[9], false);
+    }
+    console.log(this.getCompleteSectionNumber());
+  }
+
   /**
    * Functions
    */
@@ -1099,7 +1109,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.continueButtonPressedOnSection6();
     this.continueButtonPressedOnSection7();
     this.continueButtonPressedOnSection8();
-    this.continueButtonPressedOnSection9();
     this.checkSection10Status();
   }
 
@@ -1229,6 +1238,40 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }).catch(error => {
       console.log("Response plan creation unsuccessful with error --> " + error.message);
     });
+  }
+
+  private checkSectorInfo() {
+    if (!this.activityInfoMap) {
+      return false;
+    }
+    Object.keys(this.activityMap).forEach(key => {
+      if (!this.activityInfoMap.get(key)) {
+        return false;
+      }
+    });
+    return true;
+  }
+
+  private checkInputsBudget() {
+    if (!this.sectorBudget) {
+      return false;
+    }
+    Object.keys(this.sectorBudget).forEach(key => {
+      if (!this.sectorBudget.get(key)) {
+        return false;
+      }
+    });
+    return true;
+  }
+
+  private getCompleteSectionNumber() {
+    let counter = 0;
+    this.sectionsCompleted.forEach((v,) => {
+      if (v) {
+        counter++;
+      }
+    });
+    return counter;
   }
 
   private navigateToLogin() {
