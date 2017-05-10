@@ -5,13 +5,11 @@ import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
   HazardScenario, ResponsePlanSectionSettings, ResponsePlanSectors,
-  PresenceInTheCountry, MethodOfImplementation, MediaFormat, Gender, AgeRange, BudgetCategory
+  PresenceInTheCountry, MethodOfImplementation, Gender, AgeRange
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
-import {validate} from "codelyzer/walkerFactory/walkerFn";
-import {isUndefined} from "util";
 import {ModelBudgetItem} from "../../model/budget-item.model";
 
 @Component({
@@ -79,7 +77,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section2Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 3/10
-  private sectorsRelatedTo: ResponsePlanSectors[] = [ResponsePlanSectors.wash, ResponsePlanSectors.health];
+  private sectorsRelatedTo: ResponsePlanSectors[] = [];
   private otherRelatedSector: string = '';
 
   private waSHSectorSelected: boolean = false;
@@ -285,7 +283,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
   onSubmit() {
 
-    // TODO - Check if section 10 is completed
     // this.checkSection10Status();
 
     console.log("Finish button pressed");
@@ -295,8 +292,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 1
     newResponsePlan.name = this.planName;
     newResponsePlan.location = this.geographicalLocation;
-    newResponsePlan.planLead = this.staffMemberSelected.$key;
-    newResponsePlan.hazardScenario = this.hazardScenarioSelected;
+    if (this.staffMemberSelected) {
+      newResponsePlan.planLead = this.staffMemberSelected.$key;
+    }
+    if (this.hazardScenarioSelected) {
+      newResponsePlan.hazardScenario = this.hazardScenarioSelected;
+    }
 
     //section 2
     newResponsePlan.scenarioCrisisList = this.convertTolist(this.scenarioCrisisObject);
@@ -306,9 +307,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 3
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
-    newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
-    newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
-    newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
+
+    if (this.presenceInTheCountry) {
+      newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
+    }
+
+    // newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
+    // newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
+
+    if (this.isDirectlyThroughFieldStaff) {
+      newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
+    } else {
+      if (Object.keys(this.partnerOrganisationsSelected).length != 0) {
+        newResponsePlan.methodOfImplementation = MethodOfImplementation.withPartner;
+        newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
+      } else {
+        newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
+      }
+    }
 
     //section 4
     newResponsePlan.activitySummary["q1"] = this.proposedResponseText;
@@ -316,8 +332,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.activitySummary["q3"] = this.coordinationPlanText;
 
     //section 5
-    newResponsePlan.peoplePerHousehold = this.numOfPeoplePerHouseHold;
-    newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
+    if (this.numOfPeoplePerHouseHold) {
+      newResponsePlan.peoplePerHousehold = this.numOfPeoplePerHouseHold;
+    }
+    if (this.numOfHouseHolds) {
+      newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
+    }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText;
     newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
@@ -327,17 +347,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     //section 7
     newResponsePlan.activities = this.activityMap;
-    // this.activityMap.forEach((v,k) =>{
-    // });
 
     //section 8
-    newResponsePlan.mALSystemsDescription = this.mALSystemsDescriptionText;
+    newResponsePlan.monAccLearning['mALSystemsDescription'] = this.mALSystemsDescriptionText;
     if (this.mediaFormat != null) {
-      newResponsePlan.mediaFormat = this.mediaFormat;
-      newResponsePlan.isMedia = true;
+      if (this.intentToVisuallyDocument) {
+        newResponsePlan.monAccLearning['mediaFormat'] = this.mediaFormat;
+        newResponsePlan.monAccLearning['isMedia'] = true;
+      } else {
+        newResponsePlan.monAccLearning['mediaFormat'] = null;
+        newResponsePlan.monAccLearning['isMedia'] = true;
+      }
     } else {
       this.intentToVisuallyDocument = false;
-      newResponsePlan.isMedia = false;
+      newResponsePlan.monAccLearning['isMedia'] = false;
     }
 
     //section 9
@@ -605,6 +628,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   isOtherSectorSelected() {
     this.otherSectorSelected = !this.otherSectorSelected;
+    if (!this.otherSectorSelected) {
+      this.otherRelatedSector = '';
+    }
   }
 
   currentProgrammesSelected() {
@@ -648,17 +674,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO
   continueButtonPressedOnSection3() {
-    // console.log('this.waSHSectorSelected = ' + this.waSHSectorSelected);
-    // console.log('this.healthSectorSelected = ' + this.healthSectorSelected);
-    // console.log('this.shelterSectorSelected = ' + this.shelterSectorSelected);
-    // console.log('this.nutritionSectorSelected = ' + this.nutritionSectorSelected);
-    // console.log('this.foodSecAndLivelihoodsSectorSelected = ' + this.foodSecAndLivelihoodsSectorSelected);
-    // console.log('this.protectionSectorSelected = ' + this.protectionSectorSelected);
-    // console.log('this.educationSectorSelected = ' + this.educationSectorSelected);
-    // console.log('this.campManagementSectorSelected = ' + this.campManagementSectorSelected);
-    // console.log('this.otherSectorSelected = ' + this.otherSectorSelected);
+    let sectionsSelected: boolean = (this.sectorsRelatedTo.length != 0) || (this.otherRelatedSector != '');
+    let presenceSelected: boolean = this.presenceInTheCountry != null;
+    let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff != null;
+
+    if (sectionsSelected && presenceSelected && methodOfImplementationSelected) {
+      this.section3Status = "GLOBAL.COMPLETE";
+    } else {
+      this.section3Status = "GLOBAL.INCOMPLETE";
+    }
   }
 
   /**
@@ -1154,14 +1179,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private getGroups() {
 
     if (this.systemAdminUid) {
-
       let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
         .map(groupList => {
           let groups = [];
           groupList.forEach(x => {
             groups.push(x.$key);
           });
-          // groups.push(this.Other);
           return groups;
         })
         .subscribe(x => {
@@ -1172,6 +1195,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private convertTolist(object) {
+
     let keys = Object.keys(object);
     let tempList = [];
     for (let key of keys) {
@@ -1181,15 +1205,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private updateSectorsList(sectorSelected, sectorEnum) {
+
     if (sectorSelected) {
       if (!(this.sectorsRelatedTo.includes(sectorEnum))) {
         this.sectorsRelatedTo.push(sectorEnum);
       }
     } else {
       if (this.sectorsRelatedTo.includes(sectorEnum)) {
-        let index: number = this.sectorsRelatedTo.indexOf(sectorEnum);
+        let index: number = this.sectorsRelatedTo.indexOf(sectorEnum, 0);
         if (index > -1) {
-          this.sectorsRelatedTo.slice(index, 1)
+          this.sectorsRelatedTo.splice(index, 1)
         }
       }
     }
