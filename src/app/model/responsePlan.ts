@@ -34,7 +34,7 @@ export class ResponsePlan {
   // Section 5/10
   public numOfBeneficiaries: number;
   public vulnerableGroups: string[];
-  public targetPopulationInvolmentList: string[];
+  public targetPopulationInvolvementList: string[];
 
   // Section 6/10
   public riskManagementPlan: string;
@@ -54,5 +54,7 @@ export class ResponsePlan {
   // TODO - Add Section 10 attributes
 
   // Other
+  public sectionsCompleted: number;
   public totalSections: number;
+  public isActive: boolean;
 }

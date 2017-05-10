@@ -12,14 +12,15 @@
 
     <div class="Ribbon__section__wrap Spaced">
 
+
       <!--Response Plan 1/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.PlanDetails]">
         <div class="Ribbon__response" id="Ribbon__response__1">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>1</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>1</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section1Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -43,24 +44,25 @@
               <label for="H-scen">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
                 translate}}</label>
               <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected" (change)="filterData()">
-                <!--<option hidden disabled selected>Please select</option>-->
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let hazardScenario of hazardScenariosList" [value]="hazardScenario">
                   {{HazardScenario[hazardScenario] | translate}}
                 </option>
               </select>
             </div>
             <div class="col-lg-6 col-md-6">
-              <label for="P-lead">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
+              <label for="P-lead1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
                 translate}}</label>
-              <select class="form-control" id="P-lead" [(ngModel)]="staffMemberSelected" (change)="staffSelected()">
-                <option hidden disabled selected>Please select</option>
+              <select class="form-control" id="P-lead1" [(ngModel)]="staffMemberSelected" (change)="staffSelected()">
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let staffMember of staffMembers">{{staffMember.firstName + ' ' + staffMember.lastName}}
                 </option>
               </select>
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection1()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
@@ -72,45 +74,55 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.PlanContext]">
         <div class="Ribbon__response" id="Ribbon__response__2">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>2</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>2</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
+
+
+
+
+
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{summarizeScenarioBulletPointsCounter}}</span>
-                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
+                <span class="input-group-addon">{{bulletPoint + 1}}</span>
+                <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1"
+                       (change)="addToSummarizeScenarioList(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
-                   [hidden]="summarizeScenarioBulletPointsCounter == 1">{{"GLOBAL.REMOVE"
+                   [hidden]="bulletPoint == 0">{{"GLOBAL.REMOVE"
                   | translate}}</a>
               </div>
             </div>
           </div>
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addSummarizeScenarioBulletPoint()"
-             [hidden]="summarizeScenarioBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+             [hidden]="summarizeScenarioBulletPointsCounter+1 == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
-            ({{"GLOBAL.MAXIMUM" | translate}} 5)</a>
+            ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
+
+
+
+
 
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
               | translate}}</label>
-            <div class="col-lg-8" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
+            <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{impactOfCrisisBulletPointsCounter}}</span>
+                <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
-                   [hidden]="impactOfCrisisBulletPointsCounter == 1">{{"GLOBAL.REMOVE"
+                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
                   | translate}}</a>
               </div>
             </div>
@@ -118,19 +130,18 @@
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addImpactOfCrisisBulletPoint()"
              [hidden]="impactOfCrisisBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
-            ({{"GLOBAL.MAXIMUM" | translate}} 5)</a>
+            ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
               | translate}}</label>
-            <div class="col-lg-8" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
+            <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{availabilityOfFundsBulletPointsCounter}}</span>
+                <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="Summary" aria-describedby="basic-addon1">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
-                   [hidden]="availabilityOfFundsBulletPointsCounter == 1">{{"GLOBAL.REMOVE"
-                  | translate}}</a>
+                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a>
               </div>
             </div>
           </div>
@@ -138,24 +149,26 @@
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addAvailabilityOfFundsBulletPoint()"
              [hidden]="availabilityOfFundsBulletPointsCounter == MAX_BULLET_POINTS_VAL_1">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
             | translate}}
-            ({{"GLOBAL.MAXIMUM" | translate}} 3)</a>
+            ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_1}})</a>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection2()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
       </div>
 
+
       <!--Response Plan 3/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.BasicInformation]">
         <div class="Ribbon__response" id="Ribbon__response__3">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>3</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>3</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -236,7 +249,7 @@
           <div class="row Spaced subitem">
             <div class="col-lg-8 col-md-8">
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
-              <div class="row align-items-center Small-spaced">
+              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead">
                     <option hidden disabled selected>
@@ -249,34 +262,19 @@
                   </select>
                 </div>
                 <div class="col-sm-6">
-                  <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
+                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(dropDown)"
+                     [hidden]="dropDown == 1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
                     | translate}}</a>
                 </div>
               </div>
-              <div class="row align-items-center Small-spaced">
-                <div class="col-sm-6">
-                  <select class="form-control" id="P-lead">
-                    <option hidden disabled selected>
-                      {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.SELECT_A_PARTNER" | translate}}
-                    </option>
-                    <option>Partner Organisation 1</option>
-                    <option value="" class="text-primary">+
-                      {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-sm-6">
-                  <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
-                    | translate}}</a>
-                </div>
-              </div>
-              <a href="javascript:void(0)" class=" Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_ANOTHER_PARTNER"
+              <a href="javascript:void(0)" class=" Add__row__cta" (click)="addPartnersDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_ANOTHER_PARTNER"
                 | translate}}</a>
             </div>
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection3()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
@@ -289,10 +287,10 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]">
         <div class="Ribbon__response" id="Ribbon__response__4">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>4</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>4</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -328,21 +326,23 @@
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection4()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
       </div>
 
+
       <!--Response Plan 5/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.TargetPopulation]">
         <div class="Ribbon__response" id="Ribbon__response__5">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>5</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>5</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section5Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -379,20 +379,24 @@
               <div class="form-group">
                 <label for="n-Done">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
                   translate}}</label>
-                <div class="row">
+                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
                   <div class="form-group col-sm-6">
                     <select class="form-control">
                       <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                     </select>
                   </div>
-                  <div class="form-group col-sm-6">
-                    <input type="text" class="form-control" placeholder="Please specify the group">
-                  </div>
+                  <a href="javascript:void(0)" class="Remove__row__cta"
+                     (click)="removeVulnerableGroupDropDown(vulnerableGroupsDropDown)"
+                     [hidden]="vulnerableGroupsDropDown == 1">{{"GLOBAL.REMOVE"
+                    | translate}}</a>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Please specify the group">
                 </div>
               </div>
             </div>
             <div class="col-lg-8">
-              <a href="javascript:void(0)" class=" Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_MORE_GROUPS"
+              <a href="javascript:void(0)" class=" Add__row__cta" (click)="addVulnerableGroupDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.ADD_MORE_GROUPS"
                 | translate}}</a>
             </div>
           </div>
@@ -400,18 +404,25 @@
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
               | translate}}</label>
-            <div class="col-lg-8">
+            <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">1</span>
+                <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="">
+                <a href="javascript:void(0)" class="Remove__row__cta"
+                   (click)="removeTargetPopulationBulletPoint(bulletPoint)"
+                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
+                  | translate}}</a>
               </div>
             </div>
           </div>
-          <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.ADD_BULLET_POINT" | translate}}
-            ({{"GLOBAL.MAXIMUM" | translate}} 5)</a>
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addTargetPopulationBulletPoint()"
+             [hidden]="targetPopulationBulletPointsCounter == MAX_BULLET_POINTS_VAL_2">{{"RESPONSE_PLANS.ADD_BULLET_POINT"
+            | translate}}
+            ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection5()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
@@ -423,10 +434,10 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ExpectedResults]">
         <div class="Ribbon__response" id="Ribbon__response__6">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>6</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>6</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section6Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -442,21 +453,23 @@
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection6()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
       </div>
 
+
       <!--Response Plan 7/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.Activities]">
         <div class="Ribbon__response" id="Ribbon__response__7">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>7</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>7</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -612,21 +625,23 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection7()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
       </div>
 
+
       <!--Response Plan 8/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.MonitoringAccLearning]">
         <div class="Ribbon__response" id="Ribbon__response__8">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>8</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>8</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -649,10 +664,12 @@
               </div>
               <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="Y-vis"
-                       [checked]="intentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">Yes</label>
+                       [checked]="intentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">{{"GLOBAL.YES" |
+                translate}}</label>
               <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="N-vis"
-                       [checked]="!intentToVisuallyDocument" (click)="noSelectedForVisualDocument()">No</label>
+                       [checked]="!intentToVisuallyDocument" (click)="noSelectedForVisualDocument()">{{"GLOBAL.NO" |
+                translate}}</label>
             </div>
           </div>
 
@@ -673,21 +690,23 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection8()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
       </div>
 
+
       <!--Response Plan 9/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.DoubleCounting]">
         <div class="Ribbon__response" id="Ribbon__response__9">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>9</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>9</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -796,21 +815,23 @@
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="continueButtonPressedOnSection9()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
       </div>
 
+
       <!--Response Plan 10/10-->
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.Budget]">
-        <div class="Ribbon__response" id="Ribbon__response__10">
+        <div class="Ribbon__response" id="Ribbon__response__{{totalSections}}">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>10</span>{{"GLOBAL.OF" | translate}} 10</div>
+            <div class="Ribbon__header__number"><span>10</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
               translate}}</h4>
-            <div class="Ribbon__header__status text-primary">{{"GLOBAL.INCOMPLETE" | translate}}</div>
+            <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -832,6 +853,8 @@
               <div class="col-lg-4 col-5"></div>
             </div>
             <div class="row subitem Header Small-spaced">
+
+              <!--TODO - The list of sectors selected in secrion 3 should be shown here-->
               <div class="row Line-row col-lg-12">
                 <div class="col-lg-3 col-4">A-1: {{"SECTORS.WASH" | translate}}</div>
                 <div class="col-lg-2 col-3">
@@ -975,9 +998,9 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" value="10%" [(ngModel)]="managementSupportBudget"
+                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage"
                        (change)="calculateBudget()">
-                <br/> &pound; {{totalBToH}}
+                <br/> &pound; {{totalOfAllCosts}}
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="managementSupportNarrative"></div>
@@ -1011,12 +1034,17 @@
               <div class="col-lg-3 col-4">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" | translate}} (&pound;)</div>
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
-            <div class="row Line-row Header Small-spaced">
-              <div class="col-lg-3 col-4"><input type="text" class="form-control"></div>
+            <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
+              <div class="col-lg-3 col-4"><input type="text" class="form-control">
+                <br/>
+                <a href="javascript:void(0)" class="Remove__row__cta"
+                   (click)="removeCapitalItemSection(capitalItemSection)"
+                   [hidden]="capitalItemSection == 1">{{"GLOBAL.REMOVE" | translate}}</a>
+              </div>
               <div class="col-lg-9 col-8"><input type="text" class="form-control"></div>
             </div>
             <div class="row Line-row Small-spaced">
-              <a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.ADD_ITEM"
+              <a href="javascript:void(0)" class="Add__row__cta" (click)="addCapitalItemSection()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.ADD_ITEM"
                 | translate}}</a>
             </div>
           </div>

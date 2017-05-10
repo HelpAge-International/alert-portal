@@ -1,7 +1,17 @@
 /**
  * Created by Fei on 08/03/2017.
  */
-import {PersonTitle, Country, Currency, UserType, StaffPosition, OfficeType, DurationType, ResponsePlanSectionSettings, DocumentType} from "./Enums";
+import {
+    PersonTitle,
+    Country,
+    Currency,
+    UserType,
+    StaffPosition,
+    OfficeType,
+    DurationType,
+    ResponsePlanSectionSettings,
+    DocumentType
+} from "./Enums";
 
 export class Constants {
 
@@ -53,11 +63,11 @@ export class Constants {
     static CURRENCY: string[] = ["GBP", "EUR", "USD"];
     static CURRENCY_SELECTION = [Currency.GBP, Currency.EUR, Currency.USD];
 
-    static USER_TYPE = ["All users", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
+    static USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
         "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT", "GLOBAL.USER_TYPE.DONOR",
-        "GLOBAL.USER_TYPE.GLOBAL_USER", "GLOBAL.USER_TYPE.COUNTRY_ADMINS"];
+        "GLOBAL.USER_TYPE.GLOBAL_USER", "GLOBAL.USER_TYPE.COUNTRY_ADMINS", "GLOBAL.USER_TYPE.NON_ALERT"];
     static USER_TYPE_SELECTION = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
-    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin];
+    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
 
     static STAFF_POSITION = ["AGENCY_ADMIN.STAFF.ALL_POSITIONS", "AGENCY_ADMIN.STAFF.OFFICE_DIRECTOR", "AGENCY_ADMIN.STAFF.OFFICE_STAFF"];
     static STAFF_POSITION_SELECTION = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
@@ -93,6 +103,10 @@ export class Constants {
     /*
      * Response Plans
      */
+
+    static MAX_BULLET_POINTS_VAL_1: number = 3;
+    static MAX_BULLET_POINTS_VAL_2: number = 5;
+
     static HAZARD_SCENARIOS: string[] = [
         "RESPONSE_PLANS.HAZARD_SCENARIO0.HAZARD_SCENARIO0",
         "RESPONSE_PLANS.HAZARD_SCENARIO1.HAZARD_SCENARIO1",
@@ -380,17 +394,17 @@ export class Constants {
     ];
 
     static DEPARTMENT = [
-        "GLOBAL.DEPARTMENT.CHS",
-        "GLOBAL.DEPARTMENT.FINANCE",
-        "GLOBAL.DEPARTMENT.HR",
-        "GLOBAL.DEPARTMENT.LOGISTICS",
-        "GLOBAL.DEPARTMENT.PROGRAMME"
+        "GLOBAL.DEPARTMENT_LIST.CHS",
+        "GLOBAL.DEPARTMENT_LIST.FINANCE",
+        "GLOBAL.DEPARTMENT_LIST.HR",
+        "GLOBAL.DEPARTMENT_LIST.LOGISTICS",
+        "GLOBAL.DEPARTMENT_LIST.PROGRAMME"
     ];
 
     static HAZARD_CATEGORY = [
-        "GLOBAL.HAZARD_CATEGORY.EARTHQUAKE",
-        "GLOBAL.HAZARD_CATEGORY.TSUNAMI",
-        "GLOBAL.HAZARD_CATEGORY.DROUGHT"
+        "GLOBAL.HAZARD_CATEGORY_LIST.EARTHQUAKE",
+        "GLOBAL.HAZARD_CATEGORY_LIST.TSUNAMI",
+        "GLOBAL.HAZARD_CATEGORY_LIST.DROUGHT"
     ];
 
     static HAZARD_CATEGORY_ICON_CLASS = [

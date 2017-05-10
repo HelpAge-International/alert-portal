@@ -50,7 +50,7 @@
 
           <div class="col-md-6 col-sm-9 col-8 gpa_action_department">{{"GLOBAL.DEPARTMENT:" | translate}}
             <select class="form-control form-control-sm" onChange="addDepartmentModal(this, '#add_department')" (change)="setDepartment($event.target.value, genericAction)">
-              <option selected hidden disabled>Please select</option>
+              <option value="undefined" selected hidden disabled>Please select</option>
               <option *ngFor="let department of departments | async" value={{department}}>{{department.toString()}}</option>
               <option class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_A_DEPARTMENT" | translate}}</option>
             </select>

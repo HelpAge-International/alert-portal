@@ -1,0 +1,71 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Back--button">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
+
+        <div class="Ribbon__section__wrap col-lg-8 Spaced">
+            <div class="Header-title__wrap Small-spaced">
+                <h2>{{actionLevel[aList] | translate}} {{"PREPAREDNESS.BUDGET" | translate}}</h2>
+            </div>
+            <div class="row text-bold Line-row--no-border align-items-center">
+                <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
+                <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
+                <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
+            </div>
+            <div class="row Line-row text-bold align-items-center" *ngFor="let departmentKey of departmentList">
+                 <div class="col-sm-4 col-4">{{department[departmentKey] | translate}}</div>
+                <div class="col-sm-3 col-4">
+                    <input type="text" class="form-control" [(ngModel)]="minimumPreparednessBudget[departmentKey]['value']" (input)="setTotal('MPA')" (keypress)="_keyPress($event)">
+                </div>
+                <div class="col-sm-5 col-4">
+                    <input type="text" class="form-control" [(ngModel)]="minimumPreparednessBudget[departmentKey]['narrative']">
+                </div>
+            </div>
+            <div class="row Line-row text-bold align-items-center">
+                <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
+                <div class="col-sm-3 col-6">&pound;{{minimumBudgetTotal}}</div>
+            </div>
+        </div>
+
+        <div class="Ribbon__section__wrap col-lg-8 Spaced">
+            <div class="Header-title__wrap Small-spaced">
+                <h2>{{actionLevel[aList] | translate}} Budget</h2>
+            </div>
+            <div class="row text-bold Line-row--no-border align-items-center">
+                <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
+                <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
+                <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
+            </div>
+            <div class="row Line-row text-bold align-items-center" *ngFor="let departmentKey of departmentList">
+                 <div class="col-sm-4 col-4">{{department[departmentKey] | translate}}</div>
+                <div class="col-sm-3 col-4">
+                    <input type="text" class="form-control" [(ngModel)]="advancedPreparednessBudget[departmentKey]['value']" (input)="setTotal('APA')" (keypress)="_keyPress($event)">
+                </div>
+                <div class="col-sm-5 col-4">
+                    <input type="text" class="form-control" [(ngModel)]="advancedPreparednessBudget[departmentKey]['narrative']">
+                </div>
+            </div>
+            <div class="row Line-row text-bold align-items-center">
+                <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
+                <div class="col-sm-3 col-6">&pound;{{advancedBudgetTotal}}</div>
+            </div>
+        </div>
+
+
+        <div class="Ribbon__section__wrap col-lg-8">
+            <div class="row Line-row--no-border text-bold align-items-center">
+                <div class="col-sm-4 col-6 text-right">{{"GLOBAL.GRAND_TOTAL" | translate}}</div>
+                <div class="col-sm-3 col-6">&pound;{{grandTotal}}</div>
+            </div>
+        </div>
+
+        <div class="Form-submit__wrapper">
+            <div class="btn btn-primary" (click)="savePreparednessBudget()">{{"GLOBAL.SAVE" | translate}}</div>
+            <div class="btn btn-outline-secondary">{{"GLOBAL.CANCEL" | translate}}</div>
+        </div>
+    </div>
+</div>

@@ -10,20 +10,18 @@ import {ModelUserPublic} from "../model/user-public.model";
 declare var jQuery: any;
 @Component({
     selector: 'app-preparedness',
-    templateUrl: './preparedness.component.html',
-    styleUrls: ['./preparedness.component.css']
+    templateUrl: './preparedness-create-edit.component.html',
+    styleUrls: ['./preparedness-create-edit.component.css']
 })
-export class PreparednessComponent implements OnInit {
+export class PreparednessCreateEditComponent implements OnInit {
 
     submitted = false;
 
     private uid: string;
 
     private actionID: string;
-    private modalID: string;
 
     private countryID: string;
-    private agencyID: string;
     private actionData: Action;
     private dueDate: any;
 
@@ -63,10 +61,6 @@ export class PreparednessComponent implements OnInit {
         let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
                 this.uid = auth.uid;
-
-                console.log(this.uid);
-
-
                 this._defaultHazardCategoryValue();
                 this.getUsersForAssign();
                 this.processPage();
@@ -123,19 +117,17 @@ export class PreparednessComponent implements OnInit {
 
     processPage() {
         this.getCountryID().then(() => {
-            this.getAgencyID().then(() => {
-                this._getPreparednessFrequency().then(() => {
-                    if (this.actionID) {
-                        this.getActionData().then(() => {
-                            this._parseSelectParams();
-                            if (this.frequencyDefaultSettings.type != this.actionData.frequencyBase && this.frequencyDefaultSettings.value != this.actionData.frequencyValue) {
-                                this.frequencyActive = true;
-                            }
-                        });
-                    } else {
+            this._getPreparednessFrequency().then(() => {
+                if (this.actionID) {
+                    this.getActionData().then(() => {
                         this._parseSelectParams();
-                    }
-                });
+                        if (this.frequencyDefaultSettings.type != this.actionData.frequencyBase && this.frequencyDefaultSettings.value != this.actionData.frequencyValue) {
+                            this.frequencyActive = true;
+                        }
+                    });
+                } else {
+                    this._parseSelectParams();
+                }
             });
         });
     }
@@ -171,10 +163,7 @@ export class PreparednessComponent implements OnInit {
     selectFrequencyBase(event: any) {
         var frequencyBase = event.target.value;
         this.actionData.frequencyBase = parseInt(frequencyBase);
-
-        if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
-            this.frequency = new Array(this.allowedFrequencyValue[frequencyBase]);
-        }
+        this.frequency = new Array(this.allowedFrequencyValue[frequencyBase]);
         return true;
     }
 
@@ -230,45 +219,11 @@ export class PreparednessComponent implements OnInit {
         return promise;
     }
 
-    getAgencyID() {
-        let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyIDs: any) => {
-                this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-                res(true);
-            });
-            this.subscriptions.add(subscription);
-        });
-        return promise;
-    }
-
-    copyAction() {
-        /* added route for create action page */
-        console.log(this.actionData);
-        this.closeModal();
-    }
-
-    archiveAction() {
-        console.log('archive');
-        this.closeModal();
-        this.actionData.isActive = false;
-
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.uid + '/' + this.actionID)
-            .set(this.actionData)
-            .then(() => {
-                console.log('success update archive');
-            }).catch((error: any) => {
-                console.log(error, 'You do not have access!')
-            });
-
-    }
-
     _getPreparednessFrequency() {
         let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + '/' + this.countryID + '/clockSettings/preparedness').subscribe((frequencySetting: any) => {
-                if (typeof (frequencySetting.durationType) != 'undefined' && typeof (frequencySetting.value) != 'undefined') {
-                    this.frequencyDefaultSettings.type = frequencySetting.durationType;
-                    this.frequencyDefaultSettings.value = frequencySetting.value;
-                }
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + '/' + this.countryID + '/clockSettings/preparedness').subscribe((frequencySetting: any) => {
+                this.frequencyDefaultSettings.type = frequencySetting.durationType;
+                this.frequencyDefaultSettings.value = frequencySetting.value;
                 res(true);
             });
 
@@ -291,9 +246,8 @@ export class PreparednessComponent implements OnInit {
         return promise;
     }
 
-    showActionConfirm(modalID: string) {
-        this.modalID = modalID;
-        jQuery("#" + this.modalID).modal("show");
+    deleteActionConfirm() {
+        jQuery("#delete-action").modal("show");
     }
 
     deleteAction() {
@@ -303,28 +257,32 @@ export class PreparednessComponent implements OnInit {
     }
 
     closeModal() {
-        jQuery("#" + this.modalID).modal("hide");
+        jQuery("#delete-action").modal("hide");
+    }
+
+    copyAction() {
+        /* added route for create action page */
+        console.log(this.actionData);
+    }
+
+    archiveAction() {
+        console.log('archive action');
     }
 
     _parseSelectParams() {
         this.allowedFrequencyValue = [];
+        let multipliers: any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
 
-        if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
-            let multipliers: any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
-            multipliers[this.frequencyDefaultSettings.type].forEach((val, key) => {
-                var result = Math.trunc(val * this.frequencyDefaultSettings.value);
-                if (result) {
-                    this.allowedDurationList.push(this.durationTypeList[key]);
-                    this.allowedFrequencyValue.push(Math.min(100, result));
-                }
-            });
+        multipliers[this.frequencyDefaultSettings.type].forEach((val, key) => {
+            var result = Math.trunc(val * this.frequencyDefaultSettings.value);
+            if (result) {
+                this.allowedDurationList.push(this.durationTypeList[key]);
+                this.allowedFrequencyValue.push(Math.min(100, result));
+            }
+        });
 
-            var frequencyBaseKey = this.actionID ? this.actionData.frequencyBase : 0;
-            this.frequency = new Array(this.allowedFrequencyValue[frequencyBaseKey]);
-        } else {
-            this.allowedDurationList = this.durationTypeList;
-        }
-
+        var frequencyBaseKey = this.actionID ? this.actionData.frequencyBase : 0;
+        this.frequency = new Array(this.allowedFrequencyValue[frequencyBaseKey]);
     }
 
     _convertDateToTimestamp(date: any) {

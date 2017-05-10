@@ -91,7 +91,9 @@ import { AddPartnerOrganisationComponent } from './response-plans/add-partner-or
 import { OrdinalPipe } from './utils/pipes/ordinal.pipe';
 import { StatusAlertComponent } from './commons/status-alert/status-alert.component';
 import { AgencyNotificationsComponent } from './agency-admin/agency-notifications/agency-notifications.component';
-import { DatepickerModule } from 'angular2-material-datepicker'
+import { DatepickerModule } from 'angular2-material-datepicker';
+import {PreparednessBudgetComponent} from "./preparedness-budget/preparedness-budget.component";
+import {PreparednessSelectComponent} from "./preparedness-select/preparedness-select.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -192,7 +194,9 @@ const firebaseAuthConfig = {
     AddPartnerOrganisationComponent,
     OrdinalPipe,
     StatusAlertComponent,
-    AgencyNotificationsComponent
+    AgencyNotificationsComponent,
+    PreparednessBudgetComponent,
+    PreparednessSelectComponent
   ],
   imports: [
     BrowserModule,

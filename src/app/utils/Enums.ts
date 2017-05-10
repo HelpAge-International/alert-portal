@@ -76,15 +76,16 @@ export enum StaffPosition {
 }
 
 export enum UserType {
-    All = 0,
-    GlobalDirector = 1,
-    RegionalDirector = 2,
-    CountryDirector = 3,
-    ErtLeader = 4,
-    Ert = 5,
-    Donor = 6,
-    GlobalUser = 7,
-    CountryAdmin = 8
+  All = 0,
+  GlobalDirector = 1,
+  RegionalDirector = 2,
+  CountryDirector = 3,
+  ErtLeader = 4,
+  Ert = 5,
+  Donor = 6,
+  GlobalUser = 7,
+  CountryAdmin = 8,
+  NonAlert = 9
 }
 
 export enum OfficeType {
@@ -453,4 +454,11 @@ export enum HazardCategory {
     Earthquake = 0,
     Tsunami = 1,
     Drought = 2
+}
+
+export enum ActionStatus {
+    expired = 0,
+    inProgress = 1,
+    Completed = 2,
+    Inactive = 3
 }

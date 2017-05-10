@@ -158,6 +158,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   removeLogoPreview() {
     this.agencyLogo = '';
     this.logoFile = null; // remove the uploaded file
+    jQuery("#imgInp").val(""); // reset file to trigger change event if the same file is uploaded
     this.setLogoPreview(this.agencyLogo);
   }
 

@@ -284,6 +284,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       let countriesData = {};
       for (let office of this.officeList) {
         countriesData[office] = true;
+        //update group
+        regionData["/directorRegion/" + office + "/"] = this.regionalDirectorId;
       }
       regionData["/region/" + this.uid + "/" + this.regionId + "/countries"] = countriesData;
       this.af.database.object(Constants.APP_STATUS).update(regionData).then(() => {
@@ -349,6 +351,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
               this.counter++;
             }
           }
+          this.hideRemove = !( this.counter > 0 );
         }
       })
       .do(region => {
@@ -385,7 +388,9 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   removeCountry(country) {
     if (this.countries.length > 1) {
+      this.selectedCountries.splice(country, 1);
       this.countries = this.countries.filter(item => item !== country);
+      this.counter--;
     }
     if (this.countries.length == 1) {
       this.hideRemove = true;
