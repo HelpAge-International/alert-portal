@@ -94,6 +94,8 @@ import { AgencyNotificationsComponent } from './agency-admin/agency-notification
 import { MinimumPreparednessComponent } from './preparedness/minimum/minimum.component';
 import { AdvancedPreparednessComponent } from './preparedness/advanced/advanced.component';
 import { BudgetPreparednessComponent } from './preparedness/budget/budget.component';
+import {ResponsePlanService} from "./services/response-plan.service";
+import {UserService} from "./services/user.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -216,7 +218,7 @@ const firebaseAuthConfig = {
     ModalModule.forRoot(),
     BootstrapModalModule
   ],
-  providers: [RxHelper, Modal],
+  providers: [RxHelper, Modal, UserService],
   bootstrap: [AppComponent]
 })
 

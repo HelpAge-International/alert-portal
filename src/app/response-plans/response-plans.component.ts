@@ -6,12 +6,14 @@ import {Constants} from "../utils/Constants";
 import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Observable} from "rxjs/Observable";
 import set = Reflect.set;
+import {ResponsePlanService} from "../services/response-plan.service";
 declare const jQuery: any;
 
 @Component({
   selector: 'app-response-plans',
   templateUrl: './response-plans.component.html',
-  styleUrls: ['./response-plans.component.css']
+  styleUrls: ['./response-plans.component.css'],
+  providers: [ResponsePlanService]
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
@@ -28,7 +30,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private countryId: string;
   private notesMap = new Map();
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper, private service: ResponsePlanService) {
   }
 
   ngOnInit() {
@@ -80,6 +82,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+    this.service.releaseSubscriptions();
   }
 
   getName(id) {
@@ -102,6 +105,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     jQuery("#dialog-action").modal("show");
     this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
     this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
+  }
+
+  submitForPartnerValidation(plan) {
+    this.service.submitForPartnerValidation(plan, this.uid);
   }
 
   confirmDialog() {
@@ -201,10 +208,16 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   getApproves(plan) {
-    return Object.keys(plan.approval).map(key => plan.approval[key]);
+    if (!plan.approval) {
+      return;
+    }
+    return Object.keys(plan.approval).filter(key => key != "partner").map(key => plan.approval[key]);
   }
 
   getApproveStatus(approve) {
+    if (!approve) {
+      return;
+    }
     let list = Object.keys(approve).map(key => approve[key]);
     return list[0] == ApprovalStatus.Approved;
   }

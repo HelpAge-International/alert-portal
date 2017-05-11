@@ -265,7 +265,7 @@
                     <option value="null" hidden disabled selected>
                       {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations">
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
                       {{partnerOrganisation.organisationName}}
                     </option>
                     <option value="addNewPartnerOrganisation" class="text-primary">+
