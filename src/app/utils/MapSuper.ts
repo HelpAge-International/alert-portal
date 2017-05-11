@@ -25,15 +25,16 @@ import {ModelSystem} from "../model/system.model";
 export class SuperMapComponents {
 
   private af: AngularFire;
-  private handler: RxHelper;
+  private subscriptions: RxHelper;
   public map: google.maps.Map;
+  private departmentMap: Map<number, SDepHolder>;
 
   private geocoder: google.maps.Geocoder;
 
   public static init(af: AngularFire, handler: RxHelper) {
     let components = new SuperMapComponents();
     components.af = af;
-    components.handler = handler;
+    components.subscriptions = handler;
     components.geocoder = new google.maps.Geocoder;
     return components;
   }
@@ -55,7 +56,7 @@ export class SuperMapComponents {
         funct(red, yellow, green);
       });
 
-    this.handler.add(sub);
+    this.subscriptions.add(sub);
   }
 
 
@@ -67,37 +68,26 @@ export class SuperMapComponents {
     let sub = this
       .getCountryOffice(uid, folder)
       .flatMap((countryOffice) => {
-        console.log(countryOffice);
         for (let key of countryOffice) {
           this.markersForAgencyAdminMap.set(key.$key, key.location);
-          console.log(key.$key);
-          return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key);
+          return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key, { preserveSnapshot: true});
         }
       })
       .subscribe((result) => {
-        console.log(result);
-        console.log(result.$key);
-        for (let key in result) {
-          // TODO: Re-look at this! Ideal solution is to return a pair with the firebase database.object call and the key / location above.
-          //   Don't want to re-query the database to find the key that this object would have been under
-          //   list returns a ModelHazard[], no access to the key/location
-          //   object returns the objects complete with $key and $exists. Cannot cleanly iterate through the actual firebase result
-          //   current solution requires structure of firebase object to remain constant. Is not dynamic enough for our purpose
-          if (key != '$key' && key != '$exists') {
-            this.geocoder.geocode({"address": Countries[this.markersForAgencyAdminMap.get(result.$key)]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-              if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-                let marker = new google.maps.Marker({
-                  position: geoResult[0].geometry.location,
-                  icon: HazardImages.init().get(result[key].category)
-                });
-                funct(marker);
-              }
-            })
-          }
-        }
+        result.forEach(snapshot => {
+          this.geocoder.geocode({"address": Countries[this.markersForAgencyAdminMap.get(result.key)]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+              let marker = new google.maps.Marker({
+                position: geoResult[0].geometry.location,
+                icon: HazardImages.init().get(snapshot.val().hazardScenario)
+              });
+              funct(marker);
+            }
+          })
+        });
       });
 
-    this.handler.add(sub);
+    this.subscriptions.add(sub);
   };
 
 
@@ -115,19 +105,68 @@ export class SuperMapComponents {
         let green: number = model.minThreshold[2];
         funct(red, yellow, green);
       });
-    this.handler.add(sub);
+    this.subscriptions.add(sub);
   }
 
 
   /**
    * Get the list of departments for the country
    */
-  public departmentBreakdownForCountry(uid: string, folder: string, country: number, funct: () => void) {
-    let sub = this.getAgency(uid, folder)
+  public getDepForCountry(uid: string, folder: string, country: number, funct: (holder: SDepHolder) => void) {
+    let sub = this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
+      .map((result: AgencyAdminPlaceholder) => {
+        let s: string;
+        for (let key in result.agencyAdmin) {
+          s = key;
+        }
+        return s;
+      })
+      .flatMap((agencyAdmin: string) => {
+        return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyAdmin);
+      })
+      .flatMap((result) => {
+        for (let x of result) {
+          if (x.location == country) {
+            return this.af.database.object(Constants.APP_STATUS + "/action/" + x.$key, {preserveSnapshot: true});
+          }
+        }
+      })
       .subscribe((result) => {
-
+        let returnObj = new SDepHolder();
+        returnObj.departments = [];
+        returnObj.location = country;
+        result.forEach(snapshot => {
+          returnObj.departments.push(new DepHolder(snapshot.val().department, snapshot.val().actionStatus == null ? 0 : snapshot.val().actionStatus));
+        });
+        funct(returnObj);
       });
-    this.handler.add(sub);
+    this.subscriptions.add(sub);
+  }
+
+
+  /** Get all the countries **/
+  private mDepCounter;
+  private mDepHolder: SDepHolder[]
+  public getDepsForAllCountries(uid: string, folder: string, funct: (holder: SDepHolder[]) => void) {
+    this.mDepCounter = 0;
+    this.mDepHolder = [];
+    let sub = this.getCountryOffice(uid, folder)
+      .subscribe((result) => {
+        for (let r of result) {
+          this.mDepCounter++;
+          this.getDepForCountry(uid, folder, r.location, (holder) => {
+            this.getDepsForAllCountriesCounterMethod(holder, funct);
+          })
+        }
+      });
+    this.subscriptions.add(sub);
+  }
+  private getDepsForAllCountriesCounterMethod(holder: SDepHolder, funct: (holder: SDepHolder[]) => void) {
+    this.mDepCounter--;
+    this.mDepHolder.push(holder);
+    if (this.mDepCounter == 0) {
+      funct(this.mDepHolder);
+    }
   }
 
 
@@ -173,7 +212,7 @@ export class SuperMapComponents {
       .flatMap((agencyAdminId: string) => {
         return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId);
       })
-      .flatMap((agency: ModelAgency) => {
+      .map((agency: ModelAgency) => {
         let s: string;
         for (let key in agency.systemAdmin) {
           s = key;
@@ -192,7 +231,7 @@ export class SuperMapComponents {
       zoom: 4,
       center: uluru,
       mapTypeControlOptions: {
-        mapTypeIds: [google.maps.MapTypeId.ROADMAP]
+        mapTypeIds: []
       },
       streetViewControl: false,
       styles: [
@@ -205,8 +244,8 @@ export class SuperMapComponents {
           ]
         },
         {
-          "elementType": "labels",
-          "stylers": [
+          elementType: "labels",
+          stylers: [
             {
               "visibility": "off"
             }
@@ -249,7 +288,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "administrative.land_parcel",
-          "stylers": [
+          stylers: [
             {
               "visibility": "off"
             }
@@ -275,7 +314,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "administrative.locality",
-          "stylers": [
+          stylers: [
             {
               "visibility": "off"
             }
@@ -283,7 +322,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "administrative.neighborhood",
-          "stylers": [
+          stylers: [
             {
               "visibility": "off"
             }
@@ -291,7 +330,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "administrative.province",
-          "stylers": [
+          stylers: [
             {
               "visibility": "off"
             }
@@ -299,7 +338,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "landscape.man_made",
-          "stylers": [
+          stylers: [
             {
               "color": "#b0b1b3"
             }
@@ -316,7 +355,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "landscape.natural.terrain",
-          "stylers": [
+          stylers: [
             {
               "color": "#b0b1b3"
             }
@@ -359,7 +398,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "poi.business",
-          "stylers": [
+          stylers: [
             {
               "visibility": "off"
             }
@@ -385,7 +424,7 @@ export class SuperMapComponents {
         },
         {
           featureType: "road",
-          "stylers": [
+          stylers: [
             {
               "visibility": "off"
             }
@@ -547,12 +586,29 @@ export class SuperMapComponents {
     });
   }
 
-  public initMapFrom(elementId: string, uid: string, folder: string) {
+  public initMapFrom(elementId: string, uid: string, folder: string, done: (departments: SDepHolder[]) => void) {
     if (this.map == null) {
       this.initBlankMap(elementId);
     }
-    this.highlightedCountriesAgencyAdmin(uid, folder, (red, yellow, green) => {
-      this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map);
+    this.getSystemInfo(uid, folder, (redThresh, yellowThresh, greenThresh) => {
+      this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
+        let red: string[] = [];
+        let yellow: string[] = [];
+        let green: string[] = [];
+        for (let h of holder) {
+          if (h.overallAction() >= greenThresh) {
+            green.push(Countries[h.location]);
+          }
+          else if (h.overallAction() >= yellowThresh) {
+            yellow.push(Countries[h.location]);
+          }
+          else {
+            red.push(Countries[h.location]);
+          }
+        }
+        this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map);
+        done(holder);
+      });
     });
   }
 
@@ -618,8 +674,8 @@ export class SuperMapComponents {
     });
     layer.setMap(map);
     google.maps.event.addListener(layer, 'click', function (e) {
-      e.infoWindowHtml = e.row['ISO_2DIGIT'].value + "<br/>";
-      e.infoWindowHtml += "Clicked!";
+      console.log("Clicked!");
+      // let c: Countries = <Countries>Countries["GB"];
     });
   }
 
@@ -641,18 +697,28 @@ export class SuperMapComponents {
   }
 }
 
-export class Holder {
-  private t: string;
-  private s: ModelHazard[];
-
-  public init(t: string, s: ModelHazard[]) {
-    this.t = t;
-    this.s = s;
+export class DepHolder {
+  constructor(department, actionStatus) {
+    this.department = department;
+    this.actionStatus = actionStatus;
   }
-}
 
-export class AgencyDepartmentPlaceholder {
-  public departments: Map<string, boolean>;
+  public department: string;
+  public actionStatus: number;
+}
+export class SDepHolder {
+  public departments: DepHolder[];
+  public location: number;
+  public overallAction() {
+    let diviser = 0;
+    for (let dep of this.departments) {
+      if (dep.actionStatus == 2) {
+        diviser += 1;
+      }
+    }
+    let x = (diviser * 100) / (this.departments.length);
+    return x;
+  }
 }
 
 export class AgencyAdminPlaceholder {

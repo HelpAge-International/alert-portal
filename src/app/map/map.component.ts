@@ -7,9 +7,8 @@ import {} from '@types/googlemaps';
 import {ModelAdministratorCountry} from "../model/administrator.country.model";
 import {ModelCountryOffice} from "../model/countryoffice.model";
 import {ModelHazard} from "../model/hazard.model";
-import {HazardScenario} from "../utils/Enums";
+import {Countries, HazardScenario} from "../utils/Enums";
 import {HazardImages} from "../utils/HazardImages";
-import Marker = google.maps.Marker;
 import {SuperMapComponents} from "../utils/MapSuper";
 import {unescapeIdentifier} from "@angular/compiler";
 import {Subscription} from "rxjs/Subscription";
@@ -35,7 +34,9 @@ export class MapComponent implements OnInit, OnDestroy {
         this.uid = user.auth.uid;
 
         // Query firebase for country information
-        this.mapHelper.initMapFrom("global-map", this.uid, "administratorCountry");
+        this.mapHelper.initMapFrom("global-map", this.uid, "administratorCountry", (departments) => {
+
+        });
         this.mapHelper.markersForAgencyAdmin(this.uid, "administratorCountry", (marker) => {
           marker.setMap(this.mapHelper.map);
         });
