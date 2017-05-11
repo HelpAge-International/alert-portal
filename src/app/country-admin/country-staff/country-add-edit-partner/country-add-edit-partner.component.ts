@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFire } from 'angularfire2';
 import { Constants } from '../../../utils/Constants';
 import { AlertMessageType } from '../../../utils/Enums';
@@ -13,6 +13,8 @@ import { NotificationSettingsService } from '../../../services/notification-sett
 import { ModelUserPublic } from '../../../model/user-public.model';
 import { UserService } from "../../../services/user.service";
 import { CountryAdminModel } from "../../../model/country-admin.model";
+import { DisplayError } from "../../../errors/display.error";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-country-add-edit-partner',
@@ -21,9 +23,9 @@ import { CountryAdminModel } from "../../../model/country-admin.model";
   providers: [PartnerOrganisationService, UserService, NotificationSettingsService]
 })
 
-export class CountryAddEditPartnerComponent implements OnInit {
+export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
-  private isEdit: false;
+  private isEdit = false;
   private uid: string;
 
   // Constants and enums
@@ -50,8 +52,12 @@ export class CountryAddEditPartnerComponent implements OnInit {
     this.userPublic = new ModelUserPublic(null, null, null, null); // no parameterless constructor
   }
 
+  ngOnDestroy() {
+    this.subscriptions.releaseAll();
+  }
+
   ngOnInit() {
-    this._userService.getAuthUser().subscribe(user => {
+    const authSubscription = this._userService.getAuthUser().subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -59,20 +65,38 @@ export class CountryAddEditPartnerComponent implements OnInit {
 
       this.uid = user.uid;
 
-      try{
+      try {
         this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
           this.countryAdmin = countryAdminUser;
 
           this._partnerOrganisationService.getPartnerOrganisations()
-            .subscribe(partnerOrganisations => { this.partnerOrganisations = partnerOrganisations; });
+              .subscribe(partnerOrganisations => { this.partnerOrganisations = partnerOrganisations; });
 
-          this._notificationSettingsService.getNotificationSettings(Object.keys(this.countryAdmin.agencyAdmin)[0])
-            .subscribe(notificationSettings => { this.partner.notificationSettings = notificationSettings });
-          })
+          const editSubscription = this.route.params.subscribe((params: Params) => {
+              if (params['id']) {
+                this.isEdit = true;
+
+                const userSubscription = this._userService.getUser(params['id']).subscribe(user => {
+                    if(user) { if(user) { this.userPublic = user; } }
+                });
+                this.subscriptions.add(userSubscription);
+
+                const partnerSubscription = this._userService.getPartnerUser(params['id']).subscribe(partner => { 
+                    if(partner) { if(partner) { this.partner = partner; } } 
+                });
+                this.subscriptions.add(partnerSubscription);
+              }else{
+                this._notificationSettingsService.getNotificationSettings(Object.keys(this.countryAdmin.agencyAdmin)[0])
+                  .subscribe(notificationSettings => { this.partner.notificationSettings = notificationSettings });
+              }
+            })
+          this.subscriptions.add(editSubscription);
+        });
       }
-      catch(err){ console.log(err); }
+      catch(err) { console.log(err); }
     })
+    this.subscriptions.add(authSubscription);
   }
 
   validateForm(): boolean {
@@ -92,27 +116,34 @@ export class CountryAddEditPartnerComponent implements OnInit {
   }
 
   submit() {
-      console.log('submit called');
-      console.log(this.partner);
+      this._userService.savePartnerUser(this.partner, this.userPublic)
+            .then(user => {
+              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
+              setTimeout(() => this.router.navigateByUrl('/country-admin/country-staff'), Constants.ALERT_REDIRECT_DURATION);
+            })
+            .catch(err => {
+              if(err instanceof DisplayError) {
+                this.alertMessage = new AlertMessageModel(err.message);
+              }else{
+                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+              }
+            });
+  }
 
-      if( !(this.partner.id || this.userPublic.id ) )
-      {
-        this._userService.createNewFirebaseUser(this.userPublic.email, Constants.TEMP_PASSWORD)
-          .then(newUser => {
-            this.partner.id = newUser.uid;
-            this._userService.savePartnerUser(this.partner, this.userPublic)
-              .then(user => {
-                this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
-              })
-              .catch(err => { this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'); });
-          })
-          .catch(err => {  this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'); });
-      }else{
-        this._userService.savePartnerUser(this.partner, this.userPublic)
-          .then(user => {
-            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
-          })
-          .catch(err => { this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'); });
-      }
+  deletePartner() {
+    jQuery('#delete-action').modal('show');
+  }
+  deleteAction() {
+    this.closeModal();
+    this._userService.deletePartnerUser(this.partner.id)
+      .then(() => {
+        this.router.navigateByUrl('/country-admin/country-staff');
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+  }
+
+  closeModal() {
+    jQuery('#delete-action').modal('hide');
   }
 }

@@ -746,10 +746,38 @@
       "PARTNER_ORGANISATION": "Partner Organisation",
       "SAVE_NEW_PARTNER": "Save new partner user",
       "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
+      "PARTNER_PLAN_VALIDATION": "Partner & Plan Validation",
       "NO_PARTNER_ORGANISATION": "Please select a partner organisation",
       "NO_POSITION":"Please select a position",
       "NO_VALIDATION_PERMISSION":"Please specify if you would like to grant the user partner & response plan validation permission",
-      "SUCCESS_SAVED":"Partner user successfully saved"
+      "SUCCESS_SAVED":"Partner user successfully saved",
+      "DELETE_DIALOG_TITLE": "Delete Partner",
+      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this partner?",
+      "SUCCESS_DELETED": "The partner has been successfully deleted",
+      "PERMISSIONS": {
+        "TITLE": "Permissions",
+        "CHS_ACTIONS": "CHS Actions",
+        "MANDATED_MPA": "Mandated MPA",
+        "CUSTOM_MPA": "Custom MPA",
+        "MANDATED_APA": "Mandated APA",
+        "CUSTOM_APA": "Custom APA",
+        "NOTES": "Notes",
+        "COUNTRY_CONTACTS": "Country Contacts",
+        "CROSS_COUNTRY": "Cross Country ( same agency )",
+        "INTER_AGENCY": "Inter-agency and cross country ( Full Access ) - Platform testing and restricted on configuration and access request",
+        "OTHER": "Other permissions",
+        "ASSIGN": "Assign",
+        "NEW": "New",
+        "EDIT": "Edit",
+        "DELETE": "Delete",
+        "ADD_NOTE": "Add note",
+        "COPY_ACTION": "Copy action",
+        "DOWNLOAD": "Download",
+        "VIEW": "View",
+        "VIEW_CONTACTS": "View contacts",
+        "DOWNLOAD_DOC": "Download documents",
+        "UPLOAD_DOC": "Upload documents"
+      }
     },
     "SETTINGS": {
       "TITLE_TEXT": "Country Office Settings"
@@ -941,5 +969,11 @@
     "EDUCATION": "Education",
     "CAMP_MANAGEMENT": "Camp management",
     "OTHER": "Other"
+  },
+  "FIREBASE":{
+    "auth/email-already-in-use": "The email address is already in use",
+    "auth/invalid-email": "The email address is invalid",
+    "auth/operation-not-allowed": "Operation not allowed",
+    "auth/weak-password": "The password is to weak"
   }
 }

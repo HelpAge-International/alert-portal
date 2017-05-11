@@ -13,7 +13,7 @@ export class PartnerOrganisationService {
 
   getPartnerOrganisations(): Observable<PartnerOrganisationModel[]> {
 
-    const partnerOrganisationSubscription = this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation')
+    const partnerOrganisationsSubscription = this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation')
       .map(items =>
         {
             let partnerOrganisations: PartnerOrganisationModel[] = [];
@@ -22,10 +22,23 @@ export class PartnerOrganisationService {
               let partnerOrganisation = item as PartnerOrganisationModel;
               partnerOrganisation.id = item.$key;
 
-              partnerOrganisations.push(item as PartnerOrganisationModel);
+              partnerOrganisations.push(partnerOrganisation);
             });
             return partnerOrganisations;
         });
+
+    return partnerOrganisationsSubscription;
+  }
+
+  getPartnerOrganisation(id: string): Observable<PartnerOrganisationModel> {
+    if(!id) { return null; }
+    const partnerOrganisationSubscription = this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + id)
+      .map(item => { 
+        if(item.$key) { 
+          return item as PartnerOrganisationModel; 
+        }
+        return null;
+    });
 
     return partnerOrganisationSubscription;
   }

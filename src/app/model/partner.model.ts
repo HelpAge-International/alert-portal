@@ -1,12 +1,19 @@
 import { BaseModel } from "./base.model";
 import { AlertMessageModel } from "./alert-message.model";
+import { PermissionsModel } from "./permissions.model";
 
 export class PartnerModel extends BaseModel {
   public id: string;
   public partnerOrganisationId: string;
   public position: string;
   public notificationSettings: any[];
+  public permissions: PermissionsModel;
   public hasValidationPermission: string;
+
+  constructor() {
+    super();
+    this.permissions = new PermissionsModel();
+  }
 
   validate(excludedFields = []): AlertMessageModel {
     if(!this.partnerOrganisationId && !this.isExcluded('partnerOrganisationId', excludedFields))

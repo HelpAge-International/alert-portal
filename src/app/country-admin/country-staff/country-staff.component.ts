@@ -8,13 +8,19 @@ import {Observable} from 'rxjs';
 import {ModelStaff} from '../../model/staff.model';
 import {ModelUserPublic} from '../../model/user-public.model';
 import {OfficeType, SkillType, StaffPosition, UserType} from '../../utils/Enums';
+import { UserService } from "../../services/user.service";
+import { PartnerModel } from "../../model/partner.model";
+import { PartnerOrganisationModel } from "../../model/partner-organisation.model";
+import { PartnerOrganisationService } from "../../services/partner-organisation.service";
 declare var jQuery: any;
 @Component({
   selector: 'app-country-staff',
   templateUrl: './country-staff.component.html',
-  styleUrls: ['./country-staff.component.css']
+  styleUrls: ['./country-staff.component.css'],
+  providers: [UserService, PartnerOrganisationService]
 })
 export class CountryStaffComponent implements OnInit, OnDestroy {
+  partnersList: PartnerModel[];
   private agencyAdminId: string;
   private countryId: any;
   private uid: string;
@@ -37,11 +43,17 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private skillSet = new Set();
   private skillNames: string[] = [];
   private staffMap = new Map();
+  private partnerPublicUser: ModelUserPublic[] = [];
+  private partnerOrganisations: PartnerOrganisationModel[] = [];
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
   private departments: any[] = [];
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {  }
+  constructor(private _userService: UserService,
+              private _partnerOrganisationService: PartnerOrganisationService,
+              private af: AngularFire,
+              private router: Router,
+              private subscriptions: RxHelper) {  }
 
   ngOnInit() {
     let subscription = this.af.auth.subscribe(user => {
@@ -63,6 +75,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
   private initData() {
     this.getStaffData();
+    this.getPartnerData();
     const subscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
       .map(departmentList => {
         let departments = [this.All_Department];
@@ -87,6 +100,19 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
       })
       .subscribe();
     this.subscriptions.add(staffSubscription);
+  }
+
+  private getPartnerData(){
+    this._userService.getPartnerUsers().subscribe(partners =>
+    {
+        this.partnersList = partners;
+        this.partnersList.forEach(partner => {
+            this._userService.getUser(partner.id)
+                    .subscribe(partnerPublicUser => {this.partnerPublicUser[partner.id] = partnerPublicUser; });
+            this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+                     .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.id] = partnerOrganisation});
+        });
+    });
   }
 
   private addStaff(item) {
@@ -126,6 +152,12 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.router.navigate(['/country-admin/country-staff/country-add-edit-staff', {
       id: staffId,
       officeId: officeId
+    }], {skipLocationChange: true});
+  }
+
+  editPartner(partnerId) {
+    this.router.navigate(['/country-admin/country-staff/country-add-edit-partner', {
+      id: partnerId
     }], {skipLocationChange: true});
   }
 

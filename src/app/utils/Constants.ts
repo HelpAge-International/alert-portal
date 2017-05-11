@@ -17,6 +17,7 @@ export class Constants {
 
   static TEMP_PASSWORD = "testtest";
   static ALERT_DURATION: number = 5000;
+  static ALERT_REDIRECT_DURATION: number = 1500;
 
   /*PATHS*/
   static APP_STATUS = "/sand";
