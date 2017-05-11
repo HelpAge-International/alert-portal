@@ -761,9 +761,9 @@
       "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
       "PARTNER_PLAN_VALIDATION": "Partner & Plan Validation",
       "NO_PARTNER_ORGANISATION": "Please select a partner organisation",
-      "NO_POSITION":"Please select a position",
-      "NO_VALIDATION_PERMISSION":"Please specify if you would like to grant the user partner & response plan validation permission",
-      "SUCCESS_SAVED":"Partner user successfully saved",
+      "NO_POSITION": "Please select a position",
+      "NO_VALIDATION_PERMISSION": "Please specify if you would like to grant the user partner & response plan validation permission",
+      "SUCCESS_SAVED": "Partner user successfully saved",
       "DELETE_DIALOG_TITLE": "Delete Partner",
       "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this partner?",
       "SUCCESS_DELETED": "The partner has been successfully deleted",
@@ -953,11 +953,6 @@
           "CAPITAL_ITEMS": "Capital Items",
           "MANAGEMENT_SUPPORT": "Management support"
         }
-      },
-      "ADD_PARTNER": {
-        "SELECT_A_PARTNER": "Select a partner",
-        "ADD_A_PARTNER_ORGANISATION": "Add a partner organisation",
-        "ADD_ANOTHER_PARTNER": "Add another partner to this plan"
       }
     },
     "HAZARD_SCENARIOS": {
@@ -985,7 +980,22 @@
     "CAMP_MANAGEMENT": "Camp management",
     "OTHER": "Other"
   },
-  "FIREBASE":{
+  "ADD_PARTNER": {
+    "SELECT_A_PARTNER": "Select a partner",
+    "ADD_A_PARTNER_ORGANISATION": "Add partner organisation",
+    "PARTNER_ORGANISATION": "Partner Organisation",
+    "ADD_ANOTHER_PARTNER_TO_THIS_PLAN": "Add another partner to this plan",
+    "ORGANISATION_DETAILS": "Organisation Details",
+    "RELATIONSHIP": "Relationship",
+    "SECTOR": "Sector",
+    "TYPE_OF_PROJECT": "Type of project",
+    "PROJECT_END_DATE": "Project End date",
+    "AREAS_OF_OPERATION": "Area(s) of operation",
+    "ADD_ANOTHER_PROJECT": "Add another location",
+    "PARTNER_CONTACT_DETAILS": "Partner contact details",
+    "ADD_NEW_PARTNER_ORGANISATION": "Add new partner organisation"
+  },
+  "FIREBASE": {
     "auth/email-already-in-use": "The email address is already in use",
     "auth/invalid-email": "The email address is invalid",
     "auth/operation-not-allowed": "Operation not allowed",

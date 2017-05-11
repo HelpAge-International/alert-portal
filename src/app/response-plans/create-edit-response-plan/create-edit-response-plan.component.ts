@@ -1235,6 +1235,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
       console.log("Response plan creation successful");
       console.log(newResponsePlan);
+      this.router.navigateByUrl('response-plans');
     }).catch(error => {
       console.log("Response plan creation unsuccessful with error --> " + error.message);
     });
