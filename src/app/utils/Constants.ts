@@ -147,26 +147,15 @@ export class Constants {
     ];
 
     static RESPONSE_PLANS_SECTORS = [
-        "WaSH",
-        "Health",
-        "Shelter",
-        "Nutrition",
-        "Food security & livelihoods",
-        "Protections",
-        "Education",
-        "Camp management",
-        "Other"
-    ];
-
-    static RESPONSE_PLANS_BUDGET_CATEGORY = [
-        "Inputs",
-        "Transport",
-        "Security",
-        "Logistics & overheads",
-        "Staffing & support",
-        "Monitoring & evaluation",
-        "Capital Items",
-        "Management support"
+        "SECTORS.WASH",
+        "SECTORS.HEALTH",
+        "SECTORS.SHELTER",
+        "SECTORS.NUTRITION",
+        "SECTORS.FOOD_SEC_AND_LIVELIHOOD",
+        "SECTORS.PROTECTION",
+        "SECTORS.EDUCATION",
+        "SECTORS.CAMP_MANAGEMENT",
+        "SECTORS.OTHER"
     ];
 
     static DOCUMENT_TYPE = [
