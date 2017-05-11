@@ -57,4 +57,5 @@ export class ResponsePlan {
   public totalSections: number;
   public isActive: boolean;
   public status: ApprovalStatus;
+  public startDate:number;
 }

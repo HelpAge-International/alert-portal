@@ -150,6 +150,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private activityMap = new Map();
   private addActivityToggleMap = new Map();
   private activityInfoMap = new Map();
+  private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
   // Section 8/10
   private mALSystemsDescriptionText: string = '';
@@ -186,24 +187,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private totalInputs: number = 0;
   private totalOfAllCosts: number = 0;
   private totalBudget: number = 0;
-
-  private waSHBudget: number = 0;
-  private healthBudget: number = 0;
-  private shelterBudget: number = 0;
-  private campManagementBudget: number = 0;
-  private educationBudget: number = 0;
-  private protectionBudget: number = 0;
-  private foodSecAndLivelihoodsBudget: number = 0;
-  private otherBudget: number = 0;
-
-  private waSHNarrative: string = '';
-  private healthNarrative: string = '';
-  private shelterNarrative: string = '';
-  private campManagementNarrative: string = '';
-  private educationNarrative: string = '';
-  private protectionNarrative: string = '';
-  private foodSecAndLivelihoodsNarrative: string = '';
-  private otherNarrative: string = '';
 
   private transportBudget: number;
   private securityBudget: number;
@@ -274,8 +257,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Finish Button press on section 10
    */
   onSubmit() {
-
     console.log("Finish button pressed");
+    this.checkAllSections();
 
     let newResponsePlan: ResponsePlan = new ResponsePlan;
 
@@ -338,9 +321,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 7
     this.activityMap.forEach((v, k) => {
       let sectorInfo = {};
-      sectorInfo["sourcePlan"] = 1;
-      sectorInfo["bullet1"] = "bullet one";
-      sectorInfo["bullet2"] = "bullet two";
+      sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
+      sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
+      sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
       sectorInfo["activities"] = v;
       newResponsePlan.sectors[k] = sectorInfo;
     });
@@ -398,12 +381,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     //section 10
     let budgetData = {};
-    let inputs = [];
+    let inputs = {};
     this.sectorBudget.forEach((v, k) => {
       let item = new ModelBudgetItem();
       item.budget = this.sectorBudget && this.sectorBudget.get(v) ? this.sectorBudget.get(v) : 0;
       item.narrative = this.sectorNarrative && this.sectorNarrative.get(k) ? this.sectorNarrative.get(k) : "";
-      inputs.push(item);
+      // inputs.push(item);
+      inputs[k] = item;
     });
     let allBudgetValues = {};
     allBudgetValues[1] = this.transportBudget;
@@ -453,6 +437,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.isActive = true;
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
+    newResponsePlan.startDate = Date.now();
 
     this.saveToFirebase(newResponsePlan);
   }
@@ -621,6 +606,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   isOtherSectorSelected() {
     this.otherSectorSelected = !this.otherSectorSelected;
+    this.updateSectorsList(this.otherSectorSelected, ResponsePlanSectors.other);
     if (!this.otherSectorSelected) {
       this.otherRelatedSector = '';
     }
@@ -672,7 +658,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let presenceSelected: boolean = this.presenceInTheCountry != null;
     let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff != null;
 
-    if (sectionsSelected && presenceSelected && methodOfImplementationSelected) {
+    if (sectionsSelected && presenceSelected && methodOfImplementationSelected && !this.otherSectorSelected ||
+      sectionsSelected && presenceSelected && methodOfImplementationSelected && this.otherSectorSelected && this.otherRelatedSector != "") {
       this.section3Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[2], true);
     } else {
