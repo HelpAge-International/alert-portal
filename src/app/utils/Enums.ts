@@ -189,6 +189,11 @@ export enum AgeRange {
     More50 = 2
 }
 
+export enum PhonePrefix{
+  GB = 44,
+  FR = 33
+}
+
 export enum Countries {
     GB = 0,
     FR = 1,
@@ -462,6 +467,11 @@ export enum HazardCategory {
     Drought = 2
 }
 
+export enum AlertMessageType {
+  Error = 0,
+  Success = 1
+}
+
 export enum BudgetCategory {
     Inputs = 0,
     Transport = 1,
@@ -484,3 +494,4 @@ export enum SizeType {
     KB = 0,
     MB = 1
 }
+

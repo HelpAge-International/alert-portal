@@ -17,23 +17,33 @@ export class Constants {
 
     static TEMP_PASSWORD = "testtest";
     static ALERT_DURATION: number = 5000;
+    static ALERT_REDIRECT_DURATION: number = 1500;
 
     /*PATHS*/
     static APP_STATUS = "/sand";
 
     static LOGIN_PATH = "/login";
+
     //system admin
     static DEFAULT_MPA_PATH = "/system-admin/mpa";
     static SYSTEM_ADMIN_HOME = "/system-admin/agency";
     static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
-
     static SYSTEM_ADMIN_ADD_NETWORK = "/system-admin/network/create";
+
     //agency admin
     static AGENCY_ADMIN_HOME = "/agency-admin/country-office";
     static AGENCY_ADMIN_ADD_STARFF = "/agency-admin/staff/create-edit-staff";
     static AGENCY_ADMIN_STARFF = "/agency-admin/staff";
     static AGENCY_ADMIN_LOGO_MAX_SIZE = 2000000; //in bytes
     static AGENCY_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
+
+    // country administrator
+    static COUNTRY_ADMIN_HOME = "/dashboard";
+    static COUNTRY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.COUNTRY_USER",
+        "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
+    static COUNTRY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.GlobalUser,
+    UserType.ErtLeader, UserType.Ert];
+
 
     /*LIST VALUES FOR TRANSLATION*/
     static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];

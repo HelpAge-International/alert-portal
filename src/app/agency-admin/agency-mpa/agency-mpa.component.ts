@@ -20,7 +20,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private actions: Observable<any>;
   private ActionLevel = ActionLevel;
   private departments: any[] = [];
-  private All_Department: string = "All departments";
+  private All_Department: string = "allDepartments"; // <option value="allDepartments">
   private departmentSelected: string = this.All_Department;
   private actionLevelSelected = 0;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
@@ -80,7 +80,6 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     this.router.navigate(['agency-admin/agency-mpa/add-generic-action']);
   }
 
-  // TODO - Change checking the 'All departments' string to increase efficiency
   filter() {
     console.log("Selected Department ---- " + this.departmentSelected);
 
@@ -163,7 +162,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
     let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departmentList => {
-        let departments = [this.All_Department];
+        let departments = [];
         departmentList.forEach(x => {
           departments.push(x.$key);
         });

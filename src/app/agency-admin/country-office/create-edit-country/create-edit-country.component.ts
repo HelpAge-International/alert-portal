@@ -258,6 +258,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     countryAdmin.postCode = this.countryAdminPostcode ? this.countryAdminPostcode : "";
     updateAdminData["/userPublic/" + countryId] = countryAdmin;
 
+    updateAdminData["/administratorCountry/" + countryId + "/firstLogin"] = true;
     updateAdminData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
     updateAdminData["/administratorCountry/" + countryId + "/countryId"] = this.countryOfficeId;
 

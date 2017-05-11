@@ -1,3 +1,160 @@
-<p>
-  country-staff works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Header-title__wrap">
+            <h1>{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" | translate}}</h1>
+            <button type="button" class="btn btn-primary" (click)="addNewStaff();">{{"COUNTRY_ADMIN.STAFF.ADD_NEW_STAFF" | translate}}</button>
+        </div>
+        <div class="row align-items-center Filter-form System-admin--form-wrap">
+            <div class="col-lg-1 col-md-1">
+                {{"GLOBAL.FILTER"| translate}}
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
+                <option *ngFor="let department of departments" [value]="department">{{department}}</option>
+              </select>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <select class="form-control" [(ngModel)]="filterUser" (change)="filterStaff()">
+                  <option *ngFor="let userType of userTypesList" [value]="userType">{{UserType[userType] | translate}}</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <select class="form-control" [(ngModel)]="filterOffice" (change)="filterStaff()">
+                  <option *ngFor="let officeType of officeTypesList" [value]="officeType">{{OfficeType[officeType] |
+                    translate}}
+                  </option>
+                </select>
+            </div>
+        </div>
+        <div class="row Line-row Small-spaced Header">
+            <div class="col-lg-2 col-md-2">{{"GLOBAL.NAME"| translate}}</div>
+            <div class="col-lg-2 col-md-2">{{"GLOBAL.DEPARTMENT"| translate}}</div>
+            <div class="col-lg-2 col-md-2">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
+            <div class="col-lg-2 col-md-2">{{"COUNTRY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
+            <div class="col-lg-2 col-md-2"></div>
+            <div class="col-lg-2 col-md-2"></div>
+        </div>
+        <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced">
+            <div class="col-lg-2 col-md-2">{{ staffPublicUser[staff?.id]?.firstName }} {{ staffPublicUser[staff?.id]?.lastName }}</div>
+            <div class="col-lg-2 col-md-2">{{ staff.department }}</div>
+            <div class="col-lg-2 col-md-2">{{ getStaffUserType(staff.userType) | translate}}</div>
+            <div class="col-lg-2 col-md-2">{{OfficeType[staff.officeType] | translate}}</div>
+            <div class="col-lg-2 col-md-2 additional-info">
+                <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
+                <a href="javascript:void(0)" data-toggle="collapse" [attr.data-target]="'#'+staff.id" aria-expanded="false"
+                aria-controls="popover_content">{{"COUNTRY_ADMIN.STAFF.ADDITIONAL_INFO"| translate}}</a>
+            </div>
+            <div class="col-lg-2 col-md-2"><a href="javascript:void(0)" (click) = "editStaff(countryId, staff.id)" class="btn btn-primary">Edit</a></div>
+            
+            <!-- Additional information -->
+            <div [attr.id]="staff?.id" class="Popover__ribbon prevent_parent_collapse collapse col-12">
+                <div class="row  Spaced">
+                    <div class="col-sm-10 col-8"><h4>{{"COUNTRY_ADMIN.STAFF.ADDITIONAL_INFO"| translate}}</h4></div>
+                    <div class="col-sm-2 col-4 text-right">
+                        <button class="btn-link" (click)="closeAdditionalInfo(staff?.id)">{{"GLOBAL.CLOSE"| translate}}</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.STAFF.POSITION"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">{{ staff?.position }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">{{ staffPublicUser[staff?.id]?.email }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"GLOBAL.USER_INFO.PHONE"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">{{ staffPublicUser[staff?.id]?.phone }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">
+                        <ul>
+                            <li *ngFor="let skill of getSupportSkills(countryId, staff.id)"> {{skill}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">
+                        <ul>
+                            <li *ngFor="let skill of getTechSkills(countryId, staff.id)"> {{skill}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">{{staff.training}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"GLOBAL.NOTIFICATIONS"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">
+                        <ul>
+                        <li *ngFor="let notification of staff.notification"> {{notificationSettings[notification] |
+                            translate}}
+                        </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="Sub-header-title__wrap">
+            <h2>Partner users</h2>
+            <button type="button" class="btn btn-primary" (click) = "addNewPartner()">{{"COUNTRY_ADMIN.PARTNER.ADD_NEW_PARTNER"| translate}}</button>
+        </div>
+        <div class="row Line-row Small-spaced Header">
+            <div class="col-lg-2 col-md-2">{{"GLOBAL.NAME"| translate}}</div>
+            <div class="col-lg-2 col-md-2">{{"COUNTRY_ADMIN.STAFF.POSITION"| translate}}</div>
+            <div class="col-lg-4 col-md-4">{{"COUNTRY_ADMIN.PARTNER.PARTNER_ORGANISATION"| translate}}</div>
+            <div class="col-lg-2 col-md-2"></div>
+            <div class="col-lg-2 col-md-2"></div>
+        </div>
+        <div *ngFor="let partner of partnersList" class="row align-items-center Line-row Small-spaced">
+            <div class="col-lg-2 col-md-2">{{ partnerPublicUser[partner?.id]?.firstName }} {{ partnerPublicUser[partner?.id]?.lastName }}</div>
+            <div class="col-lg-2 col-md-2">{{ partner.position }}</div>
+            <div class="col-lg-4 col-md-4">{{ partnerOrganisations[partner?.id]?.organisationName }}</div>
+            <div class="col-lg-2 col-md-2 additional-info">
+                <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
+                <a href="javascript:void(0)" data-toggle="collapse" [attr.data-target]="'#'+partner.id" aria-expanded="false"
+                aria-controls="popover_content">{{"COUNTRY_ADMIN.STAFF.ADDITIONAL_INFO"| translate}}</a>
+            </div>
+            <div class="col-lg-2 col-md-2"><a href="javascript:void(0)" (click) = "editPartner(partner.id)" class="btn btn-primary">Edit</a></div>
+            
+            <!-- Additional information -->
+            <div [attr.id]="partner?.id" class="Popover__ribbon prevent_parent_collapse collapse col-12">
+                <div class="row  Spaced">
+                    <div class="col-sm-10 col-8"><h4>{{"COUNTRY_ADMIN.STAFF.ADDITIONAL_INFO"| translate}}</h4></div>
+                    <div class="col-sm-2 col-4 text-right">
+                        <button class="btn-link" (click)="closeAdditionalInfo(partner?.id)">{{"GLOBAL.CLOSE"| translate}}</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">{{ partnerPublicUser[partner?.id]?.email }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"GLOBAL.USER_INFO.PHONE"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">{{ partnerPublicUser[partner?.id]?.phone }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.PARTNER.PARTNER_PLAN_VALIDATION"| translate}}</div>
+                    <div class="col-md-10 col-sm-6" *ngIf="partner.hasValidationPermission">{{ "GLOBAL.YES" | translate }}</div>
+                    <div class="col-md-10 col-sm-6" *ngIf="!partner.hasValidationPermission">{{ "GLOBAL.NO" | translate }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 text-bold">{{"GLOBAL.NOTIFICATIONS"| translate}}</div>
+                    <div class="col-md-10 col-sm-6">
+                        <ul>
+                        <li *ngFor="let notification of partner.notificationSettings | keyValues" [hidden] = "!notification.value"> {{notificationSettings[notification.key] |
+                            translate}}
+                        </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </div>
+</div>

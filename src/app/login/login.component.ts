@@ -87,7 +87,15 @@ export class LoginComponent implements OnInit, OnDestroy {
                     .subscribe(snapshots => {
                       snapshots.forEach(snapshot => {
                         if (snapshot.key == success.uid) {
-                          this.router.navigateByUrl("/dashboard");
+                          let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + snapshot.key + '/firstLogin').subscribe((value) => {
+                            let firstLogin: boolean = value.$value;
+                            if (firstLogin) {
+                              this.router.navigateByUrl('country-admin/new-country/new-country-password');
+                            } else {
+                              this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+                            }
+                          });
+                          this.subscriptions.add(subscription);
                         }
                       });
                       this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";

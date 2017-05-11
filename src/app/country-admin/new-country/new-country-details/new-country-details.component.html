@@ -1,3 +1,83 @@
-<p>
-  new-country-details works!
-</p>
+<div id="wrap">
+  <div class="Header_bar">
+    <div class="Header_bar__wrap--inner">
+      <div class="logo"></div>
+    </div>
+  </div>
+
+  <div class="Alert-success" [hidden]="successInactive">
+    {{successMessage | translate}}
+  </div>
+
+  <div class="Alert-error" [hidden]="errorInactive">
+    {{errorMessage | translate}}
+  </div>
+
+  <div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+
+      <div class="Header-title__wrap">
+        <h1>{{"GLOBAL.WELCOME" | translate}}, {{countryAdminName}}</h1>
+      </div>
+      <h3>{{"COUNTRY_ADMIN.PLEASE_FILL" | translate}}</h3>
+
+      <div class="Spaced">
+        <div class="row ">
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.addressLine1]}">
+              <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}*</label>
+              <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.addressLine1">
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group">
+              <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
+              <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="CountryOfficeAddressModel.addressLine2">
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group">
+              <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
+              <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="CountryOfficeAddressModel.addressLine3">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.location]}">
+              <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
+              <select name="Country" [disabled] = "CountryOfficeAddressModel.location" id="Country" class="form-control" [(ngModel)]="CountryOfficeAddressModel.location">
+                <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.city]}">
+              <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}*</label>
+              <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.city">
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group" >
+              <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
+              <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="CountryOfficeAddressModel.postCode">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.phone]}">
+              <label for="T-number">{{"GLOBAL.USER_INFO.PHONE" | translate}}*</label>
+              <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.phone">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="Form-submit__wrapper">
+        <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.CONTINUE" | translate | uppercase}}</div>
+      </div>
+
+    </div>
+  </div>
+</div>

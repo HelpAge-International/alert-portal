@@ -24,7 +24,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
-  All_Department: string = "All departments";
+  All_Department: string = "allDepartments";
   filterPosition: string = this.All_Department;
   filterUser: number = 0;
   filterOffice: number = 0;
@@ -75,7 +75,7 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.getStaffData();
     let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departmentList => {
-        let departments = [this.All_Department];
+        let departments = [];
         departmentList.forEach(x => {
           departments.push(x.$key);
         });

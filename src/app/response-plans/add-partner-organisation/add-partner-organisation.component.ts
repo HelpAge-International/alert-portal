@@ -34,7 +34,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('response-plans');
+    this.router.navigateByUrl('response-plans/create-edit-response-plan');
   }
 
   private navigateToLogin() {

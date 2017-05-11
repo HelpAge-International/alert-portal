@@ -46,7 +46,7 @@
               <label for="H-scen">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
                 translate}}</label>
               <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected">
-                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let hazardScenario of hazardScenariosList" [value]="hazardScenario">
                   {{HazardScenario[hazardScenario] | translate}}
                 </option>
@@ -56,8 +56,9 @@
               <label for="P-lead1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
                 translate}}</label>
               <select class="form-control" id="P-lead1" [(ngModel)]="staffMemberSelected">
-                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember">{{staffMember.firstName + ' ' + staffMember.lastName}}
+                <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember">{{staffMember.firstName + ' ' +
+                  staffMember.lastName}}
                 </option>
               </select>
             </div>
@@ -80,7 +81,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -169,7 +170,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -259,12 +260,15 @@
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
               <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
                 <div class="col-sm-6">
-                  <select class="form-control" id="P-lead">
-                    <option hidden disabled selected>
+                  <select class="form-control" id="P-lead"
+                          (change)="setPartnerOrganisation($event.target.value, dropDown)">
+                    <option value="null" hidden disabled selected>
                       {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
-                    <option>Partner Organisation 1</option>
-                    <option value="" class="text-primary">+
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations">
+                      {{partnerOrganisation.organisationName}}
+                    </option>
+                    <option value="addNewPartnerOrganisation" class="text-primary">+
                       {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
                     </option>
                   </select>
@@ -275,7 +279,8 @@
                     | translate}}</a>
                 </div>
               </div>
-              <a href="javascript:void(0)" class=" Add__row__cta" (click)="addPartnersDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_ANOTHER_PARTNER"
+              <a href="javascript:void(0)" class=" Add__row__cta"
+                 [hidden]="partnersDropDownsCounter == partnerOrganisations.length" (click)="addPartnersDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_ANOTHER_PARTNER"
                 | translate}}</a>
             </div>
           </div>
@@ -299,7 +304,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -510,7 +515,7 @@
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
-                    {{activityMap.get(i)?activityMap.get(i)?.length:0}}
+                    {{activityMap.get(sector)?activityMap.get(sector)?.length:0}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
                   </div>
                   <div class="col-sm-1 col-12 text-center" data-toggle="collapse" [attr.href]="'#Activity'+sector"
@@ -521,8 +526,8 @@
                 </div>
                 <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
-                  <div *ngIf="activityMap.get(i)?.length > 0">
-                    <div *ngFor="let activity of activityMap.get(i); index as i"
+                  <div *ngIf="activityMap.get(sector)?.length > 0">
+                    <div *ngFor="let activity of activityMap.get(sector); index as i"
                          class="row Outlined Spaced align-items-center">
                       <div class="col-sm-1 Small-spaced text-bold text-center">{{i}}</div>
                       <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
@@ -773,7 +778,8 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()" (click)="checkAllSections()"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -898,7 +904,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"  (click)="checkAllSections()"></div>
+            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Response__content--budget Spaced">
@@ -1064,7 +1070,8 @@
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" | translate}}
               </div>
               <div class="col-lg-2 col-3">
-                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage" min="0"
+                <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage"
+                       min="0"
                        (change)="calculateBudget(null, null, false)">
                 <br/> &pound; {{totalOfAllCosts}}
               </div>
@@ -1101,13 +1108,16 @@
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
-              <div class="col-lg-3 col-4"><input type="text" class="form-control" #budget (change)="budgetOverThousand(capitalItemSection, budget.value)">
+              <div class="col-lg-3 col-4"><input type="text" class="form-control" #budget
+                                                 (change)="budgetOverThousand(capitalItemSection, budget.value)">
                 <br/>
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeCapitalItemSection(capitalItemSection)"
                    [hidden]="capitalItemSection == 1">{{"GLOBAL.REMOVE" | translate}}</a>
               </div>
-              <div class="col-lg-9 col-8"><input type="text" class="form-control" #desc (change)="budgetOverThousandDesc(capitalItemSection, desc.value)"></div>
+              <div class="col-lg-9 col-8"><input type="text" class="form-control" #desc
+                                                 (change)="budgetOverThousandDesc(capitalItemSection, desc.value)">
+              </div>
             </div>
             <div class="row Line-row Small-spaced">
               <a href="javascript:void(0)" class="Add__row__cta" (click)="addCapitalItemSection()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.ADD_ITEM"

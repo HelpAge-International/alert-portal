@@ -113,13 +113,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   setDepartment(department, genericAction) {
 
-    // TODO - FIX - Change checking the string
-
-    let addDepText = "AGENCY_ADMIN.MANDATED_PA.ADD_A_DEPARTMENT";
-
-    console.log("addDepText ----" + addDepText);
-
-    if (department != "Add a department +") {
+    if (department != "addNewDepartment") {
       this.actionsSelected[genericAction.$key].department = department;
     } else {
       console.log("Add a department selected");
