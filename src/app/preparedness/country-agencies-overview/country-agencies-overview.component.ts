@@ -10,10 +10,10 @@ import {ModelUserPublic} from "../../model/user-public.model";
 declare var jQuery: any;
 @Component({
     selector: 'app-budget',
-    templateUrl: './agency-overview.component.html',
-    styleUrls: ['./agency-overview.component.css']
+    templateUrl: './country-agencies-overview.component.html',
+    styleUrls: ['./country-agencies-overview.component.css']
 })
-export class AgencyOverviewPreparednessComponent implements OnInit {
+export class CountryAgenciesOverviewPreparednessComponent implements OnInit {
 
     private uid: string;
     private countryID: string;
