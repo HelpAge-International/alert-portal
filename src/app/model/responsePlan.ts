@@ -1,16 +1,17 @@
-import {
-  HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation,
-  MediaFormat
-} from "../utils/Enums";
 /**
  * Created by Sanjaya on 27/04/2017.
  */
 
+import {
+  HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation,
+  ApprovalStatus
+} from "../utils/Enums";
+
 export class ResponsePlan {
 
   // Section 1/10
-  public planName: string;
-  public geographicalLocation: string;
+  public name: string;
+  public location: string;
   public planLead: string;
   public hazardScenario: HazardScenario;
 
@@ -24,15 +25,15 @@ export class ResponsePlan {
   public otherRelatedSector: string;
   public presenceInTheCountry: PresenceInTheCountry;
   public methodOfImplementation: MethodOfImplementation;
-  public partners: string[]; // TODO - Update to list of Partner Organisations
+  public partnerOrganisations: string[];
 
   // Section 4/10
-  public proposedResponse: string;
-  public progressOfActivitiesPlan: string;
-  public coordinationPlan: string;
+  public activitySummary = {};
 
   // Section 5/10
-  public numOfBeneficiaries: number;
+  public peoplePerHousehold: number;
+  public numOfHouseholds: number;
+  public beneficiariesNote: string;
   public vulnerableGroups: string[];
   public targetPopulationInvolvementList: string[];
 
@@ -40,21 +41,20 @@ export class ResponsePlan {
   public riskManagementPlan: string;
 
   // Section 7/10
-  // TODO - Add Section 7 attributes
+  public sectors = {};
 
   // Section 8/10
-  public mALSystemsDescription: string;
-  public isMedia: boolean;
-  public mediaFormat: MediaFormat;
+  public monAccLearning = {};
 
   // Section 9/10
-  // TODO - Add Section 9 attributes
+  public doubleCounting = {};
 
   // Section 10/10
-  // TODO - Add Section 10 attributes
+  public budget = {};
 
   // Other
   public sectionsCompleted: number;
   public totalSections: number;
   public isActive: boolean;
+  public status: ApprovalStatus;
 }

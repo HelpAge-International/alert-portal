@@ -22,6 +22,7 @@
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
         <select class="form-control" [(ngModel)]="departmentSelected" (change)="filter()">
+          <option value="allDepartments">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
           <option *ngFor="let department of departments" [value]="department">{{department}}</option>
         </select>
       </div>

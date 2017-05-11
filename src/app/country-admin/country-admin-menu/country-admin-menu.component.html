@@ -10,11 +10,19 @@
     <li class="" routerLinkActive="active">
       <a routerLink="/risk-monitoring">Risk Monitoring</a> <!--TODO - Go to Risk Monitoring-->
     </li>
+
     <li class="" routerLinkActive="active">
-      <a routerLink="/preparedness">Preparedness</a> <!--TODO - Go to Preparedness-->
+        <div class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true" aria-expanded="false">Preparedness</a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" routerLink="/preparedness/minimum">Minimum preparedness</a>
+                <a class="dropdown-item" routerLink="/preparedness/advanced">Advanced preparedness</a>
+                <a class="dropdown-item" routerLink="/preparedness/budget">Preparedness budget</a>
+            </div>
+        </div>
     </li>
     <li class="" routerLinkActive="active">
-      <a routerLink="/response-plans">Response Plans</a> <!--TODO - Go to Response Plans-->
+      <a routerLink="/response-plans">Plans</a> <!--TODO - Go to Response Plans-->
     </li>
     <li class="" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile">Country Office</a> <!--TODO - Go to Country Office Profile-->

@@ -179,8 +179,14 @@ export enum MediaFormat {
 }
 
 export enum Gender {
-  male = 0,
-  feMale = 1
+  feMale = 1,
+  male = 0
+}
+
+export enum AgeRange {
+  Less18 = 0,
+  Between18To50 = 1,
+  More50 = 2
 }
 
 export enum PhonePrefix{
@@ -451,3 +457,27 @@ export enum AlertMessageType {
   Error = 0,
   Success = 1
 }
+
+export enum BudgetCategory {
+  Inputs = 0,
+  Transport = 1,
+  Security = 2,
+  Logistics = 3,
+  Staffing = 4,
+  Monitoring = 5,
+  CapitalItems = 6,
+  ManagementSupport = 7
+}
+
+export enum ActionStatus {
+  Expired = 0,
+  InProgress = 1,
+  Completed = 2,
+  Inactive = 3
+}
+
+export enum SizeType {
+  KB = 0,
+  MB = 1
+}
+

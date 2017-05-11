@@ -69,7 +69,9 @@ export class Constants {
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY9"];
 
   static ACTION_LEVEL: string[] = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
-
+  static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.INACTIVE"];
+  static ACTION_TYPE: string[] = ["GLOBAL.ACTION_TYPE.CHS", "GLOBAL.ACTION_TYPE.MANDATED", "GLOBAL.ACTION_TYPE.CUSTOM"];
+  
   static CURRENCY: string[] = ["GBP", "EUR", "USD"];
   static CURRENCY_SELECTION = [Currency.GBP, Currency.EUR, Currency.USD];
 
@@ -142,6 +144,29 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING",
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.DOUBLE_COUNTING",
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET"
+  ];
+
+  static RESPONSE_PLANS_SECTORS = [
+    "WaSH",
+    "Health",
+    "Shelter",
+    "Nutrition",
+    "Food security & livelihoods",
+    "Protections",
+    "Education",
+    "Camp management",
+    "Other"
+  ];
+
+  static RESPONSE_PLANS_BUDGET_CATEGORY = [
+    "Inputs",
+    "Transport",
+    "Security",
+    "Logistics & overheads",
+    "Staffing & support",
+    "Monitoring & evaluation",
+    "Capital Items",
+    "Management support"
   ];
 
   static DOCUMENT_TYPE = [
