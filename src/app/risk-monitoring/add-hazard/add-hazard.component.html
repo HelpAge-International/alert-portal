@@ -1,0 +1,71 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+
+<!--Create an alert section start-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Back--button row" routerLink="/risk-monitoring">Risk Monitoring</div> <!-- Back button-->
+        <div class="Header-title__wrap--risk Spaced-above">
+            <h1>Add new hazard</h1>
+        </div>
+        <p>Information provided by <a href="#">Inform Index for Philippines.</a></p>
+        <div class="Ribbon__section__wrap--risk Spaced"></div>
+        <div class="row Spaced-above"> <!-- Alert selection section start -->
+            <div></div>
+        </div>
+
+        <!--Earthquake-->
+        <div class="row" style="width:100%">
+            <label for="RT_yes" class="Checkbox--ribbon__alert Left col-sm-5">
+                <input type="radio" name="RT" id="RT_yes">
+                <div class="risk-icon__components no-bg"><img src="assets/images/hazards/earthquake.svg"></div>
+                <p><b>Earthquake</b>Risk 10.0</p>
+            </label>
+            <p class="col-sm-4 align-self-center">Note: this list will only display the hazards that don’t appear in your risk monitoring list (you cannot add the same hazard twice)</p>
+        </div>
+        <!--Tsunami-->
+        <div class="row" style="width:100%">
+            <label for="RT_yes" class="Checkbox--ribbon__alert Left col-sm-5">
+                <input type="radio" name="RT" id="RT_yes" checked="checked">
+                <div class="risk-icon__components no-bg"><img src="assets/images/hazards/Tsunami.svg"></div>
+                <p><b>Tsunami</b>Risk 9.8</p>
+            </label>
+        </div>
+        <!--Drought-->
+        <div class="row" style="width:100%">
+            <label for="RT_yes" class="Checkbox--ribbon__alert Left col-sm-5">
+                <input type="radio" name="RT" id="RT_yes">
+                <div class="risk-icon__components"><img src="assets/images/risks/drought.svg"></div>
+                <p><b>Drought</b>Risk 3.3</p>
+            </label>
+        </div>
+        <!--Select another hazard-->
+        <div class="row" style="width:100%">
+            <label for="RT_yes" class="Checkbox--ribbon__alert Left col-sm-5">
+                <input type="radio" name="RT" id="RT_yes">
+
+                <div class="col-sm-11">
+                    <div>
+                        <select class="form-control" id="select1">
+                            <option selected="selected">Select another hazard</option>
+                            <option>Floods</option>
+                            <option>Insect Infestation</option>
+                            <option>... and all other hazards in the alert system</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+            </label>
+        </div>
+
+        <!--Confirm/cancel buttons-->
+        <br>
+        <div class="Form-submit__wrapper">
+            <div class="btn btn-primary">continue</div>
+        </div>
+
+
+    </div>
+</div>

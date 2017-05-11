@@ -1,0 +1,150 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <br>
+        <div class="Back--button" routerLink="/risk-monitoring">Risk Monitoring</div>
+        <div class="Header-title__wrap">
+            <h1>Add new indicator</h1>
+        </div>
+
+        <!--Hazard Dropdown-->
+        <h6 class="Spaced-above"><b>Hazard</b></h6>
+        <div class="Spaced-above form-group col-sm-12 row">
+            <select class="form-control col-sm-4" id="select1">
+                <option>Country Context</option>
+                <option>Country Context</option>
+            </select>
+            <span class="col-sm-1"> </span>
+            <p class="col-sm-4">Note: Pre-filled based on the hazard I have select to add the indicator</p>
+        </div>
+
+        <!--Indicator -->
+        <h6 class="Spaced-above"><b>Indicator</b></h6>
+        <div class="Spaced-above form-group col-sm-12 row">
+            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Please enter">
+        </div>
+
+        <!--Source of Information-->
+        <div class="row Spaced-above"><h6 class="col-sm-4"><b>Source of information</b></h6><img src="assets/images/icons/info_source.svg"></div>
+
+        <div class="Spaced-above form-group col-sm-12 row">
+            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Name of source">
+            <span class="col-sm-1"></span>
+            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Link to source if available">
+            <a href="#" class="Spaced-above">+ Add another source</a>
+        </div>
+
+        <div class="row Spaced"> <!--start of row-->
+            <div class="col Spaced"><!--Trigger Values-->
+                <div class="row"><h6 class="col-sm-4"><b>Trigger Values</b></h6><a placement="right" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-content="This is an example for a tooltip/explanation text inside of a dialogue box."><img src="assets/images/icons/question_bubble.svg"></a></div>
+                <div class="form-group col-sm-12 row Spaced-above">
+                    <img class="oval_green__wrap--risk Spaced-above" src="assets/images/oval_icon/oval_green_large.svg">
+                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="Green Level">
+                    <span class="oval_green__wrap--risk"></span>
+                </div>
+                <div class="form-group col-sm-12 row">
+                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_amber_large.svg">
+                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="Amber Level">
+                    <span class="oval_green__wrap--risk"></span>
+                </div>
+                <div class="form-group col-sm-12 row">
+                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_red_large.svg">
+                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="Red Level">
+                    <span class="oval_green__wrap--risk"></span>
+                </div>
+            </div><!--Trigger Values-->
+
+            <div class="col Spaced"><!--Frequency of Monitoring-->
+                <h6 class="col-sm-6"><b>Frequency of monitoring</b></h6>
+                <div class="Spaced-above form-group-risk-frequency col-sm-12 row">
+                    <img class="align-middle oval_green__wrap--risk" src="assets/images/oval_icon/oval_green_large.svg">
+                    <label class="oval_green__wrap--risk">Every</label>
+                    <div class="form-group-risk-frequency">
+                        <select class="form-control" id="select1">
+                            <option>0</option> <!--Placeholder amount, will have to configure to include large numbers. Maybe worth allowing the user to type the number in-->
+                        </select>
+                    </div>
+                    <!--frequency-->
+                    <div class="form-group-risk-frequency">
+                        <select class="form-control" id="select1">
+                            <option>hours</option>
+                            <option>days</option>
+                            <option>weeks</option>
+                            <option>months</option>
+                        </select>
+                    </div>
+                    <span class="oval_green__wrap--risk"></span>
+                </div>
+                <div class="form-group-risk-frequency col-sm-12 row ">
+                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_amber_large.svg">
+                    <label class="oval_green__wrap--risk align-bottom">Every</label>
+                    <div class="form-group-risk-frequency">
+                        <select class="form-control" id="select1">
+                            <option>0</option> <!--Placeholder amount, will have to configure to include large numbers. Maybe worth allowing the user to type the number in-->
+                        </select>
+                    </div>
+                    <!--frequency-->
+                    <div class="form-group-risk-frequency">
+                        <select class="form-control" id="select1">
+                            <option>hours</option>
+                            <option>days</option>
+                            <option>weeks</option>
+                            <option>months</option>
+                        </select>
+                    </div>
+                    <span class="oval_green__wrap--risk"></span>
+                </div>
+                <div class="form-group-risk-frequency col-sm-12 row">
+                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_red_large.svg">
+                    <label class="oval_green__wrap--risk">Every</label>
+                    <div class="form-group-risk-frequency">
+                        <select class="form-control" id="select1">
+                            <option>0</option> <!--Placeholder amount, will have to configure to include large numbers. Maybe worth allowing the user to type the number in-->
+
+                        </select>
+                    </div>
+                    <!--frequency-->
+                    <div class="form-group-risk-frequency ">
+                        <select class="form-control" id="select1">
+                            <option>hours</option>
+                            <option>days</option>
+                            <option>weeks</option>
+                            <option>months</option>
+                        </select>
+                    </div>
+                    <span class="oval_green__wrap--risk"></span>
+                </div>
+            </div><!--Frequency of Monitoring-->
+
+        </div> <!--end of row-->
+
+        <!--Assign to-->
+        <h6 class="Spaced-above"><b>Assign to:</b></h6>
+        <div class="form-group col-sm-12 row">
+            <select class="form-control col-sm-4" id="select1" placeholder="Please select">
+                <option selected="selected">Please select</option> <!--default select value-->
+                <option>Disaster Monitoring Services</option>
+                <option>The Weatherman</option>
+            </select>
+        </div>
+        <br>
+
+        <!--Geographical location of indicator monitoring-->
+        <h6><b>Geographical location of indicator monitoring</b></h6>
+        <div class="row">
+            <label for="RT_yes" class="Checkbox--ribbon col-sm-5"><input type="radio" name="RT" id="RT_yes">National<span class="col-sm-9"></span></label>
+        </div>
+        <div class="row">
+            <label for="RT_yes" class="Checkbox--ribbon col-sm-5"><input type="radio" name="RT" id="RT_yes">Subnational<span class="col-sm-8"></span></label>
+
+        </div>
+        <div class="Form-submit__wrapper">
+            <div class="btn btn-primary">Save new indicator</div>
+            <div class="btn btn-outline-secondary">Cancel</div>
+        </div>
+
+    </div>
+</div>
