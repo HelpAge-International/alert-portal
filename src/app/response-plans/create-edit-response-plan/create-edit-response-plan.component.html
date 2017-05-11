@@ -263,13 +263,13 @@
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
                     <option value="null" hidden disabled selected>
-                      {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.SELECT_A_PARTNER" | translate}}
+                      {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations">
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
                       {{partnerOrganisation.organisationName}}
                     </option>
                     <option value="addNewPartnerOrganisation" class="text-primary">+
-                      {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
+                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
                     </option>
                   </select>
                 </div>
@@ -280,7 +280,7 @@
                 </div>
               </div>
               <a href="javascript:void(0)" class=" Add__row__cta"
-                 [hidden]="partnersDropDownsCounter == partnerOrganisations.length" (click)="addPartnersDropDown()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ADD_PARTNER.ADD_ANOTHER_PARTNER"
+                 [hidden]="partnersDropDownsCounter == partnerOrganisations.length" (click)="addPartnersDropDown()">{{"ADD_PARTNER.ADD_ANOTHER_PARTNER_TO_THIS_PLAN"
                 | translate}}</a>
             </div>
           </div>
