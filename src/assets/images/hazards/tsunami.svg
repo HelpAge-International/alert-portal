@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="65px" height="57px" viewBox="0 0 65 57" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
-    <title>Fill 9</title>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Fill 1</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="06-MAP" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Hazard-icons" transform="translate(-39.000000, -190.000000)" fill="#FFFFFF">
-            <path d="M103.8001,239.8771 C56.5031,237.9351 69.1631,196.3611 85.0511,200.4271 C83.4011,201.4161 82.3281,204.8781 83.3601,207.2031 C84.4701,209.6991 88.0441,211.1211 90.1191,210.5911 C95.0581,209.3311 95.2711,202.3841 93.5011,198.7311 C91.6651,194.9461 86.7901,190.2601 78.2891,190.2601 C57.7581,190.2601 44.6891,201.7061 39.4181,219.7601 L39.4181,246.3351 L103.8001,246.3351 L103.8001,239.8771 Z" id="Fill-9"></path>
+    <g id="♠️-04-Risk-Monitoring" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Add-new-hazard" transform="translate(-60.000000, -353.000000)" fill="#000000">
+            <path d="M83.9502317,375.485056 L66.0497683,375.485056 L66.0497683,368.096338 C67.5152919,363.076737 71.1489342,359.894375 76.8572753,359.894375 C79.2208526,359.894375 80.5762743,361.197236 81.086747,362.24959 C81.5788693,363.265243 81.5196478,365.196736 80.1464319,365.547057 C79.5695088,365.694414 78.5758109,365.299052 78.2671918,364.605082 C77.9802595,363.958657 78.2785913,362.996108 78.7373494,362.721133 C74.3199259,361.590653 70.8,373.149582 83.9502317,373.689521 L83.9502317,375.485056 Z M75,353 C66.7156627,353 60,359.715878 60,368.000139 C60,376.284122 66.7156627,383 75,383 C83.2843373,383 90,376.284122 90,368.000139 C90,359.715878 83.2843373,353 75,353 L75,353 Z" id="Fill-1"></path>
         </g>
     </g>
 </svg>

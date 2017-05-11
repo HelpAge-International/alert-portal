@@ -66,170 +66,180 @@ import {Modal} from 'angular2-modal/plugins/bootstrap';
 import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
 import {SystemSettingsResponsePlansComponent} from './system-admin/system-settings/system-settings-response-plans/system-settings-response-plans.component';
 import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/system-settings-documents/system-settings-documents.component';
-import { NewAgencyPasswordComponent } from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
-import { NewAgencyDetailsComponent } from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
-import { KeysPipe } from './utils/pipes/keys.pipe';
-import { KeyValuesPipe } from './utils/pipes/key-values.pipe';
-import { NewCountryDetailsComponent } from './country-admin/new-country/new-country-details/new-country-details.component';
-import { NewCountryPasswordComponent } from './country-admin/new-country/new-country-password/new-country-password.component';
-import { CountryAccountSettingsComponent } from './country-admin/country-account-settings/country-account-settings.component';
-import { CountryChangePasswordComponent } from './country-admin/country-account-settings/country-change-password/country-change-password.component';
-import { CountryAdminHeaderComponent } from './country-admin/country-admin-header/country-admin-header.component';
-import { CountryAdminMenuComponent } from './country-admin/country-admin-menu/country-admin-menu.component';
-import { CountryMessagesComponent } from './country-admin/country-messages/country-messages.component';
-import { CountryCreateEditMessageComponent } from './country-admin/country-messages/country-create-edit-message/country-create-edit-message.component';
-import { CountryPermissionSettingsComponent } from './country-admin/settings/country-permission-settings/country-permission-settings.component';
-import { CountryModulesSettingsComponent } from './country-admin/settings/country-modules-settings/country-modules-settings.component';
-import { CountryClockSettingsComponent } from './country-admin/settings/country-clock-settings/country-clock-settings.component';
-import { CountryNotificationSettingsComponent } from './country-admin/settings/country-notification-settings/country-notification-settings.component';
-import { CountryAddExternalRecipientComponent } from './country-admin/settings/country-notification-settings/country-add-external-recipient/country-add-external-recipient.component';
-import { CountryStaffComponent } from './country-admin/country-staff/country-staff.component';
-import { CountryAddEditPartnerComponent } from './country-admin/country-staff/country-add-edit-partner/country-add-edit-partner.component';
-import { CountryAddEditStaffComponent } from './country-admin/country-staff/country-add-edit-staff/country-add-edit-staff.component';
-import { CreateEditResponsePlanComponent } from './response-plans/create-edit-response-plan/create-edit-response-plan.component';
-import { AddPartnerOrganisationComponent } from './response-plans/add-partner-organisation/add-partner-organisation.component';
-import { OrdinalPipe } from './utils/pipes/ordinal.pipe';
-import { StatusAlertComponent } from './commons/status-alert/status-alert.component';
-import { AgencyNotificationsComponent } from './agency-admin/agency-notifications/agency-notifications.component';
-import { DatepickerModule } from 'angular2-material-datepicker';
-import { MinimumPreparednessComponent } from './preparedness/minimum/minimum.component';
-import { AdvancedPreparednessComponent } from './preparedness/advanced/advanced.component';
-import { BudgetPreparednessComponent } from './preparedness/budget/budget.component';
-import { SelectPreparednessComponent } from './preparedness/select/select.component';
-import { CreateEditPreparednessComponent } from './preparedness/create-edit/create-edit.component';
+import {NewAgencyPasswordComponent} from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
+import {NewAgencyDetailsComponent} from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
+import {KeysPipe} from './utils/pipes/keys.pipe';
+import {KeyValuesPipe} from './utils/pipes/key-values.pipe';
+import {NewCountryDetailsComponent} from './country-admin/new-country/new-country-details/new-country-details.component';
+import {NewCountryPasswordComponent} from './country-admin/new-country/new-country-password/new-country-password.component';
+import {CountryAccountSettingsComponent} from './country-admin/country-account-settings/country-account-settings.component';
+import {CountryChangePasswordComponent} from './country-admin/country-account-settings/country-change-password/country-change-password.component';
+import {CountryAdminHeaderComponent} from './country-admin/country-admin-header/country-admin-header.component';
+import {CountryAdminMenuComponent} from './country-admin/country-admin-menu/country-admin-menu.component';
+import {CountryMessagesComponent} from './country-admin/country-messages/country-messages.component';
+import {CountryCreateEditMessageComponent} from './country-admin/country-messages/country-create-edit-message/country-create-edit-message.component';
+import {CountryPermissionSettingsComponent} from './country-admin/settings/country-permission-settings/country-permission-settings.component';
+import {CountryModulesSettingsComponent} from './country-admin/settings/country-modules-settings/country-modules-settings.component';
+import {CountryClockSettingsComponent} from './country-admin/settings/country-clock-settings/country-clock-settings.component';
+import {CountryNotificationSettingsComponent} from './country-admin/settings/country-notification-settings/country-notification-settings.component';
+import {CountryAddExternalRecipientComponent} from './country-admin/settings/country-notification-settings/country-add-external-recipient/country-add-external-recipient.component';
+import {CountryStaffComponent} from './country-admin/country-staff/country-staff.component';
+import {CountryAddEditPartnerComponent} from './country-admin/country-staff/country-add-edit-partner/country-add-edit-partner.component';
+import {CountryAddEditStaffComponent} from './country-admin/country-staff/country-add-edit-staff/country-add-edit-staff.component';
+import {CreateEditResponsePlanComponent} from './response-plans/create-edit-response-plan/create-edit-response-plan.component';
+import {AddPartnerOrganisationComponent} from './response-plans/add-partner-organisation/add-partner-organisation.component';
+import {OrdinalPipe} from './utils/pipes/ordinal.pipe';
+import {StatusAlertComponent} from './commons/status-alert/status-alert.component';
+import {AgencyNotificationsComponent} from './agency-admin/agency-notifications/agency-notifications.component';
+import {DatepickerModule} from 'angular2-material-datepicker';
+import {MinimumPreparednessComponent} from './preparedness/minimum/minimum.component';
+import {AdvancedPreparednessComponent} from './preparedness/advanced/advanced.component';
+import {BudgetPreparednessComponent} from './preparedness/budget/budget.component';
+import {SelectPreparednessComponent} from './preparedness/select/select.component';
+import {CreateEditPreparednessComponent} from './preparedness/create-edit/create-edit.component';
+import {AgencyOverviewPreparednessComponent} from './preparedness/agency-overview/agency-overview.component';
+import {CountryAgenciesOverviewPreparednessComponent} from './preparedness/country-agencies-overview/country-agencies-overview.component';
+import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
+import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
+import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
 
-import { LocalStorageModule } from 'angular-2-local-storage';
+import {LocalStorageModule} from 'angular-2-local-storage';
 
 export function HttpLoaderFactory(http: Http) {
-  return new TranslateHttpLoader(http);
+    return new TranslateHttpLoader(http);
 }
 
 // Must export the config
 export const firebaseConfig = {
-  apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-  authDomain: "alert-190fa.firebaseapp.com",
-  // authDomain: "test.alertplatform.co.uk",
-  databaseURL: "https://alert-190fa.firebaseio.com",
-  storageBucket: "alert-190fa.appspot.com",
-  messagingSenderId: "305491871378"
+    apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+    authDomain: "alert-190fa.firebaseapp.com",
+    // authDomain: "test.alertplatform.co.uk",
+    databaseURL: "https://alert-190fa.firebaseio.com",
+    storageBucket: "alert-190fa.appspot.com",
+    messagingSenderId: "305491871378"
 };
 
 const firebaseAuthConfig = {
-  provider: AuthProviders.Google,
-  method: AuthMethods.Redirect
+    provider: AuthProviders.Google,
+    method: AuthMethods.Redirect
 };
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    SystemAdminComponent,
-    DashboardComponent,
-    ResponsePlansComponent,
-    PreparednessComponent,
-    RiskMonitoringComponent,
-    CountryOfficeProfileComponent,
-    MapComponent,
-    DirectorDashboardComponent,
-    DonorModuleComponent,
-    ForgotPasswordComponent,
-    AddAgencyComponent,
-    MessagesComponent,
-    SystemAdminMenuComponent,
-    MessagesCreateComponent,
-    MinPrepComponent,
-    MpaComponent,
-    CreateActionComponent,
-    CreateMpaActionComponent,
-    SystemSettingsComponent,
-    SystemAdminHeaderComponent,
-    CountryOfficeComponent,
-    CreateEditCountryComponent,
-    CreateEditMpaComponent,
-    SettingsMenuComponent,
-    AgencyAdminMenuComponent,
-    DepartmentComponent,
-    SkillsComponent,
-    ModulesComponent,
-    ClockSettingsComponent,
-    DocumentsComponent,
-    NetworkComponent,
-    CreateEditNetworkComponent,
-    NotificationComponent,
-    CreateEditNotificationComponent,
-    StaffComponent,
-    CreateEditStaffComponent,
-    AgencyMpaComponent,
-    AgencyMessagesComponent,
-    CreateEditMessageComponent,
-    AgencyAdminHeaderComponent,
-    AccountSettingsComponent,
-    ChangePasswordComponent,
-    GlobalNetworksComponent,
-    CreateEditGlobalNetworkComponent,
-    CreateEditRegionComponent,
-    AddGenericActionComponent,
-    AgencyAccountSettingsComponent,
-    AgencyAccountDetailsComponent,
-    AgencyChangePasswordComponent,
-    AgencyAdminSettingsResponsePlanComponent,
-    SystemSettingsResponsePlansComponent,
-    SystemSettingsDocumentsComponent,
-    NewAgencyPasswordComponent,
-    NewAgencyDetailsComponent,
-    KeysPipe,
-    KeyValuesPipe,
-    NewCountryDetailsComponent,
-    NewCountryPasswordComponent,
-    CountryAccountSettingsComponent,
-    CountryChangePasswordComponent,
-    CountryAdminHeaderComponent,
-    CountryAdminMenuComponent,
-    CountryMessagesComponent,
-    CountryCreateEditMessageComponent,
-    CountryPermissionSettingsComponent,
-    CountryModulesSettingsComponent,
-    CountryClockSettingsComponent,
-    CountryNotificationSettingsComponent,
-    CountryAddExternalRecipientComponent,
-    CountryStaffComponent,
-    CountryAddEditPartnerComponent,
-    CountryAddEditStaffComponent,
-    CreateEditResponsePlanComponent,
-    AddPartnerOrganisationComponent,
-    OrdinalPipe,
-    StatusAlertComponent,
-    AgencyNotificationsComponent,
-    MinimumPreparednessComponent,
-    AdvancedPreparednessComponent,
-    BudgetPreparednessComponent,
-    SelectPreparednessComponent,
-    CreateEditPreparednessComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-    AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
-    NgbModule.forRoot(),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [Http]
-      }
-    }),
-    ModalModule.forRoot(),
-    BootstrapModalModule,
-    DatepickerModule,
-    LocalStorageModule.withConfig({
+    declarations: [
+        AppComponent,
+        LoginComponent,
+        SystemAdminComponent,
+        DashboardComponent,
+        ResponsePlansComponent,
+        PreparednessComponent,
+        RiskMonitoringComponent,
+        CountryOfficeProfileComponent,
+        MapComponent,
+        DirectorDashboardComponent,
+        DonorModuleComponent,
+        ForgotPasswordComponent,
+        AddAgencyComponent,
+        MessagesComponent,
+        SystemAdminMenuComponent,
+        MessagesCreateComponent,
+        MinPrepComponent,
+        MpaComponent,
+        CreateActionComponent,
+        CreateMpaActionComponent,
+        SystemSettingsComponent,
+        SystemAdminHeaderComponent,
+        CountryOfficeComponent,
+        CreateEditCountryComponent,
+        CreateEditMpaComponent,
+        SettingsMenuComponent,
+        AgencyAdminMenuComponent,
+        DepartmentComponent,
+        SkillsComponent,
+        ModulesComponent,
+        ClockSettingsComponent,
+        DocumentsComponent,
+        NetworkComponent,
+        CreateEditNetworkComponent,
+        NotificationComponent,
+        CreateEditNotificationComponent,
+        StaffComponent,
+        CreateEditStaffComponent,
+        AgencyMpaComponent,
+        AgencyMessagesComponent,
+        CreateEditMessageComponent,
+        AgencyAdminHeaderComponent,
+        AccountSettingsComponent,
+        ChangePasswordComponent,
+        GlobalNetworksComponent,
+        CreateEditGlobalNetworkComponent,
+        CreateEditRegionComponent,
+        AddGenericActionComponent,
+        AgencyAccountSettingsComponent,
+        AgencyAccountDetailsComponent,
+        AgencyChangePasswordComponent,
+        AgencyAdminSettingsResponsePlanComponent,
+        SystemSettingsResponsePlansComponent,
+        SystemSettingsDocumentsComponent,
+        NewAgencyPasswordComponent,
+        NewAgencyDetailsComponent,
+        KeysPipe,
+        KeyValuesPipe,
+        NewCountryDetailsComponent,
+        NewCountryPasswordComponent,
+        CountryAccountSettingsComponent,
+        CountryChangePasswordComponent,
+        CountryAdminHeaderComponent,
+        CountryAdminMenuComponent,
+        CountryMessagesComponent,
+        CountryCreateEditMessageComponent,
+        CountryPermissionSettingsComponent,
+        CountryModulesSettingsComponent,
+        CountryClockSettingsComponent,
+        CountryNotificationSettingsComponent,
+        CountryAddExternalRecipientComponent,
+        CountryStaffComponent,
+        CountryAddEditPartnerComponent,
+        CountryAddEditStaffComponent,
+        CreateEditResponsePlanComponent,
+        AddPartnerOrganisationComponent,
+        OrdinalPipe,
+        StatusAlertComponent,
+        AgencyNotificationsComponent,
+        MinimumPreparednessComponent,
+        AdvancedPreparednessComponent,
+        BudgetPreparednessComponent,
+        SelectPreparednessComponent,
+        CreateEditPreparednessComponent,
+        AgencyOverviewPreparednessComponent,
+        CountryAgenciesOverviewPreparednessComponent,
+        CreateAlertRiskMonitoringComponent,
+        AddIndicatorRiskMonitoringComponent,
+        AddHazardRiskMonitoringComponent
+    ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+        AppRoutingModule,
+        AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
+        NgbModule.forRoot(),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [Http]
+            }
+        }),
+        ModalModule.forRoot(),
+        BootstrapModalModule,
+        DatepickerModule,
+        LocalStorageModule.withConfig({
             prefix: 'my-app',
             storageType: 'localStorage'
         })
-  ],
-  providers: [RxHelper, Modal],
-  bootstrap: [AppComponent]
+    ],
+    providers: [RxHelper, Modal],
+    bootstrap: [AppComponent]
 })
 
 export class AppModule {

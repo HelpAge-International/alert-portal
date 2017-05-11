@@ -71,6 +71,10 @@ import {CreateEditPreparednessComponent} from "./preparedness/create-edit/create
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
 
+import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
+import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
+import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
+
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
 
@@ -165,6 +169,9 @@ const routes: Routes = [
      * Risk Monitoring
      */
     {path: 'risk-monitoring', component: RiskMonitoringComponent},
+    {path: 'risk-monitoring/create-alert', component: CreateAlertRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-indicator', component: AddIndicatorRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
 
     /**
      * Preparedness

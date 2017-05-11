@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="63px" height="35px" viewBox="0 0 63 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="✅-0.4-Country-Admin" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Country-Office-Staff" transform="translate(-754.000000, -313.000000)" fill="#006EA0">
+            <g id="Group" transform="translate(752.000000, 313.000000)">
+                <g id="Icons/info" transform="translate(23.000000, 0.000000)">
+                    <g id="Page-1">
+                        <path d="M0,10 C0,4.47715 4.47715,0 10,0 C15.52285,0 20,4.47715 20,10 C20,15.52285 15.52285,20 10,20 C4.47715,20 0,15.52285 0,10 Z M9.99975,7.670485 C9.269,7.670485 8.67595,8.239435 8.67595,8.941135 L8.67595,14.422635 C8.67595,15.124485 9.269,15.693285 9.99975,15.693285 C10.73115,15.693285 11.32405,15.124485 11.32405,14.422635 L11.32405,8.941135 C11.32405,8.239435 10.73115,7.670485 9.99975,7.670485 Z M9.999985,6.95479 C10.731385,6.95479 11.323935,6.36209 11.323935,5.63084 C11.323935,4.89974 10.731385,4.30669 9.999985,4.30669 C9.268735,4.30669 8.676035,4.89974 8.676035,5.63084 C8.676035,6.36209 9.268735,6.95479 9.999985,6.95479 Z" id="Combined-Shape"></path>
+                    </g>
+                </g>
+                <text id="Additional-Info" font-family="ArialMT, Arial" font-size="10" font-weight="normal">
+                    <tspan x="2.09684602" y="34">Additional Info</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>
