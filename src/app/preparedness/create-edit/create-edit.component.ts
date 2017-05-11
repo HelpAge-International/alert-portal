@@ -80,7 +80,7 @@ export class CreateEditPreparednessComponent implements OnInit {
             if (params['id']) {
                 /* TODO remove hardcode actionID */
                 //this.actionID = params['id'];
-                this.actionID = '-Kjlzy5gJ_xeTajzL7ty';
+                this.actionID = '-KjmcXntUYWCU6UB_-Wl';
             }
         });
         this.subscriptions.add(subscription);
@@ -326,7 +326,7 @@ export class CreateEditPreparednessComponent implements OnInit {
     closeModal() {
         jQuery("#" + this.modalID).modal("hide");
     }
-    
+
     backButtonAction() {
         /* TODO get last route and implemented this functionality */
         console.log('back button');
