@@ -10,7 +10,7 @@ import {RxHelper} from '../../utils/RxHelper';
 })
 export class StatusAlertComponent implements OnInit {
   private _show: boolean = false;
-  private _subscriptions: RxHelper; 
+  private _subscriptions: RxHelper;
   @Input() message: string;
   @Input() success: boolean;
   @Output() onAlertHidden = new EventEmitter<boolean>();
@@ -18,6 +18,7 @@ export class StatusAlertComponent implements OnInit {
   constructor() {
   	this._subscriptions = new RxHelper;
   }
+
 
   @Input()
   set show(show: boolean) {

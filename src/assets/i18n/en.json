@@ -878,6 +878,7 @@
         "CREATE_NEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Create new scenario based response plan",
             "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
+            "EDIT_RESPONSE_PLAN": "Edit response plan",
             "PLAN_DETAILS": {
                 "TITLE_TEXT": "Plan Details",
                 "PLAN_NAME": "Plan name",
