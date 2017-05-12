@@ -495,3 +495,9 @@ export enum SizeType {
     MB = 1
 }
 
+export enum ThresholdName { // alias for AlertLevel
+  Green = 0,
+  Amber = 1,
+  Red = 2
+}
+

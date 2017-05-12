@@ -157,6 +157,11 @@
             "RESPONSE_PLAN_EXPIRE": "Response plan expired",
             "RESPONSE_PLAN_REJECT": "Response plan rejected"
         },
+        "THRESHOLD_NAME": {
+            "GREEN": "Green",
+            "AMBER": "Amber",
+            "RED": "Red"
+        },
         "COUNTRIES": {
             "AF": "Afghanistan",
             "AX": "Åland Islands",

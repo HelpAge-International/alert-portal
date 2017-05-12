@@ -54,6 +54,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
     protected attachments: any[] = [];
 
+	protected obsCountryId: Subject<string> = new Subject();
     firebase: any;
 
     constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router) {
@@ -73,11 +74,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
                 //this.uid = auth.uid; TODO remove comment
-                this.subscriptions.add(this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
-                    if (country.$exists()) {
-                        this.countryId = country.$value
 
-                        this.assignedToUsers = [];
+                this.subscriptions.add(this.obsCountryId.subscribe(
+                	value => {
+                		this.assignedToUsers = [];
                         this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId).subscribe(staff => {
                             this.assignedToUsers = staff.map(member => {
                                 let userId = member.$key;
@@ -94,9 +94,21 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                             });
 
                         }));
+                	},
+					error => console.log(error),
+					() => console.log("finished")
+				));
+
+                
+                this.subscriptions.add(this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
+                    if (country.$exists()) {
+                        this.countryId = country.$value;
+
+                        this.obsCountryId.next(this.countryId);                        
                     }
                 }));
 
+                
                 this.assignedToUserKey = this.uid;
                 this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/action/').subscribe(_ => {
                     this.actions = [];
