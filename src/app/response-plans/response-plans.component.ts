@@ -29,6 +29,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private waringMessage: string;
   private countryId: string;
   private notesMap = new Map();
+  private needShowDialog: boolean;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper, private service: ResponsePlanService) {
   }
@@ -101,10 +102,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForApproval(plan) {
+    this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
-    jQuery("#dialog-action").modal("show");
-    this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
-    this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
+    if (this.needShowDialog) {
+      jQuery("#dialog-action").modal("show");
+      this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
+      this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
+    } else {
+      this.confirmDialog();
+    }
   }
 
   submitForPartnerValidation(plan) {
@@ -112,14 +118,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   confirmDialog() {
-    jQuery("#dialog-action").modal("hide");
+    if (this.needShowDialog) {
+      jQuery("#dialog-action").modal("hide");
+    }
     if (this.userType == UserType.CountryAdmin) {
       let approvalData = {};
       let countryId = "";
       let agencyId = "";
       let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
         .flatMap(countryAdmin => {
-          // console.log(countryAdmin);
           countryId = countryAdmin.countryId;
           agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
           return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
@@ -128,9 +135,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           if (director && director.$value) {
             console.log("country director");
             console.log(director);
-            // console.log(this.planToApproval);
-            // console.log("country id: " + countryId);
-            // console.log(agencyId);
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
           } else {
@@ -157,7 +161,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-            this.af.database.object(Constants.APP_STATUS).update(approvalData);
+            this.updatePartnerValidation(countryId, approvalData);
+
           } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
             console.log("regional enabled");
             this.updateWithRegionalApproval(countryId, approvalData);
@@ -171,6 +176,21 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
+  private updatePartnerValidation(countryId: string, approvalData: {}) {
+    if (this.planToApproval.partnerOrganisations) {
+      let partnerData = {};
+      this.planToApproval.partnerOrganisations.forEach(item => {
+        partnerData[item] = ApprovalStatus.InProgress;
+      });
+      approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/partner/"] = partnerData;
+    }
+    this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
+      console.log("success");
+    }, error => {
+      console.log(error.message);
+    });
+  }
+
   private updateWithRegionalApproval(countryId: string, approvalData) {
 
     let subscription = this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
@@ -178,14 +198,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         // console.log(id);
         if (id && id.$value) {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
-          // console.log("*****approve data*****");
-          // console.log(approvalData);
-          // console.log("*****approve data*****");
-          this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
-            console.log("success");
-          }, error => {
-            console.log(error.message);
-          });
+          this.updatePartnerValidation(countryId, approvalData);
         }
       });
     this.subscriptions.add(subscription);
@@ -268,6 +281,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     }
     return this.notesMap.get(plan.$key);
+  }
+
+  testExport() {
+    this.router.navigateByUrl("/export");
   }
 
 

@@ -96,6 +96,7 @@ import { AdvancedPreparednessComponent } from './preparedness/advanced/advanced.
 import { BudgetPreparednessComponent } from './preparedness/budget/budget.component';
 import {ResponsePlanService} from "./services/response-plan.service";
 import {UserService} from "./services/user.service";
+import { ExportTestComponent } from './export-test/export-test.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -199,7 +200,8 @@ const firebaseAuthConfig = {
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,
     AdvancedPreparednessComponent,
-    BudgetPreparednessComponent
+    BudgetPreparednessComponent,
+    ExportTestComponent
   ],
   imports: [
     BrowserModule,

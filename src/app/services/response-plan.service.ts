@@ -19,6 +19,17 @@ export class ResponsePlanService {
     this.subscriptions.add(subscription);
   }
 
+  needShowWaringBypassValidation(plan) {
+    console.log(plan);
+    if (!plan.partnerOrganisations) {
+      return false;
+    }
+    if (plan.partnerOrganisations && plan.approval && plan.approval["partner"]) {
+      return false;
+    }
+    return true;
+  }
+
   private updatePartnerValidation(uid: string, user: UserType, plan: any) {
     const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
       Constants.APP_STATUS + "/directorCountry/", , , , , Constants.APP_STATUS + "/administratorCountry/",]

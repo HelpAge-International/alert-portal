@@ -68,6 +68,7 @@ import {AdvancedPreparednessComponent} from "./preparedness/advanced/advanced.co
 import {BudgetPreparednessComponent} from "./preparedness/budget/budget.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
+import {ExportTestComponent} from "./export-test/export-test.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -182,8 +183,12 @@ const routes: Routes = [
   /**
    * Maps
    */
-  {path: 'map', component: MapComponent}
+  {path: 'map', component: MapComponent},
 
+  /*
+  * test
+  * */
+  {path: 'export', component: ExportTestComponent}
   //TODO: define needed routes here. see the example above
 
 ];

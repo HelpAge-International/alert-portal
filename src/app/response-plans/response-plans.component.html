@@ -60,8 +60,13 @@
                   <div *ngFor="let partner of plan?.partnerOrganisations; index as i"
                        class="row no-gutters Small-spaced">
                     <div class="col-6 text-left">Partner {{i+1}}</div>
-                    <div *ngIf="plan?.approval?.partner[partner] != 2" class="col-6 text-right text-warning">
+                    <div *ngIf="!plan?.approval?.partner[partner]"
+                         class="col-6 text-right text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                      translate}}<i
+                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                    <div *ngIf="plan?.approval?.partner[partner] == 1" class="col-6 text-right text-warning">
+                      {{"RESPONSE_PLANS.HOME.REQUIRE_APPROVAL" |
                       translate}}<i
                       class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
                     <div *ngIf="plan?.approval?.partner[partner] == 2" class="col-6 text-right text-success">
@@ -196,7 +201,7 @@
                 <a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner" class="dropdown-item"
                    (click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |
                   translate}}</a>
-                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Start Fund
+                <a class="dropdown-item" (click)="testExport()">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Start Fund
                   (.doc, 78Kb)</a>
                 <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
                   78Kb)</a>
