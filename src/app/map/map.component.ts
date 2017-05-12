@@ -9,7 +9,7 @@ import {ModelCountryOffice} from "../model/countryoffice.model";
 import {ModelHazard} from "../model/hazard.model";
 import {Countries, HazardScenario} from "../utils/Enums";
 import {HazardImages} from "../utils/HazardImages";
-import {SuperMapComponents} from "../utils/MapSuper";
+import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapSuper";
 import {unescapeIdentifier} from "@angular/compiler";
 import {Subscription} from "rxjs/Subscription";
 declare var jQuery: any;
@@ -23,20 +23,44 @@ declare var jQuery: any;
 export class MapComponent implements OnInit, OnDestroy {
   public uid: string;
   public mapHelper: SuperMapComponents;
+  public department: SDepHolder;
+  private mDepartmentMap: Map<string, SDepHolder>;
+
+  public minThreshRed: number;
+  public minThreshYellow: number;
+  public minThreshGreen: number;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
     this.mapHelper = SuperMapComponents.init(af, subscriptions);
   }
 
   ngOnInit() {
+    this.department = new SDepHolder();
+    this.department.location = -1;
+    this.department.departments.push(new DepHolder("Loading", 100, 1));
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
 
         // Query firebase for country information
-        this.mapHelper.initMapFrom("global-map", this.uid, "administratorCountry", (departments) => {
-          console.log(departments);
-        });
+        this.mapHelper.initMapFrom("global-map", this.uid, "administratorCountry",
+          (departments) => {
+            this.mDepartmentMap = departments;
+          },
+          (mapCountryClicked) => {
+            if (this.mDepartmentMap != null) {
+              this.department = this.mDepartmentMap.get(mapCountryClicked);
+              // Need to be put here for inheritance / visibility issues in angular
+              this.minThreshRed = this.mapHelper.minThreshRed;
+              this.minThreshYellow = this.mapHelper.minThreshYellow;
+              this.minThreshGreen = this.mapHelper.minThreshGreen;
+              this.openMinimumPreparednessModal();
+            }
+            else {
+              console.log("TODO: Map is yet to initialise properly / failed properly. ");
+            }
+          }
+        );
         this.mapHelper.markersForAgencyAdmin(this.uid, "administratorCountry", (marker) => {
           marker.setMap(this.mapHelper.map);
         });
@@ -50,5 +74,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+  }
+
+  public getCountryCode(location: number) {
+    return Countries[location];
+  }
+
+  public openMinimumPreparednessModal() {
+    jQuery("#minimum-prep-modal").modal("show");
   }
 }

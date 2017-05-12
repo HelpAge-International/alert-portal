@@ -27,7 +27,10 @@ export class SuperMapComponents {
   private af: AngularFire;
   private subscriptions: RxHelper;
   public map: google.maps.Map;
-  private departmentMap: Map<number, SDepHolder>;
+
+  public minThreshRed: number;
+  public minThreshYellow: number;
+  public minThreshGreen: number;
 
   private geocoder: google.maps.Geocoder;
 
@@ -100,9 +103,9 @@ export class SuperMapComponents {
         return this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdmin);
       })
       .subscribe((model: ModelSystem) => {
-        let red: number = model.minThreshold[0];
+        let green: number = model.minThreshold[0];
         let yellow: number = model.minThreshold[1];
-        let green: number = model.minThreshold[2];
+        let red: number = model.minThreshold[2];
         funct(red, yellow, green);
       });
     this.subscriptions.add(sub);
@@ -268,7 +271,7 @@ export class SuperMapComponents {
    * Utility methods for initialising the map and handling colouring and theming of it
    */
   public initBlankMap(elementId: string) {
-    let uluru = {lat: 33.443861, lng: 105.891683};
+    let uluru = {lat: 54.339089, lng: -2.140014};
     this.map = new google.maps.Map(document.getElementById(elementId), {
       zoom: 4,
       center: uluru,
@@ -628,11 +631,19 @@ export class SuperMapComponents {
     });
   }
 
-  public initMapFrom(elementId: string, uid: string, folder: string, done: (departments: SDepHolder[]) => void) {
+  public initMapFrom(elementId: string, uid: string, folder: string,
+                     done: (departments: Map<string,SDepHolder>) => void,
+                     mapIconClicked: (countryCode: string) => void) {
     if (this.map == null) {
       this.initBlankMap(elementId);
     }
     this.getSystemInfo(uid, folder, (redThresh, yellowThresh, greenThresh) => {
+      this.minThreshGreen = greenThresh;
+      this.minThreshRed = redThresh;
+      this.minThreshYellow = yellowThresh;
+      console.log(this.minThreshGreen);
+      console.log(this.minThreshYellow);
+      console.log(this.minThreshRed);
       this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
         let red: string[] = [];
         let yellow: string[] = [];
@@ -648,16 +659,22 @@ export class SuperMapComponents {
             red.push(Countries[h.location]);
           }
         }
-        this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map);
-        done(holder);
+
+        let returnMap: Map<string, SDepHolder> = new Map<string, SDepHolder>();
+        for (let h of holder) {
+          returnMap.set(Countries[h.location].toString(), h);
+        }
+        this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map, mapIconClicked);
+        done(returnMap);
       });
     });
   }
 
 
   /** Function for where **/
-  public doneWithEmbeddedStyles(red, redCol, yellow, yellowCol, green, greenCol, map) {
+  public doneWithEmbeddedStyles(red, redCol, yellow, yellowCol, green, greenCol, map, funct: (countryCode: string) => void) {
     let layer = new google.maps.FusionTablesLayer({
+      suppressInfoWindows: true,
       query: {
         select: '*',
         from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
@@ -717,7 +734,11 @@ export class SuperMapComponents {
     layer.setMap(map);
     google.maps.event.addListener(layer, 'click', function (e) {
       console.log("Clicked!");
+      e.infoWindowHtml = "";
+      console.log(e);
+      funct(e.row.ISO_2DIGIT.value);
       // let c: Countries = <Countries>Countries["GB"];
+
     });
   }
 
@@ -751,6 +772,10 @@ export class DepHolder {
   public actionStatus: number;
 }
 export class SDepHolder {
+  constructor() {
+    this.departments = [];
+  }
+
   public departments: DepHolder[];
   public location: number;
   public overallAction() {
