@@ -1,369 +1,127 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" (click)="goBack()">Response plans</div>
+    <div class="Back--button">Country Office Staff</div>
     <div class="Header-title__wrap">
       <h1>Add partner organisation</h1>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Organisation Details</h3>
-    <hr>
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Organisation">Partner Organisation*</label>
-          <input type="text" class="form-control" id="p-Organisation" placeholder="Please enter">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Relationship">Relationship*</label>
-          <input type="text" class="form-control" id="p-Relationship" placeholder="Please enter">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Sector">Sector*</label>
-          <select name="p-Sector" id="p-Sector" class="form-control">
-            <option value="" disabled selected hidden>Please select</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Type">Type of project*</label>
-          <input type="text" class="form-control" id="p-Type" placeholder="Please enter">
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-End-date">Project End date:</label>
-          <input type="date" class="form-control" id="p-End-date" placeholder="DD/MM/YYYY">
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-area-op">Area(s) of operation*</label>
 
-          <select name="p-area-op" id="p-area-op" class="form-control" onChange="">
-            <option value="" disabled selected hidden>Select a country</option>
-            <option value="AF">Afghanistan</option>
-            <option value="AX">Åland Islands</option>
-            <option value="AL">Albania</option>
-            <option value="DZ">Algeria</option>
-            <option value="AS">American Samoa</option>
-            <option value="AD">Andorra</option>
-            <option value="AO">Angola</option>
-            <option value="AI">Anguilla</option>
-            <option value="AQ">Antarctica</option>
-            <option value="AG">Antigua and Barbuda</option>
-            <option value="AR">Argentina</option>
-            <option value="AM">Armenia</option>
-            <option value="AW">Aruba</option>
-            <option value="AU">Australia</option>
-            <option value="AT">Austria</option>
-            <option value="AZ">Azerbaijan</option>
-            <option value="BS">Bahamas</option>
-            <option value="BH">Bahrain</option>
-            <option value="BD">Bangladesh</option>
-            <option value="BB">Barbados</option>
-            <option value="BY">Belarus</option>
-            <option value="BE">Belgium</option>
-            <option value="BZ">Belize</option>
-            <option value="BJ">Benin</option>
-            <option value="BM">Bermuda</option>
-            <option value="BT">Bhutan</option>
-            <option value="BO">Bolivia, Plurinational State of</option>
-            <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
-            <option value="BA">Bosnia and Herzegovina</option>
-            <option value="BW">Botswana</option>
-            <option value="BV">Bouvet Island</option>
-            <option value="BR">Brazil</option>
-            <option value="IO">British Indian Ocean Territory</option>
-            <option value="BN">Brunei Darussalam</option>
-            <option value="BG">Bulgaria</option>
-            <option value="BF">Burkina Faso</option>
-            <option value="BI">Burundi</option>
-            <option value="KH">Cambodia</option>
-            <option value="CM">Cameroon</option>
-            <option value="CA">Canada</option>
-            <option value="CV">Cape Verde</option>
-            <option value="KY">Cayman Islands</option>
-            <option value="CF">Central African Republic</option>
-            <option value="TD">Chad</option>
-            <option value="CL">Chile</option>
-            <option value="CN">China</option>
-            <option value="CX">Christmas Island</option>
-            <option value="CC">Cocos (Keeling) Islands</option>
-            <option value="CO">Colombia</option>
-            <option value="KM">Comoros</option>
-            <option value="CG">Congo</option>
-            <option value="CD">Congo, the Democratic Republic of the</option>
-            <option value="CK">Cook Islands</option>
-            <option value="CR">Costa Rica</option>
-            <option value="CI">Côte d'Ivoire</option>
-            <option value="HR">Croatia</option>
-            <option value="CU">Cuba</option>
-            <option value="CW">Curaçao</option>
-            <option value="CY">Cyprus</option>
-            <option value="CZ">Czech Republic</option>
-            <option value="DK">Denmark</option>
-            <option value="DJ">Djibouti</option>
-            <option value="DM">Dominica</option>
-            <option value="DO">Dominican Republic</option>
-            <option value="EC">Ecuador</option>
-            <option value="EG">Egypt</option>
-            <option value="SV">El Salvador</option>
-            <option value="GQ">Equatorial Guinea</option>
-            <option value="ER">Eritrea</option>
-            <option value="EE">Estonia</option>
-            <option value="ET">Ethiopia</option>
-            <option value="FK">Falkland Islands (Malvinas)</option>
-            <option value="FO">Faroe Islands</option>
-            <option value="FJ">Fiji</option>
-            <option value="FI">Finland</option>
-            <option value="FR">France</option>
-            <option value="GF">French Guiana</option>
-            <option value="PF">French Polynesia</option>
-            <option value="TF">French Southern Territories</option>
-            <option value="GA">Gabon</option>
-            <option value="GM">Gambia</option>
-            <option value="GE">Georgia</option>
-            <option value="DE">Germany</option>
-            <option value="GH">Ghana</option>
-            <option value="GI">Gibraltar</option>
-            <option value="GR">Greece</option>
-            <option value="GL">Greenland</option>
-            <option value="GD">Grenada</option>
-            <option value="GP">Guadeloupe</option>
-            <option value="GU">Guam</option>
-            <option value="GT">Guatemala</option>
-            <option value="GG">Guernsey</option>
-            <option value="GN">Guinea</option>
-            <option value="GW">Guinea-Bissau</option>
-            <option value="GY">Guyana</option>
-            <option value="HT">Haiti</option>
-            <option value="HM">Heard Island and McDonald Islands</option>
-            <option value="VA">Holy See (Vatican City State)</option>
-            <option value="HN">Honduras</option>
-            <option value="HK">Hong Kong</option>
-            <option value="HU">Hungary</option>
-            <option value="IS">Iceland</option>
-            <option value="IN">India</option>
-            <option value="ID">Indonesia</option>
-            <option value="IR">Iran, Islamic Republic of</option>
-            <option value="IQ">Iraq</option>
-            <option value="IE">Ireland</option>
-            <option value="IM">Isle of Man</option>
-            <option value="IL">Israel</option>
-            <option value="IT">Italy</option>
-            <option value="JM">Jamaica</option>
-            <option value="JP">Japan</option>
-            <option value="JE">Jersey</option>
-            <option value="JO">Jordan</option>
-            <option value="KZ">Kazakhstan</option>
-            <option value="KE">Kenya</option>
-            <option value="KI">Kiribati</option>
-            <option value="KP">Korea, Democratic People's Republic of</option>
-            <option value="KR">Korea, Republic of</option>
-            <option value="KW">Kuwait</option>
-            <option value="KG">Kyrgyzstan</option>
-            <option value="LA">Lao People's Democratic Republic</option>
-            <option value="LV">Latvia</option>
-            <option value="LB">Lebanon</option>
-            <option value="LS">Lesotho</option>
-            <option value="LR">Liberia</option>
-            <option value="LY">Libya</option>
-            <option value="LI">Liechtenstein</option>
-            <option value="LT">Lithuania</option>
-            <option value="LU">Luxembourg</option>
-            <option value="MO">Macao</option>
-            <option value="MK">Macedonia, the former Yugoslav Republic of</option>
-            <option value="MG">Madagascar</option>
-            <option value="MW">Malawi</option>
-            <option value="MY">Malaysia</option>
-            <option value="MV">Maldives</option>
-            <option value="ML">Mali</option>
-            <option value="MT">Malta</option>
-            <option value="MH">Marshall Islands</option>
-            <option value="MQ">Martinique</option>
-            <option value="MR">Mauritania</option>
-            <option value="MU">Mauritius</option>
-            <option value="YT">Mayotte</option>
-            <option value="MX">Mexico</option>
-            <option value="FM">Micronesia, Federated States of</option>
-            <option value="MD">Moldova, Republic of</option>
-            <option value="MC">Monaco</option>
-            <option value="MN">Mongolia</option>
-            <option value="ME">Montenegro</option>
-            <option value="MS">Montserrat</option>
-            <option value="MA">Morocco</option>
-            <option value="MZ">Mozambique</option>
-            <option value="MM">Myanmar</option>
-            <option value="NA">Namibia</option>
-            <option value="NR">Nauru</option>
-            <option value="NP">Nepal</option>
-            <option value="NL">Netherlands</option>
-            <option value="NC">New Caledonia</option>
-            <option value="NZ">New Zealand</option>
-            <option value="NI">Nicaragua</option>
-            <option value="NE">Niger</option>
-            <option value="NG">Nigeria</option>
-            <option value="NU">Niue</option>
-            <option value="NF">Norfolk Island</option>
-            <option value="MP">Northern Mariana Islands</option>
-            <option value="NO">Norway</option>
-            <option value="OM">Oman</option>
-            <option value="PK">Pakistan</option>
-            <option value="PW">Palau</option>
-            <option value="PS">Palestinian Territory, Occupied</option>
-            <option value="PA">Panama</option>
-            <option value="PG">Papua New Guinea</option>
-            <option value="PY">Paraguay</option>
-            <option value="PE">Peru</option>
-            <option value="PH">Philippines</option>
-            <option value="PN">Pitcairn</option>
-            <option value="PL">Poland</option>
-            <option value="PT">Portugal</option>
-            <option value="PR">Puerto Rico</option>
-            <option value="QA">Qatar</option>
-            <option value="RE">Réunion</option>
-            <option value="RO">Romania</option>
-            <option value="RU">Russian Federation</option>
-            <option value="RW">Rwanda</option>
-            <option value="BL">Saint Barthélemy</option>
-            <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
-            <option value="KN">Saint Kitts and Nevis</option>
-            <option value="LC">Saint Lucia</option>
-            <option value="MF">Saint Martin (French part)</option>
-            <option value="PM">Saint Pierre and Miquelon</option>
-            <option value="VC">Saint Vincent and the Grenadines</option>
-            <option value="WS">Samoa</option>
-            <option value="SM">San Marino</option>
-            <option value="ST">Sao Tome and Principe</option>
-            <option value="SA">Saudi Arabia</option>
-            <option value="SN">Senegal</option>
-            <option value="RS">Serbia</option>
-            <option value="SC">Seychelles</option>
-            <option value="SL">Sierra Leone</option>
-            <option value="SG">Singapore</option>
-            <option value="SX">Sint Maarten (Dutch part)</option>
-            <option value="SK">Slovakia</option>
-            <option value="SI">Slovenia</option>
-            <option value="SB">Solomon Islands</option>
-            <option value="SO">Somalia</option>
-            <option value="ZA">South Africa</option>
-            <option value="GS">South Georgia and the South Sandwich Islands</option>
-            <option value="SS">South Sudan</option>
-            <option value="ES">Spain</option>
-            <option value="LK">Sri Lanka</option>
-            <option value="SD">Sudan</option>
-            <option value="SR">Suriname</option>
-            <option value="SJ">Svalbard and Jan Mayen</option>
-            <option value="SZ">Swaziland</option>
-            <option value="SE">Sweden</option>
-            <option value="CH">Switzerland</option>
-            <option value="SY">Syrian Arab Republic</option>
-            <option value="TW">Taiwan, Province of China</option>
-            <option value="TJ">Tajikistan</option>
-            <option value="TZ">Tanzania, United Republic of</option>
-            <option value="TH">Thailand</option>
-            <option value="TL">Timor-Leste</option>
-            <option value="TG">Togo</option>
-            <option value="TK">Tokelau</option>
-            <option value="TO">Tonga</option>
-            <option value="TT">Trinidad and Tobago</option>
-            <option value="TN">Tunisia</option>
-            <option value="TR">Turkey</option>
-            <option value="TM">Turkmenistan</option>
-            <option value="TC">Turks and Caicos Islands</option>
-            <option value="TV">Tuvalu</option>
-            <option value="UG">Uganda</option>
-            <option value="UA">Ukraine</option>
-            <option value="AE">United Arab Emirates</option>
-            <option value="GB">United Kingdom</option>
-            <option value="US">United States</option>
-            <option value="UM">United States Minor Outlying Islands</option>
-            <option value="UY">Uruguay</option>
-            <option value="UZ">Uzbekistan</option>
-            <option value="VU">Vanuatu</option>
-            <option value="VE">Venezuela, Bolivarian Republic of</option>
-            <option value="VN">Viet Nam</option>
-            <option value="VG">Virgin Islands, British</option>
-            <option value="VI">Virgin Islands, U.S.</option>
-            <option value="WF">Wallis and Futuna</option>
-            <option value="EH">Western Sahara</option>
-            <option value="YE">Yemen</option>
-            <option value="ZM">Zambia</option>
-            <option value="ZW">Zimbabwe</option>
-          </select>
+    <div class="Underline-title__wrap">
+      <h5>Organisation Details</h5>
+    </div>
 
-          <a href="javascript:void(0)" class="Add__row__cta">Add another location</a>
-        </div>
+    <form (ngSubmit)="submit()" class="Spaced">
+
+    <div class="row Spaced">
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="P-org">Partner Organisation</label>
+        <input type="text" class="form-control" name="P-org" id="P-org" [(ngModel)]="partnerOrganisation && partnerOrganisation.organisationName" placeholder="Please enter">
+      </div>
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="Relationship">Relationship</label>
+        <input type="text" class="form-control" id="Relationship" placeholder="Please enter">
       </div>
     </div>
 
-    <h3 class="System-admin__Sub-title--spaced">Partner contact details</h3>
-    <hr>
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="Title">Title*</label>
-          <select name="Title" id="Title" class="form-control">
-            <option value="" disabled selected hidden>Please select</option>
-            <option value="1">Mr</option>
-            <option value="2">Mrs</option>
-            <option value="3">Miss</option>
-            <option value="4">Ms</option>
-            <option value="5">Dr</option>
-            <option value="6">Professor</option>
-          </select>
+
+    <div class="Underline-title__wrap">
+      <h5>Projects</h5>
+    </div>
+
+    <div class="Outline__bubble__wrap Grey">
+      <div class="row">
+        <div class="col-sm-6">Example: 500 kits distributed across 4 communities</div>
+        <div class="col-sm-6 Right-aligned">View this project</div>
+      </div>
+    </div>
+    <div class="Outline__bubble__wrap Grey">
+      <div class="row">
+        <div class="col-sm-6"><h6>Test</h6></div>
+        <div class="col-sm-6 Right-aligned text-danger">Remove this project</div>
+      </div>
+      <div class="row">
+        <div class="Selection-row">
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="water"></div><label>WaSH</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="health"></div><label>Health</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="shelter"></div><label>Shelter</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="nutrition"></div><label>Nutrition</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="food"></div><label>Food Security &amp; Livelihoods</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="protection"></div><label>Protection</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="education"></div><label>Education</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="camp"></div><label>Camp Management</label></div>
+          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="misc"></div><label>Other</label></div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="f-Name">First Name*</label>
-          <input type="text" class="form-control" id="f-Name" placeholder="Please enter">
+      <div class="row Spaced">
+        <div class="col-lg-4 col-md-6 form-group">
+          <label for="P-title">Protject title</label>
+          <input type="text" class="form-control" id="P-title" placeholder="Please enter">
+        </div>
+        <div class="col-lg-4 col-md-6 form-group">
+          <label for="P-end-date">Project end date</label>
+          <input type="text" class="form-control" id="P-end-date" placeholder="Please enter">
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="l-Name">Last Name*</label>
-          <input type="text" class="form-control" id="l-Name" placeholder="Please enter">
+      <div class="row Spaced">
+        <div class="col-lg-4 col-md-6 form-group">
+          <label for="A-operation">Areas of operation</label>
+          <input type="text" class="form-control" id="A-operation" placeholder="Please enter">
+        </div>
+      </div>
+      <div class="row Spaced">
+        <div class="col-sm-12">
+          <p class="text-primary">+ Add another location</p>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Position">Position*</label>
-          <select name="p-Position" id="p-Position" class="form-control">
-            <option value="" disabled selected hidden>Please select</option>
-          </select>
-        </div>
+    <div class="row Spaced">
+      <div class="col-sm-12">
+        <p class="text-primary">+ Add another project</p>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Email">Email Address*</label>
-          <input type="email" class="form-control" id="p-Email" placeholder="Please enter">
-        </div>
+    </div>
+
+    <div class="Underline-title__wrap">
+      <h5>Partner Contact Details</h5>
+    </div>
+
+    <div class="row Spaced">
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="Title">Title</label>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="form-group">
-          <label for="p-Phone">Telephone Number*</label>
-          <input type="text" class="form-control" id="p-Phone" placeholder="Please enter">
-        </div>
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="f-Name">First Name</label>
+        <input type="text" class="form-control" [(ngModel)]="partnerOrganisation && partnerOrganisation.firstName" name="f-name" id="f-Name" placeholder="Please enter">
+      </div>
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="l-Name">Last Name</label>
+        <input type="text" class="form-control" [(ngModel)]="partnerOrganisation && partnerOrganisation.lastName" name="l-name" id="l-Name" placeholder="Please enter">
+      </div>
+    </div>
+    <div class="row Spaced">
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="Position">Position</label>
+        <input type="text" class="form-control" id="Position" placeholder="Please enter">
+      </div>
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="e-Address">Email Address</label>
+        <input type="text" class="form-control" id="e-Address" placeholder="Please enter">
+      </div>
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="t-Number">Telephone Number</label>
+        <input type="number" class="form-control" id="t-Number" placeholder="Please enter">
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary">Add new partner organisation</div>
-      <div class="btn btn-outline-secondary">Cancel</div>
+        <button class="btn btn-primary" type="submit" (click)="validateForm()">
+          {{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}
+        </button>
+        <button class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>
     </div>
+    </form>
   </div>
 </div>

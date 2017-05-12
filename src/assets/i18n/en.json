@@ -147,7 +147,8 @@
             "NO_EMAIL": "Please enter the email address",
             "NO_CITY": "Please enter the the city",
             "NO_PHONE": "Please enter the phone number",
-            "NO_COUNTRY": "Please select a country"
+            "NO_COUNTRY": "Please select a country",
+            "NO_TITLE": "Please select a title"
         },
         "NOTIFICATION_SETTING": {
             "ALERT_LEVEL_CHANGE": "Alert level changed",
