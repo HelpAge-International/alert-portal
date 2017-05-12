@@ -102,7 +102,7 @@ import {CountryAgenciesOverviewPreparednessComponent} from './preparedness/count
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
-
+import { ExportTestComponent } from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import { MapCountriesListComponent } from './map/map-countries-list/map-countries-list.component';
 
@@ -216,7 +216,8 @@ const firebaseAuthConfig = {
         CreateAlertRiskMonitoringComponent,
         AddIndicatorRiskMonitoringComponent,
         AddHazardRiskMonitoringComponent,
-        MapCountriesListComponent
+        MapCountriesListComponent,
+        ExportTestComponent
     ],
     imports: [
         BrowserModule,
@@ -239,6 +240,7 @@ const firebaseAuthConfig = {
             prefix: 'my-app',
             storageType: 'localStorage'
         })
+
     ],
     providers: [RxHelper, Modal],
     bootstrap: [AppComponent]

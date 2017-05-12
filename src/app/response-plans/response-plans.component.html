@@ -57,17 +57,22 @@
               <div class="row">
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.PARTNERS" | translate}}</strong>
-                  <div class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left">Partner 1</div>
-                    <div class="col-6 text-right text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                  <div *ngFor="let partner of plan?.partnerOrganisations; index as i"
+                       class="row no-gutters Small-spaced">
+                    <div class="col-6 text-left">Partner {{i+1}}</div>
+                    <div *ngIf="!plan?.approval?.partner[partner]"
+                         class="col-6 text-right text-warning">
+                      {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
                       translate}}<i
-                        class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
-                  </div>
-                  <div class="row no-gutters Line-row">
-                    <div class="col-6 text-left">Partner 2</div>
-                    <div class="col-6 text-right text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                    <div *ngIf="plan?.approval?.partner[partner] == 1" class="col-6 text-right text-warning">
+                      {{"RESPONSE_PLANS.HOME.REQUIRE_APPROVAL" |
                       translate}}<i
-                        class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                    <div *ngIf="plan?.approval?.partner[partner] == 2" class="col-6 text-right text-success">
+                      {{"RESPONSE_PLANS.HOME.APPROVAL" |
+                      translate}}<i
+                      class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -76,10 +81,10 @@
                     <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                       translate}}
                     </div>
-                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTORS_SINGLE" |
+                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                       translate}}
                     </div>
-                    <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTORS_SINGLE" |
+                    <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                       translate}}
                     </div>
                     <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
@@ -193,8 +198,10 @@
                 <a class="dropdown-item" (click)="editResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" | translate}}</a>
                 <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
-                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" | translate}}</a>
-                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Start Fund
+                <a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner" class="dropdown-item"
+                   (click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |
+                  translate}}</a>
+                <a class="dropdown-item" (click)="testExport()">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Start Fund
                   (.doc, 78Kb)</a>
                 <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
                   78Kb)</a>
