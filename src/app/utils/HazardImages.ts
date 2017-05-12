@@ -1,5 +1,5 @@
 export class HazardImages {
-  public static ending: string = "_red.svg";
+  public static ending: string = "_blue.svg";
   public static info: string = "/assets/images/hazards/marker/";
 
   public getMap() {

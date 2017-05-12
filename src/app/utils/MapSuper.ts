@@ -127,16 +127,20 @@ export class SuperMapComponents {
       .flatMap((result) => {
         for (let x of result) {
           if (x.location == country) {
-            return this.af.database.object(Constants.APP_STATUS + "/action/" + x.$key, {preserveSnapshot: true});
+            return this.af.database.object(Constants.APP_STATUS + "/action/" + x.$key, { preserveSnapshot: true });
           }
         }
       })
       .subscribe((result) => {
+        console.log("subscribe result");
         let returnObj = new SDepHolder();
         returnObj.departments = [];
         returnObj.location = country;
         result.forEach(snapshot => {
-          returnObj.departments.push(new DepHolder(snapshot.val().department, snapshot.val().actionStatus == null ? 0 : snapshot.val().actionStatus));
+          returnObj.departments.push(new DepHolder(
+            snapshot.val().department,
+            snapshot.val().actionStatus == null ? 0 : snapshot.val().actionStatus,
+            snapshot.val().level));
         });
         funct(returnObj);
       });
@@ -146,7 +150,8 @@ export class SuperMapComponents {
 
   /** Get all the countries **/
   private mDepCounter;
-  private mDepHolder: SDepHolder[]
+  private mDepHolder: SDepHolder[];
+  private flagToClear: boolean = false;
   public getDepsForAllCountries(uid: string, folder: string, funct: (holder: SDepHolder[]) => void) {
     this.mDepCounter = 0;
     this.mDepHolder = [];
@@ -154,7 +159,9 @@ export class SuperMapComponents {
       .subscribe((result) => {
         for (let r of result) {
           this.mDepCounter++;
+          this.mDepHolder = [];
           this.getDepForCountry(uid, folder, r.location, (holder) => {
+            holder = this.processDepHolder(holder, 1);
             this.getDepsForAllCountriesCounterMethod(holder, funct);
           })
         }
@@ -162,11 +169,46 @@ export class SuperMapComponents {
     this.subscriptions.add(sub);
   }
   private getDepsForAllCountriesCounterMethod(holder: SDepHolder, funct: (holder: SDepHolder[]) => void) {
+    if (!this.flagToClear) {
+      this.mDepHolder = [];
+      this.flagToClear = true;
+    }
     this.mDepCounter--;
-    this.mDepHolder.push(holder);
+    if (holder != null) {
+      this.mDepHolder.push(holder);
+    }
     if (this.mDepCounter == 0) {
       funct(this.mDepHolder);
+      this.flagToClear = false;
     }
+  }
+  private processDepHolder(holder: SDepHolder, levelToSelect: number) {
+    let newHolder: Map<string, DepHolder> = new Map<string, DepHolder>();
+    let counterMap: Map<string, number> = new Map<string, number>();
+    for (let x of holder.departments) {
+      if (x.level == levelToSelect) {
+        let mHolder = newHolder.get(x.department);
+        if (mHolder != null) {
+          mHolder.actionStatus += (x.actionStatus == 2 ? 100 : 0);
+          counterMap.set(x.department, counterMap.get(x.department) + 1);
+        }
+        else {
+          counterMap.set(x.department, 1);
+          newHolder.set(x.department, new DepHolder(x.department, (x.actionStatus == 2 ? 100 : 0), x.level));
+        }
+      }
+    }
+
+    // Convert the maps to a list
+    let mHolders: DepHolder[] = [];
+    newHolder.forEach((value, key) => {
+      let obj = newHolder.get(key);
+      obj.actionStatus /= counterMap.get(key);
+      newHolder.set(key, obj);
+      mHolders.push(newHolder.get(key));
+    });
+    holder.departments = mHolders;
+    return holder;
   }
 
 
@@ -698,11 +740,13 @@ export class SuperMapComponents {
 }
 
 export class DepHolder {
-  constructor(department, actionStatus) {
+  constructor(department, actionStatus, level) {
     this.department = department;
     this.actionStatus = actionStatus;
+    this.level = level;
   }
 
+  public level: number;
   public department: string;
   public actionStatus: number;
 }
@@ -712,11 +756,9 @@ export class SDepHolder {
   public overallAction() {
     let diviser = 0;
     for (let dep of this.departments) {
-      if (dep.actionStatus == 2) {
-        diviser += 1;
-      }
+      diviser += dep.actionStatus;
     }
-    let x = (diviser * 100) / (this.departments.length);
+    let x = (diviser) / (this.departments.length);
     return x;
   }
 }

@@ -35,7 +35,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         // Query firebase for country information
         this.mapHelper.initMapFrom("global-map", this.uid, "administratorCountry", (departments) => {
-
+          console.log(departments);
         });
         this.mapHelper.markersForAgencyAdmin(this.uid, "administratorCountry", (marker) => {
           marker.setMap(this.mapHelper.map);
