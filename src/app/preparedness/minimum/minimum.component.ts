@@ -29,6 +29,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     protected assignedToUsers: any[] = [];
     protected departments: any[] = [];
     protected countryId = null;
+    protected agencyId = null;
     protected actionStatus = ActionStatus;
     protected ActionStatusEnum = Object.keys(ActionStatus).map(k => ActionStatus[k]).filter(v => typeof v === "string") as string[];
     protected ActionTypeEnum = Object.keys(ActionType).map(k => ActionType[k]).filter(v => typeof v === "string") as string[];
@@ -56,6 +57,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 	protected obsCountryId: Subject<string> = new Subject();
 	protected countrySelected = false;
+	protected agencySelected = false;
     firebase: any;
 
     constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute) {
@@ -76,6 +78,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 this.obsCountryId.next(this.countryId);
 
                 this.countrySelected = true;
+            }
+
+            if (params['agencyId']) {
+                this.agencyId = params['agencyId'];
+
+                this.agencySelected = true;
             }
         });
     }

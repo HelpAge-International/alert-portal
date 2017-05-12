@@ -13,14 +13,35 @@ import {AgencySubmenuComponent} from '../agency-submenu/agency-submenu.component
 })
 export class CountrySubmenuComponent extends AgencySubmenuComponent implements OnInit {
 
+	private agencyLogo: string = '';
+	private agencyName: string = '';
+
 	@Input() countryId: string;
 	@Input() agencyId: string;
+
 	constructor(protected af: AngularFire, protected _sanitizer: DomSanitizer) {
 			super(af, _sanitizer);
 	}
 
-	ngOnInit() {
-		
+	ngOnInit(){
+		super.ngOnInit();
+		this.loadAgencyData();
+	}
+
+	getAgencyBackground(){
+		if (this.agencyLogo){
+			return this._sanitizer.bypassSecurityTrustStyle('url(' + this.agencyLogo + ')');
+		}
+	}
+
+	private loadAgencyData(){
+		let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId).subscribe(agency => {
+
+	      this.agencyLogo = agency.logoPath;
+	      this.agencyName = agency.name;
+
+	    });
+	    this.subscriptions.add(subscription);
 	}
 
 }

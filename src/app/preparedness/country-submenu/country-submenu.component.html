@@ -4,10 +4,10 @@
         <div class="col-md-5 Selected-part">
             <div class="row align-items-center">
                 <div class="col-2">
-                    <div class="Icon--md Icon__country" [style.background-image]="getBackground()"></div>
+                    <div class="Icon--md Icon__country" [style.background-image]="getAgencyBackground()"></div>
                 </div>
                 <div class="col-10">
-                    <span>{{COUNTRIES[location] | translate}}</span>
+                    <span>{{agencyName}}</span>
                 </div>
             </div>
         </div>
@@ -24,9 +24,9 @@
 		            <div class="dropdown">
 		                <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true" aria-expanded="false">Preparedness</a>
 		                <div class="dropdown-menu">
-		                    <a class="dropdown-item" routerLink="/preparedness/minimum/{{countryId}}">Minimum preparedness</a>
-		                    <a class="dropdown-item" routerLink="/preparedness/advanced/{{countryId}}">Advanced preparedness</a>
-		                    <a class="dropdown-item" routerLink="/preparedness/budget/{{countryId}}">Preparedness budget</a>
+		                    <a class="dropdown-item" routerLink="/preparedness/minimum/{{countryId}}/{{agencyId}}">Minimum preparedness</a>
+		                    <a class="dropdown-item" routerLink="/preparedness/advanced/{{countryId}}/{{agencyId}}">Advanced preparedness</a>
+		                    <a class="dropdown-item" routerLink="/preparedness/budget/{{countryId}}/{{agencyId}}">Preparedness budget</a>
 		                </div>
 		            </div>
 		        </li>

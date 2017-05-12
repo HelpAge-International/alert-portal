@@ -221,7 +221,7 @@ const firebaseAuthConfig = {
         AddHazardRiskMonitoringComponent,
         AgencySubmenuComponent,
         CountrySubmenuComponent,
-        AlertWidgetComponent
+        AlertWidgetComponent,
         MapCountriesListComponent,
         ExportTestComponent
     ],

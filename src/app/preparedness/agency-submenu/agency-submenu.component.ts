@@ -21,6 +21,7 @@ export class AgencySubmenuComponent implements OnInit {
 
 	constructor(protected af: AngularFire, protected _sanitizer: DomSanitizer) {
 	    this.subscriptions = new RxHelper;
+
 	}
 
 	ngOnInit() {
@@ -36,7 +37,8 @@ export class AgencySubmenuComponent implements OnInit {
 	}
 
 	protected getBackground() {
-		return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[this.location] + '.svg)');
+		if (this.location)
+			return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[this.location] + '.svg)');
 	}
 
 }
