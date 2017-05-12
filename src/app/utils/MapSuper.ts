@@ -135,7 +135,6 @@ export class SuperMapComponents {
         }
       })
       .subscribe((result) => {
-        console.log("subscribe result");
         let returnObj = new SDepHolder();
         returnObj.departments = [];
         returnObj.location = country;
@@ -641,9 +640,6 @@ export class SuperMapComponents {
       this.minThreshGreen = greenThresh;
       this.minThreshRed = redThresh;
       this.minThreshYellow = yellowThresh;
-      console.log(this.minThreshGreen);
-      console.log(this.minThreshYellow);
-      console.log(this.minThreshRed);
       this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
         let red: string[] = [];
         let yellow: string[] = [];
@@ -733,9 +729,6 @@ export class SuperMapComponents {
     });
     layer.setMap(map);
     google.maps.event.addListener(layer, 'click', function (e) {
-      console.log("Clicked!");
-      e.infoWindowHtml = "";
-      console.log(e);
       funct(e.row.ISO_2DIGIT.value);
       // let c: Countries = <Countries>Countries["GB"];
 
