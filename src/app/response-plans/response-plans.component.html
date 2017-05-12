@@ -7,7 +7,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"RESPONSE_PLANS.HOME.TITLE" | translate}}</h1>
-      <button class="btn btn-primary" (click)="goToNewOrEditPlan()">
+      <button class="btn btn-primary" (click)="goToCreateNewResponsePlan()">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
       </button>
     </div>
@@ -190,7 +190,7 @@
               </button>
               <div class="dropdown-menu">
                 <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.VIEW_PLAN" | translate}}</a>
-                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" | translate}}</a>
+                <a class="dropdown-item" (click)="editResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" | translate}}</a>
                 <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
                 <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" | translate}}</a>

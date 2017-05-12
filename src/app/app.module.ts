@@ -104,6 +104,7 @@ import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicat
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
 
 import {LocalStorageModule} from 'angular-2-local-storage';
+import { MapCountriesListComponent } from './map/map-countries-list/map-countries-list.component';
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -214,7 +215,8 @@ const firebaseAuthConfig = {
         CountryAgenciesOverviewPreparednessComponent,
         CreateAlertRiskMonitoringComponent,
         AddIndicatorRiskMonitoringComponent,
-        AddHazardRiskMonitoringComponent
+        AddHazardRiskMonitoringComponent,
+        MapCountriesListComponent
     ],
     imports: [
         BrowserModule,

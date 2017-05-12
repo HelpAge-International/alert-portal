@@ -74,6 +74,7 @@ import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
+import {MapCountriesListComponent} from "./map/map-countries-list/map-countries-list.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -189,12 +190,14 @@ const routes: Routes = [
      */
     {path: 'response-plans', component: ResponsePlansComponent},
     {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
+    {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
 
     /**
      * Maps
      */
-    {path: 'map', component: MapComponent}
+    {path: 'map', component: MapComponent},
+    {path: 'map/map-countries-list', component: MapCountriesListComponent}
 
     //TODO: define needed routes here. see the example above
 
