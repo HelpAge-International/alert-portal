@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType, ThresholdName} from "../../utils/Enums";
 import {Observable, Subject} from 'rxjs';
@@ -29,8 +29,8 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
 
   	firebase: any;
 
-  	constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router) {
-  		super(firebaseApp, af, router);
+  	constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute) {
+  		super(firebaseApp, af, router, route);
 		this.subscriptions = new RxHelper;
 		this.firebase = firebaseApp;		
 
@@ -151,8 +151,6 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
 
                             }));
 
-
-
                             if (actions[action].level == this.actionLevel) {
                                 this.actions.push(actions[action]);
                             }
@@ -170,12 +168,13 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
     }
 
     protected changeActionStatus(action) {
-    	console.log(action);
-    	console.log(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key);
+    	let status = ActionStatus.InProgress;
+    	if (!action.assigned)
+    		status = ActionStatus.Expired;
+
     	this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
         .update({
-            actionStatus: ActionStatus.InProgress,
-            isActive: true
+            actionStatus: status
         });
     }
 

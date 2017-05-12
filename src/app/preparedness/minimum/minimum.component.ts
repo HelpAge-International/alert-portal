@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
-import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType} from "../../utils/Enums";
 import {Observable, Subject} from 'rxjs';
@@ -55,9 +55,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     protected attachments: any[] = [];
 
 	protected obsCountryId: Subject<string> = new Subject();
+	protected countrySelected = false;
     firebase: any;
 
-    constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router) {
+    constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute) {
         this.subscriptions = new RxHelper;
         this.firebase = firebaseApp;
 
@@ -68,6 +69,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 equalTo: this.docFilterSubject
             }
         }
+
+        let subscription = this.route.params.subscribe((params: Params) => {
+            if (params['countryId']) {
+                this.countryId = params['countryId'];
+                this.obsCountryId.next(this.countryId);
+
+                this.countrySelected = true;
+            }
+        });
     }
 
     ngOnInit() {
@@ -99,14 +109,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 					() => console.log("finished")
 				));
 
-                
-                this.subscriptions.add(this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
-                    if (country.$exists()) {
-                        this.countryId = country.$value;
+                if (!this.countrySelected)
+	                this.subscriptions.add(this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
+	                    if (country.$exists()) {
+	                        this.countryId = country.$value;
 
-                        this.obsCountryId.next(this.countryId);                        
-                    }
-                }));
+	                        this.obsCountryId.next(this.countryId);                     
+	                    }
+	                }));
 
                 
                 this.assignedToUserKey = this.uid;

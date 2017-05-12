@@ -35,11 +35,11 @@ export class StatusAlertComponent implements OnInit {
   }
 
   ngOnDestroy() {
-	try{
-		this._subscriptions.releaseAll();
-	} catch(e){
-		console.log('Unable to releaseAll');
-	}
+  	try{
+  		this._subscriptions.releaseAll();
+  	} catch(e){
+  		console.log('Unable to releaseAll');
+  	}
   }
 
 }

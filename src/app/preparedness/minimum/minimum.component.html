@@ -25,6 +25,11 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
+    <ng-template [ngIf]="countrySelected">
+    	<app-agency-submenu [countryId]="countryId"></app-agency-submenu>
+    </ng-template>
+    	
+
         <div class="Header-title__wrap">
             <h1>Minimum Preparedness Actions</h1>
             <div class="btn-group">

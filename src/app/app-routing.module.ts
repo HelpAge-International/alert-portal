@@ -176,7 +176,11 @@ const routes: Routes = [
     /**
      * Preparedness
      */
+    {path: 'preparedness/minimum/:countryId/:agencyId', component: MinimumPreparednessComponent},
+    {path: 'preparedness/minimum/:countryId', component: MinimumPreparednessComponent},
     {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId/:agencyId', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId', component: AdvancedPreparednessComponent},
     {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
     {path: 'preparedness/budget', component: BudgetPreparednessComponent},
     {path: 'preparedness/select', component: SelectPreparednessComponent},
