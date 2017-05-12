@@ -18,7 +18,7 @@ export class PartnerOrganisationModel extends BaseModel {
     this.projects = [new PartnerOrganisationProjectModel()];
   }
 
-  // TODO implement validation
+
   validate(excludedFields = []): AlertMessageModel {
     if (!this.title && !this.isExcluded('title', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_TITLE');
@@ -46,7 +46,12 @@ export class PartnerOrganisationProjectModel extends BaseModel {
   public title: string;
   public endDate: string;
   public sector: any;
-  public operationAreas: any;
+  public operationAreas: any[];
+
+  constructor(){
+    super();
+    this.operationAreas = [];
+  }
 
   // TODO implement validation
   validate(excludedFields = []): AlertMessageModel {

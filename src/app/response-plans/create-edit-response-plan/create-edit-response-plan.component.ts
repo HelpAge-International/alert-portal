@@ -581,7 +581,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   isNutritionSectorSelected() {
     this.nutritionSectorSelected = !this.nutritionSectorSelected;
-    this.updateSectorsList(this.nutritionSectorSelected, ResponsePlanSectors.nurtrition);
+    this.updateSectorsList(this.nutritionSectorSelected, ResponsePlanSectors.nutrition);
   }
 
   isFoodSecAndLivelihoodsSectorSelected() {

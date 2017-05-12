@@ -69,6 +69,7 @@ import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/s
 import {NewAgencyPasswordComponent} from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
 import {NewAgencyDetailsComponent} from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
 import {KeysPipe} from './utils/pipes/keys.pipe';
+import {EnumKeysPipe} from './utils/pipes/enum-keys.pipe';
 import {KeyValuesPipe} from './utils/pipes/key-values.pipe';
 import {NewCountryDetailsComponent} from './country-admin/new-country/new-country-details/new-country-details.component';
 import {NewCountryPasswordComponent} from './country-admin/new-country/new-country-password/new-country-password.component';
@@ -183,6 +184,7 @@ const firebaseAuthConfig = {
         NewAgencyPasswordComponent,
         NewAgencyDetailsComponent,
         KeysPipe,
+        EnumKeysPipe,
         KeyValuesPipe,
         NewCountryDetailsComponent,
         NewCountryPasswordComponent,

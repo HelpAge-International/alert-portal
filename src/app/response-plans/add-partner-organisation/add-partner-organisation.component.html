@@ -28,7 +28,6 @@
       </div>
     </div>
 
-
     <div class="Underline-title__wrap">
       <h5>Projects</h5>
     </div>
@@ -46,20 +45,15 @@
       </div>
       <div class="row">
         <div class="Selection-row">
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="water"></div><label>WaSH</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="health"></div><label>Health</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="shelter"></div><label>Shelter</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="nutrition"></div><label>Nutrition</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="food"></div><label>Food Security &amp; Livelihoods</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="protection"></div><label>Protection</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="education"></div><label>Education</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="camp"></div><label>Camp Management</label></div>
-          <div class="Item__selectable Icon__selectable"><div onClick="$(this).toggleClass('Selected');"  class="misc"></div><label>Other</label></div>
+          <div class="Item__selectable Icon__selectable" *ngFor = "let sector of responsePlansSectors | enumKeys; let i = index">
+            <div onClick="$(this).toggleClass('Selected');" [class] = "sector"></div>
+            <label>{{responsePlansSectorsSelection[i] | translate}}</label>
+          </div>
         </div>
       </div>
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="P-title">Protject title</label>
+          <label for="P-title">Project title</label>
           <input type="text" class="form-control" id="P-title" placeholder="Please enter">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
@@ -68,9 +62,28 @@
         </div>
       </div>
       <div class="row Spaced">
-        <div class="col-lg-4 col-md-6 form-group">
+        <div class="col-lg-12 col-md-12 form-group">
           <label for="A-operation">Areas of operation</label>
-          <input type="text" class="form-control" id="A-operation" placeholder="Please enter">
+          <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <select class="form-control" name="CountryArea"
+                          [(ngModel)] = "partnerOrganisation && partnerOrganisation.projects[0].operationAreas" (change) = "areaChanged()">
+                        <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                        <option *ngFor="let country of countryLevels | keyValues" [value] = "country.key">{{countryEnum[country.key]}}
+                    </select>
+                </div>
+            </div>
+              <div class="col-sm-3" *ngFor = "let countryLevel of countryLevels[partnerOrganisation.projects[0].operationAreas]?.levels">
+                  <div class="form-group">
+                      <select class="form-control">
+                          <option selected="selected">Select a {{ countryLevel.value }}</option>
+                          <option>Ilocos Reigon</option>
+                          <option>....and the rest of the regions list</option>
+                      </select>
+                  </div>
+              </div>
+            </div>
         </div>
       </div>
       <div class="row Spaced">
