@@ -9,6 +9,7 @@ import {RxHelper} from '../../utils/RxHelper';
 import {Frequency} from "../../utils/Frequency";
 import * as firebase from 'firebase';
 declare var jQuery: any;
+import { LocalStorageService } from 'angular-2-local-storage';
 import { MinimumPreparednessComponent } from '../minimum/minimum.component';
 
 @Component({
@@ -29,8 +30,8 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
 
   	firebase: any;
 
-  	constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute) {
-  		super(firebaseApp, af, router, route);
+  	constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService) {
+  		super(firebaseApp, af, router, route, storage);
 		this.subscriptions = new RxHelper;
 		this.firebase = firebaseApp;		
 

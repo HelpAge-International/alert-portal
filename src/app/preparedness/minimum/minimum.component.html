@@ -153,12 +153,17 @@
                                         </a>
 
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                                         <template [ngIf]="action.actionStatus == actionStatus.InProgress">
                                             <a href="javascript:void(0)" data-toggle="collapse" [attr.data-target]="'#popover_content_' + action.key" aria-expanded="false" aria-controls="popover_content" 
                                            class="btn btn-outline-primary btn-block ">Mark as complete</a>	
                                         </template>                            
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected && action.actionStatus == actionStatus.Completed">
+                                        <template [ngIf]="action.actionStatus == actionStatus.InProgress">
+                                            <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
+                                        </template>                            
                                     </div>
                                 </div>
                                 <div class="row">
@@ -344,7 +349,7 @@
                                         </a>
 
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block">
+                                    <div class="col-md-3 col-sm-4 btn-block"  *ngIf="!countrySelected">
                                         <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
                                            class="btn btn-outline-primary btn-block ">Assign this action</a>
 
@@ -493,12 +498,15 @@
                                         </a>
 
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                                         <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3" aria-expanded="false" aria-controls="popover_content" 
                                            class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
 
 
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                        <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
                                 <div class="row">

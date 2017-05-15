@@ -162,6 +162,7 @@ const routes: Routes = [
     {path: 'country-admin/country-staff', component: CountryStaffComponent},
     {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
     {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
+    {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
 

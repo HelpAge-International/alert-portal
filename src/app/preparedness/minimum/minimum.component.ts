@@ -7,6 +7,7 @@ import {Observable, Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {RxHelper} from '../../utils/RxHelper';
 import {Frequency} from "../../utils/Frequency";
+import { LocalStorageService } from 'angular-2-local-storage';
 import * as firebase from 'firebase';
 declare var jQuery: any;
 
@@ -58,9 +59,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 	protected obsCountryId: Subject<string> = new Subject();
 	protected countrySelected = false;
 	protected agencySelected = false;
+
+    protected actionSelected: any = {};
     firebase: any;
 
-    constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute) {
+    constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService) {
         this.subscriptions = new RxHelper;
         this.firebase = firebaseApp;
 
@@ -469,6 +472,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     protected purgeDocumentReference(action, docKey) {
         this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key + '/documents/' + docKey).remove();
         this.af.database.object(Constants.APP_STATUS + '/document/' + action.agencyId + '/' + docKey).remove();
+    }
+
+    protected copyAction(action) {
+        this.storage.set('selectedAction', action);
+        this.router.navigate(["/preparedness/create-edit-preparedness"]);
     }
 
 }

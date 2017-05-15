@@ -1,6 +1,18 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<p>
-  country-office-profile works!
-</p>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+    <ng-template [ngIf]="countrySelected">
+    	<app-agency-submenu [countryId]="countryId"></app-agency-submenu>
+    	<app-alert-widget></app-alert-widget>
+    </ng-template>
+
+    <div class="Header-title__wrap">
+        <h1>Country Office Profile</h1>
+    </div>
+
+    </div>
+
+</div><!-- end #wrap -->
