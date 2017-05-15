@@ -9,7 +9,7 @@ import {ModelCountryOffice} from "../model/countryoffice.model";
 import {ModelHazard} from "../model/hazard.model";
 import {Countries, HazardScenario} from "../utils/Enums";
 import {HazardImages} from "../utils/HazardImages";
-import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapSuper";
+import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {unescapeIdentifier} from "@angular/compiler";
 import {Subscription} from "rxjs/Subscription";
 declare var jQuery: any;
@@ -102,4 +102,3 @@ export class MapComponent implements OnInit, OnDestroy {
     jQuery("#minimum-prep-modal-" + countryCode).modal("show");
   }
 }
-1
