@@ -94,6 +94,16 @@ export class SuperMapComponents {
   };
 
 
+  public logoForAgencyAdmin(uid: string, folder: string, funct: (logoPath: string) => void) {
+    let sub = this.getAgencyObj(uid, folder)
+      .subscribe((result) => {
+        if (result != null) {
+          funct(result.logoPath);
+        }
+      });
+    this.subscriptions.add(sub);
+  }
+
   /**
    * Get the system information
    */
@@ -135,7 +145,7 @@ export class SuperMapComponents {
         }
       })
       .subscribe((result) => {
-        let returnObj = new SDepHolder();
+        let returnObj = new SDepHolder(result.key);
         returnObj.departments = [];
         returnObj.location = country;
         result.forEach(snapshot => {
@@ -217,16 +227,32 @@ export class SuperMapComponents {
   /**
    * Get the country office
    */
-  private getAgency(uid: string, agencyAdminRefFolder: string) {
+  private getAgencyList(uid: string, agencyAdminRefFolder: string) {
+    return this.getListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
+  }
+  private getAgencyObj(uid: string, agencyAdminRefFolder: string) {
     return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
   }
   private getCountryOffice(uid: string, agencyAdminRefFolder: string) {
-    return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
+    return this.getListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
   }
   private getAdministratorAgency(uid: string, agencyAdminRefFolder: string) {
-    return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
+    return this.getListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
   }
   private getObjectBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
+    return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
+      .map((result: AgencyAdminPlaceholder) => {
+        let s: string;
+        for (let key in result.agencyAdmin) {
+          s = key;
+        }
+        return s;
+      })
+      .flatMap((agencyAdmin: string) => {
+        return this.af.database.object(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin)
+      });
+  }
+  private getListBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
     return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
@@ -765,10 +791,11 @@ export class DepHolder {
   public actionStatus: number;
 }
 export class SDepHolder {
-  constructor() {
+  constructor(agencyId) {
     this.departments = [];
   }
 
+  public agencyId: string;
   public departments: DepHolder[];
   public location: number;
   public overallAction() {

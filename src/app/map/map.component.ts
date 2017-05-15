@@ -25,6 +25,10 @@ export class MapComponent implements OnInit, OnDestroy {
   public mapHelper: SuperMapComponents;
   public department: SDepHolder;
   private mDepartmentMap: Map<string, SDepHolder>;
+  private agencyMap: Map<string, string> = new Map<string, string>();
+  private departments: SDepHolder[];
+
+  public agencyLogo: string;
 
   public minThreshRed: number;
   public minThreshYellow: number;
@@ -35,34 +39,43 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.department = new SDepHolder();
+    this.department = new SDepHolder("Something");
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
     let subscription = this.af.auth.subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
 
-        // Query firebase for country information
+        /** Initialise map and colour the relevant countries */
         this.mapHelper.initMapFrom("global-map", this.uid, "administratorCountry",
           (departments) => {
             this.mDepartmentMap = departments;
+            this.departments = [];
+            this.minThreshRed = this.mapHelper.minThreshRed;
+            this.minThreshYellow = this.mapHelper.minThreshYellow;
+            this.minThreshGreen = this.mapHelper.minThreshGreen;
+            this.mDepartmentMap.forEach((value, key) => {
+              this.departments.push(value);
+            });
           },
           (mapCountryClicked) => {
             if (this.mDepartmentMap != null) {
-              this.department = this.mDepartmentMap.get(mapCountryClicked);
-              // Need to be put here for inheritance / visibility issues in angular
-              this.minThreshRed = this.mapHelper.minThreshRed;
-              this.minThreshYellow = this.mapHelper.minThreshYellow;
-              this.minThreshGreen = this.mapHelper.minThreshGreen;
-              this.openMinimumPreparednessModal();
+              this.openMinimumPreparednessModal(mapCountryClicked);
             }
             else {
-              console.log("TODO: Map is yet to initialise properly / failed properly. ");
+              console.log("TODO: Map is yet to initialise properly / it failed to do so");
             }
           }
         );
+
+        /** Load in the markers on the map! */
         this.mapHelper.markersForAgencyAdmin(this.uid, "administratorCountry", (marker) => {
           marker.setMap(this.mapHelper.map);
+        });
+
+        /** Get the Agency logo */
+        this.mapHelper.logoForAgencyAdmin(this.uid, "administratorCountry", (logo) => {
+          this.agencyLogo = logo;
         });
 
       } else {
@@ -80,7 +93,8 @@ export class MapComponent implements OnInit, OnDestroy {
     return Countries[location];
   }
 
-  public openMinimumPreparednessModal() {
-    jQuery("#minimum-prep-modal").modal("show");
+  public openMinimumPreparednessModal(countryCode: string) {
+    jQuery("#minimum-prep-modal-" + countryCode).modal("show");
   }
 }
+1
