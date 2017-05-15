@@ -419,6 +419,11 @@
             "EARTHQUAKE": "Earthquake",
             "TSUNAMI": "Tsunami",
             "DROUGHT": "Drought"
+        },
+        "ALERT_LEVELS": {
+            "GREEN": "Green alert level",
+            "AMBER": "Amber alert level",
+            "RED": "Red alert level"
         }
     },
     "LOGIN": {
@@ -811,6 +816,18 @@
         },
         "MESSAGES": {
             "TITLE_TEXT": "Country Office Messages"
+        },
+        "VIEW_MY_AGENCY" : {
+            "TITLE" : "Helpage International: Overview",
+            "RESPONSE_PLANS" : "Response plans",
+            "MPA" : "Minimum Preparedness",
+            "APA" : "Advanced preparedness",
+            "CHS" : "CHS Preparednes",
+            "SORT_BY" : "Sort by",
+            "NO_COUNTRIES": "Countries doesn't",
+            "NO_COUNTRIES_BY": "Countries doesn't exist by",
+            "ALL_ALERT_LEVEL" : "All Alert level",
+            "ALERT_LEVEL" : "Alert Level"
         }
     },
     "DIALOG": {
@@ -1043,5 +1060,5 @@
         "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs",
         "SELECT_GENERIC_ACTION": "Select a generic preparedness action",
         "BUDGET_NARRATIVE": "Budget Narrative"
-    }
+    }   
 }

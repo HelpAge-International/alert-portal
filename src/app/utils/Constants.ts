@@ -437,6 +437,18 @@ export class Constants {
         "Icon--drought"
     ];
 
+    static ALERT_LEVELS = [
+        "GLOBAL.ALERT_LEVELS.GREEN",
+        "GLOBAL.ALERT_LEVELS.AMBER",
+        "GLOBAL.ALERT_LEVELS.RED"
+    ];
+
+    static ALERT_COLORS = [
+        "green",
+        "yellow",
+        "red"
+    ];
+
 }
 
 export enum FILE_SETTING {

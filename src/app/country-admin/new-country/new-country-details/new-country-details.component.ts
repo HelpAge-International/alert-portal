@@ -28,7 +28,7 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
   private CountryOfficeAddressModel: CountryOfficeAddressModel = new CountryOfficeAddressModel();
 
   private Country = Constants.COUNTRY;
-  private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
+  private countriesList: number[] = [];
 
   firebase: any;
 
