@@ -88,11 +88,11 @@ export class RegionHolder {
   constructor() {
     this.countries = new Set<string>();
   }
-  public getParentId() {
+  public getRegionId() {
     return "collapseParent-" + this.regionId;
   }
-  public getParentIdHash() {
-    return "#" + this.getParentId();
+  public getRegionIdHash() {
+    return "#" + this.getRegionId();
   }
   public getCountryId(id: string) {
     return "collapseCountry-" + this.regionId + "-" + id;
@@ -102,9 +102,9 @@ export class RegionHolder {
   }
   public listOfCountries() {
     let r: string = "";
-    r += this.getParentId() + ", ";
+    r += this.getRegionIdHash() + ", ";
     this.countries.forEach(value => {
-      r += this.getCountryId(value) + ", ";
+      r += this.getCountryIdHash(value) + ", ";
     });
     r = r.substr(0, r.length - 2);
     return r;

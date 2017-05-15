@@ -12,19 +12,24 @@
     <!-- Region header -->
     <div *ngIf="showRegionHeaders">
       <div  *ngFor="let x of regions">
-        <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
-             [attr.data-target]="x.getParentId()" data-toggle="collapse"
-             [attr.href]="x.getParentId()" aria-expanded="true">
+        <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true" [attr.data-target]="x.listOfCountries()" data-toggle="collapse" [attr.href]="x.getRegionIdHash()" aria-expanded="true">
           <div class="row">
-            <h3 class="col-sm-11">{{x.regionName}} >> {{x.getParentId()}} </h3>
+            <h3 class="col-sm-11">{{x.regionName}}</h3>
             <i class="fa fa-caret-down text-primary col-sm-1 align-self-center" aria-hidden="true"></i>
           </div>
         </div>
-        <div id="{{x.getParentId()}}" class="Ribbon__section__wrap Spaced collapse">
-          <div *ngFor="let c of countries">
-            <div id="{{x.getCountryId(c.countryId)}}" class="Accordion Map-list" data-toggle="collapse" [attr.href]="'#' + x.getCountryId(c.countryId)" aria-expanded="true"
-                 [attr.aria-controls]="x.getCountryId(c.countryId)">
-              <p>Part of region {{x.getCountryId(c.countryId)}}</p>
+
+        <div *ngFor="let y of countries">
+          <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
+            <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getCountryIdHash(y.countryId)" aria-expanded="true">
+              <h3>Header?</h3>
+            </div>
+          </div>
+          <div class="Accordion__Content collapse" id="{{x.getCountryId(y.countryId)}}">
+            <div class="info-window container-fluid">
+              <div class="info-window__subheading row">
+                <div class="col">Minimum Preparedness Action (MPAs)</div>
+              </div>
             </div>
           </div>
         </div>
