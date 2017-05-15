@@ -70,10 +70,12 @@ import {SelectPreparednessComponent} from "./preparedness/select/select.componen
 import {CreateEditPreparednessComponent} from "./preparedness/create-edit/create-edit.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
+import {ExportTestComponent} from "./export-test/export-test.component";
 
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
+import {MapCountriesListComponent} from "./map/map-countries-list/map-countries-list.component";
 
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
 
@@ -192,14 +194,20 @@ const routes: Routes = [
      */
     {path: 'response-plans', component: ResponsePlansComponent},
     {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
+    {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
 
     /**
      * Maps
      */
-    {path: 'map', component: MapComponent}
+    {path: 'map', component: MapComponent},
+    {path: 'map/map-countries-list', component: MapCountriesListComponent},
 
-    //TODO: define needed routes here. see the example above
+  /*
+  * test
+  * */
+  {path: 'export', component: ExportTestComponent}
+  //TODO: define needed routes here. see the example above
 
 ];
 

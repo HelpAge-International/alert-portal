@@ -817,17 +817,17 @@
         "MESSAGES": {
             "TITLE_TEXT": "Country Office Messages"
         },
-        "VIEW_MY_AGENCY" : {
-            "TITLE" : "Helpage International: Overview",
-            "RESPONSE_PLANS" : "Response plans",
-            "MPA" : "Minimum Preparedness",
-            "APA" : "Advanced preparedness",
-            "CHS" : "CHS Preparednes",
-            "SORT_BY" : "Sort by",
+        "VIEW_MY_AGENCY": {
+            "TITLE": "Helpage International: Overview",
+            "RESPONSE_PLANS": "Response plans",
+            "MPA": "Minimum Preparedness",
+            "APA": "Advanced preparedness",
+            "CHS": "CHS Preparednes",
+            "SORT_BY": "Sort by",
             "NO_COUNTRIES": "Countries doesn't",
             "NO_COUNTRIES_BY": "Countries doesn't exist by",
-            "ALL_ALERT_LEVEL" : "All Alert level",
-            "ALERT_LEVEL" : "Alert Level"
+            "ALL_ALERT_LEVEL": "All Alert level",
+            "ALERT_LEVEL": "Alert Level"
         }
     },
     "DIALOG": {
@@ -890,6 +890,7 @@
         "CREATE_NEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Create new scenario based response plan",
             "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
+            "EDIT_RESPONSE_PLAN": "Edit response plan",
             "PLAN_DETAILS": {
                 "TITLE_TEXT": "Plan Details",
                 "PLAN_NAME": "Plan name",
@@ -984,11 +985,6 @@
                     "CAPITAL_ITEMS": "Capital Items",
                     "MANAGEMENT_SUPPORT": "Management support"
                 }
-            },
-            "ADD_PARTNER": {
-                "SELECT_A_PARTNER": "Select a partner",
-                "ADD_A_PARTNER_ORGANISATION": "Add a partner organisation",
-                "ADD_ANOTHER_PARTNER": "Add another partner to this plan"
             }
         },
         "HAZARD_SCENARIOS": {
@@ -1015,6 +1011,21 @@
         "EDUCATION": "Education",
         "CAMP_MANAGEMENT": "Camp management",
         "OTHER": "Other"
+    },
+    "ADD_PARTNER": {
+        "SELECT_A_PARTNER": "Select a partner",
+        "ADD_A_PARTNER_ORGANISATION": "Add partner organisation",
+        "PARTNER_ORGANISATION": "Partner Organisation",
+        "ADD_ANOTHER_PARTNER_TO_THIS_PLAN": "Add another partner to this plan",
+        "ORGANISATION_DETAILS": "Organisation Details",
+        "RELATIONSHIP": "Relationship",
+        "SECTOR": "Sector",
+        "TYPE_OF_PROJECT": "Type of project",
+        "PROJECT_END_DATE": "Project End date",
+        "AREAS_OF_OPERATION": "Area(s) of operation",
+        "ADD_ANOTHER_PROJECT": "Add another location",
+        "PARTNER_CONTACT_DETAILS": "Partner contact details",
+        "ADD_NEW_PARTNER_ORGANISATION": "Add new partner organisation"
     },
     "FIREBASE": {
         "auth/email-already-in-use": "The email address is already in use",
@@ -1060,5 +1071,5 @@
         "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs",
         "SELECT_GENERIC_ACTION": "Select a generic preparedness action",
         "BUDGET_NARRATIVE": "Budget Narrative"
-    }   
+    }
 }
