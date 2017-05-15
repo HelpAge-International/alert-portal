@@ -97,12 +97,11 @@ import {AdvancedPreparednessComponent} from './preparedness/advanced/advanced.co
 import {BudgetPreparednessComponent} from './preparedness/budget/budget.component';
 import {SelectPreparednessComponent} from './preparedness/select/select.component';
 import {CreateEditPreparednessComponent} from './preparedness/create-edit/create-edit.component';
-import {AgencyOverviewPreparednessComponent} from './preparedness/agency-overview/agency-overview.component';
-import {CountryAgenciesOverviewPreparednessComponent} from './preparedness/country-agencies-overview/country-agencies-overview.component';
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
-import { ExportTestComponent } from './export-test/export-test.component';
+import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
+import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import { AgencySubmenuComponent } from './preparedness/agency-submenu/agency-submenu.component';
 import { CountrySubmenuComponent } from './preparedness/country-submenu/country-submenu.component';
@@ -214,14 +213,13 @@ const firebaseAuthConfig = {
         BudgetPreparednessComponent,
         SelectPreparednessComponent,
         CreateEditPreparednessComponent,
-        AgencyOverviewPreparednessComponent,
-        CountryAgenciesOverviewPreparednessComponent,
         CreateAlertRiskMonitoringComponent,
         AddIndicatorRiskMonitoringComponent,
         AddHazardRiskMonitoringComponent,
         AgencySubmenuComponent,
         CountrySubmenuComponent,
         AlertWidgetComponent,
+        CountryMyAgencyComponent,
         MapCountriesListComponent,
         ExportTestComponent
     ],
@@ -246,7 +244,6 @@ const firebaseAuthConfig = {
             prefix: 'my-app',
             storageType: 'localStorage'
         })
-
     ],
     providers: [RxHelper, Modal],
     bootstrap: [AppComponent]

@@ -9,13 +9,49 @@
       <a href="" (click)="goToListView()">See countries as a list</a>
     </div>
     <div class="Ribbon__section__wrap Spaced">
-
-      <div id="map" class="map">
-
-        <!--Add the map here-->
-
+      <div id="global-map" style="height: 500px;"></div>
+    </div>
+    <div *ngIf="(departments != null)">
+      <div *ngFor="let x of departments" class="modal fade" id="minimum-prep-modal-{{getCountryCode(x.location)}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="info-window container-fluid Spaced" (change)="openMinimumPreparednessModal()">
+              <div class="info-window__heading row">
+                <div class="col-sm-2 logo"><img class="agency-logo-scale" src="{{agencyLogo}}"></div>
+                <div *ngIf="x.location == -1" class="col-sm-8"><h5>Loading...</h5></div>
+                <div *ngIf="(x != null && x.location != -1)" class="col-sm-8"><h5>{{"GLOBAL.COUNTRIES." + getCountryCode(x.location).toUpperCase() | translate}} ({{getCountryCode(x.location)}})</h5></div>
+                <div class="col-sm-2"></div>
+              </div>
+              <div class="info-window__subheading row">
+                <div class="col">Minimum Preparedness Action (MPAs)</div>
+              </div>
+              <table class="table">
+                <thead>
+                <tr>
+                  <th class="col-10 text-left">Department</th>
+                  <th class="col-2 text-center">Preparedness</th>
+                </tr>
+                </thead>
+                <tbody  *ngIf="(x != null && x.location != -1)">
+                  <tr *ngFor="let y of x.departments">
+                    <td>{{y.department}}</td>
+                    <td *ngIf="y.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
+                    <td *ngIf="y.actionStatus >= minThreshYellow && !(y.actionStatus >= minThreshGreen)"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                    <td *ngIf="!(y.actionStatus >= minThreshYellow) && !(y.actionStatus >= minThreshGreen)"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Overall</strong></td>
+                    <td *ngIf="x.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
+                    <td *ngIf="x.overallAction() >= minThreshYellow && !(x.overallAction() >= minThreshGreen)"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                    <td *ngIf="!(x.overallAction() >= minThreshYellow) && !(x.overallAction() >= minThreshGreen)"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-
     </div>
   </div>
 </div>

@@ -77,6 +77,8 @@ import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicat
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
 import {MapCountriesListComponent} from "./map/map-countries-list/map-countries-list.component";
 
+import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
+
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
 
@@ -161,6 +163,7 @@ const routes: Routes = [
     {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
     {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
     {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
+    {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
 
     /**
      * Dashboard
