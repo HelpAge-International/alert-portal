@@ -5,6 +5,7 @@ import {AngularFire} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {ModelCountryOffice} from "../../model/countryoffice.model";
 import {ModelRegion} from "../../model/region.model";
+import {Countries} from "../../utils/Enums";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -19,6 +20,10 @@ export class MapCountriesListComponent implements OnInit {
   public countries: SDepHolder[];
   public showRegionHeaders: boolean;
 
+  public minThreshGreen: number = -1;
+  public minThreshYellow: number = -1;
+  public minThreshRed: number = -1;
+
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
     this.mapHelper = SuperMapComponents.init(af, subscriptions);
     this.regions = [];
@@ -30,8 +35,16 @@ export class MapCountriesListComponent implements OnInit {
       if (user) {
         this.uid = user.uid;
 
+        /** Setup the minimum threshold **/
+        this.mapHelper.getSystemInfo(this.uid, "administratorCountry", (red, yellow, green) => {
+          this.minThreshGreen = green;
+          this.minThreshYellow = yellow;
+          this.minThreshRed = red;
+        });
+
         /** Setup the region count **/
         this.mapHelper.getRegionsForAgency(this.uid, "administratorCountry", (key, obj) => {
+          console.log("Updating Region");
           this.showRegionHeaders = key != "";
           if (!this.showRegionHeaders) return;
           let hRegion = new RegionHolder();
@@ -45,10 +58,10 @@ export class MapCountriesListComponent implements OnInit {
 
         /** Country list **/
         this.mapHelper.initCountries(this.uid, "administratorCountry", (departments => {
+          console.log("Updating country");
           for (let x of departments) {
             this.addOrUpdateCountry(x);
           }
-          console.log(this.countries);
         }));
       }
     });
@@ -82,6 +95,10 @@ export class MapCountriesListComponent implements OnInit {
     this.regions.push(holder);
     return;
   }
+
+  public getCountryCodeFromLocation(location: number) {
+    return Countries[location];
+  }
 }
 
 export class RegionHolder {
@@ -89,16 +106,22 @@ export class RegionHolder {
     this.countries = new Set<string>();
   }
   public getRegionId() {
-    return "collapseParent-" + this.regionId;
+    return "mapParent-" + this.regionId;
   }
   public getRegionIdHash() {
     return "#" + this.getRegionId();
   }
   public getCountryId(id: string) {
-    return "collapseCountry-" + this.regionId + "-" + id;
+    return "mapCountry-" + this.regionId + "-" + id;
   }
   public getCountryIdHash(id: string) {
     return "#" + this.getCountryId(id);
+  }
+  public getDepartmentId(id: string) {
+    return "mapDepartment-" + this.regionId + "-" + id;
+  }
+  public getDepartmentIdHash(id: string) {
+    return "#" + this.getDepartmentId(id);
   }
   public listOfCountries() {
     let r: string = "";
@@ -109,6 +132,17 @@ export class RegionHolder {
     r = r.substr(0, r.length - 2);
     return r;
   }
+
+  public listOfDepartments() {
+    let r: string = "";
+    r += this.getRegionIdHash() + ", ";
+    this.countries.forEach(value => {
+      r += this.getDepartmentIdHash(value) + ", ";
+    });
+    r = r.substr(0, r.length - 2);
+    return r;
+  }
+
   public countries: Set<string>;
   public regionId: string;
   public regionName: string;

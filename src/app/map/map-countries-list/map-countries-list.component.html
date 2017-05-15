@@ -19,26 +19,32 @@
           </div>
         </div>
 
-        <div *ngFor="let y of countries">
-          <div *ngIf="x.countries.has(y.countryId)">
-            <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
-              <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getCountryIdHash(y.countryId)" aria-expanded="true"><div class="row align-items-center">
-                <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
-                  <i class="Icon__square--transparent Icon__country--philippines Icon--lg"></i>
-                  <b><p>Philippines (PHL)</p></b>
+        <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
+          <div *ngFor="let y of countries">
+            <div *ngIf="x.countries.has(y.countryId)">
+              <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)" aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
+                <div class="row align-items-center">
+                  <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
+                    <i class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
+                    <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() | translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
+                  </div>
+                  <div class="col-md-2 col-lg-2 col-sm-2 text-center">
+                    <i *ngIf="y.overallAction() >= minThreshGreen" class="fa fa-check-circle fa-5x text-success" aria-hidden="true"></i>
+                    <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)" class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
+                    <i *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen)" class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
+                    <p>Minimum Preparedness</p>
+                  </div>
+                  <div class="col-md-2 col-lg-2 col-sm-2"></div>
+                  <div class="col-md-4 col-sm-4"></div>
+                  <div class="col-sm-1 text-center">
+                    <i class="Icon__circle Icon--b-black Icon--cyclone Icon--sm"></i>
+                    <span><b>Typhoon</b></span>
+                  </div>
+                  <div class="col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
                 </div>
-                <div class="col-md-2 col-lg-2 col-sm-2 text-center"><i class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i><p>Minimum Preparedness</p></div>
-                <div class="col-md-2 col-lg-2 col-sm-2"></div>
-                <div class="col-md-4 col-sm-4"></div>
-                <div class="col-sm-1 text-center">
-                  <i class="Icon__circle Icon--b-black Icon--cyclone Icon--sm"></i>
-                  <span><b>Typhoon</b></span>
-                </div>
-                <div class="col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
-              </div>
               </div>
             </div>
-            <div class="Accordion__Content collapse" id="{{x.getCountryId(y.countryId)}}">
+            <div class="Accordion__Content collapse" id="{{x.getDepartmentId(y.countryId)}}">
               <div class="info-window container-fluid">
                 <div class="info-window__subheading row">
                   <div class="col">Minimum Preparedness Action (MPAs)</div>
