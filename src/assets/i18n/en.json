@@ -424,6 +424,10 @@
             "GREEN": "Green alert level",
             "AMBER": "Amber alert level",
             "RED": "Red alert level"
+        },
+        "GEO_LOCATION" : {
+            "NATIONAL" : "National",
+            "SUBNATIONAL" : "Subnational"
         }
     },
     "LOGIN": {

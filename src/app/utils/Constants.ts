@@ -449,6 +449,12 @@ export class Constants {
         "red"
     ];
 
+
+    static GEO_LOCATION = [
+        "GLOBAL.GEO_LOCATION.NATIONAL",
+        "GLOBAL.GEO_LOCATION.SUBNATIONAL"
+    ];
+    
 }
 
 export enum FILE_SETTING {
