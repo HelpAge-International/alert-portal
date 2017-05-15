@@ -652,12 +652,14 @@
                                class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
                           type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
                           value="0" #radio0
+                          [checked]="activityInfoMap.get(sector) && activityInfoMap.get(sector)['sourcePlan']==0"
                           id="source-intern{{sector}}" (click)="selectInternationa(sector, radio0.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INTERNATIONALLY" | translate}}</label>
                         <label for="source-region{{sector}}"
                                class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
                           type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
                           value="1" #radio1
+                          [checked]="activityInfoMap.get(sector) && activityInfoMap.get(sector)['sourcePlan']==1"
                           id="source-region{{sector}}" (click)="selectNeighbour(sector, radio1.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REGIONALLY_COUNTRY" |
                           translate}}</label>
@@ -665,6 +667,7 @@
                                class="Checkbox--ribbon Left col-lg-3 col-md-3 col-sm-2"><input
                           type="radio" onClick="multi_select_radioSelected(this)" name="source-goods{{sector}}"
                           value="2" #radio2
+                          [checked]="activityInfoMap.get(sector) && activityInfoMap.get(sector)['sourcePlan']==2"
                           id="source-local{{sector}}" (click)="selectLocal(sector, radio2.value)">
                           {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.IN_COUNTRY_LOCALLY" |
                           translate}}</label>
@@ -678,11 +681,13 @@
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">1</span>
                         <input type="text" class="form-control" #pointOne
+                               [value]="activityInfoMap.get(sector) ? activityInfoMap.get(sector)['bullet1']:''"
                                (change)="getBulletOne(sector, pointOne.value)">
                       </div>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">2</span>
                         <input type="text" class="form-control" #pointTwo
+                               [value]="activityInfoMap.get(sector) ? activityInfoMap.get(sector)['bullet2']:''"
                                (change)="getBulletTwo(sector, pointTwo.value)">
                       </div>
                     </div>
@@ -747,15 +752,18 @@
             <div class="Selection-row Selection-row--column Spaced">
               <label for="P-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="P-doc" value="0"
-                       [(ngModel)]="mediaFormat">
+                       #photo
+                       (change)="updateMediaFormat(photo.value)" [checked]="mediaFormat == 0">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC" | translate}}</label>
               <label for="V-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc" value="1"
-                       [(ngModel)]="mediaFormat">
+                       #video
+                       (change)="updateMediaFormat(video.value)" [checked]="mediaFormat == 1">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO" | translate}}</label>
               <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc" value="2"
-                       [(ngModel)]="mediaFormat">
+                       #both
+                       (change)="updateMediaFormat(both.value)" [checked]="mediaFormat==2">
                 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO" | translate}}</label>
             </div>
           </div>
@@ -925,14 +933,15 @@
               <div class="col-lg-4 col-5"></div>
             </div>
             <div *ngIf="sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
-              <!--TODO - The list of sectors selected in secrion 3 should be shown here-->
               <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
                 <div class="col-lg-3 col-4">A-{{i+1}}: {{SECTORS[sector] | translate}}</div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
+                         [value]="loadResponsePlan?loadResponsePlan.budget['item'][0][sector]['budget']:null"
                          (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
                   <input type="text" class="form-control budget-narrative" #narrative
+                         [value]="loadResponsePlan?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
                          (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
               <!--<div class="row Line-row col-lg-12">-->
@@ -1109,6 +1118,7 @@
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
               <div class="col-lg-3 col-4"><input type="text" class="form-control" #budget
+                                                 [value]="loadResponsePlan?budgetOver1000.get(capitalItemSection):null"
                                                  (change)="budgetOverThousand(capitalItemSection, budget.value)">
                 <br/>
                 <a href="javascript:void(0)" class="Remove__row__cta"
@@ -1116,6 +1126,7 @@
                    [hidden]="capitalItemSection == 1">{{"GLOBAL.REMOVE" | translate}}</a>
               </div>
               <div class="col-lg-9 col-8"><input type="text" class="form-control" #desc
+                                                 [value]="loadResponsePlan?budgetOver1000Desc.get(capitalItemSection):null"
                                                  (change)="budgetOverThousandDesc(capitalItemSection, desc.value)">
               </div>
             </div>
