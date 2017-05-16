@@ -104,6 +104,8 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
+import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
+
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -215,7 +217,8 @@ const firebaseAuthConfig = {
         AddHazardRiskMonitoringComponent,
         CountryMyAgencyComponent,
         MapCountriesListComponent,
-        ExportTestComponent
+        ExportTestComponent,
+        CountryAgenciesComponent
     ],
     imports: [
         BrowserModule,
