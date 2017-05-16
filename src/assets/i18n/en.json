@@ -625,6 +625,7 @@
         "INVALID_DATE": "The project end date is invalid",
         "DIALOG_TITLE": "Create partner user",
         "DIALOG_CONTENT": "The entered partner details do not correspond to any of the registered partners. Would you like to create an account now?"
+    },
     "MANDATED_PA": {
       "TITLE_TEXT": "Mandated Preparedness Actions",
       "LOOK_UP_ACTIONS": "LOOKUP GENERIC ACTIONS",
