@@ -64,15 +64,16 @@ export class CountryMyAgencyComponent implements OnInit {
         this._getAgencyID().then(() => {
             this._getCountryList().then(() => {
                 this._getResponsePlans();
-                this._getAllActions();
-            });
-        });
-        this._getSystemAdminID().then(() => {
-            this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
-                this.minTreshold = minTreshold;
-            });
-            this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-                this.advTreshold = advTreshold;
+                this._getSystemAdminID().then(() => {
+                    this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
+                        this.minTreshold = minTreshold;
+                    });
+                    this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+                        this.advTreshold = advTreshold;
+                    });
+                }).then(() => {
+                    this._getAllActions();
+                });
             });
         });
     }
