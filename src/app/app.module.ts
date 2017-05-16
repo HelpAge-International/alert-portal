@@ -69,6 +69,7 @@ import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/s
 import {NewAgencyPasswordComponent} from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
 import {NewAgencyDetailsComponent} from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
 import {KeysPipe} from './utils/pipes/keys.pipe';
+import {EnumKeysPipe} from './utils/pipes/enum-keys.pipe';
 import {KeyValuesPipe} from './utils/pipes/key-values.pipe';
 import {NewCountryDetailsComponent} from './country-admin/new-country/new-country-details/new-country-details.component';
 import {NewCountryPasswordComponent} from './country-admin/new-country/new-country-password/new-country-password.component';
@@ -107,6 +108,7 @@ import { AgencySubmenuComponent } from './preparedness/agency-submenu/agency-sub
 import { CountrySubmenuComponent } from './preparedness/country-submenu/country-submenu.component';
 import { AlertWidgetComponent } from './commons/alert-widget/alert-widget.component';
 import { MapCountriesListComponent } from './map/map-countries-list/map-countries-list.component';
+import {UserService} from "./services/user.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -186,6 +188,7 @@ const firebaseAuthConfig = {
         NewAgencyPasswordComponent,
         NewAgencyDetailsComponent,
         KeysPipe,
+        EnumKeysPipe,
         KeyValuesPipe,
         NewCountryDetailsComponent,
         NewCountryPasswordComponent,
@@ -245,7 +248,7 @@ const firebaseAuthConfig = {
             storageType: 'localStorage'
         })
     ],
-    providers: [RxHelper, Modal],
+    providers: [RxHelper, Modal, UserService],
     bootstrap: [AppComponent]
 })
 

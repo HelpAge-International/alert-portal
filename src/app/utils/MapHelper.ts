@@ -18,6 +18,7 @@ import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {current} from "codelyzer/util/syntaxKind";
 import {ModelSystem} from "../model/system.model";
+import {ModelRegion} from "../model/region.model";
 /**
  * Created by jordan on 05/05/2017.
  */
@@ -92,13 +93,30 @@ export class SuperMapComponents {
 
     this.subscriptions.add(sub);
   };
+  public actionInfoForAgencyAdmin(uid: string, folder: string, funct: (location: number, marker) => void) {
+    let sub = this.getCountryOffice(uid, folder)
+      .flatMap((countryOffice) => {
+        for (let key of countryOffice) {
+          this.markersForAgencyAdminMap.set(key.$key, key.location);
+          return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key, { preserveSnapshot: true});
+        }
+      })
+      .subscribe((result) => {
+        result.forEach(snapshot => {
+          funct(this.markersForAgencyAdminMap.get(result.key), snapshot.val());
+        });
+      });
+    this.subscriptions.add(sub);
+  }
 
-
+  /**
+   *    Find the agency logo path from firebase
+   */
   public logoForAgencyAdmin(uid: string, folder: string, funct: (logoPath: string) => void) {
-    let sub = this.getAgencyObj(uid, folder)
+    let sub = this.fbgetAgencyObj(uid, folder)
       .subscribe((result) => {
         if (result != null) {
-          funct(result.logoPath);
+          funct(result.val().logoPath);
         }
       });
     this.subscriptions.add(sub);
@@ -108,7 +126,7 @@ export class SuperMapComponents {
    * Get the system information
    */
   public getSystemInfo(uid: string, folder:string, funct: (red: number, yellow: number, green: number) => void) {
-    let sub = this.getSystemAdminId(uid, folder)
+    let sub = this.fbgetSystemAdminId(uid, folder)
       .flatMap((systemAdmin) => {
         return this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdmin);
       })
@@ -160,7 +178,10 @@ export class SuperMapComponents {
   }
 
 
-  /** Get all the countries **/
+  /**
+   *    Get all the departments for all the countries that belong to a
+   *    certain agency
+   * */
   private mDepCounter;
   private mDepHolder: SDepHolder[];
   private flagToClear: boolean = false;
@@ -180,6 +201,29 @@ export class SuperMapComponents {
       });
     this.subscriptions.add(sub);
   }
+
+
+  /**
+   *    Method to get all the regions inside an agency
+   *    - Could return null, and this needs to be handled! Absense determines view type
+   */
+  public getRegionsForAgency(uid: string, folder: string, funct: (key: string, region: ModelRegion) => void) {
+    let sub = this.fbgetRegionsForAgency(uid, folder)
+      .subscribe((result) => {
+        if (result.childCount == 0) {
+          funct("", null);
+        }
+        result.forEach((snapshot) => {
+          funct(snapshot.key, snapshot.val());
+        })
+      });
+    this.subscriptions.add(sub);
+  }
+
+  /**
+   *    Counter method for the returning of the departments for a specific agency
+   *    - Needs to count due to nature of firebase list call
+   */
   private getDepsForAllCountriesCounterMethod(holder: SDepHolder, funct: (holder: SDepHolder[]) => void) {
     if (!this.flagToClear) {
       this.mDepHolder = [];
@@ -194,6 +238,12 @@ export class SuperMapComponents {
       this.flagToClear = false;
     }
   }
+
+  /**
+   *    Method to work out the actionStatus result based on how the hazard
+   *    - Duplicates in the list - finding the average (and removing duplicates)
+   *    - Removing any that don't have the desired level
+   * */
   private processDepHolder(holder: SDepHolder, levelToSelect: number) {
     let newHolder: Map<string, DepHolder> = new Map<string, DepHolder>();
     let counterMap: Map<string, number> = new Map<string, number>();
@@ -227,19 +277,22 @@ export class SuperMapComponents {
   /**
    * Get the country office
    */
-  private getAgencyList(uid: string, agencyAdminRefFolder: string) {
-    return this.getListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
+  private fbgetAgencyList(uid: string, agencyAdminRefFolder: string) {
+    return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
   }
-  private getAgencyObj(uid: string, agencyAdminRefFolder: string) {
-    return this.getObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
+  private fbgetAgencyObj(uid: string, agencyAdminRefFolder: string) {
+    return this.fbgetObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "agency");
   }
   private getCountryOffice(uid: string, agencyAdminRefFolder: string) {
-    return this.getListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
+    return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
   }
-  private getAdministratorAgency(uid: string, agencyAdminRefFolder: string) {
-    return this.getListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
+  private fbgetAdministratorAgency(uid: string, agencyAdminRefFolder: string) {
+    return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
   }
-  private getObjectBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
+  private fbgetRegionsForAgency(uid: string, agencyAdminRefFolder: string) {
+    return this.fbgetObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "region");
+  }
+  private fbgetObjectBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
     return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
@@ -249,10 +302,10 @@ export class SuperMapComponents {
         return s;
       })
       .flatMap((agencyAdmin: string) => {
-        return this.af.database.object(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin)
+        return this.af.database.object(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin, {preserveSnapshot: true})
       });
   }
-  private getListBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
+  private fbgetListBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
     return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
@@ -268,9 +321,9 @@ export class SuperMapComponents {
 
 
   /**
-   * Get system admin id
+   * Get system admin id firebase handler
    */
-  private getSystemAdminId(uid: string, folder: string) {
+  private fbgetSystemAdminId(uid: string, folder: string) {
     return this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
@@ -292,9 +345,74 @@ export class SuperMapComponents {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Utility methods for initialising the map and handling colouring and theming of it
    */
+
+  public initCountries(uid: string, folder: string,
+                     done: (departments: SDepHolder[]) => void) {
+    this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
+      done(holder);
+    });
+  }
+
+
+  public initMapFrom(elementId: string, uid: string, folder: string,
+                     done: (departments: Map<string,SDepHolder>) => void,
+                     mapIconClicked: (countryCode: string) => void) {
+    if (this.map == null) {
+      this.initBlankMap(elementId);
+    }
+    this.getSystemInfo(uid, folder, (redThresh, yellowThresh, greenThresh) => {
+      this.minThreshGreen = greenThresh;
+      this.minThreshRed = redThresh;
+      this.minThreshYellow = yellowThresh;
+      this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
+        let red: string[] = [];
+        let yellow: string[] = [];
+        let green: string[] = [];
+        for (let h of holder) {
+          if (h.overallAction() >= greenThresh) {
+            green.push(Countries[h.location]);
+          }
+          else if (h.overallAction() >= yellowThresh) {
+            yellow.push(Countries[h.location]);
+          }
+          else {
+            red.push(Countries[h.location]);
+          }
+        }
+
+        let returnMap: Map<string, SDepHolder> = new Map<string, SDepHolder>();
+        for (let h of holder) {
+          returnMap.set(Countries[h.location].toString(), h);
+        }
+        this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map, mapIconClicked);
+        done(returnMap);
+      });
+    });
+  }
+
+
   public initBlankMap(elementId: string) {
     let uluru = {lat: 54.339089, lng: -2.140014};
     this.map = new google.maps.Map(document.getElementById(elementId), {
@@ -656,45 +774,8 @@ export class SuperMapComponents {
     });
   }
 
-  public initMapFrom(elementId: string, uid: string, folder: string,
-                     done: (departments: Map<string,SDepHolder>) => void,
-                     mapIconClicked: (countryCode: string) => void) {
-    if (this.map == null) {
-      this.initBlankMap(elementId);
-    }
-    this.getSystemInfo(uid, folder, (redThresh, yellowThresh, greenThresh) => {
-      this.minThreshGreen = greenThresh;
-      this.minThreshRed = redThresh;
-      this.minThreshYellow = yellowThresh;
-      this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
-        let red: string[] = [];
-        let yellow: string[] = [];
-        let green: string[] = [];
-        for (let h of holder) {
-          if (h.overallAction() >= greenThresh) {
-            green.push(Countries[h.location]);
-          }
-          else if (h.overallAction() >= yellowThresh) {
-            yellow.push(Countries[h.location]);
-          }
-          else {
-            red.push(Countries[h.location]);
-          }
-        }
-
-        let returnMap: Map<string, SDepHolder> = new Map<string, SDepHolder>();
-        for (let h of holder) {
-          returnMap.set(Countries[h.location].toString(), h);
-        }
-        this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map, mapIconClicked);
-        done(returnMap);
-      });
-    });
-  }
-
-
   /** Function for where **/
-  public doneWithEmbeddedStyles(red, redCol, yellow, yellowCol, green, greenCol, map, funct: (countryCode: string) => void) {
+  private doneWithEmbeddedStyles(red, redCol, yellow, yellowCol, green, greenCol, map, funct: (countryCode: string) => void) {
     let layer = new google.maps.FusionTablesLayer({
       suppressInfoWindows: true,
       query: {
@@ -791,11 +872,12 @@ export class DepHolder {
   public actionStatus: number;
 }
 export class SDepHolder {
-  constructor(agencyId) {
+  constructor(countryId) {
+    this.countryId = countryId;
     this.departments = [];
   }
 
-  public agencyId: string;
+  public countryId: string;
   public departments: DepHolder[];
   public location: number;
   public overallAction() {
@@ -804,6 +886,8 @@ export class SDepHolder {
       diviser += dep.actionStatus;
     }
     let x = (diviser) / (this.departments.length);
+    if (this.departments.length == 0)
+      return -1;
     return x;
   }
 }

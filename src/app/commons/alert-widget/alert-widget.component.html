@@ -1,27 +1,37 @@
-<div class="Widget Alert-Widget Bordered-box noCTALink">
+<ng-template ngFor let-alert [ngForOf]="alerts">
+<div class="Widget Alert-Widget Bordered-box noCTALink" >
     <div class="row">
-        <div class="col-md-3 Alert-Widget__item bg-danger">
-            <h4>Red Alert</h4>
+        <div class="col-md-3 Alert-Widget__item" [ngClass]="
+                                               {
+                                               'bg-warning': alert.alertLevel == AmberAlertStatus,
+                                               'bg-danger': alert.alertLevel == RedAlertStatus
+                                               }
+                                               ">
+            <h4>{{alertLevels[alert.alertLevel] | translate}}</h4>
         </div>
         <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk">
-                <i div class="Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></i>
+                <i div class="Icon__circle Icon--sm Icon--b-dark-blue {{getCSSHazard(alert.hazardScenario)}}"></i>
                 <div>
                     <span>Risk:</span>
-                    Typhoon
+                    {{hazardScenarios[alert.hazardScenario] | translate}}<br>
                 </div>
         </div>
         <div class="col-md-3 Alert-Widget__item">
             <div>
-                <span>Population affected:</span> 200,000 people
+                <span>Population affected:</span> {{alert.estimatedPopulation}} people
             </div>
         </div>
         <div class="col-md-3 Alert-Widget__item">
             <div>
-                <span>Affected areas:</span> Leyre and Cebu
+                <span>Affected areas:</span>
+                <ng-template ngFor let-area [ngForOf]="alert.affectedAreas | keyValues" let-isLast="last">
+                    {{area.value.region}}, {{area.value.province}} <ng-template [ngIf]="!isLast">and </ng-template>
+                </ng-template>
+                 
             </div>
         </div>
         
         
     </div>
-    
 </div>
+</ng-template>

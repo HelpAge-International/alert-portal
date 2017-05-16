@@ -169,7 +169,7 @@ export enum ResponsePlanSectors {
     wash = 0,
     health = 1,
     shelter = 2,
-    nurtrition = 3,
+    nutrition = 3,
     foodSecurityAndLivelihoods = 4,
     protection = 5,
     education = 6,

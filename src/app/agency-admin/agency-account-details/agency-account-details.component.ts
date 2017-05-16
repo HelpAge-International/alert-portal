@@ -41,17 +41,24 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private showReplaceRemoveLinks: boolean = false;
 
   firebase: any;
+  private agencyId: string;
 
   constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
     this.firebase = firebaseApp;
   }
 
+
   ngOnInit() {
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        console.log("Agency admin uid: " + this.uid);
-        this.loadAgencyData(this.uid);
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+          .subscribe(id => {
+            this.agencyId = id.$value;
+            this.loadAgencyData(this.agencyId);
+          });
+        this.subscriptions.add(subscription);
+        console.log("Agency admin uid: " + this.agencyId);
       } else {
         this.navigateToLogin();
       }
@@ -108,7 +115,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
           if (this.logoFile == null) {
 
-            this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
+            this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId).update(editedAgency).then(() => {
               this.showAlert(false)
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -135,7 +142,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
                 catch (error) { /* Log error */
                 }
 
-                this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid).update(editedAgency).then(() => {
+                this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId).update(editedAgency).then(() => {
                   this.showAlert(false)
                 }, error => {
                   this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -169,7 +176,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   removeLogoFromStorage() {
     try {
       this.firebase.storage().refFromURL(this.agencyLogo).delete().then(() => {
-        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/logoPath').remove().then(() => {
+        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/logoPath').remove().then(() => {
           jQuery("#delete-logo").modal("hide");
         });
       })
@@ -217,7 +224,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private uploadAgencyLogo() {
     let promise = new Promise((res, rej) => {
       if (this.logoFile) {
-        var storageRef = this.firebase.storage().ref().child('agency/' + this.uid + '/' + this.logoFile.name);
+        var storageRef = this.firebase.storage().ref().child('agency/' + this.agencyId + '/' + this.logoFile.name);
         var uploadTask = storageRef.put(this.logoFile);
         uploadTask.on('state_changed', function (snapshot) {
         }, function (error) {

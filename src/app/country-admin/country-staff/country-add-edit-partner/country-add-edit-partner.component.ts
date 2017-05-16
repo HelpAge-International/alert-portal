@@ -3,7 +3,7 @@ import { AngularFire } from 'angularfire2';
 import { Constants } from '../../../utils/Constants';
 import { AlertMessageType } from '../../../utils/Enums';
 import { RxHelper } from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import { ActivatedRoute, Params, Router} from '@angular/router';
 
 import { AlertMessageModel } from '../../../model/alert-message.model';
 import { PartnerOrganisationService } from '../../../services/partner-organisation.service';
@@ -46,7 +46,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
               private _notificationSettingsService: NotificationSettingsService,
               private router: Router,
               private route: ActivatedRoute,
-              private subscriptions: RxHelper ){
+              private subscriptions: RxHelper){
     this.partner = new PartnerModel();
     this.partnerOrganisations = [];
     this.userPublic = new ModelUserPublic(null, null, null, null); // no parameterless constructor
@@ -133,6 +133,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   deletePartner() {
     jQuery('#delete-action').modal('show');
   }
+
   deleteAction() {
     this.closeModal();
     this._userService.deletePartnerUser(this.partner.id)
@@ -145,5 +146,9 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
   closeModal() {
     jQuery('#delete-action').modal('hide');
+  }
+
+  goBack(){
+    this.router.navigateByUrl('/country-admin/country-staff');
   }
 }

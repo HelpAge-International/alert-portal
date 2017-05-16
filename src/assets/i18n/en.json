@@ -103,7 +103,8 @@
       "EMAIL_ADDRESS": "Email Address",
       "POSTCODE": "Postcode/Zip Code",
       "PHONE": "Phone Number",
-      "WEB_ADDRESS": "Website address"
+      "WEB_ADDRESS": "Website address",
+      "POSITION": "Position"
     },
     "USER_TYPE": {
       "ALL_USERS": "All Users",
@@ -424,6 +425,45 @@
       "GREEN": "Green alert level",
       "AMBER": "Amber alert level",
       "RED": "Red alert level"
+    },
+    "ALERTS": {
+      "GREEN": "Green Alert",
+      "AMBER": "Amber Alert",
+      "RED": "Red Alert"
+    },
+    "ALERTS": {
+      "GREEN": "Green Alert",
+      "AMBER": "Amber Alert",
+      "RED": "Red Alert"
+    },
+    "HAZARD_SCENARIOS": {
+      "HAZARD_SCENARIO0": "Cold Wave",
+      "HAZARD_SCENARIO1": "Conflict",
+      "HAZARD_SCENARIO2": "Cyclone",
+      "HAZARD_SCENARIO3": "Drought",
+      "HAZARD_SCENARIO4": "Earthquake",
+      "HAZARD_SCENARIO5": "Epidemic",
+      "HAZARD_SCENARIO6": "Fire",
+      "HAZARD_SCENARIO7": "Flash Flood",
+      "HAZARD_SCENARIO8": "Flood",
+      "HAZARD_SCENARIO9": "Heat Wave",
+      "HAZARD_SCENARIO10": "Heavy Rain",
+      "HAZARD_SCENARIO11": "Humanitarian Access",
+      "HAZARD_SCENARIO12": "Insect Infestation",
+      "HAZARD_SCENARIO13": "Landslide",
+      "HAZARD_SCENARIO14": "Locust Infestation",
+      "HAZARD_SCENARIO15": "Mudslide",
+      "HAZARD_SCENARIO16": "Population Displacement",
+      "HAZARD_SCENARIO17": "Population Return",
+      "HAZARD_SCENARIO18": "Snow Avalanche",
+      "HAZARD_SCENARIO19": "Snowfall",
+      "HAZARD_SCENARIO20": "Storm",
+      "HAZARD_SCENARIO21": "Storm Surge",
+      "HAZARD_SCENARIO22": "Technological Disaster",
+      "HAZARD_SCENARIO23": "Tornado",
+      "HAZARD_SCENARIO24": "Tsunami",
+      "HAZARD_SCENARIO25": "Violent Wind",
+      "HAZARD_SCENARIO26": "Volcano"
     }
   },
   "LOGIN": {
@@ -544,9 +584,9 @@
       "FILE_FORMAT": "File Format",
       "FILE_SIZE": "Maximum file size",
       "SAVE": "Save Settings",
-      "PREPAREDNESS": "Preparedness",
-      "DOC_SETTINGS": "Document upload settings",
-      "RESPONSE_PLANS": "Response plans",
+      "PREPAREDNESS": "Preparedness Settings",
+      "DOC_SETTINGS": "Document Upload Settings",
+      "RESPONSE_PLANS": "Response Plans Settings",
       "VULNERABLE_GROUPS": "Vulnerable groups",
       "ADD_NEW_GROUP": "Add a new group",
       "EDIT_GROUPS": "Edit groups",
@@ -986,35 +1026,6 @@
           "MANAGEMENT_SUPPORT": "Management support"
         }
       }
-    },
-    "HAZARD_SCENARIOS": {
-      "HAZARD_SCENARIO0": "Cold Wave",
-      "HAZARD_SCENARIO1": "Conflict",
-      "HAZARD_SCENARIO2": "Cyclone",
-      "HAZARD_SCENARIO3": "Drought",
-      "HAZARD_SCENARIO4": "Earthquake",
-      "HAZARD_SCENARIO5": "Epidemic",
-      "HAZARD_SCENARIO6": "Fire",
-      "HAZARD_SCENARIO7": "Flash Flood",
-      "HAZARD_SCENARIO8": "Flood",
-      "HAZARD_SCENARIO9": "Heat Wave",
-      "HAZARD_SCENARIO10": "Heavy Rain",
-      "HAZARD_SCENARIO11": "Humanitarian Access",
-      "HAZARD_SCENARIO12": "Insect Infestation",
-      "HAZARD_SCENARIO13": "Landslide",
-      "HAZARD_SCENARIO14": "Locust Infestation",
-      "HAZARD_SCENARIO15": "Mudslide",
-      "HAZARD_SCENARIO16": "Population Displacement",
-      "HAZARD_SCENARIO17": "Population Return",
-      "HAZARD_SCENARIO18": "Snow Avalanche",
-      "HAZARD_SCENARIO19": "Snowfall",
-      "HAZARD_SCENARIO20": "Storm",
-      "HAZARD_SCENARIO21": "Storm Surge",
-      "HAZARD_SCENARIO22": "Technological Disaster",
-      "HAZARD_SCENARIO23": "Tornado",
-      "HAZARD_SCENARIO24": "Tsunami",
-      "HAZARD_SCENARIO25": "Violent Wind",
-      "HAZARD_SCENARIO26": "Volcano"
     }
   },
   "SECTORS": {
@@ -1029,19 +1040,39 @@
     "OTHER": "Other"
   },
   "ADD_PARTNER": {
-    "SELECT_A_PARTNER": "Select a partner",
-    "ADD_A_PARTNER_ORGANISATION": "Add partner organisation",
-    "PARTNER_ORGANISATION": "Partner Organisation",
-    "ADD_ANOTHER_PARTNER_TO_THIS_PLAN": "Add another partner to this plan",
-    "ORGANISATION_DETAILS": "Organisation Details",
-    "RELATIONSHIP": "Relationship",
-    "SECTOR": "Sector",
-    "TYPE_OF_PROJECT": "Type of project",
-    "PROJECT_END_DATE": "Project End date",
-    "AREAS_OF_OPERATION": "Area(s) of operation",
-    "ADD_ANOTHER_PROJECT": "Add another location",
-    "PARTNER_CONTACT_DETAILS": "Partner contact details",
-    "ADD_NEW_PARTNER_ORGANISATION": "Add new partner organisation"
+      "SELECT_A_PARTNER": "Select a partner",
+      "ADD_A_PARTNER_ORGANISATION": "Add partner organisation",
+      "PARTNER_ORGANISATION": "Partner Organisation",
+      "ADD_ANOTHER_PARTNER_TO_THIS_PLAN": "Add another partner to this plan",
+      "ORGANISATION_DETAILS": "Organisation Details",
+      "RELATIONSHIP": "Relationship",
+      "SECTOR": "Sector",
+      "TYPE_OF_PROJECT": "Type of project",
+      "PROJECT_END_DATE": "Project End date",
+      "AREAS_OF_OPERATION": "Area(s) of operation",
+      "AREAS_OF_OPERATION_SELECT_A": "Select a",
+      "ADD_ANOTHER_LOCATION": "Add another location",
+      "PARTNER_CONTACT_DETAILS": "Partner contact details",
+      "ADD_NEW_PARTNER_ORGANISATION": "Add new partner organisation",
+      "ADD_ANOTHER_PROJECT": "Add another project",
+      "REMOVE_PROJECT": "Remove this project",
+      "PROJECTS": "Projects",
+      "PROJECT_TITLE": "Project title",
+      "PROJECT_UNTITLED": "Untitled project" ,
+      "VIEW_PROJECT": "View project",
+      "NO_ORGANISATION_NAME": "Please enter the organisation name",
+      "NO_RELATIONSHIP": "Please enter the organisation relationship",
+      "NO_PROJECT_TITLE": "Please enter the project title",
+      "NO_POSITION": "Please enter the position",
+      "NO_PROJECT_END_DATE": "Please enter the project end date",
+      "NO_PROJECT_SECTOR": "Please select the project sector(s)",
+      "NO_OPERATION_AREA_COUNTRY": "Please select the country operation area",
+      "NO_OPERATION_AREA_LEVEL1": "Please select the first level of the country operation area",
+      "NO_OPERATION_AREA_LEVEL2": "Please select the second level of the country operation area",
+      "SUCCESS_SAVED": "The partner organisation was successfully saved",
+      "INVALID_DATE": "The project end date is invalid",
+      "DIALOG_TITLE": "Create partner user",
+      "DIALOG_CONTENT": "The entered partner details do not correspond to any of the registered partners. Would you like to create an account now?"
   },
   "FIREBASE": {
     "auth/email-already-in-use": "The email address is already in use",
@@ -1087,5 +1118,14 @@
     "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs",
     "SELECT_GENERIC_ACTION": "Select a generic preparedness action",
     "BUDGET_NARRATIVE": "Budget Narrative"
+  },
+  "MAPS": {
+    "MPA": "Minimum Preparedness Actions (MPAs)",
+    "READINESS": "Readiness",
+    "DEPARTMENTS": "Departments",
+    "NO_DEPARTMENTS": "No Departments",
+    "OVERALL": "Overall",
+    "SEE_COUNTRIES_MAP": "See countries as a map",
+    "SEE_COUNTRIES_LIST": "See countries as a list"
   }
 }

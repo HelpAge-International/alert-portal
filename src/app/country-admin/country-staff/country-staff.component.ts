@@ -20,6 +20,7 @@ declare var jQuery: any;
   providers: [UserService, PartnerOrganisationService]
 })
 export class CountryStaffComponent implements OnInit, OnDestroy {
+  
   partnersList: PartnerModel[];
   private agencyAdminId: string;
   private countryId: any;
@@ -33,8 +34,8 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private notificationSettings = Constants.NOTIFICATION_SETTINGS;
 
   All_Department = 'All departments';
-  filterPosition: string = this.All_Department;
-  filterUser = 0;
+  filterDepartment: string = this.All_Department;
+  filterUserType = 0;
   filterOffice = 0;
 
   private staff: ModelStaff;
@@ -113,6 +114,26 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
                      .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.id] = partnerOrganisation});
         });
     });
+  }
+
+  hideFilteredStaff(staff: ModelStaff): boolean{
+    let hide = false;
+
+    if(!staff) { return hide; }
+        
+    if(this.filterDepartment && this.filterDepartment !== this.All_Department && staff.department !== this.filterDepartment){
+      hide = true;
+   }
+
+   if(this.filterUserType && this.filterUserType > 0 && staff.userType != this.filterUserType){
+      hide = true;
+   }
+
+   if(this.filterOffice && this.filterOffice > 0 && staff.officeType != this.filterOffice){
+      hide = true;
+    }
+
+    return hide;
   }
 
   private addStaff(item) {
