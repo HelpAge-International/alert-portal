@@ -35,7 +35,15 @@
   <script src="https://use.fontawesome.com/1e6803cc8c.js"></script>
   <!-- inject:js -->
   <script src="assets/js/vendor/jquery.js"></script>
+  <script src="assets/js/vendor/tableExport.js"></script>
+  <script src="assets/js/vendor/jquery.base64.js"></script>
   <!-- endinject -->
   <script src="assets/js/main.js"></script>
-</body>
+  <script>
+    function loadedMaps() {
+        console.log("Loaded Google Maps API");
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1Bc3slcPsdbH2EhAxyhyoJlrrBs6_P_M&callback=loadedMaps"></script>
+  </body>
 </html>

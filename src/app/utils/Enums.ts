@@ -25,17 +25,33 @@ export enum GenericActionCategory {
 
 // TODO - Update when Ryan provides actual Hazard Scenario names
 export enum HazardScenario {
-    HazardScenario0 = 0,
-    HazardScenario1 = 1,
-    HazardScenario2 = 2,
-    HazardScenario3 = 3,
-    HazardScenario4 = 4,
-    HazardScenario5 = 5,
-    HazardScenario6 = 6,
-    HazardScenario7 = 7,
-    HazardScenario8 = 8,
-    HazardScenario9 = 9,
-    HazardScenario10 = 10
+  HazardScenario0 = 0,
+  HazardScenario1 = 1,
+  HazardScenario2 = 2,
+  HazardScenario3 = 3,
+  HazardScenario4 = 4,
+  HazardScenario5 = 5,
+  HazardScenario6 = 6,
+  HazardScenario7 = 7,
+  HazardScenario8 = 8,
+  HazardScenario9 = 9,
+  HazardScenario10 = 10,
+  HazardScenario11 = 11,
+  HazardScenario12 = 12,
+  HazardScenario13 = 13,
+  HazardScenario14 = 14,
+  HazardScenario15 = 15,
+  HazardScenario16 = 16,
+  HazardScenario17 = 17,
+  HazardScenario18 = 18,
+  HazardScenario19 = 19,
+  HazardScenario20 = 20,
+  HazardScenario21 = 21,
+  HazardScenario22 = 22,
+  HazardScenario23 = 23,
+  HazardScenario24 = 24,
+  HazardScenario25 = 25,
+  HazardScenario26 = 26,
 }
 
 export enum ActionLevel {
@@ -189,9 +205,9 @@ export enum AgeRange {
     More50 = 2
 }
 
-export enum PhonePrefix{
-  GB = 44,
-  FR = 33
+export enum PhonePrefix {
+    GB = 44,
+    FR = 33
 }
 
 export enum Countries {
@@ -468,8 +484,8 @@ export enum HazardCategory {
 }
 
 export enum AlertMessageType {
-  Error = 0,
-  Success = 1
+    Error = 0,
+    Success = 1
 }
 
 export enum BudgetCategory {
@@ -493,5 +509,11 @@ export enum ActionStatus {
 export enum SizeType {
     KB = 0,
     MB = 1
+}
+
+export enum AlertLevels {
+    Green = 0,
+    Amber = 1,
+    Red = 2
 }
 

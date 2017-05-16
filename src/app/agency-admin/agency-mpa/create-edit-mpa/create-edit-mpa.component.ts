@@ -26,13 +26,13 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private departmentsPath: string;
   private departments: Observable<any>;
   private path: string;
-  private inactive: Boolean = true;
+  private inactive: boolean = true;
   private errorMessage: string = '';
   private pageTitle: string = 'AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_MANDATED_PA';
   private buttonText: string = 'AGENCY_ADMIN.MANDATED_PA.SAVE_BUTTON_TEXT';
   private textArea: string;
-  private isMpa: Boolean = true;
-  private forEditing: Boolean = false;
+  private isMpa: boolean = true;
+  private forEditing: boolean = false;
   private idOfMpaToEdit: string;
   private departmentSelected: string;
 

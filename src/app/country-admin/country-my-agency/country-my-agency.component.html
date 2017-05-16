@@ -1,0 +1,71 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Header-title__wrap">
+            <h1>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.TITLE" | translate}}</h1>
+        </div>
+
+        <div class="row align-items-center Filter-form Spaced">
+            <div class="col-lg-1 col-md-2 col-sm-6">
+                {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.SORT_BY" | translate}}:
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <select class="form-control" (change)="filterAlertLevel($event)">
+                    <option value="all" selected>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>
+                    <option *ngFor="let alertLevelKey of this.alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] | translate}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="Ribbon__section__wrap Spaced" *ngIf="countryOfficeData && countryOfficeData.length > 0">
+            <div class="Accordion Preparedness__agency-list" *ngFor="let countryData of countryOfficeData">
+                 <div class="row">
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right">
+                        <div class="Icon--md Icon--align-center Icon__country--philippines"></div>
+                        <span>{{countries[countryData.location] | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertColors[countryData.alertLevel] ? alertColors[countryData.alertLevel] : 'red'}}"></div><span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{countResponsePlans[countryData.$key] ? countResponsePlans[countryData.$key] : 0}}</div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.RESPONSE_PLANS" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[countryData.$key]}} Icon--md"><i class="fa {{mpaStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i></div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div *ngIf="countryData.alertLevel != 2" class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[countryData.$key]}} Icon--md">
+                                <i class="fa {{advStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                            </div>
+                            <div *ngIf="countryData.alertLevel == 2" class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
+                                <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{percentageCHS[countryData.$key]}}%</div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="Ribbon__section__wrap Spaced" *ngIf="!countryOfficeData || !countryOfficeData.length">
+            <h1 *ngIf="filter != 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES_BY" | translate}} {{countries[filter] | translate}}</h1>
+            <h1 *ngIf="filter == 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES" | translate}}</h1>
+        </div>
+    </div>
+
+</div><!-- end #wrap -->

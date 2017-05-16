@@ -80,7 +80,7 @@ export class CreateEditPreparednessComponent implements OnInit {
             if (params['id']) {
                 /* TODO remove hardcode actionID */
                 //this.actionID = params['id'];
-                this.actionID = '-KjmcXntUYWCU6UB_-Wl';
+                this.actionID = '-KjwQyhlExYqstjk75GD';
             }
         });
         this.subscriptions.add(subscription);
@@ -125,7 +125,7 @@ export class CreateEditPreparednessComponent implements OnInit {
         }
 
         if (typeof (this.actionData.level) == 'undefined') {
-            this.actionData.level = this.level - 1;
+            this.actionData.level = this.level;
         }
 
         if (!this.actionData.level) {
@@ -194,7 +194,7 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     selectActionLevel(levelKey: number) {
-        this.actionData.level = levelKey - 1;
+        this.actionData.level = levelKey;
         return true;
     }
 
@@ -303,7 +303,7 @@ export class CreateEditPreparednessComponent implements OnInit {
         let promise = new Promise((res, rej) => {
             let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).subscribe((action: Action) => {
                 this.actionData = action;
-                this.level = action.level + 1;
+                this.level = action.level;
                 this.dueDate = this._convertTimestampToDate(action.dueDate);
                 res(true);
             });
