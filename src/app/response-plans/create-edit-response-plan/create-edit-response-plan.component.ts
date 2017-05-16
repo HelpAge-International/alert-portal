@@ -109,7 +109,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private partnersDropDownsCounter: number = 1;
   private partnersDropDowns: number[] = [this.partnersDropDownsCounter];
-  private partnerOrganisations: FirebaseObjectObservable<any>[] = [];
+  // private partnerOrganisations: FirebaseObjectObservable<any>[] = [];
+  private partnerOrganisations: any[] = [];
   private partnerOrganisationsSelected = {};
 
   private section3Status: string = "GLOBAL.INCOMPLETE";
@@ -319,6 +320,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText;
     newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
+    newResponsePlan.otherVulnerableGroup = this.otherGroup;
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
     //section 6
@@ -720,13 +722,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.selectedVulnerableGroups[vulnerableGroupsDropDown] = groupSelected;
   }
 
-  updateOtherGroupToGroups() {
-    if (this.otherGroup != '') {
-      this.selectedVulnerableGroups['other'] = this.otherGroup;
-    } else {
-      delete this.selectedVulnerableGroups['other'];
-    }
-  }
+  // updateOtherGroupToGroups() {
+  //   if (this.otherGroup != '') {
+  //     this.selectedVulnerableGroups['other'] = this.otherGroup;
+  //   } else {
+  //     delete this.selectedVulnerableGroups['other'];
+  //   }
+  // }
 
   addToTargetPopulationObject(bulletPoint, textEntered) {
     if (textEntered) {
@@ -1192,13 +1194,91 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscription);
   }
 
-  // TODO
   private loadSection2(responsePlan: ResponsePlan) {
-    // console.log(responsePlan.scenarioCrisisList);
+    console.log("load section 2");
+    console.log(responsePlan.scenarioCrisisList);
+    //scenario crisis list
+    let scenarioCrisisList = responsePlan.scenarioCrisisList;
+    this.loadSection2Back(0, scenarioCrisisList, this.summarizeScenarioBulletPointsCounter, this.summarizeScenarioBulletPoints);
+
+    let impactOfCrisisList = responsePlan.impactOfCrisisList;
+    this.loadSection2Back(1, impactOfCrisisList, this.impactOfCrisisBulletPointsCounter, this.impactOfCrisisBulletPoints);
+
+    let availabilityOfFundsList = responsePlan.availabilityOfFundsList;
+    this.loadSection2Back(2, availabilityOfFundsList, this.availabilityOfFundsBulletPointsCounter, this.availabilityOfFundsBulletPoints);
+    // for (let i = 0; i < impactOfCrisisList.length; i++) {
+    //   if (i != 0) {
+    //     this.impactOfCrisisBulletPointsCounter++;
+    //     this.impactOfCrisisBulletPoints.push(this.impactOfCrisisBulletPointsCounter);
+    //   }
+    // }
+    // this.impactOfCrisisBulletPoints.forEach(item => {
+    //   this.addToImpactOfCrisisObject(item, impactOfCrisisList[item - 1]);
+    // });
+  }
+
+  private loadSection2Back(type: number, list: string[], counter: number, counterList: number[]) {
+    for (let i = 0; i < list.length; i++) {
+      if (i != 0) {
+        counter++;
+        counterList.push(counter);
+      }
+    }
+    counterList.forEach(item => {
+      if (type == 0) {
+        this.addToSummarizeScenarioObject(item, list[item - 1]);
+      } else if (type == 1) {
+        this.addToImpactOfCrisisObject(item, list[item - 1]);
+      } else if (type == 2) {
+        this.addToAvailabilityOfFundsObject(item, list[item - 1]);
+      }
+    });
   }
 
   // TODO
   private loadSection3(responsePlan: ResponsePlan) {
+    let sectors = responsePlan.sectors;
+    let sectorKeys = Object.keys(sectors);
+    this.updateSectorSelections(sectorKeys, responsePlan);
+    this.presenceInTheCountry = responsePlan.presenceInTheCountry;
+    this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+  }
+
+  private updateSectorSelections(sectorKeys: string[], responsePlan: ResponsePlan) {
+    sectorKeys.forEach(key => {
+      if (Number(key) == ResponsePlanSectors.wash) {
+        this.waSHSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.health) {
+        this.healthSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.shelter) {
+        this.shelterSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.nurtrition) {
+        this.nutritionSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.foodSecurityAndLivelihoods) {
+        this.foodSecAndLivelihoodsSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.protection) {
+        this.protectionSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.education) {
+        this.educationSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.campManagement) {
+        this.campManagementSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.other) {
+        this.otherSectorSelected = true;
+      }
+    });
+    if (this.otherSectorSelected) {
+      this.otherRelatedSector = responsePlan.otherRelatedSector;
+    }
+
+    let partnerOrganisations = responsePlan.partnerOrganisations;
+    for (let i = 0; i < partnerOrganisations.length; i++) {
+      if (i != 0) {
+        this.partnersDropDownsCounter++;
+        this.partnersDropDowns.push(this.partnersDropDownsCounter);
+      }
+      this.partnerOrganisationsSelected[this.partnersDropDownsCounter] = partnerOrganisations[this.partnersDropDownsCounter - 1];
+    }
+
   }
 
   private loadSection4(responsePlan: ResponsePlan) {
@@ -1209,13 +1289,39 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO
   private loadSection5(responsePlan: ResponsePlan) {
+    this.numOfPeoplePerHouseHold = responsePlan.peoplePerHousehold;
+    this.numOfHouseHolds = responsePlan.numOfHouseholds;
+    this.calculateBeneficiaries();
+    this.howBeneficiariesCalculatedText = responsePlan.beneficiariesNote;
+    this.showBeneficiariesTextEntry = this.howBeneficiariesCalculatedText ? true : false;
+
+    //vulnerable groups
+    let vulnerableGroups = responsePlan.vulnerableGroups;
+    for (let i = 0; i < vulnerableGroups.length; i++) {
+      if (i != 0) {
+        this.vulnerableGroupsDropDownsCounter++;
+        this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
+      }
+      this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
+    }
+    this.otherGroup = responsePlan.otherVulnerableGroup;
+
+    //target population bullets
+    let targetPopulationInvolvementList = responsePlan.targetPopulationInvolvementList;
+    for (let i = 0; i < targetPopulationInvolvementList.length; i++) {
+      if (i != 0) {
+        this.targetPopulationBulletPointsCounter++;
+        this.targetPopulationBulletPoints.push(this.targetPopulationBulletPointsCounter);
+      }
+      this.addToTargetPopulationObject(this.targetPopulationBulletPointsCounter, targetPopulationInvolvementList[this.targetPopulationBulletPointsCounter - 1])
+    }
+
   }
 
   private loadSection6(responsePlan: ResponsePlan) {
     this.riskManagementPlanText = responsePlan.riskManagementPlan;
   }
 
-  // TODO
   private loadSection7(responsePlan: ResponsePlan) {
     console.log("load section 7");
     let sectors: {} = responsePlan.sectors;
@@ -1251,7 +1357,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO - Test and check the functionality
   private loadSection8(responsePlan: ResponsePlan) {
 
     this.mALSystemsDescriptionText = responsePlan.monAccLearning['mALSystemsDescription'];
@@ -1259,7 +1364,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.mediaFormat = responsePlan.monAccLearning['mediaFormat'];
   }
 
-  // TODO - Test and check the functionality
   private loadSection9(responsePlan: ResponsePlan) {
 
     this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
@@ -1273,7 +1377,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.sectionsCompleted.set(this.sections[8], true);
   }
 
-  // TODO
   private loadSection10(responsePlan: ResponsePlan) {
     console.log("load section 10");
 

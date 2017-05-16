@@ -16,6 +16,7 @@ declare var jQuery: any;
 export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private agencyId: string;
   private agencyName: string;
   private agencyAdminName: string;
 
@@ -54,6 +55,11 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
     let subscription = this.af.auth.subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+          .subscribe(id => {
+            this.agencyId = id.$value;
+          });
+        this.subscriptions.add(subscription);
         console.log("New agency admin uid: " + this.uid);
         let userPublicSubscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).subscribe(user => {
           this.agencyAdminName = user.firstName;
@@ -82,15 +88,15 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
       let agencyData = {};
 
-      agencyData['/agency/' + this.uid + '/addressLine1'] = this.agencyAddressLine1;
-      agencyData['/agency/' + this.uid + '/addressLine2'] = this.agencyAddressLine2;
-      agencyData['/agency/' + this.uid + '/addressLine3'] = this.agencyAddressLine3;
-      agencyData['/agency/' + this.uid + '/country'] = this.agencyCountry;
-      agencyData['/agency/' + this.uid + '/city'] = this.agencyCity;
-      agencyData['/agency/' + this.uid + '/postCode'] = this.agencyPostCode;
-      agencyData['/agency/' + this.uid + '/phone'] = this.agencyPhone;
-      agencyData['/agency/' + this.uid + '/website'] = this.agencyWebAddress;
-      agencyData['/agency/' + this.uid + '/currency'] = this.agencyCurrency;
+      agencyData['/agency/' + this.agencyId + '/addressLine1'] = this.agencyAddressLine1;
+      agencyData['/agency/' + this.agencyId + '/addressLine2'] = this.agencyAddressLine2;
+      agencyData['/agency/' + this.agencyId + '/addressLine3'] = this.agencyAddressLine3;
+      agencyData['/agency/' + this.agencyId + '/country'] = this.agencyCountry;
+      agencyData['/agency/' + this.agencyId + '/city'] = this.agencyCity;
+      agencyData['/agency/' + this.agencyId + '/postCode'] = this.agencyPostCode;
+      agencyData['/agency/' + this.agencyId + '/phone'] = this.agencyPhone;
+      agencyData['/agency/' + this.agencyId + '/website'] = this.agencyWebAddress;
+      agencyData['/agency/' + this.agencyId + '/currency'] = this.agencyCurrency;
       agencyData['/administratorAgency/' + this.uid + '/firstLogin'] = false;
 
       if (this.logoFile) {
@@ -99,7 +105,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
         this.uploadAgencyLogo().then(result => {
 
             this.agencyLogo = result as string;
-            agencyData['/agency/' + this.uid + '/logoPath'] = this.agencyLogo;
+            agencyData['/agency/' + this.agencyId + '/logoPath'] = this.agencyLogo;
 
             this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
               this.successInactive = false;
@@ -122,7 +128,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       } else {
 
         console.log("Without logo");
-        console.log("agencyData" + agencyData['/agency/' + this.uid + '/addressLine2']);
+        console.log("agencyData" + agencyData['/agency/' + this.agencyId + '/addressLine2']);
         this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
           this.successInactive = false;
           let subscription = Observable.timer(1500).subscribe(() => {
@@ -174,7 +180,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
   private uploadAgencyLogo() {
     let promise = new Promise((res, rej) => {
-      var storageRef = this.firebase.storage().ref().child('agency/' + this.uid + '/' + this.logoFile.name);
+      var storageRef = this.firebase.storage().ref().child('agency/' + this.agencyId + '/' + this.logoFile.name);
       var uploadTask = storageRef.put(this.logoFile);
       uploadTask.on('state_changed', function (snapshot) {
       }, function (error) {

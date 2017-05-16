@@ -95,6 +95,7 @@
                 <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
                        aria-describedby="basic-addon1"
+                       [value]="loadResponsePlan&&scenarioCrisisObject[bulletPoint]?scenarioCrisisObject[bulletPoint]:''"
                        (change)="addToSummarizeScenarioObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
@@ -117,6 +118,7 @@
                 <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
                        aria-describedby="basic-addon1"
+                       [value]="loadResponsePlan&&impactOfCrisisObject[bulletPoint]?impactOfCrisisObject[bulletPoint]:''"
                        (change)="addToImpactOfCrisisObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
@@ -139,6 +141,7 @@
                 <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
                        aria-describedby="basic-addon1"
+                       [value]="loadResponsePlan&&availabilityOfFundsObject[bulletPoint]?availabilityOfFundsObject[bulletPoint]:''"
                        (change)="addToAvailabilityOfFundsObject(bulletPoint, $event.target.value)">
                 <a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
@@ -179,36 +182,45 @@
           </div>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="water" (click)="isWaSHSectorSelected()"></div>
+              <div onClick="$(this).toggleClass('Selected');" [class.Selected]="waSHSectorSelected" class="water"
+                   (click)="isWaSHSectorSelected()"></div>
               <label>{{"SECTORS.WASH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="health" (click)="isHealthSectorSelected()"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="health" [class.Selected]="healthSectorSelected"
+                   (click)="isHealthSectorSelected()"></div>
               <label>{{"SECTORS.HEALTH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="shelter" (click)="isShelterSectorSelected()"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="shelter" [class.Selected]="shelterSectorSelected"
+                   (click)="isShelterSectorSelected()"></div>
               <label>{{"SECTORS.SHELTER" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="nutrition"
+                   [class.Selected]="nutritionSectorSelected"
                    (click)="isNutritionSectorSelected()"></div>
               <label>{{"SECTORS.NUTRITION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="food"
+                   [class.Selected]="foodSecAndLivelihoodsSectorSelected"
                    (click)="isFoodSecAndLivelihoodsSectorSelected()"></div>
               <label>{{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="protection"
+                   [class.Selected]="protectionSectorSelected"
                    (click)="isProtectionSectorSelected()"></div>
               <label>{{"SECTORS.PROTECTION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="education"
+                   [class.Selected]="educationSectorSelected"
                    (click)="isEducationSectorSelected()"></div>
               <label>{{"SECTORS.EDUCATION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="camp"
+                   [class.Selected]="campManagementSectorSelected"
                    (click)="isCampManagementSectorSelected()"></div>
               <label>{{"SECTORS.CAMP_MANAGEMENT" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
-              <div onClick="$(this).toggleClass('Selected');" class="misc" (click)="isOtherSectorSelected()"></div>
+              <div onClick="$(this).toggleClass('Selected');" class="misc" [class.Selected]="otherSectorSelected"
+                   (click)="isOtherSectorSelected()"></div>
               <label>{{"SECTORS.OTHER" | translate}}</label></div>
           </div>
 
@@ -227,14 +239,17 @@
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog"
+                     [checked]="presenceInTheCountry === 0"
                      (click)="currentProgrammesSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.CURRENT_PROGRAMMES" | translate}}</label>
             <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog"
+                     [checked]="presenceInTheCountry === 1"
                      (click)="preExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRE-EXISTING_PARTNER" | translate}}</label>
             <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog"
+                     [checked]="presenceInTheCountry === 2"
                      (click)="noPreExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.NO_PRE-EXISTING_PRESENCE" |
               translate}}</label>
@@ -247,10 +262,12 @@
           <div class="Selection-row Spaced">
             <label for="imp-direct" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-direct"
+                     [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
             <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
+                     [checked]="!isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
           </div>
@@ -366,7 +383,7 @@
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-              <input type="number" class="form-control" placeholder="0" [(ngModel)]="numOfPeoplePerHouseHold"
+              <input type="text" class="form-control" placeholder="0" [(ngModel)]="numOfPeoplePerHouseHold"
                      (change)="calculateBeneficiaries()">
             </div>
             <div class="col-lg-2 col-md-3 col-sm-3 ">
@@ -374,7 +391,7 @@
             </div>
             <div class="col-lg-1 col-md-1 col-sm-1  text-bold">X</div>
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
-              <input type="number" class="form-control" placeholder="0" [(ngModel)]="numOfHouseHolds"
+              <input type="text" class="form-control" placeholder="0" [(ngModel)]="numOfHouseHolds"
                      (change)="calculateBeneficiaries()">
             </div>
             <div class="col-lg-1 col-md-2 col-sm-2 ">
@@ -406,7 +423,8 @@
                     <select class="form-control" id="ff"
                             (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
                       <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                      <option *ngFor="let group of groups">{{group | translate}}</option>
+                      <option *ngFor="let group of groups">{{group | translate}}
+                      </option>
                     </select>
                   </div>
                   <a href="javascript:void(0)" class="Remove__row__cta"
@@ -417,7 +435,7 @@
                 <div class="form-group">
                   <input type="text" class="form-control"
                          placeholder="{{'RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.OTHER_GROUP_PLEASE_SPECIFY' | translate}}"
-                         [(ngModel)]="otherGroup" (change)="updateOtherGroupToGroups()">
+                         [(ngModel)]="otherGroup">
                 </div>
               </div>
             </div>
@@ -434,6 +452,7 @@
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
                 <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
+                       [value]="loadResponsePlan&&targetPopulationInvolvementObject[bulletPoint]?targetPopulationInvolvementObject[bulletPoint]:''"
                        (change)="addToTargetPopulationObject(bulletPoint, $event.target.value)">
 
                 <a href="javascript:void(0)" class="Remove__row__cta"
@@ -937,11 +956,11 @@
                 <div class="col-lg-3 col-4">A-{{i+1}}: {{SECTORS[sector] | translate}}</div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
-                         [value]="loadResponsePlan?loadResponsePlan.budget['item'][0][sector]['budget']:null"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:''"
                          (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
                   <input type="text" class="form-control budget-narrative" #narrative
-                         [value]="loadResponsePlan?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
                          (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
               <!--<div class="row Line-row col-lg-12">-->
@@ -1118,7 +1137,7 @@
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
               <div class="col-lg-3 col-4"><input type="text" class="form-control" #budget
-                                                 [value]="loadResponsePlan?budgetOver1000.get(capitalItemSection):null"
+                                                 [value]="loadResponsePlan&&budgetOver1000.get(capitalItemSection)?budgetOver1000.get(capitalItemSection):''"
                                                  (change)="budgetOverThousand(capitalItemSection, budget.value)">
                 <br/>
                 <a href="javascript:void(0)" class="Remove__row__cta"
@@ -1126,7 +1145,7 @@
                    [hidden]="capitalItemSection == 1">{{"GLOBAL.REMOVE" | translate}}</a>
               </div>
               <div class="col-lg-9 col-8"><input type="text" class="form-control" #desc
-                                                 [value]="loadResponsePlan?budgetOver1000Desc.get(capitalItemSection):null"
+                                                 [value]="loadResponsePlan&&budgetOver1000Desc.get(capitalItemSection)?budgetOver1000Desc.get(capitalItemSection):''"
                                                  (change)="budgetOverThousandDesc(capitalItemSection, desc.value)">
               </div>
             </div>
