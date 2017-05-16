@@ -5,7 +5,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-        <div (click) = "this.router.navigateByUrl('/country-admin/country-staff');" class="Back--button">
+        <div (click) = "goBack()" class="Back--button">
         {{"COUNTRY_ADMIN.STAFF.TITLE_TEXT"| translate}}</div>
         <div class="Header-title__wrap">
             <h1 *ngIf="!isEdit">{{"COUNTRY_ADMIN.PARTNER.TITLE_ADD_PARTNER"| translate}}</h1>
@@ -334,7 +334,7 @@
           <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
             {{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}
           </button>
-          <button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL"| translate}}</button>
+          <button class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
       </form>
     </div>

@@ -29,7 +29,7 @@ export class ModelUserPublic extends BaseModel {
 
   validate(excludedFields = []): AlertMessageModel {
     if (!this.title && !this.isExcluded('title', excludedFields)) {
-      return new AlertMessageModel('COUNTRY_ADMIN.STAFF.NO_TITLE');
+      return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_TITLE');
     }
     if (!this.firstName && !this.isExcluded('firstName', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_F_NAME');
@@ -49,5 +49,7 @@ export class ModelUserPublic extends BaseModel {
     if (!this.city && !this.isExcluded('city', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_CITY');
     }
+
+    return null;
   }
 }

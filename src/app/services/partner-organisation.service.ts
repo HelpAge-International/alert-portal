@@ -42,4 +42,8 @@ export class PartnerOrganisationService {
 
     return partnerOrganisationSubscription;
   }
+
+  savePartnerOrganisation(partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
+    return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation);
+  }
 }

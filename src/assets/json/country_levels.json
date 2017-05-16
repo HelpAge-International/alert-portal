@@ -1,0 +1,26 @@
+{  
+   "0":{  
+      "levels":[  
+         {  
+            "id":0,
+            "value":"County"
+         },
+         {  
+            "id":1,
+            "value":"City"
+         }
+      ]
+   },
+   "1":{  
+      "levels":[  
+         {  
+            "id":0,
+            "value":"Region"
+         },
+         {  
+            "id":1,
+            "value":"City"
+         }
+      ]
+   }
+}

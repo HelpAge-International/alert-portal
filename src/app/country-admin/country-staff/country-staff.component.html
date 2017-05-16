@@ -12,17 +12,17 @@
                 {{"GLOBAL.FILTER"| translate}}
             </div>
             <div class="col-lg-3 col-md-3">
-                <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
+                <select class="form-control" [(ngModel)]="filterDepartment">
                 <option *ngFor="let department of departments" [value]="department">{{department}}</option>
               </select>
             </div>
             <div class="col-lg-3 col-md-3">
-                <select class="form-control" [(ngModel)]="filterUser" (change)="filterStaff()">
-                  <option *ngFor="let userType of userTypesList" [value]="userType">{{UserType[userType] | translate}}</option>
+                <select class="form-control" [(ngModel)]="filterUserType">
+                  <option *ngFor="let userType of userTypesList;let i = index" [value]="userType">{{UserType[i] | translate}}</option>
                 </select>
             </div>
             <div class="col-lg-3 col-md-3">
-                <select class="form-control" [(ngModel)]="filterOffice" (change)="filterStaff()">
+                <select class="form-control" [(ngModel)]="filterOffice">
                   <option *ngFor="let officeType of officeTypesList" [value]="officeType">{{OfficeType[officeType] |
                     translate}}
                   </option>
@@ -37,7 +37,7 @@
             <div class="col-lg-2 col-md-2"></div>
             <div class="col-lg-2 col-md-2"></div>
         </div>
-        <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced">
+        <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced" [hidden] = "hideFilteredStaff(staff)">
             <div class="col-lg-2 col-md-2">{{ staffPublicUser[staff?.id]?.firstName }} {{ staffPublicUser[staff?.id]?.lastName }}</div>
             <div class="col-lg-2 col-md-2">{{ staff.department }}</div>
             <div class="col-lg-2 col-md-2">{{ getStaffUserType(staff.userType) | translate}}</div>
