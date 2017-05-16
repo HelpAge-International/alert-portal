@@ -9,6 +9,7 @@ export class CommonService {
 
   constructor(private _http: Http, private subscriptions: RxHelper) {}
 
+
   getJsonContent(path: string): Observable<any> {
     return this._http.get(path).map(res => { return res.json() || {} });
   }

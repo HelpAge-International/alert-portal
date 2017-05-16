@@ -48,6 +48,28 @@ export class UserService {
     return userSubscription;
   }
 
+  getUserByEmail(email): Observable<ModelUserPublic> {
+    if(!email) { return null };
+    const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
+        query: {
+          orderByChild: "email",
+          equalTo: email
+        }
+      })
+      .first()
+      .map(item => {
+        if(item.length > 0){
+          let user = item as ModelUserPublic;
+          user.id = item.id;
+          return user;
+        }else{
+          return null;
+        }
+      });
+
+    return userSubscription;
+  }
+
   // COUNTRY ADMIN USER
   getCountryAdminUser(uid: string): Observable<CountryAdminModel> {
     if(!uid) { return null; }
