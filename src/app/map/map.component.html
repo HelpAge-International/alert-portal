@@ -4,8 +4,8 @@
 <div class="Page-top__wrap--w_sub_header">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>Global Map</h1>
-      <a (click)="goToListView()">See countries as a list</a>
+      <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1>
+      <a (click)="goToListView()">{{"MAPS.SEE_COUNTRIES_LIST" | translate}}</a>
     </div>
     <div class="Ribbon__section__wrap Spaced">
       <div id="global-map" style="height: 500px;"></div>
@@ -23,13 +23,13 @@
                 <div class="col-sm-2"></div>
               </div>
               <div class="info-window__subheading row">
-                <div class="col">Minimum Preparedness Action (MPAs)</div>
+                <div class="col">{{"MAPS.MPA" | translate}}</div>
               </div>
               <table class="table">
                 <thead>
                 <tr>
-                  <th class="col-10 text-left">Department</th>
-                  <th class="col-2 text-center">Preparedness</th>
+                  <th class="col-10 text-left">{{"MAPS.DEPARTMENTS" | translate}}</th>
+                  <th class="col-2 text-center">{{"MAPS.READINESS" | translate}}</th>
                 </tr>
                 </thead>
                 <tbody  *ngIf="(x != null && x.location != -1)">
@@ -40,7 +40,7 @@
                     <td *ngIf="!(y.actionStatus >= minThreshYellow) && !(y.actionStatus >= minThreshGreen)"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                   </tr>
                   <tr>
-                    <td><strong>Overall</strong></td>
+                    <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
                     <td *ngIf="x.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
                     <td *ngIf="x.overallAction() >= minThreshYellow && !(x.overallAction() >= minThreshGreen)"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
                     <td *ngIf="!(x.overallAction() >= minThreshYellow) && !(x.overallAction() >= minThreshGreen)"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>

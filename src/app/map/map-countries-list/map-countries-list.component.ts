@@ -6,6 +6,8 @@ import {RxHelper} from "../../utils/RxHelper";
 import {ModelCountryOffice} from "../../model/countryoffice.model";
 import {ModelRegion} from "../../model/region.model";
 import {Countries} from "../../utils/Enums";
+import {ModelHazard} from "../../model/hazard.model";
+import {HazardImages} from "../../utils/HazardImages";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -18,6 +20,7 @@ export class MapCountriesListComponent implements OnInit {
   private mapHelper: SuperMapComponents;
   public regions: RegionHolder[];
   public countries: SDepHolder[];
+  public hazards: RegionHazard[];
   public showRegionHeaders: boolean;
 
   public minThreshGreen: number = -1;
@@ -28,6 +31,7 @@ export class MapCountriesListComponent implements OnInit {
     this.mapHelper = SuperMapComponents.init(af, subscriptions);
     this.regions = [];
     this.countries = [];
+    this.hazards = [];
   }
 
   ngOnInit() {
@@ -63,6 +67,13 @@ export class MapCountriesListComponent implements OnInit {
             this.addOrUpdateCountry(x);
           }
         }));
+
+        /** Markers */
+        this.mapHelper.actionInfoForAgencyAdmin(this.uid, "administratorCountry", (location, marker) => {
+          let hazard: RegionHazard = new RegionHazard(location, marker);
+          this.addOrUpdateHazard(hazard);
+          console.log(this.hazards);
+        });
       }
     });
     this.subscriptions.add(sub);
@@ -96,10 +107,45 @@ export class MapCountriesListComponent implements OnInit {
     return;
   }
 
+  public addOrUpdateHazard(holder: RegionHazard) {
+    for (let x of this.hazards) {
+      if (x.hazardScenario == holder.hazardScenario) {
+        x.location = holder.location;
+        return;
+      }
+    }
+    this.hazards.push(holder);
+    return;
+  }
+
   public getCountryCodeFromLocation(location: number) {
     return Countries[location];
   }
+
+  public getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  public isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
 }
+
+export class RegionHazard {
+
+  constructor(location: number, hazard) {
+    this.hazardScenario = hazard.hazardScenario;
+    this.location = location;
+  }
+
+  public hazardScenario: number;
+  public location: number;
+
+  public locationS() {
+    return Countries[this.location];
+  }
+}
+
 
 export class RegionHolder {
   constructor() {

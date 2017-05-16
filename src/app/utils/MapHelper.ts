@@ -93,6 +93,21 @@ export class SuperMapComponents {
 
     this.subscriptions.add(sub);
   };
+  public actionInfoForAgencyAdmin(uid: string, folder: string, funct: (location: number, marker) => void) {
+    let sub = this.getCountryOffice(uid, folder)
+      .flatMap((countryOffice) => {
+        for (let key of countryOffice) {
+          this.markersForAgencyAdminMap.set(key.$key, key.location);
+          return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key, { preserveSnapshot: true});
+        }
+      })
+      .subscribe((result) => {
+        result.forEach(snapshot => {
+          funct(this.markersForAgencyAdminMap.get(result.key), snapshot.val());
+        });
+      });
+    this.subscriptions.add(sub);
+  }
 
   /**
    *    Find the agency logo path from firebase
@@ -871,6 +886,8 @@ export class SDepHolder {
       diviser += dep.actionStatus;
     }
     let x = (diviser) / (this.departments.length);
+    if (this.departments.length == 0)
+      return -1;
     return x;
   }
 }

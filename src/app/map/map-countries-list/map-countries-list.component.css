@@ -1,3 +1,9 @@
+.MapList__HazardOverflow {
+  word-wrap: break-word;
+}
+
+
+
 .Icon__country--AO {
   background-image: url(/assets/images/countries/AO.svg);
   background-size: contain;

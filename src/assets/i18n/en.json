@@ -1087,5 +1087,14 @@
     "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs",
     "SELECT_GENERIC_ACTION": "Select a generic preparedness action",
     "BUDGET_NARRATIVE": "Budget Narrative"
+  },
+  "MAPS": {
+    "MPA": "Minimum Preparedness Actions (MPAs)",
+    "READINESS": "Readiness",
+    "DEPARTMENTS": "Departments",
+    "NO_DEPARTMENTS": "No Departments",
+    "OVERALL": "Overall",
+    "SEE_COUNTRIES_MAP": "See countries as a map",
+    "SEE_COUNTRIES_LIST": "See countries as a list"
   }
 }
