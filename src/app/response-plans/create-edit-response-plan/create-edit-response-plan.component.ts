@@ -11,12 +11,13 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, MediaFormat
+  ResponsePlanSectors, MediaFormat, BudgetCategory
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -53,7 +54,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // Section 1/10
   private planName: string = '';
   private geographicalLocation: string = '';
-  private staffMembers: FirebaseObjectObservable<any>[] = [];
+  // private staffMembers: FirebaseObjectObservable<any>[] = [];
+  private staffMembers: any[] = [];
   private staffMemberSelected: any;
   private hazardScenarioSelected: number;
   private HazardScenario = HazardScenario;
@@ -123,7 +125,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private partnersDropDownsCounter: number = 1;
   private partnersDropDowns: number[] = [this.partnersDropDownsCounter];
-  private partnerOrganisations: FirebaseObjectObservable<any>[] = [];
+  // private partnerOrganisations: FirebaseObjectObservable<any>[] = [];
+  private partnerOrganisations: any[] = [];
   private partnerOrganisationsSelected = {};
 
   private section3Status: string = "GLOBAL.INCOMPLETE";
@@ -228,9 +231,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private capitalItemSections: number[] = [this.capitalItemSectionSectionsCounter];
 
   private section10Status: string = "GLOBAL.INCOMPLETE";
+  private loadResponsePlan: ResponsePlan;
 
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper, private userService: UserService) {
   }
 
   ngOnInit() {
@@ -332,6 +336,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText;
     newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
+    newResponsePlan.otherVulnerableGroup = this.otherGroup;
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
     //section 6
@@ -403,7 +408,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let inputs = {};
     this.sectorBudget.forEach((v, k) => {
       let item = new ModelBudgetItem();
-      item.budget = this.sectorBudget && this.sectorBudget.get(v) ? this.sectorBudget.get(v) : 0;
+      item.budget = this.sectorBudget && this.sectorBudget.get(k) ? this.sectorBudget.get(k) : 0;
       item.narrative = this.sectorNarrative && this.sectorNarrative.get(k) ? this.sectorNarrative.get(k) : "";
       // inputs.push(item);
       inputs[k] = item;
@@ -733,13 +738,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.selectedVulnerableGroups[vulnerableGroupsDropDown] = groupSelected;
   }
 
-  updateOtherGroupToGroups() {
-    if (this.otherGroup != '') {
-      this.selectedVulnerableGroups['other'] = this.otherGroup;
-    } else {
-      delete this.selectedVulnerableGroups['other'];
-    }
-  }
+  // updateOtherGroupToGroups() {
+  //   if (this.otherGroup != '') {
+  //     this.selectedVulnerableGroups['other'] = this.otherGroup;
+  //   } else {
+  //     delete this.selectedVulnerableGroups['other'];
+  //   }
+  // }
 
   addToTargetPopulationObject(bulletPoint, textEntered) {
     if (textEntered) {
@@ -946,6 +951,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   noSelectedForVisualDocument() {
     this.intentToVisuallyDocument = false;
+  }
+
+  updateMediaFormat(value) {
+    console.log(value);
+    this.mediaFormat = value;
   }
 
   continueButtonPressedOnSection8() {
@@ -1169,6 +1179,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + responsePlanId;
     let subscription = this.af.database.object(responsePlansPath).subscribe((responsePlan: ResponsePlan) => {
+      this.loadResponsePlan = responsePlan;
       this.loadSection1(responsePlan);
       this.loadSection2(responsePlan);
       this.loadSection3(responsePlan);
@@ -1190,15 +1201,100 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.geographicalLocation = responsePlan.location;
     this.hazardScenarioSelected = responsePlan.hazardScenario;
     // this.staffMemberSelected = responsePlan.planLead;
+    let subscription = this.userService.getUser(responsePlan.planLead)
+      .subscribe(user => {
+        this.staffMemberSelected = user;
+        console.log("selected member");
+        console.log(this.staffMemberSelected);
+      });
+    this.subscriptions.add(subscription);
   }
 
-  // TODO
   private loadSection2(responsePlan: ResponsePlan) {
-    // console.log(responsePlan.scenarioCrisisList);
+    console.log("load section 2");
+    console.log(responsePlan.scenarioCrisisList);
+    //scenario crisis list
+    let scenarioCrisisList = responsePlan.scenarioCrisisList;
+    this.loadSection2Back(0, scenarioCrisisList, this.summarizeScenarioBulletPointsCounter, this.summarizeScenarioBulletPoints);
+
+    let impactOfCrisisList = responsePlan.impactOfCrisisList;
+    this.loadSection2Back(1, impactOfCrisisList, this.impactOfCrisisBulletPointsCounter, this.impactOfCrisisBulletPoints);
+
+    let availabilityOfFundsList = responsePlan.availabilityOfFundsList;
+    this.loadSection2Back(2, availabilityOfFundsList, this.availabilityOfFundsBulletPointsCounter, this.availabilityOfFundsBulletPoints);
+    // for (let i = 0; i < impactOfCrisisList.length; i++) {
+    //   if (i != 0) {
+    //     this.impactOfCrisisBulletPointsCounter++;
+    //     this.impactOfCrisisBulletPoints.push(this.impactOfCrisisBulletPointsCounter);
+    //   }
+    // }
+    // this.impactOfCrisisBulletPoints.forEach(item => {
+    //   this.addToImpactOfCrisisObject(item, impactOfCrisisList[item - 1]);
+    // });
+  }
+
+  private loadSection2Back(type: number, list: string[], counter: number, counterList: number[]) {
+    for (let i = 0; i < list.length; i++) {
+      if (i != 0) {
+        counter++;
+        counterList.push(counter);
+      }
+    }
+    counterList.forEach(item => {
+      if (type == 0) {
+        this.addToSummarizeScenarioObject(item, list[item - 1]);
+      } else if (type == 1) {
+        this.addToImpactOfCrisisObject(item, list[item - 1]);
+      } else if (type == 2) {
+        this.addToAvailabilityOfFundsObject(item, list[item - 1]);
+      }
+    });
   }
 
   // TODO
   private loadSection3(responsePlan: ResponsePlan) {
+    let sectors = responsePlan.sectors;
+    let sectorKeys = Object.keys(sectors);
+    this.updateSectorSelections(sectorKeys, responsePlan);
+    this.presenceInTheCountry = responsePlan.presenceInTheCountry;
+    this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+  }
+
+  private updateSectorSelections(sectorKeys: string[], responsePlan: ResponsePlan) {
+    sectorKeys.forEach(key => {
+      if (Number(key) == ResponsePlanSectors.wash) {
+        this.waSHSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.health) {
+        this.healthSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.shelter) {
+        this.shelterSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.nutrition) {
+        this.nutritionSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.foodSecurityAndLivelihoods) {
+        this.foodSecAndLivelihoodsSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.protection) {
+        this.protectionSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.education) {
+        this.educationSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.campManagement) {
+        this.campManagementSectorSelected = true;
+      } else if (Number(key) == ResponsePlanSectors.other) {
+        this.otherSectorSelected = true;
+      }
+    });
+    if (this.otherSectorSelected) {
+      this.otherRelatedSector = responsePlan.otherRelatedSector;
+    }
+
+    let partnerOrganisations = responsePlan.partnerOrganisations;
+    for (let i = 0; i < partnerOrganisations.length; i++) {
+      if (i != 0) {
+        this.partnersDropDownsCounter++;
+        this.partnersDropDowns.push(this.partnersDropDownsCounter);
+      }
+      this.partnerOrganisationsSelected[this.partnersDropDownsCounter] = partnerOrganisations[this.partnersDropDownsCounter - 1];
+    }
+
   }
 
   private loadSection4(responsePlan: ResponsePlan) {
@@ -1209,17 +1305,74 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO
   private loadSection5(responsePlan: ResponsePlan) {
+    this.numOfPeoplePerHouseHold = responsePlan.peoplePerHousehold;
+    this.numOfHouseHolds = responsePlan.numOfHouseholds;
+    this.calculateBeneficiaries();
+    this.howBeneficiariesCalculatedText = responsePlan.beneficiariesNote;
+    this.showBeneficiariesTextEntry = this.howBeneficiariesCalculatedText ? true : false;
+
+    //vulnerable groups
+    let vulnerableGroups = responsePlan.vulnerableGroups;
+    for (let i = 0; i < vulnerableGroups.length; i++) {
+      if (i != 0) {
+        this.vulnerableGroupsDropDownsCounter++;
+        this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
+      }
+      this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
+    }
+    this.otherGroup = responsePlan.otherVulnerableGroup;
+
+    //target population bullets
+    let targetPopulationInvolvementList = responsePlan.targetPopulationInvolvementList;
+    for (let i = 0; i < targetPopulationInvolvementList.length; i++) {
+      if (i != 0) {
+        this.targetPopulationBulletPointsCounter++;
+        this.targetPopulationBulletPoints.push(this.targetPopulationBulletPointsCounter);
+      }
+      this.addToTargetPopulationObject(this.targetPopulationBulletPointsCounter, targetPopulationInvolvementList[this.targetPopulationBulletPointsCounter - 1])
+    }
+
   }
 
   private loadSection6(responsePlan: ResponsePlan) {
     this.riskManagementPlanText = responsePlan.riskManagementPlan;
   }
 
-  // TODO
   private loadSection7(responsePlan: ResponsePlan) {
+    console.log("load section 7");
+    let sectors: {} = responsePlan.sectors;
+    Object.keys(sectors).forEach(sectorKey => {
+      //initial load back
+      this.sectorsRelatedTo.push(Number(sectorKey));
+
+      //activity info load back
+      let sectorInfo = this.activityInfoMap.get(sectorKey);
+      if (!sectorInfo) {
+        let infoData = {};
+        infoData["sourcePlan"] = responsePlan.sectors[sectorKey]["sourcePlan"];
+        infoData["bullet1"] = responsePlan.sectors[sectorKey]["bullet1"];
+        infoData["bullet2"] = responsePlan.sectors[sectorKey]["bullet2"];
+        this.activityInfoMap.set(Number(sectorKey), infoData);
+      }
+
+      //activities list load back
+      let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
+      let moreData: {}[] = [];
+      Object.keys(activitiesData).forEach(key => {
+        let beneficiary = [];
+        activitiesData[key]["beneficiary"].forEach(item => {
+          beneficiary.push(item);
+        })
+        let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+        moreData.push(model);
+        if (!this.activityMap.get(Number(sectorKey))) {
+          this.activityMap.set(Number(sectorKey), moreData);
+          this.addActivityToggleMap.set(Number(sectorKey), true);
+        }
+      });
+    });
   }
 
-  // TODO - Test and check the functionality
   private loadSection8(responsePlan: ResponsePlan) {
 
     this.mALSystemsDescriptionText = responsePlan.monAccLearning['mALSystemsDescription'];
@@ -1227,7 +1380,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.mediaFormat = responsePlan.monAccLearning['mediaFormat'];
   }
 
-  // TODO - Test and check the functionality
   private loadSection9(responsePlan: ResponsePlan) {
 
     this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
@@ -1236,10 +1388,58 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
     this.numberMale18To50 = responsePlan.doubleCounting[4].value;
     this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
+
+    this.section9Status = "GLOBAL.COMPLETE";
+    this.sectionsCompleted.set(this.sections[8], true);
   }
 
-  // TODO
   private loadSection10(responsePlan: ResponsePlan) {
+    console.log("load section 10");
+
+    let inputs = responsePlan.budget["item"][BudgetCategory.Inputs];
+    Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
+      this.totalInputs += item.budget;
+    })
+
+    this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
+    this.transportNarrative = responsePlan.budget["item"][BudgetCategory.Transport]["narrative"];
+    this.securityBudget = responsePlan.budget["item"][BudgetCategory.Security]["budget"];
+    this.securityNarrative = responsePlan.budget["item"][BudgetCategory.Security]["narrative"];
+    this.logisticsAndOverheadsBudget = responsePlan.budget["item"][BudgetCategory.Logistics]["budget"];
+    this.logisticsAndOverheadsNarrative = responsePlan.budget["item"][BudgetCategory.Logistics]["narrative"];
+    this.staffingAndSupportBudget = responsePlan.budget["item"][BudgetCategory.Staffing]["budget"];
+    this.staffingAndSupportNarrative = responsePlan.budget["item"][BudgetCategory.Staffing]["narrative"];
+    this.monitoringAndEvolutionBudget = responsePlan.budget["item"][BudgetCategory.Monitoring]["budget"];
+    this.monitoringAndEvolutionNarrative = responsePlan.budget["item"][BudgetCategory.Monitoring]["narrative"];
+    this.capitalItemsBudget = responsePlan.budget["item"][BudgetCategory.CapitalItems]["budget"];
+    this.capitalItemsNarrative = responsePlan.budget["item"][BudgetCategory.CapitalItems]["narrative"];
+    this.managementSupportPercentage = responsePlan.budget["item"][BudgetCategory.ManagementSupport]["budget"];
+    this.managementSupportNarrative = responsePlan.budget["item"][BudgetCategory.ManagementSupport]["narrative"];
+
+    let totalOfSectionsBToG = this.transportBudget + this.securityBudget + this.logisticsAndOverheadsBudget +
+      this.staffingAndSupportBudget + this.monitoringAndEvolutionBudget + this.capitalItemsBudget
+
+    this.totalOfAllCosts = ((this.totalInputs + totalOfSectionsBToG) * this.managementSupportPercentage) / 100;
+    this.totalBudget = this.totalInputs + totalOfSectionsBToG + this.totalOfAllCosts;
+
+    this.capitalsExist = responsePlan.budget["itemsOver1000Exists"];
+    if (this.capitalsExist) {
+      let over1000List = responsePlan.budget["itemsOver1000"];
+      if (over1000List.length > 0) {
+        for (let i = 0; i < over1000List.length; i++) {
+          let item = new ModelBudgetItem();
+          item.budget = over1000List[i]["budget"];
+          item.narrative = over1000List[i]["narrative"];
+          if (i != 0) {
+            this.capitalItemSectionSectionsCounter++;
+            this.capitalItemSections.push(this.capitalItemSectionSectionsCounter);
+          }
+          this.budgetOver1000.set(this.capitalItemSectionSectionsCounter, item.budget);
+          this.budgetOver1000Desc.set(this.capitalItemSectionSectionsCounter, item.narrative);
+        }
+      }
+    }
+
   }
 
   private getStaff() {
@@ -1386,6 +1586,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     });
     return counter;
   }
+
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);

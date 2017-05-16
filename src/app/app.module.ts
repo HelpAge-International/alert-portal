@@ -104,7 +104,8 @@ import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
 import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
-import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
+import { MapCountriesListComponent } from './map/map-countries-list/map-countries-list.component';
+import {UserService} from "./services/user.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -241,7 +242,7 @@ const firebaseAuthConfig = {
             storageType: 'localStorage'
         })
     ],
-    providers: [RxHelper, Modal],
+    providers: [RxHelper, Modal, UserService],
     bootstrap: [AppComponent]
 })
 
