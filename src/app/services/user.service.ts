@@ -12,6 +12,7 @@ import {PartnerModel} from "../model/partner.model";
 import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
 export class UserService {
@@ -56,20 +57,23 @@ export class UserService {
   }
 
   getUserByEmail(email): Observable<ModelUserPublic> {
-    if(!email) { return null };
+    if (!email) {
+      return null
+    }
+    ;
     const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
-        query: {
-          orderByChild: "email",
-          equalTo: email
-        }
-      })
+      query: {
+        orderByChild: "email",
+        equalTo: email
+      }
+    })
       .first()
       .map(item => {
-        if(item.length > 0){
+        if (item.length > 0) {
           let user = item as ModelUserPublic;
           user.id = item.id;
           return user;
-        }else{
+        } else {
           return null;
         }
       });
@@ -208,5 +212,26 @@ export class UserService {
         }
       });
     return userTypeSubscription;
+  }
+
+  //get user country id
+  getCountryId(userType, uid): Observable<string> {
+    let subscription = this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
+      .map(countryId => {
+        if (countryId.$value) {
+          return countryId.$value
+        }
+      });
+    return subscription;
+  }
+
+  getAgencyId(userType, uid): Observable<string> {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
+      .map(agencyIds => {
+        if (agencyIds.length > 0 && agencyIds[0].$value) {
+          return agencyIds[0].$value;
+        }
+      });
+    return subscription;
   }
 }
