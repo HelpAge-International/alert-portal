@@ -30,11 +30,13 @@
         <!--Source of Information-->
         <div class="row Spaced-above"><h6 class="col-sm-4"><b>Source of information</b></h6><img src="assets/images/icons/info_source.svg"></div>
 
-        <div class="Spaced-above form-group col-sm-12 row">
-            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Name of source">
-            <span class="col-sm-1"></span>
-            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Link to source if available">
-            <a href="#" class="Spaced-above">+ Add another source</a>
+        <div class="Spaced-above form-group col-sm-12 row indicator-source">
+            <div class="col-sm-12 row" style="padding-top:10px;" *ngFor="let source of indicatorData.source; let sourceKey = index">
+                 <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="indicatorData.source[sourceKey]['name']" placeholder="Name of source">
+                <span class="col-sm-1"></span>
+                <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="indicatorData.source[sourceKey]['name']" placeholder="Link to source if available">
+            </div>
+            <a href="javascript:void(0)" class="Spaced-above" (click)="addAnotherSource()">+ Add another source</a>
         </div>
 
         <div class="row Spaced"> <!--start of row-->
@@ -134,13 +136,47 @@
 
         <!--Geographical location of indicator monitoring-->
         <h6><b>Geographical location of indicator monitoring</b></h6>
-        <div class="row">
-            <label for="RT_yes" class="Checkbox--ribbon col-sm-5"><input type="radio" name="RT" id="RT_yes">National<span class="col-sm-9"></span></label>
+        <div class="row" *ngFor="let geoLocationKey of geoLocationList">
+             <label for="geoLocation_{{geoLocationKey}}" class="Checkbox--ribbon col-sm-5">
+                <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}" value="{{geoLocationKey}}">{{geoLocation[geoLocationKey] | translate}}
+                <span class="col-sm-9"></span>
+            </label>
         </div>
-        <div class="row">
-            <label for="RT_yes" class="Checkbox--ribbon col-sm-5"><input type="radio" name="RT" id="RT_yes">Subnational<span class="col-sm-8"></span></label>
 
+        <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above" *ngIf="indicatorData.geoLocation">
+            <p class="col-sm-12"><b>Please select the locations affected</b></p><br>
+            <div class="col-sm-12 row" *ngFor="let location of indicatorData.affectedLocation; let locationKey = index">
+                 <div class="col-sm-3">
+                    <div class="form-group-risk-frequency ">
+                        <select class="form-control" name="selectCountry" id="selectCountry" (change)="setCountryValue(locationKey, $event)" required>
+                            <option disabled selected="selected">Select a Country</option>
+                            <option  *ngFor="let country of countriesList; let countryKey = index" [value]="countryKey">{{countries[countryKey] | translate}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-risk-frequency ">
+                        <select class="form-control" id="select1">
+                            <option selected="selected">Select a Reigon</option>
+                            <option>Ilocos Reigon</option>
+                            <option>....and the rest of the regions list</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group-risk-frequency ">
+                        <select class="form-control" id="select1">
+                            <option selected="selected">Select a province</option>
+                            <option>Please select a region first</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherLocation()">+ Add another location</a>
         </div>
+
+
         <div class="Form-submit__wrapper">
             <div class="btn btn-primary">Save new indicator</div>
             <div class="btn btn-outline-secondary">Cancel</div>
