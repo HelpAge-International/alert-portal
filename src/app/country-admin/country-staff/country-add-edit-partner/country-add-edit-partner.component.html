@@ -18,10 +18,15 @@
         <div class="row Spaced">
             <div class="col-lg-4 col-md-6 form-group">
                 <label for="partner-org">{{"COUNTRY_ADMIN.PARTNER.PARTNER_ORGANISATION"| translate}}</label>
-                <select class="form-control" id="partner-org" [(ngModel)] = "partner.partnerOrganisationId" name="partnerOrganisation">
+                <select class="form-control" id="partner-org"  name="partnerOrganisation"
+                        [(ngModel)] = "partner.partnerOrganisationId"
+                        (change)="setPartnerOrganisation($event.target.value)">
                     <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                     <option *ngFor="let partnerOrganisation of partnerOrganisations"
                         [value] = "partnerOrganisation.id">{{ partnerOrganisation.organisationName }}</option>
+                    <option value="addNewPartnerOrganisation" class="text-primary">+
+                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
+                    </option>
                 </select>
             </div>
         </div>

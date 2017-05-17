@@ -99,6 +99,12 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
     this.subscriptions.add(authSubscription);
   }
 
+  setPartnerOrganisation(optionSelected){
+    if(optionSelected === 'addNewPartnerOrganisation')
+    {
+      this.router.navigateByUrl('response-plans/add-partner-organisation');
+    }
+  }
   validateForm(): boolean {
     this.alertMessage = this.partner.validate() || this.userPublic.validate(['city']);
 
