@@ -1129,5 +1129,10 @@
     "AFFECTED_AREAS": "Affected areas",
     "RED_ALERT_REQUESTED": "Red Alert Requested",
     "INFO_AND_NOTES": "Information sources and notes"
+  },
+  "DASHBOARD": {
+    "RISK_MONITORING": "Risk Monitoring",
+    "INDICATORS": "indicators",
+    "CONTEXT": "Context"
   }
 }

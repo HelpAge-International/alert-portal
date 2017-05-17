@@ -9,9 +9,9 @@
       <ul class="list-inline">
         <li class="list-inline-item active">
           <div class="Icon">
-            <div class="Icon--lg Icon--align-center Icon__country--philippines"></div>
+            <div class="Icon--lg Icon--align-center Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
           </div>
-          <span>{{Countries[countryLocation] | translate}}</span>
+          <span>{{CountriesList[countryLocation] | translate}}</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
@@ -275,35 +275,21 @@
     <div class="Widget-Group">
 
       <div class="Widget Risk-Monitoring">
-        <h3>Risk Monitoring</h3>
+        <h3>{{"DASHBOARD.RISK_MONITORING" | translate}}</h3>
         <ul class="list-inline">
           <li class="list-inline-item active">
             <div class="Icon">
               <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--country-context"></div>
             </div>
-            <span>Context</span>
-            4 indicators
+            <span>{{"DASHBOARD.CONTEXT" | translate}}</span>
+            4 {{"DASHBOARD.INDICATORS" | translate}}
           </li>
-          <li class="list-inline-item">
+          <li class="list-inline-item" *ngFor="let hazard of hazards">
             <div class="Icon">
               <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--cyclone"></div>
             </div>
-            <span>Typhoon</span>
-            4 indicators
-          </li>
-          <li class="list-inline-item">
-            <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--storm"></div>
-            </div>
-            <span>Flood</span>
-            4 indicators
-          </li>
-          <li class="list-inline-item">
-            <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--conflict"></div>
-            </div>
-            <span>Conflict</span>
-            4 indicators
+            <span>{{HazardScenariosList[hazardObject[hazard.$key].hazardScenario]}}</span>
+            4 {{"DASHBOARD.INDICATORS" | translate}}
           </li>
         </ul>
       </div>

@@ -4,7 +4,7 @@ import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
-import {AlertLevels, ApprovalStatus} from "../utils/Enums";
+import {AlertLevels, ApprovalStatus, Countries} from "../utils/Enums";
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private overallAlertLevel: AlertLevels = AlertLevels.Green; // TODO - Find this value
 
   private countryLocation: any;
-  private Countries = Constants.COUNTRIES;
+  private CountriesList = Constants.COUNTRIES;
   private count: number = 0;
   private numOfApprovedResponsePlans: number = 0;
   private sysAdminMinThreshold: any = [];
@@ -38,6 +38,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private AlertLevels = AlertLevels;
 
   private alerts: Observable<any>;
+
+  private hazards: any[] = [];
+  private hazardObject = {};
+  private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
   }
@@ -66,6 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getCountryId().then(() => {
       this.getApprovedResponsePlansCount();
       this.getAlerts();
+      this.getHazards();
     });
     this.getAgencyID().then(() => {
       this.getCountryData();
@@ -270,6 +275,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
         equalTo: AlertLevels.Red
       }
     });
+  }
+
+  // TODO - FIX
+  private getHazards() {
+
+    let subscription = this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
+      .flatMap(list => {
+        this.hazards = [];
+        let tempList = [];
+        list.forEach(hazard => {
+          tempList.push(hazard);
+          this.hazardObject[hazard.$key] = hazard;
+        });
+        return Observable.from(tempList)
+      })
+      .flatMap(hazard => {
+        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+      })
+      .distinctUntilChanged()
+      .subscribe(x => {
+        this.hazards.push(x);
+        console.log(x);
+      });
+    this.subscriptions.add(subscription);
+  }
+
+  public getCountryCodeFromLocation(location: number) {
+    return Countries[location];
   }
 
   private navigateToLogin() {
