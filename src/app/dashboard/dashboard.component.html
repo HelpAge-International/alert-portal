@@ -17,14 +17,14 @@
           <div class="Icon">
             <div class="Icon__circle Icon--blue Icon--lg">{{numOfApprovedResponsePlans}}</div>
           </div>
-          <span>Response plans</span>
+          <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
             <div class="Icon__circle Icon--b-{{mpaStatusColor}} Icon--lg">
               <i class="fa {{mpaStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i></div>
           </div>
-          <span>Minimum preparedness</span>
+          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
         </li>
         <li class="list-inline-item  ">
           <div class="Icon">
@@ -35,13 +35,13 @@
               <i class="fa fa-times fa-2x fa-inverse" aria-hidden="true"></i>
             </div>
           </div>
-          <span>Advanced preparedness</span>
+          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
             <div class="Icon__circle Icon--green Icon--lg">{{percentageCHS}}%</div>
           </div>
-          <span>CHS preparedness</span>
+          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
         </li>
       </ul>
     </div>
@@ -49,8 +49,8 @@
     <div class="Widget Alert-Widget" *ngFor="let alert of alerts | async">
       <div class="row">
         <div class="col-md-3 Alert-Widget__item bg-danger">
-          <h4 *ngIf="alert.alertLevel == AlertLevels.Red">Red Alert</h4>
-          <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">Amber Alert</h4>
+          <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
+          <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
         </div>
         <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
           <i div class="Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></i>
@@ -61,12 +61,12 @@
         </div>
         <div class="col-md-2 Alert-Widget__item">
           <div>
-            <span>Population affected:</span> 200,000 people
+            <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> 200,000 {{"ALERT.PEOPLE" | translate}}
           </div>
         </div>
         <div class="col-md-2 Alert-Widget__item">
           <div>
-            <span>Affected areas:</span> Leyre and Cebu
+            <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> Leyre and Cebu
           </div>
         </div>
 
@@ -77,7 +77,7 @@
               <i class="fa fa-comment fa-stack-2x"></i>
               <i class="fa fa-stack-1x fa-inverse"></i>
             </div>
-            <div>Notes</div>
+            <div>{{"GLOBAL.NOTES" | translate}}</div>
           </a>
         </div>
 
@@ -96,11 +96,11 @@
           <div class="col-md-10">
             <div class="row align-items-center Small-spaced no-gutters">
               <div class="col-sm-6 col-8">
-                <h4>Information sources and notes</h4>
+                <h4>{{"ALERT.INFO_AND_NOTES" | translate}}</h4>
               </div>
               <div class="col-sm-6 col-4 text-right">
                 <a href="javascript:void(0);"
-                   onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>
+                   onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" | translate}}</a>
               </div>
             </div>
             <div class="row no-gutters">

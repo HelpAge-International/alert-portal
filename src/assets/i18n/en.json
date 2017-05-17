@@ -25,6 +25,7 @@
     "SHOW_ALL": "Show all",
     "SKILLS": "Skills",
     "EDIT_SECTION": "Edit region",
+    "NOTES": "Notes: ",
     "FILTER": "Filter: ",
     "ACTIVE": "Active",
     "DEACTIVE": "Deactive",
@@ -824,7 +825,7 @@
       "RESPONSE_PLANS": "Response plans",
       "MPA": "Minimum Preparedness",
       "APA": "Advanced preparedness",
-      "CHS": "CHS Preparednes",
+      "CHS": "CHS Preparedness",
       "SORT_BY": "Sort by",
       "NO_COUNTRIES": "Countries doesn't",
       "NO_COUNTRIES_BY": "Countries doesn't exist by",
@@ -1118,5 +1119,15 @@
     "OVERALL": "Overall",
     "SEE_COUNTRIES_MAP": "See countries as a map",
     "SEE_COUNTRIES_LIST": "See countries as a list"
+  },
+  "ALERT": {
+    "AMBER_ALERT": "Amber Alert",
+    "RED_ALERT": "Red ALert",
+    "RISK": "Risk",
+    "PEOPLE": "People",
+    "POPULATION_AFFECTED": "Population affected",
+    "AFFECTED_AREAS": "Affected areas",
+    "RED_ALERT_REQUESTED": "Red Alert Requested",
+    "INFO_AND_NOTES": "Information sources and notes"
   }
 }
