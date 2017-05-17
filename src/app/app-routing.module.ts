@@ -200,6 +200,7 @@ const routes: Routes = [
     {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
+    {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
 
     /**
      * Maps

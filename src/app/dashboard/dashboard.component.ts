@@ -3,6 +3,8 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {RxHelper} from "../utils/RxHelper";
+import {Observable} from "rxjs";
+import {AlertLevels} from "../utils/Enums";
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +21,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private agencyAdminUid: string;
   // private systemAdminUid: string;
 
+  private alerts: Observable<any>;
+
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) { }
 
   ngOnInit() {
@@ -28,6 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").subscribe((countryId) => {
           this.countryId = countryId.$value;
+          this.getAlerts();
 
           let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').subscribe((agencyAdminIds) => {
             this.agencyAdminUid = agencyAdminIds[0].$key;
@@ -51,6 +56,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.releaseAll();
+  }
+
+  /**
+   * Private functions
+   */
+
+  getAlerts() {
+
+    this.alerts = this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {
+      query: {
+        orderByChild: "alertLevel",
+        equalTo: AlertLevels.Red
+      }
+    });
+
+    this.alerts.forEach(alert => {
+      console.log("alert = " + alert);
+    });
+
   }
 
 }

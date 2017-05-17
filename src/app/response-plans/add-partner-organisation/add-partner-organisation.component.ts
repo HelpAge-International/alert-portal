@@ -1,20 +1,20 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
-import { AlertMessageType, ResponsePlanSectors, Country } from "../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors, Country} from "../../utils/Enums";
 declare var jQuery: any;
 
-import { PartnerOrganisationService } from "../../services/partner-organisation.service";
-import { UserService } from "../../services/user.service";
-import { AlertMessageModel } from '../../model/alert-message.model';
-import { PartnerOrganisationModel, PartnerOrganisationProjectModel } from '../../model/partner-organisation.model';
-import { ModelUserPublic } from '../../model/user-public.model';
-import { OperationAreaModel } from "../../model/operation-area.model";
-import { DisplayError } from "../../errors/display.error";
-import { PartnerModel } from "../../model/partner.model";
-import { SessionService } from "../../services/session.service";
-import { CommonService } from "../../services/common.service";
+import {PartnerOrganisationService} from "../../services/partner-organisation.service";
+import {UserService} from "../../services/user.service";
+import {AlertMessageModel} from '../../model/alert-message.model';
+import {PartnerOrganisationModel, PartnerOrganisationProjectModel} from '../../model/partner-organisation.model';
+import {ModelUserPublic} from '../../model/user-public.model';
+import {OperationAreaModel} from "../../model/operation-area.model";
+import {DisplayError} from "../../errors/display.error";
+import {PartnerModel} from "../../model/partner.model";
+import {SessionService} from "../../services/session.service";
+import {CommonService} from "../../services/common.service";
 
 @Component({
   selector: 'app-add-partner-organisation',
@@ -42,15 +42,16 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   // Other
   private activeProject: PartnerOrganisationProjectModel;
+  private fromResponsePlans: boolean = false;
 
-  constructor( private _userService: UserService,
+  constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _sessionService: SessionService,
-              private router: Router,
+              private router: Router, private route: ActivatedRoute,
               private subscriptions: RxHelper) {
-                this.partnerOrganisation = new PartnerOrganisationModel();
-                this.activeProject = this.partnerOrganisation.projects[0];
+    this.partnerOrganisation = new PartnerOrganisationModel();
+    this.activeProject = this.partnerOrganisation.projects[0];
   }
 
   ngOnInit() {
@@ -62,10 +63,20 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
 
+      let subscription = this.route.params
+        .subscribe((params: Params) => {
+          if (params["fromResponsePlans"]) {
+            this.fromResponsePlans = true;
+          }
+        });
+      this.subscriptions.add(subscription);
+
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .subscribe(content => { this.countryLevelsValues = content;
-                        err => console.log(err); });
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          err => console.log(err);
+        });
 
     });
   }
@@ -77,7 +88,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   validateForm(): boolean {
     this.alertMessage = this.partnerOrganisation.validate();
 
-    if(!this.alertMessage) {
+    if (!this.alertMessage) {
       // Validate organisation projects
       this.partnerOrganisation.projects.forEach(project => {
         this.alertMessage = this.validateProject(project);
@@ -92,39 +103,36 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime().toString());
 
     this._partnerOrganisationService.savePartnerOrganisation(this.partnerOrganisation)
-          .then(result => {
-            this.partnerOrganisation.id = result.key;
+      .then(result => {
+        this.partnerOrganisation.id = result.key;
 
-            this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
+        this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
-            this._userService.getUserByEmail(this.partnerOrganisation.email).subscribe(user => {
-              
-              if(!user)
-              {
-                jQuery('#redirect-partners').modal('show');
-              }else{
-                setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-              }
-            });
+        this._userService.getUserByEmail(this.partnerOrganisation.email).subscribe(user => {
 
-          })
-          .catch(err => {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
+          if (!user) {
+            jQuery('#redirect-partners').modal('show');
+          } else {
+            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+          }
+        });
+
+      })
+      .catch(err => {
+        if (err instanceof DisplayError) {
+          this.alertMessage = new AlertMessageModel(err.message);
+        } else {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+        }
+      });
   }
 
-  saveSector(pin: number, i: number)
-  {
-    let project = this.partnerOrganisation.projects[pin]; 
-    
-    if (project.sector[i])
-    {
+  saveSector(pin: number, i: number) {
+    let project = this.partnerOrganisation.projects[pin];
+
+    if (project.sector[i]) {
       project.sector.splice(i, 1);
-    }else{
+    } else {
       project.sector[i] = true;
     }
   }
@@ -153,14 +161,18 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('country-admin/country-staff');
+    if (this.fromResponsePlans) {
+      this.router.navigateByUrl('response-plans/create-edit-response-plan');
+    } else {
+      this.router.navigateByUrl('country-admin/country-staff');
+    }
   }
 
   redirectToPartnersPage() {
     this.closeModal();
 
     const user = new ModelUserPublic(this.partnerOrganisation.firstName, this.partnerOrganisation.lastName,
-                              this.partnerOrganisation.title, this.partnerOrganisation.email);
+      this.partnerOrganisation.title, this.partnerOrganisation.email);
     user.phone = this.partnerOrganisation.phone;
     this._sessionService.user = user;
 
@@ -176,37 +188,35 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     jQuery('#redirect-partners').modal('hide');
     this.goBack();
   }
-  
-  private validateProject(project: PartnerOrganisationProjectModel): AlertMessageModel{
-     this.alertMessage = project.validate();
 
-     if(!this.alertMessage)
-     {
-        project.operationAreas.forEach(operationArea => {
-          this.alertMessage = this.validateOperationArea(operationArea);
-        });
-     }
+  private validateProject(project: PartnerOrganisationProjectModel): AlertMessageModel {
+    this.alertMessage = project.validate();
 
-      if(this.alertMessage){
-        this.setActiveProject(project);
-        return this.alertMessage;
-      }
+    if (!this.alertMessage) {
+      project.operationAreas.forEach(operationArea => {
+        this.alertMessage = this.validateOperationArea(operationArea);
+      });
+    }
 
-      return null;
+    if (this.alertMessage) {
+      this.setActiveProject(project);
+      return this.alertMessage;
+    }
+
+    return null;
   }
 
-  private validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel
-  {
+  private validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
     let excludeFields = [];
-    let countryLevel1Exists = operationArea.country 
-                                && this.countryLevelsValues[operationArea.country].levelOneValues 
-                                && this.countryLevelsValues[operationArea.country].levelOneValues.length > 0;
-    if( !countryLevel1Exists ){
+    let countryLevel1Exists = operationArea.country
+      && this.countryLevelsValues[operationArea.country].levelOneValues
+      && this.countryLevelsValues[operationArea.country].levelOneValues.length > 0;
+    if (!countryLevel1Exists) {
       excludeFields.push("level1", "level2");
-    }else if( countryLevel1Exists && operationArea.level1
-          && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues 
-                || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)){
-        excludeFields.push("level2");
+    } else if (countryLevel1Exists && operationArea.level1
+      && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
+      || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+      excludeFields.push("level2");
     }
 
     return operationArea.validate(excludeFields);
