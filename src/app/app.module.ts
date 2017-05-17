@@ -105,6 +105,9 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
+import { UserService } from "./services/user.service";
+import { SessionService } from "./services/session.service";
+import { CommonService } from "./services/common.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -241,7 +244,7 @@ const firebaseAuthConfig = {
             storageType: 'localStorage'
         })
     ],
-    providers: [RxHelper, Modal],
+    providers: [RxHelper, Modal, SessionService, CommonService],
     bootstrap: [AppComponent]
 })
 

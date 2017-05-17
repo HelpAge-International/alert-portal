@@ -10,15 +10,17 @@ import { UserService } from "../../services/user.service";
 import { AlertMessageModel } from '../../model/alert-message.model';
 import { PartnerOrganisationModel, PartnerOrganisationProjectModel } from '../../model/partner-organisation.model';
 import { ModelUserPublic } from '../../model/user-public.model';
-import { CommonService } from "../../services/common.service";
 import { OperationAreaModel } from "../../model/operation-area.model";
 import { DisplayError } from "../../errors/display.error";
+import { PartnerModel } from "../../model/partner.model";
+import { SessionService } from "../../services/session.service";
+import { CommonService } from "../../services/common.service";
 
 @Component({
   selector: 'app-add-partner-organisation',
   templateUrl: './add-partner-organisation.component.html',
   styleUrls: ['./add-partner-organisation.component.css'],
-  providers: [PartnerOrganisationService, UserService, CommonService]
+  providers: [PartnerOrganisationService, UserService]
 })
 
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
@@ -33,12 +35,10 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   userTitle = Constants.PERSON_TITLE;
   userTitleSelection = Constants.PERSON_TITLE_SELECTION;
 
-
   // Models
   private alertMessage: AlertMessageModel = null;
   private partnerOrganisation: PartnerOrganisationModel;
-  private countryLevels: any[] = [];
-  private countryLevelsValues: any[] = [];
+  private countryLevelsValues = [];
 
   // Other
   private activeProject: PartnerOrganisationProjectModel;
@@ -46,6 +46,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   constructor( private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
+              private _sessionService: SessionService,
               private router: Router,
               private subscriptions: RxHelper) {
                 this.partnerOrganisation = new PartnerOrganisationModel();
@@ -60,11 +61,6 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
       }
 
       this.uid = user.uid;
-
-      // get the country levels
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_FILE)
-        .subscribe(content => { this.countryLevels = content;
-                        err => console.log(err); });
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -92,8 +88,13 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   submit() {
+    // Transforms projects endDate to timestamp
+    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime().toString());
+
     this._partnerOrganisationService.savePartnerOrganisation(this.partnerOrganisation)
           .then(result => {
+            this.partnerOrganisation.id = result.key;
+
             this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
             this._userService.getUserByEmail(this.partnerOrganisation.email).subscribe(user => {
@@ -122,7 +123,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     
     if (project.sector[i])
     {
-      delete project.sector[i];
+      project.sector.splice(i, 1);
     }else{
       project.sector[i] = true;
     }
@@ -152,11 +153,22 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('response-plans/create-edit-response-plan');
+    this.router.navigateByUrl('country-admin/country-staff');
   }
 
   redirectToPartnersPage() {
     this.closeModal();
+
+    const user = new ModelUserPublic(this.partnerOrganisation.firstName, this.partnerOrganisation.lastName,
+                              this.partnerOrganisation.title, this.partnerOrganisation.email);
+    user.phone = this.partnerOrganisation.phone;
+    this._sessionService.user = user;
+
+    const partner = new PartnerModel();
+    partner.partnerOrganisationId = this.partnerOrganisation.id;
+    partner.position = this.partnerOrganisation.position;
+    this._sessionService.partner = partner;
+
     this.router.navigateByUrl('country-admin/country-staff/country-add-edit-partner');
   }
 

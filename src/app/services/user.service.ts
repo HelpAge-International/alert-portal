@@ -17,6 +17,9 @@ import {UserType} from "../utils/Enums";
 export class UserService {
   private secondApp: firebase.app.App;
 
+  public user: ModelUserPublic;
+  public partner: PartnerModel;
+
   constructor(private af: AngularFire, private subscriptions: RxHelper) {
     this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
   }
@@ -47,7 +50,11 @@ export class UserService {
     const userSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uid)
       .map(user => {
         if (user.$key) {
-          return user as ModelUserPublic;
+          let userPublic = new ModelUserPublic(null, null, null, null);
+          userPublic.id = uid;
+          userPublic.mapFromObject(user);
+
+          return userPublic;
         }
         return null;
       });
@@ -66,9 +73,10 @@ export class UserService {
       .first()
       .map(item => {
         if(item.length > 0){
-          let user = item as ModelUserPublic;
-          user.id = item.id;
-          return user;
+          let userPublic = new ModelUserPublic(null, null, null, null);
+          userPublic.id = item.$key;
+          userPublic.mapFromObject(item);
+          return userPublic;
         }else{
           return null;
         }
@@ -96,15 +104,15 @@ export class UserService {
   // PARTNER USER
   getPartnerUser(uid: string): Observable<PartnerModel> {
     if (!uid) {
-      return null
+      return null;
     }
-    ;
+    
     const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
       .map(item => {
         if (item.$key) {
-          let partner = item as PartnerModel;
+          let partner = new PartnerModel();
+          partner.mapFromObject(item);
           partner.id = uid;
-
           return partner;
         }
         return null;
@@ -118,6 +126,7 @@ export class UserService {
       .map(items => {
         let partners: PartnerModel[] = [];
         items.forEach(item => {
+         
           // Add the organisation ID
           let partner = item as PartnerModel;
           partner.id = item.$key;
@@ -134,6 +143,8 @@ export class UserService {
     const partnerData = {};
 
     let uid = partner.id || userPublic.id;
+
+    console.log(partner);
 
     if (!uid) {
       return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
@@ -156,12 +167,13 @@ export class UserService {
             .catch(err => {
               throw new Error(err.message);
             });
-        } else {
-          partnerData['/userPublic/' + uid + '/'] = userPublic;
-          partnerData['/partner/' + uid + '/'] = partner;
-          return this.af.database.object(Constants.APP_STATUS).update(partnerData);
         }
       })
+      
+      partnerData['/userPublic/' + uid + '/'] = userPublic;
+      partnerData['/partner/' + uid + '/'] = partner;
+      return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+
     }
   }
 
