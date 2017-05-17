@@ -1,6 +1,199 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<p>
-  country-permission-settings works!
-</p>
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-country-admin-settings-menu></app-country-admin-settings-menu>
+
+    <div class="Header-title__wrap">
+        <h2>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.TITLE_TEXT" | translate}}</h2>
+        <button type="button" class="btn btn-outline-secondary">{{"GLOBAL.CANCEL"| translate}}</button>  
+        <button type="button" class="btn btn-primary">{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SAVE_PERMISSIONS" | translate}}</button> 
+    </div>
+
+    <div class="Ribbon__section__wrap Spaced">
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__1">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CHS_ACTIONS"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+        <div class="Spaced">
+            <div class="row Spaced">
+                <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
+                <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
+                <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+            </div>
+            <div class="row Spaced Line-row">
+                <div class="col-sm-4"><p>Alert level changed</p></div>
+                <div class="col-sm-4">
+                <p>Country Administrator</p>
+                <p>Country Director</p>
+                <p>ERT Lead</p>
+                <p>ERT</p>
+                </div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#grant_permissions"><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
+            </div>
+            <div class="row Spaced Line-row">
+                <div class="col-sm-4"><p>Red alert request</p></div>
+                <div class="col-sm-4">
+                <p>Country Administrator</p>
+                <p>Country Director</p>
+                <p>ERT Lead</p>
+                <p>ERT</p>
+                </div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#grant_permissions"><p>Add user type</p></a></div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#remove_permissions"><p>Remove user type</p></a></div>
+            </div>
+            <div class="row Spaced Line-row">
+                <div class="col-sm-4"><p>Update hazard indicator</p></div>
+                <div class="col-sm-4">
+                <p>Country Administrator</p>
+                <p>Country Director</p>
+                <p>ERT Lead</p>
+                <p>ERT</p>
+                </div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#grant_permissions"><p>Add user type</p></a></div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#remove_permissions"><p>Remove user type</p></a></div>
+            </div>
+            <div class="row Spaced Line-row">
+                <div class="col-sm-4"><p>MPA/APA expired</p></div>
+                <div class="col-sm-4">
+                <p>Country Administrator</p>
+                <p>Country Director</p>
+                <p>ERT Lead</p>
+                <p>ERT</p>
+                </div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#grant_permissions"><p>Add user type</p></a></div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#remove_permissions"><p>Remove user type</p></a></div>
+            </div>
+            <div class="row Spaced Line-row">
+                <div class="col-sm-4"><p>Response plan expired</p></div>
+                <div class="col-sm-4">
+                <p>Country Administrator</p>
+                <p>Country Director</p>
+                <p>ERT Lead</p>
+                <p>ERT</p>
+                </div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#grant_permissions"><p>Add user type</p></a></div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#remove_permissions"><p>Remove user type</p></a></div>
+            </div>
+            <div class="row Spaced Line-row">
+                <div class="col-sm-4"><p>Response plan rejected</p></div>
+                <div class="col-sm-4">
+                <p>Country Administrator</p>
+                <p>Country Director</p>
+                <p>ERT Lead</p>
+                <p>ERT</p>
+                </div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#grant_permissions"><p>Add user type</p></a></div>
+                <div class="col-sm-2"><a href=""  data-toggle="modal" data-target="#remove_permissions"><p>Remove user type</p></a></div>
+            </div>
+        </div>
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__2">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.MANDATED_MPA"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__3">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__2">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.MANDATED_APA"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__3">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__4">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NOTES"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__5">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__5">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__5">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+
+      <!--Ribbon Item-->
+      <div class="Ribbon__response" id="Ribbon__response__5">
+          <div class="Ribbon__header__wrap">
+              <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER"| translate}}</h4>
+              <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+      </div>
+      <div class="Response__content No-indent Spaced">
+          
+      </div>
+    </div>
+  </div>
+</div>

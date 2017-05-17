@@ -814,7 +814,21 @@
       }
     },
     "SETTINGS": {
-      "TITLE_TEXT": "Country Office Settings"
+      "TITLE_TEXT": "Country Office Settings",
+      "MENU": {
+        "PERMISSIONS": "Permissions",
+        "MODULES": "Modules",
+        "CLOCK_SETTINGS": "Clock settings",
+        "NOTIFICATIONS": "Notifications" 
+      },
+      "PERMISSIONS": {
+        "TITLE_TEXT": "Permission settings",
+        "SAVE_PERMISSIONS": "SAVE PERMISSION SETTINGS",
+        "PERMISSION": "Permission",
+        "GRANTED_TO": "Granted to",
+        "ACTIONS": "Actions",
+        "SELECT_USER_TYPE": "Select user type"
+      }
     },
     "MESSAGES": {
       "TITLE_TEXT": "Country Office Messages"
