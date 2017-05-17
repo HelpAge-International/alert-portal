@@ -5,17 +5,19 @@ import {Constants} from "../utils/Constants";
 import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
+import {AgencyServiceService} from "../services/agency-service.service";
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
+  providers: [AgencyServiceService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-  private loaderInactive: Boolean = true;
-  private inactive: Boolean = true;
+  private loaderInactive: boolean = true;
+  private inactive: boolean = true;
   private errorMessage: string;
-  private successInactive: Boolean = true;
+  private successInactive: boolean = true;
   private successMessage: string;
   private alerts = {};
   private emailEntered: string;
@@ -25,7 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     password: ''
   };
 
-  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyServiceService) {
     this.subscriptions = new RxHelper();
   }
 
@@ -72,12 +74,26 @@ export class LoginComponent implements OnInit, OnDestroy {
                 .subscribe(snapshots => {
                   snapshots.forEach(snapshot => {
                     if (snapshot.key == success.uid) {
+
                       let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + snapshot.key + '/firstLogin').subscribe((value) => {
                         let firstLogin: boolean = value.$value;
                         if (firstLogin) {
                           this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
                         } else {
-                          this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+                          let subscriptionAgencyid = this.agencyService.getAgencyId(snapshot.key)
+                            .subscribe(agencyId => {
+                              let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + '/isActive').subscribe((value) => {
+                                let isActive: boolean = value.$value;
+                                if (isActive) {
+                                  this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+                                } else {
+                                  this.errorMessage = 'Your account is deactivated - Please check with your system administrator'; // TODO - Translate
+                                  this.showAlert(true);
+                                }
+                              });
+                              this.subscriptions.add(subscription);
+                            });
+                          this.subscriptions.add(subscriptionAgencyid);
                         }
                       });
                       this.subscriptions.add(subscription);
@@ -100,6 +116,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                       });
                       this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
                       this.showAlert(true);
+
                     });
                   this.subscriptions.add(countryAdminLoginSubscription);
 

@@ -1,0 +1,37 @@
+{  
+   "0":{  
+      "levelOneValues":[  
+         {  
+            "id":0,
+            "value":"Buckinghamshire",
+            "levelTwoValues":[  
+               {  
+                  "id":0,
+                  "value":"Aylesbury"
+               },
+               {  
+                  "id":1,
+                  "value":"High Wycombe"
+               }
+            ]
+         },
+         {  
+            "id":1,
+            "value":"Cambridgeshire",
+            "levelTwoValues":[  
+               {  
+                  "id":0,
+                  "value":"Cambridge"
+               },
+               {  
+                  "id":1,
+                  "value":"Peterborough"
+               }
+            ]
+         }
+      ]
+   },
+   "1":{
+       "levelOneValues":[]
+   }
+}

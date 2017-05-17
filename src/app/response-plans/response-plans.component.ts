@@ -21,6 +21,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private dialogTitle: string;
   private dialogContent: string;
   private uid: string;
+
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
   private planToApproval: any;

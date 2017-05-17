@@ -1,0 +1,905 @@
+.MapList__HazardOverflow {
+  word-wrap: break-word;
+}
+
+
+
+.Icon__country--AO {
+  background-image: url(/assets/images/countries/AO.svg);
+  background-size: contain;
+}
+.Icon__country--BG {
+  background-image: url(/assets/images/countries/BG.svg);
+  background-size: contain;
+}
+.Icon__country--AM {
+  background-image: url(/assets/images/countries/AM.svg);
+  background-size: contain;
+}
+.Icon__country--AL {
+  background-image: url(/assets/images/countries/AL.svg);
+  background-size: contain;
+}
+.Icon__country--BN {
+  background-image: url(/assets/images/countries/BN.svg);
+  background-size: contain;
+}
+.Icon__country--BD {
+  background-image: url(/assets/images/countries/BD.svg);
+  background-size: contain;
+}
+.Icon__country--BJ {
+  background-image: url(/assets/images/countries/BJ.svg);
+  background-size: contain;
+}
+.Icon__country--BI {
+  background-image: url(/assets/images/countries/BI.svg);
+  background-size: contain;
+}
+.Icon__country--AZ {
+  background-image: url(/assets/images/countries/AZ.svg);
+  background-size: contain;
+}
+.Icon__country--AE {
+  background-image: url(/assets/images/countries/AE.svg);
+  background-size: contain;
+}
+.Icon__country--AF {
+  background-image: url(/assets/images/countries/AF.svg);
+  background-size: contain;
+}
+.Icon__country--BO {
+  background-image: url(/assets/images/countries/BO.svg);
+  background-size: contain;
+}
+.Icon__country--BF {
+  background-image: url(/assets/images/countries/BF.svg);
+  background-size: contain;
+}
+.Icon__country--AU {
+  background-image: url(/assets/images/countries/AU.svg);
+  background-size: contain;
+}
+.Icon__country--BA {
+  background-image: url(/assets/images/countries/BA.svg);
+  background-size: contain;
+}
+.Icon__country--BE {
+  background-image: url(/assets/images/countries/BE.svg);
+  background-size: contain;
+}
+.Icon__country--AT {
+  background-image: url(/assets/images/countries/AT.svg);
+  background-size: contain;
+}
+.Icon__country--AR {
+  background-image: url(/assets/images/countries/AR.svg);
+  background-size: contain;
+}
+.Icon__country--CD {
+  background-image: url(/assets/images/countries/CD.svg);
+  background-size: contain;
+}
+.Icon__country--CF {
+  background-image: url(/assets/images/countries/CF.svg);
+  background-size: contain;
+}
+.Icon__country--CA {
+  background-image: url(/assets/images/countries/CA.svg);
+  background-size: contain;
+}
+.Icon__country--BT {
+  background-image: url(/assets/images/countries/BT.svg);
+  background-size: contain;
+}
+.Icon__country--CG {
+  background-image: url(/assets/images/countries/CG.svg);
+  background-size: contain;
+}
+.Icon__country--CH {
+  background-image: url(/assets/images/countries/CH.svg);
+  background-size: contain;
+}
+.Icon__country--BZ {
+  background-image: url(/assets/images/countries/BZ.svg);
+  background-size: contain;
+}
+.Icon__country--CU {
+  background-image: url(/assets/images/countries/CU.svg);
+  background-size: contain;
+}
+.Icon__country--BR {
+  background-image: url(/assets/images/countries/BR.svg);
+  background-size: contain;
+}
+.Icon__country--CO {
+  background-image: url(/assets/images/countries/CO.svg);
+  background-size: contain;
+}
+.Icon__country--CM {
+  background-image: url(/assets/images/countries/CM.svg);
+  background-size: contain;
+}
+.Icon__country--CN {
+  background-image: url(/assets/images/countries/CN.svg);
+  background-size: contain;
+}
+.Icon__country--BW {
+  background-image: url(/assets/images/countries/BW.svg);
+  background-size: contain;
+}
+.Icon__country--BY {
+  background-image: url(/assets/images/countries/BY.svg);
+  background-size: contain;
+}
+.Icon__country--CL {
+  background-image: url(/assets/images/countries/CL.svg);
+  background-size: contain;
+}
+.Icon__country--CR {
+  background-image: url(/assets/images/countries/CR.svg);
+  background-size: contain;
+}
+.Icon__country--BS {
+  background-image: url(/assets/images/countries/BS.svg);
+  background-size: contain;
+}
+.Icon__country--CI {
+  background-image: url(/assets/images/countries/CI.svg);
+  background-size: contain;
+}
+.Icon__country--CZ {
+  background-image: url(/assets/images/countries/CZ.svg);
+  background-size: contain;
+}
+.Icon__country--CY {
+  background-image: url(/assets/images/countries/CY.svg);
+  background-size: contain;
+}
+.Icon__country--DE {
+  background-image: url(/assets/images/countries/DE.svg);
+  background-size: contain;
+}
+.Icon__country--ER {
+  background-image: url(/assets/images/countries/ER.svg);
+  background-size: contain;
+}
+.Icon__country--EC {
+  background-image: url(/assets/images/countries/EC.svg);
+  background-size: contain;
+}
+.Icon__country--DZ {
+  background-image: url(/assets/images/countries/DZ.svg);
+  background-size: contain;
+}
+.Icon__country--DJ {
+  background-image: url(/assets/images/countries/DJ.svg);
+  background-size: contain;
+}
+.Icon__country--DK {
+  background-image: url(/assets/images/countries/DK.svg);
+  background-size: contain;
+}
+.Icon__country--DO {
+  background-image: url(/assets/images/countries/DO.svg);
+  background-size: contain;
+}
+.Icon__country--EE {
+  background-image: url(/assets/images/countries/EE.svg);
+  background-size: contain;
+}
+.Icon__country--EG {
+  background-image: url(/assets/images/countries/EG.svg);
+  background-size: contain;
+}
+.Icon__country--EH {
+  background-image: url(/assets/images/countries/EH.svg);
+  background-size: contain;
+}
+.Icon__country--ET {
+  background-image: url(/assets/images/countries/ET.svg);
+  background-size: contain;
+}
+.Icon__country--FI {
+  background-image: url(/assets/images/countries/FI.svg);
+  background-size: contain;
+}
+.Icon__country--ES {
+  background-image: url(/assets/images/countries/ES.svg);
+  background-size: contain;
+}
+.Icon__country--FK {
+  background-image: url(/assets/images/countries/FK.svg);
+  background-size: contain;
+}
+.Icon__country--FJ {
+  background-image: url(/assets/images/countries/FJ.svg);
+  background-size: contain;
+}
+.Icon__country--GE {
+  background-image: url(/assets/images/countries/GE.svg);
+  background-size: contain;
+}
+.Icon__country--FR {
+  background-image: url(/assets/images/countries/FR.svg);
+  background-size: contain;
+}
+.Icon__country--GA {
+  background-image: url(/assets/images/countries/GA.svg);
+  background-size: contain;
+}
+.Icon__country--GB {
+  background-image: url(/assets/images/countries/GB.svg);
+  background-size: contain;
+}
+.Icon__country--GL {
+  background-image: url(/assets/images/countries/GL.svg);
+  background-size: contain;
+}
+.Icon__country--GR {
+  background-image: url(/assets/images/countries/GR.svg);
+  background-size: contain;
+}
+.Icon__country--GQ {
+  background-image: url(/assets/images/countries/GQ.svg);
+  background-size: contain;
+}
+.Icon__country--GH {
+  background-image: url(/assets/images/countries/GH.svg);
+  background-size: contain;
+}
+.Icon__country--GN {
+  background-image: url(/assets/images/countries/GN.svg);
+  background-size: contain;
+}
+.Icon__country--GF {
+  background-image: url(/assets/images/countries/GF.svg);
+  background-size: contain;
+}
+.Icon__country--GM {
+  background-image: url(/assets/images/countries/GM.svg);
+  background-size: contain;
+}
+.Icon__country--GW {
+  background-image: url(/assets/images/countries/GW.svg);
+  background-size: contain;
+}
+.Icon__country--GT {
+  background-image: url(/assets/images/countries/GT.svg);
+  background-size: contain;
+}
+.Icon__country--HU {
+  background-image: url(/assets/images/countries/HU.svg);
+  background-size: contain;
+}
+.Icon__country--HR {
+  background-image: url(/assets/images/countries/HR.svg);
+  background-size: contain;
+}
+.Icon__country--ID {
+  background-image: url(/assets/images/countries/ID.svg);
+  background-size: contain;
+}
+.Icon__country--HT {
+  background-image: url(/assets/images/countries/HT.svg);
+  background-size: contain;
+}
+.Icon__country--IL {
+  background-image: url(/assets/images/countries/IL.svg);
+  background-size: contain;
+}
+.Icon__country--IE {
+  background-image: url(/assets/images/countries/IE.svg);
+  background-size: contain;
+}
+.Icon__country--IQ {
+  background-image: url(/assets/images/countries/IQ.svg);
+  background-size: contain;
+}
+.Icon__country--HN {
+  background-image: url(/assets/images/countries/HN.svg);
+  background-size: contain;
+}
+.Icon__country--IN {
+  background-image: url(/assets/images/countries/IN.svg);
+  background-size: contain;
+}
+.Icon__country--GY {
+  background-image: url(/assets/images/countries/GY.svg);
+  background-size: contain;
+}
+.Icon__country--IR {
+  background-image: url(/assets/images/countries/IR.svg);
+  background-size: contain;
+}
+.Icon__country--IS {
+  background-image: url(/assets/images/countries/IS.svg);
+  background-size: contain;
+}
+.Icon__country--JO {
+  background-image: url(/assets/images/countries/JO.svg);
+  background-size: contain;
+}
+.Icon__country--KH {
+  background-image: url(/assets/images/countries/KH.svg);
+  background-size: contain;
+}
+.Icon__country--KG {
+  background-image: url(/assets/images/countries/KG.svg);
+  background-size: contain;
+}
+.Icon__country--JP {
+  background-image: url(/assets/images/countries/JP.svg);
+  background-size: contain;
+}
+.Icon__country--KR {
+  background-image: url(/assets/images/countries/KR.svg);
+  background-size: contain;
+}
+.Icon__country--IT {
+  background-image: url(/assets/images/countries/IT.svg);
+  background-size: contain;
+}
+.Icon__country--LA {
+  background-image: url(/assets/images/countries/LA.svg);
+  background-size: contain;
+}
+.Icon__country--KP {
+  background-image: url(/assets/images/countries/KP.svg);
+  background-size: contain;
+}
+.Icon__country--KZ {
+  background-image: url(/assets/images/countries/KZ.svg);
+  background-size: contain;
+}
+.Icon__country--KW {
+  background-image: url(/assets/images/countries/KW.svg);
+  background-size: contain;
+}
+.Icon__country--KE {
+  background-image: url(/assets/images/countries/KE.svg);
+  background-size: contain;
+}
+.Icon__country--LB {
+  background-image: url(/assets/images/countries/LB.svg);
+  background-size: contain;
+}
+.Icon__country--JM {
+  background-image: url(/assets/images/countries/JM.svg);
+  background-size: contain;
+}
+.Icon__country--LK {
+  background-image: url(/assets/images/countries/LK.svg);
+  background-size: contain;
+}
+.Icon__country--LS {
+  background-image: url(/assets/images/countries/LS.svg);
+  background-size: contain;
+}
+.Icon__country--LV {
+  background-image: url(/assets/images/countries/LV.svg);
+  background-size: contain;
+}
+.Icon__country--LT {
+  background-image: url(/assets/images/countries/LT.svg);
+  background-size: contain;
+}
+.Icon__country--LR {
+  background-image: url(/assets/images/countries/LR.svg);
+  background-size: contain;
+}
+.Icon__country--LU {
+  background-image: url(/assets/images/countries/LU.svg);
+  background-size: contain;
+}
+.Icon__country--LY {
+  background-image: url(/assets/images/countries/LY.svg);
+  background-size: contain;
+}
+.Icon__country--MD {
+  background-image: url(/assets/images/countries/MD.svg);
+  background-size: contain;
+}
+.Icon__country--MG {
+  background-image: url(/assets/images/countries/MG.svg);
+  background-size: contain;
+}
+.Icon__country--MR {
+  background-image: url(/assets/images/countries/MR.svg);
+  background-size: contain;
+}
+.Icon__country--MA {
+  background-image: url(/assets/images/countries/MA.svg);
+  background-size: contain;
+}
+.Icon__country--ME {
+  background-image: url(/assets/images/countries/ME.svg);
+  background-size: contain;
+}
+.Icon__country--MZ {
+  background-image: url(/assets/images/countries/MZ.svg);
+  background-size: contain;
+}
+.Icon__country--MN {
+  background-image: url(/assets/images/countries/MN.svg);
+  background-size: contain;
+}
+.Icon__country--MX {
+  background-image: url(/assets/images/countries/MX.svg);
+  background-size: contain;
+}
+.Icon__country--NC {
+  background-image: url(/assets/images/countries/NC.svg);
+  background-size: contain;
+}
+.Icon__country--MY {
+  background-image: url(/assets/images/countries/MY.svg);
+  background-size: contain;
+}
+.Icon__country--ML {
+  background-image: url(/assets/images/countries/ML.svg);
+  background-size: contain;
+}
+.Icon__country--MW {
+  background-image: url(/assets/images/countries/MW.svg);
+  background-size: contain;
+}
+.Icon__country--MK {
+  background-image: url(/assets/images/countries/MK.svg);
+  background-size: contain;
+}
+.Icon__country--NI {
+  background-image: url(/assets/images/countries/NI.svg);
+  background-size: contain;
+}
+.Icon__country--NA {
+  background-image: url(/assets/images/countries/NA.svg);
+  background-size: contain;
+}
+.Icon__country--NZ {
+  background-image: url(/assets/images/countries/NZ.svg);
+  background-size: contain;
+}
+.Icon__country--NG {
+  background-image: url(/assets/images/countries/NG.svg);
+  background-size: contain;
+}
+.Icon__country--MM {
+  background-image: url(/assets/images/countries/MM.svg);
+  background-size: contain;
+}
+.Icon__country--NP {
+  background-image: url(/assets/images/countries/NP.svg);
+  background-size: contain;
+}
+.Icon__country--NL {
+  background-image: url(/assets/images/countries/NL.svg);
+  background-size: contain;
+}
+.Icon__country--PE {
+  background-image: url(/assets/images/countries/PE.svg);
+  background-size: contain;
+}
+.Icon__country--PG {
+  background-image: url(/assets/images/countries/PG.svg);
+  background-size: contain;
+}
+.Icon__country--NO {
+  background-image: url(/assets/images/countries/NO.svg);
+  background-size: contain;
+}
+.Icon__country--OM {
+  background-image: url(/assets/images/countries/OM.svg);
+  background-size: contain;
+}
+.Icon__country--NE {
+  background-image: url(/assets/images/countries/NE.svg);
+  background-size: contain;
+}
+.Icon__country--PA {
+  background-image: url(/assets/images/countries/PA.svg);
+  background-size: contain;
+}
+.Icon__country--PL {
+  background-image: url(/assets/images/countries/PL.svg);
+  background-size: contain;
+}
+.Icon__country--PH {
+  background-image: url(/assets/images/countries/PH.svg);
+  background-size: contain;
+}
+.Icon__country--PK {
+  background-image: url(/assets/images/countries/PK.svg);
+  background-size: contain;
+}
+.Icon__country--PR {
+  background-image: url(/assets/images/countries/PR.svg);
+  background-size: contain;
+}
+.Icon__country--PS {
+  background-image: url(/assets/images/countries/PS.svg);
+  background-size: contain;
+}
+.Icon__country--PT {
+  background-image: url(/assets/images/countries/PT.svg);
+  background-size: contain;
+}
+.Icon__country--PY {
+  background-image: url(/assets/images/countries/PY.svg);
+  background-size: contain;
+}
+.Icon__country--QA {
+  background-image: url(/assets/images/countries/QA.svg);
+  background-size: contain;
+}
+.Icon__country--RO {
+  background-image: url(/assets/images/countries/RO.svg);
+  background-size: contain;
+}
+.Icon__country--RS {
+  background-image: url(/assets/images/countries/RS.svg);
+  background-size: contain;
+}
+.Icon__country--RU {
+  background-image: url(/assets/images/countries/RU.svg);
+  background-size: contain;
+}
+.Icon__country--RW {
+  background-image: url(/assets/images/countries/RW.svg);
+  background-size: contain;
+}
+.Icon__country--SA {
+  background-image: url(/assets/images/countries/SA.svg);
+  background-size: contain;
+}
+.Icon__country--SB {
+  background-image: url(/assets/images/countries/SB.svg);
+  background-size: contain;
+}
+.Icon__country--SD {
+  background-image: url(/assets/images/countries/SD.svg);
+  background-size: contain;
+}
+.Icon__country--SE {
+  background-image: url(/assets/images/countries/SE.svg);
+  background-size: contain;
+}
+.Icon__country--SI {
+  background-image: url(/assets/images/countries/SI.svg);
+  background-size: contain;
+}
+.Icon__country--SJ {
+  background-image: url(/assets/images/countries/SJ.svg);
+  background-size: contain;
+}
+.Icon__country--SK {
+  background-image: url(/assets/images/countries/SK.svg);
+  background-size: contain;
+}
+.Icon__country--SO {
+  background-image: url(/assets/images/countries/SO.svg);
+  background-size: contain;
+}
+.Icon__country--SN {
+  background-image: url(/assets/images/countries/SN.svg);
+  background-size: contain;
+}
+.Icon__country--SL {
+  background-image: url(/assets/images/countries/SL.svg);
+  background-size: contain;
+}
+.Icon__country--SR {
+  background-image: url(/assets/images/countries/SR.svg);
+  background-size: contain;
+}
+.Icon__country--SS {
+  background-image: url(/assets/images/countries/SS.svg);
+  background-size: contain;
+}
+.Icon__country--SV {
+  background-image: url(/assets/images/countries/SV.svg);
+  background-size: contain;
+}
+.Icon__country--SZ {
+  background-image: url(/assets/images/countries/SZ.svg);
+  background-size: contain;
+}
+.Icon__country--SY {
+  background-image: url(/assets/images/countries/SY.svg);
+  background-size: contain;
+}
+.Icon__country--TD {
+  background-image: url(/assets/images/countries/TD.svg);
+  background-size: contain;
+}
+.Icon__country--TF {
+  background-image: url(/assets/images/countries/TF.svg);
+  background-size: contain;
+}
+.Icon__country--TG {
+  background-image: url(/assets/images/countries/TG.svg);
+  background-size: contain;
+}
+.Icon__country--TH {
+  background-image: url(/assets/images/countries/TH.svg);
+  background-size: contain;
+}
+.Icon__country--TJ {
+  background-image: url(/assets/images/countries/TJ.svg);
+  background-size: contain;
+}
+.Icon__country--TL {
+  background-image: url(/assets/images/countries/TL.svg);
+  background-size: contain;
+}
+.Icon__country--TM {
+  background-image: url(/assets/images/countries/TM.svg);
+  background-size: contain;
+}
+.Icon__country--TN {
+  background-image: url(/assets/images/countries/TN.svg);
+  background-size: contain;
+}
+.Icon__country--TR {
+  background-image: url(/assets/images/countries/TR.svg);
+  background-size: contain;
+}
+.Icon__country--TT {
+  background-image: url(/assets/images/countries/TT.svg);
+  background-size: contain;
+}
+.Icon__country--TW {
+  background-image: url(/assets/images/countries/TW.svg);
+  background-size: contain;
+}
+.Icon__country--TZ {
+  background-image: url(/assets/images/countries/TZ.svg);
+  background-size: contain;
+}
+.Icon__country--UA {
+  background-image: url(/assets/images/countries/UA.svg);
+  background-size: contain;
+}
+.Icon__country--UG {
+  background-image: url(/assets/images/countries/UG.svg);
+  background-size: contain;
+}
+.Icon__country--UY {
+  background-image: url(/assets/images/countries/UY.svg);
+  background-size: contain;
+}
+.Icon__country--US {
+  background-image: url(/assets/images/countries/US.svg);
+  background-size: contain;
+}
+.Icon__country--UZ {
+  background-image: url(/assets/images/countries/UZ.svg);
+  background-size: contain;
+}
+.Icon__country--VN {
+  background-image: url(/assets/images/countries/VN.svg);
+  background-size: contain;
+}
+.Icon__country--VE {
+  background-image: url(/assets/images/countries/VE.svg);
+  background-size: contain;
+}
+.Icon__country--VU {
+  background-image: url(/assets/images/countries/VU.svg);
+  background-size: contain;
+}
+.Icon__country--XK {
+  background-image: url(/assets/images/countries/XK.svg);
+  background-size: contain;
+}
+.Icon__country--ZA {
+  background-image: url(/assets/images/countries/ZA.svg);
+  background-size: contain;
+}
+.Icon__country--YE {
+  background-image: url(/assets/images/countries/YE.svg);
+  background-size: contain;
+}
+.Icon__country--ZM {
+  background-image: url(/assets/images/countries/ZM.svg);
+  background-size: contain;
+}
+.Icon__country--ZW {
+  background-image: url(/assets/images/countries/ZW.svg);
+  background-size: contain;
+}
+
+
+
+/*
+public class GeneratorForCSS {
+
+	public static String[] INPUTS = new String[] {
+		"AO",
+		"BG",
+		"AM",
+		"AL",
+		"BN",
+		"BD",
+		"BJ",
+		"BI",
+		"AZ",
+		"AE",
+		"AF",
+		"BO",
+		"BF",
+		"AU",
+		"BA",
+		"BE",
+		"AT",
+		"AR",
+		"CD",
+		"CF",
+		"CA",
+		"BT",
+		"CG",
+		"CH",
+		"BZ",
+		"CU",
+		"BR",
+		"CO",
+		"CM",
+		"CN",
+		"BW",
+		"BY",
+		"CL",
+		"CR",
+		"BS",
+		"CI",
+		"CZ",
+		"CY",
+		"DE",
+		"ER",
+		"EC",
+		"DZ",
+		"DJ",
+		"DK",
+		"DO",
+		"EE",
+		"EG",
+		"EH",
+		"ET",
+		"FI",
+		"ES",
+		"FK",
+		"FJ",
+		"GE",
+		"FR",
+		"GA",
+		"GB",
+		"GL",
+		"GR",
+		"GQ",
+		"GH",
+		"GN",
+		"GF",
+		"GM",
+		"GW",
+		"GT",
+		"HU",
+		"HR",
+		"ID",
+		"HT",
+		"IL",
+		"IE",
+		"IQ",
+		"HN",
+		"IN",
+		"GY",
+		"IR",
+		"IS",
+		"JO",
+		"KH",
+		"KG",
+		"JP",
+		"KR",
+		"IT",
+		"LA",
+		"KP",
+		"KZ",
+		"KW",
+		"KE",
+		"LB",
+		"JM",
+		"LK",
+		"LS",
+		"LV",
+		"LT",
+		"LR",
+		"LU",
+		"LY",
+		"MD",
+		"MG",
+		"MR",
+		"MA",
+		"ME",
+		"MZ",
+		"MN",
+		"MX",
+		"NC",
+		"MY",
+		"ML",
+		"MW",
+		"MK",
+		"NI",
+		"NA",
+		"NZ",
+		"NG",
+		"MM",
+		"NP",
+		"NL",
+		"PE",
+		"PG",
+		"NO",
+		"OM",
+		"NE",
+		"PA",
+		"PL",
+		"PH",
+		"PK",
+		"PR",
+		"PS",
+		"PT",
+		"PY",
+		"QA",
+		"RO",
+		"RS",
+		"RU",
+		"RW",
+		"SA",
+		"SB",
+		"SD",
+		"SE",
+		"SI",
+		"SJ",
+		"SK",
+		"SO",
+		"SN",
+		"SL",
+		"SR",
+		"SS",
+		"SV",
+		"SZ",
+		"SY",
+		"TD",
+		"TF",
+		"TG",
+		"TH",
+		"TJ",
+		"TL",
+		"TM",
+		"TN",
+		"TR",
+		"TT",
+		"TW",
+		"TZ",
+		"UA",
+		"UG",
+		"UY",
+		"US",
+		"UZ",
+		"VN",
+		"VE",
+		"VU",
+		"XK",
+		"ZA",
+		"YE",
+		"ZM",
+		"ZW"
+	};
+
+	public static void main(String[] args) {
+		for (int i = 0; i < INPUTS.length; i++) {
+			System.out.println(".Icon__country--" + INPUTS[i] + " {");
+			System.out.println("    background-image: url(/assets/images/countries/" + INPUTS[i] + ".svg);");
+			System.out.println("    background-size: contain;");
+			System.out.println("}");
+		}
+	}
+}
+ */

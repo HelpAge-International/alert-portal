@@ -148,7 +148,10 @@ private initData() {
 
     this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
   }
-  
+
+  goBack(){
+    this.router.navigateByUrl('/country-admin/country-staff');
+  }
   validateForm() {
     if (!this.title) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_TITLE';
