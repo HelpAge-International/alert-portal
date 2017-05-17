@@ -78,6 +78,8 @@ import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add
 import {MapCountriesListComponent} from "./map/map-countries-list/map-countries-list.component";
 
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
+import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
+import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -169,6 +171,8 @@ const routes: Routes = [
      * Dashboard
      */
     {path: 'dashboard', component: DashboardComponent},
+    {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
+    {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
 
     /**
      * Risk Monitoring
@@ -207,7 +211,6 @@ const routes: Routes = [
   * test
   * */
   {path: 'export', component: ExportTestComponent}
-  //TODO: define needed routes here. see the example above
 
 ];
 

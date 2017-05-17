@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router, Params, ActivatedRoute} from "@angular/router";
-import {AngularFire, FirebaseObjectObservable} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
@@ -11,7 +11,7 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, MediaFormat, BudgetCategory
+  ResponsePlanSectors, BudgetCategory
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
