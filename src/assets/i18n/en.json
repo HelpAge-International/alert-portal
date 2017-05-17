@@ -546,9 +546,9 @@
       "FILE_FORMAT": "File Format",
       "FILE_SIZE": "Maximum file size",
       "SAVE": "Save Settings",
-      "PREPAREDNESS": "Preparedness",
-      "DOC_SETTINGS": "Document upload settings",
-      "RESPONSE_PLANS": "Response plans",
+      "PREPAREDNESS": "Preparedness Settings",
+      "DOC_SETTINGS": "Document Upload Settings",
+      "RESPONSE_PLANS": "Response Plans Settings",
       "VULNERABLE_GROUPS": "Vulnerable groups",
       "ADD_NEW_GROUP": "Add a new group",
       "EDIT_GROUPS": "Edit groups",
@@ -1109,5 +1109,14 @@
     "FREQUENCY_LABEL": "I need to update this MPA more frequently than other MPAs",
     "SELECT_GENERIC_ACTION": "Select a generic preparedness action",
     "BUDGET_NARRATIVE": "Budget Narrative"
+  },
+  "MAPS": {
+    "MPA": "Minimum Preparedness Actions (MPAs)",
+    "READINESS": "Readiness",
+    "DEPARTMENTS": "Departments",
+    "NO_DEPARTMENTS": "No Departments",
+    "OVERALL": "Overall",
+    "SEE_COUNTRIES_MAP": "See countries as a map",
+    "SEE_COUNTRIES_LIST": "See countries as a list"
   }
 }
