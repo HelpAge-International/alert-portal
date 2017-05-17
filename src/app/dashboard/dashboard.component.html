@@ -5,49 +5,52 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
-
     <div class="Widget">
       <ul class="list-inline">
         <li class="list-inline-item active">
           <div class="Icon">
             <div class="Icon--lg Icon--align-center Icon__country--philippines"></div>
           </div>
-          <span>Philippines</span>
+          <span>{{Countries[countryLocation] | translate}}</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
-            <div class="Icon__circle Icon--blue Icon--lg">4</div>
+            <div class="Icon__circle Icon--blue Icon--lg">{{numOfApprovedResponsePlans}}</div>
           </div>
           <span>Response plans</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
-            <div class="Icon__circle Icon--b-green Icon--lg"><i class="fa fa-check fa-2x fa-inverse"
-                                                                aria-hidden="true"></i></div>
+            <div class="Icon__circle Icon--b-{{mpaStatusColor}} Icon--lg">
+              <i class="fa {{mpaStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i></div>
           </div>
           <span>Minimum preparedness</span>
         </li>
         <li class="list-inline-item  ">
           <div class="Icon">
-            <div class="Icon__circle Icon--b-red Icon--lg"><i class="fa fa-times fa-2x fa-inverse"
-                                                              aria-hidden="true"></i></div>
+            <div *ngIf="overallAlertLevel == AlertLevels.Red" class="Icon__circle Icon--b-{{advStatusColor}} Icon--lg">
+              <i class="fa {{advStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i>
+            </div>
+            <div *ngIf="overallAlertLevel != AlertLevels.Red" class="Icon__circle Icon--b-grey Icon--lg">
+              <i class="fa fa-times fa-2x fa-inverse" aria-hidden="true"></i>
+            </div>
           </div>
           <span>Advanced preparedness</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
-            <div class="Icon__circle Icon--green Icon--lg">90%</div>
+            <div class="Icon__circle Icon--green Icon--lg">{{percentageCHS}}%</div>
           </div>
           <span>CHS preparedness</span>
         </li>
       </ul>
     </div>
 
-
-    <div class="Widget Alert-Widget ">
+    <div class="Widget Alert-Widget" *ngFor="let alert of alerts | async">
       <div class="row">
         <div class="col-md-3 Alert-Widget__item bg-danger">
-          <h4>Red Alert</h4>
+          <h4 *ngIf="alert.alertLevel == AlertLevels.Red">Red Alert</h4>
+          <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">Amber Alert</h4>
         </div>
         <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
           <i div class="Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></i>
@@ -127,96 +130,97 @@
 
       </div>
 
-
     </div>
 
 
-    <div class="Widget Alert-Widget ">
-      <div class="row">
-        <div class="col-md-3 Alert-Widget__item bg-warning">
-          <h4>Amber Alert</h4>
-        </div>
-        <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-          <i div class="Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></i>
-          <div>
-            <span>Risk:</span>
-            Insect Infestation
-          </div>
-        </div>
-        <div class="col-md-2 Alert-Widget__item">
-          <div>
-            <span>Population affected:</span> 200,000 people
-          </div>
-        </div>
-        <div class="col-md-2 Alert-Widget__item">
-          <div>
-            <span>Affected areas:</span> Leyre and Cebu
-          </div>
-        </div>
+    <!--<div class="Widget Alert-Widget ">-->
+      <!--<div class="row">-->
+        <!--<div class="col-md-3 Alert-Widget__item bg-warning">-->
+          <!--<h4>Amber Alert</h4>-->
+        <!--</div>-->
+        <!--<div class="col-md-2 Alert-Widget__item Alert-Widget__item&#45;&#45;risk">-->
+          <!--<i div class="Icon__circle Icon&#45;&#45;sm Icon&#45;&#45;b-dark-blue Icon&#45;&#45;cyclone"></i>-->
+          <!--<div>-->
+            <!--<span>Risk:</span>-->
+            <!--Insect Infestation-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-md-2 Alert-Widget__item">-->
+          <!--<div>-->
+            <!--<span>Population affected:</span> 200,000 people-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-md-2 Alert-Widget__item">-->
+          <!--<div>-->
+            <!--<span>Affected areas:</span> Leyre and Cebu-->
+          <!--</div>-->
+        <!--</div>-->
 
-        <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
-          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"
-             aria-expanded="false" aria-controls="notes_popover">
-            <div class="fa-stack">
-              <i class="fa fa-comment fa-stack-2x"></i>
-              <i class="fa fa-stack-1x fa-inverse"></i>
-            </div>
-            <div>Notes</div>
-          </a>
-        </div>
-
-
-        <div class="col-md-2 Alert-Widget__item">
-          <!--<a href="javascript:void(0)" class="btn btn-outline-primary">Update alert level</a>-->
-          <button class="btn btn-outline-primary" routerLink="/dashboard/dashboard-update-alert-level">Update alert level</button>
-        </div>
-
-      </div>
+        <!--<div class="col-md-1 Alert-Widget__item Alert-Widget__item&#45;&#45;notes">-->
+          <!--<a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"-->
+             <!--aria-expanded="false" aria-controls="notes_popover">-->
+            <!--<div class="fa-stack">-->
+              <!--<i class="fa fa-comment fa-stack-2x"></i>-->
+              <!--<i class="fa fa-stack-1x fa-inverse"></i>-->
+            <!--</div>-->
+            <!--<div>Notes</div>-->
+          <!--</a>-->
+        <!--</div>-->
 
 
-      <div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-        <!-- Notes -->
-        <div class="row Spaced">
-          <div class="col-md-2"></div>
-          <div class="col-md-10">
-            <div class="row align-items-center Small-spaced no-gutters">
-              <div class="col-sm-6 col-8">
-                <h4>Information sources and notes</h4>
-              </div>
-              <div class="col-sm-6 col-4 text-right">
-                <a href="javascript:void(0);"
-                   onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>
-              </div>
-            </div>
-            <div class="row no-gutters">
-              <div class="col-sm-10 col-12 notes-popover__item">
-                <p>
-                  This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in
-                  everyone’s calendar.
-                </p>
-                <p>
-                  <strong>by Andrew Collodel</strong>
-                </p>
-              </div>
-            </div>
-            <div class="row no-gutters">
-              <div class="col-sm-10 col-12  notes-popover__item">
-                <p>
-                  This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in
-                  everyone’s calendar.
-                </p>
-                <p>
-                  <strong>by Andrew Collodel</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!--<div class="col-md-2 Alert-Widget__item">-->
+          <!--&lt;!&ndash;<a href="javascript:void(0)" class="btn btn-outline-primary">Update alert level</a>&ndash;&gt;-->
+          <!--<button class="btn btn-outline-primary" routerLink="/dashboard/dashboard-update-alert-level">Update alert-->
+            <!--level-->
+          <!--</button>-->
+        <!--</div>-->
 
-      </div>
+      <!--</div>-->
 
 
-    </div>
+      <!--<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">-->
+        <!--&lt;!&ndash; Notes &ndash;&gt;-->
+        <!--<div class="row Spaced">-->
+          <!--<div class="col-md-2"></div>-->
+          <!--<div class="col-md-10">-->
+            <!--<div class="row align-items-center Small-spaced no-gutters">-->
+              <!--<div class="col-sm-6 col-8">-->
+                <!--<h4>Information sources and notes</h4>-->
+              <!--</div>-->
+              <!--<div class="col-sm-6 col-4 text-right">-->
+                <!--<a href="javascript:void(0);"-->
+                   <!--onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>-->
+              <!--</div>-->
+            <!--</div>-->
+            <!--<div class="row no-gutters">-->
+              <!--<div class="col-sm-10 col-12 notes-popover__item">-->
+                <!--<p>-->
+                  <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
+                  <!--everyone’s calendar.-->
+                <!--</p>-->
+                <!--<p>-->
+                  <!--<strong>by Andrew Collodel</strong>-->
+                <!--</p>-->
+              <!--</div>-->
+            <!--</div>-->
+            <!--<div class="row no-gutters">-->
+              <!--<div class="col-sm-10 col-12  notes-popover__item">-->
+                <!--<p>-->
+                  <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
+                  <!--everyone’s calendar.-->
+                <!--</p>-->
+                <!--<p>-->
+                  <!--<strong>by Andrew Collodel</strong>-->
+                <!--</p>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</div>-->
+
+      <!--</div>-->
+
+
+    <!--</div>-->
 
 
     <div class="Widget">
@@ -227,35 +231,42 @@
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">3 advanced preparedness action (APA) needs to be assigned
             <strong>ASAP</strong>.<span>3 out of 5 APA are still unassigned.</span></a></div>
-          <div class="col-md-3"><button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">Update</button></div>
+          <div class="col-md-3">
+            <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">Update</button>
+          </div>
         </div>
 
         <div class="row alert-danger">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>today</strong>.<span>Activate emergency response team (ERT) and arrange first meeting…</span></a>
           </div>
-          <div class="col-md-3"><button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</button></div>
+          <div class="col-md-3">
+            <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</button>
+          </div>
         </div>
 
         <div class="row alert-danger">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>this
             week</strong>.<span>Request immediate deployment of surge capacity</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</a></div>
+          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block"
+                                   routerLink="/preparedness/minimum">Update</a></div>
         </div>
 
         <div class="row ">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">A red level indicator needs to be completed <strong>today ( within 2 hours
             )</strong>.<span>Track of the storm.</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/risk-monitoring">Update</a></div>
+          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/risk-monitoring">Update</a>
+          </div>
         </div>
 
         <div class="row ">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">An red level indicator needs to be updated <strong>today ( within 2 hours
             )</strong>.<span>Typhoon category</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/risk-monitoring">Update</a></div>
+          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/risk-monitoring">Update</a>
+          </div>
         </div>
 
       </div>
