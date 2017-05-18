@@ -222,50 +222,51 @@
 
     <!--</div>-->
 
-
-    <div class="Widget">
+    <!--TODO my tasks-->
+    <div
+      *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 "
+      class="Widget">
       <h3>My Tasks</h3>
       <div class="My-Tasks container-fluid">
 
-        <div class="row alert-danger">
+        <div *ngFor="let action of actionsToday" class="row alert-danger">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">3 advanced preparedness action (APA) needs to be assigned
-            <strong>ASAP</strong>.<span>3 out of 5 APA are still unassigned.</span></a></div>
+          <div class="col-md-8"><a href="">{{getActionTitle(action)}}
+            <strong>today</strong>.<span>{{action.task}}</span></a></div>
           <div class="col-md-3">
             <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">Update</button>
           </div>
         </div>
 
-        <div class="row alert-danger">
+        <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>today</strong>.<span>Activate emergency response team (ERT) and arrange first meeting…</span></a>
+          <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
           </div>
           <div class="col-md-3">
             <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</button>
           </div>
         </div>
 
-        <div class="row alert-danger">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>this
-            week</strong>.<span>Request immediate deployment of surge capacity</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block"
-                                   routerLink="/preparedness/minimum">Update</a></div>
-        </div>
+        <!--<div class="row alert-danger">-->
+        <!--<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>-->
+        <!--<div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>this-->
+        <!--week</strong>.<span>Request immediate deployment of surge capacity</span></a></div>-->
+        <!--<div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</a></div>-->
+        <!--</div>-->
 
-        <div class="row ">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">A red level indicator needs to be completed <strong>today ( within 2 hours
-            )</strong>.<span>Track of the storm.</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/risk-monitoring">Update</a>
+        <div *ngFor="let action of actionsThisWeek" class="row">
+          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+          <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>this week
+            )</strong>.<span>{{action.task}}</span></a></div>
+          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">Update</a>
           </div>
         </div>
 
-        <div class="row ">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">An red level indicator needs to be updated <strong>today ( within 2 hours
-            )</strong>.<span>Typhoon category</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/risk-monitoring">Update</a>
+        <div *ngFor="let indicator of indicatorsThisWeek" class="row">
+          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+          <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>this week</strong>.<span>{{indicator?.name}}</span></a>
+          </div>
+          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">Update</a>
           </div>
         </div>
 

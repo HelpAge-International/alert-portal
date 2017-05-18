@@ -1,15 +1,19 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
 import {AlertLevels, ApprovalStatus, Countries} from "../utils/Enums";
+import {UserService} from "../services/user.service";
+import {ActionsService} from "../services/actions.service";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  providers: [ActionsService]
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -19,6 +23,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private uid: string;
   private countryId: string;
   private agencyAdminUid: string;
+  private actionsToday = [];
+  private actionsThisWeek = [];
+  private indicatorsToday = [];
+  private indicatorsThisWeek = [];
   private systemAdminUid: string;
 
   private overallAlertLevel: AlertLevels = AlertLevels.Green; // TODO - Find this value
@@ -43,7 +51,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private hazardObject = {};
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router,
+              private subscriptions: RxHelper, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
@@ -74,6 +83,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
     this.getAgencyID().then(() => {
       this.getCountryData();
+      this.initData();
     });
     this.getSystemAdminID().then(() => {
       this.getSystemThreshold('minThreshold').then((minThreshold: any) => {
@@ -106,6 +116,51 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     });
     return promise;
+  }
+
+
+  private initData() {
+    let startOfToday = moment().startOf("day").valueOf();
+    let endOfToday = moment().endOf("day").valueOf();
+    let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId, this.uid)
+      .subscribe(actions => {
+        this.actionsToday = [];
+        this.actionsThisWeek = [];
+        this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
+        this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
+      });
+    this.subscriptions.add(subscriptionActions);
+
+    let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
+      .subscribe(indicators => {
+        let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
+        let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
+        if (dayIndicators.length > 0) {
+          dayIndicators.forEach(indicator => {
+            if (this.actionService.isExist(indicator.$key, this.indicatorsToday)) {
+              let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsToday);
+              if (index != -1) {
+                this.indicatorsToday[index] = indicator;
+              }
+            } else {
+              this.indicatorsToday.push(indicator);
+            }
+          });
+        }
+        if (weekIndicators.length > 0) {
+          weekIndicators.forEach(indicator => {
+            if (this.actionService.isExist(indicator.$key, this.indicatorsThisWeek)) {
+              let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsThisWeek);
+              if (index != -1) {
+                this.indicatorsThisWeek[index] = indicator;
+              }
+            } else {
+              this.indicatorsThisWeek.push(indicator);
+            }
+          });
+        }
+      });
+    this.subscriptions.add(subscriptionIndicators);
   }
 
   private getSystemAdminID() {
@@ -308,5 +363,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
+
+  getActionTitle(action): string {
+    return this.actionService.getActionTitle(action);
+  }
+
+  getIndicatorName(indicator): string {
+    return this.actionService.getIndicatorTitle(indicator);
+  }
+
 
 }
