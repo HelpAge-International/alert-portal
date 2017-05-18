@@ -9,7 +9,8 @@
       <ul class="list-inline">
         <li class="list-inline-item active">
           <div class="Icon">
-            <div class="Icon--lg Icon--align-center Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
+            <div
+              class="Icon--lg Icon--align-center Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
           </div>
           <span>{{CountriesList[countryLocation] | translate}}</span>
         </li>
@@ -100,7 +101,8 @@
               </div>
               <div class="col-sm-6 col-4 text-right">
                 <a href="javascript:void(0);"
-                   onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" | translate}}</a>
+                   onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" |
+                  translate}}</a>
               </div>
             </div>
             <div class="row no-gutters">
@@ -134,95 +136,106 @@
 
 
     <!--<div class="Widget Alert-Widget ">-->
-      <!--<div class="row">-->
-        <!--<div class="col-md-3 Alert-Widget__item bg-warning">-->
-          <!--<h4>Amber Alert</h4>-->
-        <!--</div>-->
-        <!--<div class="col-md-2 Alert-Widget__item Alert-Widget__item&#45;&#45;risk">-->
-          <!--<i div class="Icon__circle Icon&#45;&#45;sm Icon&#45;&#45;b-dark-blue Icon&#45;&#45;cyclone"></i>-->
-          <!--<div>-->
-            <!--<span>Risk:</span>-->
-            <!--Insect Infestation-->
-          <!--</div>-->
-        <!--</div>-->
-        <!--<div class="col-md-2 Alert-Widget__item">-->
-          <!--<div>-->
-            <!--<span>Population affected:</span> 200,000 people-->
-          <!--</div>-->
-        <!--</div>-->
-        <!--<div class="col-md-2 Alert-Widget__item">-->
-          <!--<div>-->
-            <!--<span>Affected areas:</span> Leyre and Cebu-->
-          <!--</div>-->
-        <!--</div>-->
+    <!--<div class="row">-->
+    <!--<div class="col-md-3 Alert-Widget__item bg-warning">-->
+    <!--<h4>Amber Alert</h4>-->
+    <!--</div>-->
+    <!--<div class="col-md-2 Alert-Widget__item Alert-Widget__item&#45;&#45;risk">-->
+    <!--<i div class="Icon__circle Icon&#45;&#45;sm Icon&#45;&#45;b-dark-blue Icon&#45;&#45;cyclone"></i>-->
+    <!--<div>-->
+    <!--<span>Risk:</span>-->
+    <!--Insect Infestation-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-md-2 Alert-Widget__item">-->
+    <!--<div>-->
+    <!--<span>Population affected:</span> 200,000 people-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-md-2 Alert-Widget__item">-->
+    <!--<div>-->
+    <!--<span>Affected areas:</span> Leyre and Cebu-->
+    <!--</div>-->
+    <!--</div>-->
 
-        <!--<div class="col-md-1 Alert-Widget__item Alert-Widget__item&#45;&#45;notes">-->
-          <!--<a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"-->
-             <!--aria-expanded="false" aria-controls="notes_popover">-->
-            <!--<div class="fa-stack">-->
-              <!--<i class="fa fa-comment fa-stack-2x"></i>-->
-              <!--<i class="fa fa-stack-1x fa-inverse"></i>-->
-            <!--</div>-->
-            <!--<div>Notes</div>-->
-          <!--</a>-->
-        <!--</div>-->
-
-
-        <!--<div class="col-md-2 Alert-Widget__item">-->
-          <!--&lt;!&ndash;<a href="javascript:void(0)" class="btn btn-outline-primary">Update alert level</a>&ndash;&gt;-->
-          <!--<button class="btn btn-outline-primary" routerLink="/dashboard/dashboard-update-alert-level">Update alert-->
-            <!--level-->
-          <!--</button>-->
-        <!--</div>-->
-
-      <!--</div>-->
+    <!--<div class="col-md-1 Alert-Widget__item Alert-Widget__item&#45;&#45;notes">-->
+    <!--<a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"-->
+    <!--aria-expanded="false" aria-controls="notes_popover">-->
+    <!--<div class="fa-stack">-->
+    <!--<i class="fa fa-comment fa-stack-2x"></i>-->
+    <!--<i class="fa fa-stack-1x fa-inverse"></i>-->
+    <!--</div>-->
+    <!--<div>Notes</div>-->
+    <!--</a>-->
+    <!--</div>-->
 
 
-      <!--<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">-->
-        <!--&lt;!&ndash; Notes &ndash;&gt;-->
-        <!--<div class="row Spaced">-->
-          <!--<div class="col-md-2"></div>-->
-          <!--<div class="col-md-10">-->
-            <!--<div class="row align-items-center Small-spaced no-gutters">-->
-              <!--<div class="col-sm-6 col-8">-->
-                <!--<h4>Information sources and notes</h4>-->
-              <!--</div>-->
-              <!--<div class="col-sm-6 col-4 text-right">-->
-                <!--<a href="javascript:void(0);"-->
-                   <!--onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>-->
-              <!--</div>-->
-            <!--</div>-->
-            <!--<div class="row no-gutters">-->
-              <!--<div class="col-sm-10 col-12 notes-popover__item">-->
-                <!--<p>-->
-                  <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
-                  <!--everyone’s calendar.-->
-                <!--</p>-->
-                <!--<p>-->
-                  <!--<strong>by Andrew Collodel</strong>-->
-                <!--</p>-->
-              <!--</div>-->
-            <!--</div>-->
-            <!--<div class="row no-gutters">-->
-              <!--<div class="col-sm-10 col-12  notes-popover__item">-->
-                <!--<p>-->
-                  <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
-                  <!--everyone’s calendar.-->
-                <!--</p>-->
-                <!--<p>-->
-                  <!--<strong>by Andrew Collodel</strong>-->
-                <!--</p>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
+    <!--<div class="col-md-2 Alert-Widget__item">-->
+    <!--&lt;!&ndash;<a href="javascript:void(0)" class="btn btn-outline-primary">Update alert level</a>&ndash;&gt;-->
+    <!--<button class="btn btn-outline-primary" routerLink="/dashboard/dashboard-update-alert-level">Update alert-->
+    <!--level-->
+    <!--</button>-->
+    <!--</div>-->
 
-      <!--</div>-->
+    <!--</div>-->
+
+
+    <!--<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">-->
+    <!--&lt;!&ndash; Notes &ndash;&gt;-->
+    <!--<div class="row Spaced">-->
+    <!--<div class="col-md-2"></div>-->
+    <!--<div class="col-md-10">-->
+    <!--<div class="row align-items-center Small-spaced no-gutters">-->
+    <!--<div class="col-sm-6 col-8">-->
+    <!--<h4>Information sources and notes</h4>-->
+    <!--</div>-->
+    <!--<div class="col-sm-6 col-4 text-right">-->
+    <!--<a href="javascript:void(0);"-->
+    <!--onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="row no-gutters">-->
+    <!--<div class="col-sm-10 col-12 notes-popover__item">-->
+    <!--<p>-->
+    <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
+    <!--everyone’s calendar.-->
+    <!--</p>-->
+    <!--<p>-->
+    <!--<strong>by Andrew Collodel</strong>-->
+    <!--</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="row no-gutters">-->
+    <!--<div class="col-sm-10 col-12  notes-popover__item">-->
+    <!--<p>-->
+    <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
+    <!--everyone’s calendar.-->
+    <!--</p>-->
+    <!--<p>-->
+    <!--<strong>by Andrew Collodel</strong>-->
+    <!--</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--</div>-->
 
 
     <!--</div>-->
 
     <!--TODO my tasks-->
+    <div
+      *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0"
+      class="Widget">
+      <h3>My Tasks</h3>
+      <div class="My-Tasks container-fluid">
+        <div class="Empty--ribbon">
+          No action or indicator assigned to you
+        </div>
+      </div>
+    </div>
+
     <div
       *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 "
       class="Widget">
