@@ -13,9 +13,9 @@
         <!--Hazard Dropdown-->
         <h6 class="Spaced-above"><b>Hazard</b></h6>
         <div class="Spaced-above form-group col-sm-12 row">
-            <select class="form-control col-sm-4" id="select1">
-                <option>Country Context</option>
-                <option>Country Context</option>
+            <select class="form-control col-sm-4" name="hazardID" [(ngModel)] = "hazardID">
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option *ngFor="let hazardKey of hazardScenariosList" [value]="hazardKey">{{hazardScenario[hazardKey] | translate}}</option>
             </select>
             <span class="col-sm-1"> </span>
             <p class="col-sm-4">Note: Pre-filled based on the hazard I have select to add the indicator</p>
@@ -32,89 +32,48 @@
 
         <div class="Spaced-above form-group col-sm-12 row indicator-source">
             <div class="col-sm-12 row" style="padding-top:10px;" *ngFor="let source of indicatorData.source; let sourceKey = index">
-                 <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="indicatorData.source[sourceKey]['name']" placeholder="Name of source">
+                 <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="source.name" placeholder="Name of source">
                 <span class="col-sm-1"></span>
-                <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="indicatorData.source[sourceKey]['name']" placeholder="Link to source if available">
+                <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="source.link" placeholder="Link to source if available">
+                <div class="col-sm-1">
+                    <a href="javascript:void(0)" class="text-danger" *ngIf = "indicatorData.source.length > 1" (click) = "removeAnotherSource(sourceKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
+                </div>
             </div>
             <a href="javascript:void(0)" class="Spaced-above" (click)="addAnotherSource()">+ Add another source</a>
         </div>
 
         <div class="row Spaced"> <!--start of row-->
             <div class="col Spaced"><!--Trigger Values-->
-                <div class="row"><h6 class="col-sm-4"><b>Trigger Values</b></h6><a placement="right" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-content="This is an example for a tooltip/explanation text inside of a dialogue box."><img src="assets/images/icons/question_bubble.svg"></a></div>
-                <div class="form-group col-sm-12 row Spaced-above">
-                    <img class="oval_green__wrap--risk Spaced-above" src="assets/images/oval_icon/oval_green_large.svg">
-                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="Green Level">
+                <div class="row">
+                    <h6 class="col-sm-4"><b>Trigger Values</b></h6>
+                    <a placement="right" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-content="This is an example for a tooltip/explanation text inside of a dialogue box.">
+                        <img src="assets/images/icons/question_bubble.svg">
+                    </a>
+                </div>
+
+                <div *ngFor="let alertLevelKey of alertLevelsList" class="form-group col-sm-12 row {{!alertLevelKey ? 'Spaced-above' : ''}}">
+                    <img class="oval_green__wrap--risk {{!alertLevelKey ? 'Spaced-above' : ''}}" src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
+                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="{{alertLevels[alertLevelKey] | translate}}">
                     <span class="oval_green__wrap--risk"></span>
                 </div>
-                <div class="form-group col-sm-12 row">
-                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_amber_large.svg">
-                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="Amber Level">
-                    <span class="oval_green__wrap--risk"></span>
-                </div>
-                <div class="form-group col-sm-12 row">
-                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_red_large.svg">
-                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="Red Level">
-                    <span class="oval_green__wrap--risk"></span>
-                </div>
+
             </div><!--Trigger Values-->
 
             <div class="col Spaced"><!--Frequency of Monitoring-->
                 <h6 class="col-sm-6"><b>Frequency of monitoring</b></h6>
-                <div class="Spaced-above form-group-risk-frequency col-sm-12 row">
-                    <img class="align-middle oval_green__wrap--risk" src="assets/images/oval_icon/oval_green_large.svg">
+                <div class="Spaced-above form-group-risk-frequency col-sm-12 row" *ngFor="let alertLevelKey of alertLevelsList">
+                     <img class="align-middle oval_green__wrap--risk" src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
                     <label class="oval_green__wrap--risk">Every</label>
                     <div class="form-group-risk-frequency">
-                        <select class="form-control" id="select1">
-                            <option>0</option> <!--Placeholder amount, will have to configure to include large numbers. Maybe worth allowing the user to type the number in-->
+                        <select class="form-control" id="select1" name="frequencyValue" [(ngModel)]="indicatorData.trigger[alertLevelKey].frequencyValue">
+                            <option value="undefined" disabled selected hidden>0</option>
+                            <option *ngFor="let f of frequency; let index = index" [value]="index">{{index + 1}}</option>
                         </select>
                     </div>
                     <!--frequency-->
                     <div class="form-group-risk-frequency">
                         <select class="form-control" id="select1">
-                            <option>hours</option>
-                            <option>days</option>
-                            <option>weeks</option>
-                            <option>months</option>
-                        </select>
-                    </div>
-                    <span class="oval_green__wrap--risk"></span>
-                </div>
-                <div class="form-group-risk-frequency col-sm-12 row ">
-                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_amber_large.svg">
-                    <label class="oval_green__wrap--risk align-bottom">Every</label>
-                    <div class="form-group-risk-frequency">
-                        <select class="form-control" id="select1">
-                            <option>0</option> <!--Placeholder amount, will have to configure to include large numbers. Maybe worth allowing the user to type the number in-->
-                        </select>
-                    </div>
-                    <!--frequency-->
-                    <div class="form-group-risk-frequency">
-                        <select class="form-control" id="select1">
-                            <option>hours</option>
-                            <option>days</option>
-                            <option>weeks</option>
-                            <option>months</option>
-                        </select>
-                    </div>
-                    <span class="oval_green__wrap--risk"></span>
-                </div>
-                <div class="form-group-risk-frequency col-sm-12 row">
-                    <img class="oval_green__wrap--risk" src="assets/images/oval_icon/oval_red_large.svg">
-                    <label class="oval_green__wrap--risk">Every</label>
-                    <div class="form-group-risk-frequency">
-                        <select class="form-control" id="select1">
-                            <option>0</option> <!--Placeholder amount, will have to configure to include large numbers. Maybe worth allowing the user to type the number in-->
-
-                        </select>
-                    </div>
-                    <!--frequency-->
-                    <div class="form-group-risk-frequency ">
-                        <select class="form-control" id="select1">
-                            <option>hours</option>
-                            <option>days</option>
-                            <option>weeks</option>
-                            <option>months</option>
+                            <option *ngFor="let dKey of durationTypeList" [value]="dKey">{{durationType[dKey] | translate}}</option>
                         </select>
                     </div>
                     <span class="oval_green__wrap--risk"></span>
@@ -128,8 +87,7 @@
         <div class="form-group col-sm-12 row">
             <select class="form-control col-sm-4" id="select1" placeholder="Please select">
                 <option selected="selected">Please select</option> <!--default select value-->
-                <option>Disaster Monitoring Services</option>
-                <option>The Weatherman</option>
+                <option *ngFor="let uAssign of usersForAssign">{{uAssign.firstName}}</option>
             </select>
         </div>
         <br>
@@ -148,28 +106,39 @@
             <div class="col-sm-12 row" *ngFor="let location of indicatorData.affectedLocation; let locationKey = index">
                  <div class="col-sm-3">
                     <div class="form-group-risk-frequency ">
-                        <select class="form-control" name="selectCountry" id="selectCountry" (change)="setCountryValue(locationKey, $event)" required>
-                            <option disabled selected="selected">Select a Country</option>
-                            <option  *ngFor="let country of countriesList; let countryKey = index" [value]="countryKey">{{countries[countryKey] | translate}}</option>
+                        <select class="form-control" name="CountryArea"
+                                [(ngModel)] = "location.country">
+                            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                            <option *ngFor="let country of countryLevels | keyValues" [value]="country.key">{{countries[country.key]}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3" *ngIf="location.country">
+                    <div class="form-group-risk-frequency ">
+                        <select class="form-control" name="CountryAreaLevelOne"
+                                [(ngModel)] = "location.level1">
+                            <option value="undefined" disabled selected hidden>
+                                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[0].value | translate }}</option>
+                            <option 
+                                *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
+                                [value] = "countryLevel1Value.id">{{countryLevel1Value.value}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3" *ngIf="location.level1">
+                    <div class="form-group-risk-frequency ">
+                        <select class="form-control" name="CountryAreaLevelTwo"
+                                [(ngModel)] = "location.level2">
+                            <option value="undefined" disabled selected hidden>
+                                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[1].value | translate }}</option>
+                            <option 
+                                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1].levelTwoValues"
+                                [value] = "countryLevel2Value.id">{{countryLevel2Value.value}}</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-3">
-                    <div class="form-group-risk-frequency ">
-                        <select class="form-control" id="select1">
-                            <option selected="selected">Select a Reigon</option>
-                            <option>Ilocos Reigon</option>
-                            <option>....and the rest of the regions list</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group-risk-frequency ">
-                        <select class="form-control" id="select1">
-                            <option selected="selected">Select a province</option>
-                            <option>Please select a region first</option>
-                        </select>
-                    </div>
+                    <a href="javascript:void(0)" class="text-danger" *ngIf = "indicatorData.affectedLocation.length > 1" (click) = "removeAnotherLocation(locationKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
                 </div>
             </div>
 
@@ -178,7 +147,7 @@
 
 
         <div class="Form-submit__wrapper">
-            <div class="btn btn-primary">Save new indicator</div>
+            <div class="btn btn-primary" (click)="saveIndicator()">Save new indicator</div>
             <div class="btn btn-outline-secondary">Cancel</div>
         </div>
 

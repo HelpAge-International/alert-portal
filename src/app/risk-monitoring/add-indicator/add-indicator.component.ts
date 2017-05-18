@@ -1,43 +1,109 @@
 import {Component, OnInit} from '@angular/core';
 import {Indicator} from "../../model/indicator";
-import {AlertLevels, GeoLocation, Countries} from "../../utils/Enums";
+import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
-
+import {CommonService} from "../../services/common.service";
+import {OperationAreaModel} from "../../model/operation-area.model";
+import {IndicatorSourceModel} from "../../model/indicator-source.model";
+import {IndicatorTriggerModel} from "../../model/indicator-trigger.model";
+import {ModelUserPublic} from "../../model/user-public.model";
 @Component({
     selector: 'app-add-indicator',
     templateUrl: './add-indicator.component.html',
-    styleUrls: ['./add-indicator.component.css']
+    styleUrls: ['./add-indicator.component.css'],
+    providers: [CommonService]
 })
 export class AddIndicatorRiskMonitoringComponent implements OnInit {
 
     public uid: string;
+    public countryID: string;
 
     public indicatorData: any;
 
     private alertLevels = Constants.ALERT_LEVELS;
     private alertColors = Constants.ALERT_COLORS;
+    private alertImages = Constants.ALERT_IMAGES;
     private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
+
+    private durationType = Constants.DURATION_TYPE;
+    private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
     private geoLocation = Constants.GEO_LOCATION;
     private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
 
 
-    private countries = Constants.COUNTRIES;
-    private countriesList = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
+    private countries = Country;
+    private frequency = new Array(100);
 
-    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router) {
+    private countryLevels: any[] = [];
+    private countryLevelsValues: any[] = [];
+
+    private hazardScenario = Constants.HAZARD_SCENARIOS;
+    private hazardScenariosList: number[] = [
+        HazardScenario.HazardScenario0,
+        HazardScenario.HazardScenario1,
+        HazardScenario.HazardScenario2,
+        HazardScenario.HazardScenario3,
+        HazardScenario.HazardScenario4,
+        HazardScenario.HazardScenario5,
+        HazardScenario.HazardScenario6,
+        HazardScenario.HazardScenario7,
+        HazardScenario.HazardScenario8,
+        HazardScenario.HazardScenario9,
+        HazardScenario.HazardScenario10,
+        HazardScenario.HazardScenario11,
+        HazardScenario.HazardScenario12,
+        HazardScenario.HazardScenario13,
+        HazardScenario.HazardScenario14,
+        HazardScenario.HazardScenario15,
+        HazardScenario.HazardScenario16,
+        HazardScenario.HazardScenario17,
+        HazardScenario.HazardScenario18,
+        HazardScenario.HazardScenario19,
+        HazardScenario.HazardScenario20,
+        HazardScenario.HazardScenario21,
+        HazardScenario.HazardScenario22,
+        HazardScenario.HazardScenario23,
+        HazardScenario.HazardScenario24,
+        HazardScenario.HazardScenario25,
+        HazardScenario.HazardScenario26,
+    ];
+
+    private hazardID: number;
+    private usersForAssign: any = [];
+
+    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
         this.indicatorData = new Indicator();
         this.addAnotherSource();
         this.addAnotherLocation();
+        this.addIndicatorTrigger();
     }
 
     ngOnInit() {
         let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
                 this.uid = auth.uid;
+                this.getCountryID().then(() => {
+                    this.getUsersForAssign();
+                });
+
+                // get the country levels
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_FILE)
+                    .subscribe(content => {
+                        this.countryLevels = content;
+                        err => console.log(err);
+                    });
+
+                // get the country levels values
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                    .subscribe(content => {
+                        this.countryLevelsValues = content;
+                        err => console.log(err);
+                    });
+
             } else {
                 this.navigateToLogin();
             }
@@ -48,36 +114,61 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     stateGeoLocation(event: any) {
         var geoLocation = parseInt(event.target.value);
         this.indicatorData.geoLocation = geoLocation;
-        console.log(this.indicatorData);
+        console.log(this.countryLevelsValues);
 
     }
 
 
     addAnotherSource() {
-        var indicatorSource = new Array();
-        indicatorSource['name'] = '';
-        indicatorSource['link'] = '';
-        this.indicatorData.source.push(indicatorSource);
+        this.indicatorData.source.push(new IndicatorSourceModel());
+    }
+
+    removeAnotherSource(key: number) {
+        this.indicatorData.source.splice(key, 1);
     }
 
     addAnotherLocation() {
-        var locations = new Array();
-        locations['level1location'] = '';
-        locations['level2location'] = '';
-        this.indicatorData.affectedLocation.push(locations);
+        this.indicatorData.affectedLocation.push(new OperationAreaModel());
     }
-    
-    setCountryValue(locationKey: number, event: any) {
-        
-        
-        //console.log(event.target.value);
-        
-        this.indicatorData.affectedLocation[locationKey]['level1location'] = event.target.value;
-        
+
+    removeAnotherLocation(key: number, ) {
+        this.indicatorData.affectedLocation.splice(key, 1);
+    }
+
+    addIndicatorTrigger() {
+        for (let alertLevelKey in this.alertLevelsList) {
+            this.indicatorData.trigger.push(new IndicatorTriggerModel());
+        }
+    }
+
+    getUsersForAssign() {
+        /* TODO if user ERT OR Partner, assign only me */
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+            for (let userID in data) {
+                this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                    var userToPush = {userID: userID, firstName: user.firstName};
+                    this.usersForAssign.push(userToPush);
+                });
+            }
+        });
+        this.subscriptions.add(subscription);
+    }
+
+    getCountryID() {
+        let promise = new Promise((res, rej) => {
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryID: any) => {
+                this.countryID = countryID.$value ? countryID.$value : "";
+                res(true);
+            });
+            this.subscriptions.add(subscription);
+        });
+        return promise;
+    }
+
+    saveIndicator() {
         console.log(this.indicatorData);
     }
 
- 
     private navigateToLogin() {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
     }
