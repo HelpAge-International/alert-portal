@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
@@ -6,7 +6,6 @@ import {RxHelper} from "../utils/RxHelper";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
-import {ActionLevel, ActionType} from "../utils/Enums";
 
 @Component({
   selector: 'app-dashboard',
@@ -61,7 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
-    let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId)
+    let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .subscribe(actions => {
         this.actionsToday = [];
         this.actionsThisWeek = [];
@@ -70,7 +69,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(subscriptionActions);
 
-    let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId)
+    let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .subscribe(indicators => {
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
@@ -110,7 +109,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.actionService.getActionTitle(action);
   }
 
-  getIndicatorName(indicator):string {
+  getIndicatorName(indicator): string {
     return this.actionService.getIndicatorTitle(indicator);
   }
 

@@ -221,7 +221,9 @@
     </div>
 
     <!--TODO my tasks-->
-    <div class="Widget">
+    <div
+      *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 "
+      class="Widget">
       <h3>My Tasks</h3>
       <div class="My-Tasks container-fluid">
 
@@ -260,7 +262,8 @@
 
         <div *ngFor="let indicator of indicatorsThisWeek" class="row">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">An red level indicator needs to be updated <strong>this week</strong>.<span>{{indicator?.name}}</span></a></div>
+          <div class="col-md-8"><a href="">An red level indicator needs to be updated <strong>this week</strong>.<span>{{indicator?.name}}</span></a>
+          </div>
           <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">Update</a>
           </div>
         </div>

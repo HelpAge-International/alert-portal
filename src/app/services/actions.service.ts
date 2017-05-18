@@ -11,24 +11,25 @@ export class ActionsService {
   constructor(private af: AngularFire) {
   }
 
-  getActionsDueInWeek(countryId): Observable<any> {
+  getActionsDueInWeek(countryId, uid: string): Observable<any> {
     return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {
       query: {
         orderByChild: "dueDate",
         startAt: moment().startOf('day').valueOf()
       }
     })
-      // .filter(action => action.assignee === "ff");
+      .filter(action => action.assignee === uid);
   }
 
-  getIndicatorsDueInWeek(countryId) {
+  getIndicatorsDueInWeek(countryId, uid) {
     let startOfToday = moment().startOf('day').valueOf();
     let countryContextIndicators = this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId, {
       query: {
         orderByChild: "dueDate",
         startAt: startOfToday
       }
-    });
+    })
+      .filter(indicator => indicator.assignee === uid);
 
     let countryIndicators = this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
       .flatMap(hazards => {
@@ -41,6 +42,9 @@ export class ActionsService {
             startAt: startOfToday
           }
         })
+      })
+      .map(indicators => {
+        return indicators.filter(indicator => indicator.assignee === uid);
       });
 
     return countryContextIndicators.merge(countryIndicators);
