@@ -5,7 +5,8 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" (click) = "goBack()">{{"RESPONSE_PLANS.TITLE_TEXT"| translate}}</div>
+    <div class="Back--button" (click) = "goBack()" [hidden]="fromResponsePlans">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT"| translate}}</div>
+    <div class="Back--button" (click) = "goBack()" [hidden]="!fromResponsePlans">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>{{ "ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate }}</h1>
     </div>
@@ -20,12 +21,12 @@
     <div class="row Spaced">
       <div class="col-lg-4 col-md-6 form-group">
         <label for="P-org">{{ "ADD_PARTNER.PARTNER_ORGANISATION" | translate }}</label>
-        <input type="text" class="form-control" name="P-org" id="P-org" 
+        <input type="text" class="form-control" name="P-org" id="P-org"
             [(ngModel)]="partnerOrganisation && partnerOrganisation.organisationName" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
       </div>
       <div class="col-lg-4 col-md-6 form-group">
         <label for="Relationship">{{ "ADD_PARTNER.RELATIONSHIP" | translate }}</label>
-        <input type="text" class="form-control" name="Relationship" id="Relationship" 
+        <input type="text" class="form-control" name="Relationship" id="Relationship"
             [(ngModel)]="partnerOrganisation && partnerOrganisation.relationship" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
       </div>
     </div>
@@ -45,7 +46,7 @@
         <div class="row">
           <div class="col-sm-6"><h6>{{ "ADD_PARTNER.SECTOR" | translate }}</h6></div>
           <div class="col-sm-6 Right-aligned">
-            <a href="javascript:void(0)" class="text-danger" 
+            <a href="javascript:void(0)" class="text-danger"
                 *ngIf="partnerOrganisation?.projects.length > 1"
                 (click) = "removeProject(pin);">{{ "ADD_PARTNER.REMOVE_PROJECT" | translate }}</a>
           </div>
@@ -66,7 +67,7 @@
           </div>
           <div class="col-lg-4 col-md-6 form-group">
             <label for="P-end-date">{{ "ADD_PARTNER.PROJECT_END_DATE" | translate }}</label>
-            <input type="date" class="form-control" name = "P-end-date" 
+            <input type="date" class="form-control" name = "P-end-date"
                 [(ngModel)]="project.endDate" id="P-end-date" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
           </div>
         </div>
@@ -79,29 +80,33 @@
                       <select class="form-control" name="CountryArea"
                             [(ngModel)] = "operationArea.country">
                           <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                          <option *ngFor="let country of countryLevels | keyValues" [value] = "country.key">{{countryEnum[country.key]}}
+                          <option *ngFor="let country of countryLevelsValues | keyValues" [value] = "country.key">{{countryEnum[country.key]}}
                       </select>
                   </div>
               </div>
-              <div class="col-sm-3" *ngIf="operationArea.country">
+              <div class="col-sm-3" *ngIf="operationArea.country
+                                          && countryLevelsValues[operationArea.country]
+                                          && countryLevelsValues[operationArea.country].levelOneValues">
                     <div class="form-group">
                         <select class="form-control" name="CountryAreaLevelOne"
                             [(ngModel)] = "operationArea.level1">
                             <option value="undefined" disabled selected hidden>
-                                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[operationArea.country]?.levels[0].value | translate }}</option>
-                            <option 
+                                {{ "GLOBAL.PLEASE_SELECT" | translate }}</option>
+                            <option
                               *ngFor="let countryLevel1Value of countryLevelsValues[operationArea.country]?.levelOneValues"
                               [value] = "countryLevel1Value.id">{{countryLevel1Value.value}}</option>
                         </select>
                     </div>
               </div>
-              <div class="col-sm-3" *ngIf="operationArea.level1">
+              <div class="col-sm-3" *ngIf="operationArea.level1
+                                          && countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1]
+                                          && countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues">
                     <div class="form-group">
                         <select class="form-control" name="CountryAreaLevelTwo"
                             [(ngModel)] = "operationArea.level2">
                             <option value="undefined" disabled selected hidden>
-                                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[operationArea.country]?.levels[1].value | translate }}</option>
-                            <option 
+                                {{ "GLOBAL.PLEASE_SELECT" | translate }}</option>
+                            <option
                               *ngFor="let countryLevel2Value of countryLevelsValues[operationArea.country]?.levelOneValues[operationArea.level1].levelTwoValues"
                               [value] = "countryLevel2Value.id">{{countryLevel2Value.value}}</option>
                         </select>
@@ -113,7 +118,7 @@
               </div>
             </div>
         </div>
-      
+
         <div class="row Spaced">
           <div class="col-sm-12">
             <a href="javascript:void(0)" (click) = "addProjectLocation(pin)" class="Add__row__cta">{{ "ADD_PARTNER.ADD_ANOTHER_LOCATION" | translate }}</a>

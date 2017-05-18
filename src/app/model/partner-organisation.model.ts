@@ -66,13 +66,10 @@ export class PartnerOrganisationProjectModel extends BaseModel {
   }
 
   validate(excludedFields = []): AlertMessageModel {
-    // Transforms endDate to timestamp - TO BE REFACTORED ( moved as a setter )
-    this.endDate = new Date(this.endDate).getTime().toString();
-
     if (!this.title && !this.isExcluded('title', excludedFields)) {
       return new AlertMessageModel('ADD_PARTNER.NO_PROJECT_TITLE');
     }
-    if (this.sector.length < 1 && !this.isExcluded('sector', excludedFields)) {
+    if (Object.keys(this.sector).length < 1 && !this.isExcluded('sector', excludedFields)) {
       return new AlertMessageModel('ADD_PARTNER.NO_PROJECT_SECTOR');
     }
     if (!this.endDate && !this.isExcluded('endDate', excludedFields)) {

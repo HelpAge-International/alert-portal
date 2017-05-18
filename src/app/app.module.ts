@@ -104,9 +104,13 @@ import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
 import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
-import { MapCountriesListComponent } from './map/map-countries-list/map-countries-list.component';
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
+import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
 import {UserService} from "./services/user.service";
+import {DashboardSeasonalCalendarComponent} from './dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component';
+import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component';
+import {SessionService} from "./services/session.service";
+import {CommonService} from "./services/common.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -220,6 +224,8 @@ const firebaseAuthConfig = {
         CountryMyAgencyComponent,
         MapCountriesListComponent,
         ExportTestComponent,
+        DashboardSeasonalCalendarComponent,
+        DashboardUpdateAlertLevelComponent,
         CountryAgenciesComponent
     ],
     imports: [
@@ -244,7 +250,7 @@ const firebaseAuthConfig = {
             storageType: 'localStorage'
         })
     ],
-    providers: [RxHelper, Modal, UserService],
+    providers: [RxHelper, Modal, UserService, SessionService, CommonService],
     bootstrap: [AppComponent]
 })
 

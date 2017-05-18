@@ -79,6 +79,8 @@ import {MapCountriesListComponent} from "./map/map-countries-list/map-countries-
 
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
+import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
+import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -171,6 +173,8 @@ const routes: Routes = [
      * Dashboard
      */
     {path: 'dashboard', component: DashboardComponent},
+    {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
+    {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
 
     /**
      * Risk Monitoring
@@ -198,6 +202,7 @@ const routes: Routes = [
     {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
+    {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
 
     /**
      * Maps
@@ -209,7 +214,6 @@ const routes: Routes = [
   * test
   * */
   {path: 'export', component: ExportTestComponent}
-  //TODO: define needed routes here. see the example above
 
 ];
 

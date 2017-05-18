@@ -7,7 +7,6 @@ export class OperationAreaModel extends BaseModel {
   public level2: number;
 
   validate(excludedFields = []): AlertMessageModel {
-    console.log('excluded ' + excludedFields);
     if (!this.country && !this.isExcluded('country', excludedFields)) {
       return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_COUNTRY');
     }

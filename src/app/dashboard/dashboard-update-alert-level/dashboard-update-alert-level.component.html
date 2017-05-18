@@ -1,0 +1,124 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <!--<div class="Back&#45;&#45;button" routerLink="/dashboard">Home</div>-->
+    <div class="Header-title__wrap">
+      <h1>Change Alert Level</h1>
+    </div>
+    <div class="row Spaced">
+      <div class="col-lg-6 col-md-8 bg-grey">
+        <div class="row align-items-center Small-spaced no-gutters">
+          <div class="col-6">
+            <span class="Icon Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></span>
+            Typhoon
+          </div>
+          <div class="col-6 text-right">
+            Last updated <strong>10/06/2016</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row Spaced">
+      <div class="col-lg-8 col-md-10 form-group">
+        <label>Select the Alert Level</label>
+        <div class="row no-gutters Change-alert-level">
+          <label for="green-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
+                                                                             id="green-alert-level"><span
+            class="badge badge-success">Green Alert Level</span></label>
+          <label for="amber-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
+                                                                             id="amber-alert-level"><span
+            class="badge badge-warning">Amber Alert Level</span></label>
+          <label for="red-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
+                                                                           id="red-alert-level"><span
+            class="badge badge-danger">Red Alert Level</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-8">
+        <div class="form-group">
+          <label for="reason-red-alert">Reason for red alert request</label>
+          <textarea name="reason-red-alert" id="reason-red-alert" cols="20" rows="5" class="form-control"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="row Spaced">
+      <div class="col-md-12 form-group">
+        <label>Affected area(s)</label>
+        <div class="row align-items-center">
+          <div class="col-sm-3 form-group">
+            <select class="form-control">
+              <option selected hidden disabled>Please select</option>
+            </select>
+          </div>
+          <div class="col-sm-3 form-group">
+            <select class="form-control">
+              <option selected hidden disabled>Please select</option>
+            </select>
+          </div>
+          <div class="col-sm-3 form-group">
+            <select class="form-control">
+              <option selected hidden disabled>Please select</option>
+            </select>
+          </div>
+          <div class="col-sm-3 form-group">
+            <a href="#" class="text-danger">Remove</a>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-sm-3 form-group">
+            <select class="form-control">
+              <option selected hidden disabled>Please select</option>
+            </select>
+          </div>
+          <div class="col-sm-3 form-group">
+            <select class="form-control">
+              <option selected hidden disabled>Please select</option>
+            </select>
+          </div>
+          <div class="col-sm-3 form-group">
+            <select class="form-control">
+              <option selected hidden disabled>Please select</option>
+            </select>
+          </div>
+          <div class="col-sm-3 form-group">
+            <a href="#" class="text-danger">Remove</a>
+          </div>
+        </div>
+        <div class="row no-gutters">
+          <a href="#" class="Add__row__cta">Add another location</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-8">
+        <div class="form-group">
+          <label for="pop-affected">Estimated population affected</label>
+          <input type="text" class="form-control" id="pop-affected">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-8">
+        <div class="form-group">
+          <label for="info-sources-notes">Information sources and notes</label>
+          <textarea name="info-sources-notes" id="info-sources-notes" cols="20" rows="5"
+                    class="form-control"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-primary">Confirm alert level</div>
+      <div class="btn btn-outline-secondary" routerLink="/dashboard">Cancel</div>
+    </div>
+
+  </div>
+</div>

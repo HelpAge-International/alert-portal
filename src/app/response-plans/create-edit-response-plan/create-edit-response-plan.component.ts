@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router, Params, ActivatedRoute} from "@angular/router";
-import {AngularFire, FirebaseObjectObservable} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
@@ -11,7 +11,7 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, MediaFormat, BudgetCategory
+  ResponsePlanSectors, BudgetCategory
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -671,7 +671,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   setPartnerOrganisation(partnerOrganisationSelected, dropDown) {
     console.log(partnerOrganisationSelected);
     if (partnerOrganisationSelected == 'addNewPartnerOrganisation') {
-      this.router.navigateByUrl('response-plans/add-partner-organisation');
+      this.router.navigate(['/response-plans/add-partner-organisation', {fromResponsePlans: true}]);
     } else {
       this.partnerOrganisationsSelected[dropDown] = partnerOrganisationSelected;
     }

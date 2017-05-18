@@ -14,13 +14,14 @@ import { ModelUserPublic } from '../../../model/user-public.model';
 import { UserService } from "../../../services/user.service";
 import { CountryAdminModel } from "../../../model/country-admin.model";
 import { DisplayError } from "../../../errors/display.error";
+import { SessionService } from "../../../services/session.service";
 declare var jQuery: any;
 
 @Component({
   selector: 'app-country-add-edit-partner',
   templateUrl: './country-add-edit-partner.component.html',
   styleUrls: ['./country-add-edit-partner.component.css'],
-  providers: [PartnerOrganisationService, UserService, NotificationSettingsService]
+  providers: [PartnerOrganisationService, NotificationSettingsService, UserService]
 })
 
 export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
@@ -44,15 +45,18 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _notificationSettingsService: NotificationSettingsService,
+              private _sessionService: SessionService,
               private router: Router,
               private route: ActivatedRoute,
               private subscriptions: RxHelper){
-    this.partner = new PartnerModel();
+    this.partner = this._sessionService.partner || new PartnerModel();
     this.partnerOrganisations = [];
-    this.userPublic = new ModelUserPublic(null, null, null, null); // no parameterless constructor
+    this.userPublic = this._sessionService.user || new ModelUserPublic(null, null, null, null); // no parameterless constructor
   }
 
   ngOnDestroy() {
+    this._sessionService.partner = null;
+    this._sessionService.user = null;
     this.subscriptions.releaseAll();
   }
 
@@ -99,6 +103,13 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
     this.subscriptions.add(authSubscription);
   }
 
+
+  setPartnerOrganisation(optionSelected){
+    if(optionSelected === 'addNewPartnerOrganisation')
+    {
+      this.router.navigateByUrl('response-plans/add-partner-organisation');
+    }
+  }
   validateForm(): boolean {
     this.alertMessage = this.partner.validate() || this.userPublic.validate(['city']);
 
