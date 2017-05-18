@@ -64,7 +64,6 @@ export class ActionsService {
   }
 
   getActionTitle(action): string {
-    console.log(action);
     let title = "";
     if (action.type == ActionType.chs) {
       title = "A CHS preparedness action needs to be completed"
