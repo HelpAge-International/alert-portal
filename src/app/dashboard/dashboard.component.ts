@@ -80,10 +80,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.getApprovedResponsePlansCount();
       this.getAlerts();
       this.getHazards();
+      this.initData();
     });
     this.getAgencyID().then(() => {
       this.getCountryData();
-      this.initData();
+
     });
     this.getSystemAdminID().then(() => {
       this.getSystemThreshold('minThreshold').then((minThreshold: any) => {
