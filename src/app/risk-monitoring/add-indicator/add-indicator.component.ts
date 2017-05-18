@@ -35,7 +35,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
 
 
-    private countries = Country;
+    private countries = Constants.COUNTRY;
+    private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
     private frequency = new Array(100);
 
     private countryLevels: any[] = [];
@@ -90,13 +91,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
                     this.getUsersForAssign();
                 });
 
-                // get the country levels
-                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_FILE)
-                    .subscribe(content => {
-                        this.countryLevels = content;
-                        err => console.log(err);
-                    });
-
                 // get the country levels values
                 this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
                     .subscribe(content => {
@@ -114,8 +108,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     stateGeoLocation(event: any) {
         var geoLocation = parseInt(event.target.value);
         this.indicatorData.geoLocation = geoLocation;
-        console.log(this.countryLevelsValues);
-
     }
 
 
@@ -166,7 +158,70 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     }
 
     saveIndicator() {
-        console.log(this.indicatorData);
+
+        if (typeof (this.hazardID) == 'undefined') {
+            console.log('hazard iD is required');
+            return false;
+        }
+        this.indicatorData.triggerSelected = 0;
+        this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[0].durationType, this.indicatorData.trigger[0].frequencyValue);
+
+        var dataToSave = this.indicatorData;
+
+        this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.hazardID)
+            .push(dataToSave)
+            .then(() => {
+                console.log('success save data');
+            }).catch((error: any) => {
+                console.log(error, 'You do not have access!')
+            });
+    }
+
+    _calculationDueDate(durationType: number, frequencyValue: number) {
+
+        var currentUnixTime = new Date().getTime();
+        var CurrentDate = new Date();
+        var currentYear = new Date().getFullYear();
+
+        var day = 86400;
+        var week = 604800;
+
+        if (durationType == 0) {
+            var differenceTime = frequencyValue * week;
+        } else if (durationType == 1) {
+            var resultDate = CurrentDate.setMonth(CurrentDate.getMonth() + frequencyValue);
+            var differenceTime = resultDate - currentUnixTime;
+        } else if (durationType == 2) {
+            differenceTime = this._getDifferenceTimeByYear(frequencyValue);
+        }
+
+        var dueDate = currentUnixTime + differenceTime;
+        return dueDate;
+
+    }
+
+    _getDifferenceTimeByYear(years: number) {
+
+        var currentYear = new Date().getFullYear();
+        var year = 315036000;
+        var leapYear = 31622400;
+
+        var i;
+        var differenceTime = 0;
+        for (i = 0; i < years; i++) {
+            currentYear = currentYear + 1;
+            var seconds = this._isLeapYear(currentYear) ? leapYear : year;
+            differenceTime = differenceTime + seconds;
+        }
+        return differenceTime;
+    }
+
+    _isLeapYear(year: number) {
+        var isLeapYear = year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0);
+        if (!isLeapYear) {
+            return false;
+        }
+        return true;
     }
 
     private navigateToLogin() {

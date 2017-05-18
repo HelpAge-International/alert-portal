@@ -24,7 +24,7 @@
         <!--Indicator -->
         <h6 class="Spaced-above"><b>Indicator</b></h6>
         <div class="Spaced-above form-group col-sm-12 row">
-            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Please enter">
+            <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Please enter" [(ngModel)]="indicatorData.name">
         </div>
 
         <!--Source of Information-->
@@ -53,7 +53,7 @@
 
                 <div *ngFor="let alertLevelKey of alertLevelsList" class="form-group col-sm-12 row {{!alertLevelKey ? 'Spaced-above' : ''}}">
                     <img class="oval_green__wrap--risk {{!alertLevelKey ? 'Spaced-above' : ''}}" src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
-                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" placeholder="{{alertLevels[alertLevelKey] | translate}}">
+                    <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput" [(ngModel)]="indicatorData.trigger[alertLevelKey].triggerValue" placeholder="{{alertLevels[alertLevelKey] | translate}}">
                     <span class="oval_green__wrap--risk"></span>
                 </div>
 
@@ -72,7 +72,8 @@
                     </div>
                     <!--frequency-->
                     <div class="form-group-risk-frequency">
-                        <select class="form-control" id="select1">
+                        <select class="form-control" id="select1" name="durationType" [(ngModel)]="indicatorData.trigger[alertLevelKey].durationType">
+                            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                             <option *ngFor="let dKey of durationTypeList" [value]="dKey">{{durationType[dKey] | translate}}</option>
                         </select>
                     </div>
@@ -85,7 +86,7 @@
         <!--Assign to-->
         <h6 class="Spaced-above"><b>Assign to:</b></h6>
         <div class="form-group col-sm-12 row">
-            <select class="form-control col-sm-4" id="select1" placeholder="Please select">
+            <select class="form-control col-sm-4" id="select1" placeholder="Please select" [(ngModel)]="indicatorData.assignee">
                 <option selected="selected">Please select</option> <!--default select value-->
                 <option *ngFor="let uAssign of usersForAssign">{{uAssign.firstName}}</option>
             </select>
@@ -109,7 +110,7 @@
                         <select class="form-control" name="CountryArea"
                                 [(ngModel)] = "location.country">
                             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                            <option *ngFor="let country of countryLevels | keyValues" [value]="country.key">{{countries[country.key]}}</option>
+                            <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] | translate}}</option>
                         </select>
                     </div>
                 </div>
