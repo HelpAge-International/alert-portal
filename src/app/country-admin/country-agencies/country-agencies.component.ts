@@ -7,28 +7,30 @@ import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-country-account-settings',
-    templateUrl: './country-my-agency.component.html',
-    styleUrls: ['./country-my-agency.component.css']
+    templateUrl: './country-agencies.component.html',
+    styleUrls: ['./country-agencies.component.css']
 })
-export class CountryMyAgencyComponent implements OnInit {
+export class CountryAgenciesComponent implements OnInit {
 
     private uid: string;
     private agencyID: string;
     private systemAdminID: string;
+    private countryKey: string;
+    private countryOffices: any = [];
+    private countryIDs: string[] = [];
+    
+    private countries = Constants.COUNTRIES;
 
     private alertLevels = Constants.ALERT_LEVELS;
     private alertColors = Constants.ALERT_COLORS;
     private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
 
-    private countries = Constants.COUNTRIES;
-    private countryOfficeData: any = [];
-    private countryIDs: string[] = [];
-
-    private countResponsePlans: any = [];
     private count: number = 0;
+    private countResponsePlans: any = [];
     private percentageCHS: any = [];
 
     private filter: any = 'all';
+    private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
 
     private minTreshold: any = [];
     private advTreshold: any = [];
@@ -57,26 +59,46 @@ export class CountryMyAgencyComponent implements OnInit {
 
     filterAlertLevel(event: any) {
         this.filter = event.target.value;
-        this._getCountryList();
+        this._getCountryOfficeByLocation().then(() => {
+            console.log(this.countryOffices);
+        });
     }
 
     _loadData() {
-        this._getAgencyID().then(() => {
-            this._getCountryList().then(() => {
-                this._getResponsePlans();
-                this._getSystemAdminID().then(() => {
-                    this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
-                        this.minTreshold = minTreshold;
+        this._getUserInfo().then(() => {
+            this._getAgencyID().then(() => {
+                this._getCountryOfficeByLocation().then(() => {
+                    this._getResponsePlans();
+                    this._getSystemAdminID().then(() => {
+                        this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
+                            this.minTreshold = minTreshold;
+                        });
+                        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+                            this.advTreshold = advTreshold;
+                        });
+                    }).then(() => {
+                        this._getAllActions();
                     });
-                    this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-                        this.advTreshold = advTreshold;
-                    });
-                }).then(() => {
-                    this._getAllActions();
                 });
             });
         });
     }
+
+    _getUserInfo() {
+        let promise = new Promise((res, rej) => {
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).subscribe((user: any) => {
+                if (typeof (user.country) == 'undefined') {
+                    console.log('country undefined');
+                    return false;
+                }
+                this.countryKey = user.country;
+                res(true);
+            });
+            this.subscriptions.add(subscription);
+        });
+        return promise;
+    }
+
 
     _getAgencyID() {
         let promise = new Promise((res, rej) => {
@@ -89,24 +111,28 @@ export class CountryMyAgencyComponent implements OnInit {
         return promise;
     }
 
-    _getCountryList() {
+
+    _getCountryOfficeByLocation() {
         let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID).subscribe((countries: any) => {
-                this.countryOfficeData = [];
+            let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID).subscribe((countryOffices: any) => {
+                this.countryOffices = [];
                 this.countryIDs = [];
-                if (this.filter == 'all') {
-                    this.countryOfficeData = countries;
-                    countries.forEach((val, key) => {
-                        this.countryIDs.push(val.$key);
-                    });
-                } else {
-                    countries.forEach((val, key) => {
-                        if (val.alertLevel == this.filter) {
-                            this.countryOfficeData.push(val);
-                            this.countryIDs.push(val.$key);
+                countryOffices.forEach((countryOffice: any) => {
+
+                    if (this.filter == 'all') {
+                        if (countryOffice.location == this.countryKey) {
+                            this.countryIDs.push(countryOffice.$key);
+                            this.countryOffices.push(countryOffice);
                         }
-                    });
-                }
+                    } else {
+                        if (countryOffice.location == this.countryKey && parseInt(countryOffice.alertLevel) == this.filter) {
+                            this.countryOffices.push(countryOffice);
+                            this.countryIDs.push(countryOffice.$key);
+                        }
+                    }
+
+                });
+
                 res(true);
             });
             this.subscriptions.add(subscription);
@@ -144,10 +170,13 @@ export class CountryMyAgencyComponent implements OnInit {
                 if (approvalStatus == 2) {
                     this.count = this.count + 1;
                     this.countResponsePlans[countryID] = this.count;
+                } else {
+                    this.countResponsePlans[countryID] = 0;
                 }
             }
         }
     }
+
 
     _getAllActions() {
         let promise = new Promise((res, rej) => {
@@ -266,6 +295,7 @@ export class CountryMyAgencyComponent implements OnInit {
         });
         return promise;
     }
+
 
     private navigateToLogin() {
         this.router.navigateByUrl(Constants.LOGIN_PATH);

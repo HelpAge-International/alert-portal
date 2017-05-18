@@ -1,0 +1,74 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Header-title__wrap">
+            <h1>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.AGENCIES_IN" | translate}} {{countries[countryKey] | translate}} {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
+        </div>
+
+        <div class="row align-items-center Filter-form Spaced">
+            <div class="col-lg-1 col-md-2 col-sm-6">
+                {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.SORT_BY" | translate}}:
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <select class="form-control" (change)="filterAlertLevel($event)">
+                    <option value="all" selected>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>
+                    <option *ngFor="let alertLevelKey of this.alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] | translate}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="Ribbon__section__wrap Spaced" *ngIf="countryOffices && countryOffices.length > 0">
+
+            <div class="Accordion Preparedness__agency-list" *ngFor="let countryOffice of countryOffices">
+                 <div class="row">
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right">
+                        <div class="Agency-logo--no-border Agency-logo--md Icon--align-center" [ngStyle]="countryOffice.logoPath ? { 'background-image': 'url(' + countryOffice.logoPath + ')'} : { 'background-image': 'url(' + defaultAgencyLogo + ')'}"></div>
+                        <span>{{countryOffice.name}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertColors[countryOffice.alertLevel] ? alertColors[countryOffice.alertLevel] : 'red'}}"></div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{countResponsePlans[countryOffice.$key] ? countResponsePlans[countryOffice.$key] : 0}}</div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.RESPONSE_PLANS" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[countryOffice.$key]}} Icon--md"><i class="fa {{mpaStatusIcons[countryOffice.$key]}} fa-inverse fa-2x" aria-hidden="true"></i></div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div *ngIf="countryOffice.alertLevel != 2" class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[countryOffice.$key]}} Icon--md">
+                                <i class="fa {{advStatusIcons[countryOffice.$key]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                            </div>
+                            <div *ngIf="countryOffice.alertLevel == 2" class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
+                                <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
+                    </div>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                            <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{percentageCHS[countryOffice.$key]}}%</div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="Ribbon__section__wrap Spaced" *ngIf="!countryOffices || !countryOffices.length">
+            <h1 style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_AGENCIES" | translate}}</h1>
+        </div>
+
+    </div>
+
+</div><!-- end #wrap -->
