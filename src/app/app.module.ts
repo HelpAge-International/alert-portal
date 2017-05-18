@@ -244,11 +244,11 @@ const firebaseAuthConfig = {
         }),
         ModalModule.forRoot(),
         BootstrapModalModule,
-        DatepickerModule,
-        LocalStorageModule.withConfig({
-            prefix: 'my-app',
-            storageType: 'localStorage'
-        })
+        DatepickerModule
+        // LocalStorageModule.withConfig({
+        //     prefix: 'my-app',
+        //     storageType: 'localStorage'
+        // })
     ],
     providers: [RxHelper, Modal, UserService, SessionService, CommonService],
     bootstrap: [AppComponent]

@@ -12,7 +12,9 @@ export class RxHelper {
 
   releaseAll() {
     this.subscriptions.forEach(result => {
-      result.unsubscribe();
+      if (!result.closed) {
+        result.unsubscribe();
+      }
     });
   }
 }

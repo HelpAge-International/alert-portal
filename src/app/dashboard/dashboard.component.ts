@@ -8,6 +8,7 @@ import {AlertLevels, ApprovalStatus, Countries} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'app-dashboard',
@@ -17,6 +18,8 @@ import * as moment from "moment";
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private USER_TYPE: string = 'administratorCountry';
 
@@ -56,7 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    let subscription = this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
         this.loadData();
@@ -68,7 +71,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
+    // console.log(this.subscriptions);
+    // // this.subscriptions.releaseAll();
+    // this.subscriptions.subscriptions.forEach(result => {
+    //     result.unsubscribe();
+    // });
+    // console.log(this.subscriptions);
   }
 
   /**
@@ -99,7 +111,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").subscribe((countryId: any) => {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").takeUntil(this.ngUnsubscribe).subscribe((countryId: any) => {
         this.countryId = countryId.$value;
         res(true);
       });
@@ -110,7 +122,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').subscribe((agencyIds: any) => {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe).subscribe((agencyIds: any) => {
         this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
         res(true);
       });
@@ -124,6 +136,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
     let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId, this.uid)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
         this.actionsToday = [];
         this.actionsThisWeek = [];
@@ -133,6 +146,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscriptionActions);
 
     let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
@@ -166,7 +180,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').subscribe((systemAdminIds: any) => {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').takeUntil(this.ngUnsubscribe).subscribe((systemAdminIds: any) => {
         this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
         res(true);
       });
@@ -177,7 +191,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location").subscribe((location: any) => {
+      let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location").takeUntil(this.ngUnsubscribe).subscribe((location: any) => {
         this.countryLocation = location.$value;
         res(true);
       });
@@ -188,7 +202,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getApprovedResponsePlansCount() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).subscribe((responsePlans: any) => {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).takeUntil(this.ngUnsubscribe).subscribe((responsePlans: any) => {
         this.getCountApprovalStatus(responsePlans);
         res(true);
       });
@@ -221,7 +235,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAllActions() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).subscribe((actions: any) => {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
         this.getPercenteActions(actions);
         res(true);
       });
@@ -305,7 +319,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getActionsBySystemAdmin() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid).subscribe((actions: any) => {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
         res(actions);
       });
       this.subscriptions.add(subscription);
@@ -315,7 +329,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getSystemThreshold(thresholdType: string) {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType).subscribe((threshold: any) => {
+      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType).takeUntil(this.ngUnsubscribe).subscribe((threshold: any) => {
         res(threshold);
       });
       this.subscriptions.add(subscription);
@@ -350,6 +364,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
       })
       .distinctUntilChanged()
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(x => {
         this.hazards.push(x);
         console.log(x);
