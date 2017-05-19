@@ -112,6 +112,7 @@ import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-a
 import {SessionService} from "./services/session.service";
 import {CommonService} from "./services/common.service";
 import { SettingsService } from "./services/settings.service";
+import { CountryAdminSettingsMenuComponent } from "./country-admin/settings/settings-menu/settings-menu.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -160,6 +161,7 @@ const firebaseAuthConfig = {
         CreateEditCountryComponent,
         CreateEditMpaComponent,
         SettingsMenuComponent,
+        CountryAdminSettingsMenuComponent,
         AgencyAdminMenuComponent,
         DepartmentComponent,
         SkillsComponent,
