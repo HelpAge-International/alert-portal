@@ -431,6 +431,45 @@
     "GEO_LOCATION": {
       "NATIONAL": "National",
       "SUBNATIONAL": "Subnational"
+},
+    "ALERTS": {
+      "GREEN": "Green Alert",
+      "AMBER": "Amber Alert",
+      "RED": "Red Alert"
+    },
+    "ALERTS": {
+      "GREEN": "Green Alert",
+      "AMBER": "Amber Alert",
+      "RED": "Red Alert"
+    },
+    "HAZARD_SCENARIOS": {
+      "HAZARD_SCENARIO0": "Cold Wave",
+      "HAZARD_SCENARIO1": "Conflict",
+      "HAZARD_SCENARIO2": "Cyclone",
+      "HAZARD_SCENARIO3": "Drought",
+      "HAZARD_SCENARIO4": "Earthquake",
+      "HAZARD_SCENARIO5": "Epidemic",
+      "HAZARD_SCENARIO6": "Fire",
+      "HAZARD_SCENARIO7": "Flash Flood",
+      "HAZARD_SCENARIO8": "Flood",
+      "HAZARD_SCENARIO9": "Heat Wave",
+      "HAZARD_SCENARIO10": "Heavy Rain",
+      "HAZARD_SCENARIO11": "Humanitarian Access",
+      "HAZARD_SCENARIO12": "Insect Infestation",
+      "HAZARD_SCENARIO13": "Landslide",
+      "HAZARD_SCENARIO14": "Locust Infestation",
+      "HAZARD_SCENARIO15": "Mudslide",
+      "HAZARD_SCENARIO16": "Population Displacement",
+      "HAZARD_SCENARIO17": "Population Return",
+      "HAZARD_SCENARIO18": "Snow Avalanche",
+      "HAZARD_SCENARIO19": "Snowfall",
+      "HAZARD_SCENARIO20": "Storm",
+      "HAZARD_SCENARIO21": "Storm Surge",
+      "HAZARD_SCENARIO22": "Technological Disaster",
+      "HAZARD_SCENARIO23": "Tornado",
+      "HAZARD_SCENARIO24": "Tsunami",
+      "HAZARD_SCENARIO25": "Violent Wind",
+      "HAZARD_SCENARIO26": "Volcano"
     }
   },
   "LOGIN": {
@@ -997,35 +1036,6 @@
           "MANAGEMENT_SUPPORT": "Management support"
         }
       }
-    },
-    "HAZARD_SCENARIOS": {
-      "HAZARD_SCENARIO0": "Cold Wave",
-      "HAZARD_SCENARIO1": "Conflict",
-      "HAZARD_SCENARIO2": "Cyclone",
-      "HAZARD_SCENARIO3": "Drought",
-      "HAZARD_SCENARIO4": "Earthquake",
-      "HAZARD_SCENARIO5": "Epidemic",
-      "HAZARD_SCENARIO6": "Fire",
-      "HAZARD_SCENARIO7": "Flash Flood",
-      "HAZARD_SCENARIO8": "Flood",
-      "HAZARD_SCENARIO9": "Heat Wave",
-      "HAZARD_SCENARIO10": "Heavy Rain",
-      "HAZARD_SCENARIO11": "Humanitarian Access",
-      "HAZARD_SCENARIO12": "Insect Infestation",
-      "HAZARD_SCENARIO13": "Landslide",
-      "HAZARD_SCENARIO14": "Locust Infestation",
-      "HAZARD_SCENARIO15": "Mudslide",
-      "HAZARD_SCENARIO16": "Population Displacement",
-      "HAZARD_SCENARIO17": "Population Return",
-      "HAZARD_SCENARIO18": "Snow Avalanche",
-      "HAZARD_SCENARIO19": "Snowfall",
-      "HAZARD_SCENARIO20": "Storm",
-      "HAZARD_SCENARIO21": "Storm Surge",
-      "HAZARD_SCENARIO22": "Technological Disaster",
-      "HAZARD_SCENARIO23": "Tornado",
-      "HAZARD_SCENARIO24": "Tsunami",
-      "HAZARD_SCENARIO25": "Violent Wind",
-      "HAZARD_SCENARIO26": "Volcano"
     }
   },
   "SECTORS": {

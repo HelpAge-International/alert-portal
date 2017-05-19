@@ -521,3 +521,9 @@ export enum GeoLocation {
     national = 0,
     subnational = 1
 }
+
+export enum ThresholdName { // alias for AlertLevel
+  Green = 0,
+  Amber = 1,
+  Red = 2
+}

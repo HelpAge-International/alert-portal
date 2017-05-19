@@ -8380,6 +8380,10 @@ h3, h4 {
   background-image: url(/assets/images/hazards/volcano.svg);
 }
 
+.Icon__country {
+    background-size: contain;
+}
+
 .Icon__country--philippines {
   background-image: url(/assets/images/countries/philippines.svg);
   background-size: contain;
