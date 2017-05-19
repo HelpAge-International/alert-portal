@@ -1141,5 +1141,18 @@
         "RISK_MONITORING": "Risk Monitoring",
         "INDICATORS": "indicators",
         "CONTEXT": "Context"
+    },
+    "RISK_MONITORING" : {
+        "ADD_INDICATOR" : {
+            "NO_NAME" : "Please enter indicator name",
+            "NO_SOURCE_NAME" : "Please enter indicator source name",
+            "NO_SOURCE_LINK" : "Please enter indicator source link",
+            "NO_TRIGGER_VALUE" : "Please enter indicator trigger value",
+            "NO_TRIGGER_DURATION_TYPE" : "Please select indicator trigger duration type",
+            "NO_TRIGGER_FREQUENCY_VALUE" : "Please select indicator trigger frequency value",
+            "NO_CATEGORY" : "Please select hazard",
+            "NO_GEO_LOCATION" : "Please select geo location",
+            "SUCCESS_MESSAGE_ADD_INDICATOR" : "Indicator successfully saved!"
+        }
     }
 }

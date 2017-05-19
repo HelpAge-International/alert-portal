@@ -7,15 +7,14 @@ export class IndicatorTriggerModel extends BaseModel {
     public triggerValue: string;
 
     validate(excludedFields = []): AlertMessageModel {
-        console.log('excluded ' + excludedFields);
-        if (!this.durationType && !this.isExcluded('durationType', excludedFields)) {
-            return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_COUNTRY');
+        if (!this.triggerValue && !this.isExcluded('triggerValue', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_TRIGGER_VALUE');
         }
         if (!this.frequencyValue && !this.isExcluded('frequencyValue', excludedFields)) {
-            return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_LEVEL1');
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_TRIGGER_FREQUENCY_VALUE');
         }
-        if (!this.triggerValue && !this.isExcluded('triggerValue', excludedFields)) {
-            return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_LEVEL1');
+        if (!this.durationType && !this.isExcluded('durationType', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_TRIGGER_DURATION_TYPE');
         }
         return null;
     }

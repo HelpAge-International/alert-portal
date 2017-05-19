@@ -7,11 +7,11 @@ export class IndicatorSourceModel extends BaseModel {
 
     validate(excludedFields = []): AlertMessageModel {
         console.log('excluded ' + excludedFields);
-        if (!this.link && !this.isExcluded('link', excludedFields)) {
-            return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_COUNTRY');
-        }
         if (!this.name && !this.isExcluded('name', excludedFields)) {
-            return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_LEVEL1');
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_SOURCE_NAME');
+        }
+        if (!this.link && !this.isExcluded('link', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_SOURCE_LINK');
         }
 
         return null;

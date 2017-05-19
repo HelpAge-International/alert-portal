@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Indicator} from "../../model/indicator";
-import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario} from "../../utils/Enums";
+import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
@@ -9,6 +9,7 @@ import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../model/indicator-source.model";
 import {IndicatorTriggerModel} from "../../model/indicator-trigger.model";
+import {AlertMessageModel} from '../../model/alert-message.model';
 import {ModelUserPublic} from "../../model/user-public.model";
 @Component({
     selector: 'app-add-indicator',
@@ -17,6 +18,9 @@ import {ModelUserPublic} from "../../model/user-public.model";
     providers: [CommonService]
 })
 export class AddIndicatorRiskMonitoringComponent implements OnInit {
+
+    alertMessageType = AlertMessageType;
+    private alertMessage: AlertMessageModel = null;
 
     public uid: string;
     public countryID: string;
@@ -77,6 +81,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     private usersForAssign: any = [];
 
     constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
+        this.initIndicatorData();
+    }
+
+
+    initIndicatorData() {
         this.indicatorData = new Indicator();
         this.addAnotherSource();
         this.addAnotherLocation();
@@ -159,23 +168,96 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
 
     saveIndicator() {
 
-        if (typeof (this.hazardID) == 'undefined') {
-            console.log('hazard iD is required');
-            return false;
-        }
-        this.indicatorData.triggerSelected = 0;
-        this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[0].durationType, this.indicatorData.trigger[0].frequencyValue);
+        this._validateData().then((isValid: boolean) => {
+            console.log(isValid);
+            if (isValid) {
+                this.indicatorData.triggerSelected = 0;
+                this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[0].durationType, this.indicatorData.trigger[0].frequencyValue);
+                var dataToSave = this.indicatorData;
 
-        var dataToSave = this.indicatorData;
+                this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.indicatorData.category)
+                    .push(dataToSave)
+                    .then(() => {
+                        this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
+                        this.initIndicatorData();
+                    }).catch((error: any) => {
+                        console.log(error, 'You do not have access!')
+                    });
+            }
+        });
 
-        this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.hazardID)
-            .push(dataToSave)
-            .then(() => {
-                console.log('success save data');
-            }).catch((error: any) => {
-                console.log(error, 'You do not have access!')
-            });
     }
+
+
+    _validateData() {
+
+        let promise = new Promise((res, rej) => {
+            this.alertMessage = this.indicatorData.validate();
+            if (this.alertMessage) {
+                res(false);
+            }
+            if (!this.alertMessage) {
+                this.indicatorData.source.forEach((val, key) => {
+                    this._validateIndicatorSource(val);
+                    if (this.alertMessage) {
+                        res(false);
+                    }
+                });
+                this.indicatorData.trigger.forEach((val, key) => {
+                    this._validateIndicatorTrigger(val);
+                    if (this.alertMessage) {
+                        res(false);
+                    }
+                });
+
+                if (!this.alertMessage) {
+                    if (this.indicatorData.geoLocation == 1) {
+                        this.indicatorData.affectedLocation.forEach((val, key) => {
+                            this._validateOperationArea(val);
+                            if (this.alertMessage) {
+                                res(false);
+                            }
+                        });
+                    }
+                }
+
+                if (!this.alertMessage) {
+                    res(true);
+                }
+
+            }
+        });
+        return promise;
+    }
+
+    _validateIndicatorSource(indicatorSource: IndicatorSourceModel): AlertMessageModel {
+        this.alertMessage = indicatorSource.validate();
+        return this.alertMessage;
+    }
+
+    _validateIndicatorTrigger(indicatorTrigger: IndicatorTriggerModel): AlertMessageModel {
+        this.alertMessage = indicatorTrigger.validate();
+        return this.alertMessage;
+    }
+
+    _validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
+
+
+        let excludeFields = [];
+        let countryLevel1Exists = operationArea.country
+            && this.countryLevelsValues[operationArea.country].levelOneValues
+            && this.countryLevelsValues[operationArea.country].levelOneValues.length > 0;
+        if (!countryLevel1Exists) {
+            excludeFields.push("level1", "level2");
+        } else if (countryLevel1Exists && operationArea.level1
+            && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
+                || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+            excludeFields.push("level2");
+        }
+        this.alertMessage = operationArea.validate(excludeFields);
+        return this.alertMessage;
+    }
+
 
     _calculationDueDate(durationType: number, frequencyValue: number) {
 
