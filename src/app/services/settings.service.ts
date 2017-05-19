@@ -4,11 +4,14 @@ import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
 import { PermissionSettingsModel } from "../model/permission-settings.model";
+import { ModuleSettingsModel } from "../model/module-settings.model";
 
 @Injectable()
 export class SettingsService {
 
   constructor(private af: AngularFire, private subscriptions: RxHelper) {}
+
+  // PERMISSIONS
 
   getPermissionSettings(agencyId: string, countryId: string): Observable<PermissionSettingsModel> {
     if (!agencyId || !countryId) {
@@ -37,5 +40,41 @@ export class SettingsService {
     permissionSettingsData['/countryOffice/' + agencyId + '/' + countryId +'/permissionSettings'] = permissionSettings;
     
     return this.af.database.object(Constants.APP_STATUS).update(permissionSettingsData);
+  }
+
+  // MODULES
+
+  getModulesSettings(countryId: string): Observable<ModuleSettingsModel[]> {
+    if (!countryId) {
+      return null;
+    }
+    const moduleSettingsSubscription = this.af.database.object(Constants.APP_STATUS + '/module/' + countryId)
+      .map(items => {
+        if (items.$key) {
+          let modules = [];
+          items.forEach(item => {
+            const module = new ModuleSettingsModel();
+            module.mapFromObject(item);
+            modules.push(module);
+          });
+
+          return modules;
+        }
+        return null;
+      });
+
+    return moduleSettingsSubscription;
+  }
+
+  saveModuleSettings(countryId: string, moduleSettings: ModuleSettingsModel[]): firebase.Promise<any> {
+    if (!countryId || !moduleSettings) {
+      throw new Error('Country or module value is null');
+    }
+
+    const moduleSettingsData = {};
+
+    moduleSettingsData['/module/' + countryId] = moduleSettings;
+    
+    return this.af.database.object(Constants.APP_STATUS).update(moduleSettingsData);
   }
 }

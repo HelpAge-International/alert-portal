@@ -9,6 +9,8 @@
         "CONTINUE": "Continue",
         "COMPLETE": "Complete",
         "INCOMPLETE": "Incomplete",
+        "ENABLED": "Enabled",
+        "DISABLED": "Disabled",
         "OF": "of",
         "CLOSE": "Close",
         "REMOVE": "Remove",
@@ -833,6 +835,14 @@
             "GRANTED_TO": "Granted to",
             "ACTIONS": "Actions",
             "SELECT_USER_TYPE": "Select user type"
+          },
+          "MODULES": {
+            "TITLE_TEXT": "Module Settings",
+            "MODULE": "Module",
+            "PRIVACY_SETTINGS": "Privacy settings",
+            "STATUS": "Status",
+            "SAVE_MODULES": "Save module settings",
+            "SAVED_SUCCESS": "Module Settings successfully saved"
           }
         },
         "MESSAGES": {
