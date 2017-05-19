@@ -111,6 +111,8 @@ import {DashboardSeasonalCalendarComponent} from './dashboard/dashboard-seasonal
 import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component';
 import {SessionService} from "./services/session.service";
 import {CommonService} from "./services/common.service";
+import { SettingsService } from "./services/settings.service";
+import { CountryAdminSettingsMenuComponent } from "./country-admin/settings/settings-menu/settings-menu.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -159,6 +161,7 @@ const firebaseAuthConfig = {
         CreateEditCountryComponent,
         CreateEditMpaComponent,
         SettingsMenuComponent,
+        CountryAdminSettingsMenuComponent,
         AgencyAdminMenuComponent,
         DepartmentComponent,
         SkillsComponent,
@@ -250,7 +253,7 @@ const firebaseAuthConfig = {
         //     storageType: 'localStorage'
         // })
     ],
-    providers: [RxHelper, Modal, UserService, SessionService, CommonService],
+    providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService],
     bootstrap: [AppComponent]
 })
 
