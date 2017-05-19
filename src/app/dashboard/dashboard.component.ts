@@ -59,7 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
         this.loadData();
@@ -67,7 +67,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
@@ -75,12 +74,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
     console.log(this.ngUnsubscribe);
-    // console.log(this.subscriptions);
-    // // this.subscriptions.releaseAll();
-    // this.subscriptions.subscriptions.forEach(result => {
-    //     result.unsubscribe();
-    // });
-    // console.log(this.subscriptions);
   }
 
   /**
