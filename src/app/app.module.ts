@@ -105,7 +105,6 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
-import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
 import { AgencySubmenuComponent } from './preparedness/agency-submenu/agency-submenu.component';
 import { CountrySubmenuComponent } from './preparedness/country-submenu/country-submenu.component';
 import { AlertWidgetComponent } from './commons/alert-widget/alert-widget.component';
