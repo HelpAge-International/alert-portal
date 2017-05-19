@@ -873,6 +873,31 @@
     "NO_RECIPIENTS_ERROR": "Please select the recipients group",
     "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)"
   },
+  "PERMISSIONS": {
+    "TITLE": "Permissions",
+    "CHS_ACTIONS": "CHS Actions",
+    "MANDATED_MPA": "Mandated MPA",
+    "CUSTOM_MPA": "Custom MPA",
+    "MANDATED_APA": "Mandated APA",
+    "CUSTOM_APA": "Custom APA",
+    "NOTES": "Notes",
+    "COUNTRY_CONTACTS": "Country Contacts",
+    "CROSS_COUNTRY": "Cross Country ( same agency )",
+    "INTER_AGENCY": "Inter-agency and cross country ( Full Access ) - Platform testing and restricted on configuration and access request",
+    "OTHER": "Other permissions",
+    "ASSIGN": "Assign",
+    "NEW": "New",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "ADD_NOTE": "Add note",
+    "COPY_ACTION": "Copy action",
+    "DOWNLOAD": "Download",
+    "VIEW": "View",
+    "VIEW_CONTACTS": "View contacts",
+    "DOWNLOAD_DOC": "Download documents",
+    "UPLOAD_DOC": "Upload documents",
+    "SAVED_PERMISSIONS": "Permission settings successfully saved"
+  },
   "AGENCY_HOME": {
     "AGENCY_ADMIN": "Agency Admin"
   },

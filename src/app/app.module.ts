@@ -111,6 +111,7 @@ import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-a
 import { SessionService } from "./services/session.service";
 import { CommonService } from "./services/common.service";
 import { CountryAdminSettingsMenuComponent } from "./country-admin/settings/settings-menu/settings-menu.component";
+import { SettingsService } from "./services/settings.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -250,7 +251,7 @@ const firebaseAuthConfig = {
       storageType: 'localStorage'
     })
   ],
-  providers: [RxHelper, Modal, UserService, SessionService, CommonService],
+  providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService],
   bootstrap: [AppComponent]
 })
 
