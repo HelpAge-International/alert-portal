@@ -17,6 +17,7 @@ declare var jQuery: any;
   templateUrl: './country-permission-settings.component.html',
   styleUrls: ['./country-permission-settings.component.css']
 })
+
 export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;

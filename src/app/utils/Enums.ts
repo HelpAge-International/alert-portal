@@ -517,3 +517,7 @@ export enum AlertLevels {
     Red = 2
 }
 
+export enum GeoLocation {
+    national = 0,
+    subnational = 1
+}

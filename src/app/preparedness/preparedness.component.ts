@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {RxHelper} from "../utils/RxHelper";
 import {Router} from "@angular/router";
@@ -13,7 +13,7 @@ declare var jQuery: any;
     templateUrl: './preparedness.component.html',
     styleUrls: ['./preparedness.component.css']
 })
-export class PreparednessComponent implements OnInit {
+export class PreparednessComponent implements OnInit, OnDestroy {
 
     submitted = false;
 
@@ -76,7 +76,13 @@ export class PreparednessComponent implements OnInit {
         });
         this.subscriptions.add(subscription);
     }
-
+ ngOnDestroy() {
+   try {
+     this.subscriptions.releaseAll()
+   } catch (e) {
+     console.log(e.message);
+   }
+ }
     saveAction(isValid: boolean) {
         if (!isValid || !this._isValidForm()) {
             return false;

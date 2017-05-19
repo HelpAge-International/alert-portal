@@ -3,10 +3,10 @@
  */
 
 export class ModelHazard {
-  public category: number;
-  public isSeasonal: boolean;
-  public isActive: boolean;
-  public location: Map<number, number>;
-  public risk: number;
-  public hazardScenario: number;
+    public category: number;
+    public isSeasonal: boolean;
+    public isActive: boolean;
+    public location: Map<number, number>;
+    public risk: number;
+    public hazardScenario: number;
 }

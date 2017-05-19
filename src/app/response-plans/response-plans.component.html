@@ -89,8 +89,8 @@
                     </div>
                     <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
                          [class.text-muted]="!getApproveStatus(approve)">
-                      {{getApproveStatus(approve)?'RESPONSE_PLANS.HOME.APPROVED':'RESPONSE_PLANS.HOME.WAITING_APPROVAL'
-                      | translate}}
+                      {{getApproveStatus(approve) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL'
+                      | translate)}}
                       <i class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
                 </div>
@@ -165,16 +165,17 @@
                   </button>
                 </div>
               </div>
-              <div class="row" *ngFor="let note of getNotes(plan)">
-                <div class="col-sm-3 text-left">
-                  {{note.time | date:'dd MMM yy'}}
-                </div>
-                <div class="col-sm-9">
-                  <div>{{note.content}}</div>
-                  <div><b>by {{getName(note.uploadBy)}}</b></div>
+              <div *ngIf="notesMap.get(plan.$key) != null">
+                <div class="row" *ngFor="let note of notesMap.get(plan.$key)">
+                  <div class="col-sm-3 text-left">
+                    {{note.time | date:'dd MMM yy'}}
+                  </div>
+                  <div class="col-sm-9">
+                    <div>{{note.content}}</div>
+                    <div><b>by {{getName(note.uploadBy)}}</b></div>
+                  </div>
                 </div>
               </div>
-
             </div>
           </div>
 

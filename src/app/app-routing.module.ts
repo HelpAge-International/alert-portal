@@ -78,6 +78,7 @@ import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add
 import {MapCountriesListComponent} from "./map/map-countries-list/map-countries-list.component";
 
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
+import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
 
@@ -166,6 +167,7 @@ const routes: Routes = [
     {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
     {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
+    {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 
     /**
      * Dashboard
@@ -200,6 +202,7 @@ const routes: Routes = [
     {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
+    {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
 
     /**
      * Maps
