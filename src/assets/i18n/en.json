@@ -843,6 +843,18 @@
             "STATUS": "Status",
             "SAVE_MODULES": "Save module settings",
             "SAVED_SUCCESS": "Module Settings successfully saved"
+          },
+          "CLOCK_SETTINGS": {
+            "TITLE_TEXT": "Clock settings",
+            "SAVE_SETTINGS": "Save clock settings",
+            "RISK_MONITORING": "Risk Monitoring",
+            "RISK_MONITORING_SHOW_LOGS": "Initially show log from the past:",
+            "RISK_MONITORING_HAZARD_VALID": "Hazards will remain valid for:",
+            "PREPAREDNESS": "Preparedness",
+            "PREPAREDNESS_MPA": "MPA's will remain green for:",
+            "RESPONSE_PLANS": "Response plans",
+            "RESPONSE_PLANS_STATE": "Response plans will remain in an approved state for:",
+            "SAVED_SUCCESS": "Clock Settings successfully saved"
           }
         },
         "MESSAGES": {

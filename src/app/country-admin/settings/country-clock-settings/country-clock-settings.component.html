@@ -1,3 +1,90 @@
-<p>
-  country-clock-settings works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-country-admin-settings-menu></app-country-admin-settings-menu>
+
+    
+	    <div class="Sub-header-title__wrap">
+	      <h2>{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.TITLE_TEXT" | translate }}</h2>
+	      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="goBack()">{{ "GLOBAL.CANCEL" | translate }}</button>
+	      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="submit()">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVE_SETTINGS" | translate }}</button>
+	    </div>
+	    <h4 class="System-admin--form-wrap">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING" | translate }}</h4>
+	    <div class="form-group">
+	        <label >{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING_SHOW_LOGS" | translate }}</label>
+	        <div class="row">
+              <div class="col-lg-2 col-md-3">
+                <select class="form-control" name="riskMonitoring_showlog_value"
+                   [(ngModel)] = "clockSettings && clockSettings.riskMonitoring.showLogsFrom.value" required>
+                  <option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+                </select>
+	          </div>
+              <div class="col-lg-2 col-md-3">
+								<select class="form-control" name="riskMonitoring_showlog_type"
+										[(ngModel)] = "clockSettings && clockSettings.riskMonitoring.showLogsFrom.durationType" required>
+									<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+								</select>
+	          </div>
+	        </div>
+	    </div>
+	    <div class="form-group">
+	      <label >{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING_HAZARD_VALID" | translate }}</label>
+	      <div class="row">
+	          <div class="col-lg-2 col-md-3">
+							<select class="form-control" name="riskMonitoring_hazards_value" 
+								[(ngModel)] = "clockSettings && clockSettings.riskMonitoring.hazardsValidFor.value" required>
+								<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+							</select>
+	          </div>
+						<div class="col-lg-2 col-md-3">
+							<select class="form-control" name="riskMonitoring_hazards_type" 
+								[(ngModel)] = "clockSettings && clockSettings.riskMonitoring.hazardsValidFor.durationType" required>
+								<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+							</select>
+						</div>
+	      </div>
+	    </div>
+	    <h4 class="System-admin--form-wrap">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS" | translate }}</h4>
+	    <div class="form-group">
+	      <label >{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS_MPA" | translate }}</label>
+	      <div class="row">
+	          <div class="col-lg-2 col-md-3">
+							<select class="form-control" name="preparedness_value"
+								[(ngModel)] = "clockSettings && clockSettings.preparedness.value" required>
+								<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+							</select>
+	          </div>
+	          <div class="col-lg-2 col-md-3">
+							<select class="form-control" name="preparedness_type"
+								[(ngModel)] = "clockSettings && clockSettings.preparedness.durationType" required>
+								<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+							</select>
+	          </div>
+	      </div>
+	    </div>
+	    <h4 class="System-admin--form-wrap">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RESPONSE_PLANS" | translate }}</h4>
+	    <div class="form-group">
+	      <label>{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RESPONSE_PLANS_STATE" | translate }}</label>
+	      <div class="row">
+	          <div class="col-lg-2 col-md-3">
+							<select class="form-control" name="responsePlans_value"
+								[(ngModel)] = "clockSettings && clockSettings.responsePlans.durationType" required>
+								<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+							</select>
+	          </div>
+              <div class="col-lg-2 col-md-3">
+                <select class="form-control" name="responsePlans_type"
+									[(ngModel)] = "clockSettings && clockSettings.responsePlans.durationType" required>
+                  <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
+                </select>
+	          </div>
+	      </div>
+	    </div>
+  </div>
+</div>
