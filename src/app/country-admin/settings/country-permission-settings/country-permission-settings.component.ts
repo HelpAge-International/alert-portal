@@ -61,7 +61,7 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
           this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
           this.countryId = countryAdminUser.countryId;
 
-          this._settingsService.getPermissionSettings(this.agencyId, this.countryId).subscribe(permissions => {
+          this._settingsService.getCountryPermissionSettings(this.agencyId, this.countryId).subscribe(permissions => {
             this.permissionSettings = permissions;
           })
         }
@@ -74,8 +74,14 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+validateForm(): boolean {
+    this.alertMessage = this.permissionSettings.validate();
+
+    return !this.alertMessage;
+  }
+
   submit() {
-      this._settingsService.savePermissionSettings(this.agencyId, this.countryId, this.permissionSettings)
+      this._settingsService.saveCountryPermissionSettings(this.agencyId, this.countryId, this.permissionSettings)
             .then(() => {
               this.alertMessage = new AlertMessageModel('PERMISSIONS.SAVED_PERMISSIONS', AlertMessageType.Success);
             })

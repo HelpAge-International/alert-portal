@@ -8,12 +8,12 @@
   <div class="Full-page__wrap--inner">
 
     <app-country-admin-settings-menu></app-country-admin-settings-menu>
-
-    
+		
+		<form (ngSubmit)="submit()">
 	    <div class="Sub-header-title__wrap">
 	      <h2>{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.TITLE_TEXT" | translate }}</h2>
 	      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="goBack()">{{ "GLOBAL.CANCEL" | translate }}</button>
-	      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="submit()">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVE_SETTINGS" | translate }}</button>
+	      <button type="submit" class="btn btn-primary Inline-editable--enable" (click)="validateForm()">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVE_SETTINGS" | translate }}</button>
 	    </div>
 	    <h4 class="System-admin--form-wrap">{{ "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING" | translate }}</h4>
 	    <div class="form-group">
@@ -86,5 +86,6 @@
 	          </div>
 	      </div>
 	    </div>
+			</form>
   </div>
 </div>

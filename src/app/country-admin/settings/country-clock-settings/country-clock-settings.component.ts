@@ -64,7 +64,14 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
     this.subscriptions.releaseAll();
   }
 
+  validateForm(): boolean {
+    this.alertMessage = this.clockSettings.validate();
+
+    return !this.alertMessage;
+  }
+
   submit() {
+
       this._settingsService.saveCountryClockSettings(this.agencyId, this.countryId, this.clockSettings)
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVED_SUCCESS', AlertMessageType.Success);

@@ -50,7 +50,7 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
         {
           this.countryId = countryAdminUser.countryId;
 
-          this._settingsService.getModulesSettings(this.countryId).subscribe(modules => {
+          this._settingsService.getCountryModulesSettings(this.countryId).subscribe(modules => {
             this.moduleSettings = modules;
           })
         }
@@ -67,8 +67,15 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
     module.privacy = value;
   }
 
+  validateForm(): boolean {
+    this.moduleSettings.forEach(module => {
+      this.alertMessage = module.validate();
+    })
+
+    return !this.alertMessage;
+  }
   submit() {
-      this._settingsService.saveModuleSettings(this.countryId, this.moduleSettings)
+      this._settingsService.saveCountryModuleSettings(this.countryId, this.moduleSettings)
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.MODULES.SAVED_SUCCESS', AlertMessageType.Success);
             })

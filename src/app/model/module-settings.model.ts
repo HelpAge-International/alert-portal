@@ -6,8 +6,13 @@ export class ModuleSettingsModel extends BaseModel{
   public status: boolean;
 
 
-  // No validation required
   validate(excludedFields = []): AlertMessageModel {
+    if (!this.privacy && !this.isExcluded('privacy', excludedFields)) {
+      return new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.MODULES.NO_PRIVACY');
+    }
+    if (!this.status && !this.isExcluded('status', excludedFields)) {
+      return new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.MODULES.NO_STATUS');
+    }
     return null;
   }
 }

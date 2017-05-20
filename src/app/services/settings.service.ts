@@ -12,9 +12,10 @@ export class SettingsService {
 
   constructor(private af: AngularFire, private subscriptions: RxHelper) {}
 
-  // PERMISSIONS
 
-  getPermissionSettings(agencyId: string, countryId: string): Observable<PermissionSettingsModel> {
+  // COUNTRY PERMISSIONS
+
+  getCountryPermissionSettings(agencyId: string, countryId: string): Observable<PermissionSettingsModel> {
     if (!agencyId || !countryId) {
       return null;
     }
@@ -32,7 +33,7 @@ export class SettingsService {
     return permissionSettingsSubscription;
   }
   
-  savePermissionSettings(agencyId: string, countryId: string, permissionSettings: PermissionSettingsModel): firebase.Promise<any> {
+  saveCountryPermissionSettings(agencyId: string, countryId: string, permissionSettings: PermissionSettingsModel): firebase.Promise<any> {
     if (!agencyId || !countryId) {
       return null;
     }
@@ -43,9 +44,10 @@ export class SettingsService {
     return this.af.database.object(Constants.APP_STATUS).update(permissionSettingsData);
   }
 
-  // MODULES
 
-  getModulesSettings(countryId: string): Observable<ModuleSettingsModel[]> {
+  // COUNTRY MODULES
+
+  getCountryModulesSettings(countryId: string): Observable<ModuleSettingsModel[]> {
     if (!countryId) {
       return null;
     }
@@ -67,7 +69,7 @@ export class SettingsService {
     return moduleSettingsSubscription;
   }
 
-  saveModuleSettings(countryId: string, moduleSettings: ModuleSettingsModel[]): firebase.Promise<any> {
+  saveCountryModuleSettings(countryId: string, moduleSettings: ModuleSettingsModel[]): firebase.Promise<any> {
     if (!countryId || !moduleSettings) {
       throw new Error('Country or module value is null');
     }
@@ -79,6 +81,9 @@ export class SettingsService {
     return this.af.database.object(Constants.APP_STATUS).update(moduleSettingsData);
   }
 
+
+  // COUNTRY CLOCK SETTINGS
+  
   getCountryClockSettings(agencyId:string, countryId: string): Observable<ClockSettingsModel>
   {
     if (!agencyId || !countryId) {
@@ -89,7 +94,6 @@ export class SettingsService {
         if (items.$key) {
           const clockSettings = new ClockSettingsModel();
           clockSettings.mapFromObject(items);
-          console.log(clockSettings);
           return clockSettings;
         }
         return null;

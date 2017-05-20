@@ -26,6 +26,36 @@ export class PermissionSettingsModel extends BaseModel {
   }
 
   validate(excludedFields = []): AlertMessageModel {
+    if (!this.chsActions && !this.isExcluded('chsActions', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_CSH_ACTIONS');
+    }
+    if (!this.mandatedApaAssign && !this.isExcluded('mandatedApaAssign', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_MANDATED_APA_ASSIGN');
+    }
+    if (!this.mandatedMpaAssign && !this.isExcluded('mandatedMpaAssign', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_MANDATED_MPA_ASSIGN');
+    }
+    if (!this.countryContacts && !this.isExcluded('countryContacts', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_COUNTRY_CONTACTS');
+    }
+    if (!this.crossCountry && !this.isExcluded('crossCountry', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_CROSS_COUNTRY');
+    }
+    if (!this.customApa && !this.isExcluded('customApa', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_CUSTOM_APA');
+    }
+    if (!this.customMpa && !this.isExcluded('customMpa', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_CUSTOM_MPA');
+    }
+    if (!this.interAgency && !this.isExcluded('interAgency', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_INTER_AGENCY');
+    }
+    if (!this.notes && !this.isExcluded('notes', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_NOTES');
+    }
+    if (!this.other && !this.isExcluded('other', excludedFields)) {
+      return new AlertMessageModel('PERMISSIONS.NO_OTHER');
+    }
     return null;
   }
 }

@@ -842,7 +842,9 @@
             "PRIVACY_SETTINGS": "Privacy settings",
             "STATUS": "Status",
             "SAVE_MODULES": "Save module settings",
-            "SAVED_SUCCESS": "Module Settings successfully saved"
+            "SAVED_SUCCESS": "Module Settings successfully saved",
+            "NO_PRIVACY": "Please select the privacy setting",
+            "NO_STATUS": "Please select the status"
           },
           "CLOCK_SETTINGS": {
             "TITLE_TEXT": "Clock settings",
@@ -854,7 +856,11 @@
             "PREPAREDNESS_MPA": "MPA's will remain green for:",
             "RESPONSE_PLANS": "Response plans",
             "RESPONSE_PLANS_STATE": "Response plans will remain in an approved state for:",
-            "SAVED_SUCCESS": "Clock Settings successfully saved"
+            "SAVED_SUCCESS": "Clock Settings successfully saved",
+            "NO_DURATION": "Please enter the duration",
+            "NO_PREPAREDNESS_DURATION": "Please enter the preparedness duration",
+            "NO_RESPONSE_PLANS_DURATION": "Please enter the response plans duration",
+            "NO_RISK_MONITORING_DURATION": "Please enter the risk monitoring duration"
           }
         },
         "MESSAGES": {
@@ -926,7 +932,17 @@
       "VIEW_CONTACTS": "View contacts",
       "DOWNLOAD_DOC": "Download documents",
       "UPLOAD_DOC": "Upload documents",
-      "SAVED_PERMISSIONS": "Permission settings successfully saved"
+      "SAVED_PERMISSIONS": "Permission settings successfully saved",
+      "NO_CSH_ACTIONS": "Please select permission for CHS Actions",
+      "NO_MANDATED_APA_ASSIGN": "Please select permission for Mandated APA",
+      "NO_MANDATED_MPA_ASSIGN": "Please select permission for Mandated MPA",
+      "NO_COUNTRY_CONTACTS": "Please select permission for Country Contacts",
+      "NO_CROSS_COUNTRY": "Please select permission for Cross Country",
+      "NO_CUSTOM_APA": "Please select permission for Custom APA",
+      "NO_CUSTOM_MPA": "Please select permission for Custom MPA",
+      "NO_INTER_AGENCY": "Please select permission for Inter Agency",
+      "NO_NOTES": "Please select permission for Notes",
+      "NO_OTHER": "Please select permission for Others"
     },
     "AGENCY_HOME": {
         "AGENCY_ADMIN": "Agency Admin"
