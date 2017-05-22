@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
 
   private uid: string;
@@ -101,7 +102,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
     this.getAgencyID().then(() => {
       this.getCountryData();
-
     });
     this.getSystemAdminID().then(() => {
       this.getSystemThreshold('minThreshold').then((minThreshold: any) => {
@@ -119,9 +119,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").takeUntil(this.ngUnsubscribe)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
-        this.countryId = countryId.$value;
-        res(true);
-      });
+          this.countryId = countryId.$value;
+          res(true);
+        });
     });
     return promise;
   }
@@ -131,9 +131,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
-        this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
-        res(true);
-      });
+          this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -190,9 +190,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').takeUntil(this.ngUnsubscribe)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((systemAdminIds: any) => {
-        this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
-        res(true);
-      });
+          this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -202,9 +202,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
-        this.countryLocation = location.$value;
-        res(true);
-      });
+          this.countryLocation = location.$value;
+          res(true);
+        });
     });
     return promise;
   }
@@ -214,9 +214,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).takeUntil(this.ngUnsubscribe)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((responsePlans: any) => {
-        this.getCountApprovalStatus(responsePlans);
-        res(true);
-      });
+          this.getCountApprovalStatus(responsePlans);
+          res(true);
+        });
     });
     return promise;
   }
@@ -248,9 +248,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((actions: any) => {
-        this.getPercenteActions(actions);
-        res(true);
-      });
+          this.getPercenteActions(actions);
+          res(true);
+        });
     });
     return promise;
   }
@@ -298,11 +298,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.mpaStatusColor = 'orange';
         this.mpaStatusIcon = 'fa-ellipsis-h';
       }
-      if (!percentageMinimumCompletedActions) {
+      if (!percentageMinimumCompletedActions || percentageMinimumCompletedActions < this.sysAdminMinThreshold[1].$value) {
         this.mpaStatusColor = 'red';
         this.mpaStatusIcon = 'fa-times'
       }
-
 
       if (percentageAdvancedCompletedActions && percentageAdvancedCompletedActions >= this.sysAdminAdvThreshold[0].$value) {
         this.advStatusColor = 'green';
@@ -312,7 +311,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.advStatusColor = 'orange';
         this.advStatusIcon = 'fa-ellipsis-h';
       }
-      if (!percentageAdvancedCompletedActions) {
+      if (!percentageAdvancedCompletedActions || percentageAdvancedCompletedActions < this.sysAdminAdvThreshold[1].$value) {
         this.advStatusColor = 'red';
         this.advStatusIcon = 'fa-times';
       }
@@ -333,8 +332,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((actions: any) => {
-        res(actions);
-      });
+          res(actions);
+        });
     });
     return promise;
   }
@@ -344,8 +343,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((threshold: any) => {
-        res(threshold);
-      });
+          res(threshold);
+        });
     });
     return promise;
   }
@@ -360,7 +359,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO - FIX
+  // TODO - FIX number of indicators
   private getHazards() {
 
     this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
@@ -378,8 +377,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       })
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(list => {
-        this.numberOfIndicatorsObject[list.$key] = Object.keys(list).length;
+      .subscribe(object => {
+        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).length;
       });
   }
 

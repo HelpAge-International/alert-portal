@@ -1,7 +1,6 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
@@ -36,13 +35,13 @@
               <i class="fa fa-times fa-2x fa-inverse" aria-hidden="true"></i>
             </div>
           </div>
-          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
             <div class="Icon__circle Icon--green Icon--lg">{{percentageCHS}}%</div>
           </div>
-          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
+          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
         </li>
       </ul>
     </div>
@@ -287,6 +286,9 @@
       </div>
     </div>
 
+    <!--TODO - Remove after calendar import-->
+    <button class="btn" routerLink="/dashboard/dashboard-seasonal-calendar">Temp Button</button>
+
     <div class="Widget-Group">
 
       <div class="Widget Risk-Monitoring">
@@ -294,14 +296,16 @@
         <ul class="list-inline">
           <li class="list-inline-item active">
             <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
+              <div
+                class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
             </div>
             <span>{{"DASHBOARD.CONTEXT" | translate}}</span>
             {{countryContextIndicators.length}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>
           <li class="list-inline-item" *ngFor="let hazard of hazards">
             <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
+              <div
+                class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
             </div>
             <span>{{HazardScenariosList[hazard.hazardScenario] | translate}}</span>
             {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}

@@ -17,10 +17,9 @@
       </li>
 
       <li class="Header_bar__country">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">PHL</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[countryLocation] | translate}}</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="#">Account Settings</a>
-          <a class="dropdown-item" href="#">Country Office configuration</a>
           <a class="dropdown-item" routerLink="/country-admin/country-my-agency">View My Agency</a>
           <a class="dropdown-item" routerLink="/country-admin/country-agencies">View agencies in my country</a>
           <a class="dropdown-item" (click)="logout()">
