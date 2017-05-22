@@ -240,8 +240,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     }
 
     _validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
-
-
         let excludeFields = [];
         let countryLevel1Exists = operationArea.country
             && this.countryLevelsValues[operationArea.country].levelOneValues

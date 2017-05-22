@@ -1152,7 +1152,22 @@
             "NO_TRIGGER_FREQUENCY_VALUE": "Please select indicator trigger frequency value",
             "NO_CATEGORY": "Please select hazard",
             "NO_GEO_LOCATION": "Please select geo location",
-            "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!"
+            "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
+            "TITLE_PAGE": "Add new indicator",
+            "INPUTS": {
+                "HAZARD": "Hazard",
+                "HAZARD_NOTE": "Note: Pre-filled based on the hazard I have select to add the indicator",
+                "INDICATOR": "Indicator",
+                "SOURCE_INFORMATION": "Source of information",
+                "ADD_ANOTHER_SOURCE": "Add another source",
+                "TRIGGER_VALUES": "Trigger Values",
+                "FREQUENCY_MONITORING": "Frequency of monitoring",
+                "ASSIGN_TO": "Assign to",
+                "GEO_LOCATION": "Geographical location of indicator monitoring",
+                "LOCATION_SELECT": "Please select the locations affected",
+                "ADD_ANOTHER_LOCATION": "Add another location"
+            },
+            "SAVE_INDICATOR": "Save new indicator"
         },
 
         "ADD_ALERT": {
