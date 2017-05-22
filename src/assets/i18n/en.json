@@ -1142,17 +1142,28 @@
         "INDICATORS": "indicators",
         "CONTEXT": "Context"
     },
-    "RISK_MONITORING" : {
-        "ADD_INDICATOR" : {
-            "NO_NAME" : "Please enter indicator name",
-            "NO_SOURCE_NAME" : "Please enter indicator source name",
-            "NO_SOURCE_LINK" : "Please enter indicator source link",
-            "NO_TRIGGER_VALUE" : "Please enter indicator trigger value",
-            "NO_TRIGGER_DURATION_TYPE" : "Please select indicator trigger duration type",
-            "NO_TRIGGER_FREQUENCY_VALUE" : "Please select indicator trigger frequency value",
-            "NO_CATEGORY" : "Please select hazard",
-            "NO_GEO_LOCATION" : "Please select geo location",
-            "SUCCESS_MESSAGE_ADD_INDICATOR" : "Indicator successfully saved!"
+    "RISK_MONITORING": {
+        "ADD_INDICATOR": {
+            "NO_NAME": "Please enter indicator name",
+            "NO_SOURCE_NAME": "Please enter indicator source name",
+            "NO_SOURCE_LINK": "Please enter indicator source link",
+            "NO_TRIGGER_VALUE": "Please enter indicator trigger value",
+            "NO_TRIGGER_DURATION_TYPE": "Please select indicator trigger duration type",
+            "NO_TRIGGER_FREQUENCY_VALUE": "Please select indicator trigger frequency value",
+            "NO_CATEGORY": "Please select hazard",
+            "NO_GEO_LOCATION": "Please select geo location",
+            "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!"
+        },
+
+        "ADD_ALERT": {
+            "NO_HAZARD": "Please select hazard",
+            "NO_ALERT_LEVEL": "Please select alert level",
+            "NO_ESTIMATED": "Please enter estimated population affected",
+            "NO_NOTES": "Please enter information sources and notes",
+            "NO_RED_REASONS_FOR_REQUEST": "Please enter reasons for red alert request"
+        },
+        "ADD_HAZARD": {
+            
         }
     }
 }

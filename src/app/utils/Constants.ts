@@ -478,6 +478,12 @@ export class Constants {
         "red"
     ];
 
+    static ALERT_BUTTON_CLASS = [
+        "success",
+        "warning",
+        "danger"
+    ];
+
 }
 
 export enum FILE_SETTING {

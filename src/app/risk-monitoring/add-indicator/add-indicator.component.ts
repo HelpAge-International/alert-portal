@@ -77,7 +77,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
         HazardScenario.HazardScenario26,
     ];
 
-    private hazardID: number;
     private usersForAssign: any = [];
 
     constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
