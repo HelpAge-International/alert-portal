@@ -294,17 +294,17 @@
         <ul class="list-inline">
           <li class="list-inline-item active">
             <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--country-context"></div>
+              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
             </div>
             <span>{{"DASHBOARD.CONTEXT" | translate}}</span>
-            4 {{"DASHBOARD.INDICATORS" | translate}}
+            {{countryContextIndicators.length}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>
           <li class="list-inline-item" *ngFor="let hazard of hazards">
             <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--cyclone"></div>
+              <div class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
             </div>
-            <span>{{HazardScenariosList[hazardObject[hazard.$key].hazardScenario]}}</span>
-            4 {{"DASHBOARD.INDICATORS" | translate}}
+            <span>{{HazardScenariosList[hazard.hazardScenario] | translate}}</span>
+            {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>
         </ul>
       </div>

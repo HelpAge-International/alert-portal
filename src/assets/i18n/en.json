@@ -431,7 +431,7 @@
     "GEO_LOCATION": {
       "NATIONAL": "National",
       "SUBNATIONAL": "Subnational"
-},
+    },
     "ALERTS": {
       "GREEN": "Green Alert",
       "AMBER": "Amber Alert",

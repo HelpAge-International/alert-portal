@@ -9,6 +9,7 @@ import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
 import {Subject} from "rxjs/Subject";
+import {HazardImages} from "../utils/HazardImages";
 
 @Component({
   selector: 'app-dashboard',
@@ -51,8 +52,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private alerts: Observable<any>;
 
   private hazards: any[] = [];
-  private hazardObject = {};
+  private numberOfIndicatorsObject = {};
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
+
+  private countryContextIndicators: any[] = [];
 
   constructor(private af: AngularFire, private router: Router,
               private subscriptions: RxHelper, private userService: UserService, private actionService: ActionsService) {
@@ -76,6 +79,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     console.log(this.ngUnsubscribe);
   }
 
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
+
   /**
    * Private functions
    */
@@ -84,6 +95,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getCountryId().then(() => {
       this.getApprovedResponsePlansCount();
       this.getAlerts();
+      this.getCountryContextIndicators();
       this.getHazards();
       this.initData();
     });
@@ -104,22 +116,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").takeUntil(this.ngUnsubscribe).subscribe((countryId: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").takeUntil(this.ngUnsubscribe)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((countryId: any) => {
         this.countryId = countryId.$value;
         res(true);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe).subscribe((agencyIds: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyIds: any) => {
         this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
         res(true);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
@@ -173,33 +187,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').takeUntil(this.ngUnsubscribe).subscribe((systemAdminIds: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').takeUntil(this.ngUnsubscribe)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((systemAdminIds: any) => {
         this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
         res(true);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location").takeUntil(this.ngUnsubscribe).subscribe((location: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((location: any) => {
         this.countryLocation = location.$value;
         res(true);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
 
   private getApprovedResponsePlansCount() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).takeUntil(this.ngUnsubscribe).subscribe((responsePlans: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).takeUntil(this.ngUnsubscribe)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((responsePlans: any) => {
         this.getCountApprovalStatus(responsePlans);
         res(true);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
@@ -228,11 +245,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAllActions() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((actions: any) => {
         this.getPercenteActions(actions);
         res(true);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
@@ -312,20 +330,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getActionsBySystemAdmin() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((actions: any) => {
         res(actions);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
 
   private getSystemThreshold(thresholdType: string) {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType).takeUntil(this.ngUnsubscribe).subscribe((threshold: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((threshold: any) => {
         res(threshold);
       });
-      this.subscriptions.add(subscription);
     });
     return promise;
   }
@@ -343,26 +363,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // TODO - FIX
   private getHazards() {
 
-    let subscription = this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
+    this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
       .flatMap(list => {
         this.hazards = [];
         let tempList = [];
         list.forEach(hazard => {
+          this.hazards.push(hazard);
           tempList.push(hazard);
-          this.hazardObject[hazard.$key] = hazard;
         });
         return Observable.from(tempList)
       })
       .flatMap(hazard => {
-        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key);
       })
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
-        this.hazards.push(x);
-        console.log(x);
+      .subscribe(list => {
+        this.numberOfIndicatorsObject[list.$key] = Object.keys(list).length;
       });
-    this.subscriptions.add(subscription);
+  }
+
+  private getCountryContextIndicators() {
+
+    this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => {
+        list.forEach(indicator => {
+          this.countryContextIndicators.push(indicator);
+        });
+      });
   }
 
   public getCountryCodeFromLocation(location: number) {
