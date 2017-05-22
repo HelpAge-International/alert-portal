@@ -861,6 +861,15 @@
             "NO_PREPAREDNESS_DURATION": "Please enter the preparedness duration",
             "NO_RESPONSE_PLANS_DURATION": "Please enter the response plans duration",
             "NO_RISK_MONITORING_DURATION": "Please enter the risk monitoring duration"
+          },
+          "NOTIFICATIONS": {
+              "TITLE_TEXT": "Default Notification settings",
+              "SAVE_SETTINGS": "Save notification settings",
+              "EVENTS": "Events",
+              "USERS_NOTIFIED": "Users notified",
+              "ACTIONS": "Actions",
+              "NOTIFICATION": "Notification",
+              "SAVED_SUCCESS": "Notification Settings successfully saved"
           }
         },
         "MESSAGES": {

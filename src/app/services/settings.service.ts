@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 import { PermissionSettingsModel } from "../model/permission-settings.model";
 import { ModuleSettingsModel } from "../model/module-settings.model";
 import { ClockSettingsModel } from "../model/clock-settings.model";
+import { NotificationSettingsModel } from "../model/notification-settings.model";
 
 @Injectable()
 export class SettingsService {
@@ -111,5 +112,37 @@ export class SettingsService {
     clockSettingsData['/countryOffice/' + agencyId + '/' + countryId + '/clockSettings'] = clockSettings;
     
     return this.af.database.object(Constants.APP_STATUS).update(clockSettingsData);
+  }
+
+
+  // COUNTRY NOTIFICATION SETTINGS
+
+  getCountryNotificationSettings(agencyId: string, countryId: string): Observable<NotificationSettingsModel[]> {
+
+    const notificationSettingsSubscription = 
+        this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/defaultNotificationSettings')
+      .map(items =>
+        {
+            const notificationSettings: NotificationSettingsModel[] = [];
+            items.forEach(item => {
+              const notificationSetting = new NotificationSettingsModel();
+              notificationSetting.mapFromObject(item);
+              notificationSettings.push(notificationSetting);
+            });
+            return notificationSettings;
+        });
+
+    return notificationSettingsSubscription;
+  }
+
+  saveCountryNotificationSettings(agencyId: string, countryId: string, notificationSettings: NotificationSettingsModel[]): firebase.Promise<any> {
+    if (!agencyId || !countryId) {
+      return null;
+    }
+
+    const notificationsSettingsData = {}; 
+    notificationsSettingsData['/countryOffice/' + agencyId + '/' + countryId + '/defaultNotificationSettings'] = notificationSettings;
+    
+    return this.af.database.object(Constants.APP_STATUS).update(notificationsSettingsData);
   }
 }

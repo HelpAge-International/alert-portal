@@ -113,6 +113,7 @@ import {SessionService} from "./services/session.service";
 import {CommonService} from "./services/common.service";
 import { SettingsService } from "./services/settings.service";
 import { CountryAdminSettingsMenuComponent } from "./country-admin/settings/settings-menu/settings-menu.component";
+import { EnumKeyValuesPipe } from "./utils/pipes/enum-keyValues.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -194,6 +195,7 @@ const firebaseAuthConfig = {
         NewAgencyDetailsComponent,
         KeysPipe,
         EnumKeysPipe,
+        EnumKeyValuesPipe,
         KeyValuesPipe,
         NewCountryDetailsComponent,
         NewCountryPasswordComponent,
