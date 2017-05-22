@@ -9,6 +9,8 @@ import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
 import {Subject} from "rxjs/Subject";
+import {ModelAlert} from "../model/alert.model";
+import {ModelAffectedArea} from "../model/affectedArea.model";
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +21,9 @@ import {Subject} from "rxjs/Subject";
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  private HAZARDS:string[] = Constants.HAZARD_SCENARIOS;
+
+  private alertList: ModelAlert[];
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private USER_TYPE: string = 'administratorCountry';
@@ -70,10 +75,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
+    // console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
+    this.actionService.unSubscribeNow();
+    // console.log(this.ngUnsubscribe);
   }
 
   /**
@@ -128,7 +134,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
-    let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId, this.uid)
+    this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
         this.actionsToday = [];
@@ -136,9 +142,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
       });
-    this.subscriptions.add(subscriptionActions);
 
-    let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
+    this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
@@ -168,7 +173,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           });
         }
       });
-    this.subscriptions.add(subscriptionIndicators);
   }
 
   private getSystemAdminID() {
@@ -331,13 +335,59 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts() {
+    this.alerts = this.actionService.getAlerts(this.countryId);
+    this.alerts
+      .subscribe(x => {
+        console.log(x)
+      })
+    // this.actionService.getAlerts(this.countryId)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(alertList => {
+    //     console.log(alertList);
+    //   })
 
-    this.alerts = this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {
-      query: {
-        orderByChild: "alertLevel",
-        equalTo: AlertLevels.Red
-      }
-    });
+    // this.actionService.getAlerts(this.countryId)
+    //   .map(alerts => {
+    //     this.alertList = [];
+    //     alerts.forEach(alert => {
+    //       let modelAlert = new ModelAlert();
+    //       modelAlert.id = alert.$key;
+    //       modelAlert.alertLevel = alert.alertLevel;
+    //       modelAlert.hazardScenario = alert.hazardScenario;
+    //       modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+    //       modelAlert.infoNotes = alert.infoNotes;
+    //       modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+    //       modelAlert.timeCreated = alert.timeCreated;
+    //       modelAlert.createdBy = alert.createdBy;
+    //
+    //       let affectedAreas: ModelAffectedArea[] = [];
+    //       let countries: string[] = Object.keys(alert.affectedAreas);
+    //       countries.forEach(country => {
+    //         let modelAffectedArea = new ModelAffectedArea();
+    //         modelAffectedArea.affectedCountry = Number(country);
+    //         modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] : '';
+    //         modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] : '';
+    //         affectedAreas.push(modelAffectedArea);
+    //       });
+    //       modelAlert.affectedAreas = affectedAreas;
+    //
+    //       modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+    //       modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+    //
+    //       this.alertList.push(modelAlert);
+    //     });
+    //     return this.alertList;
+    //   })
+    //   .do(alertList => {
+    //     alertList.forEach(alert => {
+    //       this.userService.getUser(alert.createdBy)
+    //         .takeUntil(this.ngUnsubscribe)
+    //         .subscribe(user => {alert.createdByName = user.firstName + " "+ user.lastName});
+    //     });
+    //   })
+    //   .subscribe(x => {
+    //     console.log(x)
+    //   });
   }
 
   // TODO - FIX
@@ -360,7 +410,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(x => {
         this.hazards.push(x);
-        console.log(x);
+        // console.log(x);
       });
     this.subscriptions.add(subscription);
   }
@@ -379,6 +429,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getIndicatorName(indicator): string {
     return this.actionService.getIndicatorTitle(indicator);
+  }
+
+  updateAlert(alertId) {
+    this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
   }
 
 
