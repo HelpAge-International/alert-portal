@@ -8,6 +8,7 @@ import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {AlertModel} from "../../model/alert.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
+import {ModelHazard} from '../../model/hazard.model';
 
 @Component({
     selector: 'app-create-alert',
@@ -21,13 +22,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
     private alertMessage: AlertMessageModel = null;
 
     public uid: string;
-    public countryID: string;
+    private countryID: string;
+    private directorCountryID: string;
     private alertData: any;
 
     private alertLevels = Constants.ALERT_LEVELS;
     private alertColors = Constants.ALERT_COLORS;
     private alertButtonsClass = Constants.ALERT_BUTTON_CLASS;
-    private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
+    private alertLevelsList: number[] = [AlertLevels.Amber, AlertLevels.Red];
 
     private durationType = Constants.DURATION_TYPE;
     private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
@@ -40,35 +42,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
     private countryLevelsValues: any[] = [];
 
     private hazardScenario = Constants.HAZARD_SCENARIOS;
-    private hazardScenariosList: number[] = [
-        HazardScenario.HazardScenario0,
-        HazardScenario.HazardScenario1,
-        HazardScenario.HazardScenario2,
-        HazardScenario.HazardScenario3,
-        HazardScenario.HazardScenario4,
-        HazardScenario.HazardScenario5,
-        HazardScenario.HazardScenario6,
-        HazardScenario.HazardScenario7,
-        HazardScenario.HazardScenario8,
-        HazardScenario.HazardScenario9,
-        HazardScenario.HazardScenario10,
-        HazardScenario.HazardScenario11,
-        HazardScenario.HazardScenario12,
-        HazardScenario.HazardScenario13,
-        HazardScenario.HazardScenario14,
-        HazardScenario.HazardScenario15,
-        HazardScenario.HazardScenario16,
-        HazardScenario.HazardScenario17,
-        HazardScenario.HazardScenario18,
-        HazardScenario.HazardScenario19,
-        HazardScenario.HazardScenario20,
-        HazardScenario.HazardScenario21,
-        HazardScenario.HazardScenario22,
-        HazardScenario.HazardScenario23,
-        HazardScenario.HazardScenario24,
-        HazardScenario.HazardScenario25,
-        HazardScenario.HazardScenario26,
-    ];
+
+    private hazards: any[] = [];
 
     constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
         this.initAlertData();
@@ -83,11 +58,18 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
         this.alertData.affectedAreas.push(new OperationAreaModel());
     }
 
+    removeAnotherArea(key: number, ) {
+        this.alertData.affectedAreas.splice(key, 1);
+    }
+
     ngOnInit() {
         let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
                 this.uid = auth.uid;
-                this.getCountryID();
+                this._getCountryID().then(() => {
+                    this._getHazards();
+                    this._getDirectorCountryID();
+                });
 
                 // get the country levels values
                 this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -103,7 +85,38 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
         this.subscriptions.add(subscription);
     }
 
-    getCountryID() {
+    saveAlert() {
+
+        if (!this.directorCountryID) {
+            this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_DIRECTOR_COUNTRY_ID');
+            return false;
+        }
+
+        this._validateData().then((isValid: boolean) => {
+            if (isValid) {
+
+                this.alertData.createdBy = this.uid;
+                this.alertData.timeCreated = this._getCurrentTimestamp();
+                this.alertData.approval['countryDirector'] = [];
+                this.alertData.approval['countryDirector'][this.directorCountryID] = 0;
+
+
+                var dataToSave = this.alertData;
+
+                this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
+                    .push(dataToSave)
+                    .then(() => {
+                        this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
+                        this.initAlertData();
+                    }).catch((error: any) => {
+                        console.log(error, 'You do not have access!')
+                    });
+                //
+            }
+        });
+    }
+
+    _getCountryID() {
         let promise = new Promise((res, rej) => {
             let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryID: any) => {
                 this.countryID = countryID.$value ? countryID.$value : "";
@@ -112,14 +125,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
             this.subscriptions.add(subscription);
         });
         return promise;
-    }
-
-    saveAlert() {
-        this._validateData().then((isValid: boolean) => {
-            if (isValid) {
-                console.log('!!!!!!!!!!!!!!!');
-            }
-        });
     }
 
     _validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
@@ -140,7 +145,13 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
 
     _validateData() {
         let promise = new Promise((res, rej) => {
-            this.alertMessage = this.alertData.validate();
+
+            var excludedFields = [];
+            if (typeof (this.alertData.alertLevel) == 'undefined' || this.alertData.alertLevel == 1) {
+                excludedFields.push('reasonForRedAlert');
+            }
+
+            this.alertMessage = this.alertData.validate(excludedFields);
             if (this.alertMessage) {
                 res(false);
             }
@@ -161,6 +172,34 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
             }
         });
         return promise;
+    }
+
+    _getHazards() {
+        let promise = new Promise((res, rej) => {
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazards: any) => {
+                this.hazards = [];
+                for (let hazard in hazards) {
+                    this.hazards.push(hazards[hazard]);
+                }
+            });
+            this.subscriptions.add(subscription);
+        });
+    }
+
+    _getDirectorCountryID() {
+        let promise = new Promise((res, rej) => {
+            let subscription = this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryID).subscribe((directorCountryID: any) => {
+                this.directorCountryID = directorCountryID.$value ? directorCountryID.$value : false;
+
+            });
+            this.subscriptions.add(subscription);
+        });
+        return promise;
+    }
+
+    _getCurrentTimestamp() {
+        var currentTimeStamp = new Date().getTime();
+        return currentTimeStamp;
     }
 
     private navigateToLogin() {

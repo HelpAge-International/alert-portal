@@ -13,22 +13,29 @@ export class AlertModel extends BaseModel {
     public infoNotes: string;
     public reasonForRedAlert: string;
     public affectedAreas: any[] = [];
+    public createdBy: string;
+    public timeCreated: number;
+    public approval: any[] = [];
 
     validate(excludedFields = []): AlertMessageModel {
         if (typeof (this.hazardScenario) == 'undefined' && !this.isExcluded('hazardScenario', excludedFields)) {
-            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_CATEGORY');
+            return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_HAZARD');
         }
 
         if (typeof (this.alertLevel) == 'undefined' && !this.isExcluded('alertLevel', excludedFields)) {
-            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_NAME');
+            return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_ALERT_LEVEL');
+        }
+
+        if (!this.reasonForRedAlert && !this.isExcluded('reasonForRedAlert', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_REASONS_FOR_REQUEST');
         }
 
         if (!this.estimatedPopulation && !this.isExcluded('estimatedPopulation', excludedFields)) {
-            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_GEO_LOCATION');
+            return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_ESTIMATED');
         }
 
         if (!this.infoNotes && !this.isExcluded('infoNotes', excludedFields)) {
-            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_GEO_LOCATION');
+            return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_NOTES');
         }
 
         return null;

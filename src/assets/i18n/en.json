@@ -1160,10 +1160,23 @@
             "NO_ALERT_LEVEL": "Please select alert level",
             "NO_ESTIMATED": "Please enter estimated population affected",
             "NO_NOTES": "Please enter information sources and notes",
-            "NO_RED_REASONS_FOR_REQUEST": "Please enter reasons for red alert request"
+            "NO_REASONS_FOR_REQUEST": "Please enter reasons for red alert request",
+            "SUCCESS_MESSAGE_ADD_ALERT": "Alert successfully saved!",
+            "NO_DIRECTOR_COUNTRY_ID": "No country director is assigned to your country",
+            "TITLE_PAGE": "Create an alert",
+            "INPUTS": {
+                "SELECT_ALERT": "Select the Alert Level",
+                "AFFECTED_AREAS": "Affected areas",
+                "LOCATION_SELECT": "Please select the locations affected",
+                "ESMITATED_POPULATION_AFFECTED": "Estimated population affected",
+                "INFORMATION_SOURCE_NOTES": "Information sources and notes",
+                "ADD_ANOTHER_AREAS": "Add another areas"
+            },
+            "CONFIRM_ALERT_LEVEL": "Confirm alert level"
         },
         "ADD_HAZARD": {
-            
-        }
+
+        },
+        "TITLE": "Risk Monitoring"
     }
 }

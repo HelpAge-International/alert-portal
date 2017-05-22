@@ -7,53 +7,52 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-        <div class="Back--button row" routerLink="/risk-monitoring">Risk Monitoring</div> <!-- Back button-->
+        <div class="Back--button row" routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</div> <!-- Back button-->
         <div class="Header-title__wrap--risk Spaced-above">
-            <h1>Create an alert</h1>
+            <h1>{{"RISK_MONITORING.ADD_ALERT.TITLE_PAGE" | translate}}</h1>
         </div>
         <div class="Ribbon__section__wrap--risk Spaced"></div>
         <div class="row Spaced-above"> <!-- Alert selection section start -->
             <div></div>
         </div>
-
-        <!--Earthquake-->
-        <div class="row" style="width:100%" *ngFor="let hazardKey of hazardScenariosList">
-             <label for="RT_yes" class="Checkbox--ribbon__alert Left col-sm-5">
-                <input type="radio" name="RT" id="RT_yes" [(ngModel)]="alertData.hazardScenario" [value]="hazardKey">
-                <div class="risk-icon__components"><img src="assets/images/risks/earthquake.svg"></div>
-                <p><b>{{hazardScenario[hazardKey] | translate}}</b>Risk 10.0</p>
+               
+        <div class="row" style="width:100%" *ngFor="let hazard of hazards; let key = index">
+             <label for="hazard_{{hazard.hazardScenario}}" class="Checkbox--ribbon__alert Left col-sm-5">
+                <input type="radio" name="hazard" id="hazard_{{hazard.hazardScenario}}" [(ngModel)]="alertData.hazardScenario" [value]="hazard.hazardScenario">
+                <div class="risk-icon__components"><img src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>
+                <p><b>{{hazardScenario[hazard.hazardScenario] | translate}}</b>Risk {{hazard.risk}}</p>
             </label>
-            <p class="col-sm-4 align-self-center" *ngIf="!hazardKey">Note: This list will only display hazards that are being monitored</p>
+            <p class="col-sm-4 align-self-center" *ngIf="!key">Note: This list will only display hazards that are being monitored</p>
         </div>
 
         <!--Select Alert level-->
         <br>
-        <h6 class="Spaced-above"><b>Select the Alert Level</b></h6>
+        <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.SELECT_ALERT" | translate}}</b></h6>
 
         <div class="Radio__button--warning--js row Spaced-above">
             <!--amber alert-->
             <label for="RT_yes" class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
-                <input type="radio" name="alert1" id="RT_yes">
+                <input type="radio" name="alert1" id="RT_yes" [(ngModel)]="alertData.alertLevel" [value]="1">
             </label>
-            <button class="btn btn-warning Left">Amber Alert Level</button>
+            <button class="btn btn-warning Left">{{alertLevels[1] | translate}}</button>
             <!--red alert -->
             <label for="RT_yes" class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
-                <input type="radio" name="alert1" checked="uncheck">
+                <input type="radio" name="alert1" checked="uncheck" [(ngModel)]="alertData.alertLevel" [value]="2">
             </label>
-            <button class="btn btn-danger Left">Red Alert Level</button>
+            <button class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
         </div>
 
         <br>
-        <h6 class="Spaced-above"><b>Reasons for red alert request</b></h6>
-        <div class="Spaced-above form-group col-sm-12 row">
-            <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5" id="smFormGroupInput">
+        <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>Reasons for red alert request</b></h6>
+        <div class="Spaced-above form-group col-sm-12 row" *ngIf="alertData.alertLevel && alertData.alertLevel == 2">
+            <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="alertData.reasonForRedAlert">
         </div>
 
         <!--Affected Areas-->
         <br><br>
-        <h6 class="Spaced-above font-weight-bold">Affected area(s)</h6>
+        <h6 class="Spaced-above font-weight-bold">{{"RISK_MONITORING.ADD_ALERT.INPUTS.AFFECTED_AREAS" | translate}}</h6>
         <div class="locations_affected__wrap--risk row text-left Spaced-above">
-            <p class="col-sm-12"><b>Please select the locations affected</b></p><br>
+            <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
             <div class="col-sm-12 row" *ngFor="let location of alertData.affectedAreas; let locationKey = index">
                  <div class="col-sm-3">
                     <div class="form-group-risk-frequency ">
@@ -80,7 +79,6 @@
                     <div class="form-group-risk-frequency ">
                         <select class="form-control" name="CountryAreaLevelTwo"
                                 [(ngModel)] = "location.level2">
-                            <a href="../../../../../alert-html-portal/dev/risk_monitoring_create_alert_red.html"></a>
                             <option value="undefined" disabled selected hidden>
                                 {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[1].value | translate }}</option>
                             <option 
@@ -90,23 +88,23 @@
                     </div>
                 </div>
                 <div class="col-sm-3">
-                    <a href="javascript:void(0)" class="text-danger" *ngIf = "alertData.affectedAreas.length > 1" (click) = "removeAnotherLocation(locationKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
+                    <a href="javascript:void(0)" class="text-danger" *ngIf = "alertData.affectedAreas.length > 1" (click) = "removeAnotherArea(locationKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
                 </div>
             </div>
 
-            <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherLocation()">+ Add another location</a>
+            <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherAreas()">+ {{"RISK_MONITORING.ADD_ALERT.INPUTS.ADD_ANOTHER_AREAS" | translate}}</a>
         </div>
 
         <!--Estimated Population Affected -->
         <br>
-        <h6 class="Spaced-above"><b>Estimated population affected</b></h6>
+        <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.ESMITATED_POPULATION_AFFECTED" | translate}}</b></h6>
         <div class="Spaced-above form-group col-sm-12 row">
             <input type="text" class="form-control form-control-sm col-sm-5" [(ngModel)]="alertData.estimatedPopulation" id="smFormGroupInput">
         </div>
 
         <!--Information sources and notes -->
         <br>
-        <h6><b>Information sources and notes</b></h6>
+        <h6><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.INFORMATION_SOURCE_NOTES" | translate}}</b></h6>
         <div class="Spaced-above form-group col-sm-12 row">
             <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5" [(ngModel)]="alertData.infoNotes" id="smFormGroupInput">
         </div>
@@ -114,10 +112,9 @@
         <!--Confirm/cancel buttons-->
         <br>
         <div class="Form-submit__wrapper">
-            <div class="btn btn-primary" (click)="saveAlert()">Confirm alert level</div>
-            <div class="btn btn-outline-secondary">Cancel</div>
+            <div class="btn btn-primary" (click)="saveAlert()">{{"RISK_MONITORING.ADD_ALERT.CONFIRM_ALERT_LEVEL" | translate}}</div>
+            <div class="btn btn-outline-secondary">{{"GLOBAL.CANCEL" | translate}}</div>
         </div>
-
 
     </div>
 </div>
