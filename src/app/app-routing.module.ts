@@ -176,6 +176,7 @@ const routes: Routes = [
     {path: 'dashboard', component: DashboardComponent},
     {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
     {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
+    {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
 
     /**
      * Risk Monitoring

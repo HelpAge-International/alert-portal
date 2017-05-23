@@ -4,11 +4,17 @@ import {Constants} from "../utils/Constants";
 import * as moment from "moment";
 import {Observable} from "rxjs/Observable";
 import {ActionLevel, ActionType, AlertLevels} from "../utils/Enums";
+import {ModelAlert} from "../model/alert.model";
+import {ModelAffectedArea} from "../model/affectedArea.model";
+import {UserService} from "./user.service";
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class ActionsService {
 
-  constructor(private af: AngularFire) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private userService: UserService) {
   }
 
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
@@ -85,6 +91,115 @@ export class ActionsService {
       title = "A red level indicator needs to be completed"
     }
     return title;
+  }
+
+  getAlerts(countryId) {
+
+    return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
+      query: {
+        orderByChild: "alertLevel",
+        startAt: AlertLevels.Amber
+      }
+    })
+      .map(alerts => {
+        let alertList = [];
+        alerts.forEach(alert => {
+          let modelAlert = new ModelAlert();
+          modelAlert.id = alert.$key;
+          modelAlert.alertLevel = alert.alertLevel;
+          modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+          modelAlert.infoNotes = alert.infoNotes;
+          modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+          modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.createdBy = alert.createdBy;
+
+          let affectedAreas: ModelAffectedArea[] = [];
+          let countries: string[] = Object.keys(alert.affectedAreas);
+          countries.forEach(country => {
+            let modelAffectedArea = new ModelAffectedArea();
+            modelAffectedArea.affectedCountry = Number(country);
+            modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] : '';
+            modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] : '';
+            affectedAreas.push(modelAffectedArea);
+          });
+          modelAlert.affectedAreas = affectedAreas;
+
+          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+
+          alertList.push(modelAlert);
+        });
+        return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          this.userService.getUser(alert.createdBy)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              alert.createdByName = user.firstName + " " + user.lastName
+            });
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          let displayArea: string[] = [];
+          alert.affectedAreas.forEach(area => {
+            if (area.affectedLevel2) {
+              displayArea.push(area.affectedLevel2);
+            } else if (area.affectedLevel1) {
+              displayArea.push(area.affectedLevel1);
+            } else {
+              displayArea.push(area.affectedCountry);
+            }
+          });
+          alert.affectedAreasDisplay = displayArea;
+        });
+      });
+  }
+
+  getAlert(alertId, countryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId)
+      .map(alert => {
+        let modelAlert = new ModelAlert();
+        modelAlert.id = alert.$key;
+        modelAlert.alertLevel = alert.alertLevel;
+        modelAlert.hazardScenario = alert.hazardScenario;
+        modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+        modelAlert.infoNotes = alert.infoNotes;
+        modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+        modelAlert.timeCreated = alert.timeCreated;
+        modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
+        modelAlert.createdBy = alert.createdBy;
+
+        let affectedAreas: ModelAffectedArea[] = [];
+        let countries: string[] = Object.keys(alert.affectedAreas);
+        countries.forEach(country => {
+          let modelAffectedArea = new ModelAffectedArea();
+          modelAffectedArea.affectedCountry = Number(country);
+          modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] : '';
+          modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] : '';
+          affectedAreas.push(modelAffectedArea);
+        });
+        modelAlert.affectedAreas = affectedAreas;
+
+        modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+        modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+
+        return modelAlert;
+      })
+      .do(modelAlert => {
+        this.userService.getUser(modelAlert.createdBy)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
+            modelAlert.createdByName = user.firstName + " " + user.lastName
+          });
+      });
+  }
+
+  unSubscribeNow() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

@@ -12,10 +12,11 @@
         <div class="row align-items-center Small-spaced no-gutters">
           <div class="col-6">
             <span class="Icon Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></span>
-            Typhoon
+            {{HAZARDS[loadedAlert?.hazardScenario] | translate}}
           </div>
           <div class="col-6 text-right">
-            Last updated <strong>10/06/2016</strong>
+            Last updated <strong>{{(loadedAlert?.timeUpdated>0) ? (loadedAlert?.timeUpdated | date:"dd/MM/yyyy") :
+            (loadedAlert?.timeCreated | date:"dd/MM/yyyy")}}</strong>
           </div>
         </div>
       </div>
@@ -26,23 +27,30 @@
         <label>Select the Alert Level</label>
         <div class="row no-gutters Change-alert-level">
           <label for="green-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
-                                                                             id="green-alert-level"><span
+                                                                             id="green-alert-level"
+                                                                             [checked]="loadedAlert?.alertLevel==0"
+                                                                             (click)="selectedAlertLevel(0)"><span
             class="badge badge-success">Green Alert Level</span></label>
           <label for="amber-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
-                                                                             id="amber-alert-level"><span
+                                                                             id="amber-alert-level"
+                                                                             [checked]="loadedAlert?.alertLevel==1"
+                                                                             (click)="selectedAlertLevel(1)"><span
             class="badge badge-warning">Amber Alert Level</span></label>
           <label for="red-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
-                                                                           id="red-alert-level"><span
+                                                                           id="red-alert-level"
+                                                                           [checked]="loadedAlert?.alertLevel==2"
+                                                                           (click)="selectedAlertLevel(2)"><span
             class="badge badge-danger">Red Alert Level</span></label>
         </div>
       </div>
     </div>
 
-    <div class="row">
+    <div *ngIf="loadedAlert?.alertLevel==2" class="row">
       <div class="col-lg-6 col-md-8">
         <div class="form-group">
           <label for="reason-red-alert">Reason for red alert request</label>
-          <textarea name="reason-red-alert" id="reason-red-alert" cols="20" rows="5" class="form-control"></textarea>
+          <textarea name="reason-red-alert" id="reason-red-alert" cols="20" rows="5" class="form-control"
+                    [(ngModel)]="reasonForRedAlert"></textarea>
         </div>
       </div>
     </div>
@@ -50,48 +58,52 @@
     <div class="row Spaced">
       <div class="col-md-12 form-group">
         <label>Affected area(s)</label>
-        <div class="row align-items-center">
-          <div class="col-sm-3 form-group">
-            <select class="form-control">
-              <option selected hidden disabled>Please select</option>
-            </select>
-          </div>
-          <div class="col-sm-3 form-group">
-            <select class="form-control">
-              <option selected hidden disabled>Please select</option>
-            </select>
-          </div>
-          <div class="col-sm-3 form-group">
-            <select class="form-control">
-              <option selected hidden disabled>Please select</option>
-            </select>
-          </div>
-          <div class="col-sm-3 form-group">
-            <a href="#" class="text-danger">Remove</a>
-          </div>
-        </div>
-        <div class="row align-items-center">
-          <div class="col-sm-3 form-group">
-            <select class="form-control">
-              <option selected hidden disabled>Please select</option>
-            </select>
-          </div>
-          <div class="col-sm-3 form-group">
-            <select class="form-control">
-              <option selected hidden disabled>Please select</option>
-            </select>
-          </div>
-          <div class="col-sm-3 form-group">
-            <select class="form-control">
-              <option selected hidden disabled>Please select</option>
-            </select>
-          </div>
-          <div class="col-sm-3 form-group">
-            <a href="#" class="text-danger">Remove</a>
+
+        <div *ngIf="loadedAlert">
+          <div *ngFor="let area of loadedAlert.affectedAreas; index as i" class="row align-items-center">
+            <div class="col-sm-3 form-group">
+              <select class="form-control">
+                <option selected hidden disabled>Please select</option>
+              </select>
+            </div>
+            <div class="col-sm-3 form-group">
+              <select class="form-control">
+                <option selected hidden disabled>Please select</option>
+              </select>
+            </div>
+            <div class="col-sm-3 form-group">
+              <select class="form-control">
+                <option selected hidden disabled>Please select</option>
+              </select>
+            </div>
+            <div *ngIf="loadedAlert?.affectedAreas?.length>1" class="col-sm-3 form-group">
+              <a href="javascript:void(0)" class="text-danger" (click)="removeArea(i)">Remove</a>
+            </div>
           </div>
         </div>
+        <!--<div class="row align-items-center">-->
+        <!--<div class="col-sm-3 form-group">-->
+        <!--<select class="form-control">-->
+        <!--<option selected hidden disabled>Please select</option>-->
+        <!--</select>-->
+        <!--</div>-->
+        <!--<div class="col-sm-3 form-group">-->
+        <!--<select class="form-control">-->
+        <!--<option selected hidden disabled>Please select</option>-->
+        <!--</select>-->
+        <!--</div>-->
+        <!--<div class="col-sm-3 form-group">-->
+        <!--<select class="form-control">-->
+        <!--<option selected hidden disabled>Please select</option>-->
+        <!--</select>-->
+        <!--</div>-->
+        <!--<div class="col-sm-3 form-group">-->
+        <!--<a href="#" class="text-danger">Remove</a>-->
+        <!--</div>-->
+        <!--</div>-->
+
         <div class="row no-gutters">
-          <a href="#" class="Add__row__cta">Add another location</a>
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addNewArea()">Add another location</a>
         </div>
       </div>
     </div>
@@ -100,7 +112,7 @@
       <div class="col-lg-6 col-md-8">
         <div class="form-group">
           <label for="pop-affected">Estimated population affected</label>
-          <input type="text" class="form-control" id="pop-affected">
+          <input type="text" class="form-control" id="pop-affected" [(ngModel)]="estimatedPopulation">
         </div>
       </div>
     </div>
@@ -110,7 +122,7 @@
         <div class="form-group">
           <label for="info-sources-notes">Information sources and notes</label>
           <textarea name="info-sources-notes" id="info-sources-notes" cols="20" rows="5"
-                    class="form-control"></textarea>
+                    class="form-control" [(ngModel)]="infoNotes"></textarea>
         </div>
       </div>
     </div>
