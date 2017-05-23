@@ -13,63 +13,8 @@
       </div>
     </div>
 
-    <div id="target2" class="timeline-tgt Spaced">
+    <div id="target2" #target class="timeline-tgt Spaced">
     </div>
-
-
-    <!-- Bundle of scripts required to run chronoline, take note of Jquery Version -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css"
-          href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.0.1/jquery.qtip.min.css"/>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.0.1/jquery.qtip.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script type="text/javascript" src="assets/js/vendor/chronoline.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function () {
-
-        var events = [
-          {
-            dates: [new Date(2016, 4, 23), new Date(2018, 6, 25)],
-            title: "Earth",
-            eventHeight: 30,
-            section: 1,
-            attrs: {fill: "#d4e3fd", stroke: "#d4e3fd"}
-          },
-          {
-            dates: [new Date(2017, 7, 23), new Date(2017, 9, 26)],
-            title: "Wind",
-            eventHeight: 20,
-            section: 1,
-            attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
-          },
-          {
-            dates: [new Date(2017, 4, 26), new Date(2017, 6, 28)],
-            title: "Fire",
-            eventHeight: 10,
-            section: 1,
-            attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
-          },
-        ];
-
-        var timeline2 = new Chronoline(document.getElementById("target2"), events,
-          {
-            visibleSpan: DAY_IN_MILLISECONDS * 91,
-            animated: true,
-            tooltips: true,
-            sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
-            labelInterval: isFifthDay,
-            hashInterval: isFifthDay,
-            scrollLeft: prevMonth,
-            scrollRight: nextMonth,
-            // markToday: 'labelBox',
-            draggable: true
-          });
-
-
-      });
-    </script>
-
-
   </div>
 </div>
 
