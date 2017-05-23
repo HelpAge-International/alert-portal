@@ -8,13 +8,15 @@ import {ModelAlert} from "../model/alert.model";
 import {ModelAffectedArea} from "../model/affectedArea.model";
 import {UserService} from "./user.service";
 import {Subject} from "rxjs/Subject";
+import {CommonService} from "./common.service";
+import {ModelJsonLocation} from "../model/json-location.model";
 
 @Injectable()
 export class ActionsService {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private userService: UserService) {
+  constructor(private af: AngularFire, private userService: UserService, private jsonService: CommonService) {
   }
 
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
@@ -175,10 +177,11 @@ export class ActionsService {
         let affectedAreas: ModelAffectedArea[] = [];
         let countries: string[] = Object.keys(alert.affectedAreas);
         countries.forEach(country => {
+          console.log(alert.affectedAreas[0])
           let modelAffectedArea = new ModelAffectedArea();
           modelAffectedArea.affectedCountry = Number(country);
-          modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] : '';
-          modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] : '';
+          modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'];
+          modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'];
           affectedAreas.push(modelAffectedArea);
         });
         modelAlert.affectedAreas = affectedAreas;
@@ -194,6 +197,58 @@ export class ActionsService {
           .subscribe(user => {
             modelAlert.createdByName = user.firstName + " " + user.lastName
           });
+      });
+  }
+
+  getAllLevelInfo(country: number) {
+    return this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .map(result => {
+        let level1values: ModelJsonLocation[] = [];
+        if (result[country] && result[country]['levelOneValues']) {
+          result[country]['levelOneValues'].forEach(item => {
+            let modelLevel1 = new ModelJsonLocation();
+            modelLevel1.id = item.id;
+            modelLevel1.value = item.value;
+            let level2models: ModelJsonLocation[] = [];
+            if (item.levelTwoValues) {
+              item.levelTwoValues.forEach(item => {
+                let modelLevel2 = new ModelJsonLocation();
+                modelLevel2.id = item.id;
+                modelLevel2.value = item.value;
+                level2models.push(modelLevel2);
+              });
+            }
+            modelLevel1.levelTwoValues = level2models;
+            level1values.push(modelLevel1);
+          });
+        }
+        return level1values;
+      });
+  }
+
+  getAllLevel2Info(country: number) {
+    return this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .map(result => {
+        let level1values: ModelJsonLocation[] = [];
+        if (result[country] && result[country]['levelOneValues']) {
+          result[country]['levelOneValues'].forEach(item => {
+            let modelLevel1 = new ModelJsonLocation();
+            modelLevel1.id = item.id;
+            modelLevel1.value = item.value;
+            let level2models: ModelJsonLocation[] = [];
+            if (item.levelTwoValues) {
+              item.levelTwoValues.forEach(item => {
+                let modelLevel2 = new ModelJsonLocation();
+                modelLevel2.id = item.id;
+                modelLevel2.value = item.value;
+                level2models.push(modelLevel2);
+              });
+            }
+            modelLevel1.levelTwoValues = level2models;
+            level1values.push(modelLevel1);
+          });
+        }
+        return level1values;
       });
   }
 

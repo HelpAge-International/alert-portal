@@ -62,18 +62,31 @@
         <div *ngIf="loadedAlert">
           <div *ngFor="let area of loadedAlert.affectedAreas; index as i" class="row align-items-center">
             <div class="col-sm-3 form-group">
-              <select class="form-control">
+              <select class="form-control" #country (change)="changeCountry(i, country.value)">
                 <option selected hidden disabled>Please select</option>
+                <option *ngFor="let country of COUNTRIES" [value]="country"
+                        [selected]="COUNTRIES.indexOf(country)==area.affectedCountry">{{country | translate}}
+                </option>
               </select>
             </div>
             <div class="col-sm-3 form-group">
-              <select class="form-control">
-                <option selected hidden disabled>Please select</option>
+              <select class="form-control" #level1 (change)="changeLevel1(i, level1.value)">
+                <!--<option selected hidden disabled>Please select</option>-->
+                <option *ngFor="let level1 of geoMap.get(area.affectedCountry)?geoMap.get(area.affectedCountry):temp"
+                        [value]="level1.id"
+                        [selected]="level1.id==area.affectedLevel1">
+                  {{level1.value}}
+                </option>
               </select>
             </div>
             <div class="col-sm-3 form-group">
-              <select class="form-control">
-                <option selected hidden disabled>Please select</option>
+              <select class="form-control" #level2 (change)="changeLevel2(i, level2.value)">
+                <!--<option selected hidden disabled>Please select</option>-->
+                <option
+                  *ngFor="let level2 of geoMap.get(area.affectedCountry)&&geoMap.get(area.affectedCountry)[area.affectedLevel1]?geoMap.get(area.affectedCountry)[area.affectedLevel1]?.levelTwoValues:temp"
+                  [value]="level2.id" [selected]="level2.id==area.affectedLevel2">
+                  {{level2.value}}
+                </option>
               </select>
             </div>
             <div *ngIf="loadedAlert?.affectedAreas?.length>1" class="col-sm-3 form-group">
@@ -112,7 +125,7 @@
       <div class="col-lg-6 col-md-8">
         <div class="form-group">
           <label for="pop-affected">Estimated population affected</label>
-          <input type="text" class="form-control" id="pop-affected" [(ngModel)]="estimatedPopulation">
+          <input type="number" class="form-control" id="pop-affected" [(ngModel)]="estimatedPopulation">
         </div>
       </div>
     </div>
@@ -128,7 +141,7 @@
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary">Confirm alert level</div>
+      <div class="btn btn-primary" (click)="submit()">Confirm alert level</div>
       <div class="btn btn-outline-secondary" routerLink="/dashboard">Cancel</div>
     </div>
 
