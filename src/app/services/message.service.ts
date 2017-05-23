@@ -28,6 +28,26 @@ export class MessageService {
     return externalRecipientSubscription;
   }
 
+  getCountryExternalRecipient(countryId: string, recipientId: string): Observable<ExternalRecipientModel> {
+    if(!countryId || !recipientId) { throw new Error('No countryID or recipientID'); }
+
+    const externalRecipientSubscription = this.af.database.object(Constants.APP_STATUS + '/externalRecipient/' + countryId + '/' + recipientId)
+      .map(item =>
+        {
+            let externalRecipient = new ExternalRecipientModel();
+            
+            if(item.$key)
+            {
+              externalRecipient.mapFromObject(item);
+              externalRecipient.id = item.$key;
+            }
+            
+            return externalRecipient;
+        });
+
+    return externalRecipientSubscription;
+  }
+
   saveCountryExternalRecipient(externalRecipient: ExternalRecipientModel, countryId: string): firebase.Promise<any> {
     const externalRecipientData = {};
 
@@ -36,25 +56,21 @@ export class MessageService {
     let uid = externalRecipient.id;
 
     if (!uid) {
-         const recipientList =  this.af.database.list(Constants.APP_STATUS + '/externalRecipient/' + countryId + '/');
-         return recipientList.push(externalRecipient);
+      const recipientList =  this.af.database.list(Constants.APP_STATUS + '/externalRecipient/' + countryId + '/');
+      return recipientList.push(externalRecipient);
     } else {
-      
       externalRecipientData['/externalRecipient/' + countryId + '/' + uid] = externalRecipient;
-      // this.getUser(uid).subscribe(oldUser => {
-      //   if (oldUser.email && oldUser.email !== userPublic.email) {
-      //     return this.deletePartnerUser(uid).then(bool => {
-      //       if (bool) {
-      //         partner.id = null; // force new user creation
-      //         return this.savePartnerUser(partner, userPublic);
-      //       }
-      //     })
-      //       .catch(err => {
-      //         throw new Error(err.message);
-      //       });
-      //   }
-      
-        return this.af.database.object(Constants.APP_STATUS).update(externalRecipientData);
+      return this.af.database.object(Constants.APP_STATUS).update(externalRecipientData);
     }
+  }
+
+  deleteCountryExternalRecipient(countryId: string, uid: string): firebase.Promise<any> {
+    const externalRecipientData = {};
+
+    if (!uid || !countryId) {
+      throw new Error('UserID or countryID not present');
+    }
+    externalRecipientData['/externalRecipient/' + countryId + '/' + uid] = null;
+    return this.af.database.object(Constants.APP_STATUS).update(externalRecipientData);
   }
 }

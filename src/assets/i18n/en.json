@@ -875,11 +875,17 @@
               "EXTERNAL_NOTIFICATIONS": "External Notifications",
               "NO_EXTERNAL_RECIPIENTS": "No external recipients",
               "ADD_RECIPIENT": "Add external recipient",
+              "EDIT_RECIPIENT": "Edit external recipient",
+              "DELETE_RECIPIENT": "Delete recipient",
               "RECIPIENT_NAME": "Name",
               "RECIPIENT_ORGANISATION": "Organisation",
               "NO_ORGANISATION": "Please enter the Organisation",
               "SAVE_RECIPIENT": "Save external recipient",
-              "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved"
+              "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved",
+              "RECIPIENT_NOT_FOUND": "Cannot find external recipient",
+              "DELETE_DIALOG_TITLE": "Delete Recipient",
+              "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this recipient?",
+              "SUCCESS_DELETED": "The external recipient was successfully deleted"
           }
         },
         "MESSAGES": {

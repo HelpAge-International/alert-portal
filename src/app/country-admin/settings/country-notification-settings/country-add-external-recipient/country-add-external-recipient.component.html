@@ -9,7 +9,11 @@
   <div class="Back--button" (click) = "goBack()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.TITLE_TEXT" | translate}}</div>
   
   <div class="Header-title__wrap">
-    <h1>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</h1>
+    <h1 *ngIf="!isEdit">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</h1>
+    <h1 *ngIf="isEdit">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EDIT_RECIPIENT" | translate}}</h1>
+    <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteRecipient()">
+      {{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_RECIPIENT" | translate}}
+    </button>
   </div>
   
   <form (ngSubmit)="submit()">
@@ -67,4 +71,23 @@
     </div>
   </form>
 </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
 </div>

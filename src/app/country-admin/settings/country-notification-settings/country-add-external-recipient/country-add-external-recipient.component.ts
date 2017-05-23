@@ -10,6 +10,8 @@ import { Constants } from "../../../../utils/Constants";
 import { NotificationSettingsService } from "../../../../services/notification-settings.service";
 import { DisplayError } from "../../../../errors/display.error";
 
+declare var jQuery: any;
+
 @Component({
   selector: 'app-country-add-external-recipient',
   templateUrl: './country-add-external-recipient.component.html',
@@ -60,17 +62,34 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
             const editSubscription = this.route.params.subscribe((params: Params) => {
                 if (params['id']) {
                   this.isEdit = true;
+                  const getExternalRecipientSubscription = this._messageService.getCountryExternalRecipient(this.countryId, params['id'])
+                        .subscribe(externalRecipient => {
+                            if( externalRecipient )
+                            {
+                              this.externalRecipient = externalRecipient;
+                            }else{
+                              throw new DisplayError('COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_NOT_FOUND');
+                            }
+                          },
+                          err => { throw new Error(err.message);});
+                  this.subscriptions.add(getExternalRecipientSubscription);
                 }else{
-                  this._notificationSettingsService.getNotificationSettings(this.agencyId)
-                    .subscribe(notificationSettings => { this.externalRecipient.notificationsSettings = notificationSettings });
-                    console.log(this.externalRecipient);
+                  const notificationSettingsSubscription = this._notificationSettingsService.getNotificationSettings(this.agencyId)
+                          .subscribe(notificationSettings => { this.externalRecipient.notificationsSettings = notificationSettings });
+                  this.subscriptions.add(notificationSettingsSubscription);
                 }
-              })
-          this.subscriptions.add(editSubscription);
+            });
+            this.subscriptions.add(editSubscription);
           }
         });
       }
-      catch(err) { console.log(err); }
+      catch(err) {
+        if(err instanceof DisplayError) {
+          this.alertMessage = new AlertMessageModel(err.message);
+        }else{
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+        }
+      }
     })
     this.subscriptions.add(authSubscription);
   }
@@ -86,12 +105,10 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    
-      console.log(this.externalRecipient);
       this._messageService.saveCountryExternalRecipient(this.externalRecipient, this.countryId)
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SAVED_RECIPIENT_SUCCESS', AlertMessageType.Success);
-              setTimeout(() => this.router.navigateByUrl('/country-admin/country-staff'), Constants.ALERT_REDIRECT_DURATION);
+              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
             })
             .catch(err => {
               if(err instanceof DisplayError) {
@@ -106,4 +123,22 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/country-admin/settings/country-notification-settings');
   }
 
+  deleteRecipient() {
+    jQuery('#delete-action').modal('show');
+  }
+
+  deleteAction() {
+    this.closeModal();
+    const deleteCountryExternalRecipientSubscription = 
+      this._messageService.deleteCountryExternalRecipient(this.countryId, this.externalRecipient.id)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SUCCESS_DELETED', AlertMessageType.Success);
+        this.goBack();
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+  }
+
+  closeModal() {
+    jQuery('#delete-action').modal('hide');
+  }
 }

@@ -144,4 +144,10 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/country-admin/settings/country-notification-settings/country-add-external-recipient');
   }
 
+  editRecipient(recipientId: string) {
+    this.router.navigate(['/country-admin/settings/country-notification-settings/country-add-external-recipient', {
+      id: recipientId
+    }], {skipLocationChange: true});
+  }
+
 }

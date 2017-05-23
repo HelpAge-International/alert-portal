@@ -57,7 +57,7 @@
                 <div class="col-sm-3"><p>{{ externalRecipient.organisation }}</p></div>
                 <div class="col-sm-3"><p>{{ externalRecipient.phone }}</p></div>
                 <div class="col-sm-2"><p>{{ externalRecipient.email }}</p></div>
-                <div class="col-sm-1"><a href="javascript:void(0)"><p>{{ "GLOBAL.EDIT" | translate}}</p></a></div>
+                <div class="col-sm-1"><a href="javascript:void(0)" (click) = "editRecipient( externalRecipient.id )"><p>{{ "GLOBAL.EDIT" | translate}}</p></a></div>
             </div>
         </div>
   </div>
