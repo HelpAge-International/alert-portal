@@ -116,7 +116,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").takeUntil(this.ngUnsubscribe)
+      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
           this.countryId = countryId.$value;
@@ -128,7 +128,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe)
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
           this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
@@ -187,7 +187,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').takeUntil(this.ngUnsubscribe)
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((systemAdminIds: any) => {
           this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
@@ -211,7 +211,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getApprovedResponsePlansCount() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).takeUntil(this.ngUnsubscribe)
+      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((responsePlans: any) => {
           this.getCountApprovalStatus(responsePlans);

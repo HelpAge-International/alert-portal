@@ -3,43 +3,55 @@
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
-        <div class="Back--button">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
-        <div class="Header-title__wrap">
-            <h1>{{"PREPAREDNESS.SELECT_GENERIC_ACTION" | translate}}</h1>
-            <button type="button" class="btn btn-ghost" disabled>{{"GLOBAL.CANCEL" | translate}}</button> 
-            <button type="button" class="btn btn-primary" [disabled]="!actionSelectedID ? true : false" (click)="continueEvent()">{{"GLOBAL.CONTINUE" | translate}}</button> 
-        </div>
-        <div class="row align-items-center Filter-form System-admin--form-wrap">
-            <div class="col-lg-1 col-md-1 col-sm-1">
-                {{"GLOBAL.FILTER" | translate}} :
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-5">
-                <select class="form-control" id="Category" (change)="changeFilter($event, 'level')">
-                    <option *ngFor="let levelKey of actionLevelList" [selected]="levelKey == actionLevelSelected ? true : false" [value]="levelKey">{{actionLevel[levelKey] | translate}}</option>
-                </select>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-5 ">
-                <select class="form-control" id="Category" (change)="changeFilter($event, 'category')">
-                    <option *ngFor="let categoryKey of categoriesList" [selected]="categoryKey == categorySelected ? true : false" [value]="categoryKey">{{category[categoryKey] | translate}}</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && !isFiltered">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</div>
-        <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && isFiltered">{{"GLOBAL.NO_FILTERED_RESULTS" | translate}}</div>
-
-        <div class="Data--ribbon" *ngFor="let genericAction of genericActions | async">
-             <div class="col-md-1 col-2">
-                <input type="radio" (change)="selectAction(genericAction)" [(ngModel)]="actionSelectedID" [value]="genericAction.$key" name="selectedActions" class="form-control" id="action1">
-            </div>
-            <div class="col-md-11 col-10">
-                <p>
-                    <label for="action1">{{genericAction.task}}</label>
-                </p>
-                <p>{{"GLOBAL.CATEGORY:" | translate}} <b>{{category[genericAction.category] | translate}}</b></p>
-            </div>
-        </div>
+  <div class="Full-page__wrap--inner">
+    <div class="Back--button" routerLink="/preparedness/minimum">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
+    <div class="Header-title__wrap">
+      <h1>{{"PREPAREDNESS.SELECT_GENERIC_ACTION" | translate}}</h1>
+      <button type="button" class="btn btn-primary" [disabled]="!actionSelectedID ? true : false"
+              (click)="continueEvent()">{{"GLOBAL.CONTINUE" | translate}}
+      </button>
+      <button type="button" class="btn btn-ghost" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}</button>
 
     </div>
+    <div class="row align-items-center Filter-form System-admin--form-wrap">
+      <div class="col-lg-1 col-md-1 col-sm-1">
+        {{"GLOBAL.FILTER" | translate}} :
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5">
+        <select class="form-control" id="Category" (change)="changeFilter($event, 'level')">
+          <option *ngFor="let levelKey of actionLevelList" [selected]="levelKey == actionLevelSelected ? true : false"
+                  [value]="levelKey">{{actionLevel[levelKey] | translate}}
+          </option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-5 ">
+        <select class="form-control" id="Category" (change)="changeFilter($event, 'category')">
+          <option *ngFor="let categoryKey of categoriesList" [selected]="categoryKey == categorySelected ? true : false"
+                  [value]="categoryKey">{{category[categoryKey] | translate}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && !isFiltered">
+      {{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}
+    </div>
+    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && isFiltered">
+      {{"GLOBAL.NO_FILTERED_RESULTS" | translate}}
+    </div>
+
+    <div class="Data--ribbon" *ngFor="let genericAction of genericActions | async">
+      <div class="col-md-1 col-2">
+        <input type="radio" (change)="selectAction(genericAction)" [(ngModel)]="actionSelectedID"
+               [value]="genericAction.$key" name="selectedActions" class="form-control" id="action1">
+      </div>
+      <div class="col-md-11 col-10">
+        <p>
+          <label for="action1">{{genericAction.task}}</label>
+        </p>
+        <p>{{"GLOBAL.CATEGORY:" | translate}} <b>{{category[genericAction.category] | translate}}</b></p>
+      </div>
+    </div>
+
+  </div>
 </div>
