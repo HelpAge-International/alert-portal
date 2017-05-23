@@ -25,7 +25,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private HAZARDS:string[] = Constants.HAZARD_SCENARIOS;
 
   private alertList: ModelAlert[];
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
@@ -62,6 +61,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
   private countryContextIndicators: any[] = [];
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router,
               private subscriptions: RxHelper, private userService: UserService, private actionService: ActionsService) {
@@ -234,6 +235,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     for (let A in approvals) {
       if (typeof (approvals[A]) == 'object') {
         this.recursiveParseArray(approvals[A]);
+        console.log(approvals[A]);
       } else {
         var approvalStatus = approvals[A];
         if (approvalStatus == ApprovalStatus.Approved) {
@@ -390,7 +392,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private getCountryContextIndicators() {
 
     this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
-      .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         list.forEach(indicator => {
           this.countryContextIndicators.push(indicator);

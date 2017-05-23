@@ -2,8 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
-import {RxHelper} from '../../../utils/RxHelper';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {CustomerValidator} from '../../../utils/CustomValidator';
 
 @Component({
@@ -24,14 +23,14 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private currentPasswordEntered: string;
   private newPasswordEntered: string;
   private confirmPasswordEntered: string;
-  private subscriptions: RxHelper;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
@@ -40,11 +39,11 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   onSubmit() {
@@ -82,16 +81,18 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.errorInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
         this.errorInactive = true;
       });
-      this.subscriptions.add(subscription);
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
         this.successInactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 
