@@ -2,9 +2,9 @@ import {Component, OnInit, OnDestroy, ViewContainerRef} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
-import {Subscription} from "rxjs";
 import {Modal} from "angular2-modal/plugins/bootstrap";
 import {Overlay} from "angular2-modal";
+import {Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -18,19 +18,19 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   agencies: FirebaseListObservable<any>;
   uid: string;
   private agencyToUpdate;
-  private subscription: Subscription;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
     overlay.defaultViewContainer = vcRef;
   }
 
   ngOnInit() {
-    this.subscription = this.af.auth.subscribe(x => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(x => {
       if (x) {
         this.uid = x.auth.uid;
         console.log("uid: " + this.uid);
         this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
-        // this.test();
       } else {
         this.navigateToLogin();
       }
@@ -38,9 +38,10 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   update(agency) {

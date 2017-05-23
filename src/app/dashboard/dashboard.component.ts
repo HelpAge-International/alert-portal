@@ -22,7 +22,7 @@ declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, ne
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  private HAZARDS:string[] = Constants.HAZARD_SCENARIOS;
+  private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
 
   private alertList: ModelAlert[];
 
@@ -159,6 +159,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
   }
+
   private getCountryId() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
@@ -276,6 +277,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     for (let A in approvals) {
       if (typeof (approvals[A]) == 'object') {
         this.recursiveParseArray(approvals[A]);
+        console.log(approvals[A]);
       } else {
         var approvalStatus = approvals[A];
         if (approvalStatus == ApprovalStatus.Approved) {
@@ -432,7 +434,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private getCountryContextIndicators() {
 
     this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
-      .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         list.forEach(indicator => {
           this.countryContextIndicators.push(indicator);

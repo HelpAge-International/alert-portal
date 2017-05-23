@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {RxHelper} from "../utils/RxHelper";
 import {Constants} from "../utils/Constants";
 import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Observable} from "rxjs/Observable";
@@ -34,6 +33,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private countryId: string;
   private notesMap = new Map();
   private needShowDialog: boolean;
+  private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
   constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService) {
   }

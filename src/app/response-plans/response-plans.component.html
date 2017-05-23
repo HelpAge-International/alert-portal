@@ -19,7 +19,7 @@
 
       <div *ngFor="let plan of activePlans" class="Accordion Plans-list">
         <div class="row align-items-center Plans-list__item">
-          <div class="col-md-2 col-sm-2 Plans-list__item--type">{{plan.hazardScenario}}</div>
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan.hazardScenario] | translate}}</div>
           <div class="col-md-3 col-sm-3">{{plan.name}}</div>
           <div *ngIf="plan.status==0" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-warning" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
