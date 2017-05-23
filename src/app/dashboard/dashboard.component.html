@@ -1,10 +1,10 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
+    <!--country header-->
     <div class="Widget">
       <ul class="list-inline">
         <li class="list-inline-item active">
@@ -36,105 +36,113 @@
               <i class="fa fa-times fa-2x fa-inverse" aria-hidden="true"></i>
             </div>
           </div>
-          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+
+          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
         </li>
         <li class="list-inline-item">
           <div class="Icon">
             <div class="Icon__circle Icon--green Icon--lg">{{percentageCHS}}%</div>
           </div>
-          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
+          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
         </li>
       </ul>
     </div>
 
-
-    <div class="Widget Alert-Widget" *ngFor="let alert of alerts | async">
-      <div class="row">
-        <div class="col-md-3 Alert-Widget__item bg-danger">
-          <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-          <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
-        </div>
-        <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-          <i div class="Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></i>
-          <div>
-            <span>Risk:</span>
-            Typhoon
+    <!--alert screen-->
+    <div *ngIf="alerts | async as alertList">
+      <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
+        <div class="row">
+          <div class="col-md-3 Alert-Widget__item"
+               [class.bg-info]="alert.approvalStatus==0"
+               [class.bg-warning]="alert.alertLevel==1 && alert.approvalStatus==1"
+               [class.bg-danger]="alert.alertLevel==2 && alert.approvalStatus==1">
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
           </div>
-        </div>
-        <div class="col-md-2 Alert-Widget__item">
-          <div>
-            <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> 200,000 {{"ALERT.PEOPLE" | translate}}
-          </div>
-        </div>
-        <div class="col-md-2 Alert-Widget__item">
-          <div>
-            <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> Leyre and Cebu
-          </div>
-        </div>
-
-        <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
-          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"
-             aria-expanded="false" aria-controls="notes_popover">
-            <div class="fa-stack">
-              <i class="fa fa-comment fa-stack-2x"></i>
-              <i class="fa fa-stack-1x fa-inverse"></i>
+          <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
+            <i div class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+            <div>
+              <span>Risk:</span>
+              {{HAZARDS[alert.hazardScenario] | translate}}
             </div>
-            <div>{{"GLOBAL.NOTES" | translate}}</div>
-          </a>
+          </div>
+          <div class="col-md-2 Alert-Widget__item">
+            <div>
+              <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}} {{"ALERT.PEOPLE" |
+              translate}}
+            </div>
+          </div>
+          <div class="col-md-2 Alert-Widget__item">
+            <div>
+              <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+            </div>
+          </div>
+
+          <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
+            <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#'+alert.id"
+               aria-expanded="false" [attr.aria-controls]="alert.id">
+              <div class="fa-stack">
+                <i class="fa fa-comment fa-stack-2x"></i>
+                <i class="fa fa-stack-1x fa-inverse"></i>
+              </div>
+              <div>{{"GLOBAL.NOTES" | translate}}</div>
+            </a>
+          </div>
+
+
+          <div class="col-md-2 Alert-Widget__item">
+            <span *ngIf="alert.approvalStatus == 0" class="text-danger text-bold">Red Alert requested</span>
+            <button *ngIf="alert.approvalStatus == 1" class="btn btn-outline-primary" (click)="updateAlert(alert.id)">
+              Update alert level
+            </button>
+          </div>
+
         </div>
 
+        <!--notes modal-->
+        <div id="{{alert.id}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+          <!-- Notes -->
+          <div class="row Spaced">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+              <div class="row align-items-center Small-spaced no-gutters">
+                <div class="col-sm-6 col-8">
+                  <h4>{{"ALERT.INFO_AND_NOTES" | translate}}</h4>
+                </div>
+                <div class="col-sm-6 col-4 text-right">
+                  <a href="javascript:void(0);"
+                     onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" |
+                    translate}}</a>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col-sm-10 col-12 notes-popover__item">
+                  <p>
+                    {{alert.infoNotes}}
+                  </p>
+                  <p>
+                    <strong>by {{alert.createdByName}}</strong>
+                  </p>
+                </div>
+              </div>
+              <!--<div class="row no-gutters">-->
+              <!--<div class="col-sm-10 col-12  notes-popover__item">-->
+              <!--<p>-->
+              <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
+              <!--everyone’s calendar.-->
+              <!--</p>-->
+              <!--<p>-->
+              <!--<strong>by Andrew Collodel</strong>-->
+              <!--</p>-->
+              <!--</div>-->
+              <!--</div>-->
+            </div>
+          </div>
 
-        <div class="col-md-2 Alert-Widget__item">
-          <span class="text-danger text-bold">Red Alert requested</span>
         </div>
 
       </div>
-
-
-      <div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-        <!-- Notes -->
-        <div class="row Spaced">
-          <div class="col-md-2"></div>
-          <div class="col-md-10">
-            <div class="row align-items-center Small-spaced no-gutters">
-              <div class="col-sm-6 col-8">
-                <h4>{{"ALERT.INFO_AND_NOTES" | translate}}</h4>
-              </div>
-              <div class="col-sm-6 col-4 text-right">
-                <a href="javascript:void(0);"
-                   onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" |
-                  translate}}</a>
-              </div>
-            </div>
-            <div class="row no-gutters">
-              <div class="col-sm-10 col-12 notes-popover__item">
-                <p>
-                  This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in
-                  everyone’s calendar.
-                </p>
-                <p>
-                  <strong>by Andrew Collodel</strong>
-                </p>
-              </div>
-            </div>
-            <div class="row no-gutters">
-              <div class="col-sm-10 col-12  notes-popover__item">
-                <p>
-                  This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in
-                  everyone’s calendar.
-                </p>
-                <p>
-                  <strong>by Andrew Collodel</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
     </div>
-
 
     <!--<div class="Widget Alert-Widget ">-->
     <!--<div class="row">-->
@@ -294,23 +302,27 @@
         <ul class="list-inline">
           <li class="list-inline-item active">
             <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--country-context"></div>
+              <div
+                class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
             </div>
             <span>{{"DASHBOARD.CONTEXT" | translate}}</span>
-            4 {{"DASHBOARD.INDICATORS" | translate}}
+            {{countryContextIndicators.length}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>
           <li class="list-inline-item" *ngFor="let hazard of hazards">
             <div class="Icon">
-              <div class="Icon--md Icon__circle Icon--b-dark-blue Icon--cyclone"></div>
+              <div
+                class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
             </div>
-            <span>{{HazardScenariosList[hazardObject[hazard.$key].hazardScenario]}}</span>
-            4 {{"DASHBOARD.INDICATORS" | translate}}
+            <span>{{HazardScenariosList[hazard.hazardScenario] | translate}}</span>
+            {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>
         </ul>
       </div>
 
-
       <div class="Widget Calendar-Widget">
+        <h3>Seasonal Calendar</h3>
+        <div id="target2" class="timeline-tgt Spaced"></div>
+        <div class="btn btn-tertiary" routerLink="/dashboard/dashboard-seasonal-calendar">Temp Button</div>
       </div>
 
     </div>

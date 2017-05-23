@@ -165,6 +165,7 @@ const routes: Routes = [
     {path: 'country-admin/country-staff', component: CountryStaffComponent},
     {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
     {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
+    {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
     {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
@@ -175,6 +176,7 @@ const routes: Routes = [
     {path: 'dashboard', component: DashboardComponent},
     {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
     {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
+    {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
 
     /**
      * Risk Monitoring
@@ -187,7 +189,11 @@ const routes: Routes = [
     /**
      * Preparedness
      */
+    {path: 'preparedness/minimum/:countryId/:agencyId', component: MinimumPreparednessComponent},
+    {path: 'preparedness/minimum/:countryId', component: MinimumPreparednessComponent},
     {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId/:agencyId', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId', component: AdvancedPreparednessComponent},
     {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
     {path: 'preparedness/budget', component: BudgetPreparednessComponent},
     {path: 'preparedness/select', component: SelectPreparednessComponent},

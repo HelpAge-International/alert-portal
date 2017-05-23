@@ -105,7 +105,10 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {ExportTestComponent} from './export-test/export-test.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
-import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
+import { AgencySubmenuComponent } from './preparedness/agency-submenu/agency-submenu.component';
+import { CountrySubmenuComponent } from './preparedness/country-submenu/country-submenu.component';
+import { AlertWidgetComponent } from './commons/alert-widget/alert-widget.component';
+import { MapCountriesListComponent } from './map/map-countries-list/map-countries-list.component';
 import {UserService} from "./services/user.service";
 import {DashboardSeasonalCalendarComponent} from './dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component';
 import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component';
@@ -228,6 +231,9 @@ const firebaseAuthConfig = {
         CreateAlertRiskMonitoringComponent,
         AddIndicatorRiskMonitoringComponent,
         AddHazardRiskMonitoringComponent,
+        AgencySubmenuComponent,
+        CountrySubmenuComponent,
+        AlertWidgetComponent,
         CountryMyAgencyComponent,
         MapCountriesListComponent,
         ExportTestComponent,
@@ -251,11 +257,11 @@ const firebaseAuthConfig = {
         }),
         ModalModule.forRoot(),
         BootstrapModalModule,
-        DatepickerModule
-        // LocalStorageModule.withConfig({
-        //     prefix: 'my-app',
-        //     storageType: 'localStorage'
-        // })
+        DatepickerModule,
+        LocalStorageModule.withConfig({
+            prefix: 'my-app',
+            storageType: 'localStorage'
+        })
     ],
     providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService],
     bootstrap: [AppComponent]

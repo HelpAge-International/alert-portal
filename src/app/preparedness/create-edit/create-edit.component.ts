@@ -329,7 +329,8 @@ export class CreateEditPreparednessComponent implements OnInit {
 
     backButtonAction() {
         /* TODO get last route and implemented this functionality */
-        console.log('back button');
+      this.router.navigate(['/preparedness/minimum']);
+      console.log('back button');
     }
 
     _parseSelectParams() {

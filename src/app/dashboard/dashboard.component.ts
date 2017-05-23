@@ -9,6 +9,9 @@ import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
 import {Subject} from "rxjs/Subject";
+import {HazardImages} from "../utils/HazardImages";
+import {ModelAlert} from "../model/alert.model";
+declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -19,8 +22,11 @@ import {Subject} from "rxjs/Subject";
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
 
+  private alertList: ModelAlert[];
+
+  // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
 
   private uid: string;
@@ -51,11 +57,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private alerts: Observable<any>;
 
   private hazards: any[] = [];
-  private hazardObject = {};
+  private numberOfIndicatorsObject = {};
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
-  constructor(private af: AngularFire, private router: Router,
-              private subscriptions: RxHelper, private userService: UserService, private actionService: ActionsService) {
+  private countryContextIndicators: any[] = [];
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
@@ -70,10 +79,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
   /**
@@ -82,14 +97,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
+      this.initCalendar();
       this.getApprovedResponsePlansCount();
       this.getAlerts();
+      this.getCountryContextIndicators();
       this.getHazards();
       this.initData();
     });
     this.getAgencyID().then(() => {
       this.getCountryData();
-
     });
     this.getSystemAdminID().then(() => {
       this.getSystemThreshold('minThreshold').then((minThreshold: any) => {
@@ -102,24 +118,68 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // TODO -
+  private initCalendar() {
+    const events = [
+      {
+        dates: [new Date(2016, 4, 23), new Date(2018, 6, 25)],
+        title: "Earth",
+        eventHeight: 30,
+        section: 1,
+        attrs: {fill: "#d4e3fd", stroke: "#d4e3fd"}
+      },
+      {
+        dates: [new Date(2017, 7, 23), new Date(2017, 9, 26)],
+        title: "Wind",
+        eventHeight: 20,
+        section: 1,
+        attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
+      },
+      {
+        dates: [new Date(2017, 4, 26), new Date(2017, 6, 28)],
+        title: "Fire",
+        eventHeight: 10,
+        section: 1,
+        attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
+      },
+    ];
+
+    const timeline2 = new Chronoline(document.getElementById("target2"), events,
+      {
+        visibleSpan: DAY_IN_MILLISECONDS * 91,
+        animated: true,
+        tooltips: true,
+        sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
+        labelInterval: isFifthDay,
+        hashInterval: isFifthDay,
+        scrollLeft: prevMonth,
+        scrollRight: nextMonth,
+        // markToday: 'labelBox',
+        draggable: true
+      });
+
+  }
+
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").takeUntil(this.ngUnsubscribe).subscribe((countryId: any) => {
-        this.countryId = countryId.$value;
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((countryId: any) => {
+          this.countryId = countryId.$value;
+          res(true);
+        });
     });
     return promise;
   }
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe).subscribe((agencyIds: any) => {
-        this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyIds: any) => {
+          this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -128,7 +188,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
-    let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId, this.uid)
+    this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
         this.actionsToday = [];
@@ -136,9 +196,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
       });
-    this.subscriptions.add(subscriptionActions);
 
-    let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
+    this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
@@ -168,38 +227,40 @@ export class DashboardComponent implements OnInit, OnDestroy {
           });
         }
       });
-    this.subscriptions.add(subscriptionIndicators);
   }
 
   private getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').takeUntil(this.ngUnsubscribe).subscribe((systemAdminIds: any) => {
-        this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((systemAdminIds: any) => {
+          this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location").takeUntil(this.ngUnsubscribe).subscribe((location: any) => {
-        this.countryLocation = location.$value;
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((location: any) => {
+          this.countryLocation = location.$value;
+          res(true);
+        });
     });
     return promise;
   }
 
   private getApprovedResponsePlansCount() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).takeUntil(this.ngUnsubscribe).subscribe((responsePlans: any) => {
-        this.getCountApprovalStatus(responsePlans);
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((responsePlans: any) => {
+          this.getCountApprovalStatus(responsePlans);
+          res(true);
+        });
     });
     return promise;
   }
@@ -216,6 +277,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     for (let A in approvals) {
       if (typeof (approvals[A]) == 'object') {
         this.recursiveParseArray(approvals[A]);
+        console.log(approvals[A]);
       } else {
         var approvalStatus = approvals[A];
         if (approvalStatus == ApprovalStatus.Approved) {
@@ -228,11 +290,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAllActions() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
-        this.getPercenteActions(actions);
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((actions: any) => {
+          this.getPercenteActions(actions);
+          res(true);
+        });
     });
     return promise;
   }
@@ -280,11 +343,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.mpaStatusColor = 'orange';
         this.mpaStatusIcon = 'fa-ellipsis-h';
       }
-      if (!percentageMinimumCompletedActions) {
+      if (!percentageMinimumCompletedActions || percentageMinimumCompletedActions < this.sysAdminMinThreshold[1].$value) {
         this.mpaStatusColor = 'red';
         this.mpaStatusIcon = 'fa-times'
       }
-
 
       if (percentageAdvancedCompletedActions && percentageAdvancedCompletedActions >= this.sysAdminAdvThreshold[0].$value) {
         this.advStatusColor = 'green';
@@ -294,7 +356,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.advStatusColor = 'orange';
         this.advStatusIcon = 'fa-ellipsis-h';
       }
-      if (!percentageAdvancedCompletedActions) {
+      if (!percentageAdvancedCompletedActions || percentageAdvancedCompletedActions < this.sysAdminAdvThreshold[1].$value) {
         this.advStatusColor = 'red';
         this.advStatusIcon = 'fa-times';
       }
@@ -312,57 +374,71 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getActionsBySystemAdmin() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
-        res(actions);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((actions: any) => {
+          res(actions);
+        });
     });
     return promise;
   }
 
   private getSystemThreshold(thresholdType: string) {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType).takeUntil(this.ngUnsubscribe).subscribe((threshold: any) => {
-        res(threshold);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((threshold: any) => {
+          res(threshold);
+        });
     });
     return promise;
   }
 
   private getAlerts() {
+    this.alerts = this.actionService.getAlerts(this.countryId);
+    this.alerts
+      .subscribe(x => {
+        console.log(x)
+      })
+    // this.actionService.getAlerts(this.countryId)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(alertList => {
+    //     console.log(alertList);
+    //   })
 
-    this.alerts = this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {
-      query: {
-        orderByChild: "alertLevel",
-        equalTo: AlertLevels.Red
-      }
-    });
   }
 
-  // TODO - FIX
+  // TODO - FIX num of indicators
   private getHazards() {
 
-    let subscription = this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
+    this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
       .flatMap(list => {
         this.hazards = [];
         let tempList = [];
         list.forEach(hazard => {
+          this.hazards.push(hazard);
           tempList.push(hazard);
-          this.hazardObject[hazard.$key] = hazard;
         });
         return Observable.from(tempList)
       })
       .flatMap(hazard => {
-        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key);
       })
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
-        this.hazards.push(x);
-        console.log(x);
+      .subscribe(object => {
+        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).length;
       });
-    this.subscriptions.add(subscription);
+  }
+
+  private getCountryContextIndicators() {
+
+    this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
+      .subscribe(list => {
+        list.forEach(indicator => {
+          this.countryContextIndicators.push(indicator);
+        });
+      });
   }
 
   public getCountryCodeFromLocation(location: number) {
@@ -379,6 +455,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getIndicatorName(indicator): string {
     return this.actionService.getIndicatorTitle(indicator);
+  }
+
+  updateAlert(alertId) {
+    this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
   }
 
 

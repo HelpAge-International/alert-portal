@@ -39,11 +39,11 @@
                     <div *ngFor="let z of hazards">
                       <div *ngIf="z.location == y.location" class="col-sm- col-md-2 text-center pull-right">
                         <p class="text-center"><i class="Icon__circle Icon--b-black {{(isNumber(z.hazardScenario) ? getCSSHazard(z.hazardScenario) : 'Icon--alert')}} Icon--sm text-center"></i></p>
-                        <p *ngIf="isNumber(z.hazardScenario)"><span><b>{{"RESPONSE_PLANS.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z.hazardScenario | translate}}</b></span></p>
+                        <p *ngIf="isNumber(z.hazardScenario)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z.hazardScenario | translate}}</b></span></p>
                         <p class="MapList__HazardOverflow" *ngIf="!isNumber(z.hazardScenario)"><b>{{z.hazardScenario}}</b></p>
                       </div>
                     </div>
-                  </div> 
+                  </div>
                   <!--<div class="col-md-2 col-lg-2 col-sm-2"></div>-->
                   <!--<div class="col-md-4 col-sm-4"></div>-->
                   <!--<div class="col-sm-1 text-center">-->

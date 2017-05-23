@@ -4,8 +4,7 @@ import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {PersonTitle} from "../../utils/Enums";
 import {ModelUserPublic} from "../../model/user-public.model";
-import {RxHelper} from "../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
 
 @Component({
@@ -31,14 +30,14 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   private systemAdminPhone: string;
   private PersonTitle = Constants.PERSON_TITLE;
   private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
-  private subscriptions: RxHelper;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
@@ -48,11 +47,13 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   onSubmit() {
@@ -88,7 +89,9 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
 
   private loadSystemAdminData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + uid).subscribe((systemAdmin: ModelUserPublic) => {
+    this.af.database.object(Constants.APP_STATUS+"/userPublic/" + uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((systemAdmin: ModelUserPublic) => {
 
       this.userPublic = systemAdmin;
       this.systemAdminTitle = systemAdmin.title;
@@ -97,22 +100,23 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
       this.systemAdminEmail = systemAdmin.email;
       this.systemAdminPhone = systemAdmin.phone;
     });
-    this.subscriptions.add(subscription);
   }
 
   private showAlert(error: boolean) {
     if (error) {
       this.errorInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
         this.errorInactive = true;
       });
-      this.subscriptions.add(subscription);
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
         this.successInactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 

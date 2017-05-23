@@ -11,13 +11,14 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, BudgetCategory
+  ResponsePlanSectors, BudgetCategory, AlertMessageType
 } from "../../utils/Enums";
 import {Observable} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
 import {UserService} from "../../services/user.service";
+import {AlertMessageModel} from "../../model/alert-message.model";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -36,6 +37,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
   private forEditing: boolean = false;
+  private alertMessageType = AlertMessageType;
+  private alertMessage: AlertMessageModel = null;
 
   private pageTitle: string = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TITLE_TEXT";
 
@@ -58,7 +61,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private staffMembers: any[] = [];
   private staffMemberSelected: any;
   private hazardScenarioSelected: number;
-  private HazardScenario = HazardScenario;
+  private HazardScenario = Constants.HAZARD_SCENARIOS;
   private hazardScenariosList = [
     HazardScenario.HazardScenario0,
     HazardScenario.HazardScenario1,
@@ -107,7 +110,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section2Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 3/10
-  private sectorsRelatedTo: ResponsePlanSectors[] = [];
+  private sectorsRelatedTo: any[] = [];
   private otherRelatedSector: string = '';
 
   private waSHSectorSelected: boolean = false;
@@ -117,6 +120,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private foodSecAndLivelihoodsSectorSelected: boolean = false;
   private protectionSectorSelected: boolean = false;
   private educationSectorSelected: boolean = false;
+
   private campManagementSectorSelected: boolean = false;
   private otherSectorSelected: boolean = false;
 
@@ -289,7 +293,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.name = this.planName;
     newResponsePlan.location = this.geographicalLocation;
     if (this.staffMemberSelected) {
-      newResponsePlan.planLead = this.staffMemberSelected.$key;
+      newResponsePlan.planLead = this.staffMemberSelected;
     }
     if (this.hazardScenarioSelected) {
       newResponsePlan.hazardScenario = this.hazardScenarioSelected;
@@ -406,6 +410,27 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 10
     let budgetData = {};
     let inputs = {};
+
+
+    let diff = [];
+    this.sectorsRelatedTo.forEach(item =>{
+
+      console.log("*****************");
+      console.log(this.sectorBudget);
+      console.log("*****************");
+      console.log(item);
+      if (!this.sectorBudget.get(item)) {
+        diff.push(item);
+        console.log("*****************");
+        console.log(item);
+      }
+    });
+
+    diff.forEach(item => {
+      this.sectorBudget.set(Number(item), 0);
+      this.sectorNarrative.set(Number(item),"");
+    });
+
     this.sectorBudget.forEach((v, k) => {
       let item = new ModelBudgetItem();
       item.budget = this.sectorBudget && this.sectorBudget.get(k) ? this.sectorBudget.get(k) : 0;
@@ -413,14 +438,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       // inputs.push(item);
       inputs[k] = item;
     });
+
     let allBudgetValues = {};
-    allBudgetValues[1] = this.transportBudget;
-    allBudgetValues[2] = this.securityBudget;
-    allBudgetValues[3] = this.logisticsAndOverheadsBudget;
-    allBudgetValues[4] = this.staffingAndSupportBudget;
-    allBudgetValues[5] = this.monitoringAndEvolutionBudget;
-    allBudgetValues[6] = this.capitalItemsBudget;
-    allBudgetValues[7] = this.managementSupportPercentage;
+    allBudgetValues[1] = this.transportBudget ? this.transportBudget : 0;
+    allBudgetValues[2] = this.securityBudget ? this.securityBudget : 0;
+    allBudgetValues[3] = this.logisticsAndOverheadsBudget ? this.logisticsAndOverheadsBudget : 0;
+    allBudgetValues[4] = this.staffingAndSupportBudget ? this.staffingAndSupportBudget : 0;
+    allBudgetValues[5] = this.monitoringAndEvolutionBudget ? this.monitoringAndEvolutionBudget : 0;
+    allBudgetValues[6] = this.capitalItemsBudget ? this.capitalItemsBudget : 0;
+    allBudgetValues[7] = this.managementSupportPercentage ? this.managementSupportPercentage : 0;
 
     let allBudgetNarratives = {};
     allBudgetNarratives[1] = this.transportNarrative;
@@ -510,7 +536,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       console.log("Bullet point not in list");
     }
-    console.log(this.scenarioCrisisObject);
   }
 
   addToImpactOfCrisisObject(bulletPoint, textEntered) {
@@ -665,11 +690,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.partnersDropDownsCounter--;
     this.partnersDropDowns = this.partnersDropDowns.filter(item => item !== dropDown);
     delete this.partnerOrganisationsSelected[dropDown];
-    console.log(this.partnerOrganisationsSelected);
   }
 
   setPartnerOrganisation(partnerOrganisationSelected, dropDown) {
-    console.log(partnerOrganisationSelected);
     if (partnerOrganisationSelected == 'addNewPartnerOrganisation') {
       this.router.navigate(['/response-plans/add-partner-organisation', {fromResponsePlans: true}]);
     } else {
@@ -678,6 +701,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   continueButtonPressedOnSection3() {
+
     let sectionsSelected: boolean = (this.sectorsRelatedTo.length != 0) || (this.otherRelatedSector != '');
     let presenceSelected: boolean = this.presenceInTheCountry != null;
     let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff != null;
@@ -806,10 +830,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Section 7/10
    */
   saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
-    console.log(sector);
-    console.log(name.value + "/" + output.value + "/" + indicator.value + "/" +
-      femaleRange1.value + "/" + femaleRange2.value + "/" + femaleRange3.value + "/" +
-      maleRange1.value + "/" + maleRange2.value + "/" + maleRange3.value);
+
     if (this.validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)) {
       console.log("valid");
       let beneficiaryList = [];
@@ -873,30 +894,23 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   selectInternationa(sector, value) {
-    console.log(sector + "/" + value);
     this.checkActivityInfo(sector, value, 0, -1);
   }
 
   selectNeighbour(sector, value) {
-    console.log(sector + "/" + value);
     this.checkActivityInfo(sector, value, 0, -1);
   }
 
   selectLocal(sector, value) {
-    console.log(sector + "/" + value);
     this.checkActivityInfo(sector, value, 0, -1);
   }
 
   getBulletOne(sector, value) {
-    console.log("1: " + sector + "/" + value);
     this.checkActivityInfo(sector, value, 1, 0);
-    console.log(this.activityInfoMap);
   }
 
   getBulletTwo(sector, value) {
-    console.log("2: " + sector + "/" + value);
     this.checkActivityInfo(sector, value, 1, 1);
-    console.log(this.activityInfoMap);
   }
 
   //type 0 = sourcePlan, 1 = bulletPoint
@@ -927,7 +941,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       }
       this.activityInfoMap.set(sector, data);
     }
-    console.log(this.activityInfoMap);
   }
 
   continueButtonPressedOnSection7() {
@@ -954,7 +967,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   updateMediaFormat(value) {
-    console.log(value);
     this.mediaFormat = value;
   }
 
@@ -982,7 +994,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   doublerCounting() {
-    console.log("double counting");
     //reset count
     if (!(this.forEditing)) {
       this.numberFemaleLessThan18 = 0;
@@ -1033,13 +1044,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   calculateBudget(sector, budget, isSector) {
+    console.log(sector);
+    console.log(budget);
+    console.log(isSector);
     if (isSector) {
       if (budget < 0) {
         console.log("Budget can not be under 0!!");
         return;
       }
       console.log(budget);
-      this.sectorBudget.set(sector, budget);
+      this.sectorBudget.set(Number(sector), budget);
+      console.log(this.sectorBudget);
       this.totalInputs = 0;
       this.sectorBudget.forEach((v,) => {
         this.totalInputs += Number(v);
@@ -1065,8 +1080,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   recordNarrative(sector, narrative) {
-    console.log(narrative);
-    this.sectorNarrative.set(sector, narrative);
+    this.sectorNarrative.set(Number(sector), narrative);
   }
 
   yesSelectedForCapitalsExist() {
@@ -1083,7 +1097,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   removeCapitalItemSection(capitalItemSection) {
-    console.log(capitalItemSection);
     this.capitalItemSectionSectionsCounter--;
     this.capitalItemSections = this.capitalItemSections.filter(item => item !== capitalItemSection);
     this.budgetOver1000.delete(capitalItemSection);
@@ -1091,14 +1104,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   budgetOverThousand(selection, value) {
-    console.log(selection);
-    console.log(value);
     this.budgetOver1000.set(selection, value);
   }
 
   budgetOverThousandDesc(selection, value) {
-    console.log(selection);
-    console.log(value);
     this.budgetOver1000Desc.set(selection, value);
   }
 
@@ -1112,7 +1121,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section10Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[9], false);
     }
-    console.log(this.getCompleteSectionNumber());
   }
 
   /**
@@ -1158,7 +1166,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         });
       this.subscriptions.add(subscription);
     }
-    console.log(this.responsePlanSettings);
   }
 
   private setupForEdit() {
@@ -1200,19 +1207,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.planName = responsePlan.name;
     this.geographicalLocation = responsePlan.location;
     this.hazardScenarioSelected = responsePlan.hazardScenario;
-    // this.staffMemberSelected = responsePlan.planLead;
-    let subscription = this.userService.getUser(responsePlan.planLead)
-      .subscribe(user => {
-        this.staffMemberSelected = user;
-        console.log("selected member");
-        console.log(this.staffMemberSelected);
-      });
-    this.subscriptions.add(subscription);
+    this.staffMemberSelected = responsePlan.planLead;
   }
 
   private loadSection2(responsePlan: ResponsePlan) {
-    console.log("load section 2");
-    console.log(responsePlan.scenarioCrisisList);
     //scenario crisis list
     let scenarioCrisisList = responsePlan.scenarioCrisisList;
     this.loadSection2Back(0, scenarioCrisisList, this.summarizeScenarioBulletPointsCounter, this.summarizeScenarioBulletPoints);
@@ -1222,45 +1220,48 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     let availabilityOfFundsList = responsePlan.availabilityOfFundsList;
     this.loadSection2Back(2, availabilityOfFundsList, this.availabilityOfFundsBulletPointsCounter, this.availabilityOfFundsBulletPoints);
-    // for (let i = 0; i < impactOfCrisisList.length; i++) {
-    //   if (i != 0) {
-    //     this.impactOfCrisisBulletPointsCounter++;
-    //     this.impactOfCrisisBulletPoints.push(this.impactOfCrisisBulletPointsCounter);
-    //   }
-    // }
-    // this.impactOfCrisisBulletPoints.forEach(item => {
-    //   this.addToImpactOfCrisisObject(item, impactOfCrisisList[item - 1]);
-    // });
   }
 
   private loadSection2Back(type: number, list: string[], counter: number, counterList: number[]) {
-    for (let i = 0; i < list.length; i++) {
-      if (i != 0) {
-        counter++;
-        counterList.push(counter);
+    if (list) {
+      for (let i = 0; i < list.length; i++) {
+        if (i != 0) {
+          counter++;
+          counterList.push(counter);
+        }
       }
+      counterList.forEach(item => {
+        if (type == 0) {
+          this.addToSummarizeScenarioObject(item, list[item - 1]);
+        } else if (type == 1) {
+          this.addToImpactOfCrisisObject(item, list[item - 1]);
+        } else if (type == 2) {
+          this.addToAvailabilityOfFundsObject(item, list[item - 1]);
+        }
+      });
     }
-    counterList.forEach(item => {
-      if (type == 0) {
-        this.addToSummarizeScenarioObject(item, list[item - 1]);
-      } else if (type == 1) {
-        this.addToImpactOfCrisisObject(item, list[item - 1]);
-      } else if (type == 2) {
-        this.addToAvailabilityOfFundsObject(item, list[item - 1]);
-      }
-    });
   }
 
   // TODO
   private loadSection3(responsePlan: ResponsePlan) {
-    let sectors = responsePlan.sectors;
-    let sectorKeys = Object.keys(sectors);
-    this.updateSectorSelections(sectorKeys, responsePlan);
-    this.presenceInTheCountry = responsePlan.presenceInTheCountry;
-    this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+    if (responsePlan.sectors) {
+      let sectors = responsePlan.sectors;
+      let sectorKeys = Object.keys(sectors);
+      this.updateSectorSelections(sectorKeys, responsePlan);
+      this.presenceInTheCountry = responsePlan.presenceInTheCountry;
+      this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+    }
+    if (!responsePlan.sectors && responsePlan.sectorsRelatedTo) {
+      this.sectorsRelatedTo = responsePlan.sectorsRelatedTo;
+
+      // let sectorKeys = Object.keys(this.sectorsRelatedTo);
+      this.updateSectorSelections(this.sectorsRelatedTo, responsePlan);
+      this.presenceInTheCountry = responsePlan.presenceInTheCountry;
+      this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+    }
   }
 
-  private updateSectorSelections(sectorKeys: string[], responsePlan: ResponsePlan) {
+  private updateSectorSelections(sectorKeys: any[], responsePlan: ResponsePlan) {
     sectorKeys.forEach(key => {
       if (Number(key) == ResponsePlanSectors.wash) {
         this.waSHSectorSelected = true;
@@ -1286,13 +1287,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.otherRelatedSector = responsePlan.otherRelatedSector;
     }
 
-    let partnerOrganisations = responsePlan.partnerOrganisations;
-    for (let i = 0; i < partnerOrganisations.length; i++) {
-      if (i != 0) {
-        this.partnersDropDownsCounter++;
-        this.partnersDropDowns.push(this.partnersDropDownsCounter);
+    if (responsePlan.partnerOrganisations) {
+      let partnerOrganisations = responsePlan.partnerOrganisations;
+      for (let i = 0; i < partnerOrganisations.length; i++) {
+        if (i != 0) {
+          this.partnersDropDownsCounter++;
+          this.partnersDropDowns.push(this.partnersDropDownsCounter);
+        }
+        this.partnerOrganisationsSelected[this.partnersDropDownsCounter] = partnerOrganisations[this.partnersDropDownsCounter - 1];
       }
-      this.partnerOrganisationsSelected[this.partnersDropDownsCounter] = partnerOrganisations[this.partnersDropDownsCounter - 1];
+    } else {
+      console.log("Response Plan's partner organisations list is null");
     }
 
   }
@@ -1312,26 +1317,30 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.showBeneficiariesTextEntry = this.howBeneficiariesCalculatedText ? true : false;
 
     //vulnerable groups
-    let vulnerableGroups = responsePlan.vulnerableGroups;
-    for (let i = 0; i < vulnerableGroups.length; i++) {
-      if (i != 0) {
-        this.vulnerableGroupsDropDownsCounter++;
-        this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
+    if (responsePlan.vulnerableGroups) {
+      let vulnerableGroups = responsePlan.vulnerableGroups;
+      for (let i = 0; i < vulnerableGroups.length; i++) {
+        if (i != 0) {
+          this.vulnerableGroupsDropDownsCounter++;
+          this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
+        }
+        this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
       }
-      this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
     }
+
     this.otherGroup = responsePlan.otherVulnerableGroup;
 
     //target population bullets
-    let targetPopulationInvolvementList = responsePlan.targetPopulationInvolvementList;
-    for (let i = 0; i < targetPopulationInvolvementList.length; i++) {
-      if (i != 0) {
-        this.targetPopulationBulletPointsCounter++;
-        this.targetPopulationBulletPoints.push(this.targetPopulationBulletPointsCounter);
+    if (responsePlan.targetPopulationInvolvementList) {
+      let targetPopulationInvolvementList = responsePlan.targetPopulationInvolvementList;
+      for (let i = 0; i < targetPopulationInvolvementList.length; i++) {
+        if (i != 0) {
+          this.targetPopulationBulletPointsCounter++;
+          this.targetPopulationBulletPoints.push(this.targetPopulationBulletPointsCounter);
+        }
+        this.addToTargetPopulationObject(this.targetPopulationBulletPointsCounter, targetPopulationInvolvementList[this.targetPopulationBulletPointsCounter - 1])
       }
-      this.addToTargetPopulationObject(this.targetPopulationBulletPointsCounter, targetPopulationInvolvementList[this.targetPopulationBulletPointsCounter - 1])
     }
-
   }
 
   private loadSection6(responsePlan: ResponsePlan) {
@@ -1339,7 +1348,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection7(responsePlan: ResponsePlan) {
-    console.log("load section 7");
+    if (responsePlan.sectors) {
     let sectors: {} = responsePlan.sectors;
     Object.keys(sectors).forEach(sectorKey => {
       //initial load back
@@ -1372,6 +1381,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
     });
   }
+  }
 
   private loadSection8(responsePlan: ResponsePlan) {
 
@@ -1394,12 +1404,22 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection10(responsePlan: ResponsePlan) {
-    console.log("load section 10");
 
-    let inputs = responsePlan.budget["item"][BudgetCategory.Inputs];
-    Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
-      this.totalInputs += item.budget;
-    })
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Inputs]) {
+      console.log("have inputs budget")
+      let inputs:{} = responsePlan.budget["item"][BudgetCategory.Inputs];
+      console.log(inputs);
+      Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
+        this.totalInputs += item.budget;
+      });
+      Object.keys(inputs).forEach( key => {
+        this.sectorBudget.set(Number(key), inputs[key]["budget"]);
+        this.sectorNarrative.set(Number(key), inputs[key]["narrative"]);
+      });
+      console.log("$$$$$$$$")
+      console.log(this.sectorBudget);
+      console.log(this.sectorNarrative);
+    }
 
     this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
     this.transportNarrative = responsePlan.budget["item"][BudgetCategory.Transport]["narrative"];
@@ -1439,7 +1459,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         }
       }
     }
-
   }
 
   private getStaff() {
@@ -1543,14 +1562,36 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private saveToFirebase(newResponsePlan: ResponsePlan) {
 
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
-    this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
-      console.log("Response plan creation successful");
-      console.log(newResponsePlan);
-      this.router.navigateByUrl('response-plans');
-    }).catch(error => {
-      console.log("Response plan creation unsuccessful with error --> " + error.message);
+    let numOfSectionsCompleted: number = 0;
+    this.sectionsCompleted.forEach((v, k) => {
+      if (v) {
+        numOfSectionsCompleted++;
+      }
     });
+
+    if (numOfSectionsCompleted > 0) {
+      if (this.forEditing) {
+        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
+        this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+          console.log("Response plan successfully updated");
+          this.router.navigateByUrl('response-plans');
+        }).catch(error => {
+          console.log("Response plan creation unsuccessful with error --> " + error.message);
+        });
+
+      } else {
+        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+        this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+          console.log("Response plan creation successful");
+          this.router.navigateByUrl('response-plans');
+        }).catch(error => {
+          console.log("Response plan creation unsuccessful with error --> " + error.message);
+        });
+      }
+    } else {
+      this.alertMessage = new AlertMessageModel('RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ERROR_NO_COMPLETED_SECTIONS');
+    }
+
   }
 
   private checkSectorInfo() {
@@ -1586,7 +1627,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     });
     return counter;
   }
-
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);

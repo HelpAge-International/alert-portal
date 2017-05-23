@@ -1,12 +1,13 @@
 import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
-import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType} from "../../utils/Enums";
 import {Observable, Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {RxHelper} from '../../utils/RxHelper';
 import {Frequency} from "../../utils/Frequency";
+import { LocalStorageService } from 'angular-2-local-storage';
 import * as firebase from 'firebase';
 declare var jQuery: any;
 
@@ -29,6 +30,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     protected assignedToUsers: any[] = [];
     protected departments: any[] = [];
     protected countryId = null;
+    protected agencyId = null;
     protected actionStatus = ActionStatus;
     protected ActionStatusEnum = Object.keys(ActionStatus).map(k => ActionStatus[k]).filter(v => typeof v === "string") as string[];
     protected ActionTypeEnum = Object.keys(ActionType).map(k => ActionType[k]).filter(v => typeof v === "string") as string[];
@@ -54,9 +56,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
     protected attachments: any[] = [];
 
+	protected obsCountryId: Subject<string> = new Subject();
+	protected countrySelected = false;
+	protected agencySelected = false;
+
+    protected actionSelected: any = {};
     firebase: any;
 
-    constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router) {
+    constructor( @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService) {
         this.subscriptions = new RxHelper;
         this.firebase = firebaseApp;
 
@@ -67,17 +74,31 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 equalTo: this.docFilterSubject
             }
         }
+
+        let subscription = this.route.params.subscribe((params: Params) => {
+            if (params['countryId']) {
+                this.countryId = params['countryId'];
+                this.obsCountryId.next(this.countryId);
+
+                this.countrySelected = true;
+            }
+
+            if (params['agencyId']) {
+                this.agencyId = params['agencyId'];
+
+                this.agencySelected = true;
+            }
+        });
     }
 
     ngOnInit() {
         let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
                 //this.uid = auth.uid; TODO remove comment
-                this.subscriptions.add(this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
-                    if (country.$exists()) {
-                        this.countryId = country.$value
 
-                        this.assignedToUsers = [];
+                this.subscriptions.add(this.obsCountryId.subscribe(
+                	value => {
+                		this.assignedToUsers = [];
                         this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId).subscribe(staff => {
                             this.assignedToUsers = staff.map(member => {
                                 let userId = member.$key;
@@ -94,9 +115,21 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                             });
 
                         }));
-                    }
-                }));
+                	},
+					error => console.log(error),
+					() => console.log("finished")
+				));
 
+                if (!this.countrySelected)
+	                this.subscriptions.add(this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/countryId').subscribe(country => {
+	                    if (country.$exists()) {
+	                        this.countryId = country.$value;
+
+	                        this.obsCountryId.next(this.countryId);                     
+	                    }
+	                }));
+
+                
                 this.assignedToUserKey = this.uid;
                 this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/action/').subscribe(_ => {
                     this.actions = [];
@@ -439,6 +472,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     protected purgeDocumentReference(action, docKey) {
         this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key + '/documents/' + docKey).remove();
         this.af.database.object(Constants.APP_STATUS + '/document/' + action.agencyId + '/' + docKey).remove();
+    }
+
+    protected copyAction(action) {
+        this.storage.set('selectedAction', action);
+        this.router.navigate(["/preparedness/create-edit-preparedness"]);
     }
 
 }
