@@ -28,15 +28,18 @@
         <div class="row no-gutters Change-alert-level">
           <label for="green-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
                                                                              id="green-alert-level"
-                                                                             [checked]="loadedAlert?.alertLevel==0"><span
+                                                                             [checked]="loadedAlert?.alertLevel==0"
+                                                                             (click)="selectedAlertLevel(0)"><span
             class="badge badge-success">Green Alert Level</span></label>
           <label for="amber-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
                                                                              id="amber-alert-level"
-                                                                             [checked]="loadedAlert?.alertLevel==1"><span
+                                                                             [checked]="loadedAlert?.alertLevel==1"
+                                                                             (click)="selectedAlertLevel(1)"><span
             class="badge badge-warning">Amber Alert Level</span></label>
           <label for="red-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
                                                                            id="red-alert-level"
-                                                                           [checked]="loadedAlert?.alertLevel==2"><span
+                                                                           [checked]="loadedAlert?.alertLevel==2"
+                                                                           (click)="selectedAlertLevel(2)"><span
             class="badge badge-danger">Red Alert Level</span></label>
         </div>
       </div>
@@ -46,7 +49,8 @@
       <div class="col-lg-6 col-md-8">
         <div class="form-group">
           <label for="reason-red-alert">Reason for red alert request</label>
-          <textarea name="reason-red-alert" id="reason-red-alert" cols="20" rows="5" class="form-control"></textarea>
+          <textarea name="reason-red-alert" id="reason-red-alert" cols="20" rows="5" class="form-control"
+                    [(ngModel)]="reasonForRedAlert"></textarea>
         </div>
       </div>
     </div>

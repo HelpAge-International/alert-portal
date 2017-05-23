@@ -24,6 +24,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private alertId: string;
   private countryId: string;
   private loadedAlert: ModelAlert;
+  private reasonForRedAlert: string;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private alertService: ActionsService) {
   }
@@ -57,6 +58,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
         console.log(this.loadedAlert);
         this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
         this.infoNotes = this.loadedAlert.infoNotes;
+        this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
       });
   }
 
@@ -67,6 +69,10 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
   removeArea() {
 
+  }
+
+  selectedAlertLevel(selection) {
+    this.loadedAlert.alertLevel = selection;
   }
 
   ngOnDestroy() {
