@@ -107,7 +107,8 @@
             "POSTCODE": "Postcode/Zip Code",
             "PHONE": "Phone Number",
             "WEB_ADDRESS": "Website address",
-            "POSITION": "Position"
+            "POSITION": "Position",
+            "TITLE": "Title"
         },
         "USER_TYPE": {
             "ALL_USERS": "All Users",
@@ -869,7 +870,16 @@
               "USERS_NOTIFIED": "Users notified",
               "ACTIONS": "Actions",
               "NOTIFICATION": "Notification",
-              "SAVED_SUCCESS": "Notification Settings successfully saved"
+              "SELECT_USER_TYPE": "Select user type",
+              "SAVED_SUCCESS": "Notification Settings successfully saved",
+              "EXTERNAL_NOTIFICATIONS": "External Notifications",
+              "NO_EXTERNAL_RECIPIENTS": "No external recipients",
+              "ADD_RECIPIENT": "Add external recipient",
+              "RECIPIENT_NAME": "Name",
+              "RECIPIENT_ORGANISATION": "Organisation",
+              "NO_ORGANISATION": "Please enter the Organisation",
+              "SAVE_RECIPIENT": "Save external recipient",
+              "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved"
           }
         },
         "MESSAGES": {

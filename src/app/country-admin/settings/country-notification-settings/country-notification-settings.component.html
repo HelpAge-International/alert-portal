@@ -30,11 +30,36 @@
                 </div>
                 <div class="col-sm-2"><a href="javascript:void(0)" 
                         (click) = "selectUserType(notificationSettings[notificationSetting.key], notificationSetting.key, NOTIFICATION_SETTINGS_SELECTION[notificationSetting.key])">
-                        <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a>
+                        <p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SELECT_USER_TYPE" | translate}}</p></a>
                 </div>
             </div>
         </div>
       </form>
+
+      <div class="Header-title__wrap">
+            <h2>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EXTERNAL_NOTIFICATIONS" | translate}}</h2>  
+            <button type="button" class="btn btn-outline-primary" (click) = "addRecipient()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</button> 
+        </div>
+
+        <div class="Spaced">
+            <div class="row Spaced">
+                <div class="col-sm-3"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_NAME" | translate}}</p></b></div>
+                <div class="col-sm-3"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_ORGANISATION" | translate}}</p></b></div>
+                <div class="col-sm-3"><b><p>{{ "GLOBAL.USER_INFO.PHONE" | translate}}</p></b></div>
+                <div class="col-sm-2"><b><p>{{ "GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate}}</p></b></div>
+                <div class="col-sm-1"><b><p></p></b></div>
+            </div>
+            <div class="row Spaced Line-row" *ngIf = "externalRecipients && externalRecipients.length == 0">
+                <div class="col-12 Empty--ribbon">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.NO_EXTERNAL_RECIPIENTS" | translate}}</div>
+            </div>
+            <div class="row Spaced Line-row" *ngFor="let externalRecipient of externalRecipients">
+                <div class="col-sm-3"><p>{{ externalRecipient.firstName }} {{ externalRecipient.lastName }}</p></div>
+                <div class="col-sm-3"><p>{{ externalRecipient.organisation }}</p></div>
+                <div class="col-sm-3"><p>{{ externalRecipient.phone }}</p></div>
+                <div class="col-sm-2"><p>{{ externalRecipient.email }}</p></div>
+                <div class="col-sm-1"><a href="javascript:void(0)"><p>{{ "GLOBAL.EDIT" | translate}}</p></a></div>
+            </div>
+        </div>
   </div>
 </div>
 

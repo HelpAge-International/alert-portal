@@ -114,6 +114,8 @@ import {CommonService} from "./services/common.service";
 import { SettingsService } from "./services/settings.service";
 import { CountryAdminSettingsMenuComponent } from "./country-admin/settings/settings-menu/settings-menu.component";
 import { EnumKeyValuesPipe } from "./utils/pipes/enum-keyValues.pipe";
+import { MessageService } from "./services/message.service";
+import { NotificationSettingsService } from "./services/notification-settings.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -255,7 +257,7 @@ const firebaseAuthConfig = {
         //     storageType: 'localStorage'
         // })
     ],
-    providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService],
+    providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService],
     bootstrap: [AppComponent]
 })
 

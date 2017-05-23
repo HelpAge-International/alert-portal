@@ -9,6 +9,8 @@ import { SettingsService } from "../../../services/settings.service";
 import { AlertMessageModel } from "../../../model/alert-message.model";
 import { DisplayError } from "../../../errors/display.error";
 import { NotificationSettingsModel } from "../../../model/notification-settings.model";
+import { ExternalRecipientModel } from "../../../model/external-recipient.model";
+import { MessageService } from "../../../services/message.service";
 
 declare var jQuery: any;
 
@@ -30,11 +32,11 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
   USER_TYPE_SELECTION =
     Constants.USER_TYPE_SELECTION.filter( x => x != UserType.All && x != UserType.NonAlert && x != UserType.GlobalUser);
 
-
   // Models
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
   private notificationSettings: NotificationSettingsModel[];
+  private externalRecipients: ExternalRecipientModel[];
 
   // Other
   private activeNotification: any;
@@ -44,6 +46,7 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
 
   constructor(private _userService: UserService,
               private _settingsService: SettingsService,
+              private _messageService: MessageService,
               private router: Router,
               private route: ActivatedRoute,
               private subscriptions: RxHelper){
@@ -66,6 +69,10 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
 
           this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId).subscribe(notificationSettings => {
             this.notificationSettings = notificationSettings;
+          })
+
+          this._messageService.getCountryExternalRecipients(this.countryId).subscribe(externalRecipients => {
+            this.externalRecipients = externalRecipients;
           })
         }
       });
@@ -131,6 +138,10 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigateByUrl('/dashboard');
+  }
+
+  addRecipient(){
+    this.router.navigateByUrl('/country-admin/settings/country-notification-settings/country-add-external-recipient');
   }
 
 }
