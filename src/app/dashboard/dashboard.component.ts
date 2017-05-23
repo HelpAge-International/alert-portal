@@ -11,7 +11,7 @@ import * as moment from "moment";
 import {Subject} from "rxjs/Subject";
 import {HazardImages} from "../utils/HazardImages";
 import {ModelAlert} from "../model/alert.model";
-import {ModelAffectedArea} from "../model/affectedArea.model";
+declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -25,7 +25,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private HAZARDS:string[] = Constants.HAZARD_SCENARIOS;
 
   private alertList: ModelAlert[];
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
@@ -63,8 +62,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private countryContextIndicators: any[] = [];
 
-  constructor(private af: AngularFire, private router: Router,
-              private subscriptions: RxHelper, private userService: UserService, private actionService: ActionsService) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
@@ -97,6 +97,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
+      this.initCalendar();
       this.getApprovedResponsePlansCount();
       this.getAlerts();
       this.getCountryContextIndicators();
@@ -117,6 +118,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // TODO -
+  private initCalendar() {
+    const events = [
+      {
+        dates: [new Date(2016, 4, 23), new Date(2018, 6, 25)],
+        title: "Earth",
+        eventHeight: 30,
+        section: 1,
+        attrs: {fill: "#d4e3fd", stroke: "#d4e3fd"}
+      },
+      {
+        dates: [new Date(2017, 7, 23), new Date(2017, 9, 26)],
+        title: "Wind",
+        eventHeight: 20,
+        section: 1,
+        attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
+      },
+      {
+        dates: [new Date(2017, 4, 26), new Date(2017, 6, 28)],
+        title: "Fire",
+        eventHeight: 10,
+        section: 1,
+        attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
+      },
+    ];
+
+    const timeline2 = new Chronoline(document.getElementById("target2"), events,
+      {
+        visibleSpan: DAY_IN_MILLISECONDS * 91,
+        animated: true,
+        tooltips: true,
+        sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
+        labelInterval: isFifthDay,
+        hashInterval: isFifthDay,
+        scrollLeft: prevMonth,
+        scrollRight: nextMonth,
+        // markToday: 'labelBox',
+        draggable: true
+      });
+
+  }
   private getCountryId() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
