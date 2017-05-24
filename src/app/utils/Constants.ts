@@ -44,6 +44,8 @@ export class Constants {
         "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
     static COUNTRY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.GlobalUser,
     UserType.ErtLeader, UserType.Ert];
+    static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
+    UserType.ErtLeader, UserType.Ert, UserType.Donor]; 
 
 
     /*LIST VALUES FOR TRANSLATION*/

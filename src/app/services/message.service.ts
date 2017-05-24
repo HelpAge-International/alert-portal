@@ -4,11 +4,14 @@ import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
 import { ExternalRecipientModel } from "../model/external-recipient.model";
+import { MessageModel } from "../model/message.model";
 
 @Injectable()
 export class MessageService {
 
   constructor(private af: AngularFire, private subscriptions: RxHelper) {}
+
+  // COUNTRY ADMIN
 
   getCountryExternalRecipients(countryId: string): Observable<ExternalRecipientModel[]> {
 
@@ -72,5 +75,33 @@ export class MessageService {
     }
     externalRecipientData['/externalRecipient/' + countryId + '/' + uid] = null;
     return this.af.database.object(Constants.APP_STATUS).update(externalRecipientData);
+  }
+
+  getCountrySentMessages(countryId: string): Observable<MessageModel[]> {
+    if(!countryId) { throw new Error('No countryID'); }
+
+    const countrySentMessagesSubsciption = this.af.database.list(Constants.APP_STATUS + '/administratorCountry/' + countryId + '/sentmessages')
+          .map(items => {
+            let sentMessages = [];
+            if(items)
+            {
+              items.forEach(item => {
+                this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
+                  .subscribe(message => {
+                    console.log(message);
+                    if(message.content) {
+                      let sentMessage = new MessageModel();
+                      sentMessage.mapFromObject(message);
+                      sentMessages.push(sentMessage);
+                    }
+
+                    return sentMessages;
+                  },
+                  err => console.log('Could not find message'))
+              })
+            }
+            return sentMessages;
+          });
+      return countrySentMessagesSubsciption;
   }
 }
