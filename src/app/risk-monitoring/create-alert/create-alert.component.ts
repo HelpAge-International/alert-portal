@@ -99,6 +99,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
                 this.alertData.timeCreated = this._getCurrentTimestamp();
                 this.alertData.approval['countryDirector'] = [];
                 this.alertData.approval['countryDirector'][this.directorCountryID] = 0;
+                this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
 
 
                 var dataToSave = this.alertData;
@@ -111,7 +112,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
                     }).catch((error: any) => {
                         console.log(error, 'You do not have access!')
                     });
-                //
             }
         });
     }
@@ -136,7 +136,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
             excludeFields.push("level1", "level2");
         } else if (countryLevel1Exists && operationArea.level1
             && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
-                || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+                || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level2].length < 1)) {
             excludeFields.push("level2");
         }
         this.alertMessage = operationArea.validate(excludeFields);
@@ -205,5 +205,24 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
     private navigateToLogin() {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
     }
+
+    checkTypeof(param: any) {
+        if (typeof (param) == 'undefined') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    _keyPress(event: any) {
+        const pattern = /[0-9\.\+\-\ ]/;
+        let inputChar = String.fromCharCode(event.charCode);
+
+        if (!pattern.test(inputChar) && event.charCode) {
+            // invalid character, prevent input
+            event.preventDefault();
+        }
+    }
+
 
 }
