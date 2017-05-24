@@ -6,6 +6,8 @@ import {Subject} from "rxjs/Subject";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {ModelAffectedArea} from "../../model/affectedArea.model";
+import {AlertLevels, AlertStatus, ApprovalStatus} from "../../utils/Enums";
+import {isNumber} from "util";
 
 @Component({
   selector: 'app-dashboard-update-alert-level',
@@ -29,6 +31,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private estimatedPopulation: number;
   private geoMap = new Map();
   private temp = [];
+  private preAlertLevel: AlertLevels;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private alertService: ActionsService) {
   }
@@ -63,12 +66,16 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
         this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
         this.infoNotes = this.loadedAlert.infoNotes;
         this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
+        this.preAlertLevel = this.loadedAlert.alertLevel;
 
         this.loadedAlert.affectedAreas.forEach(area => {
           this.alertService.getAllLevelInfo(area.affectedCountry)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(geoInfo => {
+              console.log(geoInfo);
               this.geoMap.set(area.affectedCountry, geoInfo);
+              console.log("*****");
+              console.log(this.geoMap.get(0))
             });
         });
       });
@@ -95,20 +102,14 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   }
 
   changeCountry(index, value) {
-    console.log(index)
-    console.log(this.COUNTRIES.indexOf(value));
     this.loadedAlert.affectedAreas[index].affectedCountry = this.COUNTRIES.indexOf(value);
   }
 
   changeLevel1(index, value) {
-    console.log(index)
-    console.log(value)
     this.loadedAlert.affectedAreas[index].affectedLevel1 = Number(value);
   }
 
   changeLevel2(index, value) {
-    console.log(index)
-    console.log(value)
     this.loadedAlert.affectedAreas[index].affectedLevel2 = Number(value);
   }
 
@@ -117,7 +118,10 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.loadedAlert.reasonForRedAlert = this.reasonForRedAlert;
     this.loadedAlert.infoNotes = this.infoNotes;
     this.loadedAlert.timeUpdated = Date.now();
-    console.log(this.loadedAlert)
+    if (this.loadedAlert.alertLevel != this.preAlertLevel && this.loadedAlert.alertLevel == AlertLevels.Red) {
+      this.loadedAlert.approvalStatus = AlertStatus.WaitingResponse;
+    }
+    this.alertService.updateAlert(this.loadedAlert, this.countryId, this.loadedAlert.id);
   }
 
   ngOnDestroy() {

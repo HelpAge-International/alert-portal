@@ -71,7 +71,7 @@
             </div>
             <div class="col-sm-3 form-group">
               <select class="form-control" #level1 (change)="changeLevel1(i, level1.value)">
-                <!--<option selected hidden disabled>Please select</option>-->
+                <option selected hidden disabled>Please select</option>
                 <option *ngFor="let level1 of geoMap.get(area.affectedCountry)?geoMap.get(area.affectedCountry):temp"
                         [value]="level1.id"
                         [selected]="level1.id==area.affectedLevel1">
@@ -81,7 +81,7 @@
             </div>
             <div class="col-sm-3 form-group">
               <select class="form-control" #level2 (change)="changeLevel2(i, level2.value)">
-                <!--<option selected hidden disabled>Please select</option>-->
+                <option selected hidden disabled>Please select</option>
                 <option
                   *ngFor="let level2 of geoMap.get(area.affectedCountry)&&geoMap.get(area.affectedCountry)[area.affectedLevel1]?geoMap.get(area.affectedCountry)[area.affectedLevel1]?.levelTwoValues:temp"
                   [value]="level2.id" [selected]="level2.id==area.affectedLevel2">
