@@ -1,10 +1,9 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {RxHelper} from "../../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Country, SkillType, UserType} from "../../../utils/Enums";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {firebaseConfig} from "../../../app.module";
@@ -18,7 +17,9 @@ declare var jQuery: any;
   templateUrl: 'create-edit-staff.component.html',
   styleUrls: ['create-edit-staff.component.css']
 })
+
 export class CreateEditStaffComponent implements OnInit, OnDestroy {
+
   PERSON_TITLE = Constants.PERSON_TITLE;
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
   USER_TYPE = Constants.USER_TYPE;
@@ -71,12 +72,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private isUpdateOfficeOnly: boolean;
   private isEmailChange: boolean;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -84,7 +86,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.initData();
-      let subscription = this.route.params.subscribe((params: Params) => {
+      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
         if (params["id"]) {
           this.selectedStaffId = params["id"];
           this.selectedOfficeId = params["officeId"];
@@ -92,14 +94,19 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
         }
       });
-      this.subscriptions.add(subscription);
     });
-    this.subscriptions.add(subscription);
+  }
+
+  ngOnDestroy() {
+    this.secondApp.delete();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private loadStaffInfo(staffId: string, officeId: string) {
     console.log("load staff info: " + staffId + "/ " + officeId);
-    let subscriptionUser = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
         // console.log(user);
         this.title = user.title;
@@ -109,11 +116,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.emailInDatabase = user.email;
         this.phone = user.phone;
       });
-    this.subscriptions.add(subscriptionUser);
 
     let path = officeId != "null" ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId : Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
 
-    let subscriptionStaff = this.af.database.object(path)
+    this.af.database.object(path)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(staff => {
         this.userType = staff.userType;
         this.checkUserType();
@@ -141,20 +148,19 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
               limitToFirst: 1
             }
           })
+            .takeUntil(this.ngUnsubscribe)
             .subscribe(regions => {
               this.region = regions[0];
             });
-          this.subscriptions.add(subscription);
         }
       });
-    this.subscriptions.add(subscriptionStaff);
 
     if (officeId != "null") {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId)
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + officeId)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(x => {
           this.countryOffice = x;
         });
-      this.subscriptions.add(subscription);
     }
   }
 
@@ -182,11 +188,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       }
     });
     this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.releaseAll();
-    this.secondApp.delete();
   }
 
   validateForm() {
@@ -398,7 +399,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   selectedUserType(userType) {
     //userType-1 to ignore first all option
     this.notificationSettings = [];
-    let subscription = this.notificationList
+    this.notificationList
+      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(settingList => {
         settingList.forEach(setting => {
@@ -406,7 +408,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           this.notificationsMap.set(Number(setting.$key), setting.usersNotified[userType - 1]);
         });
       });
-    this.subscriptions.add(subscription);
     console.log(this.userType);
     this.checkUserType();
   }
@@ -442,10 +443,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.hideWarning = true;
     });
-    this.subscriptions.add(subscribe);
   }
 
   deleteStaff() {

@@ -287,8 +287,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/administratorAgency/" + this.adminId] = null;
-      agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
-      agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
+      // agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+      // agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
 

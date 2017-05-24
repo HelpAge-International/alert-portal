@@ -18,8 +18,6 @@ declare const jQuery: any;
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-
   private dialogTitle: string;
   private dialogContent: string;
   private uid: string;
@@ -34,6 +32,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private notesMap = new Map();
   private needShowDialog: boolean;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService) {
   }
@@ -92,10 +92,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
     this.service.serviceDestroy();
   }
 

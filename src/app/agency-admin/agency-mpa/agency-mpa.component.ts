@@ -3,8 +3,7 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionLevel, ActionType} from "../../utils/Enums";
 import {Router} from "@angular/router";
-import {RxHelper} from "../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -27,11 +26,13 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
   private actionToDelete;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
         this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
@@ -45,11 +46,11 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   deleteAction(actionKey) {
@@ -160,7 +161,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private getDepartments() {
 
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departmentList => {
         let departments = [];
         departmentList.forEach(x => {
@@ -168,10 +169,10 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
         });
         return departments;
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(x => {
         this.departments = x;
       });
-    this.subscriptions.add(subscription);
   }
 
 }

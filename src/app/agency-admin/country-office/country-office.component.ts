@@ -1,9 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from 'angularfire2';
-import {RxHelper} from '../../utils/RxHelper';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 declare var jQuery: any;
 
 @Component({
@@ -34,11 +33,13 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private countryToUpdate;
   private directorName: string;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -47,23 +48,25 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid);
       this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.uid);
-      let subscription = this.regions
-        .subscribe(regions => {
+      this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
           regions.forEach(region => {
             this.showRegionMap.set(region.$key, false);
           });
         });
-      this.subscriptions.add(subscription);
       this.checkAnyCountryNoRegion();
     });
-    this.subscriptions.add(subscription);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private checkAnyCountryNoRegion() {
     this.countriesWithRegion = [];
     this.allCountries = [];
     this.otherCountries = [];
-    let subscription = this.regions
+    this.regions
       .map(regions => {
         let countries = new Set();
         regions.forEach(region => {
@@ -74,6 +77,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         return Array.from(countries);
       })
       .first()
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
         // console.log(result);
         this.countriesWithRegion = result;
@@ -86,6 +90,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
             return countryids;
           })
           .first()
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(result => {
             // console.log(result);
             this.allCountries = result;
@@ -97,28 +102,22 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
               this.retrieveOtherCountries(diff);
             }
           });
-        this.subscriptions.add(subscription);
       });
-    this.subscriptions.add(subscription);
 
 
   }
 
   private retrieveOtherCountries(diff: string[]) {
     // console.log('do have other countries, fetch data!');
-    let subscription = Observable.from(diff)
+    Observable.from(diff)
       .flatMap(id => {
         return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + id);
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
         // console.log(result);
         this.otherCountries.push(result);
       });
-    this.subscriptions.add(subscription);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.releaseAll();
   }
 
   update(country) {
@@ -161,15 +160,15 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.regionCountries = [];
     this.tempCountryIdList = [];
     for (let countryId in region.countries) {
-      let subscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + countryId)
+      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + countryId)
         .first()
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(country => {
           if (!this.tempCountryIdList.includes(country.location)) {
             this.tempCountryIdList.push(country.location);
             this.regionCountries.push(country);
           }
         });
-      this.subscriptions.add(subscription);
     }
     return this.regionCountries;
   }
@@ -179,14 +178,14 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       return;
     }
     let name: string = '';
-    let subscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + key + '/adminId')
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + key + '/adminId')
       .flatMap(adminId => {
         return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + adminId.$value)
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
         name = user.firstName + ' ' + user.lastName;
       });
-    this.subscriptions.add(subscription);
 
     if (name) {
       return name;
@@ -208,11 +207,11 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   getDirectorName(director) {
     this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
     if (director && director.directorId && director.directorId != "null") {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + director.directorId)
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + director.directorId)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           this.directorName = user.firstName + " " + user.lastName;
         });
-      this.subscriptions.add(subscription);
     }
 
     return this.directorName;

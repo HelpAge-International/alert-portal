@@ -3,7 +3,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from '../../utils/Constants';
 import {ActionType} from '../../utils/Enums';
-import {RxHelper} from "../../utils/RxHelper";
+import {Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -17,15 +17,15 @@ export class MinPrepComponent implements OnInit, OnDestroy {
   private chsMinPrepActions: FirebaseListObservable<any>;
   private path: string = '';
   private actionToDelete;
-  private subscriptions: RxHelper;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.path = Constants.APP_STATUS + "/action/" + auth.uid;
         this.chsMinPrepActions = this.af.database.list(this.path, {
@@ -41,11 +41,11 @@ export class MinPrepComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   editChsMinPrepAction(chsMinPrepAction) {

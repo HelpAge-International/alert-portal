@@ -1,6 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute, Params} from "@angular/router";
-import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, Country} from "../../utils/Enums";
 declare var jQuery: any;
@@ -15,6 +14,7 @@ import {DisplayError} from "../../errors/display.error";
 import {PartnerModel} from "../../model/partner.model";
 import {SessionService} from "../../services/session.service";
 import {CommonService} from "../../services/common.service";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-add-partner-organisation',
@@ -44,18 +44,21 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private activeProject: PartnerOrganisationProjectModel;
   private fromResponsePlans: boolean = false;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _sessionService: SessionService,
-              private router: Router, private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
+              private router: Router, private route: ActivatedRoute) {
     this.partnerOrganisation = new PartnerOrganisationModel();
     this.activeProject = this.partnerOrganisation.projects[0];
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
+    this._userService.getAuthUser()
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -63,26 +66,27 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
 
-      let subscription = this.route.params
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
         .subscribe((params: Params) => {
           if (params["fromResponsePlans"]) {
             this.fromResponsePlans = true;
           }
         });
-      this.subscriptions.add(subscription);
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
           err => console.log(err);
         });
-
     });
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   validateForm(): boolean {
@@ -108,7 +112,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
         this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
-        this._userService.getUserByEmail(this.partnerOrganisation.email).subscribe(user => {
+        this._userService.getUserByEmail(this.partnerOrganisation.email)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
 
           if (!user) {
             jQuery('#redirect-partners').modal('show');

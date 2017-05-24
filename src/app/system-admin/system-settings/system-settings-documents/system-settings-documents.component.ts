@@ -1,11 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {Constants, FILE_SETTING} from "../../../utils/Constants";
 import {ModelSystem} from "../../../model/system.model";
 import {FileType} from "../../../utils/Enums";
-import {RxHelper} from "../../../utils/RxHelper";
 
 @Component({
   selector: 'app-system-settings-documents',
@@ -42,12 +41,14 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
   private FileType = FileType;
   private modelSystem: ModelSystem;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(x => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(x => {
       if (x) {
         this.uid = x.uid;
         this.initData(this.uid);
@@ -55,18 +56,19 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH)
       }
     });
-    this.subscriptions.add(subscription)
-
   }
 
   ngOnDestroy() {
-
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   private initData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/system/" + uid).subscribe(x => {
+    this.af.database.object(Constants.APP_STATUS + "/system/" + uid)
+      .takeUntil(this.ngUnsubscribe).subscribe(x => {
       this.modelSystem = new ModelSystem();
       this.modelSystem.assignHazard = x.assignHazard;
       this.modelSystem.fileSettings = x.fileSettings;
@@ -92,7 +94,6 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
       this.fileSize = x.fileSize;
       this.fileType = x.fileType;
     });
-    this.subscriptions.add(subscription);
   }
 
   saveSetting() {
@@ -133,10 +134,10 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.isSaved = true;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       console.log("time up");
       this.isSaved = false;
     });
-    this.subscriptions.add(subscription);
   }
 }

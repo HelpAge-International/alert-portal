@@ -2,21 +2,19 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable} from 'rxjs';
-import {RxHelper} from '../../../utils/RxHelper';
+import {Observable, Subject} from 'rxjs';
 import Promise = firebase.Promise;
-
 
 @Component({
   selector: 'app-department',
   templateUrl: './department.component.html',
   styleUrls: ['./department.component.css']
 })
+
 export class DepartmentComponent implements OnInit, OnDestroy {
 
   private uid: string = "";
   private departments: FirebaseListObservable<any>;
-  private subscriptions: RxHelper;
   private deleting: boolean = false;
   private editing: boolean = false;
   private saved: boolean = false;
@@ -30,23 +28,24 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   private alertMessage: string = "Message";
   private alertSuccess: boolean = true;
-  private alertShow: boolean = false;  
+  private alertShow: boolean = false;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
 
-        let deptsSubscription = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments').subscribe(_ => {
+        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(_ => {
           this.depts = _;
-        })
-        this.subscriptions.add(deptsSubscription);
+        });
 
-        this.subscriptions.add(subscription);
       } else {
         // user is not logged in
         console.log('Error occurred - User is not logged in');
@@ -57,7 +56,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
-      this.subscriptions.releaseAll();
+      this.ngUnsubscribe.next();
+      this.ngUnsubscribe.complete();
     } catch (e) {
       console.log('Unable to releaseAll');
     }
@@ -108,10 +108,11 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     this.editing = !this.editing;
     this.editDepts = {};
     this.deleteCandidates = {};
-    let deptsSubscription = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments').subscribe(_ => {
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(_ => {
       this.depts = _;
-    })
-    this.subscriptions.add(deptsSubscription);
+    });
   }
 
   saveEditedDepartments(event) {
@@ -173,10 +174,10 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.newDepartmentErrorInactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.newDepartmentErrorInactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
   /**

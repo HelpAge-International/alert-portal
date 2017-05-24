@@ -4,12 +4,12 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
         <div class="Header-title__wrap">
-            <h1>{{"AGENCY_ADMIN.NOTIFICATIONS.TITLE_TEXT" | translate}}</h1>
+            <h1>{{"GLOBAL.YOUR_NOTIFICATIONS" | translate}}</h1>
         </div>
         <div class="Data--ribbon" *ngFor="let message of sortedMessages">
              <div class="row">
                 <div class="Info--ribbon--wrap">
-                    <div class="col-sm-5">{{"AGENCY_ADMIN.NOTIFICATIONS.RECEIVED" | translate}}: <b>{{message.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
+                    <div class="col-sm-5">{{"GLOBAL.RECEIVED" | translate}}: <b>{{message.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
                 </div>
                 <div class="col-sm-12">
                     <h5>{{message.title}}</h5>

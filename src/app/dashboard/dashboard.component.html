@@ -4,49 +4,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
-    <!--country header-->
-    <div class="Widget">
-      <ul class="list-inline">
-        <li class="list-inline-item active">
-          <div class="Icon">
-            <div
-              class="Icon--lg Icon--align-center Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
-          </div>
-          <span>{{CountriesList[countryLocation] | translate}}</span>
-        </li>
-        <li class="list-inline-item">
-          <div class="Icon">
-            <div class="Icon__circle Icon--blue Icon--lg">{{numOfApprovedResponsePlans}}</div>
-          </div>
-          <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
-        </li>
-        <li class="list-inline-item">
-          <div class="Icon">
-            <div class="Icon__circle Icon--b-{{mpaStatusColor}} Icon--lg">
-              <i class="fa {{mpaStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i></div>
-          </div>
-          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
-        </li>
-        <li class="list-inline-item  ">
-          <div class="Icon">
-            <div *ngIf="overallAlertLevel == AlertLevels.Red" class="Icon__circle Icon--b-{{advStatusColor}} Icon--lg">
-              <i class="fa {{advStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i>
-            </div>
-            <div *ngIf="overallAlertLevel != AlertLevels.Red" class="Icon__circle Icon--b-grey Icon--lg">
-              <i class="fa fa-times fa-2x fa-inverse" aria-hidden="true"></i>
-            </div>
-          </div>
-
-          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
-        </li>
-        <li class="list-inline-item">
-          <div class="Icon">
-            <div class="Icon__circle Icon--green Icon--lg">{{percentageCHS}}%</div>
-          </div>
-          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
-        </li>
-      </ul>
-    </div>
+    <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
     <!--alert screen-->
     <div *ngIf="alerts | async as alertList">
@@ -60,7 +18,8 @@
             <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
           </div>
           <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-            <i div class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+            <i div
+               class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
               <span>Risk:</span>
               {{HAZARDS[alert.hazardScenario] | translate}}
@@ -320,9 +279,9 @@
       </div>
 
       <div class="Widget Calendar-Widget">
-        <h3>Seasonal Calendar</h3>
+        <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
         <div id="target2" class="timeline-tgt Spaced"></div>
-        <div class="btn btn-tertiary" routerLink="/dashboard/dashboard-seasonal-calendar">Temp Button</div>
+        <a href="javascript:void(0)" routerLink="/dashboard/dashboard-seasonal-calendar">Temp link to calendar</a>
       </div>
 
     </div>

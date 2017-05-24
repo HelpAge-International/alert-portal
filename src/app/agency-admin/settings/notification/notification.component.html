@@ -2,66 +2,78 @@
 <app-agency-admin-menu></app-agency-admin-menu>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
+  <div class="Full-page__wrap--inner">
 
-        <app-settings-menu></app-settings-menu>
+    <app-settings-menu></app-settings-menu>
 
-        <div class="row Line-row no-gutters Header">
-            <div class="col-lg-4 col-4">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.EVENTS" | translate}}</div>
-            <div class="col-lg-5 col-4">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.USERS_NOTIFIED" | translate}}</div>
-            <div class="col-lg-3 col-4">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.ACTIONS" | translate}}</div>
-        </div>
-
-        <div class="row Line-row no-gutters" *ngFor="let nSetting of notificationSettingsList">
-             <div class="col-lg-4 col-4">{{notificationSettings[nSetting] | translate}}</div>
-            <div class="col-lg-5 col-4" *ngIf="userNotified[nSetting] && userNotified[nSetting].length > 0">
-                 <p *ngFor="let val of userNotified[nSetting]">{{val}}</p>
-            </div>
-            <div class="col-lg-5 col-4" *ngIf="!userNotified[nSetting] || !userNotified[nSetting].length">
-                {{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.NO_SELECTED_USER_TYPE" | translate}}
-            </div>
-            <div class="col-lg-3 col-4 row no-gutters">
-                <div class="col-md-5">
-                    <a href="#" data-toggle="modal" data-target="#select_user_type" (click)="selectUserType(nSetting)">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.SELECT_USER_TYPES" | translate}}</a>
-                </div>
-            </div>
-        </div>
+    <div class="Sub-header-title__wrap">
+      <h2>{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.TITLE_TEXT" | translate}}</h2>
     </div>
+
+    <div class="row Line-row no-gutters Header">
+      <div class="col-lg-4 col-4">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EVENTS" | translate}}</div>
+      <div class="col-lg-5 col-4">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.USERS_NOTIFIED" | translate}}</div>
+      <div class="col-lg-3 col-4">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ACTIONS" | translate}}</div>
+    </div>
+
+    <div class="row Line-row no-gutters" *ngFor="let nSetting of notificationSettingsList">
+      <div class="col-lg-4 col-4">{{notificationSettings[nSetting] | translate}}</div>
+      <div class="col-lg-5 col-4" *ngIf="userNotified[nSetting] && userNotified[nSetting].length > 0">
+        <p *ngFor="let val of userNotified[nSetting]">{{val}}</p>
+      </div>
+      <div class="col-lg-5 col-4" *ngIf="!userNotified[nSetting] || !userNotified[nSetting].length">
+        {{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.NO_SELECTED_USER_TYPE" | translate}}
+      </div>
+      <div class="col-lg-3 col-4 row no-gutters">
+        <div class="col-md-5">
+          <a href="#" data-toggle="modal" data-target="#select_user_type" (click)="selectUserType(nSetting)">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SELECT_USER_TYPE"
+            | translate}}</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="modal fade" id="select-user-type" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.NOTIFICATION_PERMISSION" | translate}}</h5>
-                <button type="button" class="close" aria-label="Close" (click)="closeModal()">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row Spaced">
-                    <div class="col-md-4 text-right">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.EVENT" | translate}}</div>
-                    <div class="col-md-8"><strong>{{notificationSettings[notificationID] | translate}}</strong></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4 text-right">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.USERS_NOTIFIED" | translate}}</div>
-                    <div class="col-md-8">
-                        <div class="row">
-                            <div class="col-md-8" *ngFor="let uType of userTypesList">
-                                 <label class="form-check-label" *ngIf="uType && uType > 0">
-                                    <input type="checkbox"  class="form-check-input" [checked]="(agencyNotificationSettings[notificationID] && agencyNotificationSettings[notificationID].usersNotified[uType]) || false" (change)="checkType(uType, $event.target.checked)"> 
-                                           <strong>{{userTypes[uType] | translate}}</strong>
-                                </label>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-                <button type="button" class="btn btn-primary" (click)="saveNotificationSettings()">{{"GLOBAL.SAVE"| translate}}</button>
-            </div>
+<div class="modal fade" id="select-user-type" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.NOTIFICATION_PERMISSION" |
+          translate}}</h5>
+        <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row Spaced">
+          <div class="col-md-4 text-right">{{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.EVENT" | translate}}</div>
+          <div class="col-md-8"><strong>{{notificationSettings[notificationID] | translate}}</strong></div>
         </div>
+        <div class="row">
+          <div class="col-md-4 text-right">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.USERS_NOTIFIED" | translate}}</div>
+          <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-8" *ngFor="let uType of userTypesList">
+                <label class="form-check-label" *ngIf="uType && uType > 0">
+                  <input type="checkbox" class="form-check-input"
+                         [checked]="(agencyNotificationSettings[notificationID] && agencyNotificationSettings[notificationID].usersNotified[uType]) || false"
+                         (change)="checkType(uType, $event.target.checked)">
+                  <strong>{{userTypes[uType] | translate}}</strong>
+                </label>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveNotificationSettings()">{{"GLOBAL.SAVE"|
+          translate}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
     </div>
+  </div>
 </div>

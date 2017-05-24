@@ -4,15 +4,16 @@
 <div class="Page-top__wrap--w_sub_header">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1><a (click)="goToMapView()">{{"MAPS.SEE_COUNTRIES_MAP" | translate}}</a>
+      <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1>
+      <a href="javascript:void(0)" (click)="goToMapView()">{{"MAPS.SEE_COUNTRIES_MAP" | translate}}</a>
     </div>
-
-
 
     <!-- Region header -->
     <div *ngIf="showRegionHeaders">
-      <div  *ngFor="let x of regions">
-        <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true" [attr.data-target]="x.listOfCountries()" data-toggle="collapse" [attr.href]="x.getRegionIdHash()" aria-expanded="true">
+      <div *ngFor="let x of regions">
+        <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
+             [attr.data-target]="x.listOfCountries()" data-toggle="collapse" [attr.href]="x.getRegionIdHash()"
+             aria-expanded="true">
           <div class="row">
             <h3 class="col-sm-11">{{x.regionName}}</h3>
             <i class="fa fa-caret-down text-primary col-sm-1 align-self-center" aria-hidden="true"></i>
@@ -22,33 +23,44 @@
         <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
           <div *ngFor="let y of countries">
             <div *ngIf="x.countries.has(y.countryId)">
-              <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)" aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
+              <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)"
+                   aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
                 <div class="row align-items-center">
                   <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
-                    <i class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
-                    <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() | translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
+                    <i
+                      class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
+                    <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() |
+                      translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
                   </div>
                   <div class="col-md-2 col-lg-2 col-sm-2 text-center">
                     <i *ngIf="y.overallAction() == -1" class="fa fa-times-circle fa-5x text-muted"></i>
-                    <i *ngIf="y.overallAction() >= minThreshGreen" class="fa fa-check-circle fa-5x text-success" aria-hidden="true"></i>
-                    <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)" class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
-                    <i *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1" class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
+                    <i *ngIf="y.overallAction() >= minThreshGreen" class="fa fa-check-circle fa-5x text-success"
+                       aria-hidden="true"></i>
+                    <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"
+                       class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
+                    <i
+                      *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1"
+                      class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
                     <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                   </div>
                   <div class="col-sm-7">
                     <div *ngFor="let z of hazards">
                       <div *ngIf="z.location == y.location" class="col-sm- col-md-2 text-center pull-right">
-                        <p class="text-center"><i class="Icon__circle Icon--b-black {{(isNumber(z.hazardScenario) ? getCSSHazard(z.hazardScenario) : 'Icon--alert')}} Icon--sm text-center"></i></p>
-                        <p *ngIf="isNumber(z.hazardScenario)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z.hazardScenario | translate}}</b></span></p>
-                        <p class="MapList__HazardOverflow" *ngIf="!isNumber(z.hazardScenario)"><b>{{z.hazardScenario}}</b></p>
+                        <p class="text-center"><i
+                          class="Icon__circle Icon--b-black {{(isNumber(z.hazardScenario) ? getCSSHazard(z.hazardScenario) : 'Icon--alert')}} Icon--sm text-center"></i>
+                        </p>
+                        <p *ngIf="isNumber(z.hazardScenario)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z.hazardScenario | translate}}</b></span>
+                        </p>
+                        <p class="MapList__HazardOverflow" *ngIf="!isNumber(z.hazardScenario)">
+                          <b>{{z.hazardScenario}}</b></p>
                       </div>
                     </div>
                   </div>
                   <!--<div class="col-md-2 col-lg-2 col-sm-2"></div>-->
                   <!--<div class="col-md-4 col-sm-4"></div>-->
                   <!--<div class="col-sm-1 text-center">-->
-                    <!--<i class="Icon__circle Icon&#45;&#45;b-black Icon&#45;&#45;cyclone Icon&#45;&#45;sm"></i>-->
-                    <!--<span><b>Typhoon</b></span>-->
+                  <!--<i class="Icon__circle Icon&#45;&#45;b-black Icon&#45;&#45;cyclone Icon&#45;&#45;sm"></i>-->
+                  <!--<span><b>Typhoon</b></span>-->
                   <!--</div>-->
                   <div class="col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
                 </div>
@@ -71,18 +83,24 @@
                   </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let z of y.departments">
-                      <td>{{z.department}}</td>
-                      <td *ngIf="z.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
-                      <td *ngIf="z.actionStatus >= minThreshYellow && !(z.actionStatus >= minThreshGreen)"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                      <td *ngIf="!(z.actionStatus >= minThreshYellow) && !(z.actionStatus >= minThreshGreen)"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
-                    </tr>
-                    <tr *ngIf="y.departments.length != 0">
-                      <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
-                      <td *ngIf="y.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
-                      <td *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                      <td *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen)"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
-                    </tr>
+                  <tr *ngFor="let z of y.departments">
+                    <td>{{z.department}}</td>
+                    <td *ngIf="z.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                                                                    aria-hidden="true"></i></td>
+                    <td *ngIf="z.actionStatus >= minThreshYellow && !(z.actionStatus >= minThreshGreen)"><i
+                      class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                    <td *ngIf="!(z.actionStatus >= minThreshYellow) && !(z.actionStatus >= minThreshGreen)"><i
+                      class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                  </tr>
+                  <tr *ngIf="y.departments.length != 0">
+                    <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
+                    <td *ngIf="y.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                                                                       aria-hidden="true"></i></td>
+                    <td *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"><i
+                      class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                    <td *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen)"><i
+                      class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                  </tr>
                   </tbody>
                 </table>
               </div>

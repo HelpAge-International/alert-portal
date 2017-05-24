@@ -1,9 +1,8 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {RxHelper} from "../../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {Country, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 
@@ -12,6 +11,7 @@ import {ModelRegion} from "../../../model/region.model";
   templateUrl: './create-edit-region.component.html',
   styleUrls: ['./create-edit-region.component.css']
 })
+
 export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   private pageTitle: string = "AGENCY_ADMIN.COUNTRY_OFFICES.CREATE_NEW_REGION";
@@ -36,11 +36,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private regionalDirectors: any[] = [null];
   private hideRemove: boolean = true;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper, private route: ActivatedRoute) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -48,7 +50,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.countrySelections = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
       //regional directors
-      let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
+      this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
         query: {
           orderByChild: "userType",
           equalTo: UserType.RegionalDirector
@@ -65,12 +67,12 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
             return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
           }
         )
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(x => {
           this.regionalDirectors.push(x);
         });
-      this.subscriptions.add(subscriptionDirector);
       // //regional directors
-      // let subscriptionDirector = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+      // this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
       //   .flatMap(countries => {
       //     let countryIds = ["globalUser"];
       //     countries.forEach(country => {
@@ -97,12 +99,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       //       return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
       //     }
       //   )
+      //   .takeUntil(this.ngUnsubscribe)
       //   .subscribe(x => {
       //     this.regionalDirectors.push(x);
       //   });
-      // this.subscriptions.add(subscriptionDirector);
       //check if edit mode
-      let subscription = this.route.params
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.regionId = params["id"];
@@ -112,30 +115,31 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           }
           this.fetchCountries();
         });
-      this.subscriptions.add(subscription);
     });
-    this.subscriptions.add(subscription);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private fetchCountries() {
     if (!this.isEdit) {
-      let subscription = this.countrySelections.subscribe(country => {
-        this.selectedCountries.push(country[0].location);
-      });
-      this.subscriptions.add(subscription);
+      this.countrySelections
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(country => {
+          this.selectedCountries.push(country[0].location);
+        });
     } else {
       this.loadRegionInfo(this.regionId);
     }
   }
 
-  ngOnDestroy() {
-    this.subscriptions.releaseAll();
-  }
-
   addCountrySelection() {
     console.log("add new country selection");
 
-    let subscription = this.countrySelections
+    this.countrySelections
+      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(result => {
         console.log("counter: " + this.counter + "/result: " + result.length);
@@ -156,7 +160,6 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           this.hideRemove = false;
         }
       });
-    this.subscriptions.add(subscription);
   }
 
   submit() {
@@ -190,12 +193,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     if (this.isEdit && this.preRegionName == this.regionName) {
       this.retrieveCountryOffices();
     } else {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid, {
+      this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid, {
         query: {
           orderByChild: "name",
           equalTo: this.regionName
         }
       })
+        .takeUntil(this.ngUnsubscribe)
         .first()
         .subscribe(result => {
           if (result.length != 0) {
@@ -206,7 +210,6 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           this.retrieveCountryOffices();
           // this.updateDatabase();
         });
-      this.subscriptions.add(subscription);
     }
 
   }
@@ -216,7 +219,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
     this.selectedCountries.forEach(country => {
       console.log(Country[country]);
-      let subscription = this.fetchOffice(Country[country])
+      this.fetchOffice(Country[country])
+        .takeUntil(this.ngUnsubscribe)
         .first()
         .subscribe(x => {
           if (!x) {
@@ -229,7 +233,6 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
             this.updateDatabase();
           }
         });
-      this.subscriptions.add(subscription);
     })
   }
 
@@ -303,10 +306,10 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   showAlert() {
     this.hideWarning = false;
-    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.hideWarning = true;
     });
-    this.subscriptions.add(subscribe);
   }
 
   private checkCountries(): boolean {
@@ -336,7 +339,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private loadRegionInfo(param: string) {
     this.selectedCountries = [];
     this.countries = [];
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/region/" + this.uid + "/" + param)
+    this.af.database.object(Constants.APP_STATUS + "/region/" + this.uid + "/" + param)
       .do(region => {
         this.regionName = region.name;
         this.preRegionName = region.name;
@@ -355,12 +358,12 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         }
       })
       .do(region => {
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + region.directorId)
+        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + region.directorId)
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
             // console.log(user);
             this.regionalDirectorId = user.$key;
           });
-        this.subscriptions.add(subscription);
       })
       .flatMap(region => {
         return Observable.from(Object.keys(region.countries));
@@ -369,13 +372,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         console.log("country id: " + countryId);
         return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryId)
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(country => {
         if (!this.isSubmitted) {
           this.selectedCountries.push(country.location);
         }
         // console.log(this.selectedCountries);
       });
-    this.subscriptions.add(subscription);
   }
 
   showName(director) {
