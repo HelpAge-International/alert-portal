@@ -19,10 +19,10 @@
         {{firstName+" "+lastName}}
       </li>
 
-      <li class="Header_bar__country">
+      <li class="Header_bar__country dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[countryLocation] | translate}}</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Account Settings</a>
+          <a class="dropdown-item" routerLink="/country-admin/country-account-settings">Account Settings</a>
           <a class="dropdown-item" routerLink="/country-admin/country-my-agency">View My Agency</a>
           <a class="dropdown-item" routerLink="/country-admin/country-agencies">View agencies in my country</a>
           <a class="dropdown-item" (click)="logout()">

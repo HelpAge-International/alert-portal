@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import { AngularFire, FirebaseAuthState, AuthProviders, AuthMethods } from 'angularfire2';
 import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
@@ -13,10 +13,12 @@ import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
 import {Subscription} from "rxjs/Subscription";
+import { ChangePasswordModel } from "../model/change-password.model";
 
 @Injectable()
 export class UserService {
   private secondApp: firebase.app.App;
+  private authState: FirebaseAuthState;
 
   public user: ModelUserPublic;
   public partner: PartnerModel;
@@ -28,6 +30,7 @@ export class UserService {
   // FIREBASE
   getAuthUser(): Observable<firebase.User> {
     const userAuthSubscription = this.af.auth.map(user => {
+      this.authState = user;
       return user.auth;
     });
 
@@ -84,6 +87,55 @@ export class UserService {
       });
 
     return userSubscription;
+  }
+
+  saveUserPublic(userPublic: ModelUserPublic): firebase.Promise<any> {
+    const userPublicData = {};
+
+    let uid = userPublic.id;
+
+    // if (!uid) {
+    //   // return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
+    //   //   .then(newUser => {
+    //   //     partner.id = newUser.uid;
+    //   //     return this.savePartnerUser(partner, userPublic);
+    //   //   })
+    //   //   .catch(err => {
+    //   //     throw new DisplayError('FIREBASE.' + (err as firebase.FirebaseError).code);
+    //   //   });
+    // } else {
+      this.getUser(uid).subscribe(oldUser => {
+        if (oldUser.email && oldUser.email !== userPublic.email) {
+          this.getAuthUser();
+          return this.authState.auth.updateEmail(userPublic.email).then(bool => {
+            return this.saveUserPublic(userPublic);
+          },
+          error => () => {throw new Error('Cannot update user email')})
+            .catch(err => {
+              throw new Error(err.message);
+            });
+        }
+      })
+      
+      userPublicData['/userPublic/' + uid + '/'] = userPublic;
+
+      return this.af.database.object(Constants.APP_STATUS).update(userPublicData);
+    //}
+  }
+
+  changePassword(email: string, password: ChangePasswordModel): firebase.Promise<any> {
+    return this.af.auth.login({
+          email: email,
+          password: password.currentPassword
+        },
+        {
+          provider: AuthProviders.Password,
+          method: AuthMethods.Password,
+        })
+        .then(() => {
+          this.authState.auth.updatePassword(password.newPassword).then(() => {
+          }, error => { throw new Error('Cannot update password'); });
+        }, error => { throw new DisplayError('GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD')})
   }
 
   // COUNTRY ADMIN USER
@@ -144,8 +196,6 @@ export class UserService {
     const partnerData = {};
 
     let uid = partner.id || userPublic.id;
-
-    console.log(partner);
 
     if (!uid) {
       return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
