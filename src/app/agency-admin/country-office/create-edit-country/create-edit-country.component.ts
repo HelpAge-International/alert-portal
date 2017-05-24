@@ -262,8 +262,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     updateAdminData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
     updateAdminData["/administratorCountry/" + countryId + "/countryId"] = this.countryOfficeId;
 
-    updateAdminData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
-    updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
+    // updateAdminData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
+    // updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
 
     updateAdminData["/countryOffice/" + this.uid + "/" + this.countryOfficeId + "/adminId"] = countryId;
     updateAdminData["/countryOffice/" + this.uid + "/" + this.countryOfficeId + "/location"] = this.countryOfficeLocation;
@@ -271,8 +271,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     //previous admin data need to be removed
     updateAdminData["/userPublic/" + this.tempAdminId] = null;
     updateAdminData["/administratorCountry/" + this.tempAdminId] = null;
-    updateAdminData["/group/systemadmin/allcountryadminsgroup/" + this.tempAdminId] = null;
-    updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + this.tempAdminId] = null;
+    // updateAdminData["/group/systemadmin/allcountryadminsgroup/" + this.tempAdminId] = null;
+    // updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + this.tempAdminId] = null;
 
     this.af.database.object(Constants.APP_STATUS).update(updateAdminData).then(() => {
       this.backHome();
@@ -301,8 +301,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
     this.countryData["/administratorCountry/" + countryId + "/countryId/"] = countryId;
 
-    this.countryData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
-    this.countryData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
+    // this.countryData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
+    // this.countryData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
 
     this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/adminId/"] = countryId;
     this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/location/"] = this.countryOfficeLocation;
