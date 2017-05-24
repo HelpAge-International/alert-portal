@@ -1,6 +1,7 @@
 {
   "GLOBAL": {
     "WELCOME": "Welcome",
+    "HOME": "Home",
     "NAME": "Name",
     "TYPE": "Type: ",
     "DELETE": "Delete",
@@ -913,28 +914,28 @@
         "NO_RISK_MONITORING_DURATION": "Please enter the risk monitoring duration"
       },
       "NOTIFICATIONS": {
-          "TITLE_TEXT": "Default Notification settings",
-          "SAVE_SETTINGS": "Save notification settings",
-          "EVENTS": "Events",
-          "USERS_NOTIFIED": "Users notified",
-          "ACTIONS": "Actions",
-          "NOTIFICATION": "Notification",
-          "SELECT_USER_TYPE": "Select user types",
-          "SAVED_SUCCESS": "Notification Settings successfully saved",
-          "EXTERNAL_NOTIFICATIONS": "External Notifications",
-          "NO_EXTERNAL_RECIPIENTS": "No external recipients",
-          "ADD_RECIPIENT": "Add external recipient",
-          "EDIT_RECIPIENT": "Edit external recipient",
-          "DELETE_RECIPIENT": "Delete recipient",
-          "RECIPIENT_NAME": "Name",
-          "RECIPIENT_ORGANISATION": "Organisation",
-          "NO_ORGANISATION": "Please enter the Organisation",
-          "SAVE_RECIPIENT": "Save external recipient",
-          "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved",
-          "RECIPIENT_NOT_FOUND": "Cannot find external recipient",
-          "DELETE_DIALOG_TITLE": "Delete Recipient",
-          "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this recipient?",
-          "SUCCESS_DELETED": "The external recipient was successfully deleted"
+        "TITLE_TEXT": "Default Notification settings",
+        "SAVE_SETTINGS": "Save notification settings",
+        "EVENTS": "Events",
+        "USERS_NOTIFIED": "Users notified",
+        "ACTIONS": "Actions",
+        "NOTIFICATION": "Notification",
+        "SELECT_USER_TYPE": "Select user types",
+        "SAVED_SUCCESS": "Notification Settings successfully saved",
+        "EXTERNAL_NOTIFICATIONS": "External Notifications",
+        "NO_EXTERNAL_RECIPIENTS": "No external recipients",
+        "ADD_RECIPIENT": "Add external recipient",
+        "EDIT_RECIPIENT": "Edit external recipient",
+        "DELETE_RECIPIENT": "Delete recipient",
+        "RECIPIENT_NAME": "Name",
+        "RECIPIENT_ORGANISATION": "Organisation",
+        "NO_ORGANISATION": "Please enter the Organisation",
+        "SAVE_RECIPIENT": "Save external recipient",
+        "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved",
+        "RECIPIENT_NOT_FOUND": "Cannot find external recipient",
+        "DELETE_DIALOG_TITLE": "Delete Recipient",
+        "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this recipient?",
+        "SUCCESS_DELETED": "The external recipient was successfully deleted"
       }
     },
     "MESSAGES": {
@@ -1252,7 +1253,7 @@
   },
   "ALERT": {
     "AMBER_ALERT": "Amber Alert",
-    "RED_ALERT": "Red ALert",
+    "RED_ALERT": "Red Alert",
     "RISK": "Risk",
     "PEOPLE": "People",
     "POPULATION_AFFECTED": "Population affected",
@@ -1263,6 +1264,16 @@
   "DASHBOARD": {
     "RISK_MONITORING": "Risk Monitoring",
     "INDICATORS": "indicators",
-    "CONTEXT": "Context"
+    "CONTEXT": "Context",
+    "CALENDAR": {
+      "ADD_TO_CALENDAR": "Add to the calendar",
+      "VIEW_AS_WEEKS": "View as weeks",
+      "VIEW_AS_MONTHS": "View as months",
+      "ADD_SEASON": "Add season to the calendar",
+      "SEASON_NAME": "Season Name",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "COLOUR": "Colour"
+    }
   }
 }
