@@ -8,8 +8,8 @@
       <h1>Seasonal calendar <a href="javascript:void(0)" class="btn btn-outline-primary" data-toggle="modal"
                                data-target="#add_calendar">Add to the calendar</a></h1>
       <div class="Header-title__wrap__Inline-links">
-        <a href="/dashboard/dashboard-seasonal-calendar" class="active">View as Weeks</a> |
-        <a href="dashboard__calendar--month.html">View as Months</a>
+        <a href="javascript:void(0)" class="{{!currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setWeekView()">View as Weeks</a> |
+        <a href="javascript:void(0)" class="{{currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setMonthView()">View as Months</a>
       </div>
     </div>
 

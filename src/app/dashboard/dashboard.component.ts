@@ -10,6 +10,10 @@ import * as moment from "moment";
 import {Subject} from "rxjs/Subject";
 import {HazardImages} from "../utils/HazardImages";
 import {ModelAlert} from "../model/alert.model";
+import {
+  ChronolineEvent,
+  DashboardSeasonalCalendarComponent
+} from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
@@ -63,6 +67,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  private seasonEvents = [];
+  private chronoline;
+
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
@@ -96,7 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
-      this.initCalendar();
+      this.getAllSeasonsForCountryId(this.countryId);
       this.getApprovedResponsePlansCount();
       this.getAlerts();
       this.getCountryContextIndicators();
@@ -117,33 +124,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO -
-  private initCalendar() {
-    const events = [
-      {
-        dates: [new Date(2016, 4, 23), new Date(2018, 6, 25)],
-        title: "Earth",
-        eventHeight: 30,
-        section: 1,
-        attrs: {fill: "#d4e3fd", stroke: "#d4e3fd"}
-      },
-      {
-        dates: [new Date(2017, 7, 23), new Date(2017, 9, 26)],
-        title: "Wind",
-        eventHeight: 20,
-        section: 1,
-        attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
-      },
-      {
-        dates: [new Date(2017, 4, 26), new Date(2017, 6, 28)],
-        title: "Fire",
-        eventHeight: 10,
-        section: 1,
-        attrs: {fill: "#6FD08C", stroke: "#6FD08C"}
-      },
-    ];
+  public getAllSeasonsForCountryId(countryId: string) {
+    this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snapshot => {
+        this.seasonEvents = [
+          ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar())
+        ];
+        let i = 2;
+        snapshot.forEach((seasonInfo) => {
+          let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+          this.seasonEvents.push(x);
+          i++;
+        });
+        this.initCalendar();
+        // Init map here after replacing the entire array
+      });
+  }
 
-    const timeline2 = new Chronoline(document.getElementById("target2"), events,
+  private initCalendar() {
+    // Element is removed and re-added upon a data change
+    document.getElementById("target2").innerHTML = "";
+    this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
         visibleSpan: DAY_IN_MILLISECONDS * 91,
         animated: true,
