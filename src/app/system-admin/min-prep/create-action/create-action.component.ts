@@ -4,8 +4,7 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction';
 import {Constants} from '../../../utils/Constants';
 import {ActionType} from '../../../utils/Enums';
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-create-action',
@@ -24,17 +23,17 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   private path: string;
   private forEditing: Boolean = false;
   private idOfChsActionToEdit: string;
-  private subscriptions: RxHelper;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
-        this.path = Constants.APP_STATUS+"/action/" + auth.uid;
+        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
         console.log("uid: " + auth.uid);
       } else {
         console.log("Error occurred - User isn't logged in");
@@ -42,7 +41,8 @@ export class CreateActionComponent implements OnInit, OnDestroy {
       }
     });
 
-    let subscriptionEdit = this.route.params
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -52,12 +52,11 @@ export class CreateActionComponent implements OnInit, OnDestroy {
           this.idOfChsActionToEdit = params["id"];
         }
       });
-    this.subscriptions.add(subscription);
-    this.subscriptions.add(subscriptionEdit);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   onSubmit() {
@@ -79,18 +78,16 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   }
 
   private loadCHSActionInfo(actionId: string) {
-    console.log(actionId);
-    console.log(this.path + actionId);
-    let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: ChsMinPreparednessAction) => {
-      this.textArea = action.task;
-    });
-    this.subscriptions.add(subscription);
+    this.af.database.object(this.path + '/' + actionId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((action: ChsMinPreparednessAction) => {
+        this.textArea = action.task;
+      });
   }
 
   private addNewChsAction() {
 
     let currentDateTime = new Date().getTime();
-
     let newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
     newAction.task = this.textArea;
     newAction.type = ActionType.chs;
@@ -117,10 +114,10 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.inactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
 

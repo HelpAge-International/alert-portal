@@ -4,8 +4,7 @@ import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enums";
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -61,16 +60,20 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     GenericActionCategory.Category10
   ];
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
         this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
-        let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorAgency/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
+        this.af.database.list(Constants.APP_STATUS + "/administratorAgency/" + this.uid + '/systemAdmin')
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((systemAdminIds) => {
           this.systemAdminUid = systemAdminIds[0].$key;
           this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
             query: {
@@ -80,17 +83,15 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
           });
           this.getDepartments();
         });
-        this.subscriptions.add(subscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
     this.actionsSelected = {};
   }
 
@@ -242,26 +243,26 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private showError() {
 
     this.errorInactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.errorInactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
   private showDepartmentAlert(error: boolean) {
 
     if (error) {
       this.newDepartmentErrorInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.newDepartmentErrorInactive = true;
       });
-      this.subscriptions.add(subscription);
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.successInactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 

@@ -3,8 +3,7 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
-import {Subscription} from "rxjs";
-import {RxHelper} from "../../utils/RxHelper";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-system-admin-header',
@@ -19,27 +18,30 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
   lastName: string = "";
   counter: number = 0;
 
-  constructor(private af: AngularFire, private router: Router, private translate: TranslateService, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private translate: TranslateService) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
+        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
-        this.subscriptions.add(subscription)
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription)
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   logout() {

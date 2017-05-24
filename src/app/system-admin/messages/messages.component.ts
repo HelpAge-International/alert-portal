@@ -2,8 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import {Observable} from 'rxjs';
-import {RxHelper} from '../../utils/RxHelper';
+import {Observable, Subject} from 'rxjs';
 import Promise = firebase.Promise;
 declare var jQuery: any;
 
@@ -20,16 +19,18 @@ export class MessagesComponent implements OnInit, OnDestroy {
   private msgData = {};
   private messageToDelete;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
 
-        let subscription = this.af.database.list(Constants.APP_STATUS + '/systemAdmin/' + this.uid + '/sentmessages')
+        this.af.database.list(Constants.APP_STATUS + '/systemAdmin/' + this.uid + '/sentmessages')
           .flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
@@ -42,10 +43,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
             return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
           })
           .distinctUntilChanged()
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(x => {
             this.sentMessages.push(x);
           });
-        this.subscriptions.add(subscription);
 
       } else {
         // user is not logged in
@@ -53,11 +54,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   deleteMessage(sentMessage) {
@@ -82,12 +83,13 @@ export class MessagesComponent implements OnInit, OnDestroy {
     let allCountryAdminsMsgRef: string = '/messageRef/systemadmin/allcountryadminsgroup/';
     let allNetworkAdminsMsgRef: string = '/messageRef/systemadmin/allnetworkadminsgroup/';
 
-    let subscription = this.af.database.list(allUsersGroupPath)
+    this.af.database.list(allUsersGroupPath)
       .do(list => {
         list.forEach(item => {
           this.msgData[allUsersMsgRefPath + item.$key + '/' + this.messageToDelete] = null;
         })
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(() => {
         this.af.database.list(allAgencyAdminsGroupPath)
           .do(list => {
@@ -95,6 +97,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
               this.msgData[allAgencyAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
             })
           })
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(() => {
             this.af.database.list(allCountryAdminsGroupPath)
               .do(list => {
@@ -102,6 +105,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                   this.msgData[allCountryAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
                 })
               })
+              .takeUntil(this.ngUnsubscribe)
               .subscribe(() => {
                 this.af.database.list(allNetworkAdminsGroupPath)
                   .do(list => {
@@ -109,6 +113,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                       this.msgData[allNetworkAdminsMsgRef + item.$key + '/' + this.messageToDelete] = null;
                     })
                   })
+                  .takeUntil(this.ngUnsubscribe)
                   .subscribe(() => {
                     this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(() => {
                       console.log('Message Ref successfully deleted from all nodes');
@@ -119,7 +124,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
               })
           })
       });
-    this.subscriptions.add(subscription);
   }
 
   closeModal() {

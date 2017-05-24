@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router, Params, ActivatedRoute} from "@angular/router";
 import {AngularFire} from "angularfire2";
-import {RxHelper} from "../../utils/RxHelper";
 import {Constants} from "../../utils/Constants";
 import {
   AgeRange,
@@ -13,7 +12,7 @@ import {
   ResponsePlanSectionSettings,
   ResponsePlanSectors, BudgetCategory, AlertMessageType
 } from "../../utils/Enums";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
@@ -237,47 +236,50 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private section10Status: string = "GLOBAL.INCOMPLETE";
   private loadResponsePlan: ResponsePlan;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper, private userService: UserService) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
         console.log("Admin uid: " + this.uid);
 
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").subscribe((countryId) => {
-          this.countryId = countryId.$value;
-          this.getStaff();
-          this.setupForEdit();
+        this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((countryId) => {
+            this.countryId = countryId.$value;
+            this.getStaff();
+            this.setupForEdit();
 
-          let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').subscribe((agencyAdminIds) => {
-            this.agencyAdminUid = agencyAdminIds[0].$key;
-            this.getSettings();
-            this.getPartners();
+            this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((agencyAdminIds) => {
+                this.agencyAdminUid = agencyAdminIds[0].$key;
+                this.getSettings();
+                this.getPartners();
 
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').subscribe((systemAdminIds) => {
-              this.systemAdminUid = systemAdminIds[0].$key;
-              this.getGroups();
-            });
+                this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin')
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((systemAdminIds) => {
+                    this.systemAdminUid = systemAdminIds[0].$key;
+                    this.getGroups();
+                  });
 
-            this.subscriptions.add(subscription);
+              });
           });
-          this.subscriptions.add(subscription);
-        });
-        this.subscriptions.add(subscription);
-
       } else {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   /**
@@ -338,9 +340,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (this.numOfHouseHolds) {
       newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
     }
-    newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText;
+    newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
     newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
-    newResponsePlan.otherVulnerableGroup = this.otherGroup;
+    newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
     //section 6
@@ -413,7 +415,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
 
     let diff = [];
-    this.sectorsRelatedTo.forEach(item =>{
+    this.sectorsRelatedTo.forEach(item => {
 
       console.log("*****************");
       console.log(this.sectorBudget);
@@ -428,7 +430,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     diff.forEach(item => {
       this.sectorBudget.set(Number(item), 0);
-      this.sectorNarrative.set(Number(item),"");
+      this.sectorNarrative.set(Number(item), "");
     });
 
     this.sectorBudget.forEach((v, k) => {
@@ -610,8 +612,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   /**
    * Section 3/10
    */
-
-  // TODO - Wait for Lucian to complete Add Partener Organisations in Country Admin
 
   isWaSHSectorSelected() {
     this.waSHSectorSelected = !this.waSHSectorSelected;
@@ -1154,7 +1154,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (this.agencyAdminUid) {
       this.responsePlanSettings = {};
-      let subscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminUid + '/responsePlanSettings/sections')
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminUid + '/responsePlanSettings/sections')
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {
           this.totalSections = 0;
           list.forEach(item => {
@@ -1164,13 +1165,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
             }
           });
         });
-      this.subscriptions.add(subscription);
     }
   }
 
   private setupForEdit() {
 
-    let subscriptionEdit = this.route.params
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -1179,30 +1180,29 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.loadResponsePlanInfo(this.idOfResponsePlanToEdit);
         }
       });
-    this.subscriptions.add(subscriptionEdit);
   }
 
   private loadResponsePlanInfo(responsePlanId: string) {
 
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + responsePlanId;
-    let subscription = this.af.database.object(responsePlansPath).subscribe((responsePlan: ResponsePlan) => {
-      this.loadResponsePlan = responsePlan;
-      this.loadSection1(responsePlan);
-      this.loadSection2(responsePlan);
-      this.loadSection3(responsePlan);
-      this.loadSection4(responsePlan);
-      this.loadSection5(responsePlan);
-      this.loadSection6(responsePlan);
-      this.loadSection7(responsePlan);
-      this.loadSection8(responsePlan);
-      this.loadSection9(responsePlan);
-      this.loadSection10(responsePlan);
-      this.checkAllSections();
-    });
-    this.subscriptions.add(subscription);
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.loadResponsePlan = responsePlan;
+        this.loadSection1(responsePlan);
+        this.loadSection2(responsePlan);
+        this.loadSection3(responsePlan);
+        this.loadSection4(responsePlan);
+        this.loadSection5(responsePlan);
+        this.loadSection6(responsePlan);
+        this.loadSection7(responsePlan);
+        this.loadSection8(responsePlan);
+        this.loadSection9(responsePlan);
+        this.loadSection10(responsePlan);
+        this.checkAllSections();
+      });
   }
 
-  // TODO - Fix plan lead
   private loadSection1(responsePlan: ResponsePlan) {
     this.planName = responsePlan.name;
     this.geographicalLocation = responsePlan.location;
@@ -1242,7 +1242,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO
   private loadSection3(responsePlan: ResponsePlan) {
     if (responsePlan.sectors) {
       let sectors = responsePlan.sectors;
@@ -1308,7 +1307,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.coordinationPlanText = responsePlan.activitySummary['q3'];
   }
 
-  // TODO
   private loadSection5(responsePlan: ResponsePlan) {
     this.numOfPeoplePerHouseHold = responsePlan.peoplePerHousehold;
     this.numOfHouseHolds = responsePlan.numOfHouseholds;
@@ -1349,38 +1347,38 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadSection7(responsePlan: ResponsePlan) {
     if (responsePlan.sectors) {
-    let sectors: {} = responsePlan.sectors;
-    Object.keys(sectors).forEach(sectorKey => {
-      //initial load back
-      this.sectorsRelatedTo.push(Number(sectorKey));
+      let sectors: {} = responsePlan.sectors;
+      Object.keys(sectors).forEach(sectorKey => {
+        //initial load back
+        this.sectorsRelatedTo.push(Number(sectorKey));
 
-      //activity info load back
-      let sectorInfo = this.activityInfoMap.get(sectorKey);
-      if (!sectorInfo) {
-        let infoData = {};
-        infoData["sourcePlan"] = responsePlan.sectors[sectorKey]["sourcePlan"];
-        infoData["bullet1"] = responsePlan.sectors[sectorKey]["bullet1"];
-        infoData["bullet2"] = responsePlan.sectors[sectorKey]["bullet2"];
-        this.activityInfoMap.set(Number(sectorKey), infoData);
-      }
-
-      //activities list load back
-      let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-      let moreData: {}[] = [];
-      Object.keys(activitiesData).forEach(key => {
-        let beneficiary = [];
-        activitiesData[key]["beneficiary"].forEach(item => {
-          beneficiary.push(item);
-        })
-        let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-        moreData.push(model);
-        if (!this.activityMap.get(Number(sectorKey))) {
-          this.activityMap.set(Number(sectorKey), moreData);
-          this.addActivityToggleMap.set(Number(sectorKey), true);
+        //activity info load back
+        let sectorInfo = this.activityInfoMap.get(sectorKey);
+        if (!sectorInfo) {
+          let infoData = {};
+          infoData["sourcePlan"] = responsePlan.sectors[sectorKey]["sourcePlan"];
+          infoData["bullet1"] = responsePlan.sectors[sectorKey]["bullet1"];
+          infoData["bullet2"] = responsePlan.sectors[sectorKey]["bullet2"];
+          this.activityInfoMap.set(Number(sectorKey), infoData);
         }
+
+        //activities list load back
+        let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
+        let moreData: {}[] = [];
+        Object.keys(activitiesData).forEach(key => {
+          let beneficiary = [];
+          activitiesData[key]["beneficiary"].forEach(item => {
+            beneficiary.push(item);
+          })
+          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+          moreData.push(model);
+          if (!this.activityMap.get(Number(sectorKey))) {
+            this.activityMap.set(Number(sectorKey), moreData);
+            this.addActivityToggleMap.set(Number(sectorKey), true);
+          }
+        });
       });
-    });
-  }
+    }
   }
 
   private loadSection8(responsePlan: ResponsePlan) {
@@ -1407,12 +1405,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Inputs]) {
       console.log("have inputs budget")
-      let inputs:{} = responsePlan.budget["item"][BudgetCategory.Inputs];
+      let inputs: {} = responsePlan.budget["item"][BudgetCategory.Inputs];
       console.log(inputs);
       Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
         this.totalInputs += item.budget;
       });
-      Object.keys(inputs).forEach( key => {
+      Object.keys(inputs).forEach(key => {
         this.sectorBudget.set(Number(key), inputs[key]["budget"]);
         this.sectorNarrative.set(Number(key), inputs[key]["narrative"]);
       });
@@ -1463,7 +1461,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private getStaff() {
 
-    let subscription = this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
@@ -1475,16 +1473,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(item => {
         return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item.$key)
       })
+      .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()
       .subscribe(x => {
         this.staffMembers.push(x);
       });
-    this.subscriptions.add(subscription);
   }
 
   private getPartners() {
 
-    let subscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
+    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
       .flatMap(list => {
         this.partnerOrganisations = [];
         let tempList = [];
@@ -1499,17 +1497,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(item => {
         return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
       })
+      .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()
       .subscribe(x => {
         this.partnerOrganisations.push(x);
       });
-    this.subscriptions.add(subscription);
   }
 
   private getGroups() {
 
     if (this.systemAdminUid) {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
         .map(groupList => {
           let groups = [];
           groupList.forEach(x => {
@@ -1517,10 +1515,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           });
           return groups;
         })
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(x => {
           this.groups = x;
         });
-      this.subscriptions.add(subscription);
     }
   }
 
@@ -1533,16 +1531,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
     return tempList;
   }
-
-  // TODO - Uncomment if needed - Coverts a list on to an object
-  // private convertToObject(list) {
-  //
-  //   let tempObject = {};
-  //   for (let bulletPoint in list) {
-  //     tempObject[bulletPoint] = list[bulletPoint];
-  //   }
-  //   return tempObject;
-  // }
 
   private updateSectorsList(sectorSelected, sectorEnum) {
 

@@ -1,9 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
-import {RxHelper} from "../../../utils/RxHelper";
 
 @Component({
   selector: 'app-system-settings-response-plans',
@@ -28,12 +27,14 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
 
   private newGroup: string;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
         this.groups = this.af.database.list(Constants.APP_STATUS + "/system/" + this.uid + '/groups');
@@ -42,23 +43,13 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH)
       }
     });
-    this.subscriptions.add(subscription)
-  }
-
-  private storeGroups() {
-
-    this.groups.forEach(groupsList => {
-      this.groupsToShow = [];
-      groupsList.forEach(group => {
-        this.groupsToShow.push(group.$key);
-      });
-      return this.groupsToShow;
-    });
   }
 
   ngOnDestroy() {
-
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   addGroup() {
@@ -118,20 +109,31 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
+  private storeGroups() {
+
+    this.groups.forEach(groupsList => {
+      this.groupsToShow = [];
+      groupsList.forEach(group => {
+        this.groupsToShow.push(group.$key);
+      });
+      return this.groupsToShow;
+    });
+  }
+
   private showAlert(error: boolean) {
 
     if (error) {
       this.errorInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.errorInactive = true;
       });
-      this.subscriptions.add(subscription);
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.successInactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 
@@ -158,10 +160,10 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
 
     if (!(this.newGroup)) {
       this.alerts[this.newGroup] = true;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.alerts[this.newGroup] = false;
       });
-      this.subscriptions.add(subscription);
       this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_GROUP_NAME";
       return false;
     }

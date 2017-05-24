@@ -2,7 +2,6 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
-import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
 import {AlertLevels, ApprovalStatus, Countries} from "../utils/Enums";
 import {UserService} from "../services/user.service";
@@ -408,7 +407,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   }
 
-  // TODO - FIX num of indicators
   private getHazards() {
 
     this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)

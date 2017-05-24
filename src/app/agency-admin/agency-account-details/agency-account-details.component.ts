@@ -3,8 +3,7 @@ import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Country, Currency} from "../../utils/Enums";
-import {RxHelper} from "../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
 declare var jQuery: any;
 
@@ -43,31 +42,33 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   firebase: any;
   private agencyId: string;
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
     this.firebase = firebaseApp;
   }
 
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(id => {
             this.agencyId = id.$value;
             this.loadAgencyData(this.agencyId);
           });
-        this.subscriptions.add(subscription);
         console.log("Agency admin uid: " + this.agencyId);
       } else {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   fileChange(event) {
@@ -192,7 +193,9 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
   private loadAgencyData(uid) {
 
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + uid).subscribe((agency: ModelAgency) => {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((agency: ModelAgency) => {
 
       this.modalAgency = agency;
       this.agencyLogo = agency.logoPath;
@@ -208,7 +211,6 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
       this.showReplaceRemoveLinks = !!this.agencyLogo;
     });
-    this.subscriptions.add(subscription);
   }
 
   private setLogoPreview(logoImage: string) {
@@ -243,16 +245,16 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.errorInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.errorInactive = true;
       });
-      this.subscriptions.add(subscription);
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.successInactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 

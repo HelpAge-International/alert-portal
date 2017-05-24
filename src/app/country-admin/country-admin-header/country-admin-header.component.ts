@@ -52,10 +52,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
   }
 
   logout() {

@@ -10,6 +10,7 @@ declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, ne
   templateUrl: './dashboard-seasonal-calendar.component.html',
   styleUrls: ['./dashboard-seasonal-calendar.component.css']
 })
+
 export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
   // TODO - Check when other users are implemented

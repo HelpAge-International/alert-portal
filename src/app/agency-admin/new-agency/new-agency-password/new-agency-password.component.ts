@@ -2,8 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
-import {RxHelper} from '../../../utils/RxHelper';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {CustomerValidator} from '../../../utils/CustomValidator';
 
 @Component({
@@ -28,31 +27,32 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
 
   private authState: FirebaseAuthState;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
         console.log('New agency admin uid: ' + this.uid);
-        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
+        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
           this.agencyAdminName = user.firstName;
         });
-        this.subscriptions.add(subscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   onSubmit() {
@@ -60,11 +60,11 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
     if (this.validate()) {
       this.authState.auth.updatePassword(this.passwordEntered).then(() => {
         this.successInactive = false;
-        let subscription = Observable.timer(1500).subscribe(() => {
+        Observable.timer(Constants.ALERT_REDIRECT_DURATION)
+          .takeUntil(this.ngUnsubscribe).subscribe(() => {
           this.successInactive = true;
           this.router.navigateByUrl('/agency-admin/new-agency/new-agency-details');
         });
-        this.subscriptions.add(subscription);
       }, error => {
         console.log(error.message);
       });
@@ -76,10 +76,10 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.errorInactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
   /**

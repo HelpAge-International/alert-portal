@@ -2,14 +2,13 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {RxHelper} from "../../../utils/RxHelper";
 import {Country, PersonTitle} from "../../../utils/Enums";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import * as firebase from "firebase";
 import {firebaseConfig} from "../../../app.module";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelCountryOffice} from "../../../model/countryoffice.model";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-create-edit-country',
@@ -45,33 +44,42 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private tempAdminId: string;
   private alerts = {};
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
       this.uid = user.auth.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, "second");
-      let subscription = this.route.params.subscribe((param: Params) => {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((param: Params) => {
         if (param["id"]) {
           this.countryOfficeId = param["id"];
           this.isEdit = true;
           this.loadCountryInfo(this.countryOfficeId);
         }
       });
-      this.subscriptions.add(subscription);
     });
-    this.subscriptions.add(subscription);
+  }
+
+  ngOnDestroy() {
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
+    this.secondApp.delete();
   }
 
   private loadCountryInfo(countryOfficeId: string) {
     console.log("edit: " + countryOfficeId);
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
       .do(result => {
         console.log(result);
         this.countryOfficeLocation = result.location;
@@ -81,6 +89,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       .flatMap(result => {
         return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + result.adminId)
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
         console.log(user);
         this.countryAdminTitle = user.title;
@@ -96,12 +105,6 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
         this.countryAdminCity = user.city;
         this.countryAdminPostcode = user.postCode;
       });
-    this.subscriptions.add(subscription);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.releaseAll();
-    this.secondApp.delete();
   }
 
   cancel() {
@@ -195,12 +198,13 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private validateLocation() {
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
       query: {
         orderByChild: "location",
         equalTo: this.countryOfficeLocation
       }
     })
+      .takeUntil(this.ngUnsubscribe)
       .take(1)
       .subscribe(result => {
         if (result.length != 0) {
@@ -216,7 +220,6 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
           this.createNewUser();
         }
       });
-    this.subscriptions.add(subscription);
   }
 
   private createNewUser() {
@@ -350,9 +353,9 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.hideWarning = true;
     });
-    this.subscriptions.add(subscribe);
   }
 }

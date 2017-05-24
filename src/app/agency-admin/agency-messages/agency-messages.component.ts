@@ -2,8 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import {Observable} from 'rxjs';
-import {RxHelper} from '../../utils/RxHelper';
+import {Observable, Subject} from 'rxjs';
 import Promise = firebase.Promise;
 declare var jQuery: any;
 
@@ -19,16 +18,18 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private messageToDelete;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
 
-        let subscription = this.af.database.list(Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages')
+        this.af.database.list(Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages')
           .flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
@@ -41,10 +42,10 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
           })
           .distinctUntilChanged()
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(x => {
             this.sentMessages.push(x);
           });
-        this.subscriptions.add(subscription);
 
       } else {
         // user is not logged in
@@ -52,11 +53,11 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   deleteMessage(sentMessage) {
@@ -91,7 +92,8 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       let groupPath = agencyGroupPath + group;
       let msgRefPath = agencyMessageRefPath + group;
 
-      let subscription = this.af.database.list(groupPath)
+      this.af.database.list(groupPath)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {
           list.forEach(item => {
             msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
@@ -106,7 +108,6 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             });
           }
         });
-      this.subscriptions.add(subscription);
     }
 
   }

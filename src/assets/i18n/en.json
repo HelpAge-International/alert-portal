@@ -48,6 +48,8 @@
     "ADD_IMAGE": "Add an image",
     "NO_CHANGES_MADE": "No changes made",
     "SAVE_CHANGES": "Save changes",
+    "YOUR_NOTIFICATIONS": "Your notifications",
+    "RECEIVED": "Received",
     "CREATE_PASSWORD": "Please create a password",
     "CURRENT_PASSWORD": "Your current password",
     "CONFIRM_PASSWORD": "Confirm your password",
@@ -515,6 +517,8 @@
       "AGENCY_ADMIN_DETAIL": "Agency Administrator Details",
       "SAVE": "Save New Agency",
       "IS_DONOR": "Is this a donor agency?",
+      "VIEW_ALL_NOTIFICATIONS": "View all notifications",
+      "NO_UNREAD_MESSAGES": "No messages to show",
       "NAME_DUPLICATE": "Agency name duplicate - Please chose a different name",
       "NAME_MISSING": "Please enter name of the agency",
       "F_NAME_MISSING": "Please enter agency administrator's first name",
@@ -774,6 +778,12 @@
         "APA": "APA",
         "RESPONSE_PLAN": "Response Plan",
         "HAZARD_DOCUMENT": "Hazard Document"
+      },
+      "NOTIFICATIONS": {
+        "TITLE_TEXT": "Default Notification Settings",
+        "NO_SELECTED_USER_TYPE": "No selected user types",
+        "NOTIFICATION_PERMISSION": "Notification permission",
+        "EVENT": "Event"
       }
     }
   },
@@ -866,7 +876,7 @@
         "PERMISSIONS": "Permissions",
         "MODULES": "Modules",
         "CLOCK_SETTINGS": "Clock settings",
-        "NOTIFICATIONS": "Notifications" 
+        "NOTIFICATIONS": "Notifications"
       },
       "PERMISSIONS": {
         "TITLE_TEXT": "Permission settings",
@@ -909,7 +919,7 @@
           "USERS_NOTIFIED": "Users notified",
           "ACTIONS": "Actions",
           "NOTIFICATION": "Notification",
-          "SELECT_USER_TYPE": "Select user type",
+          "SELECT_USER_TYPE": "Select user types",
           "SAVED_SUCCESS": "Notification Settings successfully saved",
           "EXTERNAL_NOTIFICATIONS": "External Notifications",
           "NO_EXTERNAL_RECIPIENTS": "No external recipients",

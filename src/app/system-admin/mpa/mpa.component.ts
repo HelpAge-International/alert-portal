@@ -3,8 +3,7 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
 import {Router} from "@angular/router";
-import {RxHelper} from "../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -20,7 +19,6 @@ export class MpaComponent implements OnInit, OnDestroy {
   actions: Observable<any>;
   ActionType = ActionType;
   GenericActionCategory = GenericActionCategory;
-  private subscriptions: RxHelper;
   private levelSelected = 0;
   private categorySelected = 0;
   private Category = Constants.CATEGORY;
@@ -31,12 +29,13 @@ export class MpaComponent implements OnInit, OnDestroy {
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
   private actionToDelete;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
         this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
@@ -49,11 +48,13 @@ export class MpaComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   edit(actionKey) {
