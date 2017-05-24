@@ -119,6 +119,8 @@ import { CountryAdminSettingsMenuComponent } from "./country-admin/settings/sett
 import { EnumKeyValuesPipe } from "./utils/pipes/enum-keyValues.pipe";
 import { MessageService } from "./services/message.service";
 import { NotificationSettingsService } from "./services/notification-settings.service";
+import { ReviewResponsePlanComponent } from './director-dashboard/review-response-plan/review-response-plan.component';
+import { FacetofaceMeetingRequestComponent } from './director-dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -239,7 +241,9 @@ const firebaseAuthConfig = {
         ExportTestComponent,
         DashboardSeasonalCalendarComponent,
         DashboardUpdateAlertLevelComponent,
-        CountryAgenciesComponent
+        CountryAgenciesComponent,
+        ReviewResponsePlanComponent,
+        FacetofaceMeetingRequestComponent
     ],
     imports: [
         BrowserModule,
