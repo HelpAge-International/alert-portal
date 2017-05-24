@@ -1266,6 +1266,7 @@
     "INDICATORS": "indicators",
     "CONTEXT": "Context",
     "CALENDAR": {
+      "SEASONAL_CALENDAR" : "Seasonal Calendar",
       "ADD_TO_CALENDAR": "Add to the calendar",
       "VIEW_AS_WEEKS": "View as weeks",
       "VIEW_AS_MONTHS": "View as months",
