@@ -10705,7 +10705,6 @@ html.W-Sticky-nav--en .Alert-success, html.W-Sticky-nav--en .Alert-warning, html
   border-left-color: #F1F7FB !important;
 }
 
-/*TODO - Move these to CSS file*/
 .Icon__country--AO {
   background-image: url(/assets/images/countries/AO.svg);
   background-size: contain;
