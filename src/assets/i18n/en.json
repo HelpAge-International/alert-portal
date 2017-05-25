@@ -1050,6 +1050,9 @@
       "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
       "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!"
     },
+    "VIEW_RESPONSE_PLAN": {
+      "TITLE_TEXT": "Scenario Based Response Plan"
+    },
     "CREATE_NEW_RESPONSE_PLAN": {
       "TITLE_TEXT": "Create new scenario based response plan",
       "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
@@ -1131,7 +1134,8 @@
         "TITLE_TEXT": "Adjust Beneficiaries for Double Counting",
         "CONFIRM_BENEFICIARIES_TEXT": "Please confirm or adjust the total number of beneficiaries to prevent double counting of individual beneficiaries",
         "TOTAL_BENEFICIARIES": "Total beneficiaries",
-        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting"
+        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting",
+        "TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT": "Total beneficiaries after adjustment"
       },
       "BUDGET": {
         "TITLE_TEXT": "Budget",

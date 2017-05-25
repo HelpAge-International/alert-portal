@@ -19,8 +19,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private uid: string;
   private countryId: string;
 
-  private responsePlanId;
-  string;
+  private responsePlanId: string;
 
   private responsePlanToShow: ResponsePlan;
 
