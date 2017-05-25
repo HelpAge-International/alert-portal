@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 import {AlertLevels, AlertStatus, ApprovalStatus, Countries, DashboardType} from "../utils/Enums";
@@ -25,15 +25,19 @@ declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, ne
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
+  // private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
 
   private alertList: ModelAlert[];
 
   // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
 
+  //TODO - get the real director uid
+  private tempDirectorUid = "1b5mFmWq2fcdVncMwVDbNh3yY9u2";
+
   private DashboardType = DashboardType;
   private DashboardTypeUsed = DashboardType.director;
+  // private DashboardTypeUsed = DashboardType.default;
 
   private uid: string;
   private countryId: string;
@@ -61,6 +65,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private seasonEvents = [];
   private chronoline;
+  private approveMap = new Map();
+  private responsePlansForApproval: FirebaseListObservable<any[]>;
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
@@ -212,6 +218,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           });
         }
       });
+
+    //TODO change temp id to actual uid
+    this.responsePlansForApproval = this.actionService.getResponsePlanForDirectorToApproval(this.countryId, this.tempDirectorUid);
   }
 
   private getCountryData() {
@@ -227,7 +236,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts() {
-    this.alerts = this.actionService.getAlerts(this.countryId);
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.alerts = this.actionService.getAlerts(this.countryId);
+    } else if (this.DashboardTypeUsed == DashboardType.director) {
+      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.tempDirectorUid, this.countryId);
+    }
   }
 
   private getHazards() {
@@ -276,7 +289,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   updateAlert(alertId) {
-    this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+    } else {
+      let selection = this.approveMap.get(alertId);
+      this.approveMap.set(alertId, !selection);
+    }
+  }
+
+  approveRedAlert(alertId) {
+    //TODO need to change back to uid!!
+    this.actionService.approveRedAlert(this.countryId, alertId, this.tempDirectorUid);
+  }
+
+  rejectRedRequest(alertId) {
+    console.log("delete request: " + alertId);
   }
 
   goToAgenciesInMyCountry() {

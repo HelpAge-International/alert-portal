@@ -490,6 +490,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
     newResponsePlan.startDate = Date.now();
+    newResponsePlan.timeCreated = Date.now();
 
     this.saveToFirebase(newResponsePlan);
   }
