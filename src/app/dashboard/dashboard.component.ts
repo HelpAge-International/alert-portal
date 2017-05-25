@@ -3,7 +3,7 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
-import {AlertLevels, AlertStatus, ApprovalStatus, Countries} from "../utils/Enums";
+import {AlertLevels, AlertStatus, ApprovalStatus, Countries, DashboardType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -32,6 +32,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
 
+  private DashboardType = DashboardType;
+  private DashboardTypeUsed = DashboardType.director;
+
   private uid: string;
   private countryId: string;
   private agencyAdminUid: string;
@@ -40,6 +43,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private indicatorsToday = [];
   private indicatorsThisWeek = [];
 
+  private Countries = Countries;
+  private CountriesList = Constants.COUNTRIES;
   private countryLocation: any;
 
   private AlertLevels = AlertLevels;
@@ -90,7 +95,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
-      this.getAllSeasonsForCountryId(this.countryId);
+      if (this.DashboardTypeUsed == DashboardType.default) {
+        this.getAllSeasonsForCountryId(this.countryId);
+      }
       this.getAlerts();
       this.getCountryContextIndicators();
       this.getHazards();
@@ -260,10 +267,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return Countries[location];
   }
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
-
   getActionTitle(action): string {
     return this.actionService.getActionTitle(action);
   }
@@ -276,5 +279,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
   }
 
+  goToAgenciesInMyCountry() {
+    this.router.navigateByUrl("/country-admin/country-agencies");
+  }
+
+  goToFaceToFaceMeeting() {
+    this.router.navigateByUrl("/director-dashboard/facetoface-meeting-request");
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
 
 }

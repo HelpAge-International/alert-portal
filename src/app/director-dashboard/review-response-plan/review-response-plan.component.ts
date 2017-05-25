@@ -19,7 +19,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private uid: string;
   private countryId: string;
 
-  private responsePlanId; string;
+  private responsePlanId;
+  string;
 
   private responsePlanToShow: ResponsePlan;
 
@@ -69,7 +70,63 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanData() {
 
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
 
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.responsePlanToShow = responsePlan;
+        this.loadSection1(responsePlan);
+        this.loadSection2(responsePlan);
+        this.loadSection3(responsePlan);
+        this.loadSection4(responsePlan);
+        this.loadSection5(responsePlan);
+        this.loadSection6(responsePlan);
+        this.loadSection7(responsePlan);
+        this.loadSection8(responsePlan);
+        this.loadSection9(responsePlan);
+        this.loadSection10(responsePlan);
+      });
+
+  }
+
+  private loadSection1(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection2(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection3(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection4(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection5(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection6(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection7(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection8(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection9(responsePlan: ResponsePlan) {
+
+  }
+
+  private loadSection10(responsePlan: ResponsePlan) {
 
   }
 
