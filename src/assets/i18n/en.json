@@ -9,6 +9,7 @@
     "CONTINUE": "Continue",
     "COMPLETE": "Complete",
     "INCOMPLETE": "Incomplete",
+    "UPDATE": "Update",
     "OF": "of",
     "CLOSE": "Close",
     "REMOVE": "Remove",
@@ -1140,17 +1141,30 @@
   },
   "ALERT": {
     "AMBER_ALERT": "Amber Alert",
-    "RED_ALERT": "Red ALert",
+    "RED_ALERT": "Red Alert",
     "RISK": "Risk",
     "PEOPLE": "People",
-    "POPULATION_AFFECTED": "Population affected",
-    "AFFECTED_AREAS": "Affected areas",
+    "POPULATION_AFFECTED": "Estimated population affected",
+    "AFFECTED_AREAS": "Affected area(s)",
     "RED_ALERT_REQUESTED": "Red Alert Requested",
-    "INFO_AND_NOTES": "Information sources and notes"
+    "INFO_AND_NOTES": "Information sources and notes",
+    "CHANGE_LEVEL": "Change Alert Level",
+    "SELECT_ALERT_LEVEL": "Select the Alert Level",
+    "GREEN_ALERT_LEVEL": "Green Alert Level",
+    "AMBER_ALERT_LEVEL": "Amber Alert Level",
+    "RED_ALERT_LEVEL": "Red Alert Level",
+    "REASON_FOR_RED_ALERT": "Reason for red alert request",
+    "ADD_ANOTHER_LOCATION": "Add another location",
+    "CONFIRM_ALERT_LEVEL": "Confirm alert level",
+    "UPDATE_ALERT_LEVEL": "Update alert level",
+    "LAST_UPDATED": "Last updated"
   },
   "DASHBOARD": {
     "RISK_MONITORING": "Risk Monitoring",
     "INDICATORS": "indicators",
-    "CONTEXT": "Context"
+    "CONTEXT": "Context",
+    "TODAY": "today",
+    "THIS_WEEK": "this week",
+    "MY_TASKS": "My Tasks"
   }
 }

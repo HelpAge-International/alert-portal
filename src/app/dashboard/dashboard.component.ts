@@ -4,14 +4,13 @@ import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
-import {AlertLevels, ApprovalStatus, Countries} from "../utils/Enums";
+import {AlertLevels, AlertStatus, ApprovalStatus, Countries} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
 import {Subject} from "rxjs/Subject";
 import {HazardImages} from "../utils/HazardImages";
 import {ModelAlert} from "../model/alert.model";
-import {ModelAffectedArea} from "../model/affectedArea.model";
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +21,7 @@ import {ModelAffectedArea} from "../model/affectedArea.model";
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  private HAZARDS:string[] = Constants.HAZARD_SCENARIOS;
+  private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
 
   private alertList: ModelAlert[];
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -352,16 +351,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAlerts() {
     this.alerts = this.actionService.getAlerts(this.countryId);
-    this.alerts
-      .subscribe(x => {
-        console.log(x)
-      })
-    // this.actionService.getAlerts(this.countryId)
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(alertList => {
-    //     console.log(alertList);
-    //   })
-
   }
 
   // TODO - FIX num of indicators
