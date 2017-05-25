@@ -284,7 +284,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToFaceToFaceMeeting() {
-    this.router.navigateByUrl("/director-dashboard/facetoface-meeting-request");
+    this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
   }
 
   private navigateToLogin() {
