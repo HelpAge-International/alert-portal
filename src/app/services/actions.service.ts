@@ -8,13 +8,16 @@ import {ModelAlert} from "../model/alert.model";
 import {ModelAffectedArea} from "../model/affectedArea.model";
 import {UserService} from "./user.service";
 import {Subject} from "rxjs/Subject";
+import {CommonService} from "./common.service";
+import {ModelJsonLocation} from "../model/json-location.model";
+import {Router} from "@angular/router";
 
 @Injectable()
 export class ActionsService {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private userService: UserService) {
+  constructor(private af: AngularFire, private userService: UserService, private jsonService: CommonService, private router: Router) {
   }
 
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
@@ -119,8 +122,8 @@ export class ActionsService {
           countries.forEach(country => {
             let modelAffectedArea = new ModelAffectedArea();
             modelAffectedArea.affectedCountry = Number(country);
-            modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] : '';
-            modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] : '';
+            modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1'] : -1;
+            modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2'] : -1;
             affectedAreas.push(modelAffectedArea);
           });
           modelAlert.affectedAreas = affectedAreas;
@@ -144,10 +147,13 @@ export class ActionsService {
       .do(alertList => {
         alertList.forEach(alert => {
           let displayArea: string[] = [];
+          // let displayArea: UpdateArea[] = [];
           alert.affectedAreas.forEach(area => {
-            if (area.affectedLevel2) {
+            if (area.affectedLevel2 && area.affectedLevel2 != -1) {
+              // let temp:UpdateArea = {"country":area.affectedCountry, "level1":-1, "level2":-1};
+
               displayArea.push(area.affectedLevel2);
-            } else if (area.affectedLevel1) {
+            } else if (area.affectedLevel1 && area.affectedLevel1 != -1) {
               displayArea.push(area.affectedLevel1);
             } else {
               displayArea.push(area.affectedCountry);
@@ -177,8 +183,8 @@ export class ActionsService {
         countries.forEach(country => {
           let modelAffectedArea = new ModelAffectedArea();
           modelAffectedArea.affectedCountry = Number(country);
-          modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1location'] : '';
-          modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2location'] : '';
+          modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1'];
+          modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2'];
           affectedAreas.push(modelAffectedArea);
         });
         modelAlert.affectedAreas = affectedAreas;
@@ -197,9 +203,78 @@ export class ActionsService {
       });
   }
 
+  getAllLevelInfo(country: number) {
+    return this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .map(result => {
+        let level1values: ModelJsonLocation[] = [];
+        if (result[country] && result[country]['levelOneValues']) {
+          result[country]['levelOneValues'].forEach(item => {
+            let modelLevel1 = new ModelJsonLocation();
+            modelLevel1.id = item.id;
+            modelLevel1.value = item.value;
+            let level2models: ModelJsonLocation[] = [];
+            if (item.levelTwoValues) {
+              item.levelTwoValues.forEach(item => {
+                let modelLevel2 = new ModelJsonLocation();
+                modelLevel2.id = item.id;
+                modelLevel2.value = item.value;
+                level2models.push(modelLevel2);
+              });
+            }
+            modelLevel1.levelTwoValues = level2models;
+            level1values.push(modelLevel1);
+          });
+        }
+        return level1values;
+      });
+  }
+
+  updateAlert(alert: ModelAlert, countryId: string, alertId: string) {
+    console.log("update alert");
+    let updateData = {};
+    let areaData = {};
+    alert.affectedAreas.forEach(area => {
+      let subData = {};
+      subData["country"] = Number(area.affectedCountry);
+      if (area.affectedLevel1) {
+        subData["level1"] = Number(area.affectedLevel1);
+      }
+      if (area.affectedLevel2) {
+        subData["level2"] = Number(area.affectedLevel2);
+      }
+      areaData[area.affectedCountry] = subData;
+    });
+    updateData["affectedAreas"] = areaData;
+    updateData["alertLevel"] = alert.alertLevel;
+    let countryDirectorData = {};
+    countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
+    let countryDirector = {};
+    countryDirector["countryDirector"] = countryDirectorData
+    updateData["approval"] = countryDirector;
+    updateData["createdBy"] = alert.createdBy;
+    updateData["estimatedPopulation"] = alert.estimatedPopulation;
+    updateData["hazardScenario"] = alert.hazardScenario;
+    updateData["infoNotes"] = alert.infoNotes;
+    updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
+    updateData["timeCreated"] = alert.timeCreated;
+    updateData["timeUpdated"] = alert.timeUpdated;
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId).set(updateData).then(() => {
+      this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+    }, error => {
+      console.log(error.message);
+    });
+  }
+
+
   unSubscribeNow() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 
+}
+
+interface UpdateArea {
+  country: number;
+  level1: number;
+  level2: number;
 }

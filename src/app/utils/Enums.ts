@@ -533,3 +533,9 @@ export enum AlertStatus {
   Approved = 1,
   Rejected = 2
 }
+
+export enum DashboardType {
+  default = 0,
+  director = 1
+}
+

@@ -81,9 +81,8 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
-import {ReviewResponsePlanComponent} from "./director-dashboard/review-response-plan/review-response-plan.component";
-import {FacetofaceMeetingRequestComponent} from "./director-dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
-import {DirectorDashboardComponent} from "./director-dashboard/director-dashboard.component";
+import {ReviewResponsePlanComponent} from "./dashboard/review-response-plan/review-response-plan.component";
+import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -189,13 +188,8 @@ const routes: Routes = [
   {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
   {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
   {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
-
-  /**
-   * Director Dashboard
-   */
-  {path: 'director-dashboard', component: DirectorDashboardComponent},
-  {path: 'director-dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
-  {path: 'director-dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+  {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
+  {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
 
 
   /**
