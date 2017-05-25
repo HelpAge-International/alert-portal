@@ -3,6 +3,7 @@ import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
+import {Countries} from "../utils/Enums";
 
 @Component({
   selector: 'app-director-dashboard',
@@ -19,6 +20,8 @@ export class DirectorDashboardComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyAdminUid: string;
 
+  private Countries = Countries;
+  private CountriesList = Constants.COUNTRIES;
   private countryLocation: any;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -40,6 +43,14 @@ export class DirectorDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  goToAgenciesInMyCountry() {
+    this.router.navigateByUrl("/country-admin/country-agencies");
+  }
+
+  goToFaceToFaceMeeting() {
+    this.router.navigateByUrl("/director-dashboard/facetoface-meeting-request");
   }
 
   /**

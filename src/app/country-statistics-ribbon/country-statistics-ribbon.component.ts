@@ -150,7 +150,6 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     for (let A in approvals) {
       if (typeof (approvals[A]) == 'object') {
         this.recursiveParseArray(approvals[A]);
-        console.log(approvals[A]);
       } else {
         var approvalStatus = approvals[A];
         if (approvalStatus == ApprovalStatus.Approved) {
