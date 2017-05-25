@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Privacy} from "../../../utils/Enums";
+import {Privacy, ModuleName} from "../../../utils/Enums";
 import {Subject} from "rxjs";
 
 @Component({
@@ -14,6 +14,7 @@ import {Subject} from "rxjs";
 export class ModulesComponent implements OnInit, OnDestroy {
 
   MODULE_NAME = Constants.MODULE_NAME;
+  protected ModuleName = Object.keys(ModuleName).map(k => ModuleName[k]).filter(v => typeof v !== "string") as string[];
   private Public = Privacy.Public;
   private Private = Privacy.Private;
   private Network = Privacy.Network;
@@ -38,9 +39,14 @@ export class ModulesComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS+'/module/' + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
-        	this.modules = _;
-        	_.map(module => {
-        	});
+
+            this.ModuleName.map(moduleName => {
+              this.modules[moduleName] = {$key: moduleName, privacy:-1, status:false};
+            });
+
+            _.map(module => {
+              this.modules[module.$key] = module;
+            });
         });
 
       } else {
@@ -82,11 +88,14 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   		moduleItems[index] = this.modules[index];
 
+      delete moduleItems[index].$key;
+      delete moduleItems[index].$exists;
+
   		return this.modules[index];
   	});
 
-  	this.af.database.list(Constants.APP_STATUS+'/module/')
-  	.update(this.uid, moduleItems)
+  	this.af.database.object(Constants.APP_STATUS + '/module/' + this.uid)
+  	.set(moduleItems)
   	.then(_ => {
       if (!this.alertShow){
         this.saved = true;
