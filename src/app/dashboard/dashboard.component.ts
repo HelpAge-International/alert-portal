@@ -3,7 +3,7 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
-import {AlertLevels, Countries} from "../utils/Enums";
+import {AlertLevels, AlertStatus, ApprovalStatus, Countries} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -221,16 +221,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAlerts() {
     this.alerts = this.actionService.getAlerts(this.countryId);
-    this.alerts
-      .subscribe(x => {
-        console.log(x)
-      })
-    // this.actionService.getAlerts(this.countryId)
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(alertList => {
-    //     console.log(alertList);
-    //   })
-
   }
 
   private getHazards() {
@@ -258,6 +248,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private getCountryContextIndicators() {
 
     this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         list.forEach(indicator => {
           this.countryContextIndicators.push(indicator);

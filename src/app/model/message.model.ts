@@ -8,8 +8,8 @@ export class MessageModel extends BaseModel {
   public time: number;
   public userType: any[];
 
-  constructor() { 
-    super(); 
+  constructor() {
+    super();
     this.userType = [];
 }
 

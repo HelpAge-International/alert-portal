@@ -21,7 +21,7 @@
             <i div
                class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
-              <span>Risk:</span>
+              <span>{{"ALERT.RISK" | translate}}:</span>
               {{HAZARDS[alert.hazardScenario] | translate}}
             </div>
           </div>
@@ -50,9 +50,9 @@
 
 
           <div class="col-md-2 Alert-Widget__item">
-            <span *ngIf="alert.approvalStatus == 0" class="text-danger text-bold">Red Alert requested</span>
+            <span *ngIf="alert.approvalStatus == 0" class="text-danger text-bold">{{"ALERT.RED_ALERT_REQUESTED" | translate}}</span>
             <button *ngIf="alert.approvalStatus == 1" class="btn btn-outline-primary" (click)="updateAlert(alert.id)">
-              Update alert level
+              {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
             </button>
           </div>
 
@@ -84,17 +84,6 @@
                   </p>
                 </div>
               </div>
-              <!--<div class="row no-gutters">-->
-              <!--<div class="col-sm-10 col-12  notes-popover__item">-->
-              <!--<p>-->
-              <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
-              <!--everyone’s calendar.-->
-              <!--</p>-->
-              <!--<p>-->
-              <!--<strong>by Andrew Collodel</strong>-->
-              <!--</p>-->
-              <!--</div>-->
-              <!--</div>-->
             </div>
           </div>
 
@@ -103,96 +92,7 @@
       </div>
     </div>
 
-    <!--<div class="Widget Alert-Widget ">-->
-    <!--<div class="row">-->
-    <!--<div class="col-md-3 Alert-Widget__item bg-warning">-->
-    <!--<h4>Amber Alert</h4>-->
-    <!--</div>-->
-    <!--<div class="col-md-2 Alert-Widget__item Alert-Widget__item&#45;&#45;risk">-->
-    <!--<i div class="Icon__circle Icon&#45;&#45;sm Icon&#45;&#45;b-dark-blue Icon&#45;&#45;cyclone"></i>-->
-    <!--<div>-->
-    <!--<span>Risk:</span>-->
-    <!--Insect Infestation-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="col-md-2 Alert-Widget__item">-->
-    <!--<div>-->
-    <!--<span>Population affected:</span> 200,000 people-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="col-md-2 Alert-Widget__item">-->
-    <!--<div>-->
-    <!--<span>Affected areas:</span> Leyre and Cebu-->
-    <!--</div>-->
-    <!--</div>-->
-
-    <!--<div class="col-md-1 Alert-Widget__item Alert-Widget__item&#45;&#45;notes">-->
-    <!--<a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"-->
-    <!--aria-expanded="false" aria-controls="notes_popover">-->
-    <!--<div class="fa-stack">-->
-    <!--<i class="fa fa-comment fa-stack-2x"></i>-->
-    <!--<i class="fa fa-stack-1x fa-inverse"></i>-->
-    <!--</div>-->
-    <!--<div>Notes</div>-->
-    <!--</a>-->
-    <!--</div>-->
-
-
-    <!--<div class="col-md-2 Alert-Widget__item">-->
-    <!--&lt;!&ndash;<a href="javascript:void(0)" class="btn btn-outline-primary">Update alert level</a>&ndash;&gt;-->
-    <!--<button class="btn btn-outline-primary" routerLink="/dashboard/dashboard-update-alert-level">Update alert-->
-    <!--level-->
-    <!--</button>-->
-    <!--</div>-->
-
-    <!--</div>-->
-
-
-    <!--<div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">-->
-    <!--&lt;!&ndash; Notes &ndash;&gt;-->
-    <!--<div class="row Spaced">-->
-    <!--<div class="col-md-2"></div>-->
-    <!--<div class="col-md-10">-->
-    <!--<div class="row align-items-center Small-spaced no-gutters">-->
-    <!--<div class="col-sm-6 col-8">-->
-    <!--<h4>Information sources and notes</h4>-->
-    <!--</div>-->
-    <!--<div class="col-sm-6 col-4 text-right">-->
-    <!--<a href="javascript:void(0);"-->
-    <!--onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="row no-gutters">-->
-    <!--<div class="col-sm-10 col-12 notes-popover__item">-->
-    <!--<p>-->
-    <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
-    <!--everyone’s calendar.-->
-    <!--</p>-->
-    <!--<p>-->
-    <!--<strong>by Andrew Collodel</strong>-->
-    <!--</p>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="row no-gutters">-->
-    <!--<div class="col-sm-10 col-12  notes-popover__item">-->
-    <!--<p>-->
-    <!--This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in-->
-    <!--everyone’s calendar.-->
-    <!--</p>-->
-    <!--<p>-->
-    <!--<strong>by Andrew Collodel</strong>-->
-    <!--</p>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-
-    <!--</div>-->
-
-
-    <!--</div>-->
-
-    <!--TODO my tasks-->
+    <!--my tasks-->
     <div
       *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0"
       class="Widget">
@@ -207,15 +107,17 @@
     <div
       *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 "
       class="Widget">
-      <h3>My Tasks</h3>
+      <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
       <div class="My-Tasks container-fluid">
 
         <div *ngFor="let action of actionsToday" class="row alert-danger">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">{{getActionTitle(action)}}
-            <strong>today</strong>.<span>{{action.task}}</span></a></div>
+            <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
           <div class="col-md-3">
-            <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">Update</button>
+            <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+              translate}}
+            </button>
           </div>
         </div>
 
@@ -224,7 +126,9 @@
           <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
           </div>
           <div class="col-md-3">
-            <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</button>
+            <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+              translate}}
+            </button>
           </div>
         </div>
 
@@ -237,17 +141,20 @@
 
         <div *ngFor="let action of actionsThisWeek" class="row">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>this week
+          <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
             )</strong>.<span>{{action.task}}</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">Update</a>
+          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+            | translate}}</a>
           </div>
         </div>
 
         <div *ngFor="let indicator of indicatorsThisWeek" class="row">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>this week</strong>.<span>{{indicator?.name}}</span></a>
+          <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
+            translate}}</strong>.<span>{{indicator?.name}}</span></a>
           </div>
-          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">Update</a>
+          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+            | translate}}</a>
           </div>
         </div>
 
