@@ -1290,5 +1290,10 @@
       "END_DATE": "End Date",
       "COLOUR": "Colour"
     }
+  },
+  "DIRECTOR_DASHBOARD": {
+    "INTER_AGENCIES_COLLABORATION": "Inter-agencies collaboration",
+    "AGENCIES_IN": "Agencies in",
+    "MEETING_REQUEST": "Meeting request"
   }
 }

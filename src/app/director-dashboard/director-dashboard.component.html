@@ -132,23 +132,24 @@
     </div>
 
     <div class="Widget">
-      <div class="col-sm-5 Spaced-above"><h3>Inter-agencies collaboration</h3></div>
+      <div class="col-sm-5 Spaced-above">
+        <h3>{{"DIRECTOR_DASHBOARD.INTER_AGENCIES_COLLABORATION" | translate}}</h3></div>
 
       <div class="row">
         <div class="col-sm-3 Spaced-above margin-left-four" (click)="goToAgenciesInMyCountry()">
-          <div class="col-sm-4 col-md-2">
+          <div class="col-sm-4 col-md-2 Spaced-above">
             <!--<div class="Icon&#45;&#45;lg Icon&#45;&#45;align-center Icon__country&#45;&#45;{{getCountryCodeFromLocation(countryLocation)}}"></div>-->
             <img class="padding-left-four" src="assets/images/countries/{{Countries[countryLocation]}}.svg" alt="">
           </div>
           <div class="col-sm-0">
-            <strong>Agencies in {{CountriesList[countryLocation] | translate}}</strong></div>
+            <strong>{{"DIRECTOR_DASHBOARD.AGENCIES_IN" | translate}} {{CountriesList[countryLocation] | translate}}</strong></div>
         </div>
 
         <div class="col-sm-0 Spaced margin-left-four" (click)="goToFaceToFaceMeeting()">
           <div class="col-sm-4 col-md-2 Spaced-above">
             <img class="margin-left-two margin-bottom" src="assets/images/icons/meeting.svg" alt=""></div>
           <div class="col-sm-12 Space">
-            <strong>Meeting request</strong></div>
+            <strong>{{"DIRECTOR_DASHBOARD.MEETING_REQUEST" | translate}}</strong></div>
         </div>
       </div>
 
