@@ -190,6 +190,7 @@ const routes: Routes = [
   {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
   {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
   {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+  {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
 
 
   /**

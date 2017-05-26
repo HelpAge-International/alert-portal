@@ -444,11 +444,6 @@
       "AMBER": "Amber Alert",
       "RED": "Red Alert"
     },
-    "ALERTS": {
-      "GREEN": "Green Alert",
-      "AMBER": "Amber Alert",
-      "RED": "Red Alert"
-    },
     "HAZARD_SCENARIOS": {
       "HAZARD_SCENARIO0": "Cold Wave",
       "HAZARD_SCENARIO1": "Conflict",
@@ -1279,6 +1274,12 @@
     "TODAY": "today",
     "THIS_WEEK": "this week",
     "MY_TASKS": "My Tasks",
+    "BY":"by",
+    "SUBMITTED":"Submitted",
+    "REVIEW_AND_APPROVE":"Review and approve",
+    "SUBMIT_TO_APPROVE":"has submitted a response plan for your approval",
+    "EMPTY_DEFAULT":"No actions or indicators assigned to you needs completing this week",
+    "EMPTY_DIRECTOR":"No response plans to approve, and no actions or indicators assigned to you needs completing this week",
     "CALENDAR": {
       "SEASONAL_CALENDAR" : "Seasonal Calendar",
       "ADD_TO_CALENDAR": "Add to the calendar",

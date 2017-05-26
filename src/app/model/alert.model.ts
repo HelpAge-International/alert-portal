@@ -5,10 +5,10 @@ import {ModelAffectedArea} from "./affectedArea.model";
  */
 
 export class ModelAlert {
-  public id:string;
+  public id: string;
   public alertLevel: AlertLevels;
-  public affectedAreas:ModelAffectedArea[];
-  public affectedAreasDisplay:string[];
+  public affectedAreas: ModelAffectedArea[];
+  public affectedAreasDisplay: string[];
   public approvalDirectorId: string;
   public approvalStatus: AlertStatus;
   public createdBy: string;
@@ -18,7 +18,9 @@ export class ModelAlert {
   public infoNotes: string;
   public reasonForRedAlert: string;
   public timeCreated: number;
-  public timeUpdated:number;
+  public timeUpdated: number;
+  public updatedBy: string;
+  public updatedByName: string;
 }
 
 

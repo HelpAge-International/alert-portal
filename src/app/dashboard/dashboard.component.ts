@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
-import {AlertLevels, AlertStatus, ApprovalStatus, Countries, DashboardType} from "../utils/Enums";
+import {AlertLevels, AlertStatus, Countries, DashboardType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -52,6 +52,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private countryLocation: any;
 
   private AlertLevels = AlertLevels;
+  private AlertStatus = AlertStatus;
 
   private alerts: Observable<any>;
 
@@ -66,7 +67,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private seasonEvents = [];
   private chronoline;
   private approveMap = new Map();
-  private responsePlansForApproval: FirebaseListObservable<any[]>;
+  private responsePlansForApproval: Observable<any[]>;
+  private approvalPlans = [];
+  private amberAlerts: Observable<any[]>;
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
@@ -221,6 +224,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     //TODO change temp id to actual uid
     this.responsePlansForApproval = this.actionService.getResponsePlanForDirectorToApproval(this.countryId, this.tempDirectorUid);
+    this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
+      this.approvalPlans = plans
+    });
   }
 
   private getCountryData() {
@@ -240,6 +246,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.alerts = this.actionService.getAlerts(this.countryId);
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.tempDirectorUid, this.countryId);
+      this.amberAlerts = this.actionService.getAlerts(this.countryId)
+        .map(alerts => {
+          return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
+        });
     }
   }
 
@@ -288,9 +298,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.actionService.getIndicatorTitle(indicator);
   }
 
-  updateAlert(alertId) {
+  updateAlert(alertId, isDirectorAmber) {
     if (this.DashboardTypeUsed == DashboardType.default) {
       this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+    } else if (isDirectorAmber) {
+      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {
+        id: alertId,
+        countryId: this.countryId,
+        isDirector: true
+      }]);
     } else {
       let selection = this.approveMap.get(alertId);
       this.approveMap.set(alertId, !selection);
@@ -303,7 +319,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   rejectRedRequest(alertId) {
-    console.log("delete request: " + alertId);
+    this.actionService.rejectRedAlert(this.countryId, alertId, this.tempDirectorUid);
+  }
+
+  planReview(planId) {
+    this.router.navigate(["/dashboard/review-response-plan", {"id": planId}]);
   }
 
   goToAgenciesInMyCountry() {

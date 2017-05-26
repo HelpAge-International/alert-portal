@@ -60,4 +60,8 @@ export class ResponsePlan {
   public status: ApprovalStatus;
   public startDate: number;
   public timeCreated: number;
+  public id: string;
+  public createdBy: string;
+  public timeUpdated: number;
+  public updatedBy: string;
 }
