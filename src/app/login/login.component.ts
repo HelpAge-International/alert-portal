@@ -4,13 +4,13 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
-import {AgencyServiceService} from "../services/agency-service.service";
+import {AgencyService} from "../services/agency-service.service";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  providers: [AgencyServiceService]
+  providers: [AgencyService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyServiceService) {
+  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
