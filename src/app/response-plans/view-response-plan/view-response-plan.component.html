@@ -467,15 +467,15 @@
       <p class="col-sm-4"><b>A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}</b></p>
       <p class="col-sm-4">£{{totalInputs}}</p>
     </div>
-    <div class="row">
-      <p class="col-sm-4">A-2: Health</p>
-      <p class="col-sm-4">£10,000</p>
-      <p class="col-sm-4">Budget narrative goes here</p>
-    </div>
-    <div class="row">
-      <p class="col-sm-4">A-3: Shelter</p>
-      <p class="col-sm-4">£10,000</p>
-      <p class="col-sm-4">Budget narrative goes here</p>
+    <div class="row" *ngFor="let sector of responsePlanToShow.sectorsRelatedTo; index as i">
+      <p class="col-sm-4">A-{{i+1}}: {{responsePlanToShow && responsePlanToShow.sectors ? (SectorsList[sector] |
+        translate) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
+      <p class="col-sm-4">£{{responsePlanToShow && responsePlanToShow.budget &&
+        responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget'] ?
+        (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
+      <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow.budget &&
+        responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
+        (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
     </div>
     <div class="row">
       <p class="col-sm-4"><b>B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
@@ -516,9 +516,6 @@
     <div class="row">
       <p class="col-sm-4"><b>H: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" |
         translate}}</b></p>
-      <!--<p class="col-sm-4">£5,000 ({{responsePlanToShow.budget && responsePlanToShow.budget['item'] ?-->
-        <!--(responsePlanToShow.budget['item'][BudgetCategory.ManagementSupport]['budget']) + '%' :-->
-        <!--"RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate}})</p>-->
       <p class="col-sm-4">£{{totalOfAllCosts}} ({{managementSupportPercentage}})</p>
       <p class="col-sm-4">{{managementSupportNarrative | translate}}</p>
     </div>

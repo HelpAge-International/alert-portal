@@ -42,6 +42,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   // Section 10
   private BudgetCategory = BudgetCategory;
+  private SectorsList = Constants.RESPONSE_PLANS_SECTORS;
   private totalInputs: number;
   private totalOfAllCosts: number;
   private total: number;
