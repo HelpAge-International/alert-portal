@@ -42,13 +42,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   // Section 10
   private BudgetCategory = BudgetCategory;
+  private totalInputs: number;
+  private totalOfAllCosts: number;
+  private total: number;
   private transportBudget: number;
   private securityBudget: number;
   private logisticsAndOverheadsBudget: number;
   private staffingAndSupportBudget: number;
   private monitoringAndEvolutionBudget: number;
   private capitalItemsBudget: number;
-  private managementSupportPercentage: number;
+  private managementSupportPercentage: any;
   private transportNarrative: string;
   private securityNarrative: string;
   private logisticsAndOverheadsNarrative: string;
@@ -167,6 +170,11 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private loadSection10(responsePlan: ResponsePlan) {
 
     if (responsePlan.budget) {
+
+      this.totalInputs = responsePlan.budget['totalInputs'] ? responsePlan.budget['totalInputs'] : 0;
+      this.totalOfAllCosts = responsePlan.budget['totalOfAllCosts'] ? responsePlan.budget['totalOfAllCosts'] : 0;
+      this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
+
       if (responsePlan.budget['item']) {
 
         this.transportBudget = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['budget'] : 0;
@@ -187,7 +195,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         this.capitalItemsBudget = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['budget'] : 0;
         this.capitalItemsNarrative = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
 
-        this.managementSupportPercentage = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['budget'] : 0;
+        this.managementSupportPercentage = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['budget'] + '%' : '0%';
         this.managementSupportNarrative = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
 
       } else {
@@ -207,6 +215,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     this.monitoringAndEvolutionBudget = 0;
     this.capitalItemsBudget = 0;
     this.managementSupportPercentage = 0;
+
+    this.totalInputs = 0;
+    this.totalOfAllCosts = 0;
+    this.total = 0;
 
     this.transportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
     this.securityNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";

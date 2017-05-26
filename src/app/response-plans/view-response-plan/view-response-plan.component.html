@@ -465,8 +465,7 @@
   <div class="Response__content No-indent Response__content--budget Spaced">
     <div class="row">
       <p class="col-sm-4"><b>A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}</b></p>
-      <p class="col-sm-4">£5,000</p>
-      <p class="col-sm-4">Budget narrative goes here</p>
+      <p class="col-sm-4">£{{totalInputs}}</p>
     </div>
     <div class="row">
       <p class="col-sm-4">A-2: Health</p>
@@ -520,12 +519,12 @@
       <!--<p class="col-sm-4">£5,000 ({{responsePlanToShow.budget && responsePlanToShow.budget['item'] ?-->
         <!--(responsePlanToShow.budget['item'][BudgetCategory.ManagementSupport]['budget']) + '%' :-->
         <!--"RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate}})</p>-->
-      <p class="col-sm-4">£5,000 ({{managementSupportPercentage}})</p>
+      <p class="col-sm-4">£{{totalOfAllCosts}} ({{managementSupportPercentage}})</p>
       <p class="col-sm-4">{{managementSupportNarrative | translate}}</p>
     </div>
     <div class="row">
       <p class="col-sm-4"><b>{{"GLOBAL.TOTAL" | translate}}</b></p>
-      <p class="col-sm-4"><b>£80,000</b></p>
+      <p class="col-sm-4"><b>£{{total}}</b></p>
     </div>
 
     <div class="Form-submit__wrapper">
