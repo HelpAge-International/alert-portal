@@ -6,522 +6,107 @@
 
     <div class="Back--button" routerLink="/dashboard">{{"GLOBAL.HOME" | translate}}</div>
 
-    <div class="Header-title__wrap">
-      <h1>{{"RESPONSE_PLANS.VIEW_RESPONSE_PLAN.TITLE_TEXT" | translate}}</h1>
+    <app-view-response-plan></app-view-response-plan>
+
+    <br />
+
+    <div class="Container Grey">
+      <h3>Plan Approval</h3>
+
+      <div class="row Spaced">
+        <div class="col-lg-5">
+          <div class="row Small-spaced">
+            <div class="col-lg-5">
+              <p><b>Partners</b></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Partner 1 (You)</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Partner 1 (You)</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5">
+          <div class="row Small-spaced">
+            <div class="col-lg-5">
+              <p><b>Directors</b></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Country Director</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Regional Director</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Global Director</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1"></div>
+      </div>
+      <div class="Form-submit__wrapper">
+        <div class="btn btn-success btn-continue">Approve Plan</div>
+        <div class="btn btn-danger btn-continue">Reject Plan</div>
+      </div>
+    </div>
+    <div class="Container Blue Bordered">
+      <b>Confirm you want to reject this plan</b>
+      <div class="row Small-spaced">
+        <div class="col-sm-10">
+          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+        </div>
+        <div class="col-sm-2">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="btn btn-primary Full">Confirm</div>
+            </div>
+          </div>
+          <div class="row Small-spaced">
+            <div class="col-sm-12">
+              <div class="btn btn-outline-gray Full">Cancel</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="Ribbon__section__wrap Spaced">
-
-      <!--Response Plan 1/10-->
-      <div class="Ribbon__response" id="Ribbon__response__1">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>1</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="row Spaced">
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_NAME" |
-              translate}}</b></p>
-            <p>Rapid response health, shelter and cash project to 6,000 typhoon affected families</p>
-          </div>
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.GEO_LOCATION" |
-              translate}}</b></p>
-            <p>East Leyte</p>
-          </div>
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
-              translate}}</b></p>
-            <p>Typhoon</p>
-          </div>
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
-              translate}}</b></p>
-            <p>Thomas Williams</p>
-          </div>
-        </div>
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 2/10-->
-      <div class="Ribbon__response" id="Ribbon__response__2">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>2</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="row Spaced">
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
-              | translate}}</b></p>
-            <ol>
-              <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit quisquam, facilis inventore, nemo porro
-                nam eum ullam ea possimus dolorum nihil assumenda placeat libero sed dicta nobis quas aliquid
-                temporibus.
-              </li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati facere, dolores quae sunt quam
-                veniam possimus excepturi reiciendis accusamus atque distinctio vitae asperiores perspiciatis laudantium
-                natus aliquid, facilis nesciunt dolore!
-              </li>
-            </ol>
-          </div>
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
-              | translate}}</b></p>
-            <ol>
-              <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit quisquam, facilis inventore, nemo porro
-                nam eum ullam ea possimus dolorum nihil assumenda placeat libero sed dicta nobis quas aliquid
-                temporibus.
-              </li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati facere, dolores quae sunt quam
-                veniam possimus excepturi reiciendis accusamus atque distinctio vitae asperiores perspiciatis laudantium
-                natus aliquid, facilis nesciunt dolore!
-              </li>
-            </ol>
-          </div>
-          <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
-              | translate}}</b></p>
-            <ol>
-              <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit quisquam, facilis inventore, nemo porro
-                nam eum ullam ea possimus dolorum nihil assumenda placeat libero sed dicta nobis quas aliquid
-                temporibus.
-              </li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati facere, dolores quae sunt quam
-                veniam possimus excepturi reiciendis accusamus atque distinctio vitae asperiores perspiciatis laudantium
-                natus aliquid, facilis nesciunt dolore!
-              </li>
-            </ol>
-          </div>
-        </div>
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 3/10-->
-      <div class="Ribbon__response" id="Ribbon__response__3">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>3</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="Selection-row">
-          <div class="Item__selectable Icon__selectable">
-            <div class="water"></div>
-            <label>WaSH</label></div>
-          <div class="Item__selectable Icon__selectable">
-            <div class="health"></div>
-            <label>Health</label></div>
-        </div>
-
-
-        <div class="form-group">
-          <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
-            translate}}</label>
-        </div>
-
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
-            translate}}</b></p>
-          <p>Current programmes</p>
-        </div>
-
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.METHOD_OF_IMPLEMENTATION" |
-            translate}}</b></p>
-          <p>Directly through field staff</p>
-        </div>
-
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-
-      </div>
-
-
-      <!--Response Plan 4/10-->
-      <div class="Ribbon__response" id="Ribbon__response__4">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>4</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
-            | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum nam, ad placeat animi iste provident modi,
-            accusamus officiis! Dolores eligendi provident molestiae rerum voluptatum explicabo deserunt incidunt fugit,
-            nisi! Soluta?</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
-            | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos vitae, neque modi illo, atque aliquam
-            doloribus magni beatae provident asperiores voluptates reprehenderit eum nulla, aspernatur animi dicta ullam
-            voluptatum cumque?</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_COORDINATION_TEXT?"
-            | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi doloremque quos consectetur dicta
-            molestias totam labore. Velit fuga obcaecati aspernatur, beatae ducimus esse iure tempore laboriosam sint
-            illo, provident placeat.</p>
-        </div>
-
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 5/10-->
-      <div class="Ribbon__response" id="Ribbon__response__5">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>5</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_MANY_BENEFICIARIES?" |
-            translate}}</b></p>
-          <p>75,000 {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.BENEFICIARIES" | translate}}</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
-            translate}}</b></p>
-          <p>Group 1</p>
-          <p>Group 2</p>
-          <p>Group 3</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
-            | translate}}</b></p>
-          <ol>
-            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias iusto incidunt inventore quia
-              corrupti tempore id obcaecati placeat possimus fugit vitae quasi sequi ut ad architecto, quam repellat,
-              aut eius.
-            </li>
-          </ol>
-        </div>
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-
-      <!--Response Plan 6/10-->
-      <div class="Ribbon__response" id="Ribbon__response__6">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>6</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.DESCRIBE_THE_RISKS_TEXT"
-            | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 7/10-->
-      <div class="Ribbon__response" id="Ribbon__response__7">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>7</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent">
-        <div class="Selection-row">
-          <div class="Item__selectable Icon__selectable">
-            <div class="water"></div>
-            <label>WaSH</label></div>
-          <div class="Item__selectable Icon__selectable">
-            <div class="health"></div>
-            <label>Health</label></div>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>ACTIVITY 1</b></p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
-            | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
-            | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
-            translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-            | translate}}</b></p>
-          <div class="row">
-            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
-            <p class="col-sm-3">15,000</p>
-            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} < 18</p>
-            <p class="col-sm-3">11,000</p>
-          </div>
-          <div class="row">
-            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
-            <p class="col-sm-3">30,000</p>
-            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
-            <p class="col-sm-3">25,000</p>
-          </div>
-          <div class="row">
-            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} > 50</p>
-            <p class="col-sm-3">9,000</p>
-            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} > 50</p>
-            <p class="col-sm-3">12,000</p>
-          </div>
-        </div>
-        <hr>
-        <div class="Selection-row">
-          <div class="Item__selectable Icon__selectable">
-            <div class="water"></div>
-            <label>WaSH</label></div>
-          <div class="Item__selectable Icon__selectable">
-            <div class="health"></div>
-            <label>Health</label></div>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>ACTIVITY 2</b></p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>What is the planned activity?</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>Planned outputs for this activity</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>Provide one indicator (KPI) to capture the effects of this activity</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>Beneficiaries of this activity by age and gender</b></p>
-          <div class="row">
-            <p class="col-sm-3">Female < 18</p>
-            <p class="col-sm-3">15,000</p>
-            <p class="col-sm-3">Male < 18</p>
-            <p class="col-sm-3">11,000</p>
-          </div>
-          <div class="row">
-            <p class="col-sm-3">Female 18-50</p>
-            <p class="col-sm-3">30,000</p>
-            <p class="col-sm-3">Male 18-50</p>
-            <p class="col-sm-3">25,000</p>
-          </div>
-          <div class="row">
-            <p class="col-sm-3">Female > 50</p>
-            <p class="col-sm-3">9,000</p>
-            <p class="col-sm-3">Male > 50</p>
-            <p class="col-sm-3">12,000</p>
-          </div>
-        </div>
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 8/10-->
-      <div class="Ribbon__response" id="Ribbon__response__8">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>8</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.DESCRIBE_MON_ACC_LEA" |
-            translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VISUALLY_DOCUMENT?" | translate}}</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-            animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-            magni aliquam minima.</p>
-        </div>
-
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 9/10-->
-      <div class="Ribbon__response" id="Ribbon__response__9">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>9</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Spaced">
-
-        <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT" |
-            translate}}</b></p>
-          <div class="row">
-            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
-            <p class="col-sm-3">15,000</p>
-            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} < 18</p>
-            <p class="col-sm-3">11,000</p>
-          </div>
-          <div class="row">
-            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
-            <p class="col-sm-3">30,000</p>
-            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
-            <p class="col-sm-3">25,000</p>
-          </div>
-          <div class="row">
-            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} > 50</p>
-            <p class="col-sm-3">9,000</p>
-            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} > 50</p>
-            <p class="col-sm-3">12,000</p>
-          </div>
-        </div>
-
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-      <!--Response Plan 10/10-->
-      <div class="Ribbon__response" id="Ribbon__response__10">
-        <div class="Ribbon__header__wrap">
-          <div class="Ribbon__header__number"><span>10</span>{{"GLOBAL.OF" | translate}} 10</div>
-          <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
-            translate}}</h4>
-          <div class="Ribbon__header__status text-primary">Incomplete</div>
-          <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-      <div class="Response__content No-indent Response__content--budget Spaced">
-        <div class="row">
-          <p class="col-sm-4"><b>A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}</b></p>
-          <p class="col-sm-4">£5,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4">A-2: Health</p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4">A-3: Shelter</p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
-            translate}}</b></p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>C: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.SECURITY" |
-            translate}}</b></p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>D: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.LOGISTICS_AND_OVERHEADS" | translate}}</b></p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>E: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.STAFFING_AND_SUPPORT" | translate}}</b></p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>F: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MON_AND_EVALUATION" | translate}}</b></p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>G: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.CAPITAL_ITEMS" |
-            translate}}</b></p>
-          <p class="col-sm-4">£10,000</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>H: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" | translate}}</b></p>
-          <p class="col-sm-4">£5,000 (10%)</p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-        <div class="row">
-          <p class="col-sm-4"><b>{{"GLOBAL.TOTAL" | translate}}</b></p>
-          <p class="col-sm-4"><b>£80,000</b></p>
-          <p class="col-sm-4">Budget narrative goes here</p>
-        </div>
-
-        <div class="Form-submit__wrapper">
-          <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}</div>
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
 
