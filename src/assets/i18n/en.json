@@ -1025,6 +1025,7 @@
   },
   "RESPONSE_PLANS": {
     "TITLE_TEXT": "Response Plans",
+    "NO_INFO_TO_SHOW": "No information to show",
     "ADD_BULLET_POINT": "Add bullet point",
     "HOME": {
       "TITLE": "Scenario Based Response Plans",
@@ -1094,7 +1095,7 @@
         "HOW_MANY_BENEFICIARIES?": "How many beneficiaries are you targeting?",
         "PEOPLE_PER_HOUSEHOLD": "People per household",
         "HOUSEHOLDS": "Households",
-        "BENEFICIARIES": "beneficiairies",
+        "BENEFICIARIES": "Beneficiairies",
         "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaries",
         "WHICH_GROUPS_TEXT?": "Which vulnerable groups are you specifically targeting?",
         "ADD_MORE_GROUPS": "Add more groups to this plan",

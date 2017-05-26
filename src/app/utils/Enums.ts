@@ -195,8 +195,8 @@ export enum MediaFormat {
 }
 
 export enum Gender {
-  feMale = 1,
-  male = 0
+  male = 0,
+  feMale = 1
 }
 
 export enum AgeRange {
