@@ -982,7 +982,11 @@
     "NO_TITLE_ERROR": "Please enter a title for the message",
     "NO_CONTENT_ERROR": "Please add some content to the message",
     "NO_RECIPIENTS_ERROR": "Please select the recipients group",
-    "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)"
+    "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)",
+    "SENT_SUCCESS": "The message has been successfully sent",
+    "DELETE_DIALOG_TITLE": "Alert",
+    "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this message?",
+    "DELETE_SUCCESS": "The message has been successfully deleted"
   },
   "PERMISSIONS": {
     "TITLE": "Permissions",
