@@ -32,6 +32,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private geoMap = new Map();
   private temp = [];
   private preAlertLevel: AlertLevels;
+  private isDirector: boolean;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private alertService: ActionsService) {
   }
@@ -48,6 +49,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
               if (param['id']) {
                 this.alertId = param['id'];
                 this.countryId = param['countryId'];
+                this.isDirector = param['isDirector'];
                 this.loadAlert(this.alertId, this.countryId);
               }
             })
@@ -72,10 +74,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
           this.alertService.getAllLevelInfo(area.affectedCountry)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(geoInfo => {
-              console.log(geoInfo);
               this.geoMap.set(area.affectedCountry, geoInfo);
-              console.log("*****");
-              console.log(this.geoMap.get(0))
             });
         });
       });
@@ -118,8 +117,13 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.loadedAlert.reasonForRedAlert = this.reasonForRedAlert;
     this.loadedAlert.infoNotes = this.infoNotes;
     this.loadedAlert.timeUpdated = Date.now();
+    this.loadedAlert.updatedBy = this.uid;
     if (this.loadedAlert.alertLevel != this.preAlertLevel && this.loadedAlert.alertLevel == AlertLevels.Red) {
-      this.loadedAlert.approvalStatus = AlertStatus.WaitingResponse;
+      if (this.isDirector) {
+        this.loadedAlert.approvalStatus = AlertStatus.Approved;
+      } else {
+        this.loadedAlert.approvalStatus = AlertStatus.WaitingResponse;
+      }
     }
     this.alertService.updateAlert(this.loadedAlert, this.countryId, this.loadedAlert.id);
   }

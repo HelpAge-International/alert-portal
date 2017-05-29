@@ -485,11 +485,23 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
     }
 
+    newResponsePlan.budget["totalInputs"] = this.totalInputs;
+    newResponsePlan.budget["totalOfAllCosts"] = this.totalOfAllCosts;
+    newResponsePlan.budget["total"] = this.totalBudget;
+
     newResponsePlan.totalSections = this.totalSections;
     newResponsePlan.isActive = true;
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
-    newResponsePlan.startDate = Date.now();
+    if (!this.forEditing) {
+      newResponsePlan.startDate = Date.now();
+      newResponsePlan.timeCreated = Date.now();
+      newResponsePlan.createdBy = this.uid;
+    }
+    if (this.forEditing) {
+      newResponsePlan.timeUpdated = Date.now();
+      newResponsePlan.updatedBy = this.uid;
+    }
 
     this.saveToFirebase(newResponsePlan);
   }

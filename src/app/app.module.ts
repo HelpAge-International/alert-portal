@@ -121,6 +121,7 @@ import {NotificationSettingsService} from "./services/notification-settings.serv
 import {ReviewResponsePlanComponent} from './dashboard/review-response-plan/review-response-plan.component';
 import {FacetofaceMeetingRequestComponent} from './dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/country-statistics-ribbon.component';
+import {ViewResponsePlanComponent} from './response-plans/view-response-plan/view-response-plan.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -243,7 +244,8 @@ const firebaseAuthConfig = {
     CountryAgenciesComponent,
     ReviewResponsePlanComponent,
     FacetofaceMeetingRequestComponent,
-    CountryStatisticsRibbonComponent
+    CountryStatisticsRibbonComponent,
+    ViewResponsePlanComponent
   ],
   imports: [
     BrowserModule,

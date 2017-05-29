@@ -13,7 +13,7 @@
           <div class="row">
             <div class="col-md-3 Alert-Widget__item"
                  [class.bg-info]="alert.approvalStatus==0"
-                 [class.bg-warning]="alert.alertLevel==1 && alert.approvalStatus==1"
+                 [class.bg-warning]="alert.alertLevel==1"
                  [class.bg-danger]="alert.alertLevel==2 && alert.approvalStatus==1">
               <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
               <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
@@ -23,7 +23,7 @@
                  class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
               <div>
                 <span>{{"ALERT.RISK" | translate}}:</span>
-                {{HAZARDS[alert.hazardScenario] | translate}}
+                {{HazardScenariosList[alert.hazardScenario] | translate}}
               </div>
             </div>
             <div class="col-md-2 Alert-Widget__item">
@@ -52,8 +52,9 @@
 
 
             <div class="col-md-2 Alert-Widget__item">
-              <span *ngIf="alert.approvalStatus == 0" class="text-danger text-bold">{{"ALERT.RED_ALERT_REQUESTED" | translate}}</span>
-              <button *ngIf="alert.approvalStatus == 1" class="btn btn-outline-primary" (click)="updateAlert(alert.id)">
+              <span *ngIf="alert.approvalStatus == AlertStatus.WaitingResponse" class="text-danger text-bold">{{"ALERT.RED_ALERT_REQUESTED" | translate}}</span>
+              <button *ngIf="alert.approvalStatus != AlertStatus.WaitingResponse" class="btn btn-outline-primary"
+                      (click)="updateAlert(alert.id)">
                 {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
               </button>
             </div>
@@ -83,7 +84,7 @@
                       {{alert.infoNotes}}
                     </p>
                     <p>
-                      <strong>by {{alert.createdByName}}</strong>
+                      <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
                     </p>
                   </div>
                 </div>
@@ -95,152 +96,281 @@
         </div>
       </div>
     </div>
-
+    <!--director alert screen-->
     <div *ngIf="DashboardTypeUsed == DashboardType.director">
-      <div class="Widget Alert-Widget ">
-        <div class="row">
-          <div class="col-md-3 Alert-Widget__item bg-warning">
-            <h4>Amber Alert</h4>
-          </div>
-          <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-            <i div class="Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></i>
-            <div>
-              <span>Risk:</span>
-              Typhoon
-            </div>
-          </div>
-          <div class="col-md-2 Alert-Widget__item">
-            <div>
-              <span>Population affected:</span> 200,000 people
-            </div>
-          </div>
-          <div class="col-md-2 Alert-Widget__item">
-            <div>
-              <span>Affected areas:</span> Leyre and Cebu
-            </div>
-          </div>
-
-          <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
-            <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" data-target="#notes_popover"
-               aria-expanded="false" aria-controls="notes_popover">
-              <div class="fa-stack">
-                <i class="fa fa-comment fa-stack-2x"></i>
-                <i class="fa fa-stack-1x fa-inverse"></i>
+      <div *ngIf="alerts | async as alertList">
+        <div *ngFor="let alert of alertList">
+          <div class="Widget Alert-Widget ">
+            <div class="row">
+              <div class="col-md-3 Alert-Widget__item"
+                   [class.bg-warning]="alert.alertLevel==1"
+                   [class.bg-danger]=" alert.alertLevel==2">
+                <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
+                <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
               </div>
-              <div>Notes</div>
-            </a>
+              <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
+                <i div
+                   class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+                <div>
+                  <span>{{"ALERT.RISK" | translate}}:</span>
+                  {{HazardScenariosList[alert.hazardScenario] | translate}}
+                </div>
+              </div>
+              <div class="col-md-2 Alert-Widget__item">
+                <div>
+                  <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}}
+                  {{"ALERT.PEOPLE"
+                  |
+                  translate}}
+                </div>
+              </div>
+              <div class="col-md-2 Alert-Widget__item">
+                <div>
+                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                </div>
+              </div>
+
+              <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
+                <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                   [attr.data-target]="'#'+alert.id"
+                   aria-expanded="false" [attr.aria-controls]="alert.id">
+                  <div class="fa-stack">
+                    <i class="fa fa-comment fa-stack-2x"></i>
+                    <i class="fa fa-stack-1x fa-inverse"></i>
+                  </div>
+                  <div>{{"GLOBAL.NOTES" | translate}}</div>
+                </a>
+              </div>
+
+
+              <div class="col-md-2 Alert-Widget__item">
+                <!--<span class="text-danger text-bold"></span>-->
+                <button *ngIf="alert.approvalStatus == 0" class="btn btn-outline-primary"
+                        (click)="updateAlert(alert.id)">
+                  {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
+                </button>
+              </div>
+
+            </div>
+
+
+            <div id="{{alert.id}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+              <div class="row Spaced">
+                <div class="col-md-2"></div>
+                <div class="col-md-10">
+                  <div class="row align-items-center Small-spaced no-gutters">
+                    <div class="col-sm-6 col-8">
+                      <h4>{{"ALERT.INFO_AND_NOTES" | translate}}</h4>
+                    </div>
+                    <div class="col-sm-6 col-4 text-right">
+                      <a href="javascript:void(0);"
+                         onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE"
+                        |
+                        translate}}</a>
+                    </div>
+                  </div>
+                  <div class="row no-gutters">
+                    <div class="col-sm-10 col-12 notes-popover__item">
+                      <p>
+                        {{alert.infoNotes}}
+                      </p>
+                      <p>
+                        <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
           </div>
 
-
-          <div class="col-md-2 Alert-Widget__item">
-            <span class="text-danger text-bold"></span>
+          <div class="alert-danger" *ngIf="approveMap.get(alert.id)">
+            <br>
+            <div *ngIf="alert.alertLevel == AlertLevels.Red">
+              <div class="Centered row Spaced-above">
+                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> has requested
+                  the alert
+                  level
+                  to
+                  go from Amber to Red on the <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated |
+                    date:"dd/MM/yyyy"}}</strong></h6>
+              </div>
+              <div class="Centered row Spaced-above">
+                <p class="text-gray-dark text-left col-sm-7"><strong>Reasons for raising the alert level:</strong>
+                  "{{alert?.reasonForRedAlert}}" - {{alert?.createdByName.split(" ")[0]}}</p>
+              </div>
+              <div class="Centered row Spaced">
+                <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
+                        (click)="approveRedAlert(alert.id)">approve red alert
+                  level
+                </button>
+              </div>
+              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">Or reject this
+                request</a></div>
+            </div>
+            <br>
           </div>
-
         </div>
-
-
-        <div id="notes_popover" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-          <div class="row Spaced">
-            <div class="col-md-2"></div>
-            <div class="col-md-10">
-              <div class="row align-items-center Small-spaced no-gutters">
-                <div class="col-sm-6 col-8">
-                  <h4>Information sources and notes</h4>
-                </div>
-                <div class="col-sm-6 col-4 text-right">
-                  <a href="javascript:void(0);"
-                     onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">Close</a>
-                </div>
-              </div>
-              <div class="row no-gutters">
-                <div class="col-sm-10 col-12 notes-popover__item">
-                  <p>
-                    This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in
-                    everyone’s calendar.
-                  </p>
-                  <p>
-                    <strong>by Andrew Collodel</strong>
-                  </p>
-                </div>
-              </div>
-              <div class="row no-gutters">
-                <div class="col-sm-10 col-12  notes-popover__item">
-                  <p>
-                    This is now done. We’ve agreed the quarterly meetings among the team and I’ve booked them in
-                    everyone’s calendar.
-                  </p>
-                  <p>
-                    <strong>by Andrew Collodel</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-
       </div>
+      <div *ngIf="amberAlerts | async as alertList">
+        <div *ngFor="let alert of alertList">
+          <div class="Widget Alert-Widget ">
+            <div class="row">
+              <div class="col-md-3 Alert-Widget__item bg-warning">
+                <h4>{{"ALERT.AMBER_ALERT" | translate}}</h4>
+              </div>
+              <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
+                <i
+                  class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+                <div>
+                  <span>{{"ALERT.RISK" | translate}}:</span>
+                  {{HazardScenariosList[alert.hazardScenario] | translate}}
+                </div>
+              </div>
+              <div class="col-md-2 Alert-Widget__item">
+                <div>
+                  <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}}
+                  {{"ALERT.PEOPLE"
+                  |
+                  translate}}
+                </div>
+              </div>
+              <div class="col-md-2 Alert-Widget__item">
+                <div>
+                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                </div>
+              </div>
 
-      <div class="alert-danger">
-        <br>
-        <div class="Centered row Spaced-above">
-          <h6 class="col-sm-7 text-gray-dark text-center"><strong>Vincent Henson</strong> has requested the alert level
-            to
-            go from Amber to Red on the <strong>29th June 2016</strong></h6>
-        </div>
+              <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
+                <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                   [attr.data-target]="'#'+alert.id"
+                   aria-expanded="false" [attr.aria-controls]="alert.id">
+                  <div class="fa-stack">
+                    <i class="fa fa-comment fa-stack-2x"></i>
+                    <i class="fa fa-stack-1x fa-inverse"></i>
+                  </div>
+                  <div>{{"GLOBAL.NOTES" | translate}}</div>
+                </a>
+              </div>
 
-        <div class="Centered row Spaced-above">
-          <p class="text-gray-dark text-left col-sm-7"><strong>Reasons for raising the alert level:</strong> "The storm
-            has changed direction and is directed towards us. It is moving at a cosniderable speed and should not be
-            ignored." - Vincent</p>
+
+              <div class="col-md-2 Alert-Widget__item">
+                <!--<span class="text-danger text-bold"></span>-->
+                <button class="btn btn-outline-primary"
+                        (click)="updateAlert(alert.id, true)">
+                  {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
+                </button>
+              </div>
+
+            </div>
+
+
+            <div id="{{alert.id}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+              <div class="row Spaced">
+                <div class="col-md-2"></div>
+                <div class="col-md-10">
+                  <div class="row align-items-center Small-spaced no-gutters">
+                    <div class="col-sm-6 col-8">
+                      <h4>{{"ALERT.INFO_AND_NOTES" | translate}}</h4>
+                    </div>
+                    <div class="col-sm-6 col-4 text-right">
+                      <a href="javascript:void(0);"
+                         onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE"
+                        |
+                        translate}}</a>
+                    </div>
+                  </div>
+                  <div class="row no-gutters">
+                    <div class="col-sm-10 col-12 notes-popover__item">
+                      <p>
+                        {{alert.infoNotes}}
+                      </p>
+                      <p>
+                        <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+
+          <div class="alert-info">
+            <br>
+            <div>
+              <div class="row Spaced-above">
+                <h6 class="col-sm-7 text-gray-dark"><strong>{{alert.updatedByName ? alert.updatedByName :
+                  alert.createdByName}}</strong>
+                  has set the alert to Amber Level on
+                  <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated |
+                    date:"dd/MM/yyyy"}}</strong></h6>
+              </div>
+            </div>
+            <br>
+          </div>
         </div>
-        <div class="Centered row Spaced">
-          <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center">approve red alert level
-          </button>
+      </div>
+    </div>
+
+    <!--empty rubber for default dashboard-->
+    <div
+      *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
+      class="Widget">
+      <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+      <div class="My-Tasks container-fluid">
+        <div class="Empty--ribbon">
+          {{"DASHBOARD.EMPTY_DEFAULT" | translate}}
         </div>
-        <div class="Centered row"><a href="#">Or reject this request</a></div>
-        <br>
+      </div>
+    </div>
+
+    <!--empty rubber for director dashboard-->
+    <div *ngIf="responseType?.length == 0 | async">
+      <div
+        *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.director"
+        class="Widget">
+        <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+        <div class="My-Tasks container-fluid">
+          <div class="Empty--ribbon">
+            {{"DASHBOARD.EMPTY_DIRECTOR" | translate}}
+          </div>
+        </div>
       </div>
     </div>
 
     <!--my tasks-->
-
-    <div class="Widget" *ngIf="DashboardTypeUsed == DashboardType.director">
-      <div class="col-sm-5"><h3>My Tasks</h3></div>
+    <div class="Widget"
+         *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
+      <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
-      <div class="row">
-        <div class="col-sm-9">
-          <p class="col-sm-9 margin-bottom-none"><strong>Martin Harris</strong> has submitted a response plan for your
-            approval</p>
-          <p class="col-sm-9 margin-bottom-none"><em>Ancticipatory cash intervention to 5,000 farmers/pastoralists
-            protecting their food...</em></p>
-          <p class="col-sm-9 text-gray-light margin-bottom-none">Submitted 26/04/2016</p>
-        </div>
-        <div class="col-md-3">
-          <button class="btn btn-primary font-weight-normal" routerLink="/director-dashboard/review-response-plan">
-            Review and approve
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div
-      *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0"
-      class="Widget">
-      <h3>My Tasks</h3>
-      <div class="My-Tasks container-fluid">
-        <div class="Empty--ribbon">
-          No actions or indicators assigned to you needs completing this week
+      <div *ngIf="DashboardTypeUsed == DashboardType.director">
+        <div *ngIf="responsePlansForApproval | async as plans">
+          <div class="row" *ngFor="let plan of plans">
+            <div class="col-sm-9">
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div
-      *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 "
-      class="Widget">
-      <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
-      <div class="My-Tasks container-fluid">
+      <div
+        *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ">
 
         <div *ngFor="let action of actionsToday" class="row alert-danger">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
@@ -264,13 +394,6 @@
           </div>
         </div>
 
-        <!--<div class="row alert-danger">-->
-        <!--<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>-->
-        <!--<div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>this-->
-        <!--week</strong>.<span>Request immediate deployment of surge capacity</span></a></div>-->
-        <!--<div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</a></div>-->
-        <!--</div>-->
-
         <div *ngFor="let action of actionsThisWeek" class="row">
           <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
           <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
@@ -291,7 +414,66 @@
         </div>
 
       </div>
+
     </div>
+
+    <!--actions and indicators-->
+    <!--<div-->
+    <!--*ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 "-->
+    <!--class="Widget">-->
+    <!--<h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>-->
+    <!--<div class="My-Tasks container-fluid">-->
+
+    <!--<div *ngFor="let action of actionsToday" class="row alert-danger">-->
+    <!--<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>-->
+    <!--<div class="col-md-8"><a href="">{{getActionTitle(action)}}-->
+    <!--<strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>-->
+    <!--<div class="col-md-3">-->
+    <!--<button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |-->
+    <!--translate}}-->
+    <!--</button>-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--<div *ngFor="let indicator of indicatorsToday" class="row alert-danger">-->
+    <!--<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>-->
+    <!--<div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>-->
+    <!--</div>-->
+    <!--<div class="col-md-3">-->
+    <!--<button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |-->
+    <!--translate}}-->
+    <!--</button>-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--&lt;!&ndash;<div class="row alert-danger">&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class="col-md-8"><a href="">An advanced prepadredness action needs to be completed <strong>this&ndash;&gt;-->
+    <!--&lt;!&ndash;week</strong>.<span>Request immediate deployment of surge capacity</span></a></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class="col-md-3"><a href="#" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">Update</a></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+    <!--<div *ngFor="let action of actionsThisWeek" class="row">-->
+    <!--<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>-->
+    <!--<div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}-->
+    <!--)</strong>.<span>{{action.task}}</span></a></div>-->
+    <!--<div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"-->
+    <!--| translate}}</a>-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--<div *ngFor="let indicator of indicatorsThisWeek" class="row">-->
+    <!--<div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>-->
+    <!--<div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |-->
+    <!--translate}}</strong>.<span>{{indicator?.name}}</span></a>-->
+    <!--</div>-->
+    <!--<div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"-->
+    <!--| translate}}</a>-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--</div>-->
+    <!--</div>-->
 
 
     <div class="Widget-Group" *ngIf="DashboardTypeUsed == DashboardType.default">

@@ -444,11 +444,6 @@
       "AMBER": "Amber Alert",
       "RED": "Red Alert"
     },
-    "ALERTS": {
-      "GREEN": "Green Alert",
-      "AMBER": "Amber Alert",
-      "RED": "Red Alert"
-    },
     "HAZARD_SCENARIOS": {
       "HAZARD_SCENARIO0": "Cold Wave",
       "HAZARD_SCENARIO1": "Conflict",
@@ -1025,6 +1020,7 @@
   },
   "RESPONSE_PLANS": {
     "TITLE_TEXT": "Response Plans",
+    "NO_INFO_TO_SHOW": "No information to show",
     "ADD_BULLET_POINT": "Add bullet point",
     "HOME": {
       "TITLE": "Scenario Based Response Plans",
@@ -1049,6 +1045,9 @@
       "SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE": "Submit without partner validation",
       "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
       "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!"
+    },
+    "VIEW_RESPONSE_PLAN": {
+      "TITLE_TEXT": "Scenario Based Response Plan"
     },
     "CREATE_NEW_RESPONSE_PLAN": {
       "TITLE_TEXT": "Create new scenario based response plan",
@@ -1091,7 +1090,7 @@
         "HOW_MANY_BENEFICIARIES?": "How many beneficiaries are you targeting?",
         "PEOPLE_PER_HOUSEHOLD": "People per household",
         "HOUSEHOLDS": "Households",
-        "BENEFICIARIES": "beneficiairies",
+        "BENEFICIARIES": "Beneficiairies",
         "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaries",
         "WHICH_GROUPS_TEXT?": "Which vulnerable groups are you specifically targeting?",
         "ADD_MORE_GROUPS": "Add more groups to this plan",
@@ -1131,7 +1130,8 @@
         "TITLE_TEXT": "Adjust Beneficiaries for Double Counting",
         "CONFIRM_BENEFICIARIES_TEXT": "Please confirm or adjust the total number of beneficiaries to prevent double counting of individual beneficiaries",
         "TOTAL_BENEFICIARIES": "Total beneficiaries",
-        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting"
+        "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting",
+        "TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT": "Total beneficiaries after adjustment"
       },
       "BUDGET": {
         "TITLE_TEXT": "Budget",
@@ -1279,6 +1279,12 @@
     "TODAY": "today",
     "THIS_WEEK": "this week",
     "MY_TASKS": "My Tasks",
+    "BY":"by",
+    "SUBMITTED":"Submitted",
+    "REVIEW_AND_APPROVE":"Review and approve",
+    "SUBMIT_TO_APPROVE":"has submitted a response plan for your approval",
+    "EMPTY_DEFAULT":"No actions or indicators assigned to you needs completing this week",
+    "EMPTY_DIRECTOR":"No response plans to approve, and no actions or indicators assigned to you needs completing this week",
     "CALENDAR": {
       "SEASONAL_CALENDAR" : "Seasonal Calendar",
       "ADD_TO_CALENDAR": "Add to the calendar",

@@ -83,6 +83,7 @@ import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
 import {ReviewResponsePlanComponent} from "./dashboard/review-response-plan/review-response-plan.component";
 import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
+import {ViewResponsePlanComponent} from "./response-plans/view-response-plan/view-response-plan.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -190,6 +191,7 @@ const routes: Routes = [
   {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
   {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
   {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+  {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
 
 
   /**
@@ -223,6 +225,7 @@ const routes: Routes = [
   {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
   {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
   {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
+  {path: 'response-plans/view-response-plan/view-response-plan', component: ViewResponsePlanComponent},
 
   /**
    * Maps

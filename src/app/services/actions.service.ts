@@ -3,7 +3,7 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import * as moment from "moment";
 import {Observable} from "rxjs/Observable";
-import {ActionLevel, ActionType, AlertLevels} from "../utils/Enums";
+import {ActionLevel, ActionType, AlertLevels, AlertStatus, ApprovalStatus} from "../utils/Enums";
 import {ModelAlert} from "../model/alert.model";
 import {ModelAffectedArea} from "../model/affectedArea.model";
 import {UserService} from "./user.service";
@@ -116,6 +116,9 @@ export class ActionsService {
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.createdBy = alert.createdBy;
+          if (alert.updatedBy) {
+            modelAlert.updatedBy = alert.updatedBy;
+          }
 
           let affectedAreas: ModelAffectedArea[] = [];
           let countries: string[] = Object.keys(alert.affectedAreas);
@@ -142,6 +145,17 @@ export class ActionsService {
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.updatedBy) {
+            this.userService.getUser(alert.updatedBy)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(user => {
+                alert.updatedByName = user.firstName + " " + user.lastName
+              });
+          }
         });
       })
       .do(alertList => {
@@ -195,7 +209,7 @@ export class ActionsService {
         return modelAlert;
       })
       .do(modelAlert => {
-        this.userService.getUser(modelAlert.createdBy)
+        this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
             modelAlert.createdByName = user.firstName + " " + user.lastName
@@ -258,11 +272,112 @@ export class ActionsService {
     updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
+    updateData["updatedBy"] = alert.updatedBy;
     this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId).set(updateData).then(() => {
       this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
     }, error => {
       console.log(error.message);
     });
+  }
+
+  getAlertsForDirectorToApprove(uid, countryId) {
+
+    return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
+      query: {
+        orderByChild: "approval/countryDirector/" + uid,
+        equalTo: AlertStatus.WaitingResponse
+      }
+    })
+      .map(alerts => {
+        console.log(alerts);
+        let alertList = [];
+        alerts.forEach(alert => {
+          let modelAlert = new ModelAlert();
+          modelAlert.id = alert.$key;
+          modelAlert.alertLevel = alert.alertLevel;
+          modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+          modelAlert.infoNotes = alert.infoNotes;
+          modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+          modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.createdBy = alert.createdBy;
+
+          let affectedAreas: ModelAffectedArea[] = [];
+          let countries: string[] = Object.keys(alert.affectedAreas);
+          countries.forEach(country => {
+            let modelAffectedArea = new ModelAffectedArea();
+            modelAffectedArea.affectedCountry = Number(country);
+            modelAffectedArea.affectedLevel1 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level1'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level1'] : -1;
+            modelAffectedArea.affectedLevel2 = alert.affectedAreas[modelAffectedArea.affectedCountry]['level2'] ? alert.affectedAreas[modelAffectedArea.affectedCountry]['level2'] : -1;
+            affectedAreas.push(modelAffectedArea);
+          });
+          modelAlert.affectedAreas = affectedAreas;
+
+          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+
+          alertList.push(modelAlert);
+        });
+        return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          this.userService.getUser(alert.createdBy)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              alert.createdByName = user.firstName + " " + user.lastName
+            });
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          let displayArea: string[] = [];
+          // let displayArea: UpdateArea[] = [];
+          alert.affectedAreas.forEach(area => {
+            if (area.affectedLevel2 && area.affectedLevel2 != -1) {
+              // let temp:UpdateArea = {"country":area.affectedCountry, "level1":-1, "level2":-1};
+
+              displayArea.push(area.affectedLevel2);
+            } else if (area.affectedLevel1 && area.affectedLevel1 != -1) {
+              displayArea.push(area.affectedLevel1);
+            } else {
+              displayArea.push(area.affectedCountry);
+            }
+          });
+          alert.affectedAreasDisplay = displayArea;
+        });
+      });
+  }
+
+  approveRedAlert(countryId, alertId, uid) {
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid).set(AlertStatus.Approved);
+  }
+
+  rejectRedAlert(countryId, alertId, uid) {
+    let update = {};
+    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    this.af.database.object(Constants.APP_STATUS).update(update);
+  }
+
+  getResponsePlanForDirectorToApproval(countryId, uid) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
+      query: {
+        orderByChild: "/approval/countryDirector/" + uid,
+        equalTo: ApprovalStatus.WaitingApproval
+      }
+    }))
+      .map(plans => {
+        plans.forEach(plan => {
+          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              plan["displayName"] = user.firstName + " " + user.lastName;
+            });
+        });
+        return plans;
+      });
   }
 
 
@@ -271,10 +386,4 @@ export class ActionsService {
     this.ngUnsubscribe.complete();
   }
 
-}
-
-interface UpdateArea {
-  country: number;
-  level1: number;
-  level2: number;
 }
