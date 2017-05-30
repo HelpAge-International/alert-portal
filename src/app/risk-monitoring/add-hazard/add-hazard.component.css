@@ -1,0 +1,21 @@
+input.ng-touched.ng-invalid {border:solid red 2px;}
+input.ng-touched.ng-valid {border:solid green 2px;}
+.hideoption { display:none; visibility:hidden; height:0; font-size:0; }
+.customInput{
+    padding: 0.5rem 0.5rem;
+    margin-left: 27px;
+}
+.Small-spaced{
+    margin: 0.3em 0px;
+}
+.text-center {
+    display: flex;
+}
+
+.Color__swatch__check {
+    width: 1.35em;
+    height: 1.35em;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 0.5em;
+    border: solid 2px transparent;}

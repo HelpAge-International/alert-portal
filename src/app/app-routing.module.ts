@@ -181,7 +181,8 @@ const routes: Routes = [
      */
     {path: 'risk-monitoring', component: RiskMonitoringComponent},
     {path: 'risk-monitoring/create-alert', component: CreateAlertRiskMonitoringComponent},
-    {path: 'risk-monitoring/add-indicator', component: AddIndicatorRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-indicator/:hazardID', component: AddIndicatorRiskMonitoringComponent},
     {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
 
     /**
@@ -210,10 +211,10 @@ const routes: Routes = [
     {path: 'map', component: MapComponent},
     {path: 'map/map-countries-list', component: MapCountriesListComponent},
 
-  /*
-  * test
-  * */
-  {path: 'export', component: ExportTestComponent}
+    /*
+    * test
+    * */
+    {path: 'export', component: ExportTestComponent}
 
 ];
 

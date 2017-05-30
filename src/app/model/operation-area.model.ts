@@ -3,8 +3,8 @@ import {AlertMessageModel} from "./alert-message.model";
 
 export class OperationAreaModel extends BaseModel {
     public country: number;
-  public level1: number;
-  public level2: number;
+    public level1: number;
+    public level2: number;
 
     validate(excludedFields = []): AlertMessageModel {
         if (typeof (this.country) == 'undefined' && !this.isExcluded('country', excludedFields)) {
@@ -17,5 +17,11 @@ export class OperationAreaModel extends BaseModel {
             return new AlertMessageModel('ADD_PARTNER.NO_OPERATION_AREA_LEVEL2');
         }
         return null;
+    }
+
+    setData(location) {
+        this.country = location.country;
+        this.level1 = location.level1;
+        this.level2 = location.level2;
     }
 }

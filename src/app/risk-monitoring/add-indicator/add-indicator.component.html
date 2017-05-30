@@ -9,15 +9,14 @@
         <br>
         <div class="Back--button" routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</div>
         <div class="Header-title__wrap">
-            <h1>{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE" | translate}}</h1>
+            <h1 *ngIf="!isEdit">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE" | translate}}</h1>
+            <h1 *ngIf="isEdit">Edit Indicator</h1>
         </div>
 
-        <!--Hazard Dropdown-->
         <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.HAZARD" | translate}}</b></h6>
-        <div class="Spaced-above form-group col-sm-12 row">
-            <select class="form-control col-sm-4" name="hazardID" [(ngModel)] = "indicatorData.category">
-                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                <option *ngFor="let hazardKey of hazardScenariosList" [value]="hazardKey">{{hazardScenario[hazardKey] | translate}}</option>
+        <div class="Spaced-above form-group col-sm-12 row" *ngIf="checkTypeof(indicatorData.category)">
+            <select class="form-control col-sm-4" name="hazardID" (change)="setNewHazardID($event)">
+                <option *ngFor="let hazard of hazards" [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false">{{hazardScenario[hazard.hazardScenario] | translate}}</option>
             </select>
             <span class="col-sm-1"> </span>
             <p class="col-sm-4">{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.HAZARD_NOTE" | translate}}</p>
@@ -32,7 +31,7 @@
         <!--Source of Information-->
         <div class="row Spaced-above"><h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.SOURCE_INFORMATION" | translate}}</b></h6><img src="assets/images/icons/info_source.svg"></div>
 
-        <div class="Spaced-above form-group col-sm-12 row indicator-source">
+        <div class="Spaced-above form-group col-sm-12 row indicator-source" *ngIf="indicatorData.source && indicatorData.source.length > 0">
             <div class="col-sm-12 row" style="padding-top:10px;" *ngFor="let source of indicatorData.source; let sourceKey = index">
                  <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="source.name" placeholder="Name of source">
                 <span class="col-sm-1"></span>
@@ -44,7 +43,7 @@
             <a href="javascript:void(0)" class="Spaced-above" (click)="addAnotherSource()">+ {{"RISK_MONITORING.ADD_INDICATOR.INPUTS.ADD_ANOTHER_SOURCE" | translate}}</a>
         </div>
 
-        <div class="row Spaced"> <!--start of row-->
+        <div class="row Spaced" *ngIf="indicatorData.trigger && indicatorData.trigger.length > 0"> <!--start of row-->
             <div class="col Spaced"><!--Trigger Values-->
                 <div class="row">
                     <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.TRIGGER_VALUES" | translate}}</b></h6>
@@ -89,8 +88,8 @@
         <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.ASSIGN_TO" | translate}}:</b></h6>
         <div class="form-group col-sm-12 row">
             <select class="form-control col-sm-4" id="select1" placeholder="Please select" [(ngModel)]="indicatorData.assignee">
-                <option selected="selected">Please select</option> <!--default select value-->
-                <option *ngFor="let uAssign of usersForAssign">{{uAssign.firstName}}</option>
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option *ngFor="let uAssign of usersForAssign" [value]="uAssign.userID">{{uAssign.firstName}}</option>
             </select>
         </div>
         <br>
@@ -99,24 +98,24 @@
         <h6><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.GEO_LOCATION" | translate}}</b></h6>
         <div class="row" *ngFor="let geoLocationKey of geoLocationList">
              <label for="geoLocation_{{geoLocationKey}}" class="Checkbox--ribbon col-sm-5">
-                <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}" value="{{geoLocationKey}}">{{geoLocation[geoLocationKey] | translate}}
-                <span class="col-sm-9"></span>
+                <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}" value="{{geoLocationKey}}" [checked]="indicatorData.geoLocation == geoLocationKey">{{geoLocation[geoLocationKey] | translate}}
+                    <span class="col-sm-9"></span>
             </label>
         </div>
 
-        <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above" *ngIf="indicatorData.geoLocation">
-            <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+        <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above" *ngIf="indicatorData.geoLocation && indicatorData.affectedLocation && indicatorData.affectedLocation.length > 0">
+             <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
             <div class="col-sm-12 row" *ngFor="let location of indicatorData.affectedLocation; let locationKey = index">
                  <div class="col-sm-3">
                     <div class="form-group-risk-frequency ">
                         <select class="form-control" name="CountryArea"
                                 [(ngModel)] = "location.country">
                             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                            <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] | translate}}</option>
+                            <option *ngFor="let countryKey of countriesList" [ngValue]="countryKey">{{countries[countryKey] | translate}}</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-3" *ngIf="location.country">
+                <div class="col-sm-3" *ngIf="checkTypeof(location.country)">
                     <div class="form-group-risk-frequency ">
                         <select class="form-control" name="CountryAreaLevelOne"
                                 [(ngModel)] = "location.level1">
@@ -124,11 +123,11 @@
                                 {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[0].value | translate }}</option>
                             <option 
                                 *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
-                                [value] = "countryLevel1Value.id">{{countryLevel1Value.value}}</option>
+                                [ngValue] = "countryLevel1Value.id">{{countryLevel1Value.value}}</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-3" *ngIf="location.level1">
+                <div class="col-sm-3" *ngIf="checkTypeof(location.level1)">
                     <div class="form-group-risk-frequency ">
                         <select class="form-control" name="CountryAreaLevelTwo"
                                 [(ngModel)] = "location.level2">
@@ -136,7 +135,7 @@
                                 {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[1].value | translate }}</option>
                             <option 
                                 *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1].levelTwoValues"
-                                [value] = "countryLevel2Value.id">{{countryLevel2Value.value}}</option>
+                                [ngValue] = "countryLevel2Value.id">{{countryLevel2Value.value}}</option>
                         </select>
                     </div>
                 </div>

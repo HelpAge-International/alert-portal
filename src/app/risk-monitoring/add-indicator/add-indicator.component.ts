@@ -4,13 +4,14 @@ import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario, AlertMe
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../model/indicator-source.model";
 import {IndicatorTriggerModel} from "../../model/indicator-trigger.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
 import {ModelUserPublic} from "../../model/user-public.model";
+import {LocalStorageService} from 'angular-2-local-storage';
 @Component({
     selector: 'app-add-indicator',
     templateUrl: './add-indicator.component.html',
@@ -78,17 +79,61 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     ];
 
     private usersForAssign: any = [];
+    private isEdit: boolean = false;
+    private hazardID: any;
+    private indicatorID: any;
+    private url: string;
+    private hazards: Array<any> = [];
+    private hazardsObject: any = {};
 
-    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
+    constructor(
+        private subscriptions: RxHelper,
+        private af: AngularFire,
+        private router: Router,
+        private _commonService: CommonService,
+        private route: ActivatedRoute,
+        private storage: LocalStorageService
+    ) {
         this.initIndicatorData();
     }
 
 
     initIndicatorData() {
-        this.indicatorData = new Indicator();
-        this.addAnotherSource();
-        this.addAnotherLocation();
-        this.addIndicatorTrigger();
+        let subscription = this.route.params.subscribe((params: Params) => {
+            this.indicatorData = new Indicator();
+            if (!params['hazardID']) {
+                console.log('hazardID cannot be empty');
+                this.router.navigate(["/risk-monitoring"]);
+                return false;
+            }
+
+            this.hazardID = params['hazardID'];
+
+            if (params['indicatorID']) {
+                this.isEdit = true;
+                this.hazardID = params['hazardID'];
+                this.indicatorID = params['indicatorID'];
+
+                this.af.auth.subscribe(auth => {
+                    if (auth) {
+                        this.uid = auth.uid;
+                        this.getCountryID().then(() => {
+                            this._getIndicator(this.hazardID, this.indicatorID);
+                        });
+
+                    } else {
+                        this.navigateToLogin();
+                    }
+                });
+
+            } else {
+                this.addAnotherSource();
+                this.addAnotherLocation();
+                this.addIndicatorTrigger();
+            }
+
+        });
+        this.subscriptions.add(subscription);
     }
 
     ngOnInit() {
@@ -96,6 +141,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
             if (auth) {
                 this.uid = auth.uid;
                 this.getCountryID().then(() => {
+                    this._getHazards();
                     this.getUsersForAssign();
                 });
 
@@ -166,27 +212,100 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     }
 
     saveIndicator() {
-
+        if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+            this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
+        }
         this._validateData().then((isValid: boolean) => {
-            console.log(isValid);
             if (isValid) {
                 this.indicatorData.triggerSelected = 0;
-                this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[0].durationType, this.indicatorData.trigger[0].frequencyValue);
+                this.indicatorData.category = parseInt(this.indicatorData.category);
+                this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType, this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue);
                 var dataToSave = this.indicatorData;
 
-                this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.indicatorData.category)
-                    .push(dataToSave)
-                    .then(() => {
-                        this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
-                        this.initIndicatorData();
-                    }).catch((error: any) => {
-                        console.log(error, 'You do not have access!')
-                    });
+                var urlToPush;
+                var urlToEdit;
+
+                if (this.hazardID == 'countryContext') {
+                    urlToPush = Constants.APP_STATUS + '/indicator/' + this.countryID;;
+                    urlToEdit = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.indicatorID;;
+                } else {
+                    urlToPush = Constants.APP_STATUS + '/indicator/' + this.hazardID;
+                    urlToEdit = Constants.APP_STATUS + '/indicator/' + this.hazardID + '/' + this.indicatorID;
+                }
+
+                if (!this.isEdit) {
+                    this.af.database.list(urlToPush)
+                        .push(dataToSave)
+                        .then(() => {
+                            this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
+                            this.indicatorData = new Indicator();
+                            this.addAnotherSource();
+                            this.addAnotherLocation();
+                            this.addIndicatorTrigger();
+                        }).catch((error: any) => {
+                            console.log(error, 'You do not have access!')
+                        });
+                } else {
+                    delete dataToSave.id;
+                    this.af.database.object(urlToEdit)
+                        .set(dataToSave)
+                        .then(() => {
+                            this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
+                            return true;
+                        }).catch((error: any) => {
+                            console.log(error, 'You do not have access!')
+                        });
+                }
+
             }
         });
 
     }
 
+    setNewHazardID(event: any) {
+        var hazardID = event.target.value ? event.target.value : false;
+        if (!hazardID) {
+            console.log('hazardID cannot be empty');
+            return false;
+        }
+        this.hazardID = hazardID;
+        this.indicatorData.hazardScenario = this.hazardsObject[hazardID].hazardScenario;
+    }
+
+    _getHazards() {
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazards: any) => {
+            this.hazards = [];
+            this.hazardsObject = {};
+            for (let hazard in hazards) {
+                hazards[hazard].key = hazard;
+                this.hazards.push(hazards[hazard]);
+                this.hazardsObject[hazard] = hazards[hazard];
+            }
+
+        });
+        this.subscriptions.add(subscription);
+    }
+
+    _getIndicator(hazardID: string, indicatorID: string) {
+
+        //this.indicatorData = new Indicator();
+
+        if (this.hazardID == 'countryContext') {
+            this.url = Constants.APP_STATUS + "/indicator/" + this.countryID + '/' + indicatorID;
+        } else {
+            this.url = Constants.APP_STATUS + "/indicator/" + hazardID + "/" + indicatorID;
+        }
+
+        let subscription = this.af.database.object(this.url).subscribe((indicator: any) => {
+            if (indicator.$value === null) {
+                this.router.navigate(['/risk-monitoring']);
+                return false;
+            }
+            indicator.id = indicatorID;
+            this.indicatorData.setData(indicator);
+        });
+        this.subscriptions.add(subscription);
+    }
 
     _validateData() {
 
@@ -301,6 +420,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
             return false;
         }
         return true;
+    }
+
+    checkTypeof(param: any) {
+        if (typeof (param) == 'undefined') {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private navigateToLogin() {

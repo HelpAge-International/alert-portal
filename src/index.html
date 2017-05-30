@@ -50,6 +50,30 @@
                 $('[data-toggle="popover"]').popover({placement: "right"})
             });
         </script>
+        <script>
+//Note: The main wrappers need to have the class .Accordion__Content for the expand/collapse functions to work
+
+
+            $(document).on('click', '.openall', function (e) {
+                e.preventDefault();
+                $('.Accordion__Content:not(".in")')
+                        .collapse('show');
+            });
+
+
+            $(document).on('click', '.closeall', function (e) {
+                e.preventDefault();
+                $('.Accordion__Content')
+                        .collapse('hide');
+            });
+
+            $(document).on('click', '.closealltooltips', function (e) {
+                e.preventDefault();
+                $('.Tooltip__bubble')
+                        .collapse('hide');
+            });
+
+        </script>
     </body>
 </html>
 

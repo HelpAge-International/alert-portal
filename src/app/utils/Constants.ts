@@ -484,6 +484,20 @@ export class Constants {
         "danger"
     ];
 
+    static SCENARIO_COLORS = [
+        '#D0011B',
+        '#F6A623',
+        '#F8E81C',
+        '#7ED321',
+        '#4990E2',
+        '#50E3C2',
+        '#EA5166',
+        '#64929B',
+        '#417505',
+        '#41749C',
+        '#B8E986',
+        '#9012FE'
+    ];
 }
 
 export enum FILE_SETTING {

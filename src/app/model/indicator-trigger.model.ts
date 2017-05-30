@@ -13,9 +13,15 @@ export class IndicatorTriggerModel extends BaseModel {
         if (!this.frequencyValue && !this.isExcluded('frequencyValue', excludedFields)) {
             return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_TRIGGER_FREQUENCY_VALUE');
         }
-        if (!this.durationType && !this.isExcluded('durationType', excludedFields)) {
+        if (typeof (this.durationType) == 'undefined' && !this.isExcluded('durationType', excludedFields)) {
             return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_TRIGGER_DURATION_TYPE');
         }
         return null;
+    }
+
+    setData(trigger) {
+        this.durationType = trigger.durationType;
+        this.frequencyValue = trigger.frequencyValue;
+        this.triggerValue = trigger.triggerValue;
     }
 }
