@@ -4,11 +4,13 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <div class="Back--button" routerLink="/dashboard">Home</div>
+    <!--<div class="Back&#45;&#45;button" routerLink="/dashboard">Home</div>-->
 
     <div class="Header-title__wrap">
       <h1>Face-to-face meeting request</h1>
-      <button class="btn btn-primary">Create Email</button>
+      <a [attr.href]="emails?'mailto:'+ emails: 'javascript:void(0)'" class="btn btn-primary"
+         (click)="sendEmail()">Create
+        Email</a>
     </div>
     <div class="row">
       <div class="col-sm-12">
@@ -17,35 +19,31 @@
     </div>
 
 
-    <div class="row Spaced Line-row Face-to-face__wrapper">
-      <div class="col-sm-4">
-        <label class="form-check-label V-centered Face-to-face__item">
-          <input type="checkbox" class="form-check-input Face-to-face__item">
-          <img src="assets/images/charities/oxfam.svg" class="Charity__logo Face-to-face__item" alt="">
-          <b class="Face-to-face__item">OCHA</b>
-        </label>
-      </div>
-      <div class="col-sm-8 V-centered Center">
-        <p class="Face-to-face__item__text"><b>Country Director:</b> Nicole Nguyen</p>
+    <div *ngIf="displayList.length > 0; else empty">
+      <div *ngFor="let item of displayList" class="row Spaced Line-row Face-to-face__wrapper">
+        <div class="col-sm-4">
+          <label class="form-check-label V-centered Face-to-face__item">
+            <input type="checkbox" class="form-check-input Face-to-face__item" #selection
+                   (change)="checkAgency(item, selection.checked)">
+            <img height="50" width="100" src="{{item.agencyLogoPath}}" class="Charity__logo Face-to-face__item" alt="">
+            <b class="Face-to-face__item">{{item.agencyName}}</b>
+          </label>
+        </div>
+        <div class="col-sm-8 V-centered Center">
+          <p class="Face-to-face__item__text"><b>Country Director:</b> {{item.countryDirectorName}}</p>
+        </div>
       </div>
     </div>
-    <!--<div class="row Spaced Line-row Face-to-face__wrapper">-->
-    <!--<div class="col-sm-4">-->
-    <!--<label class="form-check-label V-centered Face-to-face__item">-->
-    <!--<input type="checkbox" class="form-check-input Face-to-face__item">-->
-    <!--<img src="assets/images/charities/oxfam.svg" class="Charity__logo Face-to-face__item" alt="">-->
-    <!--<b class="Face-to-face__item">OCHA</b>-->
-    <!--</label>-->
-    <!--</div>-->
-    <!--<div class="col-sm-8 V-centered Center">-->
-    <!--<p class="Face-to-face__item__text"><b>Country Director:</b> Nicole Nguyen</p>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="row Spaced Line-row Face-to-face__wrapper">-->
-    <!--</div>-->
-
   </div>
 </div>
+
+<ng-template #empty>
+  <div class="My-Tasks container-fluid">
+    <div class="Empty--ribbon">
+      No other agencies for this country!!
+    </div>
+  </div>
+</ng-template>
 
 <!--<div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
 <!--aria-hidden="true">-->
