@@ -81,6 +81,7 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
   }
 
   getAllAgencySameCountry(countryId, agencyId) {
+    this.displayList = [];
     this.agencyService.getCountryOffice(countryId, agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(country => {
