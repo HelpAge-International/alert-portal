@@ -116,12 +116,14 @@ import {SessionService} from "./services/session.service";
 import {CommonService} from "./services/common.service";
 import {SettingsService} from "./services/settings.service";
 import {CountryAdminSettingsMenuComponent} from "./country-admin/settings/settings-menu/settings-menu.component";
+import {CountryOfficeProfileMenuComponent} from "./country-admin/country-office-profile/office-profile-menu/office-profile-menu.component";
 import {EnumKeyValuesPipe} from "./utils/pipes/enum-keyValues.pipe";
 import {MessageService} from "./services/message.service";
 import {NotificationSettingsService} from "./services/notification-settings.service";
 import {ReviewResponsePlanComponent} from './director-dashboard/review-response-plan/review-response-plan.component';
 import {FacetofaceMeetingRequestComponent} from './director-dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/country-statistics-ribbon.component';
+import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -171,6 +173,8 @@ const firebaseAuthConfig = {
     CreateEditMpaComponent,
     SettingsMenuComponent,
     CountryAdminSettingsMenuComponent,
+    CountryOfficeProfileMenuComponent,
+    CountryOfficePartnersComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,

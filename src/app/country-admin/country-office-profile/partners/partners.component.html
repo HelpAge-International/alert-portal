@@ -1,0 +1,429 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div (click) = "goBack()" class="Back--button">
+        {{"COUNTRY_ADMIN.STAFF.TITLE_TEXT"| translate}}</div>
+        <div class="Header-title__wrap">
+            <h1 *ngIf="!isEdit">{{"COUNTRY_ADMIN.PARTNER.TITLE_ADD_PARTNER"| translate}}</h1>
+            <h1 *ngIf="isEdit">{{"COUNTRY_ADMIN.PARTNER.TITLE_EDIT_PARTNER"| translate}}</h1>
+            <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartner()">
+              {{"COUNTRY_ADMIN.PARTNER.TITLE_DELETE_PARTNER" | translate}}
+            </button>
+        </div>
+        <form #addPartnerForm (ngSubmit)="submit()" class="Spaced">
+        <div class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="partner-org">{{"COUNTRY_ADMIN.PARTNER.PARTNER_ORGANISATION"| translate}}</label>
+                <select class="form-control" id="partner-org"  name="partnerOrganisation"
+                        [(ngModel)] = "partner.partnerOrganisationId"
+                        (change)="setPartnerOrganisation($event.target.value)">
+                    <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations"
+                        [value] = "partnerOrganisation.id">{{ partnerOrganisation.organisationName }}</option>
+                    <option value="addNewPartnerOrganisation" class="text-primary">+
+                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="Title">{{"GLOBAL.TITLE"| translate}}</label>
+                <select class="form-control" id="Title" [(ngModel)]="userPublic.title" name="title" required #selectTitle>
+                  <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                  <option *ngFor="let title of userTitleSelection" [value]="title">{{userTitle[title]|translate}}
+                  </option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
+                <input type="text" class="form-control" [(ngModel)]="userPublic.firstName" name="firstName" id="f-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME"| translate}}</label>
+                <input type="text" class="form-control" [(ngModel)]="userPublic.lastName"  name="lastName" id="l-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+        </div>
+        <div class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="Position">{{"COUNTRY_ADMIN.STAFF.POSITION"| translate}}</label>
+                <input type="text" class="form-control" [(ngModel)]="partner.position" name="position" id="Position" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
+                <input type="text" class="form-control" [(ngModel)]="userPublic.email" name="email" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+            <div class="col-lg-4 col-md-6 form-group">
+                <label for="l-Name">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
+                <input type="text" class="form-control" [(ngModel)]="userPublic.phone" name="phone" id="l-Name" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+            </div>
+        </div>
+
+        <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
+        <div class="row Spaced">
+            <label *ngFor="let notification of partner?.notificationSettings | keyValues"
+                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+            <input type="checkbox"  name="notifications_{{ notification.key }}"
+                    [(ngModel)] = "partner.notificationSettings[notification.key]">{{notificationsSettingsSelection[notification.key] |
+            translate}}</label>
+        </div>
+
+        <div class="form-group">
+            <label>{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.TITLE"| translate}}</label>
+        </div>
+
+        <div class="Ribbon__section__wrap Spaced">
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__1">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CHS_ACTIONS"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="assignCHS" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.assignCHS" 
+                            (checked) = "partner.permissions.assignCHS">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__2">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.MANDATED_MPA"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                   <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="assignMandatedMpa" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.assignMandatedMpa" 
+                            (checked) = "partner.permissions.assignMandatedMpa">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__3">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customMpaAssigned" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.assign" 
+                            (checked) = "partner.permissions.customMpa.assign">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customMpaNew" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.new" 
+                            (checked) = "partner.permissions.customMpa.new">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customMpaEdit" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.edit" 
+                            (checked) = "partner.permissions.customMpa.edit">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customMpaDelete" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.delete" 
+                            (checked) = "partner.permissions.customMpa.delete">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__2">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.MANDATED_APA"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                   <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="assignMandatedApa" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.assignMandatedApa" 
+                            (checked) = "partner.permissions.assignMandatedApa">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__3">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customApaAssigned" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.assign" 
+                            (checked) = "partner.permissions.customApa.assign">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customApaNew" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.new" 
+                            (checked) = "partner.permissions.customApa.new">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customApaEdit" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.edit" 
+                            (checked) = "partner.permissions.customApa.edit">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="customApaDelete" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.delete" 
+                            (checked) = "partner.permissions.customApa.delete">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__4">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NOTES"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="notesNew" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.notes.new" 
+                            (checked) = "partner.permissions.notes.new">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="notesEdit" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.notes.edit" 
+                            (checked) = "partner.permissions.notes.edit">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="notesDelete" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.notes.delete" 
+                            (checked) = "partner.permissions.notes.delete">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__5">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="contactsNew" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.new" 
+                            (checked) = "partner.permissions.contacts.new">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="contactsEdit" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.edit" 
+                            (checked) = "partner.permissions.contacts.edit">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="contactsDelete" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.delete" 
+                            (checked) = "partner.permissions.contacts.delete">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__5">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="crossCountryAddNote" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.addNote" 
+                            (checked) = "partner.permissions.crossCountry.addNote">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ADD_NOTE"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="crossCountryCopyAction" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.copyAction" 
+                            (checked) = "partner.permissions.crossCountry.copyAction">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.COPY_ACTION"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="crossCountryDownload" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.download" 
+                            (checked) = "partner.permissions.crossCountry.download">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="crossCountryEdit" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.edit" 
+                            (checked) = "partner.permissions.crossCountry.edit">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="crossCountryView" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.view" 
+                            (checked) = "partner.permissions.crossCountry.view">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="crossCountryViewContacts" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.viewContacts" 
+                            (checked) = "partner.permissions.crossCountry.viewContacts">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW_CONTACTS"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__5">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="interAgencyAddNote" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.addNote" 
+                            (checked) = "partner.permissions.interAgency.addNote">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ADD_NOTE"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="interAgencyCopyAction" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.copyAction" 
+                            (checked) = "partner.permissions.interAgency.copyAction">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.COPY_ACTION"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="interAgencyDownload" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.download" 
+                            (checked) = "partner.permissions.interAgency.download">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="interAgencyEdit" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.edit" 
+                            (checked) = "partner.permissions.interAgency.edit">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="interAgencyView" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.view" 
+                            (checked) = "partner.permissions.interAgency.view">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="interAgencyViewContacts" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.viewContacts" 
+                            (checked) = "partner.permissions.interAgency.viewContacts">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW_CONTACTS"| translate}}</label>
+                </div>
+                <div class="Form-submit__wrapper">
+                    <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
+                </div>
+            </div>
+
+            <!--Ribbon Item-->
+            <div class="Ribbon__response" id="Ribbon__response__5">
+                <div class="Ribbon__header__wrap">
+                    <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER"| translate}}</h4>
+                    <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+                </div>
+            </div>
+            <div class="Response__content No-indent Spaced">
+                <div class="row Spaced">
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="otherDownloadDoc" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.other.downloadDoc" 
+                            (checked) = "partner.permissions.other.downloadDoc">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD_DOC"| translate}}</label>
+                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+                        <input type="checkbox" name="otherUploadDoc"
+                            [(ngModel)] = "partner.permissions && partner.permissions.other.uploadDoc" 
+                            (checked) = "partner.permissions.other.uploadDoc">
+                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.UPLOAD_DOC"| translate}}</label>
+                </div>
+            </div>
+        </div>        
+
+        <div class="form-group"><label>{{"COUNTRY_ADMIN.PARTNER.HAS_VALIDATION_PERMISSION"| translate}}</label></div>
+        <div class="row">
+            <label for="VP_no" class="Checkbox--ribbon col-md-1 col-sm-2">
+            <input type="radio" name="hasValidationPermission" id="VP_no" [value]="false" [(ngModel)]="partner.hasValidationPermission">{{"GLOBAL.NO"|
+            translate}}</label>
+        </div>
+        <div class="row">
+            <label for="VP_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
+            <input type="radio" name="hasValidationPermission" id="VP_yes" [value]="true" [(ngModel)]="partner.hasValidationPermission">{{"GLOBAL.YES"|
+            translate}}</label>
+        </div>
+
+        <div class="Form-submit__wrapper">
+          <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+            {{"COUNTRY_ADMIN.PARTNER.SAVE_NEW_PARTNER" | translate | uppercase}}
+          </button>
+          <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+            {{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}
+          </button>
+          <button class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+      </form>
+    </div>
+
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.PARTNER.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PARTNER.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+

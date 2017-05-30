@@ -941,6 +941,9 @@
     "MESSAGES": {
       "TITLE_TEXT": "Country Office Messages"
     },
+    "PROFILE": {
+      "TITLE_TEXT": "Country Office Profile"
+    },
     "VIEW_MY_AGENCY": {
       "TITLE": "Helpage International: Overview",
       "RESPONSE_PLANS": "Response plans",

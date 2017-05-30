@@ -84,6 +84,7 @@ import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-a
 import {ReviewResponsePlanComponent} from "./director-dashboard/review-response-plan/review-response-plan.component";
 import {FacetofaceMeetingRequestComponent} from "./director-dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
 import {DirectorDashboardComponent} from "./director-dashboard/director-dashboard.component";
+import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -179,6 +180,7 @@ const routes: Routes = [
   {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
   {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
+  {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 

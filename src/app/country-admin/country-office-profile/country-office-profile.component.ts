@@ -1,9 +1,12 @@
 import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Observable, Subject} from 'rxjs';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {RxHelper} from '../../utils/RxHelper';
+import {Observable} from 'rxjs';
+
+
+import { AlertMessageModel } from "../../model/alert-message.model";
+import { DisplayError } from "../../errors/display.error";
+import { AlertMessageType } from "../../utils/Enums";
 
 @Component({
   selector: 'app-country-office-profile',
@@ -12,23 +15,12 @@ import {RxHelper} from '../../utils/RxHelper';
 })
 export class CountryOfficeProfileComponent implements OnInit {
 
-	protected subscriptions: RxHelper;
-
-	protected countryId = null;
-	protected obsCountryId: Subject<string> = new Subject();
-	protected countrySelected = false;
+  // Models
+  private alertMessage: AlertMessageModel = null;
+  private alertMessageType = AlertMessageType;
 
   constructor( protected router: Router, protected route: ActivatedRoute) {
-	    this.subscriptions = new RxHelper;
-
-	    let subscription = this.route.params.subscribe((params: Params) => {
-	        if (params['countryId']) {
-	            this.countryId = params['countryId'];
-	            this.obsCountryId.next(this.countryId);
-
-	            this.countrySelected = true;
-	        }
-	    });
+	    
 	}
 
   ngOnInit() {
