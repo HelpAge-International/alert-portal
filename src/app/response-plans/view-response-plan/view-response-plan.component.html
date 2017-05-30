@@ -108,12 +108,9 @@
   </div>
   <div class="Response__content No-indent Spaced">
     <div class="Selection-row">
-      <div class="Item__selectable Icon__selectable">
-        <div class="water"></div>
-        <label>WaSH</label></div>
-      <div class="Item__selectable Icon__selectable">
-        <div class="health"></div>
-        <label>Health</label></div>
+      <div *ngFor="let sector of sectors" class="Item__selectable Icon__selectable">
+        <div [class]="imgNames[sector.id]"></div>
+        <label>{{SECTORS[sector.id] | translate}}</label></div>
     </div>
 
 
@@ -125,13 +122,20 @@
     <div class="Response__rule__seperator col-sm-12">
       <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
         translate}}</b></p>
-      <p>Current programmes</p>
+      <p>{{PresenceInTheCountry[responsePlanToShow.presenceInTheCountry]}}</p>
     </div>
 
     <div class="Response__rule__seperator col-sm-12">
       <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.METHOD_OF_IMPLEMENTATION" |
         translate}}</b></p>
-      <p>Directly through field staff</p>
+      <p>{{MethodOfImplementation[responsePlanToShow.methodOfImplementation]}}</p>
+    </div>
+
+    <div
+      *ngIf="responsePlanToShow.methodOfImplementation == MethodOfImplementation.withPartner && responsePlanToShow.partnerOrganisations"
+      class="Response__rule__seperator col-sm-12">
+      <p><b>Partners</b></p>
+      <p *ngFor="let name of partnerList">{{name}}</p>
     </div>
 
     <div class="Form-submit__wrapper">
@@ -475,7 +479,8 @@
         (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
       <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow.budget &&
         responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
-        (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
+        (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) :
+        ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
     </div>
     <div class="row">
       <p class="col-sm-4"><b>B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |

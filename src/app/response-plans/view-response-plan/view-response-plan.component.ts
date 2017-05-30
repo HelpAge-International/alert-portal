@@ -1,11 +1,12 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
-import {BudgetCategory} from "../../utils/Enums";
+import {BudgetCategory, MethodOfImplementation, PresenceInTheCountry} from "../../utils/Enums";
+import {PartnerModel} from "../../model/partner.model";
 
 @Component({
   selector: 'app-view-response-plan',
@@ -15,6 +16,12 @@ import {BudgetCategory} from "../../utils/Enums";
 
 export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
+  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
+  private PresenceInTheCountry = PresenceInTheCountry;
+  private MethodOfImplementation = MethodOfImplementation;
+
+  private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
+
   // TODO - Update this
   private USER_TYPE: string = 'administratorCountry';
 
@@ -22,7 +29,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private countryId: string;
 
   // TODO - Remove - This id needs to be forwarded from the required component
-  private responsePlanId: string = '-KkQJxlVjMmJS9tXhiiz';
+  // private responsePlanId: string = '-KkQJxlVjMmJS9tXhiiz';
+  @Input() responsePlanId: string;
 
   private responsePlanToShow: ResponsePlan = new ResponsePlan;
 
@@ -34,6 +42,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO -
   // Section 03
+  private sectors: any[];
+  private partnerList: string[] = [];
   // Section 07
 
   // Section 08
@@ -108,7 +118,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlanData() {
-
+    console.log("response plan id: " + this.responsePlanId);
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
 
     this.af.database.object(responsePlansPath)
@@ -139,7 +149,24 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO -
   private loadSection3(responsePlan: ResponsePlan) {
-
+    console.log(responsePlan);
+    if (responsePlan.sectors) {
+      this.sectors = Object.keys(responsePlan.sectors).map(key => {
+        let sector = responsePlan.sectors[key];
+        sector["id"] = key;
+        return sector;
+      });
+    }
+    if (responsePlan.partnerOrganisations) {
+      let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
+      partnerIds.forEach(id => {
+        this.userService.getOrganisationName(id)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(organisation => {
+            this.partnerList.push(organisation.organisationName);
+          })
+      });
+    }
   }
 
   // TODO -
