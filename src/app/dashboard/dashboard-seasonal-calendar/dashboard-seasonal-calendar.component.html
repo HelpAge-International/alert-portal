@@ -33,7 +33,7 @@
           <div class="col-sm-6">
             <div class="form-group">
               <label for="S-name">{{"DASHBOARD.CALENDAR.SEASON_NAME" | translate}}</label>
-              <input type="text" class="form-control form-control-danger" id="S-name" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <input type="text" [(ngModel)]="addSeasonName" class="form-control form-control-danger" id="S-name" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
             </div>
           </div>
         </div>
@@ -41,13 +41,13 @@
           <div class="col-sm-6">
             <div class="form-group">
               <label for="S-date">{{"DASHBOARD.CALENDAR.START_DATE" | translate}}:</label>
-              <input type="date" class="form-control form-control-danger" id="S-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <input type="date" [(ngModel)]="addSeasonStart" class="form-control form-control-danger" id="S-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
               <label for="E-date">{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
-              <input type="date" class="form-control form-control-danger" id="E-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <input type="date" [(ngModel)]="addSeasonEnd" class="form-control form-control-danger" id="E-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
             </div>
           </div>
         </div>
@@ -56,18 +56,7 @@
             <label>{{"DASHBOARD.CALENDAR.COLOUR" | translate}}:</label>
           </div>
           <div class="col-sm-12">
-            <div class="Color__swatch pal__red"></div>
-            <div class="Color__swatch pal__orange"></div>
-            <div class="Color__swatch pal__yellow"></div>
-            <div class="Color__swatch pal__green"></div>
-            <div class="Color__swatch pal__blue"></div>
-            <div class="Color__swatch pal__turquoise"></div>
-            <div class="Color__swatch pal__light-red"></div>
-            <div class="Color__swatch pal__dark-blue"></div>
-            <div class="Color__swatch pal__dark-green"></div>
-            <div class="Color__swatch pal__purple"></div>
-            <div class="Color__swatch pal__light-green"></div>
-            <div class="Color__swatch pal__indigo"></div>
+            <div *ngFor="let x of colours" class="{{x.cssName}} {{x.colorCode == addSeasonColour ? 'Active' : ''}}" (click)="setCurrentColour(x.colorCode)"></div>
           </div>
         </div>
 
@@ -75,7 +64,7 @@
       <div class="modal-footer">
 
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
-        <button type="button" class="btn btn-danger">{{"GLOBAL.DELETE" | translate}}</button>
+        <button type="button" (click)="saveCalendarInfo()" class="btn btn-success" data-dismiss="modal">{{"GLOBAL.SAVE" | translate}}</button>
 
       </div>
     </div>
