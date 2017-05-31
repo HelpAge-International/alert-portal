@@ -2,24 +2,59 @@
  * Created by Sanjaya on 09/03/2017.
  */
 import {ActionType} from '../utils/Enums';
+import {AlertMessageModel} from "./alert-message.model";
+import {BaseModel} from "./base.model";
 
 // TODO - Modify data types when the enums are created
-export class Action {
-  public id: string;
-  public budjet: number;
-  public department: number;
-  public documentId: string;
-  public dueDate: number;
-  public frequencyBase: number;
-  public frequencyValue: number;
-  public isActive: Boolean;
-  public isComplete: Boolean;
-  public level: number;
-  public progressState: number;
-  public requireDoc: Boolean;
-  public task: string;
-  public type: ActionType;
-  public assignHazard: any = [];
-  public asignee: string;
-  public actionStatus: number;
+export class Action extends BaseModel {
+    public id: string;
+    public task: string;
+    public level: number;
+    public department: number;
+    public asignee: string;
+    public dueDate: number;
+    public budjet: number;
+    public requireDoc: Boolean;
+    public documentId: string;
+    public frequencyBase: number;
+    public frequencyValue: number;
+    public isActive: Boolean;
+    public isComplete: Boolean;
+    public progressState: number;
+    public type: ActionType;
+    public assignHazard: any = [];
+    public actionStatus: number;
+
+
+    validate(excludedFields = []): AlertMessageModel {
+        if (!this.task && !this.isExcluded('task', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_TASK');
+        }
+
+        if (typeof (this.level) == 'undefined' && !this.isExcluded('level', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_LEVEL');
+        }
+
+        if (typeof (this.department) == 'undefined' && !this.isExcluded('department', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_DEPARTMENT');
+        }
+
+        if (!this.dueDate && !this.isExcluded('dueDate', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_DUE_DATE');
+        }
+
+        if (!this.budjet && !this.isExcluded('budjet', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_BUDJET');
+        }
+
+        if (typeof (this.requireDoc) == 'undefined' && !this.isExcluded('requireDoc', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_REQUIRE_DOC');
+        }
+
+        return null;
+    }
+
 }
+
+
+
