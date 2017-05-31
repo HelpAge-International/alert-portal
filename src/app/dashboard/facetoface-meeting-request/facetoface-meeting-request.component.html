@@ -1,0 +1,92 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <!--<div class="Back&#45;&#45;button" routerLink="/dashboard">Home</div>-->
+
+    <div class="Header-title__wrap">
+      <h1>Face-to-face meeting request</h1>
+      <a [attr.href]="emails?'mailto:'+ emails: 'javascript:void(0)'" class="btn btn-primary"
+         (click)="sendEmail()">Create
+        Email</a>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <h3><b>Agencies in Phillipines</b></h3>
+      </div>
+    </div>
+
+
+    <div *ngIf="displayList.length > 0; else empty">
+      <div *ngFor="let item of displayList" class="row Spaced Line-row Face-to-face__wrapper">
+        <div class="col-sm-4">
+          <label class="form-check-label V-centered Face-to-face__item">
+            <input type="checkbox" class="form-check-input Face-to-face__item" #selection
+                   (change)="checkAgency(item, selection.checked)">
+            <img height="50" width="100" src="{{item.agencyLogoPath}}" class="Charity__logo Face-to-face__item" alt="">
+            <b class="Face-to-face__item">{{item.agencyName}}</b>
+          </label>
+        </div>
+        <div class="col-sm-8 V-centered Center">
+          <p class="Face-to-face__item__text"><b>Country Director:</b> {{item.countryDirectorName}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #empty>
+  <div class="My-Tasks container-fluid">
+    <div class="Empty--ribbon">
+      No other agencies for this country!!
+    </div>
+  </div>
+</ng-template>
+
+<!--<div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
+<!--aria-hidden="true">-->
+<!--<div class="modal-dialog" role="document">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<h5 class="modal-title" id="exampleModalLabel">Export MPA Notes</h5>-->
+<!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--<span aria-hidden="true">&times;</span>-->
+<!--</button>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+
+<!--<div class="row">-->
+
+<!--<div class="col-lg-6">-->
+<!--<label>From</label>-->
+<!--<select class="form-control">-->
+<!--<option>15/02/2016</option>-->
+<!--<option>16/02/2016</option>-->
+<!--<option>17/02/2016</option>-->
+<!--</select>-->
+<!--</div>-->
+
+<!--<div class="col-lg-6">-->
+<!--<label>To</label>-->
+<!--<select class="form-control">-->
+<!--<option>15/02/2016</option>-->
+<!--<option>16/02/2016</option>-->
+<!--<option>17/02/2016</option>-->
+<!--</select>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<br>-->
+
+<!--<div class="row">-->
+<!--<div class="col-lg-12">-->
+<!--<label>Email Address</label>-->
+<!--<input type="text" class="form-control" placeholder="Email Address">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->

@@ -1,0 +1,163 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Back--button" routerLink="/dashboard">{{"GLOBAL.HOME" | translate}}</div>
+
+    <app-view-response-plan></app-view-response-plan>
+
+    <br />
+
+    <div class="Container Grey">
+      <h3>Plan Approval</h3>
+
+      <div class="row Spaced">
+        <div class="col-lg-5">
+          <div class="row Small-spaced">
+            <div class="col-lg-5">
+              <p><b>Partners</b></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Partner 1 (You)</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Partner 1 (You)</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5">
+          <div class="row Small-spaced">
+            <div class="col-lg-5">
+              <p><b>Directors</b></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Country Director</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Regional Director</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <!-- Plan approval row -->
+          <div class="row Line-row S-small-spaced">
+            <div class="col-lg-5">
+              <p>Global Director</p>
+            </div>
+            <div class="col-lg-5">
+              <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1"></div>
+      </div>
+      <div class="Form-submit__wrapper">
+        <div class="btn btn-success btn-continue">Approve Plan</div>
+        <div class="btn btn-danger btn-continue">Reject Plan</div>
+      </div>
+    </div>
+    <div class="Container Blue Bordered">
+      <b>Confirm you want to reject this plan</b>
+      <div class="row Small-spaced">
+        <div class="col-sm-10">
+          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+        </div>
+        <div class="col-sm-2">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="btn btn-primary Full">Confirm</div>
+            </div>
+          </div>
+          <div class="row Small-spaced">
+            <div class="col-sm-12">
+              <div class="btn btn-outline-gray Full">Cancel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Export MPA Notes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+
+          <div class="col-lg-6">
+            <label>From</label>
+            <select class="form-control">
+              <option>15/02/2016</option>
+              <option>16/02/2016</option>
+              <option>17/02/2016</option>
+            </select>
+          </div>
+
+          <div class="col-lg-6">
+            <label>To</label>
+            <select class="form-control">
+              <option>15/02/2016</option>
+              <option>16/02/2016</option>
+              <option>17/02/2016</option>
+            </select>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <label>Email Address</label>
+            <input type="text" class="form-control" placeholder="Email Address">
+          </div>
+        </div>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

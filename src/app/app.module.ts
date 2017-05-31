@@ -12,7 +12,6 @@ import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {MapComponent} from "./map/map.component";
-import {DirectorDashboardComponent} from "./director-dashboard/director-dashboard.component";
 import {DonorModuleComponent} from "./donor-module/donor-module.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {ForgotPasswordComponent} from "./login/forgot-password/forgot-password.component";
@@ -120,9 +119,10 @@ import {CountryOfficeProfileMenuComponent} from "./country-admin/country-office-
 import {EnumKeyValuesPipe} from "./utils/pipes/enum-keyValues.pipe";
 import {MessageService} from "./services/message.service";
 import {NotificationSettingsService} from "./services/notification-settings.service";
-import {ReviewResponsePlanComponent} from './director-dashboard/review-response-plan/review-response-plan.component';
-import {FacetofaceMeetingRequestComponent} from './director-dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
+import {ReviewResponsePlanComponent} from './dashboard/review-response-plan/review-response-plan.component';
+import {FacetofaceMeetingRequestComponent} from './dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/country-statistics-ribbon.component';
+import {ViewResponsePlanComponent} from './response-plans/view-response-plan/view-response-plan.component';
 import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
 
 export function HttpLoaderFactory(http: Http) {
@@ -155,7 +155,6 @@ const firebaseAuthConfig = {
     RiskMonitoringComponent,
     CountryOfficeProfileComponent,
     MapComponent,
-    DirectorDashboardComponent,
     DonorModuleComponent,
     ForgotPasswordComponent,
     AddAgencyComponent,
@@ -249,7 +248,8 @@ const firebaseAuthConfig = {
     CountryAgenciesComponent,
     ReviewResponsePlanComponent,
     FacetofaceMeetingRequestComponent,
-    CountryStatisticsRibbonComponent
+    CountryStatisticsRibbonComponent,
+    ViewResponsePlanComponent
   ],
   imports: [
     BrowserModule,

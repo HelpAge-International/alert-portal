@@ -81,9 +81,9 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
-import {ReviewResponsePlanComponent} from "./director-dashboard/review-response-plan/review-response-plan.component";
-import {FacetofaceMeetingRequestComponent} from "./director-dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
-import {DirectorDashboardComponent} from "./director-dashboard/director-dashboard.component";
+import {ReviewResponsePlanComponent} from "./dashboard/review-response-plan/review-response-plan.component";
+import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
+import {ViewResponsePlanComponent} from "./response-plans/view-response-plan/view-response-plan.component";
 import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
 
 const routes: Routes = [
@@ -191,13 +191,9 @@ const routes: Routes = [
   {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
   {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
   {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
-
-  /**
-   * Director Dashboard
-   */
-  {path: 'director-dashboard', component: DirectorDashboardComponent},
-  {path: 'director-dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
-  {path: 'director-dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+  {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
+  {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+  {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
 
 
   /**
@@ -231,6 +227,7 @@ const routes: Routes = [
   {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
   {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
   {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
+  {path: 'response-plans/view-response-plan/view-response-plan', component: ViewResponsePlanComponent},
 
   /**
    * Maps
