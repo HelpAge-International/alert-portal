@@ -4,8 +4,7 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import {GenericMpaOrApaAction} from '../../../model/genericMPAAPA';
 import {Constants} from "../../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../../utils/Enums";
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-create-mpa-action',
@@ -25,20 +24,20 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private isMpa: boolean = true;
   private forEditing: Boolean = false;
   private idOfGenericActionToEdit: string;
-  private subscriptions: RxHelper;
   private categorySelected: string;
   private Category = GenericActionCategory;
   private categoriesList = [GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
     GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
     GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.path = Constants.APP_STATUS+"/action/" + auth.uid;
         console.log("uid: " + auth.uid);
@@ -48,7 +47,8 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
       }
     });
 
-    let subscriptionEdit = this.route.params
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -58,13 +58,13 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
           this.idOfGenericActionToEdit = params["id"];
         }
       });
-    this.subscriptions.add(subscription);
-    this.subscriptions.add(subscriptionEdit);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
-
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   onSubmit() {
@@ -94,12 +94,13 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   }
 
   private loadGenericActionInfo(actionId: string) {
-    let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: GenericMpaOrApaAction) => {
+    this.af.database.object(this.path + '/' + actionId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((action: GenericMpaOrApaAction) => {
       this.textArea = action.task;
       this.isMpa = action.level == ActionLevel.MPA ? true : false;
       this.categorySelected = GenericActionCategory[action.category];
     });
-    this.subscriptions.add(subscription);
   }
 
   private addNewGenericAction() {
@@ -140,10 +141,10 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.inactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
   /**

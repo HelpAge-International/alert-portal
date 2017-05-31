@@ -3,8 +3,7 @@ import {AngularFire} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Message} from '../../../model/message';
 import {Constants} from '../../../utils/Constants';
-import {RxHelper} from '../../../utils/RxHelper';
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-create-edit-message',
@@ -36,12 +35,14 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private agencyGroupPath: string;
   private agencyMessageRefPath: string;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
         console.log('uid: ' + this.uid);
@@ -52,12 +53,12 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
     this.msgData = {};
-    this.subscriptions.releaseAll();
   }
 
   onSubmit() {
@@ -72,7 +73,9 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
   private createNewMessage() {
 
-    let subscription = this.af.database.list(this.agencyGroupPath).subscribe(groups => {
+    this.af.database.list(this.agencyGroupPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(groups => {
       if (groups.length == 0) {
         this.errorMessage = "MESSAGES.NO_USERS_IN_GROUP";
         this.showAlert();
@@ -93,7 +96,6 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
           });
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   private addMsgToMessageRef(key: string) {
@@ -103,7 +105,8 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       let agencyAllUsersSelected: string = this.agencyGroupPath + 'agencyallusersgroup/';
       let agencyAllUsersMessageRefPath: string = this.agencyMessageRefPath + 'agencyallusersgroup/';
 
-      let subscription = this.af.database.list(agencyAllUsersSelected)
+      this.af.database.list(agencyAllUsersSelected)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyAllUsersIds => {
           agencyAllUsersIds.forEach(agencyAllUsersId => {
             this.msgData[agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
@@ -115,8 +118,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
           }).catch(error => {
             console.log("Message creation unsuccessful" + error);
           });
-        })
-      this.subscriptions.add(subscription);
+        });
 
     } else {
 
@@ -151,7 +153,9 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       for (let group of this.groups) {
 
         let path = this.agencyGroupPath + group;
-        let subscription = this.af.database.list(path).subscribe(list => {
+        this.af.database.list(path)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(list => {
           list.forEach(item => {
             this.msgData[this.agencyMessageRefPath + group + '/' + item.$key + '/' + key] = this.currentDateTimeInMilliseconds;
           });
@@ -165,17 +169,16 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
             });
           }
         });
-        this.subscriptions.add(subscription);
       }
     }
   }
 
   private showAlert() {
     this.inactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.inactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
   /**

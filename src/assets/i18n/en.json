@@ -1,6 +1,7 @@
 {
     "GLOBAL": {
         "WELCOME": "Welcome",
+        "HOME": "Home",
         "NAME": "Name",
         "TYPE": "Type: ",
         "DELETE": "Delete",
@@ -9,6 +10,9 @@
         "CONTINUE": "Continue",
         "COMPLETE": "Complete",
         "INCOMPLETE": "Incomplete",
+        "ENABLED": "Enabled",
+        "DISABLED": "Disabled",
+        "UPDATE": "Update",
         "OF": "of",
         "CLOSE": "Close",
         "REMOVE": "Remove",
@@ -25,7 +29,7 @@
         "SHOW_ALL": "Show all",
         "SKILLS": "Skills",
         "EDIT_SECTION": "Edit region",
-        "NOTES": "Notes: ",
+        "NOTES": "Notes",
         "FILTER": "Filter: ",
         "ACTIVE": "Active",
         "DEACTIVE": "Deactive",
@@ -46,6 +50,8 @@
         "ADD_IMAGE": "Add an image",
         "NO_CHANGES_MADE": "No changes made",
         "SAVE_CHANGES": "Save changes",
+        "YOUR_NOTIFICATIONS": "Your notifications",
+        "RECEIVED": "Received",
         "CREATE_PASSWORD": "Please create a password",
         "CURRENT_PASSWORD": "Your current password",
         "CONFIRM_PASSWORD": "Confirm your password",
@@ -105,7 +111,8 @@
             "POSTCODE": "Postcode/Zip Code",
             "PHONE": "Phone Number",
             "WEB_ADDRESS": "Website address",
-            "POSITION": "Position"
+            "POSITION": "Position",
+            "TITLE": "Title"
         },
         "USER_TYPE": {
             "ALL_USERS": "All Users",
@@ -431,6 +438,40 @@
         "GEO_LOCATION": {
             "NATIONAL": "National",
             "SUBNATIONAL": "Subnational"
+        },
+        "ALERTS": {
+            "GREEN": "Green Alert",
+            "AMBER": "Amber Alert",
+            "RED": "Red Alert"
+        },
+        "HAZARD_SCENARIOS": {
+            "HAZARD_SCENARIO0": "Cold Wave",
+            "HAZARD_SCENARIO1": "Conflict",
+            "HAZARD_SCENARIO2": "Cyclone",
+            "HAZARD_SCENARIO3": "Drought",
+            "HAZARD_SCENARIO4": "Earthquake",
+            "HAZARD_SCENARIO5": "Epidemic",
+            "HAZARD_SCENARIO6": "Fire",
+            "HAZARD_SCENARIO7": "Flash Flood",
+            "HAZARD_SCENARIO8": "Flood",
+            "HAZARD_SCENARIO9": "Heat Wave",
+            "HAZARD_SCENARIO10": "Heavy Rain",
+            "HAZARD_SCENARIO11": "Humanitarian Access",
+            "HAZARD_SCENARIO12": "Insect Infestation",
+            "HAZARD_SCENARIO13": "Landslide",
+            "HAZARD_SCENARIO14": "Locust Infestation",
+            "HAZARD_SCENARIO15": "Mudslide",
+            "HAZARD_SCENARIO16": "Population Displacement",
+            "HAZARD_SCENARIO17": "Population Return",
+            "HAZARD_SCENARIO18": "Snow Avalanche",
+            "HAZARD_SCENARIO19": "Snowfall",
+            "HAZARD_SCENARIO20": "Storm",
+            "HAZARD_SCENARIO21": "Storm Surge",
+            "HAZARD_SCENARIO22": "Technological Disaster",
+            "HAZARD_SCENARIO23": "Tornado",
+            "HAZARD_SCENARIO24": "Tsunami",
+            "HAZARD_SCENARIO25": "Violent Wind",
+            "HAZARD_SCENARIO26": "Volcano"
         }
     },
     "LOGIN": {
@@ -473,6 +514,8 @@
             "AGENCY_ADMIN_DETAIL": "Agency Administrator Details",
             "SAVE": "Save New Agency",
             "IS_DONOR": "Is this a donor agency?",
+            "VIEW_ALL_NOTIFICATIONS": "View all notifications",
+            "NO_UNREAD_MESSAGES": "No messages to show",
             "NAME_DUPLICATE": "Agency name duplicate - Please chose a different name",
             "NAME_MISSING": "Please enter name of the agency",
             "F_NAME_MISSING": "Please enter agency administrator's first name",
@@ -732,6 +775,12 @@
                 "APA": "APA",
                 "RESPONSE_PLAN": "Response Plan",
                 "HAZARD_DOCUMENT": "Hazard Document"
+            },
+            "NOTIFICATIONS": {
+                "TITLE_TEXT": "Default Notification Settings",
+                "NO_SELECTED_USER_TYPE": "No selected user types",
+                "NOTIFICATION_PERMISSION": "Notification permission",
+                "EVENT": "Event"
             }
         }
     },
@@ -819,10 +868,87 @@
             }
         },
         "SETTINGS": {
-            "TITLE_TEXT": "Country Office Settings"
+            "TITLE_TEXT": "Country Office Settings",
+            "MENU": {
+                "PERMISSIONS": "Permissions",
+                "MODULES": "Modules",
+                "CLOCK_SETTINGS": "Clock settings",
+                "NOTIFICATIONS": "Notifications"
+            },
+            "PERMISSIONS": {
+                "TITLE_TEXT": "Permission settings",
+                "SAVE_PERMISSIONS": "SAVE PERMISSION SETTINGS",
+                "PERMISSION": "Permission",
+                "GRANTED_TO": "Granted to",
+                "ACTIONS": "Actions",
+                "SELECT_USER_TYPE": "Select user type"
+            },
+            "MODULES": {
+                "TITLE_TEXT": "Module Settings",
+                "MODULE": "Module",
+                "PRIVACY_SETTINGS": "Privacy settings",
+                "STATUS": "Status",
+                "SAVE_MODULES": "Save module settings",
+                "SAVED_SUCCESS": "Module Settings successfully saved",
+                "NO_PRIVACY": "Please select the privacy setting",
+                "NO_STATUS": "Please select the status"
+            },
+            "CLOCK_SETTINGS": {
+                "TITLE_TEXT": "Clock settings",
+                "SAVE_SETTINGS": "Save clock settings",
+                "RISK_MONITORING": "Risk Monitoring",
+                "RISK_MONITORING_SHOW_LOGS": "Initially show log from the past:",
+                "RISK_MONITORING_HAZARD_VALID": "Hazards will remain valid for:",
+                "PREPAREDNESS": "Preparedness",
+                "PREPAREDNESS_MPA": "MPA's will remain green for:",
+                "RESPONSE_PLANS": "Response plans",
+                "RESPONSE_PLANS_STATE": "Response plans will remain in an approved state for:",
+                "SAVED_SUCCESS": "Clock Settings successfully saved",
+                "NO_DURATION": "Please enter the duration",
+                "NO_PREPAREDNESS_DURATION": "Please enter the preparedness duration",
+                "NO_RESPONSE_PLANS_DURATION": "Please enter the response plans duration",
+                "NO_RISK_MONITORING_DURATION": "Please enter the risk monitoring duration"
+            },
+            "NOTIFICATIONS": {
+                "TITLE_TEXT": "Default Notification settings",
+                "SAVE_SETTINGS": "Save notification settings",
+                "EVENTS": "Events",
+                "USERS_NOTIFIED": "Users notified",
+                "ACTIONS": "Actions",
+                "NOTIFICATION": "Notification",
+                "SELECT_USER_TYPE": "Select user types",
+                "SAVED_SUCCESS": "Notification Settings successfully saved",
+                "EXTERNAL_NOTIFICATIONS": "External Notifications",
+                "NO_EXTERNAL_RECIPIENTS": "No external recipients",
+                "ADD_RECIPIENT": "Add external recipient",
+                "EDIT_RECIPIENT": "Edit external recipient",
+                "DELETE_RECIPIENT": "Delete recipient",
+                "RECIPIENT_NAME": "Name",
+                "RECIPIENT_ORGANISATION": "Organisation",
+                "NO_ORGANISATION": "Please enter the Organisation",
+                "SAVE_RECIPIENT": "Save external recipient",
+                "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved",
+                "RECIPIENT_NOT_FOUND": "Cannot find external recipient",
+                "DELETE_DIALOG_TITLE": "Delete Recipient",
+                "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this recipient?",
+                "SUCCESS_DELETED": "The external recipient was successfully deleted"
+            }
         },
         "MESSAGES": {
             "TITLE_TEXT": "Country Office Messages"
+        },
+        "PROFILE": {
+            "TITLE_TEXT": "Country Office Profile",
+            "MENU": {
+                "PROGRAMME": "Programme",
+                "OFFICE_CAPACITY": "Office capacity",
+                "PARTNERS": "Partners",
+                "EQUIPMENT": "Equipment",
+                "COORDINATION": "Coordination",
+                "STOCK_CAPACITY": "Stock Capacity",
+                "DOCUMENTS": "Documents",
+                "CONTACTS": "Contacts"
+            }
         },
         "VIEW_MY_AGENCY": {
             "TITLE": "Helpage International: Overview",
@@ -865,13 +991,53 @@
         "NO_TITLE_ERROR": "Please enter a title for the message",
         "NO_CONTENT_ERROR": "Please add some content to the message",
         "NO_RECIPIENTS_ERROR": "Please select the recipients group",
-        "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)"
+        "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)",
+        "SENT_SUCCESS": "The message has been successfully sent",
+        "DELETE_DIALOG_TITLE": "Alert",
+        "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this message?",
+        "DELETE_SUCCESS": "The message has been successfully deleted"
+    },
+    "PERMISSIONS": {
+        "TITLE": "Permissions",
+        "CHS_ACTIONS": "CHS Actions",
+        "MANDATED_MPA": "Mandated MPA",
+        "CUSTOM_MPA": "Custom MPA",
+        "MANDATED_APA": "Mandated APA",
+        "CUSTOM_APA": "Custom APA",
+        "NOTES": "Notes",
+        "COUNTRY_CONTACTS": "Country Contacts",
+        "CROSS_COUNTRY": "Cross Country ( same agency )",
+        "INTER_AGENCY": "Inter-agency and cross country ( Full Access ) - Platform testing and restricted on configuration and access request",
+        "OTHER": "Other permissions",
+        "ASSIGN": "Assign",
+        "NEW": "New",
+        "EDIT": "Edit",
+        "DELETE": "Delete",
+        "ADD_NOTE": "Add note",
+        "COPY_ACTION": "Copy action",
+        "DOWNLOAD": "Download",
+        "VIEW": "View",
+        "VIEW_CONTACTS": "View contacts",
+        "DOWNLOAD_DOC": "Download documents",
+        "UPLOAD_DOC": "Upload documents",
+        "SAVED_PERMISSIONS": "Permission settings successfully saved",
+        "NO_CSH_ACTIONS": "Please select permission for CHS Actions",
+        "NO_MANDATED_APA_ASSIGN": "Please select permission for Mandated APA",
+        "NO_MANDATED_MPA_ASSIGN": "Please select permission for Mandated MPA",
+        "NO_COUNTRY_CONTACTS": "Please select permission for Country Contacts",
+        "NO_CROSS_COUNTRY": "Please select permission for Cross Country",
+        "NO_CUSTOM_APA": "Please select permission for Custom APA",
+        "NO_CUSTOM_MPA": "Please select permission for Custom MPA",
+        "NO_INTER_AGENCY": "Please select permission for Inter Agency",
+        "NO_NOTES": "Please select permission for Notes",
+        "NO_OTHER": "Please select permission for Others"
     },
     "AGENCY_HOME": {
         "AGENCY_ADMIN": "Agency Admin"
     },
     "RESPONSE_PLANS": {
         "TITLE_TEXT": "Response Plans",
+        "NO_INFO_TO_SHOW": "No information to show",
         "ADD_BULLET_POINT": "Add bullet point",
         "HOME": {
             "TITLE": "Scenario Based Response Plans",
@@ -897,10 +1063,14 @@
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
             "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!"
         },
+        "VIEW_RESPONSE_PLAN": {
+            "TITLE_TEXT": "Scenario Based Response Plan"
+        },
         "CREATE_NEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Create new scenario based response plan",
             "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
             "EDIT_RESPONSE_PLAN": "Edit response plan",
+            "NO_COMPLETED_SECTIONS": "Please complete at least one section to create a response plan",
             "PLAN_DETAILS": {
                 "TITLE_TEXT": "Plan Details",
                 "PLAN_NAME": "Plan name",
@@ -937,7 +1107,7 @@
                 "HOW_MANY_BENEFICIARIES?": "How many beneficiaries are you targeting?",
                 "PEOPLE_PER_HOUSEHOLD": "People per household",
                 "HOUSEHOLDS": "Households",
-                "BENEFICIARIES": "beneficiairies",
+                "BENEFICIARIES": "Beneficiairies",
                 "ADD_A_NOTE_ABOUT_BENEFICIARIES": "Add a note about how you calculated the number of beneficiaries",
                 "WHICH_GROUPS_TEXT?": "Which vulnerable groups are you specifically targeting?",
                 "ADD_MORE_GROUPS": "Add more groups to this plan",
@@ -977,7 +1147,8 @@
                 "TITLE_TEXT": "Adjust Beneficiaries for Double Counting",
                 "CONFIRM_BENEFICIARIES_TEXT": "Please confirm or adjust the total number of beneficiaries to prevent double counting of individual beneficiaries",
                 "TOTAL_BENEFICIARIES": "Total beneficiaries",
-                "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting"
+                "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting",
+                "TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT": "Total beneficiaries after adjustment"
             },
             "BUDGET": {
                 "TITLE_TEXT": "Budget",
@@ -996,35 +1167,6 @@
                     "MANAGEMENT_SUPPORT": "Management support"
                 }
             }
-        },
-        "HAZARD_SCENARIOS": {
-            "HAZARD_SCENARIO0": "Cold Wave",
-            "HAZARD_SCENARIO1": "Conflict",
-            "HAZARD_SCENARIO2": "Cyclone",
-            "HAZARD_SCENARIO3": "Drought",
-            "HAZARD_SCENARIO4": "Earthquake",
-            "HAZARD_SCENARIO5": "Epidemic",
-            "HAZARD_SCENARIO6": "Fire",
-            "HAZARD_SCENARIO7": "Flash Flood",
-            "HAZARD_SCENARIO8": "Flood",
-            "HAZARD_SCENARIO9": "Heat Wave",
-            "HAZARD_SCENARIO10": "Heavy Rain",
-            "HAZARD_SCENARIO11": "Humanitarian Access",
-            "HAZARD_SCENARIO12": "Insect Infestation",
-            "HAZARD_SCENARIO13": "Landslide",
-            "HAZARD_SCENARIO14": "Locust Infestation",
-            "HAZARD_SCENARIO15": "Mudslide",
-            "HAZARD_SCENARIO16": "Population Displacement",
-            "HAZARD_SCENARIO17": "Population Return",
-            "HAZARD_SCENARIO18": "Snow Avalanche",
-            "HAZARD_SCENARIO19": "Snowfall",
-            "HAZARD_SCENARIO20": "Storm",
-            "HAZARD_SCENARIO21": "Storm Surge",
-            "HAZARD_SCENARIO22": "Technological Disaster",
-            "HAZARD_SCENARIO23": "Tornado",
-            "HAZARD_SCENARIO24": "Tsunami",
-            "HAZARD_SCENARIO25": "Violent Wind",
-            "HAZARD_SCENARIO26": "Volcano"
         }
     },
     "SECTORS": {
@@ -1129,18 +1271,53 @@
     },
     "ALERT": {
         "AMBER_ALERT": "Amber Alert",
-        "RED_ALERT": "Red ALert",
+        "RED_ALERT": "Red Alert",
         "RISK": "Risk",
         "PEOPLE": "People",
-        "POPULATION_AFFECTED": "Population affected",
-        "AFFECTED_AREAS": "Affected areas",
+        "POPULATION_AFFECTED": "Estimated population affected",
+        "AFFECTED_AREAS": "Affected area(s)",
         "RED_ALERT_REQUESTED": "Red Alert Requested",
-        "INFO_AND_NOTES": "Information sources and notes"
+        "INFO_AND_NOTES": "Information sources and notes",
+        "CHANGE_LEVEL": "Change Alert Level",
+        "SELECT_ALERT_LEVEL": "Select the Alert Level",
+        "GREEN_ALERT_LEVEL": "Green Alert Level",
+        "AMBER_ALERT_LEVEL": "Amber Alert Level",
+        "RED_ALERT_LEVEL": "Red Alert Level",
+        "REASON_FOR_RED_ALERT": "Reason for red alert request",
+        "ADD_ANOTHER_LOCATION": "Add another location",
+        "CONFIRM_ALERT_LEVEL": "Confirm alert level",
+        "UPDATE_ALERT_LEVEL": "Update alert level",
+        "LAST_UPDATED": "Last updated"
     },
     "DASHBOARD": {
         "RISK_MONITORING": "Risk Monitoring",
         "INDICATORS": "indicators",
-        "CONTEXT": "Context"
+        "CONTEXT": "Context",
+        "TODAY": "today",
+        "THIS_WEEK": "this week",
+        "MY_TASKS": "My Tasks",
+        "BY": "by",
+        "SUBMITTED": "Submitted",
+        "REVIEW_AND_APPROVE": "Review and approve",
+        "SUBMIT_TO_APPROVE": "has submitted a response plan for your approval",
+        "EMPTY_DEFAULT": "No actions or indicators assigned to you needs completing this week",
+        "EMPTY_DIRECTOR": "No response plans to approve, and no actions or indicators assigned to you needs completing this week",
+        "CALENDAR": {
+            "SEASONAL_CALENDAR": "Seasonal Calendar",
+            "ADD_TO_CALENDAR": "Add to the calendar",
+            "VIEW_AS_WEEKS": "View as weeks",
+            "VIEW_AS_MONTHS": "View as months",
+            "ADD_SEASON": "Add season to the calendar",
+            "SEASON_NAME": "Season Name",
+            "START_DATE": "Start Date",
+            "END_DATE": "End Date",
+            "COLOUR": "Colour"
+        }
+    },
+    "DIRECTOR_DASHBOARD": {
+        "INTER_AGENCIES_COLLABORATION": "Inter-agencies collaboration",
+        "AGENCIES_IN": "Agencies in",
+        "MEETING_REQUEST": "Meeting request"
     },
     "RISK_MONITORING": {
         "ADD_INDICATOR": {
@@ -1188,7 +1365,8 @@
                 "INFORMATION_SOURCE_NOTES": "Information sources and notes",
                 "ADD_ANOTHER_AREAS": "Add another areas"
             },
-            "CONFIRM_ALERT_LEVEL": "Confirm alert level"
+            "CONFIRM_ALERT_LEVEL": "Confirm alert level",
+            "ERROR_ONLY_NUMBERS" : "Please enter only numbers for this field."
         },
         "ADD_HAZARD": {
             "NO_HAZARD": "Please select hazard",

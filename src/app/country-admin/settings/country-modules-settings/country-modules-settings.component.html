@@ -1,3 +1,47 @@
-<p>
-  country-modules-settings works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-country-admin-settings-menu></app-country-admin-settings-menu>
+
+    <form (ngSubmit)="submit()">
+        <div class="Header-title__wrap">
+            <h2>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.TITLE_TEXT" | translate}}</h2>
+            <button type="button" class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>  
+            <button type="submit" class="btn btn-primary" (click)="validateForm()">{{ "COUNTRY_ADMIN.SETTINGS.MODULES.SAVE_MODULES" | translate}}</button> 
+        </div>
+
+        <div class="Spaced">
+        <div class="row Spaced">
+            <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.MODULE" | translate}}</p></b></div>
+            <div class="col-sm-6"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.PRIVACY_SETTINGS" | translate}}</p></b></div>
+            <div class="col-sm-2"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.STATUS" | translate}}</p></b></div>
+        </div>
+        <!-- Row -->
+        <div class="row Spaced Line-row" *ngFor="let module of moduleSettings | keyValues">
+            <div class="col-sm-4">
+                <p>{{ moduleName[module.key] | translate }}</p>
+            </div>
+            <div class="col-sm-6">
+                <div class="Radio__button--js Alt-hover">
+                    <button class="btn" type="button" name="privacy_module_{{module.key}}"
+                        *ngFor="let privacy of privacyOptions | enumKeys"
+                        [class.btn-primary]="privacy == privacyOptions[module.value.privacy]"
+                        [class.btn-outline-primary] = "privacy != privacyOptions[module.value.privacy]"
+                        (click) = "setModulePrivacy(module.value, privacyOptions[privacy])">{{ privacy }}</button>
+
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <p *ngIf="module.value.status">{{ "GLOBAL.ENABLED" | translate }}</p>
+                <p *ngIf="!module.value.status">{{ "GLOBAL.DISABLED" | translate }}</p>
+            </div>
+        </div>
+        </div>
+    </form>
+  </div>
+</div>

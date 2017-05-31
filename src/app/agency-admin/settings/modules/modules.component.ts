@@ -1,16 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable} from 'rxjs';
-import {RxHelper} from '../../../utils/RxHelper';
 import {Privacy} from "../../../utils/Enums";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-modules',
   templateUrl: './modules.component.html',
   styleUrls: ['./modules.component.css']
 })
+
 export class ModulesComponent implements OnInit, OnDestroy {
 
   MODULE_NAME = Constants.MODULE_NAME;
@@ -19,7 +19,6 @@ export class ModulesComponent implements OnInit, OnDestroy {
   private Network = Privacy.Network;
 
   private uid: string = "";
-  private subscriptions: RxHelper;
   private modules: any[] = [];
   private saved: boolean = false;
 
@@ -27,22 +26,23 @@ export class ModulesComponent implements OnInit, OnDestroy {
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private af: AngularFire, private router: Router) {
-    this.subscriptions = new RxHelper;
   }
 
   ngOnInit() {
-  	let subscription = this.af.auth.subscribe(auth => {
+  	this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        let skillsSubscription = this.af.database.list(Constants.APP_STATUS+'/module/' + this.uid).subscribe(_ => {
+        this.af.database.list(Constants.APP_STATUS+'/module/' + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(_ => {
         	this.modules = _;
         	_.map(module => {
         	});
         });
 
-        this.subscriptions.add(skillsSubscription);
-		this.subscriptions.add(subscription);
       } else {
         // user is not logged in
         console.log('Error occurred - User is not logged in');
@@ -53,7 +53,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
 	try{
-  		this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   	} catch(e){
   		console.log('Unable to releaseAll');
   	}
@@ -78,9 +79,9 @@ export class ModulesComponent implements OnInit, OnDestroy {
   private saveChanges(){
   	var moduleItems = {};
   	var modules = this.modules.map((module, index) => {
-  		
+
   		moduleItems[index] = this.modules[index];
-  		
+
   		return this.modules[index];
   	});
 

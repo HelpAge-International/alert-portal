@@ -1,0 +1,137 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        
+        <app-country-office-profile-menu></app-country-office-profile-menu>
+
+        <div class="Header-title__wrap Spaced row">
+            <h2 class="col-sm-4">Partners</h2>
+            <div class="col-sm-8 Right-aligned"><button type="button" class="btn btn-outline-primary text-uppercase">edit partners</button></div>
+        </div>
+
+        <!--Filter-->
+        <h3 class="Spaced-above">Current Implementing partners</h3>
+        <div class="row Spaced padding-left-two">
+            <label class="col-sm-0 Spaced-above">Filter:</label>
+            <div class="form-group-country-office-profile col-sm-3">
+                <select class="form-control" id="select1">
+                    <option>Sector</option>
+                    <option>WaSH</option>
+                    <option>Health</option>
+                    <option>Shelter</option>
+                    <option>Nutrition</option>
+                    <option>Food security & livelihoods</option>
+                    <option>Protection</option>
+                    <option>Education</option>
+                    <option>Camp management</option>
+                </select>
+            </div>
+            <div class="form-group-country-office-profile col-sm-3">
+                <select class="form-control" id="select1">
+                    <option>Area of operation</option>
+                    <option>Cebu</option>
+                    <option>Leyte</option>
+                    <option>Lloilo</option>
+                </select>
+            </div>
+            <div class="form-group-country-office-profile col-sm-3">
+                <select class="form-control" id="select1">
+                    <option>Organisation</option>
+                    <option>COSE</option>
+                    <option>Apalit Christian Community Health Center Foundation</option>
+                </select>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+        <div class="row Spaced-above font-weight-bold">
+            <p class="col-sm-1">Updated</p>
+            <p class="col-sm-2">Organisation</p>
+            <p class="col-sm-2">Relationship</p>
+            <p class="col-sm-4">Areas of operation</p>
+            <p class="col-sm-2">Status</p>
+        </div>
+        <div class="row Line-row"></div>
+
+        <!--COSE-->
+        <div class="row Spaced-above" *ngFor="let partner of partners">
+            <p class="col-sm-1">02/17</p> <!--Updated-->
+            <p class="col-sm-2">{{ partnerOrganisations[partner.partnerOrganisationId]?.organisationName }}</p> <!--Organisation-->
+            <p class="col-sm-2">{{ partnerOrganisations[partner.partnerOrganisationId]?.relationship }}</p> <!--Relationship-->
+            <p class="col-sm-2">Leyte, Cebu, Lloilo</p> <!--Areas of operation-->
+
+            <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg" alt="Partnership details info">
+                <a href="#partnerDetailsOne" data-toggle="collapse" class="margin-left-one">Partnership details</a>
+            </div>
+
+            <p class="col-sm-2">Awaiting validation</p> <!--Status-->
+            <div class="col-sm-1">
+                <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+                <p class="notes-number__components--country-office-profile">1</p>
+                <a href="#notesOne" data-toggle="collapse" class="row margin-left-one-half">Notes</a></div> <!--Notes-->
+        </div>
+        <div class="row Line-row Spaced-above"></div>
+
+
+        <!--COSE Partnership Details tooltip-->
+        <div class="Tooltip__bubble container-fluid Blue info log collapse" id="partnerDetailsOne" data-parent="#partnerDetailsOne" aria-controls="partnerDetailsOne">
+            <div class="log_left row Spaced-above">
+                <h3 class="col-sm-4 text-right">Partnership details</h3>
+                <a href="#partnerDetailsOne" data-toggle="collapse" class="margin-left-five text-right col-sm-6">Close</a>
+            </div>
+            <div class="Spaced">
+                <div class="row">
+                    <div class="col-sm-3 text-center margin-left-two"><strong>Projects</strong></div>
+                </div>
+
+                <!--Border box-->
+                <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above">
+                    <div class="row">
+                        <p class="col-sm-3 Spaced-above font-weight-bold">Sectors</p>
+                        <div class="col-sm-0">
+                            <div class="col-sm-0 Spaced-above"><img src="assets/images/select_icon/water.svg" alt="WaSH"><p>WaSH</p></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <p class="col-sm-3 font-weight-bold">Sectors</p>
+                        <div class="col-sm-0"><p>Food security. School lunch programme</p></div>
+                    </div>
+
+                    <div class="row">
+                        <p class="col-sm-3 font-weight-bold">Project end date</p>
+                        <div class="col-sm-0"><p>03/18</p></div>
+                    </div>
+                </div> <!--border box end-->
+
+                <br>
+                <h3 class="col-sm-4 margin-left-six Spaced-above">Partner Contact Details</h3>
+
+                <div class="row">
+                    <div class="col-sm-3 margin-left-ten"><strong>Contact's Name</strong></div>
+                    <p class="col-sm-0">Christopher Rodriguez</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-3 margin-left-ten"><strong>Contact's Position</strong></div>
+                    <p class="col-sm-0">Head of human resources</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-3 margin-left-ten"><strong>Contact's Email</strong></div>
+                    <p class="col-sm-0">c.rodriguez@charity.org</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-3 margin-left-ten"><strong>Contact's Telephone</strong></div>
+                    <p class="col-sm-0">+692138858881</p>
+                </div>
+
+            </div>
+        </div>
+        <!--COSE Partnership Details tooltip End-->
+    </div>
+</div>

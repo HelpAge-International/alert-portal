@@ -10,8 +10,7 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
 import {PersonTitle, Country} from "../../utils/Enums";
-import {RxHelper} from "../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
 declare var jQuery: any;
 
@@ -46,25 +45,26 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private userPublic: ModelUserPublic;
   private adminId: string;
-  private rxhelper: RxHelper;
   private deleteAgency: any = {};
   private secondApp: firebase.app.App;
   private systemAdminUid: string;
   private preAgencyName: string;
   private isDonor: boolean = true;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private af: AngularFire, private router: Router,
               private route: ActivatedRoute) {
-    this.rxhelper = new RxHelper();
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.systemAdminUid = user.auth.uid;
         this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
         this.inactive = true;
-        let subscription = this.route.params
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
           .subscribe((params: Params) => {
             if (params["id"]) {
               this.agencyId = params["id"];
@@ -72,29 +72,30 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
               this.loadAgencyInfo(params["id"]);
             }
           });
-        this.rxhelper.add(subscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.rxhelper.add(subscription);
   }
 
   ngOnDestroy() {
-    this.rxhelper.releaseAll();
-    this.secondApp.delete();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private loadAgencyInfo(agencyId: string) {
     //load from agency
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId).subscribe(agency => {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agency => {
       this.agencyName = agency.name;
       this.preAgencyName = agency.name;
       this.adminId = agency.adminId;
       this.isDonor = agency.isDonor;
 
       //load from user public
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           this.userPublic = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
           this.userPublic.addressLine1 = user.addressLine1;
@@ -117,9 +118,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
           this.agencyAdminCity = user.city;
           this.agencyAdminPostCode = user.postCode;
         });
-      this.rxhelper.add(subscription);
     });
-    this.rxhelper.add(subscription);
   }
 
   onSubmit() {
@@ -224,13 +223,14 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       return;
     }
     console.log("validate agency name");
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency", {
+    this.af.database.list(Constants.APP_STATUS + "/agency", {
       query: {
         orderByChild: "name",
         equalTo: this.agencyName
       }
     })
       .take(1)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyList => {
         if (agencyList.length == 0) {
           if (this.isEdit) {
@@ -244,7 +244,6 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
           this.showAlert();
         }
       });
-    this.rxhelper.add(subscription);
   }
 
   private createNewUser() {
@@ -288,8 +287,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/administratorAgency/" + this.adminId] = null;
-      agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
-      agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
+      // agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
+      // agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
 
@@ -360,10 +359,11 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(() => {
       this.inactive = true;
     });
-    this.rxhelper.add(subscribe);
   }
 
   /**

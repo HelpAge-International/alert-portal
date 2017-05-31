@@ -3,8 +3,7 @@ import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Country, Currency} from "../../../utils/Enums";
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -46,39 +45,42 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private showReplaceRemoveLinks: boolean = false;
   firebase: any;
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
     this.firebase = firebaseApp;
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(id => {
             this.agencyId = id.$value;
           });
-        this.subscriptions.add(subscription);
         console.log("New agency admin uid: " + this.uid);
-        let userPublicSubscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).subscribe(user => {
+        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
           this.agencyAdminName = user.firstName;
         });
-        this.subscriptions.add(userPublicSubscription);
-        let agencySubscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid).subscribe(agency => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agency => {
           this.agencyName = agency.name;
         });
-        this.subscriptions.add(agencySubscription);
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   onSubmit() {
@@ -109,11 +111,12 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
             this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
               this.successInactive = false;
-              let subscription = Observable.timer(1500).subscribe(() => {
+              Observable.timer(Constants.ALERT_REDIRECT_DURATION)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(() => {
                 this.successInactive = true;
                 this.router.navigateByUrl('/agency-admin/country-office');
               });
-              this.subscriptions.add(subscription);
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
               this.showAlert();
@@ -131,11 +134,12 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
         console.log("agencyData" + agencyData['/agency/' + this.agencyId + '/addressLine2']);
         this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
           this.successInactive = false;
-          let subscription = Observable.timer(1500).subscribe(() => {
+          Observable.timer(Constants.ALERT_REDIRECT_DURATION)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(() => {
             this.successInactive = true;
             this.router.navigateByUrl('/agency-admin/country-office');
           });
-          this.subscriptions.add(subscription);
         }, error => {
           this.errorMessage = 'GLOBAL.GENERAL_ERROR';
           this.showAlert();
@@ -196,10 +200,10 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.errorInactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
 

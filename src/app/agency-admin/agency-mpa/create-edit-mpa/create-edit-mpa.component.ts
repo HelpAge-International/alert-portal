@@ -4,8 +4,7 @@ import {Router, ActivatedRoute, Params} from "@angular/router";
 import {MandatedPreparednessAction} from '../../../model/mandatedPA';
 import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
-import {RxHelper} from "../../../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -36,12 +35,14 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private idOfMpaToEdit: string;
   private departmentSelected: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
 
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
 
         this.uid = auth.uid;
@@ -55,7 +56,8 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       }
     });
 
-    let subscriptionEdit = this.route.params
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -65,12 +67,11 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
           this.idOfMpaToEdit = params["id"];
         }
       });
-    this.subscriptions.add(subscription);
-    this.subscriptions.add(subscriptionEdit);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   onSubmit() {
@@ -84,10 +85,10 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       }
     } else {
       this.inactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.inactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 
@@ -109,12 +110,13 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private loadMandatedPAInfo(actionId: string) {
 
-    let subscription = this.af.database.object(this.path + '/' + actionId).subscribe((action: MandatedPreparednessAction) => {
-      this.textArea = action.task;
-      this.isMpa = action.level == ActionLevel.MPA ? true : false;
-      this.departmentSelected = action.department;
-    });
-    this.subscriptions.add(subscription);
+    this.af.database.object(this.path + '/' + actionId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((action: MandatedPreparednessAction) => {
+        this.textArea = action.task;
+        this.isMpa = action.level == ActionLevel.MPA ? true : false;
+        this.departmentSelected = action.department;
+      });
   }
 
   private addNewMandatedPA() {
@@ -190,16 +192,16 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.newDepartmentErrorInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.newDepartmentErrorInactive = true;
       });
-      this.subscriptions.add(subscription);
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
         this.successInactive = true;
       });
-      this.subscriptions.add(subscription);
     }
   }
 

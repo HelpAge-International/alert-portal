@@ -1,3 +1,93 @@
-<p>
-  country-add-external-recipient works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+  
+  <div class="Back--button" (click) = "goBack()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.TITLE_TEXT" | translate}}</div>
+  
+  <div class="Header-title__wrap">
+    <h1 *ngIf="!isEdit">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</h1>
+    <h1 *ngIf="isEdit">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EDIT_RECIPIENT" | translate}}</h1>
+    <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteRecipient()">
+      {{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_RECIPIENT" | translate}}
+    </button>
+  </div>
+  
+  <form (ngSubmit)="submit()">
+
+    <div class="row Spaced">
+      <div class="col-lg-4 col-md-6 form-group">
+        <label for="Title">{{ "GLOBAL.USER_INFO.TITLE" | translate}}</label>      
+        <select name="Title" id="Title" class="form-control"
+            [(ngModel)] = "externalRecipient && externalRecipient.title">
+          <option value="undefined" disabled selected hidden>{{ "GLOBAL.PLEASE_SELECT" | translate}}</option>
+          <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">{{PERSON_TITLE[title]|translate}}</option>
+        </select>
+      </div>
+      <div class="col-lg-4 col-md-6 form-group">
+              <label for="f-Name">{{ "GLOBAL.USER_INFO.FIRST_NAME" | translate}}</label>
+              <input type="text" class="form-control" name="f-Name" id="f-Name" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
+                  [(ngModel)] = "externalRecipient && externalRecipient.firstName">
+      </div>
+      <div class="col-lg-4 col-md-6 form-group">
+              <label for="l-Name">{{ "GLOBAL.USER_INFO.LAST_NAME" | translate}}</label>
+              <input type="text" class="form-control" name="l-Name" id="l-Name" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
+                  [(ngModel)] = "externalRecipient && externalRecipient.lastName">
+      </div>
+    </div>
+    <div class="row Spaced">
+        <div class="col-lg-4 col-md-6 form-group">
+                <label for="Organisation">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_ORGANISATION" | translate}}</label>
+                <input type="text" class="form-control" name="organisation" id="Organisation" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
+                    [(ngModel)] = "externalRecipient && externalRecipient.organisation">
+        </div>
+        <div class="col-lg-4 col-md-6 form-group">
+                <label for="t-Number">{{ "GLOBAL.USER_INFO.PHONE" | translate}}</label>
+                <input type="text" class="form-control" name="phone" id="t-Number" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
+                    [(ngModel)] = "externalRecipient && externalRecipient.phone">
+        </div>
+        <div class="col-lg-4 col-md-6 form-group">
+                <label for="e-Address">{{ "GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate}}</label>
+                <input type="text" class="form-control" name="email" id="e-Address" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
+                    [(ngModel)] = "externalRecipient && externalRecipient.email">
+        </div>
+    </div>
+    <div class="form-group">
+            <label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label>
+    </div>
+    <div class="row Spaced">
+      <label *ngFor="let notification of externalRecipient?.notificationsSettings | keyValues"
+          class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+      <input type="checkbox"  name="notifications_{{ notification.key }}"
+              [(ngModel)] = "externalRecipient && externalRecipient.notificationsSettings[notification.key]">{{NOTIFICATION_SETTINGS[notification.key] |
+      translate}}</label>
+    </div>
+    <div class="Form-submit__wrapper">
+            <button class="btn btn-primary" type="submit" (click) = "validateForm()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SAVE_RECIPIENT" | translate}}</button>
+            <button class="btn btn-outline-secondary" type="button" (click) = "goBack()">{{ "GLOBAL.CANCEL" | translate}}</button>
+    </div>
+  </form>
+</div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

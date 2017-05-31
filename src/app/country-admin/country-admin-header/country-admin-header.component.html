@@ -1,47 +1,50 @@
 <div class="Header_bar">
-    <div class="Header_bar__wrap--inner">
-        <div class="logo"></div>
-        <span class="badge badge-pill badge-success">Green Alert Level</span>
-        <ul>
-            <li>
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">My
-                    agency</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Category 1</a>
-                    <a class="dropdown-item" href="#">Category 2</a>
-                </div>
-            </li>
+  <div class="Header_bar__wrap--inner">
+    <div class="logo"></div>
+    <span class="badge badge-pill" [class.badge-success]="alertLevel==0" [class.badge-warning]="alertLevel==1"
+          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}</span>
+    <ul>
+      <li>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">My
+          agency</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Category 1</a>
+          <a class="dropdown-item" href="#">Category 2</a>
+        </div>
+      </li>
 
-            <li class="Header_bar__username">
-                John Doe
-            </li>
+      <li class="Header_bar__username">
+        {{firstName+" "+lastName}}
+      </li>
 
-            <li class="Header_bar__country">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">PHL</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Account Settings</a>   
-                    <a class="dropdown-item" href="#">Country Office configuration</a>
-                    <a class="dropdown-item" routerLink="/country-admin/country-my-agency">View My Agency</a>
-                    <a class="dropdown-item" routerLink="/country-admin/country-agencies">View agencies in my country</a>
-                </div>
-            </li>
+      <li class="Header_bar__country dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[countryLocation] | translate}}</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" routerLink="/country-admin/country-account-settings">Account Settings</a>
+          <a class="dropdown-item" routerLink="/country-admin/country-my-agency">View My Agency</a>
+          <a class="dropdown-item" routerLink="/country-admin/country-agencies">View agencies in my country</a>
+          <a class="dropdown-item" (click)="logout()">
+            {{"GLOBAL.LOGOUT" | translate}}
+          </a>
+        </div>
+      </li>
 
-            <li class="Header_bar__alert">
-                <a data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa fa-bell" aria-hidden="true"></i>
-                    <span class="Header_bar__alert--notification"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right Notification__dropdown">
-                    <div class="Notification__dropdown__item">
-                        <p class="Notification__dropdown__item--title"><a href="notifications.html">System Maintenance</a></p>
-                        <p>There is a scheduled maintenance starting at 10:00am BST on 23/03/2017. We apologise for any
-                            inconvience caused during this time</p>
-                        <span>6 hours ago</span>
-                    </div>
-                    <div class="Notification__dropdown__view-all"><a href="notifications.html">View all notifications</a></div>
-                </div>
-            </li>
-        </ul>
+      <li class="Header_bar__alert">
+        <a data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa fa-bell" aria-hidden="true"></i>
+          <span class="Header_bar__alert--notification"></span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right Notification__dropdown">
+          <div class="Notification__dropdown__item">
+            <p class="Notification__dropdown__item--title"><a href="notifications.html">System Maintenance</a></p>
+            <p>There is a scheduled maintenance starting at 10:00am BST on 23/03/2017. We apologise for any
+              inconvience caused during this time</p>
+            <span>6 hours ago</span>
+          </div>
+          <div class="Notification__dropdown__view-all"><a href="notifications.html">View all notifications</a></div>
+        </div>
+      </li>
+    </ul>
 
-    </div>
+  </div>
 </div>

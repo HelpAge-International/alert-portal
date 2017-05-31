@@ -1,3 +1,115 @@
-<p>
-  country-account-settings works!
-</p>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>{{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item active"><a [routerLink]="['/country-admin/country-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
+        | translate}}</a></li>
+      <li class="section-nav__item"><a [routerLink]="['/country-admin/country-account-settings/country-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
+        | translate}}</a></li>
+    </ul>
+
+    <form (ngSubmit)="submit()">
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Title">{{"GLOBAL.TITLE" | translate}}*</label>
+
+          <select name="Title" id="Title" class="form-control"
+            [(ngModel)]="userPublic && userPublic.title">
+            <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">{{PERSON_TITLE[title] | translate}}</option>
+          </select>
+
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="f-Name" name="f-Name"
+            [(ngModel)]="userPublic && userPublic.firstName">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="l-Name">{{"GLOBAL.USER_INFO.LAST_NAME" | translate}}*</label>
+          <input type="text" class="form-control" id="l-Name" name="l-Name"
+            [(ngModel)]="userPublic && userPublic.lastName">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+          <input type="text" class="form-control" id="Email" name="Email"
+            [(ngModel)]="userPublic && userPublic.email">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="AddressLine1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}</label>
+          <input type="text" class="form-control" id="AddressLine1" name="AddressLine1" placeholder="Optional"
+            [(ngModel)]="userPublic && userPublic.addressLine1">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="AddressLine2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
+          <input type="text" class="form-control" id="AddressLine2" name="AddressLine2" placeholder="Optional"
+            [(ngModel)]="userPublic && userPublic.addressLine2">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="AddressLine3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
+          <input type="text" class="form-control" id="AddressLine3" name="AddressLine3" placeholder="Optional"
+            [(ngModel)]="userPublic && userPublic.addressLine3">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
+
+          <select name="Country" id="Country" class="form-control" 
+            [(ngModel)]="userPublic && userPublic.country">
+            <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}</option>
+          </select>
+
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+          <input type="text" class="form-control" id="City" name="City" placeholder="Optional"
+            [(ngModel)]="userPublic && userPublic.city">
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="l-Name">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
+          <input type="text" class="form-control" id="p-code" name="p-code" placeholder="Optional"
+            [(ngModel)]="userPublic && userPublic.postCode">
+        </div>
+      </div>
+    </div>
+    <div class="Form-submit__wrapper">
+      <button type="submit" class="btn btn-primary" (click)="validateForm()">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</button>
+      <button class="btn btn-outline-secondary" (click) = "goBack()">{{"GLOBAL.CANCEL" | translate}}</button>
+    </div>
+    </form>
+  </div>
+</div>

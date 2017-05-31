@@ -1,9 +1,8 @@
 import {Component, OnInit, OnDestroy} from "@angular/core";
-import {RxHelper} from "../../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import * as firebase from "firebase";
@@ -16,6 +15,7 @@ import {UUID} from "../../../utils/UUID";
   templateUrl: 'create-edit-global-network.component.html',
   styleUrls: ['create-edit-global-network.component.css']
 })
+
 export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
   waringMessage: string;
@@ -50,18 +50,20 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private isAdminExist: boolean;
   private uidUserExist: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
       this.uid = user.auth.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
-      let subscription = this.route.params.subscribe((params: Params) => {
+      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
         console.log("load: " + params["id"]);
         if (params["id"]) {
           this.isEdit = true;
@@ -69,19 +71,18 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
           this.loadNetworkInfo(this.networkId);
         }
       });
-      this.subscriptions.add(subscription);
     });
-    this.subscriptions.add(subscription);
   }
 
   private loadNetworkInfo(networkId) {
-    let subscription = this.af.database.object(Constants.APP_STATUS+"/network/" + networkId)
+    this.af.database.object(Constants.APP_STATUS + "/network/" + networkId)
       .flatMap(network => {
         this.preNetworkName = network.name;
         this.networkName = network.name;
         this.adminId = network.adminId;
-        return this.af.database.object(Constants.APP_STATUS+"/userPublic/" + network.adminId)
+        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + network.adminId)
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
         //create model for later use
         this.modelAdmin = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
@@ -104,20 +105,20 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         this.adminCity = user.city;
         this.adminPostcode = user.postCode;
       });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
     this.secondApp.delete();
   }
 
   private showAlert() {
     this.hideWarning = false;
-    let subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.hideWarning = true;
     });
-    this.subscriptions.add(subscribe);
   }
 
   submit() {
@@ -137,13 +138,14 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private validateNetworkName() {
-    let subscription = this.af.database.list(Constants.APP_STATUS+"/network", {
+    this.af.database.list(Constants.APP_STATUS + "/network", {
       query: {
         orderByChild: "name",
         equalTo: this.networkName
       }
     })
       .take(1)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(networks => {
         if (networks.length != 0) {
           this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_DUPLICATE";
@@ -156,8 +158,6 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
           this.createNewAdmin();
         }
       });
-    this.subscriptions.add(subscription);
-
   }
 
   private createNewAdmin() {
@@ -181,7 +181,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   private findUidForExistingEmail(adminEmail: string) {
-    let subscription = this.af.database.list(Constants.APP_STATUS+"/userPublic/", {
+    this.af.database.list(Constants.APP_STATUS + "/userPublic/", {
       query: {
         orderByChild: "email",
         equalTo: adminEmail,
@@ -195,7 +195,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         }
       })
       .flatMap(users => {
-        return this.af.database.list(Constants.APP_STATUS+"/adminNetwork/", {
+        return this.af.database.list(Constants.APP_STATUS + "/adminNetwork/", {
           query: {
             orderByKey: true,
             equalTo: users[0].$key
@@ -208,6 +208,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         }
       })
       .first()
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(() => {
         if (this.isUserExist && !this.isAdminExist) {
           console.log("user exist but not network admin, proceed to update database");
@@ -223,7 +224,6 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         //   this.updateFirebase(users[0].$key);
         // }
       });
-    this.subscriptions.add(subscription);
   }
 
   validate() {

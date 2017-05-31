@@ -2,9 +2,8 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {RxHelper} from "../../utils/RxHelper";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
 declare var jQuery: any;
@@ -55,12 +54,13 @@ export class StaffComponent implements OnInit, OnDestroy {
   private globalUsers: any[] = [];
   private departments: any[] = [];
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -68,12 +68,16 @@ export class StaffComponent implements OnInit, OnDestroy {
       this.uid = user.auth.uid;
       this.initData();
     });
-    this.subscriptions.add(subscription);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private initData() {
     this.getStaffData();
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
       .map(departmentList => {
         let departments = [];
         departmentList.forEach(x => {
@@ -81,16 +85,16 @@ export class StaffComponent implements OnInit, OnDestroy {
         });
         return departments;
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(x => {
         this.departments = x;
       });
-    this.subscriptions.add(subscription);
   }
 
   private getStaffData() {
     this.staffs = [];
     this.dealedStaff = [];
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
       .do(list => {
         list.forEach(item => {
           this.staffDisplay = new ModelStaffDisplay();
@@ -114,7 +118,8 @@ export class StaffComponent implements OnInit, OnDestroy {
       })
       .do(() => {
         this.officeId.forEach(id => {
-          let subscribe = this.staffMap.get(id)
+          this.staffMap.get(id)
+            .takeUntil(this.ngUnsubscribe)
             .subscribe(x => {
               x.forEach(item => {
                 if (!this.dealedStaff.includes(item.$key)) {
@@ -144,17 +149,15 @@ export class StaffComponent implements OnInit, OnDestroy {
                 }
               });
             });
-          this.subscriptions.add(subscribe);
         });
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe();
-    this.subscriptions.add(subscription);
 
-    // let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+    // this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid).takeUntil(this.ngUnsubscribe)
     //   .subscribe(users => {
     //     this.globalUsers = users;
     //   });
-    // this.subscriptions.add(subscriptionGlobalUser);
     this.filterGlobalUsers();
   }
 
@@ -172,21 +175,17 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.dealedStaff.push(item.$key);
   }
 
-  ngOnDestroy() {
-    this.subscriptions.releaseAll();
-  }
-
   addNewStaff() {
     this.router.navigateByUrl(Constants.AGENCY_ADMIN_ADD_STARFF);
   }
 
   getStaffName(key): string {
     this.staffName = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
         this.staffName = user.firstName + " " + user.lastName;
       });
-    this.subscriptions.add(subscription);
     return this.staffName;
   }
 
@@ -212,23 +211,23 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   getStaffEmail(staffId) {
     this.staffEmail = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(user => {
         this.staffEmail = user.email;
       });
-    this.subscriptions.add(subscription);
     return this.staffEmail;
   }
 
   getStaffPhone(staffId) {
     this.staffPhone = "";
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
+      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(user => {
         this.staffPhone = user.phone;
       });
-    this.subscriptions.add(subscription);
     return this.staffPhone;
   }
 
@@ -237,7 +236,7 @@ export class StaffComponent implements OnInit, OnDestroy {
     if (staffId) {
       let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
         Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
-      let subscription = this.af.database.object(path)
+      this.af.database.object(path)
         .first()
         .map(user => {
           let userSkill = [];
@@ -254,12 +253,12 @@ export class StaffComponent implements OnInit, OnDestroy {
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
         })
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
           if (skill.type == SkillType.Support) {
             this.supportSkills.push(skill.name);
           }
         });
-      this.subscriptions.add(subscription);
     }
     return this.supportSkills;
   }
@@ -286,12 +285,12 @@ export class StaffComponent implements OnInit, OnDestroy {
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
         })
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
           if (skill.type == SkillType.Tech) {
             this.techSkills.push(skill.name);
           }
         });
-      this.subscriptions.add(subscription);
     }
     return this.techSkills;
   }
@@ -304,7 +303,8 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private filterGlobalUsers() {
     this.globalUsers = [];
-    let subscriptionGlobalUser = this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(users => {
         if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
           this.globalUsers = users;
@@ -411,7 +411,6 @@ export class StaffComponent implements OnInit, OnDestroy {
         }
         console.log(this.globalUsers)
       });
-    this.subscriptions.add(subscriptionGlobalUser);
   }
 
 }

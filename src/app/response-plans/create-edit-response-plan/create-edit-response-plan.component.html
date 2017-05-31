@@ -1,6 +1,8 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
@@ -46,7 +48,7 @@
               <label for="H-scen">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
                 translate}}</label>
               <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected">
-                <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                 <option *ngFor="let hazardScenario of hazardScenariosList" [value]="hazardScenario">
                   {{HazardScenario[hazardScenario] | translate}}
                 </option>
@@ -56,9 +58,9 @@
               <label for="P-lead1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_LEAD" |
                 translate}}</label>
               <select class="form-control" id="P-lead1" [(ngModel)]="staffMemberSelected">
-                <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember">{{staffMember.firstName + ' ' +
-                  staffMember.lastName}}
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember.$key">
+                  {{staffMember.firstName + ' ' + staffMember.lastName}}
                 </option>
               </select>
             </div>
@@ -699,14 +701,14 @@
                         translate}}</label>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">1</span>
-                        <input type="text" class="form-control" #pointOne
-                               [value]="activityInfoMap.get(sector) ? activityInfoMap.get(sector)['bullet1']:''"
+                        <input type="text" class="form-control" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" #pointOne
+                               [value]="activityInfoMap.get(sector)&&activityInfoMap.get(sector)['bullet1'] ? activityInfoMap.get(sector)['bullet1']:''"
                                (change)="getBulletOne(sector, pointOne.value)">
                       </div>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">2</span>
-                        <input type="text" class="form-control" #pointTwo
-                               [value]="activityInfoMap.get(sector) ? activityInfoMap.get(sector)['bullet2']:''"
+                        <input type="text" class="form-control" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" #pointTwo
+                               [value]="activityInfoMap.get(sector)&&activityInfoMap.get(sector)['bullet2'] ? activityInfoMap.get(sector)['bullet2']:''"
                                (change)="getBulletTwo(sector, pointTwo.value)">
                       </div>
                     </div>
@@ -951,84 +953,20 @@
               <div class="col-lg-2 col-3">&pound; {{totalInputs}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>
-            <div *ngIf="sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
+            <div *ngIf="sectorsRelatedTo&&sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
               <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-{{i+1}}: {{SECTORS[sector] | translate}}</div>
+                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan&&loadResponsePlan.sectors?(SECTORS[sector] | translate):''}}</div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
-                         [value]="loadResponsePlan&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:''"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:0"
                          (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
                   <input type="text" class="form-control budget-narrative" #narrative
-                         [value]="loadResponsePlan&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
                          (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-2: {{"SECTORS.HEALTH" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget" [(ngModel)]="healthBudget"-->
-              <!--(change)="calculateBudget()"></div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative" [(ngModel)]="healthNarrative"></div>-->
-              <!--</div>-->
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-3: {{"SECTORS.SHELTER" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget" [(ngModel)]="shelterBudget"-->
-              <!--(change)="calculateBudget()"></div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative" [(ngModel)]="shelterNarrative"></div>-->
-              <!--</div>-->
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-4: {{"SECTORS.CAMP_MANAGEMENT" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget"-->
-              <!--[(ngModel)]="campManagementBudget" (change)="calculateBudget()">-->
-              <!--</div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative"-->
-              <!--[(ngModel)]="campManagementNarrative"></div>-->
-              <!--</div>-->
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-6: {{"SECTORS.EDUCATION" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget"-->
-              <!--[(ngModel)]="educationBudget"-->
-              <!--(change)="calculateBudget()"></div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative"-->
-              <!--[(ngModel)]="educationNarrative"></div>-->
-              <!--</div>-->
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-7: {{"SECTORS.PROTECTION" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget"-->
-              <!--[(ngModel)]="protectionBudget" (change)="calculateBudget()"></div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative"-->
-              <!--[(ngModel)]="protectionNarrative"></div>-->
-              <!--</div>-->
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-8 {{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget"-->
-              <!--[(ngModel)]="foodSecAndLivelihoodsBudget"-->
-              <!--(change)="calculateBudget()">-->
-              <!--</div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative"-->
-              <!--[(ngModel)]="foodSecAndLivelihoodsNarrative"></div>-->
-              <!--</div>-->
-              <!--<div class="row Line-row col-lg-12">-->
-              <!--<div class="col-lg-3 col-4">A-9 {{"SECTORS.OTHER" | translate}}</div>-->
-              <!--<div class="col-lg-2 col-3">-->
-              <!--<input type="number" class="form-control budget" [(ngModel)]="otherBudget"-->
-              <!--(change)="calculateBudget()"></div>-->
-              <!--<div class="col-lg-4 col-5">-->
-              <!--<input type="text" class="form-control budget-narrative"-->
-              <!--[(ngModel)]="otherNarrative"></div>-->
-              <!--</div>-->
             </div>
+
             <div class="row Line-row Header Spaced">
               <div class="col-lg-3 col-4">B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
                 translate}}
@@ -1107,7 +1045,7 @@
                 <input type="text" class="form-control" [(ngModel)]="managementSupportNarrative"></div>
             </div>
             <div class="row Line-row Header Spaced">
-              <div class="col-lg-3 col-4 text-right">TOTAL</div>
+              <div class="col-lg-3 col-4 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
               <div class="col-lg-2 col-3">&pound; {{totalBudget}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>

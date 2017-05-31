@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
+import {Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -11,23 +11,25 @@ declare var jQuery: any;
   styleUrls: ['global-networks.component.css']
 })
 export class GlobalNetworksComponent implements OnInit, OnDestroy {
+
   networks: FirebaseListObservable<any[]>;
   private alertTitle: string;
   private alertContent: string;
   private networkToUpdate;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
       this.loadNetworks();
     });
-    this.subscriptions.add(subscription);
   }
 
   private loadNetworks() {
@@ -36,7 +38,10 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   addNetwork() {

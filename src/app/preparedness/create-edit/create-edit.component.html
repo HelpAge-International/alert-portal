@@ -46,13 +46,13 @@
             <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
             <div class="row no-gutters">
                 <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
-                    <input type="checkbox" (change)="selectAllHazard($event)"> 
+                    <input type="checkbox" (change)="selectAllHazard($event)">
                     <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm Icon--alert"></span>&nbsp; {{"PREPAREDNESS.ALL_HAZARDS" | translate}}
                 </label>
             </div>
             <div class="row no-gutters" *ngFor="let hList of hazardCategoryList">
                  <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
-                    <input type="checkbox" [checked]="actionData.assignHazard[hList]" (change)="selectHazardCategory(hList, $event)" name="hazardCategory"> 
+                    <input type="checkbox" [checked]="actionData.assignHazard[hList]" (change)="selectHazardCategory(hList, $event)" name="hazardCategory">
                     <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{hazardCategoryIconClass[hList]}}"></span>
                     &nbsp; {{hazardCategory[hList] | translate}}
                 </label>
@@ -73,7 +73,7 @@
             <div [hidden]="(!f.submitted && !checkTypeOf(actionData.department)) || (f.submitted && checkTypeOf(actionData.department)) || (!f.submitted && checkTypeOf(actionData.department))" class="alert alert-danger">
                 {{"PREPAREDNESS.NO_DEPARTMENT" | translate}}
         </div>
-    </div> 
+    </div>
 </div>
 
 <div class="row System-admin--form-wrap">
@@ -85,7 +85,7 @@
                 <option *ngFor="let userAssign of usersForAssign" [selected]="actionData.asignee == userAssign.userID ? true : false" [value]="userAssign.userID">{{userAssign.firstName}}</option>
             </select>
         </div>
-    </div> 
+    </div>
 </div>
 
 <div class="row System-admin--form-wrap">
@@ -113,7 +113,7 @@
         </div>
 
         <div class="row align-items-center" *ngIf="frequencyActive">
-            <div class="col-sm-1 col-2">{{"PREPAREDNESS.EVERY" | translate}}</div> 
+            <div class="col-sm-1 col-2">{{"PREPAREDNESS.EVERY" | translate}}</div>
             <div class="col-sm-2 col-4">
                 <select class="form-control" (change)="selectFrequency($event)" [disabled]="(actionID && !actionData.department) ? true : false">
                         <option *ngFor="let f of frequency; let index = index" [value]="index + 1" [selected]="actionData.frequencyValue == (index + 1) ? true : false">{{index + 1}}</option>
@@ -125,8 +125,8 @@
                 </select>
             </div>
         </div>
-    </div> 
-</div> 
+    </div>
+</div>
 
 <div class="row System-admin--form-wrap">
     <div class="col-lg-8 col-md-10">
@@ -137,7 +137,7 @@
         <div [hidden]="budjet.valid || (budjet.pristine && !f.submitted)" class="alert alert-danger">
             {{"PREPAREDNESS.NO_BUDJET" | translate}}
         </div>
-    </div> 
+    </div>
 </div>
 
 <div class="row System-admin--form-wrap">
@@ -163,7 +163,7 @@
 </div>
 <div class="Form-submit__wrapper">
     <button class="btn btn-primary" type="submit">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}</button>
-    <div class="btn btn-outline-secondary">{{"GLOBAL.CANCEL" | translate}}</div>
+    <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}</div>
 </div>
 </form>
 </div>

@@ -110,6 +110,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('response-plans/add-partner-organisation');
     }
   }
+  
   validateForm(): boolean {
     this.alertMessage = this.partner.validate() || this.userPublic.validate(['city']);
 

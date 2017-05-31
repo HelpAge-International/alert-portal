@@ -1,21 +1,29 @@
 /**
  * Created by ser-j on 15/05/2017.
  */
-import {HazardScenario, GeoLocation} from '../utils/Enums';
+import {HazardScenario, GeoLocation, AlertLevels, AlertStatus, Countries} from '../utils/Enums';
 import {BaseModel} from "./base.model";
 import {AlertMessageModel} from "./alert-message.model";
+//import {ModelAffectedArea} from "./affectedArea.model";
 
-export class AlertModel extends BaseModel {
+export class ModelAlert extends BaseModel {
     public id: string;
-    public hazardScenario: HazardScenario;
-    public alertLevel: number;
-    public estimatedPopulation: string;
+    public alertLevel: AlertLevels;
+    public affectedAreas: any[] = [];
+    public affectedAreasDisplay: string[];
+    public approvalDirectorId: string;
+    public approvalStatus: AlertStatus;
+    public approval: any[] = [];
+    public createdBy: string;
+    public createdByName: string;
+    public estimatedPopulation: number;
+    public hazardScenario: number;
     public infoNotes: string;
     public reasonForRedAlert: string;
-    public affectedAreas: any[] = [];
-    public createdBy: string;
     public timeCreated: number;
-    public approval: any[] = [];
+    public timeUpdated: number;
+    public updatedBy: string;
+    public updatedByName: string;
 
     validate(excludedFields = []): AlertMessageModel {
         if (typeof (this.hazardScenario) == 'undefined' && !this.isExcluded('hazardScenario', excludedFields)) {

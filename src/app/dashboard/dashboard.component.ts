@@ -2,12 +2,19 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
-import {RxHelper} from "../utils/RxHelper";
 import {Observable} from "rxjs";
-import {AlertLevels, ApprovalStatus, Countries} from "../utils/Enums";
+import {AlertLevels, AlertStatus, Countries, DashboardType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
+import {Subject} from "rxjs/Subject";
+import {HazardImages} from "../utils/HazardImages";
+import {ModelAlert} from "../model/alert.model";
+import {
+  ChronolineEvent,
+  DashboardSeasonalCalendarComponent
+} from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
+declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +25,19 @@ import * as moment from "moment";
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  // private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
+
+  private alertList: ModelAlert[];
+
+  // TODO - Check when other users are implemented
   private USER_TYPE: string = 'administratorCountry';
+
+  //TODO - get the real director uid
+  private tempDirectorUid = "1b5mFmWq2fcdVncMwVDbNh3yY9u2";
+
+  private DashboardType = DashboardType;
+  private DashboardTypeUsed = DashboardType.director;
+  // private DashboardTypeUsed = DashboardType.default;
 
   private uid: string;
   private countryId: string;
@@ -27,36 +46,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private actionsThisWeek = [];
   private indicatorsToday = [];
   private indicatorsThisWeek = [];
-  private systemAdminUid: string;
 
-  private overallAlertLevel: AlertLevels = AlertLevels.Green; // TODO - Find this value
-
-  private countryLocation: any;
+  private Countries = Countries;
   private CountriesList = Constants.COUNTRIES;
-  private count: number = 0;
-  private numOfApprovedResponsePlans: number = 0;
-  private sysAdminMinThreshold: any = [];
-  private sysAdminAdvThreshold: any = [];
-  private mpaStatusIcon: any;
-  private mpaStatusColor: any;
-  private advStatusIcon: any;
-  private advStatusColor: any;
-  private percentageCHS: any;
+  private countryLocation: any;
 
   private AlertLevels = AlertLevels;
+  private AlertStatus = AlertStatus;
 
   private alerts: Observable<any>;
 
   private hazards: any[] = [];
-  private hazardObject = {};
+  private numberOfIndicatorsObject = {};
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
-  constructor(private af: AngularFire, private router: Router,
-              private subscriptions: RxHelper, private userService: UserService, private actionService: ActionsService) {
+  private countryContextIndicators: any[] = [];
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  private seasonEvents = [];
+  private chronoline;
+  private approveMap = new Map();
+  private responsePlansForApproval: Observable<any[]>;
+  private approvalPlans = [];
+  private amberAlerts: Observable<any[]>;
+
+  constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
         this.loadData();
@@ -64,11 +83,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.navigateToLogin();
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
   /**
@@ -77,44 +104,76 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
-      this.getApprovedResponsePlansCount();
+      if (this.DashboardTypeUsed == DashboardType.default) {
+        this.getAllSeasonsForCountryId(this.countryId);
+      }
       this.getAlerts();
+      this.getCountryContextIndicators();
       this.getHazards();
       this.initData();
     });
     this.getAgencyID().then(() => {
       this.getCountryData();
+    });
+  }
 
-    });
-    this.getSystemAdminID().then(() => {
-      this.getSystemThreshold('minThreshold').then((minThreshold: any) => {
-        this.sysAdminMinThreshold = minThreshold;
-        this.getSystemThreshold('advThreshold').then((advThreshold: any) => {
-          this.sysAdminAdvThreshold = advThreshold;
-          this.getAllActions();
+  public getAllSeasonsForCountryId(countryId: string) {
+    this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snapshot => {
+        this.seasonEvents = [
+          ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar())
+        ];
+        let i = 2;
+        snapshot.forEach((seasonInfo) => {
+          let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+          this.seasonEvents.push(x);
+          i++;
         });
+        this.initCalendar();
+        // Init map here after replacing the entire array
       });
-    });
+  }
+
+  private initCalendar() {
+    // Element is removed and re-added upon a data change
+    document.getElementById("target2").innerHTML = "";
+    this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,
+      {
+        visibleSpan: DAY_IN_MILLISECONDS * 91,
+        animated: true,
+        tooltips: true,
+        sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
+        labelInterval: isFifthDay,
+        hashInterval: isFifthDay,
+        scrollLeft: prevMonth,
+        scrollRight: nextMonth,
+        // markToday: 'labelBox',
+        draggable: true
+      });
+
   }
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId").subscribe((countryId: any) => {
-        this.countryId = countryId.$value;
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((countryId: any) => {
+          this.countryId = countryId.$value;
+          res(true);
+        });
     });
     return promise;
   }
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin').subscribe((agencyIds: any) => {
-        this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyIds: any) => {
+          this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -123,16 +182,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
-    let subscriptionActions = this.actionService.getActionsDueInWeek(this.countryId, this.uid)
+    this.actionService.getActionsDueInWeek(this.countryId, this.uid)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
         this.actionsToday = [];
         this.actionsThisWeek = [];
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
       });
-    this.subscriptions.add(subscriptionActions);
 
-    let subscriptionIndicators = this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
+    this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
@@ -161,208 +221,73 @@ export class DashboardComponent implements OnInit, OnDestroy {
           });
         }
       });
-    this.subscriptions.add(subscriptionIndicators);
-  }
 
-  private getSystemAdminID() {
-    let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin').subscribe((systemAdminIds: any) => {
-        this.systemAdminUid = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";
-        res(true);
-      });
-      this.subscriptions.add(subscription);
+    //TODO change temp id to actual uid
+    this.responsePlansForApproval = this.actionService.getResponsePlanForDirectorToApproval(this.countryId, this.tempDirectorUid);
+    this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
+      this.approvalPlans = plans
     });
-    return promise;
   }
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location").subscribe((location: any) => {
-        this.countryLocation = location.$value;
-        res(true);
-      });
-      this.subscriptions.add(subscription);
-    });
-    return promise;
-  }
-
-  private getApprovedResponsePlansCount() {
-    let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId).subscribe((responsePlans: any) => {
-        this.getCountApprovalStatus(responsePlans);
-        res(true);
-      });
-      this.subscriptions.add(subscription);
-    });
-    return promise;
-  }
-
-  private getCountApprovalStatus(responsePlans: any) {
-    responsePlans.forEach((responsePlan: any) => {
-      var approvals = responsePlan.approval;
-      this.count = 0;
-      this.recursiveParseArray(approvals);
-    });
-  }
-
-  private recursiveParseArray(approvals: any) {
-    for (let A in approvals) {
-      if (typeof (approvals[A]) == 'object') {
-        this.recursiveParseArray(approvals[A]);
-      } else {
-        var approvalStatus = approvals[A];
-        if (approvalStatus == ApprovalStatus.Approved) {
-          this.count = this.count + 1;
-          this.numOfApprovedResponsePlans = this.count;
-        }
-      }
-    }
-  }
-
-  private getAllActions() {
-    let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).subscribe((actions: any) => {
-        this.getPercenteActions(actions);
-        res(true);
-      });
-      this.subscriptions.add(subscription);
-    });
-    return promise;
-  }
-
-  private getPercenteActions(actions: any) {
-
-    let promise = new Promise((res, rej) => {
-      var countAllMinimumActions = 0;
-      var countAllAdvancedActions = 0;
-      var countCompletedMinimumActions = 0;
-      var countCompletedAdvancedActions = 0;
-      var countCompletedAllActions = 0;
-
-      actions.forEach((action: any) => {
-        if (action.level == 1) {
-          countAllMinimumActions = countAllMinimumActions + 1;
-          if (action.actionStatus == 2) {
-            countCompletedMinimumActions = countCompletedMinimumActions + 1;
-          }
-        }
-
-        if (action.level == 2) {
-          countAllAdvancedActions = countAllAdvancedActions + 1;
-          if (action.actionStatus == 2) {
-            countCompletedAdvancedActions = countCompletedAdvancedActions + 1;
-          }
-        }
-
-        if (action.actionStatus == 2) {
-          countCompletedAllActions = countCompletedAllActions + 1;
-        }
-      });
-
-      var percentageMinimumCompletedActions = (countCompletedMinimumActions / countAllMinimumActions) * 100;
-      percentageMinimumCompletedActions = percentageMinimumCompletedActions ? percentageMinimumCompletedActions : 0;
-
-      var percentageAdvancedCompletedActions = (countCompletedAdvancedActions / countAllAdvancedActions) * 100;
-      percentageAdvancedCompletedActions = percentageAdvancedCompletedActions ? percentageAdvancedCompletedActions : 0;
-
-      if (percentageMinimumCompletedActions && percentageMinimumCompletedActions >= this.sysAdminMinThreshold[0].$value) {
-        this.mpaStatusColor = 'green';
-        this.mpaStatusIcon = 'fa-check';
-      }
-      if (percentageMinimumCompletedActions && percentageMinimumCompletedActions >= this.sysAdminMinThreshold[1].$value) {
-        this.mpaStatusColor = 'orange';
-        this.mpaStatusIcon = 'fa-ellipsis-h';
-      }
-      if (!percentageMinimumCompletedActions) {
-        this.mpaStatusColor = 'red';
-        this.mpaStatusIcon = 'fa-times'
-      }
-
-
-      if (percentageAdvancedCompletedActions && percentageAdvancedCompletedActions >= this.sysAdminAdvThreshold[0].$value) {
-        this.advStatusColor = 'green';
-        this.advStatusIcon = 'fa-check';
-      }
-      if (percentageAdvancedCompletedActions && percentageAdvancedCompletedActions >= this.sysAdminAdvThreshold[1].$value) {
-        this.advStatusColor = 'orange';
-        this.advStatusIcon = 'fa-ellipsis-h';
-      }
-      if (!percentageAdvancedCompletedActions) {
-        this.advStatusColor = 'red';
-        this.advStatusIcon = 'fa-times';
-      }
-
-      this.getActionsBySystemAdmin().then((actions: any) => {
-        var countAllActionsSysAdmin = actions.length && actions.length > 0 ? actions.length : 0;
-        this.percentageCHS = Math.round((countCompletedAllActions / countAllActionsSysAdmin) * 100);
-      });
-
-      res(true);
-    });
-
-    return promise;
-  }
-
-  private getActionsBySystemAdmin() {
-    let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid).subscribe((actions: any) => {
-        res(actions);
-      });
-      this.subscriptions.add(subscription);
-    });
-    return promise;
-  }
-
-  private getSystemThreshold(thresholdType: string) {
-    let promise = new Promise((res, rej) => {
-      let subscription = this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/' + thresholdType).subscribe((threshold: any) => {
-        res(threshold);
-      });
-      this.subscriptions.add(subscription);
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((location: any) => {
+          this.countryLocation = location.$value;
+          res(true);
+        });
     });
     return promise;
   }
 
   private getAlerts() {
-
-    this.alerts = this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {
-      query: {
-        orderByChild: "alertLevel",
-        equalTo: AlertLevels.Red
-      }
-    });
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.alerts = this.actionService.getAlerts(this.countryId);
+    } else if (this.DashboardTypeUsed == DashboardType.director) {
+      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.tempDirectorUid, this.countryId);
+      this.amberAlerts = this.actionService.getAlerts(this.countryId)
+        .map(alerts => {
+          return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
+        });
+    }
   }
 
-  // TODO - FIX
   private getHazards() {
 
-    let subscription = this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
+    this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
       .flatMap(list => {
         this.hazards = [];
         let tempList = [];
         list.forEach(hazard => {
+          this.hazards.push(hazard);
           tempList.push(hazard);
-          this.hazardObject[hazard.$key] = hazard;
         });
         return Observable.from(tempList)
       })
       .flatMap(hazard => {
-        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key);
       })
       .distinctUntilChanged()
-      .subscribe(x => {
-        this.hazards.push(x);
-        console.log(x);
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(object => {
+        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).length;
       });
-    this.subscriptions.add(subscription);
+  }
+
+  private getCountryContextIndicators() {
+
+    this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => {
+        list.forEach(indicator => {
+          this.countryContextIndicators.push(indicator);
+        });
+      });
   }
 
   public getCountryCodeFromLocation(location: number) {
     return Countries[location];
-  }
-
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
   getActionTitle(action): string {
@@ -373,5 +298,45 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.actionService.getIndicatorTitle(indicator);
   }
 
+  updateAlert(alertId, isDirectorAmber) {
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+    } else if (isDirectorAmber) {
+      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {
+        id: alertId,
+        countryId: this.countryId,
+        isDirector: true
+      }]);
+    } else {
+      let selection = this.approveMap.get(alertId);
+      this.approveMap.set(alertId, !selection);
+    }
+  }
+
+  approveRedAlert(alertId) {
+    //TODO need to change back to uid!!
+    this.actionService.approveRedAlert(this.countryId, alertId, this.tempDirectorUid);
+  }
+
+  rejectRedRequest(alertId) {
+    this.actionService.rejectRedAlert(this.countryId, alertId, this.tempDirectorUid);
+  }
+
+  planReview(planId) {
+    this.router.navigate(["/dashboard/review-response-plan", {"id": planId}]);
+  }
+
+  goToAgenciesInMyCountry() {
+    this.router.navigateByUrl("/country-admin/country-agencies");
+  }
+
+  goToFaceToFaceMeeting() {
+    // this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
+    this.router.navigate(["/dashboard/facetoface-meeting-request",{countryId:this.countryId, agencyId:this.agencyAdminUid}]);
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
 
 }

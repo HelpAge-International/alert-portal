@@ -1,4 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Observable} from 'rxjs';
+
+
+import { AlertMessageModel } from "../../model/alert-message.model";
+import { DisplayError } from "../../errors/display.error";
+import { AlertMessageType } from "../../utils/Enums";
 
 @Component({
   selector: 'app-country-office-profile',
@@ -7,7 +15,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CountryOfficeProfileComponent implements OnInit {
 
-  constructor() { }
+  // Models
+  private alertMessage: AlertMessageModel = null;
+  private alertMessageType = AlertMessageType;
+
+  constructor( protected router: Router, protected route: ActivatedRoute) {
+	    
+	}
 
   ngOnInit() {
   }

@@ -2,15 +2,15 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../utils/Constants";
-import {RxHelper} from "../utils/RxHelper";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
-import {AgencyServiceService} from "../services/agency-service.service";
+import {AgencyService} from "../services/agency-service.service";
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  providers: [AgencyServiceService]
+  providers: [AgencyService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
@@ -21,18 +21,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   private successMessage: string;
   private alerts = {};
   private emailEntered: string;
-  private subscriptions: RxHelper;
   private localUser = {
     userEmail: '',
     password: ''
   };
 
-  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyServiceService) {
-    this.subscriptions = new RxHelper();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
-    let subscription = this.route.params
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["emailEntered"]) {
           this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
@@ -41,12 +42,12 @@ export class LoginComponent implements OnInit, OnDestroy {
           console.log("From Forgot Password");
         }
       });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
     this.loaderInactive = true;
-    this.subscriptions.releaseAll();
   }
 
   onSubmit() {
@@ -63,68 +64,77 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
         .then((success) => {
 
-          let systemAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS + '/system', {preserveSnapshot: true})
+          this.af.database.list(Constants.APP_STATUS + '/system', {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
             .subscribe(snapshots => {
               snapshots.forEach(snapshot => {
                 if (snapshot.key == success.uid) {
                   this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
                 }
               });
-              let agencyAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
+              this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
+                .takeUntil(this.ngUnsubscribe)
                 .subscribe(snapshots => {
                   snapshots.forEach(snapshot => {
                     if (snapshot.key == success.uid) {
 
-                      let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + snapshot.key + '/firstLogin').subscribe((value) => {
-                        let firstLogin: boolean = value.$value;
-                        if (firstLogin) {
-                          this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
-                        } else {
-                          let subscriptionAgencyid = this.agencyService.getAgencyId(snapshot.key)
-                            .subscribe(agencyId => {
-                              let subscription = this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + '/isActive').subscribe((value) => {
-                                let isActive: boolean = value.$value;
-                                if (isActive) {
-                                  this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
-                                } else {
-                                  this.errorMessage = 'Your account is deactivated - Please check with your system administrator'; // TODO - Translate
-                                  this.showAlert(true);
-                                }
+                      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + snapshot.key + '/firstLogin')
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe((value) => {
+                          let firstLogin: boolean = value.$value;
+                          if (firstLogin) {
+                            this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
+                          } else {
+                            this.agencyService.getAgencyId(snapshot.key)
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe(agencyId => {
+                                this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + '/isActive')
+                                  .takeUntil(this.ngUnsubscribe)
+                                  .subscribe((value) => {
+                                    let isActive: boolean = value.$value;
+                                    if (isActive) {
+                                      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+                                    } else {
+                                      this.errorMessage = 'Your account is deactivated - Please check with your system administrator'; // TODO - Translate
+                                      this.showAlert(true);
+                                    }
+                                  });
                               });
-                              this.subscriptions.add(subscription);
-                            });
-                          this.subscriptions.add(subscriptionAgencyid);
-                        }
-                      });
-                      this.subscriptions.add(subscription);
+                          }
+                        });
                     }
                   });
-                  let countryAdminLoginSubscription = this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
+                  this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
+                    .takeUntil(this.ngUnsubscribe)
                     .subscribe(snapshots => {
                       snapshots.forEach(snapshot => {
                         if (snapshot.key == success.uid) {
-                          let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + snapshot.key + '/firstLogin').subscribe((value) => {
-                            let firstLogin: boolean = value.$value;
-                            if (firstLogin) {
-                              this.router.navigateByUrl('country-admin/new-country/new-country-password');
-                            } else {
+                          this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + snapshot.key + '/firstLogin')
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe((value) => {
+                              let firstLogin: boolean = value.$value;
+                              if (firstLogin) {
+                                this.router.navigateByUrl('country-admin/new-country/new-country-password');
+                              } else {
+                                this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+                              }
+                            });
+                        }
+                      });
+                      this.af.database.list(Constants.APP_STATUS + '/countryDirector', {preserveSnapshot: true})
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(snapshots => {
+                          snapshots.forEach(snapshot => {
+                            if (snapshot.key == success.uid) {
                               this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
                             }
                           });
-                          this.subscriptions.add(subscription);
-                        }
-                      });
-                      this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
-                      this.showAlert(true);
-
+                          this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
+                          this.showAlert(true);
+                        });
                     });
-                  this.subscriptions.add(countryAdminLoginSubscription);
-
                 });
-              this.subscriptions.add(agencyAdminLoginSubscription);
-
             });
-          this.subscriptions.add(systemAdminLoginSubscription);
         })
         .catch((error) => {
           // error.message can't be used here as they won't be translated. A global message is shown here instead.
@@ -133,7 +143,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.showAlert(true);
         });
       this.inactive = true;
-    } else {
+    }
+    else {
       this.showAlert(true);
     }
   }
@@ -142,16 +153,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loaderInactive = true;
     if (error) {
       this.inactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.inactive = true;
-      });
-      this.subscriptions.add(subscription);
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
+          this.inactive = true;
+        });
     } else {
       this.successInactive = false;
-      let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-        this.successInactive = true;
-      });
-      this.subscriptions.add(subscription);
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
+          this.successInactive = true;
+        });
     }
   }
 

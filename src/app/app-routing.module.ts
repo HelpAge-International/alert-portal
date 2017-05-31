@@ -81,6 +81,10 @@ import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/countr
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
+import {ReviewResponsePlanComponent} from "./dashboard/review-response-plan/review-response-plan.component";
+import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
+import {ViewResponsePlanComponent} from "./response-plans/view-response-plan/view-response-plan.component";
+import {CountryOfficePartnersComponent} from "./country-admin/country-office-profile/partners/partners.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -113,7 +117,10 @@ const routes: Routes = [
     {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
     {path: 'system-admin/system-settings', component: SystemSettingsComponent},
     {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
-    {path: 'system-admin/system-settings/system-settings-response-plans', component: SystemSettingsResponsePlansComponent},
+    {
+        path: 'system-admin/system-settings/system-settings-response-plans',
+        component: SystemSettingsResponsePlansComponent
+    },
 
     /**
      * Agency admin
@@ -156,16 +163,24 @@ const routes: Routes = [
     {path: 'country-admin/country-account-settings/country-change-password', component: CountryChangePasswordComponent},
     {path: 'country-admin/country-messages', component: CountryMessagesComponent},
     {path: 'country-admin/country-messages/country-create-edit-message', component: CountryCreateEditMessageComponent},
-    {path: 'country-admin/country-messages/country-create-edit-message/:id', component: CountryCreateEditMessageComponent},
+    {
+        path: 'country-admin/country-messages/country-create-edit-message/:id',
+        component: CountryCreateEditMessageComponent
+    },
     {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
     {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
     {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
     {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
-    {path: 'country-admin/settings/country-notification-settings/country-add-external-recipient', component: CountryAddExternalRecipientComponent},
+    {
+        path: 'country-admin/settings/country-notification-settings/country-add-external-recipient',
+        component: CountryAddExternalRecipientComponent
+    },
     {path: 'country-admin/country-staff', component: CountryStaffComponent},
     {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
     {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
+    //{path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
+    {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
     {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
     {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 
@@ -175,6 +190,11 @@ const routes: Routes = [
     {path: 'dashboard', component: DashboardComponent},
     {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
     {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
+    {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
+    {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
+    {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+    {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+
 
     /**
      * Risk Monitoring
@@ -188,7 +208,11 @@ const routes: Routes = [
     /**
      * Preparedness
      */
+    {path: 'preparedness/minimum/:countryId/:agencyId', component: MinimumPreparednessComponent},
+    {path: 'preparedness/minimum/:countryId', component: MinimumPreparednessComponent},
     {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId/:agencyId', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId', component: AdvancedPreparednessComponent},
     {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
     {path: 'preparedness/budget', component: BudgetPreparednessComponent},
     {path: 'preparedness/select', component: SelectPreparednessComponent},
@@ -204,6 +228,7 @@ const routes: Routes = [
     {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
     {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
     {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
+    {path: 'response-plans/view-response-plan/view-response-plan', component: ViewResponsePlanComponent},
 
     /**
      * Maps
@@ -212,8 +237,8 @@ const routes: Routes = [
     {path: 'map/map-countries-list', component: MapCountriesListComponent},
 
     /*
-    * test
-    * */
+     * test
+     * */
     {path: 'export', component: ExportTestComponent}
 
 ];

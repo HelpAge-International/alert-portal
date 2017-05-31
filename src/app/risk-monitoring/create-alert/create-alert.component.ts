@@ -6,9 +6,8 @@ import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
-import {AlertModel} from "../../model/alert.model";
+import {ModelAlert} from "../../model/alert.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
-import {ModelHazard} from '../../model/hazard.model';
 
 @Component({
     selector: 'app-create-alert',
@@ -50,7 +49,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
     }
 
     initAlertData() {
-        this.alertData = new AlertModel();
+        this.alertData = new ModelAlert();
         this.addAnotherAreas();
     }
 
@@ -100,7 +99,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
                 this.alertData.approval['countryDirector'] = [];
                 this.alertData.approval['countryDirector'][this.directorCountryID] = 0;
                 this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
-
 
                 var dataToSave = this.alertData;
 
@@ -221,6 +219,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
         if (!pattern.test(inputChar) && event.charCode) {
             // invalid character, prevent input
             event.preventDefault();
+            this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.ERROR_ONLY_NUMBERS', AlertMessageType.Error);
         }
     }
 
