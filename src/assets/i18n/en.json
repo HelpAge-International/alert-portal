@@ -942,7 +942,17 @@
       "TITLE_TEXT": "Country Office Messages"
     },
     "PROFILE": {
-      "TITLE_TEXT": "Country Office Profile"
+      "TITLE_TEXT": "Country Office Profile",
+      "MENU": {
+        "PROGRAMME": "Programme",
+        "OFFICE_CAPACITY": "Office capacity",
+        "PARTNERS": "Partners",
+        "EQUIPMENT": "Equipment",
+        "COORDINATION": "Coordination",
+        "STOCK_CAPACITY": "Stock Capacity",
+        "DOCUMENTS": "Documents",
+        "CONTACTS": "Contacts"
+      }
     },
     "VIEW_MY_AGENCY": {
       "TITLE": "Helpage International: Overview",

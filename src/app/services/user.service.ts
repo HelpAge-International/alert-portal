@@ -174,6 +174,24 @@ export class UserService {
     return partnerUserSubscription;
   }
 
+  getCountryOfficePartnerUsers(agencyId: string, countryId: string): Observable<PartnerModel[]> {
+     let partners: PartnerModel[] = [];
+     const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partners')
+      .flatMap(partners => {
+        return Observable.from(partners.map(partner => partner.$key));
+        })
+      .flatMap( partnerId => {
+        partners = []; // reinitialize list to prevent duplication
+        return this.getPartnerUser(partnerId as string);
+      })
+      .map( partner => {
+        partners.push(partner);
+        return partners;
+      });
+
+      return partnerUsersSubscription;
+  }
+
   getPartnerUsers(): Observable<PartnerModel[]> {
     const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
       .map(items => {

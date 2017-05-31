@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularFire } from 'angularfire2';
 import { Constants } from '../../../utils/Constants';
 import { AlertMessageType } from '../../../utils/Enums';
 import { RxHelper } from '../../../utils/RxHelper';
@@ -9,7 +8,6 @@ import { AlertMessageModel } from '../../../model/alert-message.model';
 import { PartnerOrganisationService } from '../../../services/partner-organisation.service';
 import { PartnerOrganisationModel } from '../../../model/partner-organisation.model';
 import { PartnerModel } from '../../../model/partner.model';
-import { NotificationSettingsService } from '../../../services/notification-settings.service';
 import { ModelUserPublic } from '../../../model/user-public.model';
 import { UserService } from "../../../services/user.service";
 import { CountryAdminModel } from "../../../model/country-admin.model";
@@ -21,37 +19,32 @@ declare var jQuery: any;
   selector: 'app-country-office-partners',
   templateUrl: './partners.component.html',
   styleUrls: ['./partners.component.css'],
-  providers: [PartnerOrganisationService, NotificationSettingsService, UserService]
+  providers: [PartnerOrganisationService]
 })
 
 export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
-  private isEdit = false;
   private uid: string;
+  private agencyId: string;
+  private countryId: string;
 
   // Constants and enums
-  private userTitle = Constants.PERSON_TITLE;
-  private userTitleSelection = Constants.PERSON_TITLE_SELECTION;
-  private notificationsSettingsSelection = Constants.NOTIFICATION_SETTINGS;
   private alertMessageType = AlertMessageType;
 
   // Models
   private alertMessage: AlertMessageModel = null;
-  private partner: PartnerModel;
+  private partners: PartnerModel[];
   private partnerOrganisations: PartnerOrganisationModel[] = [];
-  private userPublic: ModelUserPublic;
   private countryAdmin: CountryAdminModel;
 
   constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
-              private _notificationSettingsService: NotificationSettingsService,
               private _sessionService: SessionService,
               private router: Router,
               private route: ActivatedRoute,
               private subscriptions: RxHelper){
-    this.partner = this._sessionService.partner || new PartnerModel();
+    //this.partners = [];
     this.partnerOrganisations = [];
-    this.userPublic = this._sessionService.user || new ModelUserPublic(null, null, null, null); // no parameterless constructor
   }
 
   ngOnDestroy() {
@@ -69,98 +62,28 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
 
-      try {
-        this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-          this.countryAdmin = countryAdminUser;
+        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+        this.countryId = countryAdminUser.countryId;
 
-          this._partnerOrganisationService.getPartnerOrganisations()
-              .subscribe(partnerOrganisations => { this.partnerOrganisations = partnerOrganisations; });
-
-          const editSubscription = this.route.params.subscribe((params: Params) => {
-              if (params['id']) {
-                this.isEdit = true;
-
-                const userSubscription = this._userService.getUser(params['id']).subscribe(user => {
-                    if(user) { if(user) { this.userPublic = user; } }
+        this._userService.getCountryOfficePartnerUsers(this.agencyId, this.countryId)
+                .subscribe(partners => {
+                  this.partners = partners;
+                  this.partners.forEach(partner => {
+                    if( !this.partnerOrganisations.find( x => x.id == partner.partnerOrganisationId))
+                    {
+                      this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+                                .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.partnerOrganisationId] = partnerOrganisation; })
+                    }
+                  })
                 });
-                this.subscriptions.add(userSubscription);
-
-                const partnerSubscription = this._userService.getPartnerUser(params['id']).subscribe(partner => { 
-                    if(partner) { if(partner) { this.partner = partner; } } 
-                });
-                this.subscriptions.add(partnerSubscription);
-              }else{
-                this._notificationSettingsService.getNotificationSettings(Object.keys(this.countryAdmin.agencyAdmin)[0])
-                  .subscribe(notificationSettings => { this.partner.notificationSettings = notificationSettings });
-              }
-            })
-          this.subscriptions.add(editSubscription);
         });
-      }
-      catch(err) { console.log(err); }
     })
     this.subscriptions.add(authSubscription);
   }
 
-
-  setPartnerOrganisation(optionSelected){
-    if(optionSelected === 'addNewPartnerOrganisation')
-    {
-      this.router.navigateByUrl('response-plans/add-partner-organisation');
-    }
-  }
-  
-  validateForm(): boolean {
-    this.alertMessage = this.partner.validate() || this.userPublic.validate(['city']);
-
-
-    /*
-    *  Specific component validation BELOW
-    *
-    * if(this.partner.projectName === this.userPublic.firstName  )
-    * {
-    *   this.alertMessage = new AlertMessageModel('ERROR message');
-    * }
-    */
-
-    return !this.alertMessage;
-  }
-
-  submit() {
-      this._userService.savePartnerUser(this.partner, this.userPublic)
-            .then(user => {
-              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
-              setTimeout(() => this.router.navigateByUrl('/country-admin/country-staff'), Constants.ALERT_REDIRECT_DURATION);
-            })
-            .catch(err => {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
-  }
-
-  deletePartner() {
-    jQuery('#delete-action').modal('show');
-  }
-
-  deleteAction() {
-    this.closeModal();
-    this._userService.deletePartnerUser(this.partner.id)
-      .then(() => {
-        this.router.navigateByUrl('/country-admin/country-staff');
-        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_DELETED', AlertMessageType.Success);
-      })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-  }
-
-  closeModal() {
-    jQuery('#delete-action').modal('hide');
-  }
-
-  goBack(){
+  goBack() {
     this.router.navigateByUrl('/country-admin/country-staff');
   }
 }
