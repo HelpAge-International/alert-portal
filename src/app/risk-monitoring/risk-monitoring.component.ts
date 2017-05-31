@@ -132,7 +132,7 @@ export class RiskMonitoringComponent implements OnInit {
                             log.addedByFullName = user.firstName + ' ' + user.lastName;
                         })
                     });
-                    indicator.logs = logs;
+                    indicator.logs = this._sortLogsByDate(logs);
                 });
             });
 
@@ -156,7 +156,7 @@ export class RiskMonitoringComponent implements OnInit {
                                         log.addedByFullName = user.firstName + ' ' + user.lastName;
                                     })
                                 });
-                                indicator.logs = logs;
+                                indicator.logs = this._sortLogsByDate(logs);
                             });
                         });
                         hazard.indicators = indicators;
@@ -351,7 +351,6 @@ export class RiskMonitoringComponent implements OnInit {
         this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
             .update(dataToUpdate)
             .then(_ => {
-
                 this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
                 return true;
             }).catch(error => {
@@ -364,6 +363,15 @@ export class RiskMonitoringComponent implements OnInit {
     _getCurrentTimestamp() {
         var currentTimeStamp = new Date().getTime();
         return currentTimeStamp;
+    }
+
+    _sortLogsByDate(array: any) {
+        var byDate = array.slice(0);
+        var result = byDate.sort(function (a, b) {
+            return b.timeStamp - a.timeStamp;
+        });
+
+        return result;
     }
 
     private navigateToLogin() {
