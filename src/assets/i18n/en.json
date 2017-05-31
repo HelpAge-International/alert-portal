@@ -842,6 +842,8 @@
       "DELETE_DIALOG_TITLE": "Delete Partner",
       "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this partner?",
       "SUCCESS_DELETED": "The partner has been successfully deleted",
+      "STATUS_AWAITING_VALIDATION": "Awaiting validation",
+      "STATUS_VALIDATED": "Validated",
       "PERMISSIONS": {
         "TITLE": "Permissions",
         "CHS_ACTIONS": "CHS Actions",
@@ -948,6 +950,25 @@
         "STOCK_CAPACITY": "Stock Capacity",
         "DOCUMENTS": "Documents",
         "CONTACTS": "Contacts"
+      },
+      "PARTNERS":{
+        "TITLE_TEXT": "Partners",
+        "IMPLEMENTING_PARTNERS": "Current Implementing partners",
+        "EDIT": "Edit partners",
+        "VIEW": "View partners",
+        "ADD": "Add",
+        "EMPTY_LIST": "Use the edit partners button to add your partner organisations",
+        "UPDATED": "Updated",
+        "ORGANISATION": "Organisation",
+        "RELATIONSHIP": "Relationship",
+        "AREAS_OF_OPERATION": "Areas of operation",
+        "STATUS": "Status",
+        "PARTNERSHIP_DETAILS": "Partnership details",
+        "NOTES": "Notes",
+        "CONTACT_NAME": "Contact's Name",
+        "CONTACT_EMAIL": "Contact's Email",
+        "CONTACT_PHONE": "Contact's Telephone",
+        "CONTACT_POSITION": "Contact's Position"
       }
     },
     "VIEW_MY_AGENCY": {

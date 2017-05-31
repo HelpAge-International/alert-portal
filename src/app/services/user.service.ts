@@ -219,6 +219,7 @@ export class UserService {
       return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
         .then(newUser => {
           partner.id = newUser.uid;
+          partner.createdAt = Date.now();
           return this.savePartnerUser(partner, userPublic);
         })
         .catch(err => {
@@ -238,6 +239,8 @@ export class UserService {
             });
         }
       })
+
+      partner.modifiedAt = Date.now();
 
       partnerData['/userPublic/' + uid + '/'] = userPublic;
       partnerData['/partner/' + uid + '/'] = partner;

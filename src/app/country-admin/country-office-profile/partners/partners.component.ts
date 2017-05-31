@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Constants } from '../../../utils/Constants';
-import { AlertMessageType } from '../../../utils/Enums';
+import { AlertMessageType, ResponsePlanSectors } from '../../../utils/Enums';
 import { RxHelper } from '../../../utils/RxHelper';
 import { ActivatedRoute, Params, Router} from '@angular/router';
 
@@ -13,6 +13,7 @@ import { UserService } from "../../../services/user.service";
 import { CountryAdminModel } from "../../../model/country-admin.model";
 import { DisplayError } from "../../../errors/display.error";
 import { SessionService } from "../../../services/session.service";
+import { CommonService } from "../../../services/common.service";
 declare var jQuery: any;
 
 @Component({
@@ -23,27 +24,35 @@ declare var jQuery: any;
 })
 
 export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
-
+  private isEdit = false;
+  private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private agencyId: string;
   private countryId: string;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
+  
+  PARTNER_STATUS = Constants.PARTNER_STATUS;
+  RESPONSE_PLAN_SECTORS = ResponsePlanSectors;
+  RESPONSE_PLAN_SECTORS_SELECTION = Constants.RESPONSE_PLANS_SECTORS;
 
   // Models
   private alertMessage: AlertMessageModel = null;
   private partners: PartnerModel[];
   private partnerOrganisations: PartnerOrganisationModel[] = [];
   private countryAdmin: CountryAdminModel;
+  private areasOfOperation: number[];
+  private countryLevelsValues: any;
 
   constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
+              private _commonService: CommonService,
               private _sessionService: SessionService,
               private router: Router,
               private route: ActivatedRoute,
               private subscriptions: RxHelper){
-    //this.partners = [];
+    this.areasOfOperation = [];
     this.partnerOrganisations = [];
   }
 
@@ -78,12 +87,49 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                     }
                   })
                 });
-        });
+
+        // get the country levels values
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+          .subscribe(content => {
+            this.countryLevelsValues = content;
+            err => console.log(err);
+          });
+      });
     })
     this.subscriptions.add(authSubscription);
   }
 
   goBack() {
     this.router.navigateByUrl('/country-admin/country-staff');
+  }
+
+  getAreasOfOperation(partnerOrganisation: PartnerOrganisationModel) {
+    let areasOfOperation: string[] = [];
+    if(partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
+      partnerOrganisation.projects.forEach(project => {
+        project.operationAreas.forEach(location => { 
+          const locationName = 
+              this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+          areasOfOperation.push(locationName);
+        });
+      })
+      return areasOfOperation.join(',');
+    }
+  }
+
+  editPartners() {
+    this.isEdit = true;
+  }
+
+  showPartners() {
+    this.isEdit = false;
+  }
+
+  addPartnerOrganisation() {
+    this.router.navigateByUrl('/response-plans/add-partner-organisation');
+  }
+
+  editPartnerOrganisation(partnerOrganisationId) {
+    this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}]);
   }
 }
