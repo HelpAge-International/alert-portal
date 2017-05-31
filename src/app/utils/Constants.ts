@@ -490,6 +490,29 @@ export class Constants {
     "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO",
     "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
   ];
+
+  // All = 0,
+  // GlobalDirector = 1,
+  // RegionalDirector = 2,
+  // CountryDirector = 3,
+  // ErtLeader = 4,
+  // Ert = 5,
+  // Donor = 6,
+  // GlobalUser = 7,
+  // CountryAdmin = 8,
+  // NonAlert = 9
+  static USER_TYPE_PATH = [
+    null,
+    null,
+    null,
+    "countryDirector",
+    null,
+    null,
+    null,
+    null,
+    "administratorCountry",
+    null
+  ];
 }
 
 export enum FILE_SETTING {

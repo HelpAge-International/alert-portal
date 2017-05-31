@@ -285,13 +285,12 @@ export class UserService {
 
   //get user country id
   getCountryId(userType, uid): Observable<string> {
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
+    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
       .map(countryId => {
         if (countryId.$value) {
           return countryId.$value
         }
       });
-    return subscription;
   }
 
   getAgencyId(userType, uid): Observable<string> {
