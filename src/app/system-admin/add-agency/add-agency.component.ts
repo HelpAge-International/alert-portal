@@ -9,9 +9,12 @@ import {ModelAgency} from "../../model/agency.model";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
-import {PersonTitle, Country} from "../../utils/Enums";
+import {PersonTitle, Country, DurationType, Privacy} from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
+import {ClockSettingModel, ClockSettingsModel} from "../../model/clock-settings.model";
+import {ModuleSettingsModel} from "../../model/module-settings.model";
+import {NotificationSettingsModel} from "../../model/notification-settings.model";
 declare var jQuery: any;
 
 @Component({
@@ -88,37 +91,37 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agency => {
-      this.agencyName = agency.name;
-      this.preAgencyName = agency.name;
-      this.adminId = agency.adminId;
-      this.isDonor = agency.isDonor;
+        this.agencyName = agency.name;
+        this.preAgencyName = agency.name;
+        this.adminId = agency.adminId;
+        this.isDonor = agency.isDonor;
 
-      //load from user public
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(user => {
-          this.userPublic = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
-          this.userPublic.addressLine1 = user.addressLine1;
-          this.userPublic.addressLine2 = user.addressLine2;
-          this.userPublic.addressLine3 = user.addressLine3;
-          this.userPublic.country = user.country;
-          this.userPublic.city = user.city;
-          this.userPublic.postCode = user.postCode;
+        //load from user public
+        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
+            this.userPublic = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
+            this.userPublic.addressLine1 = user.addressLine1;
+            this.userPublic.addressLine2 = user.addressLine2;
+            this.userPublic.addressLine3 = user.addressLine3;
+            this.userPublic.country = user.country;
+            this.userPublic.city = user.city;
+            this.userPublic.postCode = user.postCode;
 
-          this.agencyAdminTitle = user.title;
-          this.agencyAdminFirstName = user.firstName;
-          this.agencyAdminLastName = user.lastName;
-          this.agencyAdminTitle = user.title;
-          this.agencyAdminEmail = user.email;
-          this.emailInDatabase = user.email;
-          this.agencyAdminAddressLine1 = user.addressLine1;
-          this.agencyAdminAddressLine2 = user.addressLine2;
-          this.agencyAdminAddressLine3 = user.addressLine3;
-          this.agencyAdminCountry = user.country;
-          this.agencyAdminCity = user.city;
-          this.agencyAdminPostCode = user.postCode;
-        });
-    });
+            this.agencyAdminTitle = user.title;
+            this.agencyAdminFirstName = user.firstName;
+            this.agencyAdminLastName = user.lastName;
+            this.agencyAdminTitle = user.title;
+            this.agencyAdminEmail = user.email;
+            this.emailInDatabase = user.email;
+            this.agencyAdminAddressLine1 = user.addressLine1;
+            this.agencyAdminAddressLine2 = user.addressLine2;
+            this.agencyAdminAddressLine3 = user.addressLine3;
+            this.agencyAdminCountry = user.country;
+            this.agencyAdminCity = user.city;
+            this.agencyAdminPostCode = user.postCode;
+          });
+      });
   }
 
   onSubmit() {
@@ -303,6 +306,43 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agency.adminId = uid;
       // agency.logoPath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIccywWWDQhnGZDG6P4g4A9pJfSF9k8Xmsknac5C0TO-w_axRH";
       agencyData["/agency/" + uid] = agency;
+
+      //init clock settings
+      let preparedness = new ClockSettingModel();
+      preparedness.durationType = DurationType.Year;
+      preparedness.value = 1;
+      let responsePlans = new ClockSettingModel();
+      responsePlans.durationType = DurationType.Year;
+      responsePlans.value = 1;
+      let hazardsValidFor = new ClockSettingModel();
+      hazardsValidFor.durationType = DurationType.Year;
+      hazardsValidFor.value = 1;
+      let showLogsFrom = new ClockSettingModel();
+      showLogsFrom.durationType = DurationType.Year;
+      showLogsFrom.value = 1;
+      let clockSettings = new ClockSettingsModel();
+      clockSettings.preparedness = preparedness;
+      clockSettings.responsePlans = responsePlans;
+      clockSettings.riskMonitoring.hazardsValidFor = hazardsValidFor;
+      clockSettings.riskMonitoring.showLogsFrom = showLogsFrom;
+      agencyData["/agency/" + uid + "/clockSettings"] = clockSettings;
+
+      //init module settings
+      let moduleList:ModuleSettingsModel[] = [];
+      for (let i = 0; i < 10; i++) {
+        let setting = new ModuleSettingsModel();
+        setting.privacy = Privacy.Public;
+        setting.status = true;
+        moduleList.push(setting);
+      }
+      agencyData["/module/" + uid] = moduleList;
+
+      //init notification settings
+      let notificationList:NotificationSettingsModel[] = [];
+      for (let i=0;i<6;i++) {
+        let nofificationModel = new NotificationSettingsModel();
+        // nofificationModel
+      }
     }
 
     this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
@@ -362,8 +402,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     Observable.timer(Constants.ALERT_DURATION)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(() => {
-      this.inactive = true;
-    });
+        this.inactive = true;
+      });
   }
 
   /**

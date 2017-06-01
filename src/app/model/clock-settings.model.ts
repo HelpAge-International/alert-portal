@@ -2,11 +2,11 @@ import { BaseModel } from "./base.model";
 import { AlertMessageModel } from "./alert-message.model";
 
 export class ClockSettingsModel extends BaseModel{
-  private preparedness: ClockSettingModel;
-  private responsePlans: ClockSettingModel;
-  private riskMonitoring: { hazardsValidFor: ClockSettingModel, showLogsFrom: ClockSettingModel}
+  public preparedness: ClockSettingModel;
+  public responsePlans: ClockSettingModel;
+  public riskMonitoring: { hazardsValidFor: ClockSettingModel, showLogsFrom: ClockSettingModel}
 
-  
+
   validate(excludedFields = []): AlertMessageModel {
     if (!this.preparedness && !this.isExcluded('preparedness', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.NO_PREPAREDNESS_DURATION');
@@ -22,10 +22,10 @@ export class ClockSettingsModel extends BaseModel{
 }
 
 export class ClockSettingModel extends BaseModel{
-  private durationType: number;
-  private value: number;
+  public durationType: number;
+  public value: number;
 
-  
+
   validate(excludedFields = []): AlertMessageModel {
     if (!this.durationType && !this.isExcluded('durationType', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.NO_DURATION');
