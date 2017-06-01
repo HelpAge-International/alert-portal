@@ -91,7 +91,7 @@
               </select>
             </div>
             <div *ngIf="loadedAlert?.affectedAreas?.length>1" class="col-sm-3 form-group">
-              <a href="javascript:void(0)" class="text-danger" (click)="removeArea(i)">Remove</a>
+              <a href="javascript:void(0)" class="text-danger" (click)="removeArea(i)">{{"GLOBAL.REMOVE" | translate}}</a>
             </div>
           </div>
         </div>
