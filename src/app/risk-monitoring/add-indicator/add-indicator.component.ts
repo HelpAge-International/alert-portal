@@ -1,15 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {Indicator} from "../../model/indicator";
-import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario} from "../../utils/Enums";
+import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../model/indicator-source.model";
 import {IndicatorTriggerModel} from "../../model/indicator-trigger.model";
+import {AlertMessageModel} from '../../model/alert-message.model';
 import {ModelUserPublic} from "../../model/user-public.model";
+import {LocalStorageService} from 'angular-2-local-storage';
 @Component({
     selector: 'app-add-indicator',
     templateUrl: './add-indicator.component.html',
@@ -17,6 +19,9 @@ import {ModelUserPublic} from "../../model/user-public.model";
     providers: [CommonService]
 })
 export class AddIndicatorRiskMonitoringComponent implements OnInit {
+
+    alertMessageType = AlertMessageType;
+    private alertMessage: AlertMessageModel = null;
 
     public uid: string;
     public countryID: string;
@@ -35,7 +40,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
 
 
-    private countries = Country;
+    private countries = Constants.COUNTRY;
+    private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
     private frequency = new Array(100);
 
     private countryLevels: any[] = [];
@@ -72,14 +78,62 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
         HazardScenario.HazardScenario26,
     ];
 
-    private hazardID: number;
     private usersForAssign: any = [];
+    private isEdit: boolean = false;
+    private hazardID: any;
+    private indicatorID: any;
+    private url: string;
+    private hazards: Array<any> = [];
+    private hazardsObject: any = {};
 
-    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
-        this.indicatorData = new Indicator();
-        this.addAnotherSource();
-        this.addAnotherLocation();
-        this.addIndicatorTrigger();
+    constructor(
+        private subscriptions: RxHelper,
+        private af: AngularFire,
+        private router: Router,
+        private _commonService: CommonService,
+        private route: ActivatedRoute,
+        private storage: LocalStorageService
+    ) {
+        this.initIndicatorData();
+    }
+
+
+    initIndicatorData() {
+        let subscription = this.route.params.subscribe((params: Params) => {
+            this.indicatorData = new Indicator();
+            if (!params['hazardID']) {
+                console.log('hazardID cannot be empty');
+                this.router.navigate(["/risk-monitoring"]);
+                return false;
+            }
+
+            this.hazardID = params['hazardID'];
+
+            if (params['indicatorID']) {
+                this.isEdit = true;
+                this.hazardID = params['hazardID'];
+                this.indicatorID = params['indicatorID'];
+
+                this.af.auth.subscribe(auth => {
+                    if (auth) {
+                        this.uid = auth.uid;
+                        this.getCountryID().then(() => {
+                            this._getIndicator(this.hazardID, this.indicatorID);
+                        });
+
+                    } else {
+                        this.navigateToLogin();
+                    }
+                });
+
+            } else {
+                this.addAnotherSource();
+                this.addAnotherLocation();
+                this.addIndicatorTrigger();
+            }
+
+        });
+        this.subscriptions.add(subscription);
     }
 
     ngOnInit() {
@@ -87,15 +141,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
             if (auth) {
                 this.uid = auth.uid;
                 this.getCountryID().then(() => {
+                    this._getHazards();
                     this.getUsersForAssign();
                 });
-
-                // get the country levels
-                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_FILE)
-                    .subscribe(content => {
-                        this.countryLevels = content;
-                        err => console.log(err);
-                    });
 
                 // get the country levels values
                 this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -114,8 +162,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     stateGeoLocation(event: any) {
         var geoLocation = parseInt(event.target.value);
         this.indicatorData.geoLocation = geoLocation;
-        console.log(this.countryLevelsValues);
-
     }
 
 
@@ -166,7 +212,222 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit {
     }
 
     saveIndicator() {
-        console.log(this.indicatorData);
+        if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+            this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
+        }
+        this._validateData().then((isValid: boolean) => {
+            if (isValid) {
+                this.indicatorData.triggerSelected = 0;
+                this.indicatorData.category = parseInt(this.indicatorData.category);
+                this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType, this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue);
+                var dataToSave = this.indicatorData;
+
+                var urlToPush;
+                var urlToEdit;
+
+                if (this.hazardID == 'countryContext') {
+                    urlToPush = Constants.APP_STATUS + '/indicator/' + this.countryID;;
+                    urlToEdit = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.indicatorID;;
+                } else {
+                    urlToPush = Constants.APP_STATUS + '/indicator/' + this.hazardID;
+                    urlToEdit = Constants.APP_STATUS + '/indicator/' + this.hazardID + '/' + this.indicatorID;
+                }
+
+                if (!this.isEdit) {
+                    this.af.database.list(urlToPush)
+                        .push(dataToSave)
+                        .then(() => {
+                            this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
+                            this.indicatorData = new Indicator();
+                            this.addAnotherSource();
+                            this.addAnotherLocation();
+                            this.addIndicatorTrigger();
+                        }).catch((error: any) => {
+                            console.log(error, 'You do not have access!')
+                        });
+                } else {
+                    delete dataToSave.id;
+                    this.af.database.object(urlToEdit)
+                        .set(dataToSave)
+                        .then(() => {
+                            this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
+                            return true;
+                        }).catch((error: any) => {
+                            console.log(error, 'You do not have access!')
+                        });
+                }
+
+            }
+        });
+
+    }
+
+    setNewHazardID(event: any) {
+        var hazardID = event.target.value ? event.target.value : false;
+        if (!hazardID) {
+            console.log('hazardID cannot be empty');
+            return false;
+        }
+        this.hazardID = hazardID;
+        this.indicatorData.hazardScenario = this.hazardsObject[hazardID].hazardScenario;
+    }
+
+    _getHazards() {
+        let subscription = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazards: any) => {
+            this.hazards = [];
+            this.hazardsObject = {};
+            for (let hazard in hazards) {
+                hazards[hazard].key = hazard;
+                this.hazards.push(hazards[hazard]);
+                this.hazardsObject[hazard] = hazards[hazard];
+            }
+
+        });
+        this.subscriptions.add(subscription);
+    }
+
+    _getIndicator(hazardID: string, indicatorID: string) {
+
+        //this.indicatorData = new Indicator();
+
+        if (this.hazardID == 'countryContext') {
+            this.url = Constants.APP_STATUS + "/indicator/" + this.countryID + '/' + indicatorID;
+        } else {
+            this.url = Constants.APP_STATUS + "/indicator/" + hazardID + "/" + indicatorID;
+        }
+
+        let subscription = this.af.database.object(this.url).subscribe((indicator: any) => {
+            if (indicator.$value === null) {
+                this.router.navigate(['/risk-monitoring']);
+                return false;
+            }
+            indicator.id = indicatorID;
+            this.indicatorData.setData(indicator);
+        });
+        this.subscriptions.add(subscription);
+    }
+
+    _validateData() {
+
+        let promise = new Promise((res, rej) => {
+            this.alertMessage = this.indicatorData.validate();
+            if (this.alertMessage) {
+                res(false);
+            }
+            if (!this.alertMessage) {
+                this.indicatorData.source.forEach((val, key) => {
+                    this._validateIndicatorSource(val);
+                    if (this.alertMessage) {
+                        res(false);
+                    }
+                });
+                this.indicatorData.trigger.forEach((val, key) => {
+                    this._validateIndicatorTrigger(val);
+                    if (this.alertMessage) {
+                        res(false);
+                    }
+                });
+
+                if (!this.alertMessage) {
+                    if (this.indicatorData.geoLocation == 1) {
+                        this.indicatorData.affectedLocation.forEach((val, key) => {
+                            this._validateOperationArea(val);
+                            if (this.alertMessage) {
+                                res(false);
+                            }
+                        });
+                    }
+                }
+
+                if (!this.alertMessage) {
+                    res(true);
+                }
+
+            }
+        });
+        return promise;
+    }
+
+    _validateIndicatorSource(indicatorSource: IndicatorSourceModel): AlertMessageModel {
+        this.alertMessage = indicatorSource.validate();
+        return this.alertMessage;
+    }
+
+    _validateIndicatorTrigger(indicatorTrigger: IndicatorTriggerModel): AlertMessageModel {
+        this.alertMessage = indicatorTrigger.validate();
+        return this.alertMessage;
+    }
+
+    _validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
+        let excludeFields = [];
+        let countryLevel1Exists = operationArea.country
+            && this.countryLevelsValues[operationArea.country].levelOneValues
+            && this.countryLevelsValues[operationArea.country].levelOneValues.length > 0;
+        if (!countryLevel1Exists) {
+            excludeFields.push("level1", "level2");
+        } else if (countryLevel1Exists && operationArea.level1
+            && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
+                || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+            excludeFields.push("level2");
+        }
+        this.alertMessage = operationArea.validate(excludeFields);
+        return this.alertMessage;
+    }
+
+
+    _calculationDueDate(durationType: number, frequencyValue: number) {
+
+        var currentUnixTime = new Date().getTime();
+        var CurrentDate = new Date();
+        var currentYear = new Date().getFullYear();
+
+        var day = 86400;
+        var week = 604800;
+
+        if (durationType == 0) {
+            var differenceTime = frequencyValue * week;
+        } else if (durationType == 1) {
+            var resultDate = CurrentDate.setMonth(CurrentDate.getMonth() + frequencyValue);
+            var differenceTime = resultDate - currentUnixTime;
+        } else if (durationType == 2) {
+            differenceTime = this._getDifferenceTimeByYear(frequencyValue);
+        }
+
+        var dueDate = currentUnixTime + differenceTime;
+        return dueDate;
+
+    }
+
+    _getDifferenceTimeByYear(years: number) {
+
+        var currentYear = new Date().getFullYear();
+        var year = 315036000;
+        var leapYear = 31622400;
+
+        var i;
+        var differenceTime = 0;
+        for (i = 0; i < years; i++) {
+            currentYear = currentYear + 1;
+            var seconds = this._isLeapYear(currentYear) ? leapYear : year;
+            differenceTime = differenceTime + seconds;
+        }
+        return differenceTime;
+    }
+
+    _isLeapYear(year: number) {
+        var isLeapYear = year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0);
+        if (!isLeapYear) {
+            return false;
+        }
+        return true;
+    }
+
+    checkTypeof(param: any) {
+        if (typeof (param) == 'undefined') {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private navigateToLogin() {

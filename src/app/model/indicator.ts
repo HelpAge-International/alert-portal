@@ -1,15 +1,67 @@
 /**
  * Created by ser-j on 15/05/2017.
  */
-import {HazardCategory, GeoLocation} from '../utils/Enums';
+import {HazardScenario, GeoLocation} from '../utils/Enums';
+import {BaseModel} from "./base.model";
+import {AlertMessageModel} from "./alert-message.model";
+import {IndicatorSourceModel} from "./indicator-source.model";
+import {IndicatorTriggerModel} from "./indicator-trigger.model";
+import {OperationAreaModel} from "./operation-area.model";
 
-export class Indicator {
+export class Indicator extends BaseModel {
     public id: string;
-    public category: HazardCategory;
-    public name: string;
-    public source: any = [];
+    public category: HazardScenario = 0;
+    public name: string = '';
+    public source: any[] = [];
     public assignee: string;
     public geoLocation: GeoLocation;
-    public affectedLocation: any = [];
-    public trigger: any = [];
+    public affectedLocation: any[] = [];
+    public trigger: any[] = [];
+
+
+    validate(excludedFields = []): AlertMessageModel {
+        if (typeof (this.category) == 'undefined' && !this.isExcluded('category', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_CATEGORY');
+        }
+
+        if (!this.name && !this.isExcluded('name', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_NAME');
+        }
+
+        if (typeof (this.geoLocation) == 'undefined' && !this.isExcluded('geoLocation', excludedFields)) {
+            return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_GEO_LOCATION');
+        }
+
+        return null;
+    }
+
+    setData(indicator) {
+        
+        this.id = indicator.id;
+        this.category = indicator.category;
+        this.name = indicator.name;
+        this.assignee = indicator.assignee;
+        this.geoLocation = indicator.geoLocation;
+        this.source = [];
+        this.affectedLocation = [];
+        this.trigger = [];
+
+        indicator.source.forEach((source, key) => {
+            this.source.push(new IndicatorSourceModel());
+            this.source[key].setData(source);
+        });
+
+        indicator.trigger.forEach((trigger, key) => {
+            this.trigger.push(new IndicatorTriggerModel());
+            this.trigger[key].setData(trigger);
+        });
+
+        if (this.geoLocation == 1) {
+            indicator.affectedLocation.forEach((location, key) => {
+                this.affectedLocation.push(new OperationAreaModel());
+                this.affectedLocation[key].setData(location);
+            });
+        }
+
+    }
 }

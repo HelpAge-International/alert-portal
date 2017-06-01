@@ -1,59 +1,79 @@
 <!DOCTYPE html>
 <html dir="auto" lang="en">
-<head>
-  <base href="/"> <!-- Angular routing -->
-  <meta charset="UTF-8">
-  <!--[if IE]>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <![endif]-->
-  <title>Alert</title>
-  <!-- <link href='img/apple-touch-icon-precomposed.png' rel='apple-touch-icon-precomposed' sizes='192x192'> -->
-  <!-- <link href='img/favicon.ico' rel='shortcut icon' type='image/x-icon'> -->
-  <meta name="theme-color" content="#ffffff">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="assets/css/main.css">
-  <!--<link href="node_modules/@angular/material/core/theming/prebuilt/indigo-pink.css" rel="stylesheet">-->
-  <!--[if lt IE 9]>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-  <![endif]-->
-</head>
-<body>
-<!--[if lt IE 9]>
-<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-<![endif]-->
-<div id="wrap"><!-- start #wrap -->
+    <head>
+        <base href="/"> <!-- Angular routing -->
+        <meta charset="UTF-8">
+        <!--[if IE]>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <![endif]-->
+        <title>Alert</title>
+        <!-- <link href='img/apple-touch-icon-precomposed.png' rel='apple-touch-icon-precomposed' sizes='192x192'> -->
+        <!-- <link href='img/favicon.ico' rel='shortcut icon' type='image/x-icon'> -->
+        <meta name="theme-color" content="#ffffff">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+        <link rel="stylesheet" href="assets/css/main.css">
+        <!--<link href="node_modules/@angular/material/core/theming/prebuilt/indigo-pink.css" rel="stylesheet">-->
+        <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <!--[if lt IE 9]>
+        <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="wrap"><!-- start #wrap -->
 
-  <app-root></app-root>
+            <app-root></app-root>
 
-</div><!-- end #wrap -->
+        </div><!-- end #wrap -->
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-  <script src="https://use.fontawesome.com/1e6803cc8c.js"></script>
-  <!-- inject:js -->
-  <script src="assets/js/vendor/jquery.js"></script>
-  <script src="assets/js/vendor/tableExport.js"></script>
-  <script src="assets/js/vendor/jquery.base64.js"></script>
-  <!-- endinject -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/1e6803cc8c.js"></script>
+        <!-- inject:js -->
+        <script src="assets/js/vendor/jquery.js"></script>
+        <script src="assets/js/vendor/tableExport.js"></script>
+        <script src="assets/js/vendor/jquery.base64.js"></script>
+        <!-- endinject -->
+        <script src="assets/js/main.js"></script>
+        <script>
+            function loadedMaps() {
+                console.log("Loaded Google Maps API");
+            }
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1Bc3slcPsdbH2EhAxyhyoJlrrBs6_P_M&callback=loadedMaps"></script>
+        <script>
+            $(function () {
+                $('[data-toggle="popover"]').popover({placement: "right"})
+            });
+        </script>
+        <script>
+//Note: The main wrappers need to have the class .Accordion__Content for the expand/collapse functions to work
 
-  <!-- Bundle of scripts required to run chronoline, take note of Jquery Version -->
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <link rel="stylesheet" type="text/css"
-        href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.0.1/jquery.qtip.min.css"/>
-  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.0.1/jquery.qtip.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-  <script type="text/javascript" src="assets/js/vendor/chronoline.js"></script>
-  <!-- END Bundle -->
-  
-  <script src="assets/js/main.js"></script>
-  <script>
-    function loadedMaps() {
-        console.log("Loaded Google Maps API");
-    }
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1Bc3slcPsdbH2EhAxyhyoJlrrBs6_P_M&callback=loadedMaps"></script>
-  </body>
+
+            $(document).on('click', '.openall', function (e) {
+                e.preventDefault();
+                $('.Accordion__Content:not(".in")')
+                        .collapse('show');
+            });
+
+
+            $(document).on('click', '.closeall', function (e) {
+                e.preventDefault();
+                $('.Accordion__Content')
+                        .collapse('hide');
+            });
+
+            $(document).on('click', '.closealltooltips', function (e) {
+                e.preventDefault();
+                $('.Tooltip__bubble')
+                        .collapse('hide');
+            });
+
+        </script>
+    </body>
 </html>
+
