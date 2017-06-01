@@ -19,7 +19,10 @@ declare var jQuery: any;
 export class AddHazardRiskMonitoringComponent implements OnInit {
     alertMessageType = AlertMessageType;
     private alertMessage: AlertMessageModel = null;
+    private alertMsgSeasonAddToCalendar: boolean = false;
     private hazardName: string;
+    private classAlertInvalid: any;
+    private classAlertValid: any;
     private countryID: string;
     private uid: string;
     private count: number = 1;
@@ -152,6 +155,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit {
             }
         });
     }
+
     cancel() {
         this.count = 1;
     }
@@ -222,6 +226,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit {
             return true;
         }
     }
+
     _getCurrentTimestamp() {
         var currentTimeStamp = new Date().getTime();
         return currentTimeStamp;
@@ -274,6 +279,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit {
             this.saveSelectSeasonsBtn = false;
         }
     }
+
     detected(i) {
         for (let key in this.hazardData.seasons) {
             if (i == key) {
@@ -290,10 +296,22 @@ export class AddHazardRiskMonitoringComponent implements OnInit {
     }
 
     showActionConfirm(modalID: string) {
-        // this.hazardData.seasons = [];
         this._getAllSeasons();
         this.modalID = modalID;
         jQuery("#" + this.modalID).modal("show");
+    }
+
+    msgSeasonToCalendar(form: any) {
+        if (form.value.startTime > form.value.endTime && form.value.endTime != "" && form.value.startTime != "") {
+            this.alertMsgSeasonAddToCalendar = true;
+            this.classAlertInvalid = 'invalid';
+            this.classAlertValid = '';
+        }
+        else {
+            this.classAlertValid = 'valid';
+            this.classAlertInvalid = '';
+            this.alertMsgSeasonAddToCalendar = false;
+        }
     }
 
     createSeasonToCalendar(form: NgForm) {
@@ -301,14 +319,26 @@ export class AddHazardRiskMonitoringComponent implements OnInit {
         let dataToSave = form.value;
         dataToSave.startTime = new Date(dataToSave.startTime).getTime();
         dataToSave.endTime = new Date(dataToSave.endTime).getTime();
-        this.closeModal();
-        this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-            .push(dataToSave)
-            .then(() => {
-                console.log('success save data');
-            }).catch((error: any) => {
-                console.log(error, 'You do not have access!')
-            });
+        if (dataToSave.startTime > dataToSave.endTime) {
+            this.alertMsgSeasonAddToCalendar = false;
+        }
+        else {
+            this.alertMsgSeasonAddToCalendar = true;
+            this.closeModal();
+            this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+                .push(dataToSave)
+                .then(() => {
+                    console.log('success save data');
+                }).catch((error: any) => {
+                    console.log(error, 'You do not have access!')
+                });
+        }
+
+
+    }
+
+    closeModalAddCalendar(modal: any) {
+        jQuery("#" + modal).modal("hide");
     }
 
     closeModal() {
