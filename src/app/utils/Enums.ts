@@ -210,6 +210,12 @@ export enum AgeRange {
   More50 = 2
 }
 
+export enum SourcePlan {
+  Internationally = 0,
+  Regionally = 1,
+  Locally = 2
+}
+
 export enum PhonePrefix {
   GB = 44,
   FR = 33

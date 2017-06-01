@@ -492,6 +492,28 @@ export class Constants {
   ];
 
   static PARTNER_STATUS = ["COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION", "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED"];
+  // All = 0,
+  // GlobalDirector = 1,
+  // RegionalDirector = 2,
+  // CountryDirector = 3,
+  // ErtLeader = 4,
+  // Ert = 5,
+  // Donor = 6,
+  // GlobalUser = 7,
+  // CountryAdmin = 8,
+  // NonAlert = 9
+  static USER_TYPE_PATH = [
+    null,
+    null,
+    null,
+    "countryDirector",
+    null,
+    null,
+    null,
+    null,
+    "administratorCountry",
+    null
+  ];
 }
 
 export enum FILE_SETTING {

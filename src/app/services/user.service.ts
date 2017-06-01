@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { AngularFire, FirebaseAuthState, AuthProviders, AuthMethods } from 'angularfire2';
+import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
@@ -13,7 +13,8 @@ import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
 import {Subscription} from "rxjs/Subscription";
-import { ChangePasswordModel } from "../model/change-password.model";
+import {ChangePasswordModel} from "../model/change-password.model";
+import {recognize} from "@angular/router/src/recognize";
 
 @Injectable()
 export class UserService {
@@ -67,21 +68,24 @@ export class UserService {
   }
 
   getUserByEmail(email): Observable<ModelUserPublic> {
-    if(!email) { return null };
+    if (!email) {
+      return null
+    }
+    ;
     const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
-        query: {
-          orderByChild: "email",
-          equalTo: email
-        }
-      })
+      query: {
+        orderByChild: "email",
+        equalTo: email
+      }
+    })
       .first()
       .map(item => {
-        if(item.length > 0){
+        if (item.length > 0) {
           let userPublic = new ModelUserPublic(null, null, null, null);
           userPublic.id = item.$key;
           userPublic.mapFromObject(item);
           return userPublic;
-        }else{
+        } else {
           return null;
         }
       });
@@ -104,38 +108,44 @@ export class UserService {
     //   //     throw new DisplayError('FIREBASE.' + (err as firebase.FirebaseError).code);
     //   //   });
     // } else {
-      this.getUser(uid).subscribe(oldUser => {
-        if (oldUser.email && oldUser.email !== userPublic.email) {
-          this.getAuthUser();
-          return this.authState.auth.updateEmail(userPublic.email).then(bool => {
+    this.getUser(uid).subscribe(oldUser => {
+      if (oldUser.email && oldUser.email !== userPublic.email) {
+        this.getAuthUser();
+        return this.authState.auth.updateEmail(userPublic.email).then(bool => {
             return this.saveUserPublic(userPublic);
           },
-          error => () => {throw new Error('Cannot update user email')})
-            .catch(err => {
-              throw new Error(err.message);
-            });
-        }
-      })
-      
-      userPublicData['/userPublic/' + uid + '/'] = userPublic;
+          error => () => {
+            throw new Error('Cannot update user email')
+          })
+          .catch(err => {
+            throw new Error(err.message);
+          });
+      }
+    })
 
-      return this.af.database.object(Constants.APP_STATUS).update(userPublicData);
+    userPublicData['/userPublic/' + uid + '/'] = userPublic;
+
+    return this.af.database.object(Constants.APP_STATUS).update(userPublicData);
     //}
   }
 
   changePassword(email: string, password: ChangePasswordModel): firebase.Promise<any> {
     return this.af.auth.login({
-          email: email,
-          password: password.currentPassword
-        },
-        {
-          provider: AuthProviders.Password,
-          method: AuthMethods.Password,
-        })
-        .then(() => {
-          this.authState.auth.updatePassword(password.newPassword).then(() => {
-          }, error => { throw new Error('Cannot update password'); });
-        }, error => { throw new DisplayError('GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD')})
+        email: email,
+        password: password.currentPassword
+      },
+      {
+        provider: AuthProviders.Password,
+        method: AuthMethods.Password,
+      })
+      .then(() => {
+        this.authState.auth.updatePassword(password.newPassword).then(() => {
+        }, error => {
+          throw new Error('Cannot update password');
+        });
+      }, error => {
+        throw new DisplayError('GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD')
+      })
   }
 
   // COUNTRY ADMIN USER
@@ -296,13 +306,12 @@ export class UserService {
 
   //get user country id
   getCountryId(userType, uid): Observable<string> {
-    let subscription = this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
+    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
       .map(countryId => {
         if (countryId.$value) {
           return countryId.$value
         }
       });
-    return subscription;
   }
 
   getAgencyId(userType, uid): Observable<string> {
@@ -313,5 +322,9 @@ export class UserService {
         }
       });
     return subscription;
+  }
+
+  getOrganisationName(id) {
+    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
   }
 }

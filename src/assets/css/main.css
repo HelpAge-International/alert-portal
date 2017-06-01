@@ -10574,6 +10574,7 @@ h3, h4 {
   }
 }
 
+<<<<<<< HEAD
 .Agency__submenu {
   width: 100%;
   padding: 0 1em;
@@ -10586,6 +10587,10 @@ h3, h4 {
      -moz-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
+=======
+.Color__swatch.pal__purple {
+  background: #BD0FE1;
+>>>>>>> master
 }
 
 .Agency__submenu .row {

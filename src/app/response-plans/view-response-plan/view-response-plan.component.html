@@ -10,7 +10,7 @@
       <div class="Ribbon__header__number"><span>1</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -51,7 +51,7 @@
       <div class="Ribbon__header__number"><span>2</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -102,36 +102,35 @@
       <div class="Ribbon__header__number"><span>3</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
   <div class="Response__content No-indent Spaced">
     <div class="Selection-row">
-      <div class="Item__selectable Icon__selectable">
-        <div class="water"></div>
-        <label>WaSH</label></div>
-      <div class="Item__selectable Icon__selectable">
-        <div class="health"></div>
-        <label>Health</label></div>
-    </div>
-
-
-    <div class="form-group">
-      <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
-        translate}}</label>
+      <div *ngFor="let sector of sectors" class="Item__selectable Icon__selectable">
+        <div [class]="imgNames[sector.id]"></div>
+        <label>{{SECTORS[sector.id] | translate}}</label></div>
     </div>
 
     <div class="Response__rule__seperator col-sm-12">
       <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
         translate}}</b></p>
-      <p>Current programmes</p>
+      <p>
+        {{responsePlanToShow.presenceInTheCountry?PresenceInTheCountry[responsePlanToShow.presenceInTheCountry]:"none"}}</p>
     </div>
 
     <div class="Response__rule__seperator col-sm-12">
       <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.METHOD_OF_IMPLEMENTATION" |
         translate}}</b></p>
-      <p>Directly through field staff</p>
+      <p>{{MethodOfImplementation[responsePlanToShow.methodOfImplementation]}}</p>
+    </div>
+
+    <div
+      *ngIf="responsePlanToShow.methodOfImplementation == MethodOfImplementation.withPartner && responsePlanToShow.partnerOrganisations"
+      class="Response__rule__seperator col-sm-12">
+      <p><b>Partners</b></p>
+      <p *ngFor="let name of partnerList">{{name}}</p>
     </div>
 
     <div class="Form-submit__wrapper">
@@ -148,7 +147,7 @@
       <div class="Ribbon__header__number"><span>4</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -184,7 +183,7 @@
       <div class="Ribbon__header__number"><span>5</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -236,7 +235,7 @@
       <div class="Ribbon__header__number"><span>6</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -259,119 +258,73 @@
       <div class="Ribbon__header__number"><span>7</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
   <div class="Response__content No-indent">
-    <div class="Selection-row">
-      <div class="Item__selectable Icon__selectable">
-        <div class="water"></div>
-        <label>WaSH</label></div>
-      <div class="Item__selectable Icon__selectable">
-        <div class="health"></div>
-        <label>Health</label></div>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>ACTIVITY 1</b></p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
-        | translate}}</b></p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-        animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-        magni aliquam minima.</p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
-        | translate}}</b></p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-        animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-        magni aliquam minima.</p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
-        translate}}</b></p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-        animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-        magni aliquam minima.</p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-        | translate}}</b></p>
-      <div class="row">
-        <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
-        <p class="col-sm-3">15,000</p>
-        <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} < 18</p>
-        <p class="col-sm-3">11,000</p>
+    <div *ngFor="let sector of sectors">
+      <div class="Selection-row">
+        <div class="Item__selectable Icon__selectable">
+          <div [class]="imgNames[sector.id]"></div>
+          <label>{{SECTORS[sector.id] | translate}}</label></div>
       </div>
-      <div class="row">
-        <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
-        <p class="col-sm-3">30,000</p>
-        <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
-        <p class="col-sm-3">25,000</p>
+      <div *ngFor="let activity of activityMap.get(sector.id); index as i">
+        <div class="Response__rule__seperator col-sm-12">
+          <p><b>ACTIVITY {{i+1}}</b></p>
+        </div>
+        <div class="Response__rule__seperator col-sm-12">
+          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
+            | translate}}</b></p>
+          <p>{{activity.name}}</p>
+        </div>
+        <div class="Response__rule__seperator col-sm-12">
+          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
+            | translate}}</b></p>
+          <p>{{activity.output}}</p>
+        </div>
+        <div class="Response__rule__seperator col-sm-12">
+          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+            translate}}</b></p>
+          <p>{{activity.indicator}}</p>
+        </div>
+        <div class="Response__rule__seperator col-sm-12">
+          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
+            | translate}}</b></p>
+          <div class="row">
+            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
+            <p class="col-sm-3">{{activity.beneficiary &&
+              activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p>
+            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} < 18</p>
+            <p class="col-sm-3">{{activity.beneficiary &&
+              activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p>
+          </div>
+          <div class="row">
+            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
+            <p class="col-sm-3">{{activity.beneficiary &&
+              activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p>
+            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
+            <p class="col-sm-3">{{activity.beneficiary &&
+              activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p>
+          </div>
+          <div class="row">
+            <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} > 50</p>
+            <p class="col-sm-3">{{activity.beneficiary &&
+              activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p>
+            <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} > 50</p>
+            <p class="col-sm-3">{{activity.beneficiary &&
+              activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p>
+          </div>
+        </div>
+        <hr>
       </div>
-      <div class="row">
-        <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} > 50</p>
-        <p class="col-sm-3">9,000</p>
-        <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} > 50</p>
-        <p class="col-sm-3">12,000</p>
+      <div class="Response__rule__seperator col-sm-12">
+        <p><b>How are you planning to source your goods?</b></p>
+        <p>{{SourcePlan[activityInfoMap.get(sector.id)["sourcePlan"]]}}</p>
+        <p>1. {{activityInfoMap.get(sector.id)["bullet1"]}}</p>
+        <p>2. {{activityInfoMap.get(sector.id)["bullet2"]}}</p>
       </div>
-    </div>
-    <hr>
-    <div class="Selection-row">
-      <div class="Item__selectable Icon__selectable">
-        <div class="water"></div>
-        <label>WaSH</label></div>
-      <div class="Item__selectable Icon__selectable">
-        <div class="health"></div>
-        <label>Health</label></div>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>ACTIVITY 2</b></p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>What is the planned activity?</b></p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-        animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-        magni aliquam minima.</p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>Planned outputs for this activity</b></p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-        animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-        magni aliquam minima.</p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>Provide one indicator (KPI) to capture the effects of this activity</b></p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis architecto ad excepturi, nesciunt
-        animi, qui, fugit quae dolores necessitatibus commodi iusto asperiores harum rem illum voluptatem porro
-        magni aliquam minima.</p>
-    </div>
-    <div class="Response__rule__seperator col-sm-12">
-      <p><b>Beneficiaries of this activity by age and gender</b></p>
-      <div class="row">
-        <p class="col-sm-3">Female < 18</p>
-        <p class="col-sm-3">15,000</p>
-        <p class="col-sm-3">Male < 18</p>
-        <p class="col-sm-3">11,000</p>
-      </div>
-      <div class="row">
-        <p class="col-sm-3">Female 18-50</p>
-        <p class="col-sm-3">30,000</p>
-        <p class="col-sm-3">Male 18-50</p>
-        <p class="col-sm-3">25,000</p>
-      </div>
-      <div class="row">
-        <p class="col-sm-3">Female > 50</p>
-        <p class="col-sm-3">9,000</p>
-        <p class="col-sm-3">Male > 50</p>
-        <p class="col-sm-3">12,000</p>
-      </div>
-    </div>
-    <div class="Form-submit__wrapper">
-      <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}
-      </div>
+      <hr>
     </div>
   </div>
 
@@ -381,7 +334,7 @@
       <div class="Ribbon__header__number"><span>8</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -411,7 +364,7 @@
       <div class="Ribbon__header__number"><span>9</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -458,7 +411,7 @@
       <div class="Ribbon__header__number"><span>10</span>{{"GLOBAL.OF" | translate}} 10</div>
       <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
         translate}}</h4>
-      <div class="Ribbon__header__status text-primary">Incomplete</div>
+      <div class="Ribbon__header__status text-primary"></div>
       <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
     </div>
   </div>
@@ -475,7 +428,8 @@
         (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
       <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow.budget &&
         responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
-        (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
+        (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) :
+        ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
     </div>
     <div class="row">
       <p class="col-sm-4"><b>B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
