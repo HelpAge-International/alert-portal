@@ -13,8 +13,8 @@ import {ModelPlanActivity} from "../../model/plan-activity.model";
 
 @Component({
   selector: 'app-view-response-plan',
-  templateUrl: './view-response-plan.component.html',
-  styleUrls: ['./view-response-plan.component.css']
+  templateUrl: 'view-response-plan.component.html',
+  styleUrls: ['view-response-plan.component.css']
 })
 
 export class ViewResponsePlanComponent implements OnInit, OnDestroy {

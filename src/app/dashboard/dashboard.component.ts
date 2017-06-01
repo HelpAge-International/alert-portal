@@ -36,8 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private tempDirectorUid = "1b5mFmWq2fcdVncMwVDbNh3yY9u2";
 
   private DashboardType = DashboardType;
-  // private DashboardTypeUsed = DashboardType.director;
-  private DashboardTypeUsed = DashboardType.default;
+  private DashboardTypeUsed = DashboardType.director;
+  // private DashboardTypeUsed = DashboardType.default;
 
   private uid: string;
   private countryId: string;
