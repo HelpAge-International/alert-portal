@@ -1204,6 +1204,7 @@
   "ADD_PARTNER": {
     "SELECT_A_PARTNER": "Select a partner",
     "ADD_A_PARTNER_ORGANISATION": "Add partner organisation",
+    "EDIT_PARTNER_ORGANISATION": "Edit partner organisation",
     "PARTNER_ORGANISATION": "Partner Organisation",
     "ADD_ANOTHER_PARTNER_TO_THIS_PLAN": "Add another partner to this plan",
     "ORGANISATION_DETAILS": "Organisation Details",
@@ -1233,6 +1234,8 @@
     "NO_OPERATION_AREA_LEVEL2": "Please select the second level of the country operation area",
     "SUCCESS_SAVED": "The partner organisation was successfully saved",
     "INVALID_DATE": "The project end date is invalid",
+    "DIALOG_DELETE_TITLE": "Delete this partner organisation?",
+    "DIALOG_DELETE_CONTENT": "Are you sure you want to delete this partner organisation? Any partner users will lose access to your country office",
     "DIALOG_TITLE": "Create partner user",
     "DIALOG_CONTENT": "The entered partner details do not correspond to any of the registered partners. Would you like to create an account now?"
   },

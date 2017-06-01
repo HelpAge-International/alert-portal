@@ -50,9 +50,19 @@ export class PartnerOrganisationService {
   savePartnerOrganisation(partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
     if(partnerOrganisation.id)
     {
-      return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation' + partnerOrganisation.id).update(partnerOrganisation);
+      return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + partnerOrganisation.id).update(partnerOrganisation);
     } else {
       return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation);
     }
+  }
+
+  deletePartnerOrganisation(partnerOrganisationId: string): firebase.Promise<any>{
+    if (!partnerOrganisationId) {
+      throw new Error('Organisation id not present');
+    }
+    const partnerOrganisationData = {};
+    partnerOrganisationData['/partnerOrganisation/' + partnerOrganisationId] = null;
+    
+    return this.af.database.object(Constants.APP_STATUS).update(partnerOrganisationData);
   }
 }

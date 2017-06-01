@@ -183,7 +183,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   redirectToPartnersPage() {
-    this.closeModal();
+    this.closeRedirectModal();
 
     const user = new ModelUserPublic(this.partnerOrganisation.firstName, this.partnerOrganisation.lastName,
       this.partnerOrganisation.title, this.partnerOrganisation.email);
@@ -198,7 +198,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('country-admin/country-staff/country-add-edit-partner');
   }
 
-  closeModal() {
+  closeRedirectModal() {
     jQuery('#redirect-partners').modal('hide');
     this.goBack();
   }
@@ -234,5 +234,23 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     }
 
     return operationArea.validate(excludeFields);
+  }
+
+  deletePartnerOrganisation() {
+    jQuery('#delete-action').modal('show');
+  }
+
+  deleteAction() {
+    this.closeModal();
+    this._partnerOrganisationService.deletePartnerOrganisation(this.partnerOrganisation.id)
+      .then(() => {
+        this.goBack();
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+  }
+
+  closeModal() {
+    jQuery('#delete-action').modal('hide');
   }
 }

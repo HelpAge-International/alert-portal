@@ -8,7 +8,11 @@
     <div class="Back--button" (click) = "goBack()" [hidden]="fromResponsePlans">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT"| translate}}</div>
     <div class="Back--button" (click) = "goBack()" [hidden]="!fromResponsePlans">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate}}</div>
     <div class="Header-title__wrap">
-      <h1>{{ "ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate }}</h1>
+      <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
+      <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartnerOrganisation()">
+        {{"GLOBAL.DELETE" | translate}}
+      </button>
     </div>
 
 
@@ -196,8 +200,27 @@
         <div class="text-center"><p>{{"ADD_PARTNER.DIALOG_CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeRedirectModal()">{{"GLOBAL.CANCEL"| translate}}</button>
         <button type="button" class="btn btn-primary" (click)="redirectToPartnersPage()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"ADD_PARTNER.DIALOG_DELETE_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"ADD_PARTNER.DIALOG_DELETE_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
       </div>
     </div>
   </div>
