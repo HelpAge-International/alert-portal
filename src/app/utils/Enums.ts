@@ -188,6 +188,11 @@ export enum MethodOfImplementation {
   withPartner = 1
 }
 
+export enum PartnerStatus {
+  AwaitingValidation = 0,
+  Validated = 1
+}
+
 export enum MediaFormat {
   photographic = 0,
   video = 1,

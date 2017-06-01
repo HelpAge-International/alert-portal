@@ -35,7 +35,11 @@ export class PartnerOrganisationService {
     const partnerOrganisationSubscription = this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + id)
       .map(item => { 
         if(item.$key) { 
-          return item as PartnerOrganisationModel; 
+          let partnerOrganisation = new PartnerOrganisationModel();
+          partnerOrganisation.id = id;
+          partnerOrganisation.mapFromObject(item);
+
+          return partnerOrganisation; 
         }
         return null;
     });
@@ -44,6 +48,11 @@ export class PartnerOrganisationService {
   }
 
   savePartnerOrganisation(partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
-    return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation);
+    if(partnerOrganisation.id)
+    {
+      return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation' + partnerOrganisation.id).update(partnerOrganisation);
+    } else {
+      return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation);
+    }
   }
 }

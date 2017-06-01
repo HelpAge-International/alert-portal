@@ -24,7 +24,7 @@ import {Subject} from "rxjs";
 })
 
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
-
+  private isEdit = false;
   private uid: string;
 
   // Constants and enums
@@ -72,6 +72,13 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
           if (params["fromResponsePlans"]) {
             this.fromResponsePlans = true;
           }
+          if(params['id']) {
+            this.isEdit = true;
+            this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
+              this.partnerOrganisation = partnerOrganisation;
+              console.log(this.partnerOrganisation);
+            })
+          }
         });
 
       // get the country levels values
@@ -108,7 +115,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
     this._partnerOrganisationService.savePartnerOrganisation(this.partnerOrganisation)
       .then(result => {
-        this.partnerOrganisation.id = result.key;
+        this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
 
         this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
@@ -128,6 +135,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
         if (err instanceof DisplayError) {
           this.alertMessage = new AlertMessageModel(err.message);
         } else {
+          console.log(err);
           this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
         }
       });

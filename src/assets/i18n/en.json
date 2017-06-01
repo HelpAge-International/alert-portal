@@ -997,7 +997,25 @@
         "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this message?",
         "DELETE_SUCCESS": "The message has been successfully deleted"
     },
-    "PERMISSIONS": {
+    "PARTNER": {
+      "ADD_NEW_PARTNER": "Add new new partner user",
+      "TITLE_ADD_PARTNER": "Add partner user",
+      "TITLE_EDIT_PARTNER": "Edit partner user",
+      "TITLE_DELETE_PARTNER": "Delete partner user",
+      "PARTNER_ORGANISATION": "Partner Organisation",
+      "SAVE_NEW_PARTNER": "Save new partner user",
+      "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
+      "PARTNER_PLAN_VALIDATION": "Partner & Plan Validation",
+      "NO_PARTNER_ORGANISATION": "Please select a partner organisation",
+      "NO_POSITION": "Please select a position",
+      "NO_VALIDATION_PERMISSION": "Please specify if you would like to grant the user partner & response plan validation permission",
+      "SUCCESS_SAVED": "Partner user successfully saved",
+      "DELETE_DIALOG_TITLE": "Delete Partner",
+      "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this partner?",
+      "SUCCESS_DELETED": "The partner has been successfully deleted",
+      "STATUS_AWAITING_VALIDATION": "Awaiting validation",
+      "STATUS_VALIDATED": "Validated",
+      "PERMISSIONS": {
         "TITLE": "Permissions",
         "CHS_ACTIONS": "CHS Actions",
         "MANDATED_MPA": "Mandated MPA",
@@ -1179,6 +1197,38 @@
         "EDUCATION": "Education",
         "CAMP_MANAGEMENT": "Camp management",
         "OTHER": "Other"
+    }
+    "PROFILE": {
+      "TITLE_TEXT": "Country Office Profile",
+      "MENU": {
+        "PROGRAMME": "Programme",
+        "OFFICE_CAPACITY": "Office capacity",
+        "PARTNERS": "Partners",
+        "EQUIPMENT": "Equipment",
+        "COORDINATION": "Coordination",
+        "STOCK_CAPACITY": "Stock Capacity",
+        "DOCUMENTS": "Documents",
+        "CONTACTS": "Contacts"
+      },
+      "PARTNERS":{
+        "TITLE_TEXT": "Partners",
+        "IMPLEMENTING_PARTNERS": "Current Implementing partners",
+        "EDIT": "Edit partners",
+        "VIEW": "View partners",
+        "ADD": "Add",
+        "EMPTY_LIST": "Use the add partners button to add your partner organisations",
+        "UPDATED": "Updated",
+        "ORGANISATION": "Organisation",
+        "RELATIONSHIP": "Relationship",
+        "AREAS_OF_OPERATION": "Areas of operation",
+        "STATUS": "Status",
+        "PARTNERSHIP_DETAILS": "Partnership details",
+        "NOTES": "Notes",
+        "CONTACT_NAME": "Contact's Name",
+        "CONTACT_EMAIL": "Contact's Email",
+        "CONTACT_PHONE": "Contact's Telephone",
+        "CONTACT_POSITION": "Contact's Position"
+      }
     },
     "ADD_PARTNER": {
         "SELECT_A_PARTNER": "Select a partner",
