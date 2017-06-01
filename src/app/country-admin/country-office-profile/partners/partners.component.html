@@ -26,31 +26,27 @@
         <div class="row Spaced padding-left-two">
             <label class="col-sm-0 Spaced-above">{{ 'GLOBAL.FILTER' | translate }}</label>
             <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" id="select1">
-                    <option>{{ 'ADD_PARTNER.SECTOR' | translate }}</option>
-                    <option>WaSH</option>
-                    <option>Health</option>
-                    <option>Shelter</option>
-                    <option>Nutrition</option>
-                    <option>Food security & livelihoods</option>
-                    <option>Protection</option>
-                    <option>Education</option>
-                    <option>Camp management</option>
+                <select class="form-control" name="filterSector"
+                    [(ngModel)]="filterSector">
+                    <option value="null">{{ 'ADD_PARTNER.SECTOR' | translate }}</option>
+                    <option *ngFor="let sector of RESPONSE_PLAN_SECTORS | enumKeyValues"
+                            [value]="sector.key">{{ RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</option>
                 </select>
             </div>
             <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" id="select1">
-                    <option>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
-                    <option>Cebu</option>
-                    <option>Leyte</option>
-                    <option>Lloilo</option>
+                <select class="form-control" name="areasOfOperation"
+                    [(ngModel)]="filterLocation">
+                    <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
+                    <option *ngFor="let location of areasOfOperation" 
+                            [value]="location">{{ location }}</option>
                 </select>
             </div>
             <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" id="select1">
-                    <option>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
-                    <option>COSE</option>
-                    <option>Apalit Christian Community Health Center Foundation</option>
+                <select class="form-control" name="filterOrganisation"
+                    [(ngModel)]="filterOrganisation">
+                    <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
+                    <option *ngFor="let partner of partners"
+                            [value]="partner.partnerOrganisationId">{{ partnerOrganisations[partner.partnerOrganisationId]?.organisationName }}</option>
                 </select>
             </div>
             <div class="col-sm-4"></div>
@@ -68,7 +64,7 @@
         </div>
         <div class="row Line-row"></div>
 
-        <div class="row Spaced-above" *ngFor="let partner of partners; let i = index;">
+        <div class="row Spaced-above" *ngFor="let partner of partners; let i = index;" [hidden]="hideFilteredPartners(partner)">
             <p class="col-sm-1">{{ partner.modifiedAt || partner.createdAt | date: 'MM/yy'}}</p> <!--Updated-->
             <p class="col-sm-2">{{ partnerOrganisations[partner.partnerOrganisationId]?.organisationName }}</p> <!--Organisation-->
             <p class="col-sm-2">{{ partnerOrganisations[partner.partnerOrganisationId]?.relationship }}</p> <!--Relationship-->

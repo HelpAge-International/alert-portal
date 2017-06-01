@@ -32,6 +32,9 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
+  filterOrganisation = null;
+  filterSector = null;
+  filterLocation = null;
   
   PARTNER_STATUS = Constants.PARTNER_STATUS;
   RESPONSE_PLAN_SECTORS = ResponsePlanSectors;
@@ -42,7 +45,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private partners: PartnerModel[];
   private partnerOrganisations: PartnerOrganisationModel[] = [];
   private countryAdmin: CountryAdminModel;
-  private areasOfOperation: number[];
+  private areasOfOperation: string[];
   private countryLevelsValues: any;
 
   constructor(private _userService: UserService,
@@ -83,7 +86,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                     if( !this.partnerOrganisations.find( x => x.id == partner.partnerOrganisationId))
                     {
                       this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-                                .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.partnerOrganisationId] = partnerOrganisation; })
+                                .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.partnerOrganisationId] = partnerOrganisation; });
                     }
                   })
                 });
@@ -111,6 +114,11 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
           const locationName = 
               this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
           areasOfOperation.push(locationName);
+          if(!this.areasOfOperation.find(x => x == locationName))
+          {
+            this.areasOfOperation.push(locationName);
+            this.areasOfOperation.sort();
+          }
         });
       })
       return areasOfOperation.join(',');
@@ -131,5 +139,52 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   editPartnerOrganisation(partnerOrganisationId) {
     this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}]);
+  }
+
+  hideFilteredPartners(partner: PartnerModel): boolean{
+    let hide = false;
+
+    if(!partner) { return hide; }
+        
+    if(this.filterOrganisation && this.filterOrganisation != "null" && partner.partnerOrganisationId !== this.filterOrganisation){
+      hide = true;
+   }
+
+   if(this.filterSector && this.filterSector != "null" 
+            && !this.hasOrganisationProjectSector(this.partnerOrganisations[partner.partnerOrganisationId], this.filterSector)){
+      hide = true;
+   }
+
+   if(this.filterLocation && this.filterLocation != "null" && !this.hasAreaOfOperation(partner, this.filterLocation)) {
+     hide = true;
+   }
+
+    return hide;
+  }
+
+  private hasOrganisationProjectSector(partnerOrganisation: PartnerOrganisationModel, sector: string): boolean {
+    let exists = false;
+    partnerOrganisation.projects.forEach(project => {
+      Object.keys(project.sector).forEach(key => {
+        if(key == sector && project.sector[key])
+        {
+           exists = true;
+        }
+      });
+    })
+    return exists;
+  }
+
+  private hasAreaOfOperation(partner: PartnerModel, locationName: string): boolean {
+    let exists = false;
+    
+    let areasOfOperation = this.getAreasOfOperation(this.partnerOrganisations[partner.partnerOrganisationId]);
+
+    if(areasOfOperation.search(locationName) !== -1)
+    {
+      exists = true;
+    }
+
+    return exists;
   }
 }
