@@ -7,14 +7,13 @@
     <!--<div class="Back&#45;&#45;button" routerLink="/dashboard">Home</div>-->
 
     <div class="Header-title__wrap">
-      <h1>Face-to-face meeting request</h1>
+      <h1>{{"DIRECTOR_DASHBOARD.FACE_T_FACE_MEETING_REQUEST" | translate}}</h1>
       <a [attr.href]="emails?'mailto:'+ emails: 'javascript:void(0)'" class="btn btn-primary"
-         (click)="sendEmail()">Create
-        Email</a>
+         (click)="sendEmail()">{{"DIRECTOR_DASHBOARD.CREATE_EMAIL" | translate | uppercase}}</a>
     </div>
     <div class="row">
       <div class="col-sm-12">
-        <h3><b>Agencies in Phillipines</b></h3>
+        <h3><b>{{"DIRECTOR_DASHBOARD.AGENCIES_IN" | translate}} {{CountriesList[countryLocation] | translate}}</b></h3>
       </div>
     </div>
 
@@ -30,7 +29,7 @@
           </label>
         </div>
         <div class="col-sm-8 V-centered Center">
-          <p class="Face-to-face__item__text"><b>Country Director:</b> {{item.countryDirectorName}}</p>
+          <p class="Face-to-face__item__text"><b>{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" | translate}}:</b> {{item.countryDirectorName}}</p>
         </div>
       </div>
     </div>
@@ -39,9 +38,7 @@
 
 <ng-template #empty>
   <div class="My-Tasks container-fluid">
-    <div class="Empty--ribbon">
-      No other agencies for this country!!
-    </div>
+    <div class="Empty--ribbon">{{"DIRECTOR_DASHBOARD.NO_OTHER_AGENCIES" | translate}}</div>
   </div>
 </ng-template>
 

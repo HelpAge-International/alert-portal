@@ -485,6 +485,36 @@ export class Constants {
         "GLOBAL.ALERTS.RED"
     ];
 
+  static MEDIA_TYPES = [
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC",
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO",
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
+  ];
+
+  static PARTNER_STATUS = ["COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION", "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED"];
+  // All = 0,
+  // GlobalDirector = 1,
+  // RegionalDirector = 2,
+  // CountryDirector = 3,
+  // ErtLeader = 4,
+  // Ert = 5,
+  // Donor = 6,
+  // GlobalUser = 7,
+  // CountryAdmin = 8,
+  // NonAlert = 9
+  static USER_TYPE_PATH = [
+    null,
+    null,
+    null,
+    "countryDirector",
+    null,
+    null,
+    null,
+    null,
+    "administratorCountry",
+    null
+  ];
+
     static ALERT_BUTTON_CLASS = [
         "success",
         "warning",
@@ -504,12 +534,6 @@ export class Constants {
         '#41749C',
         '#B8E986',
         '#9012FE'
-    ];
-
-    static MEDIA_TYPES = [
-        "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC",
-        "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO",
-        "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
     ];
 
 }

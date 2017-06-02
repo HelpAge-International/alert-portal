@@ -188,6 +188,11 @@ export enum MethodOfImplementation {
   withPartner = 1
 }
 
+export enum PartnerStatus {
+  AwaitingValidation = 0,
+  Validated = 1
+}
+
 export enum MediaFormat {
   photographic = 0,
   video = 1,
@@ -203,6 +208,12 @@ export enum AgeRange {
   Less18 = 0,
   Between18To50 = 1,
   More50 = 2
+}
+
+export enum SourcePlan {
+  Internationally = 0,
+  Regionally = 1,
+  Locally = 2
 }
 
 export enum PhonePrefix {

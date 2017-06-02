@@ -1,19 +1,32 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
-import {BudgetCategory} from "../../utils/Enums";
+import {
+  AgeRange, BudgetCategory, Gender, MethodOfImplementation, PresenceInTheCountry,
+  SourcePlan
+} from "../../utils/Enums";
+import {ModelPlanActivity} from "../../model/plan-activity.model";
 
 @Component({
   selector: 'app-view-response-plan',
-  templateUrl: './view-response-plan.component.html',
-  styleUrls: ['./view-response-plan.component.css']
+  templateUrl: 'view-response-plan.component.html',
+  styleUrls: ['view-response-plan.component.css']
 })
 
 export class ViewResponsePlanComponent implements OnInit, OnDestroy {
+
+  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
+  private PresenceInTheCountry = PresenceInTheCountry;
+  private MethodOfImplementation = MethodOfImplementation;
+  private Gender = Gender;
+  private AgeRange = AgeRange;
+  private SourcePlan = SourcePlan;
+
+  private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
   // TODO - Update this
   private USER_TYPE: string = 'administratorCountry';
@@ -22,7 +35,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private countryId: string;
 
   // TODO - Remove - This id needs to be forwarded from the required component
-  private responsePlanId: string = '-KkQJxlVjMmJS9tXhiiz';
+  // private responsePlanId: string = '-KkQJxlVjMmJS9tXhiiz';
+  @Input() responsePlanId: string;
 
   private responsePlanToShow: ResponsePlan = new ResponsePlan;
 
@@ -34,6 +48,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO -
   // Section 03
+  private sectors: any[];
+  private partnerList: string[] = [];
   // Section 07
 
   // Section 08
@@ -60,8 +76,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private monitoringAndEvolutionNarrative: string;
   private capitalItemsNarrative: string;
   private managementSupportNarrative: string;
+  private activityInfoMap = new Map();
+  private activityMap = new Map();
 
-  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -69,7 +87,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       if (user) {
         this.uid = user.auth.uid;
         this.loadData();
-        this.loadResponsePlanData();
       } else {
         this.navigateToLogin();
       }
@@ -91,7 +108,19 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
-      this.loadResponsePlanData();
+      if (this.responsePlanId) {
+        this.loadResponsePlanData();
+      } else {
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["id"]) {
+              this.responsePlanId = params["id"];
+              this.loadResponsePlanData();
+            }
+          });
+      }
+
     });
   }
 
@@ -108,7 +137,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlanData() {
-
+    console.log("response plan id: " + this.responsePlanId);
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
 
     this.af.database.object(responsePlansPath)
@@ -139,11 +168,57 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   // TODO -
   private loadSection3(responsePlan: ResponsePlan) {
-
+    console.log(responsePlan);
+    if (responsePlan.sectors) {
+      this.sectors = Object.keys(responsePlan.sectors).map(key => {
+        let sector = responsePlan.sectors[key];
+        sector["id"] = Number(key);
+        return sector;
+      });
+    }
+    if (responsePlan.partnerOrganisations) {
+      this.partnerList = [];
+      let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
+      partnerIds.forEach(id => {
+        this.userService.getOrganisationName(id)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(organisation => {
+            this.partnerList.push(organisation.organisationName);
+          })
+      });
+    }
   }
 
   // TODO -
   private loadSection7(responsePlan: ResponsePlan) {
+    if (this.sectors) {
+      // let sectors: {} = responsePlan.sectors;
+      Object.keys(responsePlan.sectors).forEach(sectorKey => {
+
+        //activity info load back
+        // let sectorInfo = this.activityInfoMap.get(sectorKey);
+        // if (!sectorInfo) {
+        let infoData = {};
+        infoData["sourcePlan"] = responsePlan.sectors[sectorKey]["sourcePlan"];
+        infoData["bullet1"] = responsePlan.sectors[sectorKey]["bullet1"];
+        infoData["bullet2"] = responsePlan.sectors[sectorKey]["bullet2"];
+        this.activityInfoMap.set(Number(sectorKey), infoData);
+        // }
+
+        //activities list load back
+        let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
+        let moreData: {}[] = [];
+        Object.keys(activitiesData).forEach(key => {
+          let beneficiary = [];
+          activitiesData[key]["beneficiary"].forEach(item => {
+            beneficiary.push(item);
+          });
+          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+          moreData.push(model);
+          this.activityMap.set(Number(sectorKey), moreData);
+        });
+      });
+    }
 
   }
 

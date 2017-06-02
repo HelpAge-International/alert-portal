@@ -5,6 +5,7 @@ export class ColourSelector {
 
   public static list() {
     let cols: ColourSelector[] = [];
+
     cols.push(new ColourSelector("Color__swatch pal__red", "#D0011B"));
     cols.push(new ColourSelector("Color__swatch pal__orange", "#F6A623"));
     cols.push(new ColourSelector("Color__swatch pal__yellow", "#F8E81C"));
@@ -14,7 +15,7 @@ export class ColourSelector {
     cols.push(new ColourSelector("Color__swatch pal__light-red", "#EA5166"));
     cols.push(new ColourSelector("Color__swatch pal__dark-blue", "#64929B"));
     cols.push(new ColourSelector("Color__swatch pal__dark-green", "#417505"));
-    cols.push(new ColourSelector("Color__swatch pal__purple", "#417505"));
+    cols.push(new ColourSelector("Color__swatch pal__purple", "#BD0FE1"));
     cols.push(new ColourSelector("Color__swatch pal__light-green", "#B8E986"));
     cols.push(new ColourSelector("Color__swatch pal__indigo", "#9012FE"));
     return cols;
