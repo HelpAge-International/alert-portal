@@ -125,7 +125,7 @@ import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/coun
 import {ViewResponsePlanComponent} from './commons/view-response-plan/view-response-plan.component';
 import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
 import { ViewPlanComponent } from './response-plans/view-plan/view-plan.component';
-
+import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
 }
@@ -251,7 +251,8 @@ const firebaseAuthConfig = {
     FacetofaceMeetingRequestComponent,
     CountryStatisticsRibbonComponent,
     ViewResponsePlanComponent,
-    ViewPlanComponent
+    ViewPlanComponent,
+    ExternalPartnerResponsePlan
   ],
   imports: [
     BrowserModule,

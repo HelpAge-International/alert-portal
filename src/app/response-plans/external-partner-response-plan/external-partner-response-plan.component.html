@@ -1,0 +1,110 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <app-view-response-plan></app-view-response-plan>
+
+
+        <div class="Container Grey">
+            <h3>Plan Approval</h3>
+
+            <div class="row Spaced">
+                <div class="col-lg-5">
+                    <div class="row Small-spaced">
+                        <div class="col-lg-5">
+                            <p><b>Partners</b></p>
+                        </div>
+                    </div>
+
+                    <!-- Plan approval row -->
+                    <div class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p>Partner 1 (You)</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+                        </div>
+                    </div>
+
+                    <!-- Plan approval row -->
+                    <div class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p>Partner 1 (You)</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-1"></div>
+                <div class="col-lg-5">
+                    <div class="row Small-spaced">
+                        <div class="col-lg-5">
+                            <p><b>Directors</b></p>
+                        </div>
+                    </div>
+
+                    <!-- Plan approval row -->
+                    <div class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p>Country Director</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+                        </div>
+                    </div>
+
+                    <!-- Plan approval row -->
+                    <div class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p>Regional Director</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+                        </div>
+                    </div>
+
+                    <!-- Plan approval row -->
+                    <div class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p>Global Director</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-1"></div>
+            </div>
+            <div class="Form-submit__wrapper">
+                <div class="btn btn-success btn-continue">Approve Plan</div>
+                <div class="btn btn-danger btn-continue">Reject Plan</div>
+            </div>
+        </div>
+        <div class="Container Blue Bordered">
+            <b>Confirm you want to reject this plan</b>
+            <div class="row Small-spaced">
+                <div class="col-sm-10">
+                    <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+                </div>
+                <div class="col-sm-2">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="btn btn-primary Full">Confirm</div>
+                        </div>
+                    </div>
+                    <div class="row Small-spaced">
+                        <div class="col-sm-12">
+                            <div class="btn btn-outline-gray Full">Cancel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
