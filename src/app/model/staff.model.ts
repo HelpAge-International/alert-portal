@@ -13,4 +13,5 @@ export class ModelStaff {
   public training: string
   public notification: number[] =[];
   public isResponseMember: boolean;
+  public updatedAt:number;
 }

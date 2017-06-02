@@ -2,15 +2,15 @@
  * Created by Fei on 08/03/2017.
  */
 import {
-    PersonTitle,
-    Country,
-    Currency,
-    UserType,
-    StaffPosition,
-    OfficeType,
-    DurationType,
-    ResponsePlanSectionSettings,
-    DocumentType
+  PersonTitle,
+  Country,
+  Currency,
+  UserType,
+  StaffPosition,
+  OfficeType,
+  DurationType,
+  ResponsePlanSectionSettings,
+  DocumentType, Countries
 } from "./Enums";
 
 export class Constants {
@@ -55,8 +55,8 @@ export class Constants {
         "GLOBAL.PERSON_TITLE.DR", "GLOBAL.PERSON_TITLE.PROF"];
     static PERSON_TITLE_SELECTION: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
 
-    static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
-    static COUNTRY_SELECTION = [Country.UK, Country.France, Country.Germany];
+    // static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
+
 
     static CATEGORY: string[] = [
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ALL",
@@ -184,6 +184,7 @@ export class Constants {
         "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.HAZARD_DOCUMENT"
     ];
 
+    static COUNTRY_SELECTION = [Countries.GB, Countries.FR, Countries.DE, Countries.AF, Countries.AX, Countries.AL, Countries.DZ,Countries.AS,Countries.AD,Countries.AO,Countries.AI,Countries.AQ,Countries.AG];
     static COUNTRIES = [
         "GLOBAL.COUNTRIES.GB",
         "GLOBAL.COUNTRIES.FR",

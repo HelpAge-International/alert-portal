@@ -33,8 +33,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
     private durationType = Constants.DURATION_TYPE;
     private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
-    private countries = Constants.COUNTRY;
-    private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
+    private countries = Constants.COUNTRIES;
+    private countriesList: number[] = Constants.COUNTRY_SELECTION;
     private frequency = new Array(100);
 
     private countryLevels: any[] = [];

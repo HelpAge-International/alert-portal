@@ -362,6 +362,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staff.training = this.trainingNeeds ? this.trainingNeeds : "None";
     staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
+    staff.updatedAt = Date.now();
+
     if (this.isUpdateOfficeOnly) {
       staffData["/staff/" + this.selectedOfficeId + "/" + uid + "/"] = null;
     }
