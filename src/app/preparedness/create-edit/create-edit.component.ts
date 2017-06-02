@@ -3,10 +3,11 @@ import {AngularFire} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from "../../utils/Enums";
+import {Department, ActionType, ActionLevel, HazardCategory, DurationType, AlertMessageType} from "../../utils/Enums";
 import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
+import {AlertMessageModel} from '../../model/alert-message.model';
 declare var jQuery: any;
 @Component({
     selector: 'app-preparedness',
@@ -15,7 +16,8 @@ declare var jQuery: any;
 })
 export class CreateEditPreparednessComponent implements OnInit {
 
-    submitted = false;
+    private alertMessageType = AlertMessageType;
+    private alertMessage: AlertMessageModel = null;
 
     private uid: string;
 
@@ -85,6 +87,10 @@ export class CreateEditPreparednessComponent implements OnInit {
         });
         this.subscriptions.add(subscription);
 
+    }
+
+    processSave() {
+        console.log(this.actionData);
     }
 
     ngOnInit() {
@@ -329,8 +335,8 @@ export class CreateEditPreparednessComponent implements OnInit {
 
     backButtonAction() {
         /* TODO get last route and implemented this functionality */
-      this.router.navigate(['/preparedness/minimum']);
-      console.log('back button');
+        this.router.navigate(['/preparedness/minimum']);
+        console.log('back button');
     }
 
     _parseSelectParams() {
