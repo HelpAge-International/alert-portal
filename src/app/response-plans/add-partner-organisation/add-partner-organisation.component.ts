@@ -76,7 +76,6 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
             this.isEdit = true;
             this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
               this.partnerOrganisation = partnerOrganisation;
-              console.log(this.partnerOrganisation);
             })
           }
         });
@@ -111,7 +110,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   submit() {
     // Transforms projects endDate to timestamp
-    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime().toString());
+    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime());
 
     this._partnerOrganisationService.savePartnerOrganisation(this.partnerOrganisation)
       .then(result => {
@@ -172,6 +171,11 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   removeProjectLocation(pin: number, opin: number) {
     this.partnerOrganisation.projects[pin].operationAreas.splice(opin, 1);
+  }
+
+  changeDate(date, project: PartnerOrganisationProjectModel)
+  {
+    project.endDate = date;
   }
 
   goBack() {

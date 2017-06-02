@@ -138,7 +138,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   editPartnerOrganisation(partnerOrganisationId) {
-    this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}]);
+    this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
   }
 
   hideFilteredPartners(partner: PartnerModel): boolean{

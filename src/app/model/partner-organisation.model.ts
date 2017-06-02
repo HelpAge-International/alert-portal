@@ -55,7 +55,7 @@ export class PartnerOrganisationModel extends BaseModel {
 } 
 export class PartnerOrganisationProjectModel extends BaseModel {
   public title: string;
-  public endDate: string;
+  public endDate: number;
   public sector: any[];
   public operationAreas: OperationAreaModel[];
 
