@@ -27,9 +27,9 @@ export class AgencyService {
   }
 
   getSystemId(agencyAdminId): Observable<any> {
-    return this.af.database.object(Constants.APP_STATUS+"/administratorAgency/"+agencyAdminId + "/systemAdmin/")
-      .map(system =>{
-        return system.$key;
+    return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId + "/systemAdmin/", {preserveSnapshot: true})
+      .map(system => {
+        return Object.keys(system.val()).shift();
       });
   }
 
