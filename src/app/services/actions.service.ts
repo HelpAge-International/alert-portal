@@ -289,7 +289,6 @@ export class ActionsService {
       }
     })
       .map(alerts => {
-        console.log(alerts);
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();

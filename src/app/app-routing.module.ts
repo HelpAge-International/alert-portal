@@ -86,6 +86,7 @@ import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-
 import {ViewResponsePlanComponent} from "./commons/view-response-plan/view-response-plan.component";
 import {CountryOfficePartnersComponent} from "./country-admin/country-office-profile/partners/partners.component";
 import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
+import {DirectorComponent} from "./director/director.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -239,6 +240,11 @@ const routes: Routes = [
    */
   {path: 'map', component: MapComponent},
   {path: 'map/map-countries-list', component: MapCountriesListComponent},
+
+  /**
+   * Directors
+   */
+  {path: 'director', component: DirectorComponent},
 
   /*
    * test
