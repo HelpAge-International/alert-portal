@@ -62,8 +62,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private countryContextIndicators: any[] = [];
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-
   private seasonEvents = [];
   private chronoline;
   private approveMap = new Map();
@@ -71,10 +69,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
 
+  // TODO - New Subscriptions - Remove RxHelper and add Subject
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
+    // TODO - New Subscriptions - Remove subscriptions and add '.takeUntil(this.ngUnsubscribe)' before every .subscribe()
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
@@ -85,6 +87,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

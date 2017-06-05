@@ -16,7 +16,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private responsePlansForApproval: Observable<any[]>;
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();\
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router) {
   }
