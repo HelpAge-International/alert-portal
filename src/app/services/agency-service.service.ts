@@ -3,7 +3,6 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
-import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class AgencyService {

@@ -1,18 +1,17 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';
-import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
-import { PermissionSettingsModel } from "../model/permission-settings.model";
-import { ModuleSettingsModel } from "../model/module-settings.model";
-import { ClockSettingsModel } from "../model/clock-settings.model";
-import { NotificationSettingsModel } from "../model/notification-settings.model";
+import {PermissionSettingsModel} from "../model/permission-settings.model";
+import {ModuleSettingsModel} from "../model/module-settings.model";
+import {ClockSettingsModel} from "../model/clock-settings.model";
+import {NotificationSettingsModel} from "../model/notification-settings.model";
 
 @Injectable()
 export class SettingsService {
 
-  constructor(private af: AngularFire, private subscriptions: RxHelper) {}
-
+  constructor(private af: AngularFire) {
+  }
 
   // COUNTRY PERMISSIONS
 
@@ -20,12 +19,12 @@ export class SettingsService {
     if (!agencyId || !countryId) {
       return null;
     }
-    const permissionSettingsSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId +'/permissionSettings')
+    const permissionSettingsSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/permissionSettings')
       .map(items => {
         if (items.$key) {
           let permissions = new PermissionSettingsModel();
           permissions.mapFromObject(items);
-          
+
           return permissions;
         }
         return null;
@@ -33,15 +32,15 @@ export class SettingsService {
 
     return permissionSettingsSubscription;
   }
-  
+
   saveCountryPermissionSettings(agencyId: string, countryId: string, permissionSettings: PermissionSettingsModel): firebase.Promise<any> {
     if (!agencyId || !countryId) {
       return null;
     }
 
-    const permissionSettingsData = {}; 
-    permissionSettingsData['/countryOffice/' + agencyId + '/' + countryId +'/permissionSettings'] = permissionSettings;
-    
+    const permissionSettingsData = {};
+    permissionSettingsData['/countryOffice/' + agencyId + '/' + countryId + '/permissionSettings'] = permissionSettings;
+
     return this.af.database.object(Constants.APP_STATUS).update(permissionSettingsData);
   }
 
@@ -78,19 +77,18 @@ export class SettingsService {
     const moduleSettingsData = {};
 
     moduleSettingsData['/module/' + countryId] = moduleSettings;
-    
+
     return this.af.database.object(Constants.APP_STATUS).update(moduleSettingsData);
   }
 
 
   // COUNTRY CLOCK SETTINGS
-  
-  getCountryClockSettings(agencyId:string, countryId: string): Observable<ClockSettingsModel>
-  {
+
+  getCountryClockSettings(agencyId: string, countryId: string): Observable<ClockSettingsModel> {
     if (!agencyId || !countryId) {
       throw new Error("No agencyID or countryID");
     }
-    const clockSettingsSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId +'/clockSettings')
+    const clockSettingsSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/clockSettings')
       .map(items => {
         if (items.$key) {
           const clockSettings = new ClockSettingsModel();
@@ -108,9 +106,9 @@ export class SettingsService {
       return null;
     }
 
-    const clockSettingsData = {}; 
+    const clockSettingsData = {};
     clockSettingsData['/countryOffice/' + agencyId + '/' + countryId + '/clockSettings'] = clockSettings;
-    
+
     return this.af.database.object(Constants.APP_STATUS).update(clockSettingsData);
   }
 
@@ -119,17 +117,16 @@ export class SettingsService {
 
   getCountryNotificationSettings(agencyId: string, countryId: string): Observable<NotificationSettingsModel[]> {
 
-    const notificationSettingsSubscription = 
-        this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/defaultNotificationSettings')
-      .map(items =>
-        {
-            const notificationSettings: NotificationSettingsModel[] = [];
-            items.forEach(item => {
-              const notificationSetting = new NotificationSettingsModel();
-              notificationSetting.mapFromObject(item);
-              notificationSettings.push(notificationSetting);
-            });
-            return notificationSettings;
+    const notificationSettingsSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/defaultNotificationSettings')
+        .map(items => {
+          const notificationSettings: NotificationSettingsModel[] = [];
+          items.forEach(item => {
+            const notificationSetting = new NotificationSettingsModel();
+            notificationSetting.mapFromObject(item);
+            notificationSettings.push(notificationSetting);
+          });
+          return notificationSettings;
         });
 
     return notificationSettingsSubscription;
@@ -140,9 +137,9 @@ export class SettingsService {
       return null;
     }
 
-    const notificationsSettingsData = {}; 
+    const notificationsSettingsData = {};
     notificationsSettingsData['/countryOffice/' + agencyId + '/' + countryId + '/defaultNotificationSettings'] = notificationSettings;
-    
+
     return this.af.database.object(Constants.APP_STATUS).update(notificationsSettingsData);
   }
 }

@@ -89,8 +89,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
+    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   getCSSHazard(hazard: number) {

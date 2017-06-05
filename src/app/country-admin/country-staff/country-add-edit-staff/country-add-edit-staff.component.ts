@@ -1,10 +1,9 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {RxHelper} from '../../../utils/RxHelper';
 import {AngularFire, FirebaseListObservable} from 'angularfire2';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
 import {Country, SkillType, UserType} from '../../../utils/Enums';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {CustomerValidator} from '../../../utils/CustomValidator';
 import {firebaseConfig} from '../../../app.module';
 import {UUID} from '../../../utils/UUID';
@@ -18,6 +17,7 @@ declare var jQuery: any;
   templateUrl: './country-add-edit-staff.component.html',
   styleUrls: ['./country-add-edit-staff.component.css']
 })
+
 export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private secondApp: firebase.app.App;
 
@@ -75,10 +75,13 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private hideCountry: boolean;
   private hideRegion: boolean;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private subscriptions: RxHelper) { }
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  }
 
   ngOnInit() {
-    const subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -87,49 +90,51 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.uid = user.auth.uid;
 
-      const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
-            .subscribe(countryAdmin => {
-                // Get the country id and agency administrator id
-                this.countryId = countryAdmin.countryId;
-                this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
-                this.initData();
-                const editSubscription = this.route.params.subscribe((params: Params) => {
-                  if (params['id']) {
-                    this.selectedStaffId = params['id'];
-                    this.selectedOfficeId = this.countryId;
-                    this.isEdit = true;
-                    this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
-                  }
-                });
-                this.subscriptions.add(editSubscription);
-            },
-            error => {
-              this.warningMessage = 'GLOBAL.GENERAL_ERROR';
-              this.showAlert();
-            });
-      this.subscriptions.add(countryAdminSubscription);
+      this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryAdmin => {
+            // Get the country id and agency administrator id
+            this.countryId = countryAdmin.countryId;
+            this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
+            this.initData();
+            this.route.params
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((params: Params) => {
+                if (params['id']) {
+                  this.selectedStaffId = params['id'];
+                  this.selectedOfficeId = this.countryId;
+                  this.isEdit = true;
+                  this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
+                }
+              });
+          },
+          error => {
+            this.warningMessage = 'GLOBAL.GENERAL_ERROR';
+            this.showAlert();
+          });
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private showAlert() {
     this.hideWarning = false;
-    const subscribe = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-      this.hideWarning = true;
-    });
-    this.subscriptions.add(subscribe);
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(() => {
+        this.hideWarning = true;
+      });
   }
-private initData() {
-    const countryOfficeSubscription =
-      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + '/' + this.countryId)
-        .subscribe(countryOffice => {
-          this.countryOffice = countryOffice;
-        });
-    this.subscriptions.add(countryOfficeSubscription);
+
+  private initData() {
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + '/' + this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countryOffice => {
+        this.countryOffice = countryOffice;
+      });
 
     this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
     this.departmentList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
@@ -141,7 +146,9 @@ private initData() {
         return names;
       });
 
-    const skillSubscription = this.af.database.list(Constants.APP_STATUS + '/skill').subscribe(skills => {
+    this.af.database.list(Constants.APP_STATUS + '/skill')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(skills => {
       this.techSkillsList = skills.filter(skill => skill.type === SkillType.Tech);
       this.supportSkillList = skills.filter(skill => skill.type === SkillType.Support);
     });
@@ -149,9 +156,10 @@ private initData() {
     this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
   }
 
-  goBack(){
+  goBack() {
     this.router.navigateByUrl('/country-admin/country-staff');
   }
+
   validateForm() {
     if (!this.title) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_TITLE';
@@ -278,6 +286,7 @@ private initData() {
   private updateNoEmailChange() {
     this.updateFirebase(this.selectedStaffId);
   }
+
   private createNewUser() {
     this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
       this.updateFirebase(newUser.uid);
@@ -327,7 +336,7 @@ private initData() {
 
     if (!this.hideCountry) {
       staffData['/staff/' + this.countryOffice.$key + '/' + uid + '/'] = staff;
-    }else if (!this.hideRegion) {
+    } else if (!this.hideRegion) {
       staffData['/staff/globalUser/' + this.agencyAdminId + '/' + uid + '/'] = staff;
       //staffData['/region/' + this.uid + '/' + this.region.$key + '/directorId'] = uid;
     } else {
@@ -351,10 +360,11 @@ private initData() {
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.hideWarning = true;
       this.hideSuccess = false;
-      let subscription = Observable.timer(1500).subscribe(() => {
-          this.router.navigateByUrl('/country-admin/country-staff');
-        });
-        this.subscriptions.add(subscription);
+      Observable.timer(1500)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(() => {
+        this.router.navigateByUrl('/country-admin/country-staff');
+      });
     }, error => {
       this.warningMessage = error.message;
       this.showAlert();
@@ -362,7 +372,8 @@ private initData() {
   }
 
   private loadStaffInfo(staffId: string, officeId: string) {
-    let subscriptionUser = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + staffId)
+    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + staffId)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
         this.title = user.title;
         this.firstName = user.firstName;
@@ -371,13 +382,13 @@ private initData() {
         this.emailInDatabase = user.email;
         this.phone = user.phone;
       });
-    this.subscriptions.add(subscriptionUser);
 
     let path = officeId !== 'null'
-          ? Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId
-          : Constants.APP_STATUS + '/staff/globalUser/' + this.agencyAdminId + '/' + staffId;
+      ? Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId
+      : Constants.APP_STATUS + '/staff/globalUser/' + this.agencyAdminId + '/' + staffId;
 
-    let subscriptionStaff = this.af.database.object(path)
+    this.af.database.object(path)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(staff => {
         this.userType = staff.userType;
         this.checkUserType();
@@ -398,7 +409,6 @@ private initData() {
           }
         }
       });
-    this.subscriptions.add(subscriptionStaff);
   }
 
   private checkUserType() {
@@ -417,7 +427,8 @@ private initData() {
   selectedUserType(userType) {
     // userType-1 to ignore first all option
     this.notificationSettings = [];
-    let subscription = this.notificationList
+    this.notificationList
+      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(settingList => {
         settingList.forEach(setting => {
@@ -425,7 +436,6 @@ private initData() {
           this.notificationsMap.set(Number(setting.$key), setting.usersNotified[userType - 1]);
         });
       });
-    this.subscriptions.add(subscription);
     this.checkUserType();
   }
 
@@ -438,25 +448,25 @@ private initData() {
   }
 
   deleteAction() {
-      jQuery('#delete-action').modal('hide');
-      let delData = {};
-      delData['/userPublic/' + this.selectedStaffId + '/'] = null;
-      delData['/staff/' + this.selectedOfficeId + '/' + this.selectedStaffId + '/'] = null;
+    jQuery('#delete-action').modal('hide');
+    let delData = {};
+    delData['/userPublic/' + this.selectedStaffId + '/'] = null;
+    delData['/staff/' + this.selectedOfficeId + '/' + this.selectedStaffId + '/'] = null;
 
-      delData['/group/systemadmin/allusersgroup/' + this.selectedStaffId + '/'] = null;
-      delData['/group/agency/' + this.agencyAdminId + '/agencyallusersgroup/' + this.selectedStaffId + '/'] = null;
-      delData['/group/agency/' + this.agencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1]
-          + '/' + this.selectedStaffId + '/'] = null;
+    delData['/group/systemadmin/allusersgroup/' + this.selectedStaffId + '/'] = null;
+    delData['/group/agency/' + this.agencyAdminId + '/agencyallusersgroup/' + this.selectedStaffId + '/'] = null;
+    delData['/group/agency/' + this.agencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1]
+    + '/' + this.selectedStaffId + '/'] = null;
 
-      if (this.userType === UserType.CountryDirector) {
-        delData['/directorCountry/' + this.countryOffice.$key + '/'] = null;
-      }
+    if (this.userType === UserType.CountryDirector) {
+      delData['/directorCountry/' + this.countryOffice.$key + '/'] = null;
+    }
 
-      this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
-        this.router.navigateByUrl('/country-admin/country-staff');
-      }, error => {
-        this.warningMessage = error.message;
-        this.showAlert();
-      });
+    this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
+      this.router.navigateByUrl('/country-admin/country-staff');
+    }, error => {
+      this.warningMessage = error.message;
+      this.showAlert();
+    });
   }
 }

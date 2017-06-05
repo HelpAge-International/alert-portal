@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {Constants} from '../utils/Constants';
-import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
 import {firebaseConfig} from '../app.module';
 import {UUID} from '../utils/UUID';
@@ -12,7 +11,6 @@ import {PartnerModel} from "../model/partner.model";
 import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
-import {Subscription} from "rxjs/Subscription";
 import {ChangePasswordModel} from "../model/change-password.model";
 import {recognize} from "@angular/router/src/recognize";
 
@@ -24,7 +22,7 @@ export class UserService {
   public user: ModelUserPublic;
   public partner: PartnerModel;
 
-  constructor(private af: AngularFire, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire) {
     this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
   }
 
@@ -185,21 +183,21 @@ export class UserService {
   }
 
   getCountryOfficePartnerUsers(agencyId: string, countryId: string): Observable<PartnerModel[]> {
-     let partners: PartnerModel[] = [];
-     const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partners')
+    let partners: PartnerModel[] = [];
+    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partners')
       .flatMap(partners => {
         return Observable.from(partners.map(partner => partner.$key));
-        })
-      .flatMap( partnerId => {
+      })
+      .flatMap(partnerId => {
         partners = []; // reinitialize list to prevent duplication
         return this.getPartnerUser(partnerId as string);
       })
-      .map( partner => {
+      .map(partner => {
         partners.push(partner);
         return partners;
       });
 
-      return partnerUsersSubscription;
+    return partnerUsersSubscription;
   }
 
   getPartnerUsers(): Observable<PartnerModel[]> {
