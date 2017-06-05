@@ -20,7 +20,7 @@ export class CountryAccountSettingsComponent implements OnInit, OnDestroy {
   // Constants and enums
   PERSON_TITLE = Constants.PERSON_TITLE;
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
-  COUNTRY = Constants.COUNTRY;
+  COUNTRY = Constants.COUNTRIES;
   COUNTRY_SELECTION = Constants.COUNTRY_SELECTION;
 
   // Models

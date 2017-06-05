@@ -27,8 +27,8 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
 
   private CountryOfficeAddressModel: CountryOfficeAddressModel = new CountryOfficeAddressModel();
 
-  private Country = Constants.COUNTRY;
-  private countriesList: number[] = [];
+  private Country = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 

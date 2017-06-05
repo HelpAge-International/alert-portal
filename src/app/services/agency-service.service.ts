@@ -3,6 +3,7 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class AgencyService {
@@ -23,6 +24,17 @@ export class AgencyService {
 
   getAgency(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
+  getSystemId(agencyAdminId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId + "/systemAdmin/", {preserveSnapshot: true})
+      .map(system => {
+        return Object.keys(system.val()).shift();
+      });
+  }
+
+  getAgencyModuleSetting(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + agencyId);
   }
 
   getCountryOffice(countryId, agencyId) {

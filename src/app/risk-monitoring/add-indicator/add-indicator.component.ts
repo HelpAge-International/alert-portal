@@ -43,9 +43,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
 
 
-  private countries = Constants.COUNTRY;
-  private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
-  private frequency = new Array(100);
+    private countries = Constants.COUNTRIES;
+    private countriesList: number[] = Constants.COUNTRY_SELECTION;
+    private frequency = new Array(100);
 
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];

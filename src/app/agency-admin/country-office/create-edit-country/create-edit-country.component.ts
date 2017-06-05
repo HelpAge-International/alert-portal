@@ -1,22 +1,25 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Country, PersonTitle} from "../../../utils/Enums";
+import {Country, PersonTitle, UserType} from "../../../utils/Enums";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import * as firebase from "firebase";
 import {firebaseConfig} from "../../../app.module";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelCountryOffice} from "../../../model/countryoffice.model";
 import {Observable, Subject} from "rxjs";
+import {AgencyService} from "../../../services/agency-service.service";
 
 @Component({
   selector: 'app-create-edit-country',
   templateUrl: './create-edit-country.component.html',
-  styleUrls: ['./create-edit-country.component.css']
+  styleUrls: ['./create-edit-country.component.css'],
+  providers: [AgencyService]
 })
 export class CreateEditCountryComponent implements OnInit, OnDestroy {
-  countryNames = Constants.COUNTRY;
+
+  countryNames = Constants.COUNTRIES;
   countrySelections = Constants.COUNTRY_SELECTION;
   titleNames = Constants.PERSON_TITLE;
   titleSelections = Constants.PERSON_TITLE_SELECTION;
@@ -45,8 +48,11 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private alerts = {};
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private agencyModuleSetting: {};
+  private agencyClockSetting: {};
+  private systemId: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
@@ -57,24 +63,46 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       }
       this.uid = user.auth.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, "second");
+      this.handleSettings(this.uid);
+      this.agencyService.getSystemId(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(systemId => {
+          this.systemId = systemId;
+        });
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
-        if (param["id"]) {
-          this.countryOfficeId = param["id"];
-          this.isEdit = true;
-          this.loadCountryInfo(this.countryOfficeId);
-        }
-      });
+          if (param["id"]) {
+            this.countryOfficeId = param["id"];
+            this.isEdit = true;
+            this.loadCountryInfo(this.countryOfficeId);
+          }
+        });
     });
   }
 
+  private handleSettings(uid: string) {
+    this.agencyService.getAgencyId(uid)
+      .do(agencyId => {
+        this.agencyService.getAgencyModuleSetting(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(setting => {
+            this.agencyModuleSetting = setting;
+          });
+      })
+      .flatMap(agencyId => {
+        return this.agencyService.getAgency(agencyId);
+      })
+      .subscribe(agency => {
+        this.agencyClockSetting = agency.clockSettings;
+      });
+  }
+
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
     this.secondApp.delete();
+    this.agencyService.unSubscribeNow();
   }
 
   private loadCountryInfo(countryOfficeId: string) {
@@ -333,15 +361,213 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     this.countryData["/userPublic/" + countryId] = countryAdmin;
 
     this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
+    this.countryData["/administratorCountry/" + countryId + "/systemAdmin/" + this.systemId] = true;
     this.countryData["/administratorCountry/" + countryId + "/countryId"] = countryId;
+    this.countryData["/administratorCountry/" + countryId + "/firstLogin"] = true;
 
     this.countryData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
+    this.countryData["/group/systemadmin/allusersgroup/" + countryId] = true;
     this.countryData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
+    this.countryData["/group/agency/" + this.uid + "/agencyallusersgroup/" + countryId] = true;
 
     let countryOffice = new ModelCountryOffice();
     countryOffice.adminId = countryId;
     countryOffice.location = this.countryOfficeLocation;
     countryOffice.isActive = true;
+
+    //init notification settings
+    let notificationList = [];
+
+    for (let i = 0; i < 6; i++) {
+      if (i == 0) {
+        let notifyList = [];
+        let item1 = {};
+        item1[UserType.RegionalDirector] = false;
+        notifyList.push(item1);
+        let item2 = {};
+        item1[UserType.CountryDirector] = false;
+        notifyList.push(item2);
+        let item3 = {};
+        item1[UserType.ErtLeader] = false;
+        notifyList.push(item3);
+        let item4 = {};
+        item1[UserType.Ert] = false;
+        notifyList.push(item4);
+        let item5 = {};
+        item1[UserType.Donor] = false;
+        notifyList.push(item5);
+        let item6 = {};
+        item1[UserType.CountryAdmin] = false;
+        notifyList.push(item6);
+        let tempData = {};
+        tempData["usersNotified"] = notifyList;
+        notificationList.push(tempData);
+      } else {
+        let notifyList = [];
+        let item1 = {};
+        item1[UserType.RegionalDirector] = false;
+        notifyList.push(item1);
+        let item2 = {};
+        item1[UserType.CountryDirector] = false;
+        notifyList.push(item2);
+        let item3 = {};
+        item1[UserType.ErtLeader] = false;
+        notifyList.push(item3);
+        let item4 = {};
+        item1[UserType.Ert] = false;
+        notifyList.push(item4);
+        let item5 = {};
+        item1[UserType.Donor] = false;
+        notifyList.push(item5);
+        let tempData = {};
+        tempData["usersNotified"] = notifyList;
+        notificationList.push(tempData);
+      }
+    }
+    countryOffice.defaultNotificationSettings = notificationList;
+
+    //init permission settings
+    let permissionSetting = {};
+    //chs
+    let chs = {};
+    for (let i = 2; i < 6; i++) {
+      chs[i] = true;
+    }
+    permissionSetting["chsActions"] = chs;
+
+    //country contacts
+    let countryContacts = {};
+    let countryContactsDelete = {};
+    let countryContactsEdit = {};
+    let countryContactsNew = {};
+    for (let i = 3; i < 6; i++) {
+      countryContactsDelete[i] = true;
+      countryContactsEdit[i] = true;
+      countryContactsNew[i] = true;
+    }
+    countryContacts["delete"] = countryContactsDelete;
+    countryContacts["edit"] = countryContactsEdit;
+    countryContacts["new"] = countryContactsNew;
+    permissionSetting["countryContacts"] = countryContacts;
+
+    //cross country + notes + other
+    let crossCountry = {};
+    let crossCountryAddNotes = {};
+    let crossCountryCopyAction = {};
+    let crossCountryDownload = {};
+    let crossCountryEdit = {};
+    let crossCountryView = {};
+    let crossCountryViewContacts = {};
+    let notes = {};
+    let notesDelete = {};
+    let notesEdit = {};
+    let notesNew = {};
+    let other = {};
+    let otherDownloadDoc = {};
+    let otherUploadDoc = {};
+    for (let i = 3; i < 7; i++) {
+      crossCountryAddNotes[i] = true;
+      crossCountryDownload[i] = true;
+      notesDelete[i] = true;
+      notesEdit[i] = true;
+      notesNew[i] = true;
+      otherDownloadDoc[i] = true;
+      if (i != 6) {
+        crossCountryCopyAction[i] = true;
+        crossCountryEdit[i] = true;
+        crossCountryView[i] = true;
+        crossCountryViewContacts[i] = true;
+        otherUploadDoc[i] = true;
+      }
+    }
+    crossCountry["addNotes"] = crossCountryAddNotes;
+    crossCountry["copyAction"] = crossCountryCopyAction;
+    crossCountry["download"] = crossCountryDownload;
+    crossCountry["edit"] = crossCountryEdit;
+    crossCountry["view"] = crossCountryView;
+    crossCountry["viewContacts"] = crossCountryViewContacts;
+    permissionSetting["crossCountry"] = crossCountry;
+    notes["delete"] = notesDelete;
+    notes["edit"] = notesEdit;
+    notes["new"] = notesNew;
+    permissionSetting["notes"] = notes;
+    other["downloadDoc"] = otherDownloadDoc;
+    other["uploadDoc"] = otherUploadDoc;
+    permissionSetting["other"] = other;
+
+    //custom apa and mpa, mandated apa and mpa
+    let customApa = {};
+    let customApaAssign = {};
+    let customApaDelete = {};
+    let customApaEdit = {};
+    let customApaNew = {};
+    let customMpa = {};
+    let customMpaAssign = {};
+    let customMpaDelete = {};
+    let customMpaEdit = {};
+    let customMpaNew = {};
+    let mandatedApaAssign = {};
+    let mandatedMpaAssign = {};
+    for (let i = 3; i < 6; i++) {
+      customApaAssign[i] = true;
+      customApaDelete[i] = true;
+      customApaEdit[i] = true;
+      customApaNew[i] = true;
+      customMpaAssign[i] = true;
+      customMpaDelete[i] = true;
+      customMpaEdit[i] = true;
+      customMpaNew[i] = true;
+      mandatedApaAssign[i] = true;
+      mandatedMpaAssign[i] = true;
+    }
+    customApa["assign"] = customApaAssign;
+    customApa["delete"] = customApaDelete;
+    customApa["edit"] = customApaEdit;
+    customApa["new"] = customApaNew;
+    permissionSetting["customApa"] = customApa;
+    customMpa["assign"] = customMpaAssign;
+    customMpa["delete"] = customMpaDelete;
+    customMpa["edit"] = customMpaEdit;
+    customMpa["new"] = customMpaNew;
+    permissionSetting["customMpa"] = customMpa;
+    permissionSetting["mandatedApaAssign"] = mandatedApaAssign;
+    permissionSetting["mandatedMpaAssign"] = mandatedMpaAssign;
+
+    //inter agency
+    let interAgency = {};
+    let interAgencyAddNotes = {};
+    let interAgencyCopyAction = {};
+    let interAgencyDownload = {};
+    let interAgencyEdit = {};
+    let interAgencyView = {};
+    let interAgencyViewContacts = {};
+    for (let i = 3; i < 7; i++) {
+      interAgencyAddNotes[i] = true;
+      interAgencyCopyAction[i] = true;
+      interAgencyDownload[i] = true;
+      interAgencyEdit[i] = true;
+      interAgencyView[i] = true;
+      interAgencyViewContacts[i] = true;
+    }
+    interAgency["addNotes"] = interAgencyAddNotes;
+    interAgency["copyAction"] = interAgencyCopyAction;
+    interAgency["download"] = interAgencyDownload;
+    interAgency["edit"] = interAgencyEdit;
+    interAgency["view"] = interAgencyView;
+    interAgency["viewContacts"] = interAgencyViewContacts;
+    permissionSetting["interAgency"] = interAgency;
+
+    countryOffice.permissionSettings = permissionSetting;
+
+    //copy clock settings and module settings
+    if (this.agencyClockSetting) {
+      countryOffice.clockSettings = this.agencyClockSetting;
+    }
+    if (this.agencyModuleSetting) {
+      this.countryData["/module/" + countryId] = this.agencyModuleSetting;
+    }
+
+    //actual model update
     this.countryData["/countryOffice/" + this.uid + "/" + countryId] = countryOffice;
 
     this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {

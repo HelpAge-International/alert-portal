@@ -28,7 +28,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   filterUser: number = 0;
   filterOffice: number = 0;
 
-  countries = Constants.COUNTRY;
+  countries = Constants.COUNTRIES;
   staffs: ModelStaffDisplay[] = [];
   private uid: string;
   private staffDisplay: ModelStaffDisplay;
