@@ -33,7 +33,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   adminPostcode: string;
   isEdit = false;
 
-  COUNTRY = Constants.COUNTRY;
+  COUNTRY = Constants.COUNTRIES;
   COUNTRY_SELECTION = Constants.COUNTRY_SELECTION;
   PERSON_TITLE = Constants.PERSON_TITLE;
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;

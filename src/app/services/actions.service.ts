@@ -263,7 +263,7 @@ export class ActionsService {
     let countryDirectorData = {};
     countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
     let countryDirector = {};
-    countryDirector["countryDirector"] = countryDirectorData
+    countryDirector["countryDirector"] = countryDirectorData;
     updateData["approval"] = countryDirector;
     updateData["createdBy"] = alert.createdBy;
     updateData["estimatedPopulation"] = alert.estimatedPopulation;
@@ -289,7 +289,6 @@ export class ActionsService {
       }
     })
       .map(alerts => {
-        console.log(alerts);
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();

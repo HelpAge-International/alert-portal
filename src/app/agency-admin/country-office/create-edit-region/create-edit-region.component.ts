@@ -16,7 +16,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   private pageTitle: string = "AGENCY_ADMIN.COUNTRY_OFFICES.CREATE_NEW_REGION";
   private submitText: string = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_NEW_REGION";
-  private COUNTRY_NAMES: string[] = Constants.COUNTRY;
+  private COUNTRY_NAMES: string[] = Constants.COUNTRIES;
   private regionName: string;
   private counter: number = 0;
   private countries: number[] = [this.counter];

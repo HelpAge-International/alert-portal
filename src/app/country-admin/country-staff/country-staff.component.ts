@@ -2,16 +2,15 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import {RxHelper} from '../../utils/RxHelper';
 import {ModelStaffDisplay} from '../../model/staff-display.model';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {ModelStaff} from '../../model/staff.model';
 import {ModelUserPublic} from '../../model/user-public.model';
 import {OfficeType, SkillType, StaffPosition, UserType} from '../../utils/Enums';
-import { UserService } from "../../services/user.service";
-import { PartnerModel } from "../../model/partner.model";
-import { PartnerOrganisationModel } from "../../model/partner-organisation.model";
-import { PartnerOrganisationService } from "../../services/partner-organisation.service";
+import {UserService} from "../../services/user.service";
+import {PartnerModel} from "../../model/partner.model";
+import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
+import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 declare var jQuery: any;
 @Component({
   selector: 'app-country-staff',
@@ -20,7 +19,7 @@ declare var jQuery: any;
   providers: [UserService, PartnerOrganisationService]
 })
 export class CountryStaffComponent implements OnInit, OnDestroy {
-  
+
   partnersList: PartnerModel[];
   private agencyAdminId: string;
   private countryId: any;
@@ -50,34 +49,40 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private techSkills: string[] = [];
   private departments: any[] = [];
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private af: AngularFire,
-              private router: Router,
-              private subscriptions: RxHelper) {  }
+              private router: Router) {
+  }
 
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
       }
       this.uid = user.auth.uid;
-      const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
-            .subscribe(countryAdmin => {
-                // Get the country id and agency administrator id
-                this.countryId = countryAdmin.countryId;
-                this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
-                this.initData();
-            });
+      this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
+        .subscribe(countryAdmin => {
+          // Get the country id and agency administrator id
+          this.countryId = countryAdmin.countryId;
+          this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
+          this.initData();
+        });
     });
-    this.subscriptions.add(subscription);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private initData() {
     this.getStaffData();
     this.getPartnerData();
-    const subscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
+    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
       .map(departmentList => {
         let departments = [this.All_Department];
         departmentList.forEach(x => {
@@ -85,10 +90,10 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
         });
         return departments;
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(x => {
         this.departments = x;
       });
-    this.subscriptions.add(subscription);
   }
 
   private getStaffData() {
@@ -99,37 +104,46 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
           this.getStaffPublicUser(item.$key);
         });
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe();
-    this.subscriptions.add(staffSubscription);
   }
 
-  private getPartnerData(){
-    this._userService.getPartnerUsers().subscribe(partners =>
-    {
+  private getPartnerData() {
+    this._userService.getPartnerUsers()
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(partners => {
         this.partnersList = partners;
         this.partnersList.forEach(partner => {
-            this._userService.getUser(partner.id)
-                    .subscribe(partnerPublicUser => {this.partnerPublicUser[partner.id] = partnerPublicUser; });
-            this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-                     .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.id] = partnerOrganisation});
+          this._userService.getUser(partner.id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(partnerPublicUser => {
+              this.partnerPublicUser[partner.id] = partnerPublicUser;
+            });
+          this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(partnerOrganisation => {
+              this.partnerOrganisations[partner.id] = partnerOrganisation
+            });
         });
-    });
+      });
   }
 
-  hideFilteredStaff(staff: ModelStaff): boolean{
+  hideFilteredStaff(staff: ModelStaff): boolean {
     let hide = false;
 
-    if(!staff) { return hide; }
-        
-    if(this.filterDepartment && this.filterDepartment !== this.All_Department && staff.department !== this.filterDepartment){
-      hide = true;
-   }
+    if (!staff) {
+      return hide;
+    }
 
-   if(this.filterUserType && this.filterUserType > 0 && staff.userType != this.filterUserType){
+    if (this.filterDepartment && this.filterDepartment !== this.All_Department && staff.department !== this.filterDepartment) {
       hide = true;
-   }
+    }
 
-   if(this.filterOffice && this.filterOffice > 0 && staff.officeType != this.filterOffice){
+    if (this.filterUserType && this.filterUserType > 0 && staff.userType != this.filterUserType) {
+      hide = true;
+    }
+
+    if (this.filterOffice && this.filterOffice > 0 && staff.officeType != this.filterOffice) {
       hide = true;
     }
 
@@ -150,10 +164,6 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     return this.staff;
   }
 
-  ngOnDestroy() {
-    this.subscriptions.releaseAll();
-  }
-
   addNewStaff() {
     this.router.navigateByUrl('/country-admin/country-staff/country-add-edit-staff');
   }
@@ -161,14 +171,16 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   addNewPartner() {
     this.router.navigateByUrl('/country-admin/country-staff/country-add-edit-partner');
   }
-  getStaffUserType(userType){
+
+  getStaffUserType(userType) {
     for (let i = 0; i < this.userTypesList.length; i++) {
-      if(this.userTypesList[i] === userType){
+      if (this.userTypesList[i] === userType) {
         return this.UserType[i];
       }
     }
     return '';
   }
+
   editStaff(officeId, staffId) {
     this.router.navigate(['/country-admin/country-staff/country-add-edit-staff', {
       id: staffId,
@@ -182,19 +194,21 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     }], {skipLocationChange: true});
   }
 
-  getStaffPublicUser(userId){
-    const staffPublicUserSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
-              .subscribe(userPublic => {
-                this.staffPublicUser[userId] =
-                    new ModelUserPublic(userPublic.firstName, userPublic.lastName, userPublic.title, userPublic.email);
+  getStaffPublicUser(userId) {
+    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(userPublic => {
+        this.staffPublicUser[userId] =
+          new ModelUserPublic(userPublic.firstName, userPublic.lastName, userPublic.title, userPublic.email);
 
-                this.staffPublicUser[userId].phone = userPublic.phone;
-              });
+        this.staffPublicUser[userId].phone = userPublic.phone;
+      });
   }
 
   closeAdditionalInfo(staffId) {
     jQuery('#' + staffId).collapse('hide');
   }
+
   getSupportSkills(officeId, staffId) {
     this.supportSkills = [];
     if (staffId) {
@@ -216,12 +230,12 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
         })
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
           if (skill.type == SkillType.Support) {
             this.supportSkills.push(skill.name);
           }
         });
-      this.subscriptions.add(subscription);
     }
     return this.supportSkills;
   }
@@ -247,12 +261,12 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
         })
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
           if (skill.type == SkillType.Tech) {
             this.techSkills.push(skill.name);
           }
         });
-      this.subscriptions.add(subscription);
     }
     return this.techSkills;
   }

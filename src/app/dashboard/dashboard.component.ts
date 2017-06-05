@@ -36,8 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private tempDirectorUid = "1b5mFmWq2fcdVncMwVDbNh3yY9u2";
 
   private DashboardType = DashboardType;
-  private DashboardTypeUsed = DashboardType.director;
-  // private DashboardTypeUsed = DashboardType.default;
+  // private DashboardTypeUsed = DashboardType.director;
+  private DashboardTypeUsed = DashboardType.default;
 
   private uid: string;
   private countryId: string;
@@ -62,8 +62,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private countryContextIndicators: any[] = [];
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-
   private seasonEvents = [];
   private chronoline;
   private approveMap = new Map();
@@ -71,10 +69,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
 
+  // TODO - New Subscriptions - Remove RxHelper and add Subject
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
+    // TODO - New Subscriptions - Remove subscriptions and add '.takeUntil(this.ngUnsubscribe)' before every .subscribe()
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
@@ -85,9 +87,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
+    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   getCSSHazard(hazard: number) {
@@ -331,7 +336,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToFaceToFaceMeeting() {
-    this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
+    // this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
+    this.router.navigate(["/dashboard/facetoface-meeting-request",{countryId:this.countryId, agencyId:this.agencyAdminUid}]);
   }
 
   private navigateToLogin() {

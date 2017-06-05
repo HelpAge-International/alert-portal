@@ -83,7 +83,10 @@ import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
 import {ReviewResponsePlanComponent} from "./dashboard/review-response-plan/review-response-plan.component";
 import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
-import {ViewResponsePlanComponent} from "./response-plans/view-response-plan/view-response-plan.component";
+import {ViewResponsePlanComponent} from "./commons/view-response-plan/view-response-plan.component";
+import {CountryOfficePartnersComponent} from "./country-admin/country-office-profile/partners/partners.component";
+import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
+import {DirectorComponent} from "./director/director.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -177,8 +180,9 @@ const routes: Routes = [
   {path: 'country-admin/country-staff', component: CountryStaffComponent},
   {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
   {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
-  {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
+  //{path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
+  {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 
@@ -199,7 +203,8 @@ const routes: Routes = [
    */
   {path: 'risk-monitoring', component: RiskMonitoringComponent},
   {path: 'risk-monitoring/create-alert', component: CreateAlertRiskMonitoringComponent},
-  {path: 'risk-monitoring/add-indicator', component: AddIndicatorRiskMonitoringComponent},
+  {path: 'risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorRiskMonitoringComponent},
+  {path: 'risk-monitoring/add-indicator/:hazardID', component: AddIndicatorRiskMonitoringComponent},
   {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
 
   /**
@@ -225,13 +230,21 @@ const routes: Routes = [
   {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
   {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
   {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
-  {path: 'response-plans/view-response-plan/view-response-plan', component: ViewResponsePlanComponent},
+  {path: 'response-plans/view-response-plan', component: ViewResponsePlanComponent},
+  {path: 'response-plans/view-response-plan/:id', component: ViewResponsePlanComponent},
+  {path: 'response-plans/view-plan', component: ViewPlanComponent},
+  {path: 'response-plans/view-plan/:id', component: ViewPlanComponent},
 
   /**
    * Maps
    */
   {path: 'map', component: MapComponent},
   {path: 'map/map-countries-list', component: MapCountriesListComponent},
+
+  /**
+   * Directors
+   */
+  {path: 'director', component: DirectorComponent},
 
   /*
    * test

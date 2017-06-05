@@ -2,15 +2,15 @@
  * Created by Fei on 08/03/2017.
  */
 import {
-    PersonTitle,
-    Country,
-    Currency,
-    UserType,
-    StaffPosition,
-    OfficeType,
-    DurationType,
-    ResponsePlanSectionSettings,
-    DocumentType
+  PersonTitle,
+  Country,
+  Currency,
+  UserType,
+  StaffPosition,
+  OfficeType,
+  DurationType,
+  ResponsePlanSectionSettings,
+  DocumentType, Countries
 } from "./Enums";
 
 export class Constants {
@@ -47,7 +47,7 @@ export class Constants {
     static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
 
-  /*LIST VALUES FOR TRANSLATION*/
+    /*LIST VALUES FOR TRANSLATION*/
     static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
     static THRESHOLD_NAME = ["GLOBAL.THRESHOLD_NAME.GREEN", "GLOBAL.THRESHOLD_NAME.AMBER", "GLOBAL.THRESHOLD_NAME.RED"];
 
@@ -55,8 +55,8 @@ export class Constants {
         "GLOBAL.PERSON_TITLE.DR", "GLOBAL.PERSON_TITLE.PROF"];
     static PERSON_TITLE_SELECTION: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
 
-    static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
-    static COUNTRY_SELECTION = [Country.UK, Country.France, Country.Germany];
+    // static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
+
 
     static CATEGORY: string[] = [
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ALL",
@@ -114,33 +114,33 @@ export class Constants {
         "GLOBAL.NOTIFICATION_SETTING.RESPONSE_PLAN_EXPIRE", "GLOBAL.NOTIFICATION_SETTING.RESPONSE_PLAN_REJECT"];
 
     static HAZARD_SCENARIOS: string[] = [
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO0",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO1",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO2",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO3",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO4",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO5",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO6",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO7",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO8",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO9",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO10",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO11",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO12",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO13",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO14",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO15",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO16",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO17",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO18",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO19",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO20",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO21",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO22",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO23",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO24",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO25",
-      "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO26"
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO0",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO1",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO2",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO3",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO4",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO5",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO6",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO7",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO8",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO9",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO10",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO11",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO12",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO13",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO14",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO15",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO16",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO17",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO18",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO19",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO20",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO21",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO22",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO23",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO24",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO25",
+        "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO26"
     ];
 
     static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins"];
@@ -184,6 +184,7 @@ export class Constants {
         "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.HAZARD_DOCUMENT"
     ];
 
+    static COUNTRY_SELECTION = [Countries.GB, Countries.FR, Countries.DE, Countries.AF, Countries.AX, Countries.AL, Countries.DZ,Countries.AS,Countries.AD,Countries.AO,Countries.AI,Countries.AQ,Countries.AG];
     static COUNTRIES = [
         "GLOBAL.COUNTRIES.GB",
         "GLOBAL.COUNTRIES.FR",
@@ -477,7 +478,7 @@ export class Constants {
         "green",
         "amber",
         "red"
-        ];
+    ];
 
     static ALERTS = [
         "GLOBAL.ALERTS.GREEN",
@@ -490,6 +491,52 @@ export class Constants {
     "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO",
     "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
   ];
+
+  static PARTNER_STATUS = ["COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION", "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED"];
+  // All = 0,
+  // GlobalDirector = 1,
+  // RegionalDirector = 2,
+  // CountryDirector = 3,
+  // ErtLeader = 4,
+  // Ert = 5,
+  // Donor = 6,
+  // GlobalUser = 7,
+  // CountryAdmin = 8,
+  // NonAlert = 9
+  static USER_TYPE_PATH = [
+    null,
+    null,
+    null,
+    "countryDirector",
+    null,
+    null,
+    null,
+    null,
+    "administratorCountry",
+    null
+  ];
+
+    static ALERT_BUTTON_CLASS = [
+        "success",
+        "warning",
+        "danger"
+    ];
+
+    static SCENARIO_COLORS = [
+        '#D0011B',
+        '#F6A623',
+        '#F8E81C',
+        '#7ED321',
+        '#4990E2',
+        '#50E3C2',
+        '#EA5166',
+        '#64929B',
+        '#417505',
+        '#41749C',
+        '#B8E986',
+        '#9012FE'
+    ];
+
 }
 
 export enum FILE_SETTING {

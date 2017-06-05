@@ -16,6 +16,7 @@
     "OF": "of",
     "CLOSE": "Close",
     "REMOVE": "Remove",
+    "REJECT": "Reject",
     "MALE": "Male",
     "FEMALE": "Female",
     "TITLE": "Title",
@@ -169,7 +170,7 @@
     },
     "COUNTRIES": {
       "AF": "Afghanistan",
-      "AX": "Åland Islands",
+      "AX": "Ã…land Islands",
       "AL": "Albania",
       "DZ": "Algeria",
       "AS": "American Samoa",
@@ -222,10 +223,10 @@
       "CD": "Congo, the Democratic Republic of the",
       "CK": "Cook Islands",
       "CR": "Costa Rica",
-      "CI": "Côte d'Ivoire",
+      "CI": "CÃ´te d'Ivoire",
       "HR": "Croatia",
       "CU": "Cuba",
-      "CW": "Curaçao",
+      "CW": "CuraÃ§ao",
       "CY": "Cyprus",
       "CZ": "Czech Republic",
       "DK": "Denmark",
@@ -348,11 +349,11 @@
       "PT": "Portugal",
       "PR": "Puerto Rico",
       "QA": "Qatar",
-      "RE": "Réunion",
+      "RE": "RÃ©union",
       "RO": "Romania",
       "RU": "Russian Federation",
       "RW": "Rwanda",
-      "BL": "Saint Barthélemy",
+      "BL": "Saint BarthÃ©lemy",
       "SH": "Saint Helena, Ascension and Tristan da Cunha",
       "KN": "Saint Kitts and Nevis",
       "LC": "Saint Lucia",
@@ -842,6 +843,8 @@
       "DELETE_DIALOG_TITLE": "Delete Partner",
       "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this partner?",
       "SUCCESS_DELETED": "The partner has been successfully deleted",
+      "STATUS_AWAITING_VALIDATION": "Awaiting validation",
+      "STATUS_VALIDATED": "Validated",
       "PERMISSIONS": {
         "TITLE": "Permissions",
         "CHS_ACTIONS": "CHS Actions",
@@ -937,6 +940,38 @@
     "MESSAGES": {
       "TITLE_TEXT": "Country Office Messages"
     },
+    "PROFILE": {
+      "TITLE_TEXT": "Country Office Profile",
+      "MENU": {
+        "PROGRAMME": "Programme",
+        "OFFICE_CAPACITY": "Office capacity",
+        "PARTNERS": "Partners",
+        "EQUIPMENT": "Equipment",
+        "COORDINATION": "Coordination",
+        "STOCK_CAPACITY": "Stock Capacity",
+        "DOCUMENTS": "Documents",
+        "CONTACTS": "Contacts"
+      },
+      "PARTNERS":{
+        "TITLE_TEXT": "Partners",
+        "IMPLEMENTING_PARTNERS": "Current Implementing partners",
+        "EDIT": "Edit partners",
+        "VIEW": "View partners",
+        "ADD": "Add",
+        "EMPTY_LIST": "Use the add partners button to add your partner organisations",
+        "UPDATED": "Updated",
+        "ORGANISATION": "Organisation",
+        "RELATIONSHIP": "Relationship",
+        "AREAS_OF_OPERATION": "Areas of operation",
+        "STATUS": "Status",
+        "PARTNERSHIP_DETAILS": "Partnership details",
+        "NOTES": "Notes",
+        "CONTACT_NAME": "Contact's Name",
+        "CONTACT_EMAIL": "Contact's Email",
+        "CONTACT_PHONE": "Contact's Telephone",
+        "CONTACT_POSITION": "Contact's Position"
+      }
+    },
     "VIEW_MY_AGENCY": {
       "TITLE": "Helpage International: Overview",
       "RESPONSE_PLANS": "Response plans",
@@ -946,6 +981,7 @@
       "SORT_BY": "Sort by",
       "NO_COUNTRIES": "Countries doesn't",
       "NO_COUNTRIES_BY": "Countries doesn't exist by",
+      "ALERT_LEVEL": "Alert level",
       "ALL_ALERT_LEVEL": "All Alert level",
       "ALERT_LEVEL": "Alert Level",
       "NO_AGENCIES": "No Agencies",
@@ -978,7 +1014,11 @@
     "NO_TITLE_ERROR": "Please enter a title for the message",
     "NO_CONTENT_ERROR": "Please add some content to the message",
     "NO_RECIPIENTS_ERROR": "Please select the recipients group",
-    "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)"
+    "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)",
+    "SENT_SUCCESS": "The message has been successfully sent",
+    "DELETE_DIALOG_TITLE": "Alert",
+    "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this message?",
+    "DELETE_SUCCESS": "The message has been successfully deleted"
   },
   "PERMISSIONS": {
     "TITLE": "Permissions",
@@ -1069,7 +1109,7 @@
       },
       "BASIC_INFORMATION": {
         "TITLE_TEXT": "Basic Information",
-        "WHAT_SECTORS?": "What sectors will the intervention’s activities most relate to?",
+        "WHAT_SECTORS?": "What sectors will the interventionâ€™s activities most relate to?",
         "PRESENCE_IN_THE_COUNTRY": "Presence in the country before project",
         "CURRENT_PROGRAMMES": "Current programmes",
         "PRE-EXISTING_PARTNER": "Pre-existing partner",
@@ -1139,7 +1179,7 @@
         "BUDGET_NARRATIVE": "Budget Narrative",
         "INPUTS": "Inputs",
         "ADD_ITEM": "Add item",
-        "DO_YOU_HAVE_CAPITAL_ITEMS?": "Do you have any capital items costing more than £1,000?",
+        "DO_YOU_HAVE_CAPITAL_ITEMS?": "Do you have any capital items costing more than Â£1,000?",
         "CATEGORY": {
           "TRANSPORT": "Transport",
           "SECURITY": "Security",
@@ -1287,6 +1327,7 @@
     "EMPTY_DIRECTOR":"No response plans to approve, and no actions or indicators assigned to you needs completing this week",
     "CALENDAR": {
       "SEASONAL_CALENDAR" : "Seasonal Calendar",
+      "VIEW_FULL_CALENDAR" : "View full calendar",
       "ADD_TO_CALENDAR": "Add to the calendar",
       "VIEW_AS_WEEKS": "View as weeks",
       "VIEW_AS_MONTHS": "View as months",
@@ -1299,7 +1340,147 @@
   },
   "DIRECTOR_DASHBOARD": {
     "INTER_AGENCIES_COLLABORATION": "Inter-agencies collaboration",
+    "FACE_T_FACE_MEETING_REQUEST": "Face-to-face meeting request",
     "AGENCIES_IN": "Agencies in",
-    "MEETING_REQUEST": "Meeting request"
+    "CREATE_EMAIL": "Create Email",
+    "MEETING_REQUEST": "Meeting request",
+    "PLAN_APPROVAL": "Plan Approval",
+    "YOU": "You",
+    "APPROVE_PLAN": "Approve Plan",
+    "REJECT_PLAN": "Reject Plan",
+    "REJECT_PLAN_CONFIRMATION": "Please confirm you want to reject this plan",
+    "REJECT_PLAN_CONFIRMATION": "Are you sure you want to reject this plan"
+  },
+  "RISK_MONITORING": {
+    "ADD_INDICATOR": {
+      "NO_NAME": "Please enter indicator name",
+      "NO_SOURCE_NAME": "Please enter indicator source name",
+      "NO_SOURCE_LINK": "Please enter indicator source link",
+      "NO_TRIGGER_VALUE": "Please enter indicator trigger value",
+      "NO_TRIGGER_DURATION_TYPE": "Please select indicator trigger duration type",
+      "NO_TRIGGER_FREQUENCY_VALUE": "Please select indicator trigger frequency value",
+      "NO_CATEGORY": "Please select hazard",
+      "NO_GEO_LOCATION": "Please select geo location",
+      "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
+      "SUCCESS_MESSAGE_UPDATE_INDICATOR": "Indicator successfully updated!",
+      "TITLE_PAGE": "Add new indicator",
+      "INPUTS": {
+        "HAZARD": "Hazard",
+        "HAZARD_NOTE": "Note: Pre-filled based on the hazard I have select to add the indicator",
+        "INDICATOR": "Indicator",
+        "SOURCE_INFORMATION": "Source of information",
+        "ADD_ANOTHER_SOURCE": "Add another source",
+        "TRIGGER_VALUES": "Trigger Values",
+        "FREQUENCY_MONITORING": "Frequency of monitoring",
+        "ASSIGN_TO": "Assign to",
+        "GEO_LOCATION": "Geographical location of indicator monitoring",
+        "LOCATION_SELECT": "Please select the locations affected",
+        "ADD_ANOTHER_LOCATION": "Add another location"
+      },
+      "SAVE_INDICATOR": "Save new indicator",
+      "TITLE_EDIT_INDICATOR" : "Edit Indicator"
+    },
+
+    "ADD_ALERT": {
+      "NO_HAZARD": "Please select hazard",
+      "NO_ALERT_LEVEL": "Please select alert level",
+      "NO_ESTIMATED": "Please enter estimated population affected",
+      "NO_NOTES": "Please enter information sources and notes",
+      "NO_REASONS_FOR_REQUEST": "Please enter reasons for red alert request",
+      "SUCCESS_MESSAGE_ADD_ALERT": "Alert successfully saved!",
+      "NO_DIRECTOR_COUNTRY_ID": "No country director is assigned to your country",
+      "TITLE_PAGE": "Create an alert",
+      "INPUTS": {
+        "SELECT_ALERT": "Select the Alert Level",
+        "AFFECTED_AREAS": "Affected areas",
+        "LOCATION_SELECT": "Please select the locations affected",
+        "ESMITATED_POPULATION_AFFECTED": "Estimated population affected",
+        "INFORMATION_SOURCE_NOTES": "Information sources and notes",
+        "ADD_ANOTHER_AREAS": "Add another areas"
+      },
+      "CONFIRM_ALERT_LEVEL": "Confirm alert level",
+      "ERROR_ONLY_NUMBERS" : "Please enter only numbers for this field."
+    },
+    "ADD_HAZARD": {
+      "NO_HAZARD": "Please select hazard",
+      "NO_SEASONAL": "Please select seasonal",
+      "HAZARD_DETECTED": "This hazard exists already",
+      "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
+      "ADD_NEW_HAZARD": "Add new hazard",
+      "INFORMATION_PROVIDED": "Information provided by ",
+      "INFORM_INDEX_FOR_PHILIPPINES": "Inform Index for Philippines",
+      "NOTE_HAZARD": "Note: this list will only display the hazards that donâ€™t appear in your risk monitoring list (you cannot add the same hazard twice)",
+      "SELECT_ANOTHER_HAZARD": "Select another hazard",
+      "IS_SEASONAL_HAZARD": "Is this a seasonal hazard?",
+      "SELECT_SEASON_FROM_CALENDAR": "SELECT SEASON(S) FROM THE CALENDAR",
+      "EDIT_SEASONS": "Edit Seasons",
+      "ADD_HAZARD": "add hazard",
+      "SELECT_SEASONS": "Select seasons",
+      "ADD_TO_SEASONAL_CALENDAR": "Add to the seasonal calendar",
+      "ADD_SEASONAL_TO_CALENDAR": "Add season to the calendar",
+      "SEASON_NAME": "Season Name",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date"
+    },
+    "MAIN_PAGE": {
+      "LOGS_NO_CONTENT": "Please enter text for you log.",
+      "SUCCESS_ADDED_LOG": "New Log successfully added!",
+      "SUCESS_UPDATE_HAZARD": "Hazard successfully updated!",
+      "SUCCESS_UPDATE_LOG": "Log successfully updated!",
+      "SUCCESS_DELETE_LOG": "Log successfully deleted!",
+      "SUCCESS_DELETE_HAZARD": "Hazard successfully deleted!",
+      "EXPAND_ALL": "Expand All",
+      "COLLAPSE_ALL": "Collapse All",
+      "ADD_NEW_HAZARD": "ADD NEW HAZARD",
+      "CREATE_AN_ALERT": "Create an alert",
+      "SUCCESS_MESSAGE_NEW_HAZARD_PART_ONE": "You just added ",
+      "SUCCESS_MESSAGE_NEW_HAZARD_PART_TWO": "as a new hazard.",
+      "COUNTRY_CONTEXT": "Country Context",
+      "INDICATORS_COUNT": "Indicators",
+      "ARCHIVE": "Archive",
+      "ADD_NEW_INDICATOR": "Add new indicator",
+      "CHECK_EVERY": "Check every",
+      "INFO_SOURCES": "Info sources",
+      "LOG": "Log",
+      "UPDATE_INDICATOR_STATE": "Update",
+      "INDICATOR_SAVE_CHANGES": "Save changes",
+      "LOG_STATUS": "Status",
+      "BY_USER": "By",
+      "ADD_LOG_ENTRY": "ADD LOG ENTRY",
+      "EXPORT_LOG": "EXPORT LOG",
+      "MY_SOURCES_INFORMATION": "My Sources of Information",
+      "NO_INDICATORS": "You have not added any indicators year.",
+      "SEASONAL_HAZARD": "Seasonal hazard",
+      "PLACEHOLDER_ADD_LOG": "Add a log entry",
+      "ARCHIVED_HAZARDS": "Archived Hazards",
+      "VIEW_ALL": "View all",
+      "ACTIVATE": "Activate",
+      "NATIONAL": "National",
+      "SUBNATIONAL": "Subnational",
+      "MODAL": {
+        "ARCHIVE_HAZARD": {
+          "MESSAGE_PART_ONE": "Are you sure you want to",
+          "MESSAGE_PART_TWO": "the hazard? All indicators will become",
+          "MESSAGE_PART_THREE": "and any assigned users will no longer recieve notifications about indicators"
+        },
+        "EDIT_NOTE": {
+          "TITLE": "Edit note"
+        },
+        "DELETE_LOG": {
+          "MESSAGE": "Are you sure you want to delete this log?",
+          "TITLE": "Delete log"
+        },
+        "DELETE_HAZARD": {
+          "MESSAGE": "Are you sure you want to delete this hazard? All indicators and logs will be removed"
+        }
+      }
+    },
+    "TITLE": "Risk Monitoring"
+  },
+  "HEADERS": {
+    "MIN_PREP": "Minimum preparedness",
+    "ADV_PREP": "Advanced preparedness",
+    "GLOBAL_MAP": "Global Map",
+    "PLANS": "Plans"
   }
 }

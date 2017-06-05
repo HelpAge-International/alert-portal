@@ -16,6 +16,8 @@ export class PermissionSettingsModel extends BaseModel {
   constructor(){
     super();
     this.chsActions = [];
+    this.mandatedMpaAssign = [];
+    this.mandatedApaAssign = [];
     this.countryContacts = new ContactsPermissionSettingsModel();
     this.crossCountry = new CrossCountryPermissionSettingsModel();
     this.customApa = new CustomPAPermissionSettingsModel();

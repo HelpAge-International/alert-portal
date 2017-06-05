@@ -4,7 +4,7 @@ export class ModelSeason {
   public startTime: number;
   public name: string;
 
-  constructor(colorCode: string, endTime: number, startTime: number, name: string) {
+  constructor(colorCode: string, name: string, startTime: number, endTime: number) {
     this.colorCode = colorCode;
     this.endTime = endTime;
     this.startTime = startTime;

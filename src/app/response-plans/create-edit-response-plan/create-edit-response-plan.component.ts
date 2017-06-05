@@ -1381,7 +1381,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           let beneficiary = [];
           activitiesData[key]["beneficiary"].forEach(item => {
             beneficiary.push(item);
-          })
+          });
           let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
           moreData.push(model);
           if (!this.activityMap.get(Number(sectorKey))) {

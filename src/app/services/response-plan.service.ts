@@ -1,18 +1,17 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {UserService} from "./user.service";
-import {RxHelper} from "../utils/RxHelper";
 import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
-import {error} from "util";
+import {Router} from "@angular/router";
 
 @Injectable()
 export class ResponsePlanService {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private userService: UserService) {
+  constructor(private af: AngularFire, private userService: UserService, private router: Router) {
   }
 
   submitForPartnerValidation(plan, uid) {
@@ -59,10 +58,59 @@ export class ResponsePlanService {
           let updateData = {};
           updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
           // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
-          this.af.database.object(Constants.APP_STATUS).update(updateData).then((_) => {}, (error) => {
+          this.af.database.object(Constants.APP_STATUS).update(updateData).then((_) => {
+          }, (error) => {
             console.log(error.message);
           });
         });
+    }
+  }
+
+  getResponsePlan(countryId, responsePlanId) {
+    return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId);
+  }
+
+  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent) {
+    let approvalName = this.getUserTypeName(userType);
+    if (approvalName) {
+      let updateData = {};
+      updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/approval/" + approvalName + "/" + uid] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+      updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+        if (rejectNoteContent) {
+          this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent);
+        } else {
+          this.router.navigateByUrl("/dashboard");
+        }
+      }, error => {
+        console.log(error.message);
+      });
+    } else {
+      console.log("user type is empty!!!");
+    }
+  }
+
+  private addResponsePlanRejectNote(uid, responsePlanId, content) {
+    let note = {};
+    note["content"] = content;
+    note["time"] = Date.now();
+    note["uploadBy"] = uid;
+    this.af.database.list(Constants.APP_STATUS + "/note/" + responsePlanId).push(note).then(() => {
+      this.router.navigateByUrl("/dashboard");
+    }, error => {
+      console.log(error.message)
+    });
+  }
+
+  private getUserTypeName(userType: number): string {
+    if (userType == UserType.CountryDirector) {
+      return "countryDirector";
+    } else if (userType == UserType.RegionalDirector) {
+      return "regionDirector";
+    } else if (userType == UserType.GlobalDirector) {
+      return "globalDirector";
+    } else {
+      return "";
     }
   }
 

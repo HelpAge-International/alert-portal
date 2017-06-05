@@ -2,6 +2,7 @@ import { BaseModel } from "./base.model";
 import { AlertMessageModel } from "./alert-message.model";
 
 export class MessageModel extends BaseModel {
+  public id: string;
   public senderId: string;
   public title: string;
   public content: string;
