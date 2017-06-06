@@ -3,7 +3,7 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Observable} from "rxjs";
-import {AlertLevels, AlertStatus, Countries, DashboardType} from "../utils/Enums";
+import {AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -78,18 +78,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (user) {
         this.uid = user.auth.uid;
 
-        this.route.params
+        this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["isDirector"]) {
-              this.DashboardTypeUsed = DashboardType.director;
-              this.USER_TYPE = 'countryDirector';
+          .subscribe(userType => {
+            if (userType == UserType.CountryDirector) {
+              this.DashboardTypeUsed = DashboardType.director
             } else {
               this.DashboardTypeUsed = DashboardType.default;
-              this.USER_TYPE = 'administratorCountry';
             }
+            this.loadData();
           });
-          this.loadData();
+
+        // this.route.params
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe((params: Params) => {
+        //     if (params["isDirector"]) {
+        //       this.DashboardTypeUsed = DashboardType.director;
+        //       this.USER_TYPE = 'countryDirector';
+        //     } else {
+        //       this.DashboardTypeUsed = DashboardType.default;
+        //       this.USER_TYPE = 'administratorCountry';
+        //     }
+        //   });
+        //   this.loadData();
       } else {
         this.navigateToLogin();
       }
