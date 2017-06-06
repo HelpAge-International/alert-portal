@@ -4,9 +4,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
-    <div *ngIf="USER_TYPE">
-      <app-country-statistics-ribbon></app-country-statistics-ribbon>
-    </div>
+    <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
     <!--alert screen-->
     <div *ngIf="DashboardTypeUsed == DashboardType.default">
@@ -331,8 +329,8 @@
       </div>
     </div>
 
-    <!--empty rubber for director dashboard-->
-    <div *ngIf="responseType?.length == 0 | async">
+    <!--empty ribbon for director dashboard-->
+    <div *ngIf="approvalPlans.length == 0">
       <div
         *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.director"
         class="Widget">

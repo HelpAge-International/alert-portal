@@ -190,7 +190,6 @@ const routes: Routes = [
    * Dashboard
    */
   {path: 'dashboard', component: DashboardComponent},
-  {path: 'dashboard/:isDirector', component: DashboardComponent},
   {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
   {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
   {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},

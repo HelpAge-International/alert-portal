@@ -126,7 +126,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         .subscribe(snapshots => {
                           snapshots.forEach(snapshot => {
                             if (snapshot.key == success.uid) {
-                              this.router.navigate(['/dashboard', {isDirector: true}]);
+                              this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
                             }
                           });
                           this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";

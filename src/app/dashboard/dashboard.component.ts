@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Router, ActivatedRoute} from "@angular/router";
 import {Observable} from "rxjs";
 import {AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
@@ -25,12 +25,9 @@ declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, ne
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  // private HAZARDS: string[] = Constants.HAZARD_SCENARIOS;
-
   private alertList: ModelAlert[];
 
-  // TODO - Check when other users are implemented
-  private USER_TYPE: string;
+  private NODE_TO_CHECK: string;
 
   private DashboardType = DashboardType;
   private DashboardTypeUsed: DashboardType;
@@ -65,6 +62,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
 
+  private userPaths = Constants.USER_PATHS;
+
   // TODO - New Subscriptions - Remove RxHelper and add Subject
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -81,26 +80,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(userType => {
+            this.NODE_TO_CHECK = this.userPaths[userType];
             if (userType == UserType.CountryDirector) {
-              this.DashboardTypeUsed = DashboardType.director
+              this.DashboardTypeUsed = DashboardType.director;
             } else {
               this.DashboardTypeUsed = DashboardType.default;
             }
             this.loadData();
           });
-
-        // this.route.params
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe((params: Params) => {
-        //     if (params["isDirector"]) {
-        //       this.DashboardTypeUsed = DashboardType.director;
-        //       this.USER_TYPE = 'countryDirector';
-        //     } else {
-        //       this.DashboardTypeUsed = DashboardType.default;
-        //       this.USER_TYPE = 'administratorCountry';
-        //     }
-        //   });
-        //   this.loadData();
       } else {
         this.navigateToLogin();
       }
@@ -181,7 +168,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+      this.af.database.object(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
           this.countryId = countryId.$value;
@@ -193,7 +180,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
           this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
@@ -219,6 +206,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
+        console.log(indicators);
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
         if (dayIndicators.length > 0) {
@@ -245,6 +233,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
           });
         }
+        // console.log('Count ---- ' + this.responseType.length)
       });
 
     //TODO change temp id to actual uid
