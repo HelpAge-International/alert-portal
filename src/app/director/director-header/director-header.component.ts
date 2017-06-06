@@ -44,7 +44,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(userType => {
             console.log(UserType[userType]);
-            this.NODE_TO_CHECK = this.userPaths[userType]
+            this.NODE_TO_CHECK = this.userPaths[userType];
             if (this.NODE_TO_CHECK) {
               this.getAgencyName();
             }
@@ -80,7 +80,6 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
             this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
               .takeUntil(this.ngUnsubscribe)
               .subscribe((agencyName) => {
-                console.log(agencyName);
                 this.agencyName = agencyName ? agencyName.$value : "Agency";
                 res(true);
               });

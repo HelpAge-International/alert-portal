@@ -248,7 +248,7 @@ export class UserService {
               throw new Error(err.message);
             });
         }
-      })
+      });
 
       partner.modifiedAt = Date.now();
 
