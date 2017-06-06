@@ -48,7 +48,9 @@
               </strong>John Mayer
             </div>
             <div class="col-md-2 col-lg-2 col-sm-2"></div>
-            <div class="col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
+            <div class="col-sm-1">
+              <i class="fa fa-caret-down text-primary" aria-hidden="true"></i>
+            </div>
           </div>
         </div>
 
@@ -100,9 +102,18 @@
           <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
                [attr.data-target]="x.listOfCountries()" data-toggle="collapse" [attr.href]="x.getRegionIdHash()"
                aria-expanded="true">
-            <div class="row">
-              <h3 class="col-sm-11">{{x.regionName}}</h3>
-              <i class="fa fa-caret-down text-primary col-sm-1 align-self-center" aria-hidden="true"></i>
+            <div class="row align-items-center">
+              <div class="col-md-4 col-lg-4 col-sm-4">
+                <h4>{{x.regionName}}</h4>
+              </div>
+              <div class="col-md-5 col-lg-5 col-sm-5">
+                <strong>{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}:
+                </strong>{{getDirectorName(x.directorId) | translate}}
+              </div>
+              <div class="col-md-2 col-lg-2 col-sm-2"></div>
+              <div class="col-sm-1">
+                <i class="fa fa-caret-down text-primary" aria-hidden="true"></i>
+              </div>
             </div>
           </div>
 

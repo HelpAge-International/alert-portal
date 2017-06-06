@@ -6,7 +6,7 @@ import {AngularFire} from "angularfire2";
 import {SuperMapComponents, SDepHolder} from "../utils/MapHelper";
 import {RegionHolder} from "../map/map-countries-list/map-countries-list.component";
 import {RxHelper} from "../utils/RxHelper";
-import {Countries} from "../utils/Enums";
+import {Countries, UserType} from "../utils/Enums";
 
 @Component({
   selector: 'app-director',
@@ -17,17 +17,17 @@ import {Countries} from "../utils/Enums";
 export class DirectorComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  private agencyId: string = 'qbyONHp4xqZy2eUw0kQHU7BAcov1';
 
   private mapHelper: SuperMapComponents;
-  public regions: RegionHolder[];
-  public countries: SDepHolder[];
+  private regions: RegionHolder[];
+  private countries: SDepHolder[];
 
+  private directorName: string;
   private countryIdsForOther: Set<string> = new Set<string>();
   private allCountries: Set<string> = new Set<string>();
   private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
 
-  private responsePlansForApproval: Observable<any[]>;
+  private userPaths = Constants.USER_PATHS;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -61,28 +61,37 @@ export class DirectorComponent implements OnInit, OnDestroy {
     return Countries[location];
   }
 
+  getDirectorName(directorId) {
+
+    this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
+    console.log(directorId);
+    if (directorId && directorId != "null") {
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + directorId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.directorName = user.firstName + " " + user.lastName;
+        });
+    }
+    return this.directorName;
+  }
+
   /**
    * Private functions
    */
 
   private loadData() {
-    // TODO -
-    console.log("Here");
-    this.getRegions();
+    this.getAllRegionsAndCountries();
   }
 
-  private getRegions(){
+  private getAllRegionsAndCountries() {
 
     this.otherRegion = new RegionHolder();
-    this.otherRegion.regionId = "unassigned";
-    this.otherRegion.regionName = "Other";
-    console.log("Here");
-
-    this.mapHelper.getRegionsForAgency(this.uid, "globalDirector", (key, obj) => {
-      console.log("Updating Region");
-
+    this.otherRegion.regionId = "Unassigned";
+    this.otherRegion.regionName = "Other Countries";
+    this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[UserType.GlobalDirector], (key, obj) => {
       let hRegion = new RegionHolder();
-      hRegion.regionName  = obj.name;
+      hRegion.regionName = obj.name;
+      hRegion.directorId = obj.directorId;
       hRegion.regionId = key;
       for (let x in obj.countries) {
         hRegion.countries.add(x);
@@ -92,8 +101,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.addOrUpdateRegion(hRegion);
     });
 
-    this.mapHelper.initCountries(this.uid, "globalDirector", (departments) => {
-      console.log("Updating country");
+    this.mapHelper.initCountries(this.uid, this.userPaths[UserType.GlobalDirector], (departments) => {
       this.allCountries.clear();
       for (let x of departments) {
         this.addOrUpdateCountry(x);
@@ -132,6 +140,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     for (let x of this.regions) {
       if (x.regionId == holder.regionId) {
         x.regionName = holder.regionName;
+        x.directorId = holder.directorId;
         x.countries = holder.countries;
         return;
       }
