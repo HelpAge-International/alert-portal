@@ -275,7 +275,7 @@ export class UserService {
   //return current user type enum number
   getUserType(uid: string): Observable<any> {
     const paths = [Constants.APP_STATUS + "/administratorCountry/" + uid, Constants.APP_STATUS + "/countryDirector/" + uid,
-      Constants.APP_STATUS + "/regionDirector/" + uid];
+      Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid];
     if (!uid) {
       return null;
     }
@@ -294,7 +294,14 @@ export class UserService {
                     if (regionDirector.agencyAdmin) {
                       return Observable.of(UserType.RegionalDirector);
                     } else {
-                      return Observable.empty();
+                      return this.af.database.object(paths[3])
+                        .flatMap(globalDirector => {
+                          if (globalDirector.agencyAdmin) {
+                            return Observable.of(UserType.GlobalDirector);
+                          } else {
+                            return Observable.empty();
+                          }
+                        });
                     }
                   })
               }

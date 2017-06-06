@@ -140,8 +140,8 @@ export class LoginComponent implements OnInit, OnDestroy {
                               this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
                               this.showAlert(true);
                             });
-                          this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
-                          this.showAlert(true);
+                          // this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
+                          // this.showAlert(true);
                         });
                     });
                 });
