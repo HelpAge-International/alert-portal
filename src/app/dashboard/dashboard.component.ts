@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Observable} from "rxjs";
 import {AlertLevels, AlertStatus, Countries, DashboardType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
@@ -30,14 +30,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private alertList: ModelAlert[];
 
   // TODO - Check when other users are implemented
-  private USER_TYPE: string = 'administratorCountry';
-
-  //TODO - get the real director uid
-  private tempDirectorUid = "1b5mFmWq2fcdVncMwVDbNh3yY9u2";
+  private USER_TYPE: string;
 
   private DashboardType = DashboardType;
-  // private DashboardTypeUsed = DashboardType.director;
-  private DashboardTypeUsed = DashboardType.default;
+  private DashboardTypeUsed: DashboardType;
 
   private uid: string;
   private countryId: string;
@@ -72,15 +68,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // TODO - New Subscriptions - Remove RxHelper and add Subject
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private userService: UserService, private actionService: ActionsService) {
+  constructor(private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
+
     // TODO - New Subscriptions - Remove subscriptions and add '.takeUntil(this.ngUnsubscribe)' before every .subscribe()
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.loadData();
+
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["isDirector"]) {
+              this.DashboardTypeUsed = DashboardType.director;
+              this.USER_TYPE = 'countryDirector';
+            } else {
+              this.DashboardTypeUsed = DashboardType.default;
+              this.USER_TYPE = 'administratorCountry';
+            }
+          });
+          this.loadData();
       } else {
         this.navigateToLogin();
       }
@@ -228,7 +237,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     //TODO change temp id to actual uid
-    this.responsePlansForApproval = this.actionService.getResponsePlanForDirectorToApproval(this.countryId, this.tempDirectorUid);
+    this.responsePlansForApproval = this.actionService.getResponsePlanForDirectorToApproval(this.countryId, this.uid);
     this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.approvalPlans = plans
     });
@@ -250,7 +259,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.DashboardTypeUsed == DashboardType.default) {
       this.alerts = this.actionService.getAlerts(this.countryId);
     } else if (this.DashboardTypeUsed == DashboardType.director) {
-      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.tempDirectorUid, this.countryId);
+      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
       this.amberAlerts = this.actionService.getAlerts(this.countryId)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
@@ -320,11 +329,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   approveRedAlert(alertId) {
     //TODO need to change back to uid!!
-    this.actionService.approveRedAlert(this.countryId, alertId, this.tempDirectorUid);
+    this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
   }
 
   rejectRedRequest(alertId) {
-    this.actionService.rejectRedAlert(this.countryId, alertId, this.tempDirectorUid);
+    this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
   }
 
   planReview(planId) {
@@ -337,7 +346,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   goToFaceToFaceMeeting() {
     // this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
-    this.router.navigate(["/dashboard/facetoface-meeting-request",{countryId:this.countryId, agencyId:this.agencyAdminUid}]);
+    this.router.navigate(["/dashboard/facetoface-meeting-request", {
+      countryId: this.countryId,
+      agencyId: this.agencyAdminUid
+    }]);
   }
 
   private navigateToLogin() {

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {Constants} from '../utils/Constants';
+import {RxHelper} from '../utils/RxHelper';
 import {Observable} from 'rxjs';
 import {firebaseConfig} from '../app.module';
 import {UUID} from '../utils/UUID';
@@ -11,6 +12,7 @@ import {PartnerModel} from "../model/partner.model";
 import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
+import {Subscription} from "rxjs/Subscription";
 import {ChangePasswordModel} from "../model/change-password.model";
 import {recognize} from "@angular/router/src/recognize";
 
@@ -22,7 +24,7 @@ export class UserService {
   public user: ModelUserPublic;
   public partner: PartnerModel;
 
-  constructor(private af: AngularFire) {
+  constructor(private af: AngularFire, private subscriptions: RxHelper) {
     this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
   }
 
