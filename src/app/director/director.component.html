@@ -11,41 +11,86 @@
 
     <div class="Ribbon__section__wrap Spaced">
 
-      <!--My Tasks-->
-      <div class="Container-Mini Grey">
-        <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
-        <br>
-        <div *ngIf="responsePlansForApproval | async as plans">
-          <div class="row" *ngFor="let plan of plans">
-            <div class="col-sm-9">
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
-              </button>
+      <!--empty ribbon for director dashboard-->
+      <div *ngIf="approvalPlans.length == 0">
+        <div class="Widget"
+             *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0">
+          <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+          <div class="My-Tasks container-fluid">
+            <div class="Empty--ribbon">
+              {{"DASHBOARD.EMPTY_DIRECTOR" | translate}}
             </div>
           </div>
         </div>
-        <!--<div class="row">-->
-          <!--<div class="col-sm-9">-->
-            <!--<p class="col-sm-9 margin-bottom-none">-->
-              <!--<strong>Martin Harris</strong>-->
-              <!--{{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}-->
-            <!--</p>-->
-            <!--<p class="col-sm-9 margin-bottom-none">-->
-              <!--<em>My Response Plan Name</em></p>-->
-            <!--<p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}} 26/04/2016</p>-->
-          <!--</div>-->
-          <!--<div class="col-md-3">-->
-            <!--<button class="btn btn-primary font-weight-normal">{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</button>-->
-          <!--</div>-->
-        <!--</div>-->
+      </div>
+
+      <!--my tasks-->
+      <div class="Widget"
+           *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
+        <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
+        <br>
+        <div class="row" *ngFor="let plan of approvalPlans">
+          <div class="col-sm-9">
+            <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+              {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+            <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+            <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+              {{plan.timeUpdated ?
+              (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
+              {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
+            </button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ">
+
+          <div *ngFor="let action of actionsToday" class="row alert-danger">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getActionTitle(action)}}
+              <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
+            <div class="col-md-3">
+              <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+                translate}}
+              </button>
+            </div>
+          </div>
+
+          <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+                translate}}
+              </button>
+            </div>
+          </div>
+
+          <div *ngFor="let action of actionsThisWeek" class="row">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
+              )</strong>.<span>{{action.task}}</span></a></div>
+            <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              | translate}}</a>
+            </div>
+          </div>
+
+          <div *ngFor="let indicator of indicatorsThisWeek" class="row">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
+              translate}}</strong>.<span>{{indicator?.name}}</span></a>
+            </div>
+            <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              | translate}}</a>
+            </div>
+          </div>
+
+        </div>
+
       </div>
 
       <div class="Ribbon__section__wrap Spaced">

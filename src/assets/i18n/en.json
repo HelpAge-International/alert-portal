@@ -1349,7 +1349,7 @@
     "APPROVE_PLAN": "Approve Plan",
     "REJECT_PLAN": "Reject Plan",
     "REJECT_PLAN_CONFIRMATION": "Please confirm you want to reject this plan",
-    "REJECT_PLAN_CONFIRMATION": "Are you sure you want to reject this plan"
+    "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?"
   },
   "RISK_MONITORING": {
     "ADD_INDICATOR": {

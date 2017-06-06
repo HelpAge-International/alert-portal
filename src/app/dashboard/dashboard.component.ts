@@ -237,7 +237,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     //TODO change temp id to actual uid
-    this.responsePlansForApproval = this.actionService.getResponsePlanForDirectorToApproval(this.countryId, this.uid);
+    this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid);
     this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.approvalPlans = plans
     });
