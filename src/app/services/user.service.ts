@@ -352,6 +352,16 @@ export class UserService {
     return subscription;
   }
 
+  getSystemAdminId(userType, uid): Observable<string> {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
+      .map(systemIds => {
+        if (systemIds.length > 0 && systemIds[0].$value) {
+          return systemIds[0].$key;
+        }
+      });
+    return subscription;
+  }
+
   getAllCountryIdsForAgency(agencyId: string): Observable<any> {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
       .map(countries => {
@@ -360,6 +370,17 @@ export class UserService {
           countryIds.push(country.$key);
         });
         return countryIds;
+      })
+  }
+
+  getAllCountryAlertLevelsForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryAlertLevels = [];
+        countries.forEach(country => {
+          countryAlertLevels[country.$key] = country.alertLevel;
+        });
+        return countryAlertLevels;
       })
   }
 
