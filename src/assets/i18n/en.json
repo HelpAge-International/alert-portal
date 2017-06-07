@@ -67,7 +67,7 @@
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "NAME_MISSING": "Name is missing!",
     "EMAIL_NOT_VALID": "Email address is not valid!",
-    "GENERAL_ERROR": "An error occurred. Please check and try again",
+    "GENERAL_ERROR": "The email address or password you entered is incorrect. Please check and try again",
     "NO_FILTERED_RESULTS": "There are no actions for the filters your have selected",
     "PREPAREDNESS_LEVEL": {
       "ALL": "All preparedness levels",

@@ -21,6 +21,8 @@ import {UserService} from "../services/user.service";
 
 export class DirectorComponent implements OnInit, OnDestroy {
 
+  private loaderInactive: boolean = true;
+
   private uid: string;
   private agencyId: string;
   private systemAdminId: string;
@@ -68,6 +70,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loaderInactive = false;
+
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
@@ -148,6 +152,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
             this.initData();
           });
       });
+
   }
 
   private initData() {
@@ -207,6 +212,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.setupAlertLevelColours();
     this.getResponsePlans();
     this.getThresholds();
+    this.loaderInactive = true;
+
   }
 
   private getAllRegionsAndCountries() {
