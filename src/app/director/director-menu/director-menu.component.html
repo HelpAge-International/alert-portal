@@ -4,10 +4,11 @@
   </div>
   <ul>
     <li class="" routerLinkActive="active">
-      <a routerLink="/director/director-overview">{{"GLOBAL.HOME" | translate}}</a>
+      <a routerLink="/director">{{"GLOBAL.HOME" | translate}}</a>
     </li>
     <li class="" routerLinkActive="active">
-      <a routerLink="/map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
+      <a (click)="toMap()">{{"HEADERS.GLOBAL_MAP" | translate}}</a> <!--TODO Update-->
     </li>
+    <li class="col-sm-9"></li>
   </ul>
 </div>

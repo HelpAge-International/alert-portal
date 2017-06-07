@@ -26,6 +26,8 @@ import {Subject} from "rxjs";
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private isEdit = false;
   private uid: string;
+  private agencyId: string;
+  private countryId: string;
 
   // Constants and enums
   alertMessageType = AlertMessageType;
@@ -66,28 +68,33 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["fromResponsePlans"]) {
-            this.fromResponsePlans = true;
-          }
-          if(params['id']) {
-            this.isEdit = true;
-            this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
-              this.partnerOrganisation = partnerOrganisation;
-              console.log(this.partnerOrganisation);
-            })
-          }
-        });
+      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-      // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(content => {
-          this.countryLevelsValues = content;
-          err => console.log(err);
-        });
+        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+        this.countryId = countryAdminUser.countryId;
+
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["fromResponsePlans"]) {
+              this.fromResponsePlans = true;
+            }
+            if(params['id']) {
+              this.isEdit = true;
+              this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
+                this.partnerOrganisation = partnerOrganisation;
+              })
+            }
+          });
+
+        // get the country levels values
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(content => {
+            this.countryLevelsValues = content;
+            err => console.log(err);
+          });
+      })
     });
   }
 
@@ -111,9 +118,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   submit() {
     // Transforms projects endDate to timestamp
-    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime().toString());
+    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime());
 
-    this._partnerOrganisationService.savePartnerOrganisation(this.partnerOrganisation)
+    this._partnerOrganisationService.savePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
       .then(result => {
         this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
 
@@ -174,6 +181,11 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.partnerOrganisation.projects[pin].operationAreas.splice(opin, 1);
   }
 
+  changeDate(date, project: PartnerOrganisationProjectModel)
+  {
+    project.endDate = date;
+  }
+
   goBack() {
     if (this.fromResponsePlans) {
       this.router.navigateByUrl('response-plans/create-edit-response-plan');
@@ -183,7 +195,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   redirectToPartnersPage() {
-    this.closeModal();
+    this.closeRedirectModal();
 
     const user = new ModelUserPublic(this.partnerOrganisation.firstName, this.partnerOrganisation.lastName,
       this.partnerOrganisation.title, this.partnerOrganisation.email);
@@ -198,7 +210,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('country-admin/country-staff/country-add-edit-partner');
   }
 
-  closeModal() {
+  closeRedirectModal() {
     jQuery('#redirect-partners').modal('hide');
     this.goBack();
   }
@@ -234,5 +246,23 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     }
 
     return operationArea.validate(excludeFields);
+  }
+
+  deletePartnerOrganisation() {
+    jQuery('#delete-action').modal('show');
+  }
+
+  deleteAction() {
+    this.closeModal();
+    this._partnerOrganisationService.deletePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
+      .then(() => {
+        this.goBack();
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_DELETED', AlertMessageType.Success);
+      },
+      err => { this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'); });
+  }
+
+  closeModal() {
+    jQuery('#delete-action').modal('hide');
   }
 }

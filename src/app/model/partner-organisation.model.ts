@@ -14,10 +14,13 @@ export class PartnerOrganisationModel extends BaseModel {
   public email: string;
   public position: string;
   public projects: PartnerOrganisationProjectModel[];
+  public partners: any[];
+  public modifiedAt: number;
 
   constructor(){
     super();
     this.projects = [new PartnerOrganisationProjectModel()];
+    this.partners = [];
   }
 
 
@@ -55,7 +58,7 @@ export class PartnerOrganisationModel extends BaseModel {
 } 
 export class PartnerOrganisationProjectModel extends BaseModel {
   public title: string;
-  public endDate: string;
+  public endDate: number;
   public sector: any[];
   public operationAreas: OperationAreaModel[];
 

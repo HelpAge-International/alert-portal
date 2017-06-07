@@ -79,16 +79,9 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
         this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
         this.countryId = countryAdminUser.countryId;
 
-        this._userService.getCountryOfficePartnerUsers(this.agencyId, this.countryId)
-                .subscribe(partners => {
-                  this.partners = partners;
-                  this.partners.forEach(partner => {
-                    if( !this.partnerOrganisations.find( x => x.id == partner.partnerOrganisationId))
-                    {
-                      this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-                                .subscribe(partnerOrganisation => { this.partnerOrganisations[partner.partnerOrganisationId] = partnerOrganisation; });
-                    }
-                  })
+        this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+                .subscribe(partnerOrganisations => {
+                  this.partnerOrganisations = partnerOrganisations;
                 });
 
         // get the country levels values
@@ -138,24 +131,24 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   editPartnerOrganisation(partnerOrganisationId) {
-    this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}]);
+    this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
   }
 
-  hideFilteredPartners(partner: PartnerModel): boolean{
+  hideFilteredPartners(partnerOrganisation: PartnerOrganisationModel): boolean{
     let hide = false;
 
-    if(!partner) { return hide; }
-        
-    if(this.filterOrganisation && this.filterOrganisation != "null" && partner.partnerOrganisationId !== this.filterOrganisation){
+    if(!partnerOrganisation) { return hide; }
+
+    if(this.filterOrganisation && this.filterOrganisation != "null" && partnerOrganisation.id !== this.filterOrganisation){
       hide = true;
    }
 
    if(this.filterSector && this.filterSector != "null" 
-            && !this.hasOrganisationProjectSector(this.partnerOrganisations[partner.partnerOrganisationId], this.filterSector)){
+            && !this.hasOrganisationProjectSector(partnerOrganisation, this.filterSector)){
       hide = true;
    }
 
-   if(this.filterLocation && this.filterLocation != "null" && !this.hasAreaOfOperation(partner, this.filterLocation)) {
+   if(this.filterLocation && this.filterLocation != "null" && !this.hasAreaOfOperation(partnerOrganisation, this.filterLocation)) {
      hide = true;
    }
 
@@ -175,10 +168,10 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     return exists;
   }
 
-  private hasAreaOfOperation(partner: PartnerModel, locationName: string): boolean {
+  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: string): boolean {
     let exists = false;
     
-    let areasOfOperation = this.getAreasOfOperation(this.partnerOrganisations[partner.partnerOrganisationId]);
+    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
 
     if(areasOfOperation.search(locationName) !== -1)
     {

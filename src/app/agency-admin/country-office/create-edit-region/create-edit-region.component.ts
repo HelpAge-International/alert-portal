@@ -3,7 +3,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
-import {Country, UserType} from "../../../utils/Enums";
+import {Countries, Country, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 
 @Component({
@@ -218,8 +218,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     console.log("retrieve country offices");
 
     this.selectedCountries.forEach(country => {
-      console.log(Country[country]);
-      this.fetchOffice(Country[country])
+      console.log(Countries[country]);
+      this.fetchOffice(Countries[country])
         .takeUntil(this.ngUnsubscribe)
         .first()
         .subscribe(x => {
@@ -241,7 +241,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
       query: {
         orderByChild: "location",
-        equalTo: Country[country]
+        equalTo: Countries[country]
       }
     });
   }
@@ -325,10 +325,10 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     console.log("selected: " + this.selectedCountries.length + "/ countries: " + this.countries.length);
     if (this.selectedCountries.length == this.countries.length) {
       console.log("update");
-      this.selectedCountries[country] = Country[this.countrySelected];
+      this.selectedCountries[country] = Countries[this.countrySelected];
     } else {
       console.log("push new country");
-      this.selectedCountries.push(Country[this.countrySelected]);
+      this.selectedCountries.push(Countries[this.countrySelected]);
     }
     console.log("country: " + country);
     console.log("country selected: " + this.countrySelected);
