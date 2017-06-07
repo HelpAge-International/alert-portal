@@ -1280,7 +1280,7 @@
     "NO_LEVEL": "Level is required",
     "NO_DEPARTMENT": "Department is required",
     "NO_DUE_DATE": "Due Date is required",
-    "NO_BUDJET": "Budjet is required",
+    "NO_BUDGET": "Budget is required",
     "NO_REQUIRE_DOC": "Require Doc is required",
     "ALL_HAZARDS": "All Hazards",
     "UNASSIGNED": "Unassigned",
