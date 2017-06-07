@@ -7,7 +7,7 @@
       <a routerLink="/director">{{"GLOBAL.HOME" | translate}}</a>
     </li>
     <li class="" routerLinkActive="active">
-      <a routerLink="/map">{{"HEADERS.GLOBAL_MAP" | translate}}</a> <!--TODO Update-->
+      <a (click)="toMap()">{{"HEADERS.GLOBAL_MAP" | translate}}</a> <!--TODO Update-->
     </li>
     <li class="col-sm-9"></li>
   </ul>
