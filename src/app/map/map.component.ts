@@ -12,6 +12,7 @@ import {HazardImages} from "../utils/HazardImages";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {unescapeIdentifier} from "@angular/compiler";
 import {Subscription} from "rxjs/Subscription";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -27,6 +28,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private mDepartmentMap: Map<string, SDepHolder>;
   private agencyMap: Map<string, string> = new Map<string, string>();
   private departments: SDepHolder[];
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   public agencyLogo: string;
 
@@ -34,8 +36,8 @@ export class MapComponent implements OnInit, OnDestroy {
   public minThreshYellow: number;
   public minThreshGreen: number;
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
-    this.mapHelper = SuperMapComponents.init(af, subscriptions);
+  constructor(private af: AngularFire, private router: Router) {
+    this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
 
   goToListView() {
@@ -47,7 +49,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.department = new SDepHolder("Something");
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
-    let subscription = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
 
@@ -87,11 +89,11 @@ export class MapComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   public getCountryCode(location: number) {

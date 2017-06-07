@@ -43,8 +43,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryIds: string[] = [];
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper, private actionService: ActionsService, private userService: UserService) {
-    this.mapHelper = SuperMapComponents.init(af, subscriptions);
+  constructor(private af: AngularFire, private router: Router, private actionService: ActionsService, private userService: UserService) {
+    this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
   }

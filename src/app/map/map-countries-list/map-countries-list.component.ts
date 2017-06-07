@@ -8,6 +8,7 @@ import {ModelRegion} from "../../model/region.model";
 import {Countries} from "../../utils/Enums";
 import {ModelHazard} from "../../model/hazard.model";
 import {HazardImages} from "../../utils/HazardImages";
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -30,16 +31,17 @@ export class MapCountriesListComponent implements OnInit {
   private countryIdsForOther: Set<string> = new Set<string>();
   private allCountries: Set<string> = new Set<string>();
   private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
-    this.mapHelper = SuperMapComponents.init(af, subscriptions);
+  constructor(private af: AngularFire, private router: Router) {
+    this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
     this.hazards = [];
   }
 
   ngOnInit() {
-    let sub = this.af.auth.subscribe(user => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.uid;
 
@@ -88,7 +90,11 @@ export class MapCountriesListComponent implements OnInit {
         });
       }
     });
-    this.subscriptions.add(sub);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   goToMapView() {
