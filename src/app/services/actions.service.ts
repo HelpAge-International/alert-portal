@@ -359,7 +359,7 @@ export class ActionsService {
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  getResponsePlanForDirectorToApproval(countryId, uid) {
+  getResponsePlanForCountryDirectorToApproval(countryId, uid) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
         orderByChild: "/approval/countryDirector/" + uid,
@@ -373,6 +373,27 @@ export class ActionsService {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(user => {
               plan["displayName"] = user.firstName + " " + user.lastName;
+            });
+        });
+        return plans;
+      });
+  }
+
+  getResponsePlanFoGlobalDirectorToApproval(countryId, uid) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
+      query: {
+        orderByChild: "/approval/globalDirector/" + uid,
+        equalTo: ApprovalStatus.WaitingApproval
+      }
+    }))
+      .map(plans => {
+        plans.forEach(plan => {
+          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              plan["displayName"] = user.firstName + " " + user.lastName;
+              plan["countryId"] = countryId;
             });
         });
         return plans;

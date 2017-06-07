@@ -7,7 +7,7 @@ import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
   AgeRange, BudgetCategory, Gender, MethodOfImplementation, PresenceInTheCountry,
-  SourcePlan
+  SourcePlan, UserType
 } from "../../utils/Enums";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 
@@ -107,21 +107,39 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   private loadData() {
-    this.getCountryId().then(() => {
-      if (this.responsePlanId) {
-        this.loadResponsePlanData();
-      } else {
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["id"]) {
-              this.responsePlanId = params["id"];
-              this.loadResponsePlanData();
-            }
+    this.userService.getUserType(this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(usertype => {
+        if (usertype == UserType.GlobalDirector) {
+          this.route.params
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((params: Params) => {
+              if (params["countryId"]) {
+                this.countryId = params["countryId"];
+                this.handleLoadResponsePlan();
+              }
+            })
+        } else {
+          this.getCountryId().then(() => {
+            this.handleLoadResponsePlan();
           });
-      }
+        }
+      });
+  }
 
-    });
+  private handleLoadResponsePlan() {
+    if (this.responsePlanId) {
+      this.loadResponsePlanData();
+    } else {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+            this.loadResponsePlanData();
+          }
+        });
+    }
   }
 
   private getCountryId() {

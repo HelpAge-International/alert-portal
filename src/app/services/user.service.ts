@@ -24,7 +24,7 @@ export class UserService {
   public user: ModelUserPublic;
   public partner: PartnerModel;
 
-  constructor(private af: AngularFire, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire) {
     this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
   }
 
@@ -120,7 +120,7 @@ export class UserService {
             throw new Error(err.message);
           });
       }
-    })
+    });
 
     userPublicData['/userPublic/' + uid + '/'] = userPublic;
 
@@ -302,17 +302,17 @@ export class UserService {
     }
     const userTypeSubscription = this.af.database.object(paths[0])
       .flatMap(adminCountry => {
-        if (adminCountry.$key) {
+        if (adminCountry.agencyAdmin) {
           return Observable.of(UserType.CountryAdmin);
         } else {
-          this.af.database.object(paths[1])
+          return this.af.database.object(paths[1])
             .flatMap(directorCountry => {
-              if (directorCountry.$key) {
+              if (directorCountry.agencyAdmin) {
                 return Observable.of(UserType.CountryDirector);
               } else {
-                this.af.database.object(paths[2])
+                return this.af.database.object(paths[2])
                   .flatMap(regionDirector => {
-                    if (regionDirector.$key) {
+                    if (regionDirector.agencyAdmin) {
                       return Observable.of(UserType.RegionalDirector);
                     } else {
                       return this.af.database.object(paths[3])
@@ -333,7 +333,7 @@ export class UserService {
   }
 
   //get user country id
-  getCountryId(userType, uid): Observable<string> {
+  getCountryId(userType: string, uid): Observable<string> {
     return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
       .map(countryId => {
         if (countryId.$value) {
@@ -346,10 +346,21 @@ export class UserService {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
       .map(agencyIds => {
         if (agencyIds.length > 0 && agencyIds[0].$value) {
-          return agencyIds[0].$value;
+          return agencyIds[0].$key;
         }
       });
     return subscription;
+  }
+
+  getAllCountryIdsForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryIds = [];
+        countries.forEach(country => {
+          countryIds.push(country.$key);
+        });
+        return countryIds;
+      })
   }
 
   getOrganisationName(id) {
