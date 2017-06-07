@@ -10,12 +10,15 @@ import {firebaseConfig} from "../../../app.module";
 import {UUID} from "../../../utils/UUID";
 import * as firebase from "firebase";
 import {ModelStaff} from "../../../model/staff.model";
+import {AgencyService} from "../../../services/agency-service.service";
+import {UserService} from "../../../services/user.service";
 declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-staff',
   templateUrl: 'create-edit-staff.component.html',
-  styleUrls: ['create-edit-staff.component.css']
+  styleUrls: ['create-edit-staff.component.css'],
+  providers: [AgencyService]
 })
 
 export class CreateEditStaffComponent implements OnInit, OnDestroy {
@@ -73,8 +76,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private isEmailChange: boolean;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private agencyId: string;
+  private systemId: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
 
   ngOnInit() {
@@ -165,6 +170,18 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
+
+    this.agencyService.getAgencyId(this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyId => {
+        this.agencyId = agencyId;
+        this.agencyService.getSystemId(this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            this.systemId = systemId;
+          });
+      });
+
     this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
     this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid);
     this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
@@ -349,12 +366,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     //staff extra info
     let staff = new ModelStaff();
     staff.userType = Number(this.userType);
-    // if (!this.hideRegion) {
-    //   staff.region = this.region;
-    // }
-    // if (!this.hideCountry) {
-    //   staff.countryOffice = this.countryOffice.$key;
-    // }
     staff.department = this.department;
     staff.position = this.position;
     staff.officeType = Number(this.officeType);
@@ -362,6 +373,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staff.training = this.trainingNeeds ? this.trainingNeeds : "None";
     staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
+    staff.updatedAt = Date.now();
+
     if (this.isUpdateOfficeOnly) {
       staffData["/staff/" + this.selectedOfficeId + "/" + uid + "/"] = null;
     }
@@ -384,8 +397,37 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       }
     }
 
+    //push user group
+    let userData = {};
+    let agency = {};
+    agency[this.agencyId] = true;
+    userData["agencyAdmin"] = agency;
+    if (!this.hideCountry) {
+      userData["countryId"] = this.countryOffice.$key;
+    } else if (!this.hideRegion) {
+      userData["regionId"] = this.region.$key;
+    }
+    let system = {};
+    system[this.systemId] = true;
+    userData["systemAdmin"] = system;
     if (this.userType == UserType.CountryDirector) {
       staffData["/directorCountry/" + this.countryOffice.$key + "/"] = uid;
+      staffData["/countryDirector/" + uid] = userData;
+    } else if (this.userType == UserType.RegionalDirector) {
+      staffData["/directorRegion/" + this.region.$key + "/"] = uid;
+      staffData["/regionDirector/" + uid] = userData;
+    } else if (this.userType == UserType.ErtLeader) {
+      staffData["/ertLeader/" + uid] = userData;
+    } else if (this.userType == UserType.Ert) {
+      staffData["/ert/" + uid] = userData;
+    } else if (this.userType == UserType.GlobalDirector) {
+      staffData["/globalDirector/" + uid] = userData;
+    } else if (this.userType == UserType.GlobalUser) {
+      staffData["/globalUser/" + uid] = userData;
+    } else if (this.userType == UserType.Donor) {
+      staffData["/donor/" + uid] = userData;
+    } else if (this.userType == UserType.NonAlert) {
+      staffData["/nonAlert/" + uid] = userData;
     }
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {

@@ -26,6 +26,8 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
   private agencySelectionMap = new Map();
   private emails: string;
 
+  private countryLocation: any;
+  private CountriesList = Constants.COUNTRIES;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
@@ -85,6 +87,7 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
     this.agencyService.getCountryOffice(countryId, agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(country => {
+        this.countryLocation = country.location;
         this.agencyService.getAllCountryOffices()
           .takeUntil(this.ngUnsubscribe)
           .subscribe(agencies => {

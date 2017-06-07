@@ -1,10 +1,9 @@
 import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
 import {FirebaseApp} from 'angularfire2';
 import {Router} from '@angular/router';
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {CustomerValidator} from "../../utils/CustomValidator";
-import {RxHelper} from "../../utils/RxHelper";
 
 @Component({
   selector: 'app-forgot-password',
@@ -19,18 +18,21 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   private alerts = {};
   private email: string = '';
   private auth: any;
-  private subscriptions: RxHelper;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(@Inject(FirebaseApp) fa: any, private router: Router) {
     this.auth = fa.auth();
-    this.subscriptions = new RxHelper();
   }
 
   ngOnInit() {
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    console.log(this.ngUnsubscribe);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    console.log(this.ngUnsubscribe);
   }
 
   onSubmit() {
@@ -56,10 +58,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.inactive = true;
     });
-    this.subscriptions.add(subscription);
   }
 
   /**
@@ -80,7 +82,6 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     return true;
 
   }
-
 
 
 }

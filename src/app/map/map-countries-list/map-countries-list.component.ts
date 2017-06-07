@@ -21,11 +21,15 @@ export class MapCountriesListComponent implements OnInit {
   public regions: RegionHolder[];
   public countries: SDepHolder[];
   public hazards: RegionHazard[];
-  public showRegionHeaders: boolean;
+  public showRegionHeaders: boolean = true;
 
   public minThreshGreen: number = -1;
   public minThreshYellow: number = -1;
   public minThreshRed: number = -1;
+
+  private countryIdsForOther: Set<string> = new Set<string>();
+  private allCountries: Set<string> = new Set<string>();
+  private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
 
   constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
     this.mapHelper = SuperMapComponents.init(af, subscriptions);
@@ -47,25 +51,33 @@ export class MapCountriesListComponent implements OnInit {
         });
 
         /** Setup the region count **/
+        this.otherRegion = new RegionHolder();
+        this.otherRegion.regionId = "unassigned";
+        this.otherRegion.regionName = "Other";
         this.mapHelper.getRegionsForAgency(this.uid, "administratorCountry", (key, obj) => {
           console.log("Updating Region");
-          this.showRegionHeaders = key != "";
-          if (!this.showRegionHeaders) return;
+          // this.showRegionHeaders = key != "";
+          // if (!this.showRegionHeaders) return;
           let hRegion = new RegionHolder();
           hRegion.regionName  = obj.name;
           hRegion.regionId = key;
           for (let x in obj.countries) {
             hRegion.countries.add(x);
+            this.countryIdsForOther.add(x);
           }
+          this.evaluateOthers();
           this.addOrUpdateRegion(hRegion);
         });
 
         /** Country list **/
         this.mapHelper.initCountries(this.uid, "administratorCountry", (departments => {
           console.log("Updating country");
+          this.allCountries.clear();
           for (let x of departments) {
             this.addOrUpdateCountry(x);
+            this.allCountries.add(x.countryId);
           }
+          this.evaluateOthers();
         }));
 
         /** Markers */
@@ -81,6 +93,18 @@ export class MapCountriesListComponent implements OnInit {
 
   goToMapView() {
     this.router.navigateByUrl('map');
+  }
+
+  private evaluateOthers() {
+    if (this.allCountries.size > 0) {
+      for (let x in this.allCountries) {
+        if (!this.countryIdsForOther.has(x)) {
+          this.otherRegion.countries.add(x);
+        } else {
+          this.otherRegion.countries.delete(x);
+        }
+      }
+    }
   }
 
   private addOrUpdateCountry(holder: SDepHolder) {
@@ -151,6 +175,14 @@ export class RegionHolder {
   constructor() {
     this.countries = new Set<string>();
   }
+
+  public static create(name: string, uid: string) {
+    let regionHolder:RegionHolder = new RegionHolder();
+    regionHolder.regionName = name;
+    regionHolder.regionId = uid;
+    return regionHolder;
+  }
+
   public getRegionId() {
     return "mapParent-" + this.regionId;
   }

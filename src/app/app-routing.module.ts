@@ -83,8 +83,10 @@ import {DashboardSeasonalCalendarComponent} from "./dashboard/dashboard-seasonal
 import {DashboardUpdateAlertLevelComponent} from "./dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component";
 import {ReviewResponsePlanComponent} from "./dashboard/review-response-plan/review-response-plan.component";
 import {FacetofaceMeetingRequestComponent} from "./dashboard/facetoface-meeting-request/facetoface-meeting-request.component";
-import {ViewResponsePlanComponent} from "./response-plans/view-response-plan/view-response-plan.component";
-import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
+import {ViewResponsePlanComponent} from "./commons/view-response-plan/view-response-plan.component";
+import {CountryOfficePartnersComponent} from "./country-admin/country-office-profile/partners/partners.component";
+import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
+import {DirectorComponent} from "./director/director.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -201,7 +203,8 @@ const routes: Routes = [
    */
   {path: 'risk-monitoring', component: RiskMonitoringComponent},
   {path: 'risk-monitoring/create-alert', component: CreateAlertRiskMonitoringComponent},
-  {path: 'risk-monitoring/add-indicator', component: AddIndicatorRiskMonitoringComponent},
+  {path: 'risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorRiskMonitoringComponent},
+  {path: 'risk-monitoring/add-indicator/:hazardID', component: AddIndicatorRiskMonitoringComponent},
   {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
 
   /**
@@ -229,12 +232,19 @@ const routes: Routes = [
   {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
   {path: 'response-plans/view-response-plan', component: ViewResponsePlanComponent},
   {path: 'response-plans/view-response-plan/:id', component: ViewResponsePlanComponent},
+  {path: 'response-plans/view-plan', component: ViewPlanComponent},
+  {path: 'response-plans/view-plan/:id', component: ViewPlanComponent},
 
   /**
    * Maps
    */
   {path: 'map', component: MapComponent},
   {path: 'map/map-countries-list', component: MapCountriesListComponent},
+
+  /**
+   * Directors
+   */
+  {path: 'director', component: DirectorComponent},
 
   /*
    * test

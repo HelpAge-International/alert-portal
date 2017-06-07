@@ -2,8 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
-import {RxHelper} from '../../../utils/RxHelper';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {CustomerValidator} from '../../../utils/CustomValidator';
 
 @Component({
@@ -11,9 +10,10 @@ import {CustomerValidator} from '../../../utils/CustomValidator';
   templateUrl: './new-country-password.component.html',
   styleUrls: ['./new-country-password.component.css']
 })
+
 export class NewCountryPasswordComponent implements OnInit, OnDestroy {
 
-  constructor(private af: AngularFire, private router: Router, private subscriptions: RxHelper) {
+  constructor(private af: AngularFire, private router: Router) {
   }
 
   private uid: string;
@@ -30,25 +30,28 @@ export class NewCountryPasswordComponent implements OnInit, OnDestroy {
 
   private authState: FirebaseAuthState;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   ngOnInit() {
-    let subscription = this.af.auth.subscribe(auth => {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.authState = auth;
         this.uid = auth.uid;
 
-        let subscription = this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid).subscribe(user => {
-          this.countryAdminName = user.firstName;
-        });
-        this.subscriptions.add(subscription);
+        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
+            this.countryAdminName = user.firstName;
+          });
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-    this.subscriptions.add(subscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   onSubmit() {
@@ -56,11 +59,12 @@ export class NewCountryPasswordComponent implements OnInit, OnDestroy {
     if (this.validate()) {
       this.authState.auth.updatePassword(this.passwordEntered).then(() => {
         this.successInactive = false;
-        let subscription = Observable.timer(1500).subscribe(() => {
-          this.successInactive = true;
-          this.router.navigateByUrl('/country-admin/new-country/new-country-details');
-        });
-        this.subscriptions.add(subscription);
+        Observable.timer(1500)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(() => {
+            this.successInactive = true;
+            this.router.navigateByUrl('/country-admin/new-country/new-country-details');
+          });
       }, error => {
         this.router.navigateByUrl('/login');
       });
@@ -72,10 +76,11 @@ export class NewCountryPasswordComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    let subscription = Observable.timer(Constants.ALERT_DURATION).subscribe(() => {
-      this.errorInactive = true;
-    });
-    this.subscriptions.add(subscription);
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(() => {
+        this.errorInactive = true;
+      });
   }
 
   /**

@@ -3,7 +3,8 @@ import {Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
-import {ApprovalStatus, AlertLevels, Countries} from "../utils/Enums";
+import {ApprovalStatus, AlertLevels, Countries, UserType} from "../utils/Enums";
+import {UserService} from "../services/user.service";
 
 @Component({
   selector: 'app-country-statistics-ribbon',
@@ -12,8 +13,7 @@ import {ApprovalStatus, AlertLevels, Countries} from "../utils/Enums";
 })
 export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
-  // TODO - Check when other users are implemented
-  private USER_TYPE: string = 'administratorCountry';
+  private NODE_TO_CHECK: string;
   private uid: string;
   private countryId: string;
   private agencyAdminId: string;
@@ -34,16 +34,25 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
   private advStatusColor: any;
   private percentageCHS: any;
 
+  private userPaths = Constants.USER_PATHS;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-        this.loadData();
+
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+
+            this.NODE_TO_CHECK = this.userPaths[userType];
+            this.loadData();
+          });
       } else {
         this.navigateToLogin();
       }
@@ -54,7 +63,6 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 
   /**
    * Private functions
@@ -80,7 +88,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+      this.af.database.object(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
           this.countryId = countryId.$value;
@@ -92,7 +100,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
   private getAgencyID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
           this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
@@ -104,7 +112,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
   private getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/systemAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((systemAdminIds: any) => {
           this.systemAdminId = systemAdminIds[0].$key ? systemAdminIds[0].$key : "";

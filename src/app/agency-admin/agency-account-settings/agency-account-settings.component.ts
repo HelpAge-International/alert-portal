@@ -35,7 +35,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private agencyAdminCountry: number;
   private PersonTitle = Constants.PERSON_TITLE;
   private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
-  private Country = Constants.COUNTRY;
+  private Country = Constants.COUNTRIES;
   private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();

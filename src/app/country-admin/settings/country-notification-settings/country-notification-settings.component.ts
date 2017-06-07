@@ -1,7 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router} from '@angular/router';
-import { RxHelper } from "../../../utils/RxHelper";
-
 import { UserService } from "../../../services/user.service";
 import { Constants } from '../../../utils/Constants';
 import { AlertMessageType, NotificationSettingEvents, UserType } from '../../../utils/Enums';
@@ -11,6 +9,7 @@ import { DisplayError } from "../../../errors/display.error";
 import { NotificationSettingsModel } from "../../../model/notification-settings.model";
 import { ExternalRecipientModel } from "../../../model/external-recipient.model";
 import { MessageService } from "../../../services/message.service";
+import {Subject} from "rxjs";
 
 declare var jQuery: any;
 
@@ -44,16 +43,19 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
   private notificationName: string;
   private settingName: string;
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor(private _userService: UserService,
               private _settingsService: SettingsService,
               private _messageService: MessageService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper){
+              private route: ActivatedRoute){
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
+    this._userService.getAuthUser()
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
         return;
@@ -61,34 +63,41 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+      this._userService.getCountryAdminUser(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryAdminUser => {
         if(countryAdminUser)
         {
           this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
           this.countryId = countryAdminUser.countryId;
 
-          this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId).subscribe(notificationSettings => {
+          this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(notificationSettings => {
             this.notificationSettings = notificationSettings;
-          })
+          });
 
-          this._messageService.getCountryExternalRecipients(this.countryId).subscribe(externalRecipients => {
+          this._messageService.getCountryExternalRecipients(this.countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(externalRecipients => {
             this.externalRecipients = externalRecipients;
           })
         }
       });
     });
-    this.subscriptions.add(authSubscription);
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
+
 
   validateForm(): boolean {
     this.notificationSettings.forEach(notification => {
       this.alertMessage = notification.validate();
       if(this.alertMessage) { return; }
-    })
+    });
 
     return !this.alertMessage;
   }
@@ -107,7 +116,7 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
             });
   }
 
-  selectUserType(activeNotification: NotificationSettingsModel, action, notificationName) 
+  selectUserType(activeNotification: NotificationSettingsModel, action, notificationName)
   {
         this.activeNotification = action;
         this.activeNotificationSetting = activeNotification as NotificationSettingsModel;
@@ -126,12 +135,12 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
         notification = this.activeNotificationSetting;
       }
     });
-    
-    
+
+
     //this.notificationSettings.pop();
     this.closeModal();
   }
-  
+
   closeModal() {
         jQuery("#select-user-type").modal("hide");
   }

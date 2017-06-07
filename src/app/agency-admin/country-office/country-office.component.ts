@@ -15,7 +15,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countries: FirebaseListObservable<any[]>;
-  private countryNames: string [] = Constants.COUNTRY;
+  private countryNames: string [] = Constants.COUNTRIES;
   private admins: Observable<any>[];
   private regions: FirebaseListObservable<any[]>;
   private hasRegion: boolean;

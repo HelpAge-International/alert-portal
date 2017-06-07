@@ -29,8 +29,7 @@
             <div class="col-md-2 Alert-Widget__item">
               <div>
                 <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}} {{"ALERT.PEOPLE"
-                |
-                translate}}
+                | translate}}
               </div>
             </div>
             <div class="col-md-2 Alert-Widget__item">
@@ -330,8 +329,8 @@
       </div>
     </div>
 
-    <!--empty rubber for director dashboard-->
-    <div *ngIf="responseType?.length == 0 | async">
+    <!--empty ribbon for director dashboard-->
+    <div *ngIf="approvalPlans.length == 0">
       <div
         *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.director"
         class="Widget">
@@ -503,7 +502,8 @@
       <div class="Widget Calendar-Widget">
         <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
         <div id="target2" class="timeline-tgt Spaced"></div>
-        <a href="javascript:void(0)" routerLink="/dashboard/dashboard-seasonal-calendar">Temp link to calendar</a>
+        <a href="javascript:void(0)" routerLink="/dashboard/dashboard-seasonal-calendar">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
+          | translate}}</a>
       </div>
 
     </div>

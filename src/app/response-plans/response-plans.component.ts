@@ -113,7 +113,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   viewResponsePlan(plan) {
-    this.router.navigate(["/response-plans/view-response-plan", {"id": plan.$key}]);
+    this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
   }
 
   editResponsePlan(responsePlan) {

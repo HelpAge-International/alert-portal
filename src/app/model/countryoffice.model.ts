@@ -5,4 +5,7 @@ export class ModelCountryOffice {
   public location:number;
   public adminId:string;
   public isActive:boolean;
+  public defaultNotificationSettings: any = [];
+  public permissionSettings = {};
+  public clockSettings = {};
 }
