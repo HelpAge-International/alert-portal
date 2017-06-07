@@ -45,17 +45,17 @@
                 <select class="form-control" name="filterOrganisation"
                     [(ngModel)]="filterOrganisation">
                     <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
-                    <option *ngFor="let partner of partners"
-                            [value]="partner.partnerOrganisationId">{{ partnerOrganisations[partner.partnerOrganisationId]?.organisationName }}</option>
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations"
+                            [value]="partnerOrganisation.id">{{ partnerOrganisation?.organisationName }}</option>
                 </select>
             </div>
             <div class="col-sm-4"></div>
         </div>
         <div class="row">
-            <p class="text-gray-v-light col-sm-9" *ngIf="!partners">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EMPTY_LIST' | translate }}</p>
+            <p class="text-gray-v-light col-sm-9" *ngIf="!partnerOrganisations">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EMPTY_LIST' | translate }}</p>
         </div>
 
-        <div class="row Spaced-above font-weight-bold" *ngIf="partners">
+        <div class="row Spaced-above font-weight-bold" *ngIf="partnerOrganisations">
             <p class="col-sm-1">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.UPDATED' | translate }}</p>
             <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</p>
             <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.RELATIONSHIP' | translate }}</p>
@@ -64,11 +64,11 @@
         </div>
         <div class="row Line-row"></div>
 
-        <div class="row Spaced-above" *ngFor="let partner of partners; let i = index;" [hidden]="hideFilteredPartners(partner)">
-            <p class="col-sm-1">{{ partner.modifiedAt || partner.createdAt | date: 'MM/yy'}}</p> <!--Updated-->
-            <p class="col-sm-2">{{ partnerOrganisations[partner.partnerOrganisationId]?.organisationName }}</p> <!--Organisation-->
-            <p class="col-sm-2">{{ partnerOrganisations[partner.partnerOrganisationId]?.relationship }}</p> <!--Relationship-->
-            <p class="col-sm-2">{{ getAreasOfOperation(partnerOrganisations[partner.partnerOrganisationId]) }}</p> <!--Areas of operation-->
+        <div class="row Spaced-above" *ngFor="let partnerOrganisation of partnerOrganisations; let i = index;" [hidden]="hideFilteredPartners(partnerOrganisation)">
+            <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
+            <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
+            <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
+            <p class="col-sm-2">{{ getAreasOfOperation(partnerOrganisation) }}</p> <!--Areas of operation-->
 
             <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg" alt="{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHI_DETAILS' | translate }}">
                 <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-one">
@@ -76,7 +76,7 @@
                 </a>
             </div>
 
-            <p class="col-sm-2">{{ PARTNER_STATUS[partner.status] | translate }}</p> <!--Status-->
+            <p class="col-sm-2">{{ PARTNER_STATUS[partnerOrganisation.isApproved ? 1 : 0] | translate }}</p> <!--Status-->
             <div class="col-sm-1" *ngIf="!isEdit">
                 <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
                 <p class="notes-number__components--country-office-profile">1</p>
@@ -86,7 +86,7 @@
             </div> <!--Notes-->
             <div class="col-sm-1" *ngIf="canEdit && isEdit">
                 <button class="btn btn-outline-primary text-uppercase" 
-                    (click)="editPartnerOrganisation(partner.partnerOrganisationId)">
+                    (click)="editPartnerOrganisation(partnerOrganisation.id)">
                         {{ 'GLOBAL.EDIT' | translate }}</button>
             </div>
             
@@ -107,7 +107,7 @@
 
                     <!--Border box-->
                     <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above" 
-                        *ngFor="let project of partnerOrganisations[partner.partnerOrganisationId]?.projects">
+                        *ngFor="let project of partnerOrganisation?.projects">
                         <div class="row">
                             <p class="col-sm-3 Spaced-above font-weight-bold">{{ 'ADD_PARTNER.SECTOR' | translate }}</p>
                             <div class="col-sm-0">
@@ -137,24 +137,24 @@
                     <div class="row">
                         <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></div>
                         <p class="col-sm-0">
-                            {{partnerOrganisations[partner.partnerOrganisationId]?.firstName}} 
-                            {{partnerOrganisations[partner.partnerOrganisationId]?.lastName}}
+                            {{partnerOrganisation?.firstName}} 
+                            {{partnerOrganisation?.lastName}}
                         </p>
                     </div>
 
                     <div class="row">
                         <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_POSITION' | translate }}</strong></div>
-                        <p class="col-sm-0">{{partnerOrganisations[partner.partnerOrganisationId]?.position}}</p>
+                        <p class="col-sm-0">{{partnerOrganisation?.position}}</p>
                     </div>
 
                     <div class="row">
                         <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_EMAIL' | translate }}</strong></div>
-                        <p class="col-sm-0">{{partnerOrganisations[partner.partnerOrganisationId]?.email}}</p>
+                        <p class="col-sm-0">{{partnerOrganisation?.email}}</p>
                     </div>
 
                     <div class="row">
                         <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_PHONE' | translate }}</strong></div>
-                        <p class="col-sm-0">{{partnerOrganisations[partner.partnerOrganisationId]?.phone}}</p>
+                        <p class="col-sm-0">{{partnerOrganisation?.phone}}</p>
                     </div>
 
                 </div>

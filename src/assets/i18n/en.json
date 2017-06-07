@@ -808,6 +808,7 @@
       "IS_PART_OF_RESPONSE_TEAM": "Is this staff member part of the response team?",
       "SAVE_NEW_STAFF": "Save new staff member",
       "SAVE_CHANGES": "Save changes",
+      "EMPTY_LIST": "There are no staff users for this country office.",
       "NO_TITLE": "Please select a title",
       "NO_FIRST_NAME": "Please enter the first name of the staff",
       "NO_LAST_NAME": "Please enter the last name of the staff",
@@ -827,12 +828,14 @@
       "ADDITIONAL_INFO": "Additional Info"
     },
     "PARTNER": {
-      "ADD_NEW_PARTNER": "Add new new partner user",
+      "ADD_NEW_PARTNER": "Add new partner user",
       "TITLE_ADD_PARTNER": "Add partner user",
       "TITLE_EDIT_PARTNER": "Edit partner user",
       "TITLE_DELETE_PARTNER": "Delete partner user",
       "PARTNER_ORGANISATION": "Partner Organisation",
       "SAVE_NEW_PARTNER": "Save new partner user",
+      "PARTNER_USERS": "Partner users",
+      "EMPTY_LIST": "There are no partners for this country office.",
       "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
       "PARTNER_PLAN_VALIDATION": "Partner & Plan Validation",
       "NO_PARTNER_ORGANISATION": "Please select a partner organisation",

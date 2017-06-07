@@ -26,6 +26,8 @@ import {Subject} from "rxjs";
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private isEdit = false;
   private uid: string;
+  private agencyId: string;
+  private countryId: string;
 
   // Constants and enums
   alertMessageType = AlertMessageType;
@@ -66,27 +68,33 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["fromResponsePlans"]) {
-            this.fromResponsePlans = true;
-          }
-          if(params['id']) {
-            this.isEdit = true;
-            this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
-              this.partnerOrganisation = partnerOrganisation;
-            })
-          }
-        });
+      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-      // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(content => {
-          this.countryLevelsValues = content;
-          err => console.log(err);
-        });
+        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+        this.countryId = countryAdminUser.countryId;
+
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["fromResponsePlans"]) {
+              this.fromResponsePlans = true;
+            }
+            if(params['id']) {
+              this.isEdit = true;
+              this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
+                this.partnerOrganisation = partnerOrganisation;
+              })
+            }
+          });
+
+        // get the country levels values
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(content => {
+            this.countryLevelsValues = content;
+            err => console.log(err);
+          });
+      })
     });
   }
 
@@ -112,7 +120,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     // Transforms projects endDate to timestamp
     this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime());
 
-    this._partnerOrganisationService.savePartnerOrganisation(this.partnerOrganisation)
+    this._partnerOrganisationService.savePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
       .then(result => {
         this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
 
@@ -246,12 +254,12 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   deleteAction() {
     this.closeModal();
-    this._partnerOrganisationService.deletePartnerOrganisation(this.partnerOrganisation.id)
+    this._partnerOrganisationService.deletePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
       .then(() => {
         this.goBack();
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_DELETED', AlertMessageType.Success);
-      })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+      },
+      err => { this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'); });
   }
 
   closeModal() {

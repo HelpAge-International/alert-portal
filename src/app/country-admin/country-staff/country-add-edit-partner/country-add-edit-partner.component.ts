@@ -28,6 +28,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
   private isEdit = false;
   private uid: string;
+  private agencyId: string;
+  private countryId: string;
 
   // Constants and enums
   private userTitle = Constants.PERSON_TITLE;
@@ -71,10 +73,10 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
       try {
         this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+          this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+          this.countryId = countryAdminUser.countryId;
 
-          this.countryAdmin = countryAdminUser;
-
-          this._partnerOrganisationService.getPartnerOrganisations()
+          this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
               .subscribe(partnerOrganisations => { this.partnerOrganisations = partnerOrganisations; });
 
           const editSubscription = this.route.params.subscribe((params: Params) => {
@@ -91,7 +93,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                 });
                 this.subscriptions.add(partnerSubscription);
               }else{
-                this._notificationSettingsService.getNotificationSettings(Object.keys(this.countryAdmin.agencyAdmin)[0])
+                this._notificationSettingsService.getNotificationSettings(this.agencyId)
                   .subscribe(notificationSettings => { this.partner.notificationSettings = notificationSettings });
               }
             })
@@ -132,8 +134,9 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
             .then(user => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.router.navigateByUrl('/country-admin/country-staff'), Constants.ALERT_REDIRECT_DURATION);
-            })
-            .catch(err => {
+            }, 
+            err => 
+            {
               if(err instanceof DisplayError) {
                 this.alertMessage = new AlertMessageModel(err.message);
               }else{
@@ -148,7 +151,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
   deleteAction() {
     this.closeModal();
-    this._userService.deletePartnerUser(this.partner.id)
+    this._userService.deletePartnerUser(this.partner)
       .then(() => {
         this.router.navigateByUrl('/country-admin/country-staff');
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_DELETED', AlertMessageType.Success);

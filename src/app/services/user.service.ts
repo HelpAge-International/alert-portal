@@ -69,9 +69,8 @@ export class UserService {
 
   getUserByEmail(email): Observable<ModelUserPublic> {
     if (!email) {
-      return null
+      return null;
     }
-    ;
     const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
       query: {
         orderByChild: "email",
@@ -184,24 +183,6 @@ export class UserService {
     return partnerUserSubscription;
   }
 
-  getCountryOfficePartnerUsers(agencyId: string, countryId: string): Observable<PartnerModel[]> {
-     let partners: PartnerModel[] = [];
-     const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partners')
-      .flatMap(partners => {
-        return Observable.from(partners.map(partner => partner.$key));
-        })
-      .flatMap( partnerId => {
-        partners = []; // reinitialize list to prevent duplication
-        return this.getPartnerUser(partnerId as string);
-      })
-      .map( partner => {
-        partners.push(partner);
-        return partners;
-      });
-
-      return partnerUsersSubscription;
-  }
-
   getPartnerUsers(): Observable<PartnerModel[]> {
     const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
       .map(items => {
@@ -220,54 +201,90 @@ export class UserService {
     return partnerUsersSubscription;
   }
 
-  savePartnerUser(partner: PartnerModel, userPublic: ModelUserPublic): firebase.Promise<any> {
-    const partnerData = {};
+  getPartnerUsersBy(key: string, value: string): Observable<PartnerModel[]> {
+    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner', {
+      query: {
+          orderByChild: key,
+          equalTo: value
+        }
+      })
+      .map(items => {
+        let partners: PartnerModel[] = [];
+        items.forEach(item => {
 
+          // Add the organisation ID
+          let partner = item as PartnerModel;
+          partner.id = item.$key;
+
+          partners.push(partner);
+        });
+        return partners;
+      });
+
+    return partnerUsersSubscription;
+  }
+
+  savePartnerUser(partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
     let uid = partner.id || userPublic.id;
 
     if (!uid) {
       return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
         .then(newUser => {
           partner.id = newUser.uid;
-          partner.createdAt = Date.now();
           return this.savePartnerUser(partner, userPublic);
         })
         .catch(err => {
-          throw new DisplayError('FIREBASE.' + (err as firebase.FirebaseError).code);
+          return Promise.reject('FIREBASE.' + (err as firebase.FirebaseError).code);
         });
     } else {
+      // Check to see the email is changed
       this.getUser(uid).subscribe(oldUser => {
         if (oldUser.email && oldUser.email !== userPublic.email) {
-          return this.deletePartnerUser(uid).then(bool => {
-            if (bool) {
+          return this.getPartnerUser(oldUser.id).subscribe(partner => {
+              
+              let oldPartner = Object.assign(partner);
+              
               partner.id = null; // force new user creation
-              return this.savePartnerUser(partner, userPublic);
-            }
-          })
-            .catch(err => {
-              throw new Error(err.message);
-            });
+              userPublic.id = null;
+
+              return this.savePartnerUser(partner, userPublic).then(delUser => {
+                return this.deletePartnerUser(oldPartner);
+              })
+              .catch(err => { return firebase.Promise.reject(err); });
+          });
         }
-      })
+      });
+
+      // Check to see the partner organisation is changed
+      this.getPartnerUser(uid).subscribe(oldPartner => {
+        if (oldPartner.partnerOrganisationId !== partner.partnerOrganisationId 
+                && !partnerData.hasOwnProperty('/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id)) {
+            partnerData['/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id] = null;
+            return this.savePartnerUser(partner, userPublic, partnerData);
+        }
+      });
 
       partner.modifiedAt = Date.now();
 
-      partnerData['/userPublic/' + uid + '/'] = userPublic;
-      partnerData['/partner/' + uid + '/'] = partner;
-      return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+      partnerData['/userPublic/' + uid + '/'] = userPublic; // Add the public user profile
+      partnerData['/partner/' + uid + '/'] = partner; // Add the partner profile
+      partnerData['/partnerOrganisation/' + partner.partnerOrganisationId 
+                      + '/partners/' + partner.id] = true; // add the partner to the partner organisation
 
+      return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
   }
 
-  deletePartnerUser(uid: string): firebase.Promise<any> {
+  deletePartnerUser(partner: PartnerModel): firebase.Promise<any> {
     const partnerData = {};
-
-    if (!uid) {
-      throw new Error('User id not present');
+    if (!partner) {
+      throw new Error('Partner not present');
     }
 
-    partnerData['/userPublic/' + uid + '/'] = null;
-    partnerData['/partner/' + uid + '/'] = null;
+    partnerData['/userPublic/' + partner.id + '/'] = null; // remove public profile
+    partnerData['/partner/' + partner.id + '/'] = null; // remove partner profile
+    partnerData['/partnerOrganisation/' + partner.partnerOrganisationId 
+                      + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
 
     return this.af.database.object(Constants.APP_STATUS).update(partnerData);
   }

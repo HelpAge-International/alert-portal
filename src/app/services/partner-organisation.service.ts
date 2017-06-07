@@ -11,6 +11,24 @@ export class PartnerOrganisationService {
 
   constructor(private af: AngularFire, private subscriptions: RxHelper) {}
 
+  getCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
+     let partnerOrganisations: PartnerOrganisationModel[] = [];
+     const partnerOrganisationSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+      .flatMap(partnerOrganisations => {
+        return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        })
+      .flatMap( organisationId => {
+        partnerOrganisations = []; // reinitialize list to prevent duplication
+        return this.getPartnerOrganisation(organisationId as string);
+      })
+      .map( organisation => {
+        partnerOrganisations.push(organisation);
+        return partnerOrganisations;
+      });
+
+      return partnerOrganisationSubscription;
+  }
+
   getPartnerOrganisations(): Observable<PartnerOrganisationModel[]> {
 
     const partnerOrganisationsSubscription = this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation')
@@ -39,7 +57,7 @@ export class PartnerOrganisationService {
           partnerOrganisation.id = id;
           partnerOrganisation.mapFromObject(item);
 
-          return partnerOrganisation; 
+          return partnerOrganisation;
         }
         return null;
     });
@@ -47,21 +65,49 @@ export class PartnerOrganisationService {
     return partnerOrganisationSubscription;
   }
 
-  savePartnerOrganisation(partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
+  savePartnerOrganisation(agencyId: string, countryId: string, partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
+    if(!agencyId || !countryId)
+    {
+      throw new Error('Missing agencyId or countryId');
+    }
+    
+    partnerOrganisation.modifiedAt = new Date().getTime();
+
     if(partnerOrganisation.id)
     {
-      return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + partnerOrganisation.id).update(partnerOrganisation);
+      const partnerOrganisationData = {};
+
+      // Add partner organisation to the countryOffice
+      partnerOrganisationData['/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations/' + partnerOrganisation.id] = true;
+    
+      partnerOrganisationData['/partnerOrganisation/' + partnerOrganisation.id] = partnerOrganisation;
+
+      return this.af.database.object(Constants.APP_STATUS).update(partnerOrganisationData);
     } else {
-      return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation);
+      return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation).then(organisation => {
+        // update organisation Id
+        partnerOrganisation.id = organisation.key;
+
+        return this.savePartnerOrganisation(agencyId, countryId, partnerOrganisation);
+      });
     }
   }
 
-  deletePartnerOrganisation(partnerOrganisationId: string): firebase.Promise<any>{
-    if (!partnerOrganisationId) {
-      throw new Error('Organisation id not present');
+  deletePartnerOrganisation(agencyId: string, countryId: string, partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
+    if (!partnerOrganisation) {
+      throw new Error('Organisation not present');
     }
     const partnerOrganisationData = {};
-    partnerOrganisationData['/partnerOrganisation/' + partnerOrganisationId] = null;
+
+    // Remove all partners associated with this partner organisation
+    Object.keys(partnerOrganisation.partners).forEach(key => {
+      partnerOrganisationData['/partner/' + key] = null;
+    });
+    
+    // Remove the partner organisation from the country office
+    partnerOrganisationData['/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations/' + partnerOrganisation.id] = null;
+
+    partnerOrganisationData['/partnerOrganisation/' + partnerOrganisation.id] = null;
     
     return this.af.database.object(Constants.APP_STATUS).update(partnerOrganisationData);
   }
