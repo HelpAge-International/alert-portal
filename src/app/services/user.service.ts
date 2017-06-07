@@ -204,10 +204,10 @@ export class UserService {
   getPartnerUsersBy(key: string, value: string): Observable<PartnerModel[]> {
     const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner', {
       query: {
-          orderByChild: key,
-          equalTo: value
-        }
-      })
+        orderByChild: key,
+        equalTo: value
+      }
+    })
       .map(items => {
         let partners: PartnerModel[] = [];
         items.forEach(item => {
@@ -241,26 +241,28 @@ export class UserService {
       this.getUser(uid).subscribe(oldUser => {
         if (oldUser.email && oldUser.email !== userPublic.email) {
           return this.getPartnerUser(oldUser.id).subscribe(partner => {
-              
-              let oldPartner = Object.assign(partner);
-              
-              partner.id = null; // force new user creation
-              userPublic.id = null;
 
-              return this.savePartnerUser(partner, userPublic).then(delUser => {
-                return this.deletePartnerUser(oldPartner);
-              })
-              .catch(err => { return firebase.Promise.reject(err); });
+            let oldPartner = Object.assign(partner);
+
+            partner.id = null; // force new user creation
+            userPublic.id = null;
+
+            return this.savePartnerUser(partner, userPublic).then(delUser => {
+              return this.deletePartnerUser(oldPartner);
+            })
+              .catch(err => {
+                return firebase.Promise.reject(err);
+              });
           });
         }
       });
 
       // Check to see the partner organisation is changed
       this.getPartnerUser(uid).subscribe(oldPartner => {
-        if (oldPartner.partnerOrganisationId !== partner.partnerOrganisationId 
-                && !partnerData.hasOwnProperty('/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id)) {
-            partnerData['/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id] = null;
-            return this.savePartnerUser(partner, userPublic, partnerData);
+        if (oldPartner.partnerOrganisationId !== partner.partnerOrganisationId
+          && !partnerData.hasOwnProperty('/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id)) {
+          partnerData['/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id] = null;
+          return this.savePartnerUser(partner, userPublic, partnerData);
         }
       });
 
@@ -268,8 +270,8 @@ export class UserService {
 
       partnerData['/userPublic/' + uid + '/'] = userPublic; // Add the public user profile
       partnerData['/partner/' + uid + '/'] = partner; // Add the partner profile
-      partnerData['/partnerOrganisation/' + partner.partnerOrganisationId 
-                      + '/partners/' + partner.id] = true; // add the partner to the partner organisation
+      partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
+      + '/partners/' + partner.id] = true; // add the partner to the partner organisation
 
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
@@ -283,16 +285,18 @@ export class UserService {
 
     partnerData['/userPublic/' + partner.id + '/'] = null; // remove public profile
     partnerData['/partner/' + partner.id + '/'] = null; // remove partner profile
-    partnerData['/partnerOrganisation/' + partner.partnerOrganisationId 
-                      + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
+    partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
+    + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
 
     return this.af.database.object(Constants.APP_STATUS).update(partnerData);
   }
 
   //return current user type enum number
   getUserType(uid: string): Observable<any> {
-    const paths = [Constants.APP_STATUS + "/administratorCountry", Constants.APP_STATUS + "/directorCountry",
-      Constants.APP_STATUS + "/directorRegion"];
+
+    const paths = [Constants.APP_STATUS + "/administratorCountry/" + uid, Constants.APP_STATUS + "/countryDirector/" + uid,
+      Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid];
+
     if (!uid) {
       return null;
     }
@@ -311,7 +315,14 @@ export class UserService {
                     if (regionDirector.$key) {
                       return Observable.of(UserType.RegionalDirector);
                     } else {
-                      return Observable.empty();
+                      return this.af.database.object(paths[3])
+                        .flatMap(globalDirector => {
+                          if (globalDirector.agencyAdmin) {
+                            return Observable.of(UserType.GlobalDirector);
+                          } else {
+                            return Observable.empty();
+                          }
+                        });
                     }
                   })
               }

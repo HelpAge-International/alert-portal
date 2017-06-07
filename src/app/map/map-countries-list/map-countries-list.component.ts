@@ -224,4 +224,5 @@ export class RegionHolder {
   public countries: Set<string>;
   public regionId: string;
   public regionName: string;
+  public directorId: string;
 }

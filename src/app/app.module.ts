@@ -127,6 +127,7 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from './response-plans/view-plan/view-plan.component';
 import {DirectorMenuComponent} from './director/director-menu/director-menu.component';
 import {DirectorComponent} from './director/director.component';
+import { DirectorHeaderComponent } from './director/director-header/director-header.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -255,7 +256,8 @@ const firebaseAuthConfig = {
     ViewResponsePlanComponent,
     ViewPlanComponent,
     DirectorMenuComponent,
-    DirectorComponent
+    DirectorComponent,
+    DirectorHeaderComponent
   ],
   imports: [
     BrowserModule,
