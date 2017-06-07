@@ -1,4 +1,3 @@
-<!--TODO - Change the header-->
 <app-director-header></app-director-header>
 <app-director-menu></app-director-menu>
 
@@ -6,6 +5,7 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
+      <!--TODO-->
       <h1>Oxfam: {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
     </div>
 
@@ -209,73 +209,85 @@
             </div>
           </div>
           <div id="{{otherRegion.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
-            <div *ngFor="let y of countries">
-              <div *ngIf="otherRegion.countries.has(y.countryId)">
-                <div class="Accordion Map-list" data-toggle="collapse"
-                     [attr.href]="otherRegion.getDepartmentIdHash(y.countryId)"
-                     aria-expanded="true" id="{{otherRegion.getCountryId(y.countryId)}}">
 
-                  <div class="row align-items-center">
+            <div *ngIf="otherRegion.countries.size == 0">
+              <div class="Accordion Map-list" data-toggle="collapse" aria-expanded="true">
+                <div class="Empty--ribbon">{{"DIRECTORS.NO_COUNTRIES_TO_SHOW" | translate}}</div>
+              </div>
+            </div>
 
-                    <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
-                      <i
-                        class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
-                      <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() |
-                        translate}}</strong></p>
-                    </div>
+            <div *ngIf="otherRegion.countries.size != 0">
+              <div *ngFor="let y of countries">
+                <div *ngIf="otherRegion.countries.has(y.countryId)">
+                  <div class="Accordion Map-list" data-toggle="collapse"
+                       [attr.href]="otherRegion.getDepartmentIdHash(y.countryId)"
+                       aria-expanded="true" id="{{otherRegion.getCountryId(y.countryId)}}">
 
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div
-                        class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertLevelColours[y.countryId]}}"></div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
-                    </div>
+                    <div class="row align-items-center">
 
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                          {{countResponsePlans[y.countryId] ? countResponsePlans[y.countryId] : 0}}
-                        </div>
+                      <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
+                        <i
+                          class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
+                        <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() |
+                          translate}}</strong></p>
                       </div>
-                      <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
-                    </div>
 
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[y.countryId]}} Icon--md">
-                          <i class="fa {{mpaStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                        </div>
+                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div
+                          class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertLevelColours[y.countryId]}}"></div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
                       </div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
-                    </div>
 
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div *ngIf="overallAlertLevels[y.countryId] == AlertLevels.Red"
-                             class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[y.countryId]}} Icon--md">
-                          <i class="fa {{advStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+
+                          <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
+                            {{countResponsePlans[y.countryId] ? countResponsePlans[y.countryId] : 0}}
+                          </div>
                         </div>
-                        <div *ngIf="overallAlertLevels[y.countryId] != AlertLevels.Red"
-                             class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
-                          <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
-                        </div>
+                        <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
                       </div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
-                    </div>
 
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                          {{percentageCHS[y.countryId]}}%
+                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                          <div
+                            class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[y.countryId]}} Icon--md">
+                            <i class="fa {{mpaStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                          </div>
                         </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
                       </div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
-                    </div>
 
+                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                          <div *ngIf="overallAlertLevels[y.countryId] == AlertLevels.Red"
+                               class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[y.countryId]}} Icon--md">
+                            <i class="fa {{advStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                          </div>
+                          <div *ngIf="overallAlertLevels[y.countryId] != AlertLevels.Red"
+                               class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
+                            <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
+                          </div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
+                      </div>
+
+                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                        <div class="Icon">
+                          <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
+                            {{percentageCHS[y.countryId]}}%
+                          </div>
+                        </div>
+                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+                      </div>
+
+                    </div>
                   </div>
                 </div>
-              </div>
 
+              </div>
             </div>
+
           </div>
         </div>
       </div>

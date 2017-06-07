@@ -955,7 +955,7 @@
         "DOCUMENTS": "Documents",
         "CONTACTS": "Contacts"
       },
-      "PARTNERS":{
+      "PARTNERS": {
         "TITLE_TEXT": "Partners",
         "IMPLEMENTING_PARTNERS": "Current Implementing partners",
         "EDIT": "Edit partners",
@@ -1325,15 +1325,15 @@
     "TODAY": "today",
     "THIS_WEEK": "this week",
     "MY_TASKS": "My Tasks",
-    "BY":"by",
-    "SUBMITTED":"Submitted",
-    "REVIEW_AND_APPROVE":"Review and approve",
-    "SUBMIT_TO_APPROVE":"has submitted a response plan for your approval",
-    "EMPTY_DEFAULT":"No actions or indicators assigned to you needs completing this week",
-    "EMPTY_DIRECTOR":"No response plans to approve, and no actions or indicators assigned to you needs completing this week",
+    "BY": "by",
+    "SUBMITTED": "Submitted",
+    "REVIEW_AND_APPROVE": "Review and approve",
+    "SUBMIT_TO_APPROVE": "has submitted a response plan for your approval",
+    "EMPTY_DEFAULT": "No actions or indicators assigned to you needs completing this week",
+    "EMPTY_DIRECTOR": "No response plans to approve, and no actions or indicators assigned to you needs completing this week",
     "CALENDAR": {
-      "SEASONAL_CALENDAR" : "Seasonal Calendar",
-      "VIEW_FULL_CALENDAR" : "View full calendar",
+      "SEASONAL_CALENDAR": "Seasonal Calendar",
+      "VIEW_FULL_CALENDAR": "View full calendar",
       "ADD_TO_CALENDAR": "Add to the calendar",
       "VIEW_AS_WEEKS": "View as weeks",
       "VIEW_AS_MONTHS": "View as months",
@@ -1384,9 +1384,8 @@
         "ADD_ANOTHER_LOCATION": "Add another location"
       },
       "SAVE_INDICATOR": "Save new indicator",
-      "TITLE_EDIT_INDICATOR" : "Edit Indicator"
+      "TITLE_EDIT_INDICATOR": "Edit Indicator"
     },
-
     "ADD_ALERT": {
       "NO_HAZARD": "Please select hazard",
       "NO_ALERT_LEVEL": "Please select alert level",
@@ -1405,7 +1404,7 @@
         "ADD_ANOTHER_AREAS": "Add another areas"
       },
       "CONFIRM_ALERT_LEVEL": "Confirm alert level",
-      "ERROR_ONLY_NUMBERS" : "Please enter only numbers for this field."
+      "ERROR_ONLY_NUMBERS": "Please enter only numbers for this field."
     },
     "ADD_HAZARD": {
       "NO_HAZARD": "Please select hazard",
@@ -1482,6 +1481,9 @@
       }
     },
     "TITLE": "Risk Monitoring"
+  },
+  "DIRECTORS": {
+    "NO_COUNTRIES_TO_SHOW": "No countries to show"
   },
   "HEADERS": {
     "MIN_PREP": "Minimum preparedness",
