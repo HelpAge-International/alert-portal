@@ -15,6 +15,9 @@ declare var jQuery: any;
 })
 
 export class StaffComponent implements OnInit, OnDestroy {
+
+  private hideLoader: boolean = false;
+
   POSITION = Constants.STAFF_POSITION;
   POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
   USER_TYPE = Constants.USER_TYPE;
@@ -152,7 +155,9 @@ export class StaffComponent implements OnInit, OnDestroy {
         });
       })
       .takeUntil(this.ngUnsubscribe)
-      .subscribe();
+      .subscribe(x => {
+        this.hideLoader = true;
+      });
 
     // this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid).takeUntil(this.ngUnsubscribe)
     //   .subscribe(users => {
