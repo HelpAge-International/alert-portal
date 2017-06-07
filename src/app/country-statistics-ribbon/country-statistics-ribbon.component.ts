@@ -20,7 +20,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
   private systemAdminId: string;
 
   private AlertLevels = AlertLevels;
-  private overallAlertLevel: AlertLevels = AlertLevels.Green; // TODO - Find this value
+  private overallAlertLevel: AlertLevels;
 
   private countryLocation: any;
   private CountriesList = Constants.COUNTRIES;
@@ -124,10 +124,13 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryId + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value;
+        .subscribe((country: any) => {
+          this.countryLocation = country.location;
+          this.overallAlertLevel = country.alertLevel;
+          console.log(country.location);
+          console.log(country.alertLevel);
           res(true);
         });
     });

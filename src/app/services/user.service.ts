@@ -373,6 +373,17 @@ export class UserService {
       })
   }
 
+  getAllCountryAlertLevelsForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryAlertLevels = [];
+        countries.forEach(country => {
+          countryAlertLevels[country.$key] = country.alertLevel;
+        });
+        return countryAlertLevels;
+      })
+  }
+
   getOrganisationName(id) {
     return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
   }

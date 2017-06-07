@@ -39,10 +39,13 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private allCountries: Set<string> = new Set<string>();
   private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
 
+  private AlertLevels = AlertLevels;
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
   private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
 
+  private overallAlertLevels: any = [];
+  private alertLevelColours: any = [];
   private countResponsePlans: any = [];
   private count: number = 0;
   private minTreshold: any = [];
@@ -133,7 +136,13 @@ export class DirectorComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryIds => {
         this.countryIds = countryIds;
-        this.initData();
+
+        this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(countryAlertLevels => {
+            this.overallAlertLevels = countryAlertLevels;
+            this.initData();
+          });
       });
   }
 
@@ -143,7 +152,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
     this.countryIds.forEach(countryId => {
 
-      //for each couyntry do following
+      //for each country do following
       this.actionService.getActionsDueInWeek(countryId, this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(actions => {
@@ -191,6 +200,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     });
 
     this.getAllRegionsAndCountries();
+    this.setupAlertLevelColours();
     this.getResponsePlans();
     this.getThresholds();
   }
@@ -259,6 +269,21 @@ export class DirectorComponent implements OnInit, OnDestroy {
     }
     this.regions.push(holder);
     return;
+  }
+
+  private setupAlertLevelColours() {
+
+    for (let country in this.overallAlertLevels) {
+      if (this.overallAlertLevels[country] == AlertLevels.Green) {
+        this.alertLevelColours[country] = 'green';
+      } else if (this.overallAlertLevels[country] == AlertLevels.Amber) {
+        this.alertLevelColours[country] = 'orange';
+      } else if (this.overallAlertLevels[country] == AlertLevels.Red){
+        this.alertLevelColours[country] = 'red';
+      } else {
+        this.alertLevelColours[country] = 'grey';
+      }
+    }
   }
 
   private getResponsePlans() {

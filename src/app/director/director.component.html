@@ -107,68 +107,6 @@
 
       <div class="Ribbon__section__wrap Spaced">
 
-
-        <div class="Accordion Map-list" data-toggle="collapse" href="#collapseThree" aria-expanded="true"
-             aria-controls="collapseThree">
-          <div class="row align-items-center">
-            <div class="col-md-4 col-lg-4 col-sm-4">
-              <h4>Southeast Asia</h4>
-            </div>
-            <div class="col-md-5 col-lg-5 col-sm-5">
-              <strong>{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}:
-              </strong>John Mayer
-            </div>
-            <div class="col-md-2 col-lg-2 col-sm-2"></div>
-            <div class="col-sm-1">
-              <i class="fa fa-caret-down text-primary" aria-hidden="true"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="Accordion__Content collapse" id="collapseThree">
-
-          <div class="Accordion Preparedness__agency-list">
-            <div class="row">
-              <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right">
-                <div class="Agency-logo--no-border Agency-logo--md Icon--align-center"
-                     style="background-image:url(assets/images/donor/ocha.png)"></div>
-                <span>Philippines</span>
-              </div>
-              <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                <div class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-red"></div>
-                <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
-              </div>
-              <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                <div class="Icon">
-                  <div class="Icon__circle Icon--align-center Icon--blue Icon--md">9</div>
-                </div>
-                <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
-              </div>
-              <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                <div class="Icon">
-                  <div class="Icon__circle Icon--align-center Icon--b-green Icon--md"><i
-                    class="fa fa-check fa-inverse fa-2x" aria-hidden="true"></i></div>
-                </div>
-                <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
-              </div>
-              <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                <div class="Icon">
-                  <div class="Icon__circle Icon--align-center Icon--b-orange Icon--md"><i
-                    class="fa fa-ellipsis-h fa-inverse fa-2x" aria-hidden="true"></i></div>
-                </div>
-                <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
-              </div>
-              <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                <div class="Icon">
-                  <div class="Icon__circle Icon--align-center Icon--blue Icon--md">94%</div>
-                </div>
-                <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
         <div *ngFor="let x of regions">
           <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
                [attr.data-target]="x.listOfCountries()" data-toggle="collapse" [attr.href]="x.getRegionIdHash()"
@@ -203,38 +141,41 @@
                     </div>
 
                     <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-red"></div>
+                      <div class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertLevelColours[y.countryId]}}"></div>
                       <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
                     </div>
+
                     <div class="col-sm-2 col-6 Preparedness__agency-list__item">
                       <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">9</div>
+                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{countResponsePlans[y.countryId] ? countResponsePlans[y.countryId] : 0}}</div>
                       </div>
                       <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
                     </div>
 
-                    <div class="col-md-2 col-lg-2 col-sm-2 text-center">
-                      <i *ngIf="y.overallAction() == -1" class="fa fa-times-circle fa-5x text-muted"></i>
-                      <i *ngIf="y.overallAction() >= minThreshGreen" class="fa fa-check-circle fa-5x text-success"
-                         aria-hidden="true"></i>
-                      <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"
-                         class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
-                      <i
-                        *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1"
-                        class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
-                      <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
+                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+                      <div class="Icon">
+                        <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[y.countryId]}} Icon--md">
+                          <i class="fa {{mpaStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
                     </div>
 
                     <div class="col-sm-2 col-6 Preparedness__agency-list__item">
                       <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--b-orange Icon--md"><i
-                          class="fa fa-ellipsis-h fa-inverse fa-2x" aria-hidden="true"></i></div>
+                        <div *ngIf="overallAlertLevels[y.countryId] == AlertLevels.Red" class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[y.countryId]}} Icon--md">
+                          <i class="fa {{advStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <div *ngIf="overallAlertLevels[y.countryId] != AlertLevels.Red" class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
+                          <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
+                        </div>
                       </div>
-                      <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
+                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
                     </div>
+
                     <div class="col-sm-2 col-6 Preparedness__agency-list__item">
                       <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">94%</div>
+                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{percentageCHS[y.countryId]}}%</div>
                       </div>
                       <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
                     </div>
