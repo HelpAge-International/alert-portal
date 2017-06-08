@@ -27,6 +27,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private agencyId: string;
+  private agencyName: string = '';
   private systemAdminId: string;
 
   private actionsToday = [];
@@ -40,6 +41,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   // Regional Director
   private regionId: string;
+  private regionName: string = '';
   private idsOfCountriesInRegion: string[];
   private locationsOfCountriesInRegion: any = [];
 
@@ -238,6 +240,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
     });
 
+    this.getAgencyName();
     this.getAllRegionsAndCountries();
     this.setupAlertLevelColours();
     this.getResponsePlans();
@@ -248,19 +251,29 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.loaderInactive = true;
   }
 
+  private getAgencyName() {
+    if (this.agencyId) {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyName) => {
+          this.agencyName = agencyName ? agencyName.$value : "Agency";
+        });
+    }
+  }
+
   private getCountriesForRegion() {
 
     this.userService.getRegionId(this.userPaths[this.userType], this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(regionId => {
         this.regionId = regionId;
-        console.log(this.regionId);
 
         if (this.agencyId && this.regionId) {
           this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe((region: RegionHolder) => {
+            .subscribe((region) => {
 
+              this.regionName = region.name ? region.name : "Region";
               for (let country in region.countries) {
                 this.idsOfCountriesInRegion.push(country);
               }
@@ -278,7 +291,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(country => {
-            console.log(country);
             if (country.location || country.location == 0) {
               this.locationsOfCountriesInRegion[countryId] = Countries[country.location];
             }

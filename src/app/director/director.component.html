@@ -7,10 +7,9 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <!--TODO-->
-      <h1>Oxfam: </h1>
+      <h1>{{agencyName}}: </h1>
       <h1 *ngIf="userType != UserType.RegionalDirector">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
-      <h1 *ngIf="userType == UserType.RegionalDirector">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
+      <h1 *ngIf="userType == UserType.RegionalDirector"> {{regionName}}</h1>
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
