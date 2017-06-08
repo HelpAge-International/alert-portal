@@ -20,7 +20,7 @@ export class Constants {
   static ALERT_REDIRECT_DURATION: number = 1500;
 
   /*PATHS*/
-  static APP_STATUS = "/test";
+  static APP_STATUS = "/sand";
   static LOGIN_PATH = "/login";
   static COUNTRY_LEVELS_FILE = "/assets/json/country_levels.json";
   static COUNTRY_LEVELS_VALUES_FILE = "/assets/json/country_levels_values.json";
