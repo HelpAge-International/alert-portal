@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Country, PersonTitle, UserType} from "../../../utils/Enums";
+import {Countries, PersonTitle, UserType} from "../../../utils/Enums";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import * as firebase from "firebase";
 import {firebaseConfig} from "../../../app.module";
@@ -23,7 +23,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   countrySelections = Constants.COUNTRY_SELECTION;
   titleNames = Constants.PERSON_TITLE;
   titleSelections = Constants.PERSON_TITLE_SELECTION;
-  countryOfficeLocation: number = Country.UK;
+  countryOfficeLocation: number = Countries.GB;
   countryAdminTitle: number = PersonTitle.Mr;
   countryAdminFirstName: string;
   countryAdminLastName: string;

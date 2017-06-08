@@ -1,17 +1,7 @@
 /**
  * Created by Fei on 08/03/2017.
  */
-import {
-  PersonTitle,
-  Country,
-  Currency,
-  UserType,
-  StaffPosition,
-  OfficeType,
-  DurationType,
-  ResponsePlanSectionSettings,
-  DocumentType, Countries
-} from "./Enums";
+import {Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType} from "./Enums";
 
 export class Constants {
 

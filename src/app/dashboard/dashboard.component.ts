@@ -30,6 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private NODE_TO_CHECK: string;
 
   private DashboardType = DashboardType;
+  private UserType = UserType;
   private DashboardTypeUsed: DashboardType;
 
   private uid: string;
@@ -66,6 +67,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // TODO - New Subscriptions - Remove RxHelper and add Subject
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private userType: UserType;
+
 
   constructor(private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
@@ -80,6 +83,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(userType => {
+            this.userType = userType;
             this.NODE_TO_CHECK = this.userPaths[userType];
             if (userType == UserType.CountryDirector) {
               this.DashboardTypeUsed = DashboardType.director;
@@ -257,6 +261,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAlerts() {
     if (this.DashboardTypeUsed == DashboardType.default) {
+      console.log(this.countryId);
       this.alerts = this.actionService.getAlerts(this.countryId);
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
