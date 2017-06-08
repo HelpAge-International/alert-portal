@@ -53,7 +53,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private AlertLevels = AlertLevels;
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
-  private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
+  private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red, AlertLevels.All];
 
   private overallAlertLevels: any = [];
   private alertLevelColours: any = [];
@@ -66,6 +66,9 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private advStatusIcons: any = [];
   private advStatusColors: any = [];
   private percentageCHS: any = [];
+
+  // Filter
+  private alertLevelSelected = AlertLevels.All;
 
   private userPaths = Constants.USER_PATHS;
 
@@ -162,6 +165,26 @@ export class DirectorComponent implements OnInit, OnDestroy {
         });
     }
     return this.directorName;
+  }
+
+  filter() {
+
+    if (this.userType != UserType.RegionalDirector) {
+
+      if (this.alertLevelSelected == AlertLevels.All) {
+        // TODO - No filter. show all
+
+        console.log('All Filter');
+        console.log("Selected Alert level ---- " + this.alertLevelSelected);
+
+      } else {
+
+        console.log('Filter selected');
+        console.log("Selected Alert level ---- " + this.alertLevelSelected);
+
+      }
+    }
+
   }
 
   /**

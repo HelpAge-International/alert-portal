@@ -106,8 +106,8 @@
           {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.SORT_BY" | translate}}:
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6">
-          <select class="form-control" (change)="filterAlertLevel($event)">
-            <option value="all" selected>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>
+          <select class="form-control" [(ngModel)]="alertLevelSelected" (change)="filter()">
+            <!--<option value="all">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>-->
             <option *ngFor="let alertLevelKey of alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] |
               translate}}
             </option>
