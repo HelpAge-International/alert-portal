@@ -101,7 +101,8 @@ export enum UserType {
   Donor = 6,
   GlobalUser = 7,
   CountryAdmin = 8,
-  NonAlert = 9
+  NonAlert = 9,
+  CountryUser = 10
 }
 
 export enum OfficeType {

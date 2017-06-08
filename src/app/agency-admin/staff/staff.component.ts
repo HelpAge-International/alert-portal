@@ -3,7 +3,7 @@ import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
-import {Observable, Subject} from "rxjs";
+import {Observable, Scheduler, Subject} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
 declare var jQuery: any;
@@ -16,7 +16,7 @@ declare var jQuery: any;
 
 export class StaffComponent implements OnInit, OnDestroy {
 
-  private hideLoader: boolean = false;
+  private hideLoader: boolean;
 
   POSITION = Constants.STAFF_POSITION;
   POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
@@ -89,6 +89,7 @@ export class StaffComponent implements OnInit, OnDestroy {
         return departments;
       })
       .takeUntil(this.ngUnsubscribe)
+      .subscribeOn(Scheduler.async)
       .subscribe(x => {
         this.departments = x;
       });
@@ -123,6 +124,7 @@ export class StaffComponent implements OnInit, OnDestroy {
         this.officeId.forEach(id => {
           this.staffMap.get(id)
             .takeUntil(this.ngUnsubscribe)
+            .subscribeOn(Scheduler.async)
             .subscribe(x => {
               x.forEach(item => {
                 if (!this.dealedStaff.includes(item.$key)) {
