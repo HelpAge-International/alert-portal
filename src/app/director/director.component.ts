@@ -1,11 +1,10 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
-import {Observable, Subject} from "rxjs";
+import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {SuperMapComponents, SDepHolder} from "../utils/MapHelper";
 import {RegionHolder} from "../map/map-countries-list/map-countries-list.component";
-import {RxHelper} from "../utils/RxHelper";
 import {Countries, UserType, AlertLevels} from "../utils/Enums";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -28,6 +27,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private agencyId: string;
+  private agencyName: string = '';
   private systemAdminId: string;
 
   private actionsToday = [];
@@ -39,10 +39,16 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private regions: RegionHolder[];
   private countries: SDepHolder[];
 
+  // Regional Director
+  private regionId: string;
+  private regionName: string = '';
+  private idsOfCountriesInRegion: string[];
+  private locationsOfCountriesInRegion: any = [];
+
   private directorName: string;
   private countryIdsForOther: Set<string> = new Set<string>();
   private allCountries: Set<string> = new Set<string>();
-  private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
+  private otherRegion: RegionHolder = RegionHolder.create("Other Countries", "unassigned");
 
   private AlertLevels = AlertLevels;
   private alertLevels = Constants.ALERT_LEVELS;
@@ -70,6 +76,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
+    this.idsOfCountriesInRegion = [];
   }
 
   ngOnInit() {
@@ -129,6 +136,19 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   getCountryCodeFromLocation(location: number) {
     return Countries[location];
+  }
+
+  getCountryCodeFromCountryId(countryId: number) {
+    console.log("countryId - " + countryId);
+    let location;
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(country => {
+        if (country.location || country.location == 0) {
+          location = country.location;
+          return Countries[location];
+        }
+      });
   }
 
   getDirectorName(directorId) {
@@ -220,12 +240,63 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
     });
 
+    this.getAgencyName();
     this.getAllRegionsAndCountries();
     this.setupAlertLevelColours();
     this.getResponsePlans();
     this.getThresholds();
+    if (this.userType == UserType.RegionalDirector) {
+      this.getCountriesForRegion();
+    }
     this.loaderInactive = true;
+  }
 
+  private getAgencyName() {
+    if (this.agencyId) {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyName) => {
+          this.agencyName = agencyName ? agencyName.$value : "Agency";
+        });
+    }
+  }
+
+  private getCountriesForRegion() {
+
+    this.userService.getRegionId(this.userPaths[this.userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(regionId => {
+        this.regionId = regionId;
+
+        if (this.agencyId && this.regionId) {
+          this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((region) => {
+
+              this.regionName = region.name ? region.name : "Region";
+              for (let country in region.countries) {
+                this.idsOfCountriesInRegion.push(country);
+              }
+              this.getCountryCodesForCountriesInRegion()
+            });
+        }
+      });
+
+  }
+
+  private getCountryCodesForCountriesInRegion() {
+
+    if (this.idsOfCountriesInRegion) {
+      this.idsOfCountriesInRegion.forEach(countryId => {
+        this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(country => {
+            if (country.location || country.location == 0) {
+              this.locationsOfCountriesInRegion[countryId] = Countries[country.location];
+            }
+          });
+      });
+    }
   }
 
   private getAllRegionsAndCountries() {
