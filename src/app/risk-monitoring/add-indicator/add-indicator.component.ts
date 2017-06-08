@@ -1,5 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Indicator} from "../../model/indicator";
+import {Location} from '@angular/common';
 import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
@@ -95,7 +96,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               private router: Router,
               private _commonService: CommonService,
               private route: ActivatedRoute,
-              private storage: LocalStorageService) {
+              private storage: LocalStorageService,
+              private _location: Location) {
     this.initIndicatorData();
   }
 
@@ -269,6 +271,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   }
 
+  cancel() {
+    this._location.back();
+  }
+
   setNewHazardID(event: any) {
     var hazardID = event.target.value ? event.target.value : false;
     if (!hazardID) {
@@ -437,6 +443,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  onAlertHidden(hidden: boolean) {
+    if (this.alertMessage.type == AlertMessageType.Success)
+      this._location.back();
   }
 
 }

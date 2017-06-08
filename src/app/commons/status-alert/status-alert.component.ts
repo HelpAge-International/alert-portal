@@ -24,12 +24,13 @@ export class StatusAlertComponent implements OnInit {
   set show(show: boolean) {
   	this._show = show;
 
-  	this._subscriptions.add(
-		TimerObservable.create(Constants.ALERT_DURATION).subscribe(t => {
-	      this._show = false;
-	      this.onAlertHidden.emit(true);
-	    })
-    );
+    if (this._show)
+    	this._subscriptions.add(
+  		TimerObservable.create(Constants.ALERT_DURATION).subscribe(t => {
+  	      this._show = false;
+  	      this.onAlertHidden.emit(true);
+  	    })
+      );
   }
 
   ngOnInit() {

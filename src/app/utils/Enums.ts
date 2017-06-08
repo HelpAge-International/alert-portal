@@ -177,6 +177,24 @@ export enum ResponsePlanSectors {
   other = 8
 }
 
+export enum ResponsePlansApprovalSettings {
+  RegionalDirector = 0,
+  GlobalDirector = 1
+}
+
+export enum ModuleName {
+  MinimumPreparednessActions = 0,
+  AdvancedPreparednessActions = 1,
+  CHSPreparednessActions = 2,
+  HazardPrioritisation = 3,
+  PreparednessBudget = 4,
+  SeasonalCalendar = 5,
+  HazardIndicator = 6,
+  CountryOfficeProfile = 7,
+  ResponsePlanning = 8,
+  GlobalMaps = 9
+}
+
 export enum PresenceInTheCountry {
   currentProgrammes = 0,
   preExistingPartner = 1,
