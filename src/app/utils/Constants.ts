@@ -9,6 +9,9 @@ export class Constants {
   static ALERT_DURATION: number = 5000;
   static ALERT_REDIRECT_DURATION: number = 1500;
 
+  /*INFORM WORKFLOW ID*/
+  static INFORM_WORKFLOW: number = 261;
+
   /*PATHS*/
   static APP_STATUS = "/sand";
   static LOGIN_PATH = "/login";

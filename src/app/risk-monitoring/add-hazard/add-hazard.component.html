@@ -18,13 +18,13 @@
         </div>
         <form #newHazard="ngForm" novalidate *ngSwitchCase="1">
             <div class="row" style="width:100%" *ngFor="let hazard of hazardScenariosListTop; let num = index">
-                <label for="{{HazardScenario[hazard] | translate}}" class="Checkbox--ribbon__alert Left col-sm-5">
-                    <input type="radio" name="RT" (change)="stateIsCustom(true, $event,hazard)"
-                           id="{{HazardScenario[hazard] | translate}}" [value]="HazardScenario[hazard] | translate"
+                <label for="{{HazardScenario[hazard.hazardScenario] | translate}}" class="Checkbox--ribbon__alert Left col-sm-5">
+                    <input type="radio" name="RT" (change)="stateIsCustom(true, $event,hazard.hazardScenario)"
+                           id="{{HazardScenario[hazard.hazardScenario] | translate}}" [value]="HazardScenario[hazard.hazardScenario] | translate"
                            required>
                     <div class="risk-icon__components no-bg"><img
-                            src="assets/images/hazards/{{HazardScenario[hazard] | translate | lowercase}}.svg"></div>
-                    <p><b>{{HazardScenario[hazard] | translate}}</b>Risk 10.0</p>
+                            src="assets/images/hazards/{{HazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>
+                    <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>Risk {{hazard.value}}</p>
                 </label>
                 <p class="col-sm-4 align-self-center" *ngIf="num == 0">{{"RISK_MONITORING.ADD_HAZARD.NOTE_HAZARD" | translate}}</p>
             </div>

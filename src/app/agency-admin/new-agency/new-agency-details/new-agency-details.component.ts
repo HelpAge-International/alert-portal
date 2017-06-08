@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Country, Currency} from "../../../utils/Enums";
+import {Countries, Currency} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 

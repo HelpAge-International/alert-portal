@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {HazardScenario, AlertMessageType, Countries} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
@@ -8,6 +8,7 @@ import {ModelHazard} from "../../model/hazard.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
+import {InformHolder, InformService} from "../../services/inform.service";
 
 declare var jQuery: any;
 
@@ -37,11 +38,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private isCustomDisabled: boolean = true;
   private HazardScenario = Constants.HAZARD_SCENARIOS;
   private scenarioColors = Constants.SCENARIO_COLORS;
-  private hazardScenariosListTop: number[] = [
-    HazardScenario.HazardScenario4,
-    HazardScenario.HazardScenario3,
-    HazardScenario.HazardScenario24
-  ];
+  private hazardScenariosListTop: InformHolder[] = [];
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
     HazardScenario.HazardScenario1,
@@ -70,11 +67,20 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   ];
   private hazardData: any = {};
 
+  // INFORM information
+  private informHandler: InformService;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService) {
     this.hazardData.seasons = [];
     this.initHazardData();
+
+    // Inform Handler for the top 3 items
+    this.informHandler = new InformService();
+    this.informHandler.getTopResultsCC(Countries.GB, 3, (list) => {
+      this.hazardScenariosListTop = list;
+    });
   }
 
   ngOnInit() {

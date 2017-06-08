@@ -492,6 +492,317 @@ export enum Countries {
   ZW = 248
 }
 
+export class Countries3ISO {
+  private map: Map<Countries, string>;
+  public static init(): Countries3ISO {
+    let iso = new Countries3ISO();
+    iso.map = new Map<Countries, string>();
+    iso.map.set(Countries.AF, "AFG");
+    iso.map.set(Countries.AX, "ALA");
+    iso.map.set(Countries.AL, "ALB");
+    iso.map.set(Countries.DZ, "DZA");
+    iso.map.set(Countries.AS, "ASM");
+    iso.map.set(Countries.AD, "AND");
+    iso.map.set(Countries.AO, "AGO");
+    iso.map.set(Countries.AI, "AIA");
+    iso.map.set(Countries.AQ, "ATA");
+    iso.map.set(Countries.AG, "ATG");
+    iso.map.set(Countries.AR, "ARG");
+    iso.map.set(Countries.AM, "ARM");
+    iso.map.set(Countries.AW, "ABW");
+    iso.map.set(Countries.AU, "AUS");
+    iso.map.set(Countries.AT, "AUT");
+    iso.map.set(Countries.AZ, "AZE");
+    iso.map.set(Countries.BS, "BHS");
+    iso.map.set(Countries.BH, "BHR");
+    iso.map.set(Countries.BD, "BGD");
+    iso.map.set(Countries.BB, "BRB");
+    iso.map.set(Countries.BY, "BLR");
+    iso.map.set(Countries.BE, "BEL");
+    iso.map.set(Countries.BZ, "BLZ");
+    iso.map.set(Countries.BJ, "BEN");
+    iso.map.set(Countries.BM, "BMU");
+    iso.map.set(Countries.BT, "BTN");
+    iso.map.set(Countries.BO, "BOL");
+    iso.map.set(Countries.BA, "BIH");
+    iso.map.set(Countries.BW, "BWA");
+    iso.map.set(Countries.BV, "BVT");
+    iso.map.set(Countries.BR, "BRA");
+    iso.map.set(Countries.VG, "VGB");
+    iso.map.set(Countries.IO, "IOT");
+    iso.map.set(Countries.BN, "BRN");
+    iso.map.set(Countries.BG, "BGR");
+    iso.map.set(Countries.BF, "BFA");
+    iso.map.set(Countries.BI, "BDI");
+    iso.map.set(Countries.KH, "KHM");
+    iso.map.set(Countries.CM, "CMR");
+    iso.map.set(Countries.CA, "CAN");
+    iso.map.set(Countries.CV, "CPV");
+    iso.map.set(Countries.KY, "CYM");
+    iso.map.set(Countries.CF, "CAF");
+    iso.map.set(Countries.TD, "TCD");
+    iso.map.set(Countries.CL, "CHL");
+    iso.map.set(Countries.CN, "CHN");
+    iso.map.set(Countries.HK, "HKG");
+    iso.map.set(Countries.MO, "MAC");
+    iso.map.set(Countries.CX, "CXR");
+    iso.map.set(Countries.CC, "CCK");
+    iso.map.set(Countries.CO, "COL");
+    iso.map.set(Countries.KM, "COM");
+    iso.map.set(Countries.CG, "COG");
+    iso.map.set(Countries.CD, "COD");
+    iso.map.set(Countries.CK, "COK");
+    iso.map.set(Countries.CR, "CRI");
+    iso.map.set(Countries.CI, "CIV");
+    iso.map.set(Countries.HR, "HRV");
+    iso.map.set(Countries.CU, "CUB");
+    iso.map.set(Countries.CY, "CYP");
+    iso.map.set(Countries.CZ, "CZE");
+    iso.map.set(Countries.DK, "DNK");
+    iso.map.set(Countries.DJ, "DJI");
+    iso.map.set(Countries.DM, "DMA");
+    iso.map.set(Countries.DO, "DOM");
+    iso.map.set(Countries.EC, "ECU");
+    iso.map.set(Countries.EG, "EGY");
+    iso.map.set(Countries.SV, "SLV");
+    iso.map.set(Countries.GQ, "GNQ");
+    iso.map.set(Countries.ER, "ERI");
+    iso.map.set(Countries.EE, "EST");
+    iso.map.set(Countries.ET, "ETH");
+    iso.map.set(Countries.FK, "FLK");
+    iso.map.set(Countries.FO, "FRO");
+    iso.map.set(Countries.FJ, "FJI");
+    iso.map.set(Countries.FI, "FIN");
+    iso.map.set(Countries.FR, "FRA");
+    iso.map.set(Countries.GF, "GUF");
+    iso.map.set(Countries.PF, "PYF");
+    iso.map.set(Countries.TF, "ATF");
+    iso.map.set(Countries.GA, "GAB");
+    iso.map.set(Countries.GM, "GMB");
+    iso.map.set(Countries.GE, "GEO");
+    iso.map.set(Countries.DE, "DEU");
+    iso.map.set(Countries.GH, "GHA");
+    iso.map.set(Countries.GI, "GIB");
+    iso.map.set(Countries.GR, "GRC");
+    iso.map.set(Countries.GL, "GRL");
+    iso.map.set(Countries.GD, "GRD");
+    iso.map.set(Countries.GP, "GLP");
+    iso.map.set(Countries.GU, "GUM");
+    iso.map.set(Countries.GT, "GTM");
+    iso.map.set(Countries.GG, "GGY");
+    iso.map.set(Countries.GN, "GIN");
+    iso.map.set(Countries.GW, "GNB");
+    iso.map.set(Countries.GY, "GUY");
+    iso.map.set(Countries.HT, "HTI");
+    iso.map.set(Countries.HM, "HMD");
+    iso.map.set(Countries.VA, "VAT");
+    iso.map.set(Countries.HN, "HND");
+    iso.map.set(Countries.HU, "HUN");
+    iso.map.set(Countries.IS, "ISL");
+    iso.map.set(Countries.IN, "IND");
+    iso.map.set(Countries.ID, "IDN");
+    iso.map.set(Countries.IR, "IRN");
+    iso.map.set(Countries.IQ, "IRQ");
+    iso.map.set(Countries.IE, "IRL");
+    iso.map.set(Countries.IM, "IMN");
+    iso.map.set(Countries.IL, "ISR");
+    iso.map.set(Countries.IT, "ITA");
+    iso.map.set(Countries.JM, "JAM");
+    iso.map.set(Countries.JP, "JPN");
+    iso.map.set(Countries.JE, "JEY");
+    iso.map.set(Countries.JO, "JOR");
+    iso.map.set(Countries.KZ, "KAZ");
+    iso.map.set(Countries.KE, "KEN");
+    iso.map.set(Countries.KI, "KIR");
+    iso.map.set(Countries.KP, "PRK");
+    iso.map.set(Countries.KR, "KOR");
+    iso.map.set(Countries.KW, "KWT");
+    iso.map.set(Countries.KG, "KGZ");
+    iso.map.set(Countries.LA, "LAO");
+    iso.map.set(Countries.LV, "LVA");
+    iso.map.set(Countries.LB, "LBN");
+    iso.map.set(Countries.LS, "LSO");
+    iso.map.set(Countries.LR, "LBR");
+    iso.map.set(Countries.LY, "LBY");
+    iso.map.set(Countries.LI, "LIE");
+    iso.map.set(Countries.LT, "LTU");
+    iso.map.set(Countries.LU, "LUX");
+    iso.map.set(Countries.MK, "MKD");
+    iso.map.set(Countries.MG, "MDG");
+    iso.map.set(Countries.MW, "MWI");
+    iso.map.set(Countries.MY, "MYS");
+    iso.map.set(Countries.MV, "MDV");
+    iso.map.set(Countries.ML, "MLI");
+    iso.map.set(Countries.MT, "MLT");
+    iso.map.set(Countries.MH, "MHL");
+    iso.map.set(Countries.MQ, "MTQ");
+    iso.map.set(Countries.MR, "MRT");
+    iso.map.set(Countries.MU, "MUS");
+    iso.map.set(Countries.YT, "MYT");
+    iso.map.set(Countries.MX, "MEX");
+    iso.map.set(Countries.FM, "FSM");
+    iso.map.set(Countries.MD, "MDA");
+    iso.map.set(Countries.MC, "MCO");
+    iso.map.set(Countries.MN, "MNG");
+    iso.map.set(Countries.ME, "MNE");
+    iso.map.set(Countries.MS, "MSR");
+    iso.map.set(Countries.MA, "MAR");
+    iso.map.set(Countries.MZ, "MOZ");
+    iso.map.set(Countries.MM, "MMR");
+    iso.map.set(Countries.NA, "NAM");
+    iso.map.set(Countries.NR, "NRU");
+    iso.map.set(Countries.NP, "NPL");
+    iso.map.set(Countries.NL, "NLD");
+    iso.map.set(Countries.NC, "NCL");
+    iso.map.set(Countries.NZ, "NZL");
+    iso.map.set(Countries.NI, "NIC");
+    iso.map.set(Countries.NE, "NER");
+    iso.map.set(Countries.NG, "NGA");
+    iso.map.set(Countries.NU, "NIU");
+    iso.map.set(Countries.NF, "NFK");
+    iso.map.set(Countries.MP, "MNP");
+    iso.map.set(Countries.NO, "NOR");
+    iso.map.set(Countries.OM, "OMN");
+    iso.map.set(Countries.PK, "PAK");
+    iso.map.set(Countries.PW, "PLW");
+    iso.map.set(Countries.PS, "PSE");
+    iso.map.set(Countries.PA, "PAN");
+    iso.map.set(Countries.PG, "PNG");
+    iso.map.set(Countries.PY, "PRY");
+    iso.map.set(Countries.PE, "PER");
+    iso.map.set(Countries.PH, "PHL");
+    iso.map.set(Countries.PN, "PCN");
+    iso.map.set(Countries.PL, "POL");
+    iso.map.set(Countries.PT, "PRT");
+    iso.map.set(Countries.PR, "PRI");
+    iso.map.set(Countries.QA, "QAT");
+    iso.map.set(Countries.RE, "REU");
+    iso.map.set(Countries.RO, "ROU");
+    iso.map.set(Countries.RU, "RUS");
+    iso.map.set(Countries.RW, "RWA");
+    iso.map.set(Countries.BL, "BLM");
+    iso.map.set(Countries.SH, "SHN");
+    iso.map.set(Countries.KN, "KNA");
+    iso.map.set(Countries.LC, "LCA");
+    iso.map.set(Countries.MF, "MAF");
+    iso.map.set(Countries.PM, "SPM");
+    iso.map.set(Countries.VC, "VCT");
+    iso.map.set(Countries.WS, "WSM");
+    iso.map.set(Countries.SM, "SMR");
+    iso.map.set(Countries.ST, "STP");
+    iso.map.set(Countries.SA, "SAU");
+    iso.map.set(Countries.SN, "SEN");
+    iso.map.set(Countries.RS, "SRB");
+    iso.map.set(Countries.SC, "SYC");
+    iso.map.set(Countries.SL, "SLE");
+    iso.map.set(Countries.SG, "SGP");
+    iso.map.set(Countries.SK, "SVK");
+    iso.map.set(Countries.SI, "SVN");
+    iso.map.set(Countries.SB, "SLB");
+    iso.map.set(Countries.SO, "SOM");
+    iso.map.set(Countries.ZA, "ZAF");
+    iso.map.set(Countries.GS, "SGS");
+    iso.map.set(Countries.SS, "SSD");
+    iso.map.set(Countries.ES, "ESP");
+    iso.map.set(Countries.LK, "LKA");
+    iso.map.set(Countries.SD, "SDN");
+    iso.map.set(Countries.SR, "SUR");
+    iso.map.set(Countries.SJ, "SJM");
+    iso.map.set(Countries.SZ, "SWZ");
+    iso.map.set(Countries.SE, "SWE");
+    iso.map.set(Countries.CH, "CHE");
+    iso.map.set(Countries.SY, "SYR");
+    iso.map.set(Countries.TW, "TWN");
+    iso.map.set(Countries.TJ, "TJK");
+    iso.map.set(Countries.TZ, "TZA");
+    iso.map.set(Countries.TH, "THA");
+    iso.map.set(Countries.TL, "TLS");
+    iso.map.set(Countries.TG, "TGO");
+    iso.map.set(Countries.TK, "TKL");
+    iso.map.set(Countries.TO, "TON");
+    iso.map.set(Countries.TT, "TTO");
+    iso.map.set(Countries.TN, "TUN");
+    iso.map.set(Countries.TR, "TUR");
+    iso.map.set(Countries.TM, "TKM");
+    iso.map.set(Countries.TC, "TCA");
+    iso.map.set(Countries.TV, "TUV");
+    iso.map.set(Countries.UG, "UGA");
+    iso.map.set(Countries.UA, "UKR");
+    iso.map.set(Countries.AE, "ARE");
+    iso.map.set(Countries.GB, "GBR");
+    iso.map.set(Countries.US, "USA");
+    iso.map.set(Countries.UM, "UMI");
+    iso.map.set(Countries.UY, "URY");
+    iso.map.set(Countries.UZ, "UZB");
+    iso.map.set(Countries.VU, "VUT");
+    iso.map.set(Countries.VE, "VEN");
+    iso.map.set(Countries.VN, "VNM");
+    iso.map.set(Countries.VI, "VIR");
+    iso.map.set(Countries.WF, "WLF");
+    iso.map.set(Countries.EH, "ESH");
+    iso.map.set(Countries.YE, "YEM");
+    iso.map.set(Countries.ZM, "ZMB");
+    iso.map.set(Countries.ZW, "ZWE");
+    return iso;
+  }
+
+  public get(code: Countries): string {
+    return this.map.get(code);
+  }
+}
+
+export class InformCodes {
+  public map: Map<string, HazardScenario>;
+  public list: string[];
+
+  // "HAZARD_SCENARIO0": "Cold Wave",
+  // "HAZARD_SCENARIO1": "Conflict",
+  // "HAZARD_SCENARIO2": "Cyclone",
+  // "HAZARD_SCENARIO3": "Drought",
+  // "HAZARD_SCENARIO4": "Earthquake",
+  // "HAZARD_SCENARIO5": "Epidemic",
+  // "HAZARD_SCENARIO6": "Fire",
+  // "HAZARD_SCENARIO7": "Flash Flood",
+  // "HAZARD_SCENARIO8": "Flood",
+  // "HAZARD_SCENARIO9": "Heat Wave",
+  // "HAZARD_SCENARIO10": "Heavy Rain",
+  // "HAZARD_SCENARIO11": "Humanitarian Access",
+  // "HAZARD_SCENARIO12": "Insect Infestation",
+  // "HAZARD_SCENARIO13": "Landslide",
+  // "HAZARD_SCENARIO14": "Locust Infestation",
+  // "HAZARD_SCENARIO15": "Mudslide",
+  // "HAZARD_SCENARIO16": "Population Displacement",
+  // "HAZARD_SCENARIO17": "Population Return",
+  // "HAZARD_SCENARIO18": "Snow Avalanche",
+  // "HAZARD_SCENARIO19": "Snowfall",
+  // "HAZARD_SCENARIO20": "Storm",
+  // "HAZARD_SCENARIO21": "Storm Surge",
+  // "HAZARD_SCENARIO22": "Technological Disaster",
+  // "HAZARD_SCENARIO23": "Tornado",
+  // "HAZARD_SCENARIO24": "Tsunami",
+  // "HAZARD_SCENARIO25": "Violent Wind",
+  // "HAZARD_SCENARIO26": "Volcano"
+
+  public static init(): InformCodes {
+    let informCodes:InformCodes = new InformCodes();
+    informCodes.map = new Map<string, HazardScenario>();
+    informCodes.map.set("HA.NAT.FL", HazardScenario.HazardScenario8); // Flood
+    informCodes.map.set("HA.NAT.TC", HazardScenario.HazardScenario2); // Tropical Cyclone
+    informCodes.map.set("HA.NAT.EQ", HazardScenario.HazardScenario4); // Earthquake
+    informCodes.map.set("HA.NAT.TS", HazardScenario.HazardScenario24); // Tsunami
+    informCodes.map.set("HA.NAT.DR", HazardScenario.HazardScenario3); // Drought
+    informCodes.map.set("RANDOM SHIT", HazardScenario.HazardScenario3); // Drought
+    informCodes.list = [];
+    informCodes.map.forEach((val, key) => {
+      informCodes.list.push(key);
+    });
+    return informCodes;
+  }
+  public get(val: string): HazardScenario {
+    return this.map.get(val);
+  }
+}
+
 export enum ApprovalStatus {
   InProgress = 0,
   WaitingApproval = 1,
