@@ -295,7 +295,8 @@ export class UserService {
   getUserType(uid: string): Observable<any> {
 
     const paths = [Constants.APP_STATUS + "/administratorCountry/" + uid, Constants.APP_STATUS + "/countryDirector/" + uid,
-      Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid];
+      Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid,
+      Constants.APP_STATUS + "/globalUser/" + uid];
 
     if (!uid) {
       return null;
@@ -320,7 +321,14 @@ export class UserService {
                           if (globalDirector.agencyAdmin) {
                             return Observable.of(UserType.GlobalDirector);
                           } else {
-                            return Observable.empty();
+                            return this.af.database.object(paths[4])
+                              .flatMap(globalUser => {
+                                if (globalUser.agencyAdmin) {
+                                  return Observable.of(UserType.GlobalUser);
+                                } else {
+                                  return Observable.empty();
+                                }
+                              });
                           }
                         });
                     }

@@ -21,6 +21,9 @@ import {UserService} from "../services/user.service";
 
 export class DirectorComponent implements OnInit, OnDestroy {
 
+  private UserType = UserType;
+  private userType: UserType;
+
   private loaderInactive: boolean = true;
 
   private uid: string;
@@ -70,6 +73,14 @@ export class DirectorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    //clear data
+    this.actionsToday = [];
+    this.actionsThisWeek = [];
+    this.indicatorsToday = [];
+    this.indicatorsThisWeek = [];
+    this.approvalPlans = [];
+
+    //set initial loader status
     this.loaderInactive = false;
 
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
@@ -77,6 +88,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.uid = user.auth.uid;
         this.userService.getUserType(this.uid)
           .flatMap(userType => {
+            this.userType = userType;
             return this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid);
           })
           .takeUntil(this.ngUnsubscribe)
@@ -221,7 +233,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.otherRegion = new RegionHolder();
     this.otherRegion.regionId = "Unassigned";
     this.otherRegion.regionName = "Other Countries";
-    this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[UserType.GlobalDirector], (key, obj) => {
+    this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[this.userType], (key, obj) => {
       let hRegion = new RegionHolder();
       hRegion.regionName = obj.name;
       hRegion.directorId = obj.directorId;
@@ -234,7 +246,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.addOrUpdateRegion(hRegion);
     });
 
-    this.mapHelper.initCountries(this.uid, this.userPaths[UserType.GlobalDirector], (departments) => {
+    this.mapHelper.initCountries(this.uid, this.userPaths[this.userType], (departments) => {
       this.allCountries.clear();
       for (let x of departments) {
         this.addOrUpdateCountry(x);
@@ -289,7 +301,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.alertLevelColours[country] = 'green';
       } else if (this.overallAlertLevels[country] == AlertLevels.Amber) {
         this.alertLevelColours[country] = 'orange';
-      } else if (this.overallAlertLevels[country] == AlertLevels.Red){
+      } else if (this.overallAlertLevels[country] == AlertLevels.Red) {
         this.alertLevelColours[country] = 'red';
       } else {
         this.alertLevelColours[country] = 'grey';
