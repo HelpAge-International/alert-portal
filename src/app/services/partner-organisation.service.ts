@@ -12,19 +12,19 @@ export class PartnerOrganisationService {
   constructor(private af: AngularFire, private subscriptions: RxHelper) {}
 
   getCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
-     let partnerOrganisations: PartnerOrganisationModel[] = [];
-     const partnerOrganisationSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+     let partnerOrganisationsList: PartnerOrganisationModel[] = [];
+     const partnerOrganisationSubscription = 
+          this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
       .flatMap(partnerOrganisations => {
         return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
         })
       .flatMap( organisationId => {
-        partnerOrganisations = []; // reinitialize list to prevent duplication
         return this.getPartnerOrganisation(organisationId as string);
       })
       .map( organisation => {
-        partnerOrganisations.push(organisation);
-        return partnerOrganisations;
-      });
+        partnerOrganisationsList.push(organisation);
+        return partnerOrganisationsList;
+      })
 
       return partnerOrganisationSubscription;
   }

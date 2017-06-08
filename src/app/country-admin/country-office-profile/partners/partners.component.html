@@ -79,8 +79,8 @@
             <p class="col-sm-2">{{ PARTNER_STATUS[partnerOrganisation.isApproved ? 1 : 0] | translate }}</p> <!--Status-->
             <div class="col-sm-1" *ngIf="!isEdit">
                 <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                <p class="notes-number__components--country-office-profile">1</p>
-                <a href="#notesOne" data-toggle="collapse" class="row margin-left-one-half">
+                <p class="notes-number__components--country-office-profile">{{ partnerOrganisation.notes.length }}</p>
+                <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
                     {{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}
                 </a>
             </div> <!--Notes-->
@@ -91,6 +91,46 @@
             </div>
             
             <div class="row Line-row Spaced-above"></div>
+
+            <!-- Notes Drop Down -->
+            <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                    <h3>Notes</h3>
+                    <hr class="d-inline-flex">
+                    <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
+                        <input type="text" name="new_note" placeholder="Add a note"
+                            [(ngModel)] = "newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
+
+                        <!--Note post -->
+                        <div class="row Spaced log-post__wrap--risk"
+                            *ngFor="let note of partnerOrganisation.notes">
+                            <div class="log-date__wrap--risk col-lg-1">
+                                <p>{{ note.time | date: 'dd MMM y' }}</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <p>{{ note.content }}</p>
+                                <br>
+                                <div class="row">
+                                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
+                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
+                                        (click) ="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                                    <p href="#" class="padding-left-one">|</p>
+                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
+                                        (click) ="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <!--add Note button-->
+                        <div class="add_log mt-auto p-2 text-right float-right">
+                            <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button><br>
+                            <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate }}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!--Notes Drop Down End-->
 
             <!--Partnership Details tooltip-->
             <div class="Tooltip__bubble container-fluid Blue info log collapse" id="partnership_{{ i }}" data-parent="#partnerDetailsOne">
@@ -166,3 +206,45 @@
             (click)="addPartnerOrganisation()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ADD' | translate }}</button>
     </div>
 </div>
+
+<!-- Delete note modal -->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Edit Note Modal-->
+<div class="modal fade" id="edit-action" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center form-group input-lg">
+                <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="activeNote && activeNote.content"></textarea>
+            </div>
+            <div class="row Right-aligned Spaced col-sm-12">
+                <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" | translate}}</a>
+                <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="editAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.SAVE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+

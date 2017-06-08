@@ -116,7 +116,6 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   validateForm(): boolean {
     this.alertMessage = this.partner.validate() || this.userPublic.validate(['city']);
 
-
     /*
     *  Specific component validation BELOW
     *

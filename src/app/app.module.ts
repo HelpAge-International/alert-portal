@@ -109,6 +109,7 @@ import {CountrySubmenuComponent} from './preparedness/country-submenu/country-su
 import {AlertWidgetComponent} from './commons/alert-widget/alert-widget.component';
 import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
 import {UserService} from "./services/user.service";
+import {NoteService} from "./services/note.service"
 import {DashboardSeasonalCalendarComponent} from './dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component';
 import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component';
 import {SessionService} from "./services/session.service";
@@ -279,7 +280,7 @@ const firebaseAuthConfig = {
       storageType: 'localStorage'
     })
   ],
-  providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService],
+  providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService, NoteService],
   bootstrap: [AppComponent]
 })
 

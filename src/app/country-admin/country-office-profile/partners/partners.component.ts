@@ -14,6 +14,8 @@ import { CountryAdminModel } from "../../../model/country-admin.model";
 import { DisplayError } from "../../../errors/display.error";
 import { SessionService } from "../../../services/session.service";
 import { CommonService } from "../../../services/common.service";
+import { NoteModel } from "../../../model/note.model";
+import { NoteService } from "../../../services/note.service";
 declare var jQuery: any;
 
 @Component({
@@ -48,15 +50,22 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private areasOfOperation: string[];
   private countryLevelsValues: any;
 
+  // Helpers
+  private newNote: NoteModel[];
+  private activeNote: NoteModel;
+  private activePartnerOrganisation: PartnerOrganisationModel;
+
   constructor(private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
+              private _noteService: NoteService,
               private _sessionService: SessionService,
               private router: Router,
               private route: ActivatedRoute,
               private subscriptions: RxHelper){
     this.areasOfOperation = [];
     this.partnerOrganisations = [];
+    this.newNote = [];
   }
 
   ngOnDestroy() {
@@ -82,6 +91,18 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
         this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
                 .subscribe(partnerOrganisations => {
                   this.partnerOrganisations = partnerOrganisations;
+
+                  // Get the partner organisation notes
+                  this.partnerOrganisations.forEach(partnerOrganisation => {
+                    const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                    this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                      partnerOrganisation.notes = notes;
+                    });
+
+                    // Create the new note model for partner organisation
+                    this.newNote[partnerOrganisation.id] = new NoteModel();
+                    this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                  });
                 });
 
         // get the country levels values
@@ -155,6 +176,78 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     return hide;
   }
 
+  validateNote(note: NoteModel): boolean {
+    this.alertMessage = note.validate();
+
+    return !this.alertMessage;
+  }
+
+  addNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel)
+  {
+    if(this.validateNote(note))
+    {
+      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id); 
+      this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+  }
+
+  editNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+    jQuery('#edit-action').modal('show');
+    this.activePartnerOrganisation = partnerOrganisation;
+    this.activeNote = note;
+  }
+
+editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+    this.closeEditModal();
+
+    if(this.validateNote(note))
+    {
+      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id); 
+      this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+ }
+
+  closeEditModal() {
+    jQuery('#edit-action').modal('hide');
+  }
+
+  deleteNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+    jQuery('#delete-action').modal('show');
+    this.activePartnerOrganisation = partnerOrganisation;
+    this.activeNote = note;
+  }
+
+  deleteAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+    this.closeDeleteModal();
+
+    const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+
+    this._noteService.deleteNote(partnerOrganisationNode, note)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+ }
+
+  closeDeleteModal() {
+    jQuery('#delete-action').modal('hide');
+  }
+
+  getUserName(userId) {
+    let userName = "";
+
+    this._userService.getUser(userId).subscribe(user => {
+      userName = user.firstName + ' ' + user.lastName;
+    });
+
+    return userName;
+  }
   private hasOrganisationProjectSector(partnerOrganisation: PartnerOrganisationModel, sector: string): boolean {
     let exists = false;
     partnerOrganisation.projects.forEach(project => {

@@ -553,6 +553,9 @@ export class Constants {
     'administratorCountry'
   ];
 
+  // Nodes List, used for saving Notes
+  static PARTNER_ORGANISATION_NODE = '/partnerOrganisation/{id}/notes';
+
 }
 
 export enum FILE_SETTING {
