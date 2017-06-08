@@ -370,6 +370,16 @@ export class UserService {
     return subscription;
   }
 
+  // Get region id os the regional director
+  getRegionId(userType: string, uid): Observable<string> {
+    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/regionId")
+      .map(regionId => {
+        if (regionId.$value) {
+          return regionId.$value
+        }
+      });
+  }
+
   getAllCountryIdsForAgency(agencyId: string): Observable<any> {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
       .map(countries => {

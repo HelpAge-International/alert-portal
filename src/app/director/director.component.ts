@@ -1,11 +1,10 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
-import {Observable, Subject} from "rxjs";
+import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {SuperMapComponents, SDepHolder} from "../utils/MapHelper";
 import {RegionHolder} from "../map/map-countries-list/map-countries-list.component";
-import {RxHelper} from "../utils/RxHelper";
 import {Countries, UserType, AlertLevels} from "../utils/Enums";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -39,10 +38,14 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private regions: RegionHolder[];
   private countries: SDepHolder[];
 
+  // Regional Director
+  private regionId: string;
+  private countriesInRegion: SDepHolder[];
+
   private directorName: string;
   private countryIdsForOther: Set<string> = new Set<string>();
   private allCountries: Set<string> = new Set<string>();
-  private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
+  private otherRegion: RegionHolder = RegionHolder.create("Other Countries", "unassigned");
 
   private AlertLevels = AlertLevels;
   private alertLevels = Constants.ALERT_LEVELS;
@@ -70,6 +73,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
+    this.countriesInRegion = [];
   }
 
   ngOnInit() {
@@ -224,7 +228,32 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.setupAlertLevelColours();
     this.getResponsePlans();
     this.getThresholds();
+    if (this.userType == UserType.RegionalDirector) {
+      this.getCountriesForRegion();
+    }
     this.loaderInactive = true;
+  }
+
+  private getCountriesForRegion() {
+
+    this.userService.getRegionId(this.userPaths[this.userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(regionId => {
+        this.regionId = regionId;
+        console.log(this.regionId);
+
+        if (this.agencyId && this.regionId) {
+
+          this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((region: RegionHolder) => {
+
+            console.log("Region");
+            console.log(region);
+            });
+        }
+
+      });
 
   }
 
