@@ -16,7 +16,7 @@ declare var jQuery: any;
 
 export class StaffComponent implements OnInit, OnDestroy {
 
-  private hideLoader: boolean = false;
+  private hideLoader: boolean;
 
   POSITION = Constants.STAFF_POSITION;
   POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;

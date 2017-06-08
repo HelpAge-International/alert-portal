@@ -146,7 +146,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           }
         }
         if (staff.userType == UserType.RegionalDirector) {
-          let subscription = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid, {
+          this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid, {
             query: {
               orderByChild: "directorId",
               equalTo: staffId,
@@ -428,6 +428,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       staffData["/donor/" + uid] = userData;
     } else if (this.userType == UserType.NonAlert) {
       staffData["/nonAlert/" + uid] = userData;
+    } else if (this.userType == UserType.CountryUser) {
+      staffData["/countryUser/" + uid] = userData;
     }
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
@@ -458,7 +460,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.RegionalDirector) {
       this.hideCountry = true;
       this.hideRegion = false;
-    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser) {
+    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser || this.userType == UserType.CountryUser) {
       this.hideCountry = true;
       this.hideRegion = true;
     } else {

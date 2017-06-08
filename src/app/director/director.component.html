@@ -14,7 +14,7 @@
     <div class="Ribbon__section__wrap Spaced">
 
       <!--empty ribbon for director dashboard-->
-      <div *ngIf="userType != UserType.GlobalUser">
+      <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
         <div *ngIf="approvalPlans.length == 0">
           <div class="Widget"
                *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0">
@@ -29,7 +29,7 @@
       </div>
 
       <!--my tasks-->
-      <div *ngIf="userType != UserType.GlobalUser">
+      <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
         <div class="Widget"
              *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
           <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>

@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Scheduler, Subject} from 'rxjs';
 declare var jQuery: any;
 
 @Component({
@@ -13,6 +13,7 @@ declare var jQuery: any;
 
 export class CountryOfficeComponent implements OnInit, OnDestroy {
 
+  private hideLoader: boolean;
   private uid: string;
   private countries: FirebaseListObservable<any[]>;
   private countryNames: string [] = Constants.COUNTRIES;
@@ -49,10 +50,10 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid);
       this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.uid);
       this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
-          regions.forEach(region => {
-            this.showRegionMap.set(region.$key, false);
-          });
+        regions.forEach(region => {
+          this.showRegionMap.set(region.$key, false);
         });
+      });
       this.checkAnyCountryNoRegion();
     });
   }
@@ -78,10 +79,12 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       })
       .first()
       .takeUntil(this.ngUnsubscribe)
+      .subscribeOn(Scheduler.async)
       .subscribe(result => {
+        this.hideLoader = true;
         // console.log(result);
         this.countriesWithRegion = result;
-        let subscription = this.countries
+        this.countries
           .map(list => {
             let countryids = [];
             list.forEach(country => {
@@ -91,6 +94,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
           })
           .first()
           .takeUntil(this.ngUnsubscribe)
+          .subscribeOn(Scheduler.async)
           .subscribe(result => {
             // console.log(result);
             this.allCountries = result;
