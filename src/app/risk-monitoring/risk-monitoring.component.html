@@ -17,8 +17,8 @@
         <div class="Ribbon__section__wrap--risk Spaced"></div>
 
         <div class="expand_collapse__wrap--risk Right-aligned">
-            <a class="openall" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.EXPAND_ALL" | translate}}</a>
-            <a class="closeall" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.COLLAPSE_ALL" | translate}}</a>
+            <a class="openall" (click)="collapseAll('expand')" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.EXPAND_ALL" | translate}}</a>
+            <a class="closeall" (click)="collapseAll('collapse')" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.COLLAPSE_ALL" | translate}}</a>
         </div>
 
         <div class="Ribbon__section__wrap--risk align-items-right" role="tablist" aria-multiselectable="true">
@@ -176,7 +176,7 @@
          <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + hazard.hazardScenario}}" aria-expanded="true" attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="risk-icon__components"><img src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>
+                    <div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg"></div>
                     <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
                 <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
                     <div *ngIf="hazard.isSeasonal">

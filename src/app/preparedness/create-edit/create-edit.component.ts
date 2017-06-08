@@ -81,8 +81,8 @@ export class CreateEditPreparednessComponent implements OnInit {
         let subscription = this.route.params.subscribe((params: Params) => {
             if (params['id']) {
                 /* TODO remove hardcode actionID */
-                //this.actionID = params['id'];
-                this.actionID = '-KjwQyhlExYqstjk75GD';
+                this.actionID = params['id'];
+//                this.actionID = '-KjwQyhlExYqstjk75GD';
             }
         });
         this.subscriptions.add(subscription);
@@ -121,8 +121,7 @@ export class CreateEditPreparednessComponent implements OnInit {
         if (!isValid || !this._isValidForm()) {
             return false;
         }
-
-
+        
         if (!this.actionID) {
             if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
                 this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
@@ -143,12 +142,15 @@ export class CreateEditPreparednessComponent implements OnInit {
             this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
         }
 
-        var dataToSave = this.actionData;
-
+        
+        let dataToSave = Object.assign({}, this.actionData)
+        dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
+        
         if (!this.actionID) {
             this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
                 .push(dataToSave)
                 .then(() => {
+                    this.backButtonAction();
                     console.log('success save data');
                 }).catch((error: any) => {
                     console.log(error, 'You do not have access!')
@@ -157,6 +159,7 @@ export class CreateEditPreparednessComponent implements OnInit {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
                 .set(dataToSave)
                 .then(() => {
+                    this.backButtonAction();
                     console.log('success update');
                 }).catch((error: any) => {
                     console.log(error, 'You do not have access!')
@@ -172,10 +175,12 @@ export class CreateEditPreparednessComponent implements OnInit {
                 this._getPreparednessFrequency().then(() => {
                     if (this.actionID) {
                         this.getActionData().then(() => {
-
+                            console.log('test');
                         });
                     }
+                    console.log('1111111111111111111111');
                     this._parseSelectParams();
+                    console.log('2222222222222222222');
                     this._frequencyIsActive();
                 });
             });
@@ -265,6 +270,10 @@ export class CreateEditPreparednessComponent implements OnInit {
         let promise = new Promise((res, rej) => {
             let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryID: any) => {
                 this.countryID = countryID.$value ? countryID.$value : "";
+                console.log('1111111111111111111111');
+                console.log(this.uid);
+                console.log(this.countryID);
+                
                 res(true);
             });
             this.subscriptions.add(subscription);
@@ -274,6 +283,8 @@ export class CreateEditPreparednessComponent implements OnInit {
 
     getAgencyID() {
         let promise = new Promise((res, rej) => {
+            
+            
             let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyIDs: any) => {
                 this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
                 res(true);
@@ -291,7 +302,7 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     archiveAction() {
-        console.log('archive');
+        
         this.closeModal();
         this.actionData.isActive = false;
 
@@ -307,9 +318,12 @@ export class CreateEditPreparednessComponent implements OnInit {
 
     getActionData() {
         let promise = new Promise((res, rej) => {
+
             let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).subscribe((action: Action) => {
-                this.actionData = action;
-                this.level = action.level;
+                this.actionData = action; 
+                this.actionData.requireDoc = action.requireDoc ? 1 : 2;        
+                 
+                this.level = action.level; 
                 this.dueDate = this._convertTimestampToDate(action.dueDate);
                 res(true);
             });

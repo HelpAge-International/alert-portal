@@ -105,7 +105,10 @@ export class PreparednessComponent implements OnInit, OnDestroy {
             this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
         }
 
-        var dataToSave = this.actionData;
+        let dataToSave = Object.assign({}, this.actionData);
+        if(dataToSave && dataToSave.requireDoc) {
+            dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
+        }
 
         if (!this.actionID) {
             this.af.database.list(Constants.APP_STATUS + '/action/' + this.uid)

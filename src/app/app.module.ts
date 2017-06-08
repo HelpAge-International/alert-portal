@@ -117,6 +117,7 @@ import {SettingsService} from "./services/settings.service";
 import {CountryAdminSettingsMenuComponent} from "./country-admin/settings/settings-menu/settings-menu.component";
 import {CountryOfficeProfileMenuComponent} from "./country-admin/country-office-profile/office-profile-menu/office-profile-menu.component";
 import {EnumKeyValuesPipe} from "./utils/pipes/enum-keyValues.pipe";
+import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import {MessageService} from "./services/message.service";
 import {NotificationSettingsService} from "./services/notification-settings.service";
 import {ReviewResponsePlanComponent} from './dashboard/review-response-plan/review-response-plan.component';
@@ -147,6 +148,7 @@ const firebaseAuthConfig = {
 
 @NgModule({
   declarations: [
+    ReplacePipe,
     AppComponent,
     LoginComponent,
     SystemAdminComponent,

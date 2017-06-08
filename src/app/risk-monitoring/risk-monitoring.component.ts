@@ -10,6 +10,8 @@ import {AlertMessageModel} from '../model/alert-message.model';
 import {ModelHazard} from '../model/hazard.model';
 import {LogModel} from '../model/log.model';
 import {LocalStorageService} from 'angular-2-local-storage';
+import {TranslateService} from "@ngx-translate/core";
+
 
 declare var jQuery: any;
 @Component({
@@ -77,7 +79,7 @@ export class RiskMonitoringComponent implements OnInit {
 
     private successAddHazardMsg: any;
 
-    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private storage: LocalStorageService, private translate: TranslateService) {
         this.tmpLogData['content'] = '';
         this.successAddNewHazardMessage();
     }
@@ -148,6 +150,8 @@ export class RiskMonitoringComponent implements OnInit {
                 this.archivedHazards = [];
                 hazards.forEach((hazard: any, key) => {
                     hazard.id = hazard.$key;
+                    hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+                    
                     this.getIndicators(hazard.id).subscribe((indicators: any) => {
                         indicators.forEach((indicator, key) => {
                             this.getLogs(indicator.$key).subscribe((logs: any) => {
@@ -203,6 +207,14 @@ export class RiskMonitoringComponent implements OnInit {
             this.removeTmpHazardID();
         });
         jQuery("#" + modalID).modal("hide");
+    }
+
+    collapseAll(mode: string) {
+        if(mode == 'expand') {
+            jQuery('.collapse').collapse('show');
+        } else {
+            jQuery('.collapse').collapse('hide');
+        }
     }
 
     changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {

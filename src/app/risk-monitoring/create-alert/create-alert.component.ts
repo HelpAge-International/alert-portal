@@ -8,6 +8,7 @@ import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {ModelAlert} from "../../model/alert.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     selector: 'app-create-alert',
@@ -44,7 +45,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
 
     private hazards: any[] = [];
 
-    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService) {
+    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private _commonService: CommonService, private translate: TranslateService) {
         this.initAlertData();
     }
 
@@ -177,6 +178,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
             let subscription = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazards: any) => {
                 this.hazards = [];
                 for (let hazard in hazards) {
+                    hazards[hazard].imgName = this.translate.instant(this.hazardScenario[hazards[hazard].hazardScenario]).replace(" ", "_");
                     this.hazards.push(hazards[hazard]);
                 }
             });

@@ -14,7 +14,7 @@ export class Action extends BaseModel {
     public asignee: string;
     public dueDate: number;
     public budjet: number;
-    public requireDoc: Boolean;
+    public requireDoc: any;
     public documentId: string;
     public frequencyBase: number;
     public frequencyValue: number;
