@@ -87,6 +87,7 @@ import {ViewResponsePlanComponent} from "./commons/view-response-plan/view-respo
 import {CountryOfficePartnersComponent} from "./country-admin/country-office-profile/partners/partners.component";
 import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
 import {DirectorComponent} from "./director/director.component";
+import {DirectorOverviewComponent} from "./director/director-overview/director-overview.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -180,7 +181,7 @@ const routes: Routes = [
   {path: 'country-admin/country-staff', component: CountryStaffComponent},
   {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
   {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
-  //{path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
+  {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
@@ -245,6 +246,8 @@ const routes: Routes = [
    * Directors
    */
   {path: 'director', component: DirectorComponent},
+  {path: 'director/director-overview', component: DirectorOverviewComponent},
+  {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
 
   /*
    * test

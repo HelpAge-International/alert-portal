@@ -2,6 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
+import {ResponsePlanSectionSettings, ResponsePlansApprovalSettings} from "../../../utils/Enums";
 import {Subject} from "rxjs";
 
 @Component({
@@ -13,6 +14,8 @@ import {Subject} from "rxjs";
 export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestroy {
 
   RESPONSE_PLANS_SECTION_SETTINGS = Constants.RESPONSE_PLANS_SECTION_SETTINGS;
+  protected ResponsePlanSectionSettings = Object.keys(ResponsePlanSectionSettings).map(k => ResponsePlanSectionSettings[k]).filter(v => typeof v !== "string") as string[];
+  protected ResponsePlansApprovalSettings = Object.keys(ResponsePlansApprovalSettings).map(k => ResponsePlansApprovalSettings[k]).filter(v => typeof v !== "string") as string[];
 
   private uid: string = "";
 
@@ -35,6 +38,10 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
         this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/responsePlanSettings/sections')
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
+            this.ResponsePlanSectionSettings.map(sectionSetting => {
+              this.sections[sectionSetting] = {$key: sectionSetting, $value: false};
+            });
+            
             _.map(section => {
               this.sections[section.$key] = section;
             });
@@ -43,6 +50,10 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
         this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/responsePlanSettings/approvalHierachy')
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
+            this.ResponsePlansApprovalSettings.map(approvalSetting => {
+              this.approvals[approvalSetting] = {$key: approvalSetting, $value: false};
+            });
+
             _.map(approval => {
               this.approvals[approval.$key] = approval;
             });

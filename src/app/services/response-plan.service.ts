@@ -70,7 +70,7 @@ export class ResponsePlanService {
     return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId);
   }
 
-  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent) {
+  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector) {
     let approvalName = this.getUserTypeName(userType);
     if (approvalName) {
       let updateData = {};
@@ -78,9 +78,9 @@ export class ResponsePlanService {
       updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         if (rejectNoteContent) {
-          this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent);
+          this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
         } else {
-          this.router.navigateByUrl("/dashboard");
+          isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
         }
       }, error => {
         console.log(error.message);
@@ -90,13 +90,13 @@ export class ResponsePlanService {
     }
   }
 
-  private addResponsePlanRejectNote(uid, responsePlanId, content) {
+  private addResponsePlanRejectNote(uid, responsePlanId, content, isDirector) {
     let note = {};
     note["content"] = content;
     note["time"] = Date.now();
     note["uploadBy"] = uid;
     this.af.database.list(Constants.APP_STATUS + "/note/" + responsePlanId).push(note).then(() => {
-      this.router.navigateByUrl("/dashboard");
+      isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
     }, error => {
       console.log(error.message)
     });

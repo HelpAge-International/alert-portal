@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-director-menu',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DirectorMenuComponent implements OnInit {
 
-  constructor() { }
+  constructor(private route: Router) {
+  }
 
   ngOnInit() {
+  }
+
+  toMap() {
+    this.route.navigate(["/map", {"isDirector": true}]);
   }
 
 }

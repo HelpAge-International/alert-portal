@@ -5,5 +5,5 @@
 export class ModelRegion {
   public directorId: string;
   public name: string;
-  public countries: Map<string, boolean>;
+  public countries: Map<string, boolean> = new Map<string, boolean>();
 }

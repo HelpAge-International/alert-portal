@@ -1,4 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Location} from '@angular/common';
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -56,7 +57,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private _location: Location) {
     this.actionData = new Action();
     this.setDefaultActionDataValue();
     /* if selected generic action */
@@ -125,7 +126,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       return false;
     }
 
-
     if (!this.actionID) {
       if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
         this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
@@ -148,11 +148,17 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
     var dataToSave = this.actionData;
 
+    if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
+      this.actionData.frequencyBase = 0;
+      this.actionData.frequencyValue = 1;
+    }
+
     if (!this.actionID) {
       this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
         .push(dataToSave)
         .then(() => {
           console.log('success save data');
+          this._location.back();
         }).catch((error: any) => {
         console.log(error, 'You do not have access!')
       });
@@ -161,6 +167,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         .set(dataToSave)
         .then(() => {
           console.log('success update');
+          this._location.back();
         }).catch((error: any) => {
         console.log(error, 'You do not have access!')
       });

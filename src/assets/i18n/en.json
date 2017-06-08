@@ -67,7 +67,7 @@
     "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "NAME_MISSING": "Name is missing!",
     "EMAIL_NOT_VALID": "Email address is not valid!",
-    "GENERAL_ERROR": "An error occurred. Please check and try again",
+    "GENERAL_ERROR": "The email address or password you entered is incorrect. Please check and try again",
     "NO_FILTERED_RESULTS": "There are no actions for the filters your have selected",
     "PREPAREDNESS_LEVEL": {
       "ALL": "All preparedness levels",
@@ -955,7 +955,7 @@
         "DOCUMENTS": "Documents",
         "CONTACTS": "Contacts"
       },
-      "PARTNERS":{
+      "PARTNERS": {
         "TITLE_TEXT": "Partners",
         "IMPLEMENTING_PARTNERS": "Current Implementing partners",
         "EDIT": "Edit partners",
@@ -985,7 +985,7 @@
       "NO_COUNTRIES": "Countries doesn't",
       "NO_COUNTRIES_BY": "Countries doesn't exist by",
       "ALERT_LEVEL": "Alert level",
-      "ALL_ALERT_LEVEL": "All Alert level",
+      "ALL_ALERT_LEVEL": "All alert levels",
       "ALERT_LEVEL": "Alert Level",
       "NO_AGENCIES": "No Agencies",
       "AGENCIES_IN": "Agencies in",
@@ -1290,7 +1290,7 @@
     "NO_LEVEL": "Level is required",
     "NO_DEPARTMENT": "Department is required",
     "NO_DUE_DATE": "Due Date is required",
-    "NO_BUDJET": "Budjet is required",
+    "NO_BUDGET": "Budget is required",
     "NO_REQUIRE_DOC": "Require Doc is required",
     "ALL_HAZARDS": "All Hazards",
     "UNASSIGNED": "Unassigned",
@@ -1335,15 +1335,15 @@
     "TODAY": "today",
     "THIS_WEEK": "this week",
     "MY_TASKS": "My Tasks",
-    "BY":"by",
-    "SUBMITTED":"Submitted",
-    "REVIEW_AND_APPROVE":"Review and approve",
-    "SUBMIT_TO_APPROVE":"has submitted a response plan for your approval",
-    "EMPTY_DEFAULT":"No actions or indicators assigned to you needs completing this week",
-    "EMPTY_DIRECTOR":"No response plans to approve, and no actions or indicators assigned to you needs completing this week",
+    "BY": "by",
+    "SUBMITTED": "Submitted",
+    "REVIEW_AND_APPROVE": "Review and approve",
+    "SUBMIT_TO_APPROVE": "has submitted a response plan for your approval",
+    "EMPTY_DEFAULT": "No actions or indicators assigned to you needs completing this week",
+    "EMPTY_DIRECTOR": "No response plans to approve, and no actions or indicators assigned to you needs completing this week",
     "CALENDAR": {
-      "SEASONAL_CALENDAR" : "Seasonal Calendar",
-      "VIEW_FULL_CALENDAR" : "View full calendar",
+      "SEASONAL_CALENDAR": "Seasonal Calendar",
+      "VIEW_FULL_CALENDAR": "View full calendar",
       "ADD_TO_CALENDAR": "Add to the calendar",
       "VIEW_AS_WEEKS": "View as weeks",
       "VIEW_AS_MONTHS": "View as months",
@@ -1365,7 +1365,7 @@
     "APPROVE_PLAN": "Approve Plan",
     "REJECT_PLAN": "Reject Plan",
     "REJECT_PLAN_CONFIRMATION": "Please confirm you want to reject this plan",
-    "REJECT_PLAN_CONFIRMATION": "Are you sure you want to reject this plan"
+    "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?"
   },
   "RISK_MONITORING": {
     "ADD_INDICATOR": {
@@ -1394,9 +1394,8 @@
         "ADD_ANOTHER_LOCATION": "Add another location"
       },
       "SAVE_INDICATOR": "Save new indicator",
-      "TITLE_EDIT_INDICATOR" : "Edit Indicator"
+      "TITLE_EDIT_INDICATOR": "Edit Indicator"
     },
-
     "ADD_ALERT": {
       "NO_HAZARD": "Please select hazard",
       "NO_ALERT_LEVEL": "Please select alert level",
@@ -1415,7 +1414,7 @@
         "ADD_ANOTHER_AREAS": "Add another areas"
       },
       "CONFIRM_ALERT_LEVEL": "Confirm alert level",
-      "ERROR_ONLY_NUMBERS" : "Please enter only numbers for this field."
+      "ERROR_ONLY_NUMBERS": "Please enter only numbers for this field."
     },
     "ADD_HAZARD": {
       "NO_HAZARD": "Please select hazard",
@@ -1492,6 +1491,9 @@
       }
     },
     "TITLE": "Risk Monitoring"
+  },
+  "DIRECTORS": {
+    "NO_COUNTRIES_TO_SHOW": "No countries to show"
   },
   "HEADERS": {
     "MIN_PREP": "Minimum preparedness",
