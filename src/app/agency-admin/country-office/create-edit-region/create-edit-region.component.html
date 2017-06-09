@@ -57,7 +57,7 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="RegionalDirector">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}</label>
-          <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId ? regionalDirectorId : regionalDirectors[0]">
+          <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId ? regionalDirectorId : regionalDirectors[0]" #id (change)="selectRegionDirector(id.value)">
             <option *ngFor="let director of regionalDirectors" [value]="director?.$key"
                     [selected]="director?.$key == regionalDirectorId">
               {{showName(director)}}

@@ -3,7 +3,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
-import {Countries, Country, UserType} from "../../../utils/Enums";
+import {Countries, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 
 @Component({
@@ -139,10 +139,11 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     console.log("add new country selection");
 
     this.countrySelections
-      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(result => {
         console.log("counter: " + this.counter + "/result: " + result.length);
+        console.log("countries: " + this.countries.length);
+        console.log("selectedCountries: " + this.selectedCountries.length);
         // if (this.isEdit) {
         if (this.counter < result.length - 1) {
           console.log("can add more country");
@@ -155,7 +156,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           return;
         }
 
-        console.log(this.countries)
+        console.log(this.countries);
         if (this.countries.length > 1) {
           this.hideRemove = false;
         }
@@ -259,8 +260,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       }
       modelRegion.directorId = this.regionalDirectorId;
       // modelRegion.directorId = this.regionalDirectorId.$key;
+
       this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid).push(modelRegion).then(() => {
-        this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        if (this.regionalDirectorId != "null") {
+          this.updateDirectorRegion(this.regionalDirectorId, this.officeList);
+        } else {
+          this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        }
       }, error => {
         console.log(error.message);
         this.isSubmitted = false;
@@ -292,12 +298,28 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       }
       regionData["/region/" + this.uid + "/" + this.regionId + "/countries"] = countriesData;
       this.af.database.object(Constants.APP_STATUS).update(regionData).then(() => {
-        this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        if (this.regionalDirectorId != "null") {
+          this.updateDirectorRegion(this.regionalDirectorId, this.officeList);
+        } else {
+          this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        }
       }, error => {
         console.log(error.message);
         this.isSubmitted = false;
       });
     }
+  }
+
+  private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {
+    let directorRegion = {};
+    for (let office of officeList) {
+      directorRegion["/directorRegion/" + office + "/"] = regionalDirectorId;
+    }
+    this.af.database.object(Constants.APP_STATUS).update(directorRegion).then(() => {
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+    }, error => {
+      console.log(error.message);
+    });
   }
 
   cancel() {
@@ -334,6 +356,10 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     console.log("country selected: " + this.countrySelected);
     console.log("country list: " + this.selectedCountries);
     this.countrySelected = 0;
+  }
+
+  selectRegionDirector(id) {
+    this.regionalDirectorId = id;
   }
 
   private loadRegionInfo(param: string) {

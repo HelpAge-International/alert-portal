@@ -28,8 +28,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
-  // TODO - Update this
-  private USER_TYPE: string = 'administratorCountry';
+  private USER_TYPE: string;
 
   private uid: string;
   private countryId: string;
@@ -110,6 +109,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     this.userService.getUserType(this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(usertype => {
+        this.USER_TYPE = Constants.USER_PATHS[usertype];
         if (usertype == UserType.GlobalDirector) {
           this.route.params
             .takeUntil(this.ngUnsubscribe)
