@@ -206,7 +206,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
-        console.log(indicators);
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
         if (dayIndicators.length > 0) {

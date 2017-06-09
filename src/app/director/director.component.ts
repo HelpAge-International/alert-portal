@@ -167,26 +167,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
     return this.directorName;
   }
 
-  filter() {
-
-    if (this.userType != UserType.RegionalDirector) {
-
-      if (this.alertLevelSelected == AlertLevels.All) {
-        // TODO - No filter. show all
-
-        console.log('All Filter');
-        console.log("Selected Alert level ---- " + this.alertLevelSelected);
-
-      } else {
-
-        console.log('Filter selected');
-        console.log("Selected Alert level ---- " + this.alertLevelSelected);
-
-      }
-    }
-
-  }
-
   /**
    * Private functions
    */
@@ -348,6 +328,26 @@ export class DirectorComponent implements OnInit, OnDestroy {
       }
       this.evaluateOthers();
     });
+
+  }
+
+  filter() {
+
+    if (this.userType != UserType.RegionalDirector) {
+
+      if (this.alertLevelSelected == AlertLevels.All) {
+        // TODO - No filter. show all
+
+        console.log('All Filter');
+        console.log("Selected Alert level ---- " + this.alertLevelSelected);
+
+      } else {
+
+        console.log('Filter selected');
+        console.log("Selected Alert level ---- " + this.alertLevelSelected);
+
+      }
+    }
 
   }
 

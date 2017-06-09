@@ -307,7 +307,7 @@
             <div class="Empty--ribbon">{{"DIRECTORS.NO_COUNTRIES_TO_SHOW" | translate}}</div>
         </div>
 
-        <div *ngIf="countries.length != 0">
+        <div *ngIf="countries.length > 0">
           <div *ngFor="let countryId of idsOfCountriesInRegion">
 
             <div class="Accordion Map-list" data-toggle="collapse" (click)="countryOverview(countryId)">
