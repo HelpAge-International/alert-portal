@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {HazardScenario, AlertMessageType, Countries} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
@@ -8,6 +8,7 @@ import {ModelHazard} from "../../model/hazard.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
+import {InformHolder, InformService} from "../../services/inform.service";
 
 declare var jQuery: any;
 
@@ -24,6 +25,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private hazardName: string;
   private countryID: string;
   private uid: string;
+  private locationID: number;
+  private agencyID: string;
   private count: number = 1;
   private customHazards = [];
   private AllSeasons = [];
@@ -37,11 +40,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private isCustomDisabled: boolean = true;
   private HazardScenario = Constants.HAZARD_SCENARIOS;
   private scenarioColors = Constants.SCENARIO_COLORS;
-  private hazardScenariosListTop: number[] = [
-    HazardScenario.HazardScenario4,
-    HazardScenario.HazardScenario3,
-    HazardScenario.HazardScenario24
-  ];
+  private hazardScenariosListTop: InformHolder[] = [];
+
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
     HazardScenario.HazardScenario1,
@@ -70,11 +70,18 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   ];
   private hazardData: any = {};
 
+  // INFORM information
+  private informHandler: InformService;
+  private loaderInactive: boolean;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService) {
     this.hazardData.seasons = [];
     this.initHazardData();
+
+    // Inform Handler for the top 3 items
+    this.informHandler = new InformService();
   }
 
   ngOnInit() {
@@ -97,12 +104,37 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this.hazardData = new ModelHazard();
   }
 
+  _getTopResults() {
+    this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
+      this.hazardScenariosListTop = list;
+      this.loaderInactive = true;
+    });
+  }
+
+  _getCountryLocation() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((country) => {
+          this.locationID = country.location;
+          this._getTopResults();
+          res(true);
+        });
+    });
+    return promise;
+  }
+
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
+      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
+        .subscribe((country: any) => {
+          let s: string;
+          for (let key in country.agencyAdmin) {
+            s = key;
+          }
+          this.agencyID = s;
+          this.countryID = country.countryId ? country.countryId : "";
         res(true);
       });
     });
@@ -112,6 +144,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   _loadData() {
     this._getCountryID().then(() => {
       this._getCustomHazards();
+      this._getCountryLocation();
     });
   }
 
@@ -203,6 +236,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   setHazardValue(event: any) {
     this._checkHazard(event.target.value);
+    console.log(event.target.value);
     this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;

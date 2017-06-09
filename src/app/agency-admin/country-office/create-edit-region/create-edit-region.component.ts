@@ -3,7 +3,7 @@ import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
-import {Countries, Country, UserType} from "../../../utils/Enums";
+import {Countries, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 
 @Component({

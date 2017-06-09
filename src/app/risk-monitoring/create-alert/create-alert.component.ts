@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AlertLevels, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {AlertLevels, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";

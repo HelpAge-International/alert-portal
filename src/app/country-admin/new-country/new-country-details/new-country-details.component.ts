@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {AngularFire, FirebaseApp} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
-import {Country, Countries, PhonePrefix} from '../../../utils/Enums';
+import {Countries, PhonePrefix} from '../../../utils/Enums';
 import {Observable, Subject} from 'rxjs';
 import {CountryOfficeAddressModel} from '../../../model/countryoffice.address.model';
 
