@@ -1,0 +1,81 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Back--button row" (click)="goBack()">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_EQUIPMENT' | translate }}</div> <!-- Back button-->
+        <div class="Header-title__wrap">
+            <h1 *ngIf="!equipment.id">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.ADD_EQUIPMENT_TITLE' | translate }}</h1>
+            <div class="col-sm-11" *ngIf="equipment.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_EQUIPMENT_TITLE' | translate }}</h1></div>
+            <div class="col-sm-1 Right-aligned" *ngIf="equipment.id">
+                <button class="btn btn-danger text-uppercase" (click)="deleteEquipment()">{{ 'GLOBAL.DELETE' | translate }}</button>
+            </div>
+        </div><br>
+
+        <form (ngSubmit)="submit()">
+            <div class="row form-group">
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</strong></h6>
+                <div class="col-sm-4">
+                    <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="name"
+                        [(ngModel)]="equipment && equipment.name"></div>
+            </div>
+
+            <div class="row form-group">
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.LOCATION' | translate }}</strong></h6>
+                <div class="col-sm-4">
+                    <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="location"
+                        [(ngModel)]="equipment && equipment.location">
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></h6>
+                <div class="col-sm-4">
+                    <input type="number" min="1" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="quantity"
+                        [(ngModel)]="equipment && equipment.quantity">
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</strong></h6>
+                <div class="col-sm-4">
+                    <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="status"
+                        [(ngModel)]="equipment && equipment.status">
+                </div>
+            </div> <br><br><br><br>
+
+            <!--Save and cancel-->
+            <div class="row Spaced">
+                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <div class="col-sm-1 margin-top-one">
+                    <a href="javascript:void(0)" (click)="goBack()">
+                        {{ 'GLOBAL.CANCEL' | translate }}
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.PROFILE.EQUIPMENT.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.EQUIPMENT.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+

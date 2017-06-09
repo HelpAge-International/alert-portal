@@ -132,6 +132,10 @@ import { DirectorHeaderComponent } from './director/director-header/director-hea
 import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
 import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
 import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
+import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-profile/equipment/equipment.component";
+import { EquipmentService } from "./services/equipment.service";
+import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -182,6 +186,9 @@ const firebaseAuthConfig = {
     CountryAdminSettingsMenuComponent,
     CountryOfficeProfileMenuComponent,
     CountryOfficePartnersComponent,
+    CountryOfficeEquipmentComponent,
+    CountryOfficeAddEditEquipmentComponent,
+    CountryOfficeAddEditSurgeEquipmentComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
@@ -288,7 +295,17 @@ const firebaseAuthConfig = {
       storageType: 'localStorage'
     })
   ],
-  providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService, NoteService],
+  providers: [
+              RxHelper,
+              Modal,
+              UserService,
+              SessionService,
+              CommonService,
+              SettingsService,
+              MessageService,
+              NotificationSettingsService,
+              NoteService,
+              EquipmentService],
   bootstrap: [AppComponent]
 })
 
