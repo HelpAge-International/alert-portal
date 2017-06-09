@@ -8,25 +8,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var core_1 = require('@angular/core');
-var angularfire2_1 = require('angularfire2');
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = require("@angular/core");
+var angularfire2_1 = require("angularfire2");
 var rxjs_1 = require("rxjs");
 var Constants_1 = require("../../utils/Constants");
 var CustomValidator_1 = require("../../utils/CustomValidator");
-var RxHelper_1 = require("../../utils/RxHelper");
 var ForgotPasswordComponent = (function () {
     function ForgotPasswordComponent(fa, router) {
         this.router = router;
         this.inactive = true;
         this.alerts = {};
         this.email = '';
+        this.ngUnsubscribe = new rxjs_1.Subject();
         this.auth = fa.auth();
-        this.subscriptions = new RxHelper_1.RxHelper();
     }
     ForgotPasswordComponent.prototype.ngOnInit = function () {
     };
     ForgotPasswordComponent.prototype.ngOnDestroy = function () {
-        this.subscriptions.releaseAll();
+        console.log(this.ngUnsubscribe);
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+        console.log(this.ngUnsubscribe);
     };
     ForgotPasswordComponent.prototype.onSubmit = function () {
         var _this = this;
@@ -49,10 +52,10 @@ var ForgotPasswordComponent = (function () {
     ForgotPasswordComponent.prototype.showAlert = function () {
         var _this = this;
         this.inactive = false;
-        var subscription = rxjs_1.Observable.timer(Constants_1.Constants.ALERT_DURATION).subscribe(function () {
+        rxjs_1.Observable.timer(Constants_1.Constants.ALERT_DURATION)
+            .takeUntil(this.ngUnsubscribe).subscribe(function () {
             _this.inactive = true;
         });
-        this.subscriptions.add(subscription);
     };
     /**
      * Returns false and specific error messages-
@@ -71,14 +74,14 @@ var ForgotPasswordComponent = (function () {
         }
         return true;
     };
-    ForgotPasswordComponent = __decorate([
-        core_1.Component({
-            selector: 'app-forgot-password',
-            templateUrl: './forgot-password.component.html',
-            styleUrls: ['./forgot-password.component.css']
-        }),
-        __param(0, core_1.Inject(angularfire2_1.FirebaseApp))
-    ], ForgotPasswordComponent);
     return ForgotPasswordComponent;
 }());
+ForgotPasswordComponent = __decorate([
+    core_1.Component({
+        selector: 'app-forgot-password',
+        templateUrl: './forgot-password.component.html',
+        styleUrls: ['./forgot-password.component.css']
+    }),
+    __param(0, core_1.Inject(angularfire2_1.FirebaseApp))
+], ForgotPasswordComponent);
 exports.ForgotPasswordComponent = ForgotPasswordComponent;

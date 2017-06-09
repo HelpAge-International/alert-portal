@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by Fei on 16/03/2017.
  */
@@ -11,7 +12,9 @@ var RxHelper = (function () {
     };
     RxHelper.prototype.releaseAll = function () {
         this.subscriptions.forEach(function (result) {
-            result.unsubscribe();
+            if (!result.closed) {
+                result.unsubscribe();
+            }
         });
     };
     return RxHelper;
