@@ -160,7 +160,7 @@
                                         
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
@@ -351,7 +351,7 @@
                                         
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
@@ -544,7 +544,7 @@
 
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
@@ -697,7 +697,7 @@
 
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
