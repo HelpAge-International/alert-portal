@@ -484,7 +484,8 @@
     "NO_DATA_ERROR": "Please enter your email address and password to login",
     "NO_EMAIL_ERROR": "Please enter your email address",
     "NO_PASSWORD_ERROR": "Please enter your password",
-    "UNRECOGNISED_ERROR": "This email address is not recognised"
+    "UNRECOGNISED_ERROR": "This email address is not recognised",
+    "GENERIC_ERROR": "An error occured. Please try again"
   },
   "FORGOT_PASSWORD": {
     "TITLE_TEXT": "Forgot Password?",
@@ -493,6 +494,17 @@
     "REMEMBERED_PASSWORD_BUTTON": "Remembered your password?",
     "NO_EMAIL_ERROR": "Please enter your email address",
     "SUCCESS_MESSAGE": "Password reset email sent to "
+  },
+  "RESET_PASSWORD": {
+    "TITLE_TEXT": "Reset your password",
+    "INSTRUCTIONS": "Please enter a new password. Your password must be longer than 6 characters",
+    "NETWORK_FAILURE": "A network error happened. Please make sure you are connected to the internet and try again",
+    "INVALID_CODE": "Your password reset code has already been used or expired. Please recover your password again",
+    "ERRORLENGTH": "Your password must be 6 or more characters long",
+    "SUCCESSFUL": "Your password has been successfully changed",
+    "RESET_PASSWORD": "Reset password",
+    "RECOVER_ACCOUNT": "Recover Account",
+    "BACK_TO_LOGIN": "Back to Login"
   },
   "SYSTEM_ADMIN": {
     "MENU": {

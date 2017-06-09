@@ -88,6 +88,7 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
 import {DirectorComponent} from "./director/director.component";
 import {DirectorOverviewComponent} from "./director/director-overview/director-overview.component";
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -97,6 +98,7 @@ const routes: Routes = [
    */
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
 
   /**

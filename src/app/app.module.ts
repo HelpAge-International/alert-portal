@@ -132,6 +132,7 @@ import { DirectorHeaderComponent } from './director/director-header/director-hea
 import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
 import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
 import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -156,6 +157,7 @@ const firebaseAuthConfig = {
   declarations: [
     AppComponent,
     LoginComponent,
+    ResetPasswordComponent,
     SystemAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,
