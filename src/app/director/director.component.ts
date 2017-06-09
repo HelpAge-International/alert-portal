@@ -170,6 +170,19 @@ export class DirectorComponent implements OnInit, OnDestroy {
     return this.directorName;
   }
 
+  filter() {
+    if (this.userType == UserType.RegionalDirector) {
+      if (this.alertLevelSelected == AlertLevels.All) {
+        this.getCountryCodesForCountriesInRegion(true);
+      } else {
+        this.getCountryCodesForCountriesInRegion(false);
+      }
+    } else {
+
+      // TODO - Filter
+    }
+  }
+
   /**
    * Private functions
    */
@@ -191,6 +204,11 @@ export class DirectorComponent implements OnInit, OnDestroy {
           });
       });
 
+  }
+
+  isValidAlertLevel(countryLevel, filterLevel) {
+    // if countrylevel == green && filterlevel == green
+    //   return true;
   }
 
   private initData() {
@@ -367,18 +385,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
       }
       this.evaluateOthers();
     });
-
-  }
-
-  filter() {
-    if (this.userType == UserType.RegionalDirector) {
-
-      if (this.alertLevelSelected == AlertLevels.All) {
-        this.getCountryCodesForCountriesInRegion(true);
-      } else {
-        this.getCountryCodesForCountriesInRegion(false);
-      }
-    }
 
   }
 
