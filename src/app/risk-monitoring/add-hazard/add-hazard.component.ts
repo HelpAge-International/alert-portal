@@ -41,6 +41,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private HazardScenario = Constants.HAZARD_SCENARIOS;
   private scenarioColors = Constants.SCENARIO_COLORS;
   private hazardScenariosListTop: InformHolder[] = [];
+
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
     HazardScenario.HazardScenario1,
@@ -235,6 +236,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   setHazardValue(event: any) {
     this._checkHazard(event.target.value);
+    console.log(event.target.value);
     this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;

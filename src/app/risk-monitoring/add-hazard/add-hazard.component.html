@@ -12,7 +12,7 @@
         <div class="Header-title__wrap--risk Spaced-above">
             <h1>{{"RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" | translate}}</h1>
         </div>
-        <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="javascript:void(0)">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX_FOR_PHILIPPINES" | translate}}.</a></p>
+        <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="http://www.inform-index.org/">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX_FOR_PHILIPPINES" | translate}}.</a></p>
         <div class="Ribbon__section__wrap--risk Spaced"></div>
         <div class="row Spaced-above"> <!-- Alert selection section start -->
             <div></div>
@@ -64,8 +64,9 @@
         <form action="" *ngSwitchCase="2">
             <div class="row" style="width:100%">
                 <label class="Checkbox--ribbon__alert Left col-sm-5">
-                    <div class="risk-icon__components no-bg"><img src="assets/images/hazards/Tsunami.svg"></div>
-                    <p><b>{{hazardName}}</b>Risk 9.8</p>
+                  <div class="risk-icon__components no-bg"><img
+                    src="assets/images/hazards/{{HazardScenario[hazardData.hazardScenario] | translate | lowercase}}.svg"></div>
+                  <p><b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b></p>
                 </label>
             </div>
             <!--Select another hazard-->

@@ -10,7 +10,6 @@ export class InformService {
   constructor() {
     this.info = Countries3ISO.init();
     this.informInfo = InformCodes.init();
-    console.log(this.informInfo.list);
   }
 
   public getTopResultsCC(countryCode: Countries, numberOfItems: number, fun: (list: InformHolder[]) => void) {
@@ -45,7 +44,6 @@ export class InformService {
           return 0;
         })
         .slice(0, numberOfItems);
-      console.log(holder);
       fun(holder);
     });
   }
