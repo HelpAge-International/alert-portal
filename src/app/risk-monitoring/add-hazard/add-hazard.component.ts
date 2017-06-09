@@ -25,6 +25,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private hazardName: string;
   private countryID: string;
   private uid: string;
+  private locationID: number;
+  private agencyID: string;
   private count: number = 1;
   private customHazards = [];
   private AllSeasons = [];
@@ -69,6 +71,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   // INFORM information
   private informHandler: InformService;
+  private loaderInactive: boolean;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -78,9 +81,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
     // Inform Handler for the top 3 items
     this.informHandler = new InformService();
-    this.informHandler.getTopResultsCC(Countries.GB, 3, (list) => {
-      this.hazardScenariosListTop = list;
-    });
   }
 
   ngOnInit() {
@@ -103,12 +103,37 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this.hazardData = new ModelHazard();
   }
 
+  _getTopResults() {
+    this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
+      this.hazardScenariosListTop = list;
+      this.loaderInactive = true;
+    });
+  }
+
+  _getCountryLocation() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((country) => {
+          this.locationID = country.location;
+          this._getTopResults();
+          res(true);
+        });
+    });
+    return promise;
+  }
+
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
+      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
+        .subscribe((country: any) => {
+          let s: string;
+          for (let key in country.agencyAdmin) {
+            s = key;
+          }
+          this.agencyID = s;
+          this.countryID = country.countryId ? country.countryId : "";
         res(true);
       });
     });
@@ -118,6 +143,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   _loadData() {
     this._getCountryID().then(() => {
       this._getCustomHazards();
+      this._getCountryLocation();
     });
   }
 
