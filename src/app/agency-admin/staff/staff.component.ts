@@ -63,6 +63,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showCountryStaff.set("globaluser", true);
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (!user) {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
@@ -192,8 +193,13 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   hideCountryStaff(office) {
-    let isHidden = this.showCountryStaff.get(office.id);
-    this.showCountryStaff.set(office.id, !isHidden);
+    if (office.id) {
+      let isHidden = this.showCountryStaff.get(office.id);
+      this.showCountryStaff.set(office.id, !isHidden);
+    } else {
+      let isHidden = this.showCountryStaff.get("globaluser");
+      this.showCountryStaff.set("globaluser", !isHidden);
+    }
   }
 
   editStaff(officeId, staffId) {
