@@ -59,8 +59,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private countryList: FirebaseListObservable<any[]>;
   private regionList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
-  private supportSkillList: FirebaseListObservable<any[]>;
-  private techSkillsList: FirebaseListObservable<any[]>;
   private notificationList: FirebaseListObservable<any[]>;
   private notificationSettings: boolean[] = [];
   private secondApp: firebase.app.App;
@@ -74,6 +72,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private emailInDatabase: string;
   private isUpdateOfficeOnly: boolean;
   private isEmailChange: boolean;
+
+  private allSkills: any = {};
+  private skillKeys: string[] = [];
+  private editedSkills: any = [];
+  private SupportSkill = SkillType.Support;
+  private TechSkill = SkillType.Tech;
+
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
@@ -192,18 +197,30 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
         return names;
       });
-    this.supportSkillList = this.af.database.list(Constants.APP_STATUS + "/skill", {
-      query: {
-        orderByChild: "type",
-        equalTo: SkillType.Support
-      }
+
+
+    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/skills')
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe(_ => {
+      _.filter(skill => skill.$value).map(skill => {
+        this.af.database.list(Constants.APP_STATUS + '/skill/', {
+          query: {
+            orderByKey: true,
+            equalTo: skill.$key
+          }
+        })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(_skill => {
+            if (_skill[0] != undefined)
+              this.allSkills[_skill[0].$key] = _skill[0];
+            else
+              delete this.allSkills[skill.$key];
+
+            this.skillKeys = Object.keys(this.allSkills);
+          });
+      });
     });
-    this.techSkillsList = this.af.database.list(Constants.APP_STATUS + "/skill", {
-      query: {
-        orderByChild: "type",
-        equalTo: SkillType.Tech
-      }
-    });
+
     this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
   }
 

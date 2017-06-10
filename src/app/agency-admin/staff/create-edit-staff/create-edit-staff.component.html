@@ -115,16 +115,23 @@
 
       <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
-        <label *ngFor="let support of supportSkillList | async"
+      <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+          <label *ngIf="allSkills[skillKey].type == SupportSkill"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-          <input type="checkbox" #box (change)="supportSkillCheck(support,box.checked)"
-                 [checked]="skillsMap.get(support.$key)">{{support.name}}</label>
+          <input type="checkbox" #box (change)="supportSkillCheck(allSkills[skillKey],box.checked)"
+                 [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
+      </template>
+
       </div>
 
       <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
-        <label *ngFor="let tech of techSkillsList | async" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
-          type="checkbox" #box (change)="techSkillCheck(tech,box.checked)" [checked]="skillsMap.get(tech.$key)">{{tech.name}}</label>
+
+      <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+          <label *ngIf="allSkills[skillKey].type == TechSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
+          type="checkbox" #box (change)="techSkillCheck(allSkills[skillKey],box.checked)" [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
+      </template>
+        
       </div>
 
       <div class="row Spaced">
