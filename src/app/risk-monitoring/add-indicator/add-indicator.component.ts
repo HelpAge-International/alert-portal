@@ -1,18 +1,17 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
-import {Location} from '@angular/common';
-import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {Location} from "@angular/common";
+import {AlertLevels, AlertMessageType, DurationType, GeoLocation, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
-import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../model/indicator-source.model";
 import {IndicatorTriggerModel} from "../../model/indicator-trigger.model";
-import {AlertMessageModel} from '../../model/alert-message.model';
+import {AlertMessageModel} from "../../model/alert-message.model";
 import {ModelUserPublic} from "../../model/user-public.model";
-import {LocalStorageService} from 'angular-2-local-storage';
+import {LocalStorageService} from "angular-2-local-storage";
 import {Subject} from "rxjs";
 
 @Component({

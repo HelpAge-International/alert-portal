@@ -1,12 +1,12 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AlertLevels, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AlertLevels, AlertMessageType, DurationType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {ModelAlert} from "../../model/alert.model";
-import {AlertMessageModel} from '../../model/alert-message.model';
+import {AlertMessageModel} from "../../model/alert-message.model";
 import {Subject} from "rxjs";
 
 @Component({
@@ -125,9 +125,9 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
-        res(true);
-      });
+          this.countryID = countryID.$value ? countryID.$value : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -184,11 +184,11 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((hazards: any) => {
-        this.hazards = [];
-        for (let hazard in hazards) {
-          this.hazards.push(hazards[hazard]);
-        }
-      });
+          this.hazards = [];
+          for (let hazard in hazards) {
+            this.hazards.push(hazards[hazard]);
+          }
+        });
     });
   }
 
@@ -197,9 +197,9 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((directorCountryID: any) => {
-        this.directorCountryID = directorCountryID.$value ? directorCountryID.$value : false;
+          this.directorCountryID = directorCountryID.$value ? directorCountryID.$value : false;
 
-      });
+        });
     });
     return promise;
   }

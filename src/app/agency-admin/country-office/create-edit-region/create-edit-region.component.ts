@@ -13,9 +13,11 @@ import {ModelRegion} from "../../../model/region.model";
 })
 
 export class CreateEditRegionComponent implements OnInit, OnDestroy {
+  private countrySelectionsNumbers: Observable<any[]>;
 
   private pageTitle: string = "AGENCY_ADMIN.COUNTRY_OFFICES.CREATE_NEW_REGION";
   private submitText: string = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_NEW_REGION";
+  private Countries = Countries;
   private COUNTRY_NAMES: string[] = Constants.COUNTRIES;
   private regionName: string;
   private counter: number = 0;
@@ -25,8 +27,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private uid: string;
   private hideWarning: boolean = true;
   private errorMessage: string;
-  private countrySelected = 0;
-  private selectedCountries: string[] = [];
+  private countrySelected: Countries;
+  private selectedCountries: number[] = [];
   private officeList = [];
   private countrySelections: FirebaseListObservable<any[]>;
   private regionId: string;
@@ -49,6 +51,14 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       }
       this.uid = user.auth.uid;
       this.countrySelections = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
+      this.countrySelectionsNumbers = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+        .map(offices =>{
+          let locations = [];
+          offices.forEach(office =>{
+            locations.push(office.location);
+          });
+          return locations;
+        });
       //regional directors
       this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
         query: {
@@ -142,14 +152,15 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(result => {
         console.log("counter: " + this.counter + "/result: " + result.length);
-        console.log("countries: " + this.countries.length);
-        console.log("selectedCountries: " + this.selectedCountries.length);
+
         // if (this.isEdit) {
         if (this.counter < result.length - 1) {
           console.log("can add more country");
           this.counter++;
           this.countries.push(this.counter);
           this.selectedCountries.push(this.selectedCountries[0]);
+          console.log("countries: " + this.countries.length);
+          console.log("selectedCountries: " + this.selectedCountries.length);
         } else {
           this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_MAX_COUNTRIES';
           this.showAlert();
@@ -157,6 +168,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         }
 
         console.log(this.countries);
+        console.log(this.selectedCountries);
         if (this.countries.length > 1) {
           this.hideRemove = false;
         }
@@ -343,14 +355,19 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   }
 
-  countryChange(country) {
+  countryChange(country, value) {
+    this.countrySelected = value;
+    console.log(value);
+    console.log("selected country: " + this.countrySelected);
+    console.log("country: " + country);
     console.log("selected: " + this.selectedCountries.length + "/ countries: " + this.countries.length);
     if (this.selectedCountries.length == this.countries.length) {
       console.log("update");
-      this.selectedCountries[country] = Countries[this.countrySelected];
+      this.selectedCountries[country] = this.countrySelected;
+      console.log(this.selectedCountries);
     } else {
       console.log("push new country");
-      this.selectedCountries.push(Countries[this.countrySelected]);
+      this.selectedCountries.push(this.countrySelected);
     }
     console.log("country: " + country);
     console.log("country selected: " + this.countrySelected);
@@ -403,7 +420,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         if (!this.isSubmitted) {
           this.selectedCountries.push(country.location);
         }
-        // console.log(this.selectedCountries);
+        console.log(this.selectedCountries);
       });
   }
 

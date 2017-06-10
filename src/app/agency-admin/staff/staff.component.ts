@@ -124,7 +124,6 @@ export class StaffComponent implements OnInit, OnDestroy {
         this.officeId.forEach(id => {
           this.staffMap.get(id)
             .takeUntil(this.ngUnsubscribe)
-            .subscribeOn(Scheduler.async)
             .subscribe(x => {
               x.forEach(item => {
                 if (!this.dealedStaff.includes(item.$key)) {
@@ -157,14 +156,10 @@ export class StaffComponent implements OnInit, OnDestroy {
         });
       })
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
+      .subscribe(() => {
         this.hideLoader = true;
       });
 
-    // this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid).takeUntil(this.ngUnsubscribe)
-    //   .subscribe(users => {
-    //     this.globalUsers = users;
-    //   });
     this.filterGlobalUsers();
   }
 
@@ -275,7 +270,7 @@ export class StaffComponent implements OnInit, OnDestroy {
     if (staffId) {
       let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
         Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
-      let subscription = this.af.database.object(path)
+      this.af.database.object(path)
         .first()
         .map(user => {
           let userSkill = [];
