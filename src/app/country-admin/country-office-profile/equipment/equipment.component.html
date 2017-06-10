@@ -36,67 +36,71 @@
         </div>
         <div class="row Line-row Spaced-above"></div>
 
-        <!--4x4 Van-->
-        <div class="row Spaced-above" *ngFor="let equipment of equipments">
-            <div class="col-sm-1">{{ equipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
-            <div class="col-sm-2">{{ equipment.name }}</div> <!--Equipment-->
-            <div class="col-sm-2">{{ equipment.location }}</div> <!--Location-->
-            <div class="col-sm-2">{{ equipment.quantity }}</div> <!--Quantity-->
-            <div class="col-sm-4">{{ equipment.status }}</div> <!--Status-->
-            <div class="col-sm-1" *ngIf="!isEdit">
-                <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                <p class="notes-number__components--country-office-profile">1</p>
-                <a href="#notesOne" data-toggle="collapse" class="row margin-left-one-half">Notes</a></div> <!--Notes-->
-            <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                <button class="btn btn-outline-primary text-uppercase" 
-                    (click)="addEditEquipment(equipment.id)">
-                        {{ 'GLOBAL.EDIT' | translate }}</button>
+        <div *ngFor="let equipment of equipments; let i = index">
+            <!--4x4 Van-->
+            <div class="row Spaced-above">
+                <div class="col-sm-1">{{ equipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
+                <div class="col-sm-2">{{ equipment.name }}</div> <!--Equipment-->
+                <div class="col-sm-2">{{ equipment.location }}</div> <!--Location-->
+                <div class="col-sm-2">{{ equipment.quantity }}</div> <!--Quantity-->
+                <div class="col-sm-4">{{ equipment.status }}</div> <!--Status-->
+                <div class="col-sm-1" *ngIf="!isEdit">
+                    <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+                    <p class="notes-number__components--country-office-profile">{{ equipment.notes.length }}</p>
+                    <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+                        {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+                    </a>
+                </div> <!--Notes-->
+                <div class="col-sm-1" *ngIf="canEdit && isEdit">
+                    <button class="btn btn-outline-primary text-uppercase" 
+                        (click)="addEditEquipment(equipment.id)">
+                            {{ 'GLOBAL.EDIT' | translate }}</button>
+                </div>
             </div>
-        </div>
 
-        <div class="row Line-row Spaced-above"></div>
+            <div class="row Line-row Spaced-above"></div>
 
 
-        <!-- Notes Drop Down 
-        <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
-            <div class="log_left p-3">
-                <h3>Notes</h3>
-                <hr class="d-inline-flex">
-                <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
-                    <input type="text" name="new_note" placeholder="Add a note"
-                        [(ngModel)] = "newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
+            <!-- Notes Drop Down -->
+            <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                    <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+                    <hr class="d-inline-flex">
+                    <form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id])">
+                        <input type="text" name="new_note" placeholder="Add a note"
+                            [(ngModel)] = "newNote[equipment.id] && newNote[equipment.id].content">
 
-                    <!--Note post 
-                    <div class="row Spaced log-post__wrap--risk"
-                        *ngFor="let note of partnerOrganisation.notes">
-                        <div class="log-date__wrap--risk col-lg-1">
-                            <p>{{ note.time | date: 'dd MMM y' }}</p>
-                        </div>
-                        <div class="col-lg-6">
-                            <p>{{ note.content }}</p>
-                            <br>
-                            <div class="row">
-                                <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
-                                <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
-                                    (click) ="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
-                                <p href="#" class="padding-left-one">|</p>
-                                <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
-                                    (click) ="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                        <!--Note post-->
+                        <div class="row Spaced log-post__wrap--risk"
+                            *ngFor="let note of equipment.notes">
+                            <div class="log-date__wrap--risk col-lg-1">
+                                <p>{{ note.time | date: 'dd MMM y' }}</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <p>{{ note.content }}</p>
+                                <br>
+                                <div class="row">
+                                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
+                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
+                                        (click) ="editNote('equipment', equipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                                    <p href="#" class="padding-left-one">|</p>
+                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
+                                        (click) ="deleteNote('equipment', equipment.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr>
+                        <hr>
 
-                    <!--add Note button
-                    <div class="add_log mt-auto p-2 text-right float-right">
-                        <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button><br>
-                        <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate }}</a>
-                    </div>
-                </form>
+                        <!--add Note button-->
+                        <div class="add_log mt-auto p-2 text-right float-right">
+                            <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button><br>
+                            <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate }}</a>
+                        </div>
+                    </form>
+                </div>
             </div>
+            <!--Notes Drop Down End-->
         </div>
-        <!--Notes Drop Down End-->
-
         <button class="btn btn-outline-primary text-uppercase" 
             *ngIf="canEdit"
             (click)="addEditEquipment()">{{ 'GLOBAL.ADD' | translate }}</button>
@@ -118,7 +122,7 @@
         </div>
         <div class="row Line-row Spaced-above"></div>
 
-        <div  *ngFor="let surgeEquipment of surgeEquipments; let i = index;"> 
+        <div *ngFor="let surgeEquipment of surgeEquipments; let i = index;"> 
             <!--4x4 Van-->
             <div class="row Spaced-above">
                 <div class="col-sm-1">{{ surgeEquipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
@@ -137,8 +141,11 @@
                 </div> <!--Contact Info-->
                 <div class="col-sm-1" *ngIf="!isEdit">
                     <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                    <p class="notes-number__components--country-office-profile">1</p>
-                    <a href="#notesOne" data-toggle="collapse" class="row margin-left-one-half">Notes</a></div> <!--Notes-->
+                    <p class="notes-number__components--country-office-profile">{{ surgeEquipment.notes.length }}</p>
+                    <a href="#notes_surge_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+                        {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+                    </a>
+                </div> <!--Notes-->
                 <div class="col-sm-1" *ngIf="canEdit && isEdit">
                     <button class="btn btn-outline-primary text-uppercase" 
                         (click)="addEditSurgeEquipment(surgeEquipment.id)">
@@ -169,6 +176,47 @@
                     <p class="col-sm-5 margin-left-five"><a href="mailto:{{ surgeEquipment.contactEmail }}">{{ surgeEquipment.contactEmail }}</a></p>
                 </div>
             </div>
+
+            <!-- Notes Drop Down -->
+            <div id="notes_surge_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                    <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+                    <hr class="d-inline-flex">
+                    <form (ngSubmit)="addNote('surgeEquipment', surgeEquipment.id, newNote[surgeEquipment.id])">
+                        <input type="text" name="new_note" placeholder="Add a note"
+                            [(ngModel)] = "newNote[surgeEquipment.id] && newNote[surgeEquipment.id].content">
+
+                        <!--Note post-->
+                        <div class="row Spaced log-post__wrap--risk"
+                            *ngFor="let note of surgeEquipment.notes">
+                            <div class="log-date__wrap--risk col-lg-1">
+                                <p>{{ note.time | date: 'dd MMM y' }}</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <p>{{ note.content }}</p>
+                                <br>
+                                <div class="row">
+                                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
+                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
+                                        (click) ="editNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                                    <p href="#" class="padding-left-one">|</p>
+                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
+                                        (click) ="deleteNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <!--add Note button-->
+                        <div class="add_log mt-auto p-2 text-right float-right">
+                            <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button><br>
+                            <br><a href="#notes_surge_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate }}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!--Notes Drop Down End-->
+
         </div>
         
         <button class="btn btn-outline-primary text-uppercase" 
@@ -192,7 +240,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-        <button type="button" class="btn btn-primary" (click)="deleteAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction(activeEquipmentType, activeEquipmentId, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
       </div>
     </div>
   </div>
@@ -213,7 +261,7 @@
             </div>
             <div class="row Right-aligned Spaced col-sm-12">
                 <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" | translate}}</a>
-                <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="editAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.SAVE" | translate}}</button>
+                <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="editAction(activeEquipmentType, activeEquipmentId, activeNote)">{{"GLOBAL.SAVE" | translate}}</button>
             </div>
         </div>
     </div>

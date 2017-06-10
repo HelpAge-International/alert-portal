@@ -1,5 +1,6 @@
 import {BaseModel} from "./base.model";
 import {AlertMessageModel} from "./alert-message.model";
+import { NoteModel } from "./note.model";
 
 export class EquipmentModel extends BaseModel {
     public id: string;
@@ -7,6 +8,7 @@ export class EquipmentModel extends BaseModel {
     public location: string;
     public quantity: number;
     public status: string;
+    public notes: NoteModel[];
     public updatedAt: number;
 
     validate(excludedFields = []): AlertMessageModel {

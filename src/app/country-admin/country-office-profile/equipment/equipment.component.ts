@@ -37,6 +37,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   // Helpers
   private newNote: NoteModel[];
   private activeNote: NoteModel;
+  private activeEquipmentId: string;
+  private activeEquipmentType: string;
   
   constructor(private _userService: UserService,
               private _equipmentService: EquipmentService,
@@ -66,11 +68,36 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
         this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
+
+                this.equipments.forEach(equipment => {
+                  const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
+
+                  this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    equipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[equipment.id] = new NoteModel();
+                  this.newNote[equipment.id].uploadedBy = this.uid;
+                });
               });
 
         this._equipmentService.getSurgeEquipments(this.countryId)
               .subscribe(surgeEquipments => {
                 this.surgeEquipments = surgeEquipments;
+                
+                this.surgeEquipments.forEach(surgeEquipment => {
+                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
+
+                  this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    surgeEquipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[surgeEquipment.id] = new NoteModel();
+                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                });
+
               });
       });
     })
@@ -105,68 +132,107 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
     }else{
       this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
     }
+
   }
 
+getUserName(userId) {
+    let userName = "";
+    
+    if(!userId) return userName;
+
+    this._userService.getUser(userId).subscribe(user => {
+      userName = user.firstName + ' ' + user.lastName;
+    });
+
+    return userName;
+  }
+  
   validateNote(note: NoteModel): boolean {
     this.alertMessage = note.validate();
 
     return !this.alertMessage;
   }
 
-  // addNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel)
-  // {
-  //   if(this.validateNote(note))
-  //   {
-  //     const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id); 
-  //     this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
-  //       this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
-  //     })
-  //     .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
-  //   }
-  // }
 
-  // editNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
-  //   jQuery('#edit-action').modal('show');
-  //   this.activePartnerOrganisation = partnerOrganisation;
-  //   this.activeNote = note;
-  // }
+  addNote(equipmentType: string, equipmentId: string, note: NoteModel)
+  {
+    if(this.validateNote(note))
+    {
+      let equipmentNode = "";
+      
+      if(equipmentType == 'equipment')
+      {
+        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }else{
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
+    
+      this._noteService.saveNote(equipmentNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+  }
 
-// editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
-//     this.closeEditModal();
+  editNote(equipmentType: string, equipmentId: string, note: NoteModel) {
+    jQuery('#edit-action').modal('show');
+    this.activeEquipmentId = equipmentId;
+    this.activeNote = note;
+    this.activeEquipmentType = equipmentType;
+  }
 
-//     if(this.validateNote(note))
-//     {
-//       const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id); 
-//       this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
-//         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
-//       })
-//       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
-//     }
-//  }
+editAction(equipmentType: string, equipmentId: string, note: NoteModel) {
+    this.closeEditModal();
 
-//   closeEditModal() {
-//     jQuery('#edit-action').modal('hide');
-//   }
+    if(this.validateNote(note))
+    {
+      let equipmentNode = "";
+      
+      if(equipmentType == 'equipment')
+      {
+        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }else{
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
+      
+      this._noteService.saveNote(equipmentNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+ }
 
-//   deleteNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
-//     jQuery('#delete-action').modal('show');
-//     this.activePartnerOrganisation = partnerOrganisation;
-//     this.activeNote = note;
-//   }
+  closeEditModal() {
+    jQuery('#edit-action').modal('hide');
+  }
 
-//   deleteAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
-//     this.closeDeleteModal();
+  deleteNote(equipmentType: string, equipmentId: string, note: NoteModel) {
+    jQuery('#delete-action').modal('show');
+    this.activeEquipmentType = equipmentType;
+    this.activeEquipmentId = equipmentId;
+    this.activeNote = note;
+  }
 
-//     const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+  deleteAction(equipmentType: string, equipmentId: string, note: NoteModel) {
+    this.closeDeleteModal();
 
-//     this._noteService.deleteNote(partnerOrganisationNode, note)
-//       .then(() => {
-//         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
-//       })
-//       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-//  }
+    let equipmentNode = '';
 
-//   closeDeleteModal() {
-//     jQuery('#delete-action').modal('hide');
-//   }
+    if(equipmentType == 'equipment')
+    {
+      equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+    }else{
+      equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+    }
+
+    this._noteService.deleteNote(equipmentNode, note)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+ }
+
+  closeDeleteModal() {
+    jQuery('#delete-action').modal('hide');
+  }
 }

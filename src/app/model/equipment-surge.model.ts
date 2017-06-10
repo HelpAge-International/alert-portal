@@ -1,6 +1,7 @@
 import {BaseModel} from "./base.model";
 import {AlertMessageModel} from "./alert-message.model";
 import { CustomerValidator } from "../utils/CustomValidator";
+import { NoteModel } from "./note.model";
 
 export class SurgeEquipmentModel extends BaseModel {
     public id: string;
@@ -10,6 +11,7 @@ export class SurgeEquipmentModel extends BaseModel {
     public contactName: string;
     public contactEmail: string;
     public contactPhone: string;
+    public notes: NoteModel[];
     public updatedAt: number;
 
     validate(excludedFields = []): AlertMessageModel {

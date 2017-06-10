@@ -560,7 +560,8 @@ export class Constants {
 
   // Nodes List, used for saving Notes
   static PARTNER_ORGANISATION_NODE = '/partnerOrganisation/{id}/notes';
-
+  static EQUIPMENT_NODE = '/countryOfficeProfile/equipment/{countryId}/{id}/notes';
+  static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
 }
 
 export enum FILE_SETTING {

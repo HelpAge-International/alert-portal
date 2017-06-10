@@ -991,6 +991,7 @@
         "CONTACT_NAME": "Contact's Name",
         "CONTACT_EMAIL": "Contact's Email",
         "CONTACT_PHONE": "Contact's Telephone",
+        "NOTES": "Notes",
         "EMPTY_LIST": "Use the add equipment button to add your equipment",
         "NO_NAME": "Please enter the equipment name",
         "NO_LOCATION": "Please enter the equipment location",
