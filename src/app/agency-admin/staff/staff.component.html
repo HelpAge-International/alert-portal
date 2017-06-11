@@ -128,7 +128,7 @@
 
     <div [hidden]="globalUsers.length==0">
       <div class="Sub-header-title__wrap">
-        <h2>Global Users</h2>
+        <h2>{{"AGENCY_ADMIN.STAFF.GLOBAL_USERS" | translate}}</h2>
         <span *ngIf="showCountryStaff.get('globaluser')" class="Hide-all" (click)="hideCountryStaff('globaluser')">{{"GLOBAL.HIDE_ALL"| translate}}</span>
         <span *ngIf="!showCountryStaff.get('globaluser')" class="Hide-all" (click)="hideCountryStaff('globaluser')">{{"GLOBAL.SHOW_ALL"| translate}}</span>
         <!--<span  class="Hide-all" >{{"GLOBAL.SHOW_ALL"| translate}}</span>-->

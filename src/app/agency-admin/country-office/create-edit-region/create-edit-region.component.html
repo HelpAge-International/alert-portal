@@ -10,7 +10,7 @@
 
     <div class="Header-title__wrap ">
       <h1>{{pageTitle | translate}}</h1>
-      <button *ngIf="isEdit" type="button" class="btn btn-danger">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteRegion()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
         translate}}
       </button>
     </div>

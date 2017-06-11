@@ -297,7 +297,7 @@ export class UserService {
     const paths = [Constants.APP_STATUS + "/administratorCountry/" + uid, Constants.APP_STATUS + "/countryDirector/" + uid,
       Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid,
       Constants.APP_STATUS + "/globalUser/" + uid, Constants.APP_STATUS + "/countryUser/" + uid, Constants.APP_STATUS + "/ertLeader/" + uid,
-      Constants.APP_STATUS + "/ert/" + uid];
+      Constants.APP_STATUS + "/ert/" + uid, Constants.APP_STATUS + "/administratorAgency/" + uid];
 
     if (!uid) {
       return null;
@@ -372,7 +372,7 @@ export class UserService {
       });
   }
 
-  getAgencyId(userType, uid): Observable<string> {
+  getAgencyId(userType:string, uid): Observable<string> {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
       .map(agencyIds => {
         if (agencyIds.length > 0 && agencyIds[0].$value) {
@@ -382,7 +382,7 @@ export class UserService {
     return subscription;
   }
 
-  getSystemAdminId(userType, uid): Observable<string> {
+  getSystemAdminId(userType:string, uid): Observable<string> {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
       .map(systemIds => {
         if (systemIds.length > 0 && systemIds[0].$value) {
