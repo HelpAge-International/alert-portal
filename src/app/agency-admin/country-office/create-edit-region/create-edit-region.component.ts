@@ -344,7 +344,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     console.log("selected: " + this.selectedCountries.length + "/ countries: " + this.countries.length);
     if (this.selectedCountries.length == this.countries.length) {
       console.log("update");
-      this.selectedCountries[country] = this.countrySelected;
+      this.selectedCountries[country] = Number(this.countrySelected);
       console.log(this.selectedCountries);
     } else {
       console.log("push new country");

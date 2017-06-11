@@ -640,7 +640,8 @@
       "NAME_MISSING": "Please enter name of the country",
       "F_NAME_MISSING": "Please enter country administrator's first name",
       "L_NAME_MISSING": "Please enter country administrator's last name",
-      "EMAIL_MISSING": "Please enter country administrator's email address"
+      "EMAIL_MISSING": "Please enter country administrator's email address",
+      "DUPLICATE_NAME": "Region name is already exist!"
     },
     "MANDATED_PA": {
       "TITLE_TEXT": "Mandated Preparedness Actions",
