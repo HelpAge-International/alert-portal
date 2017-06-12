@@ -99,11 +99,12 @@
                        aria-describedby="basic-addon1"
                        [value]="loadResponsePlan&&scenarioCrisisObject[bulletPoint]?scenarioCrisisObject[bulletPoint]:''"
                        (change)="addToSummarizeScenarioObject(bulletPoint, $event.target.value)">
-                <a href="javascript:void(0)" class="Remove__row__cta"
+                <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
-                  | translate}}</a>
+                  | translate}}</a></div>
               </div>
+
             </div>
           </div>
           <a href="javascript:void(0)" class="Add__row__cta" (click)="addSummarizeScenarioBulletPoint()"
