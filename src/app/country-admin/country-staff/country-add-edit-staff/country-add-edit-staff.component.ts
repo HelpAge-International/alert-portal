@@ -1,15 +1,15 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire, FirebaseListObservable} from 'angularfire2';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Constants} from '../../../utils/Constants';
-import {Country, SkillType, UserType} from '../../../utils/Enums';
-import {Observable, Subject} from 'rxjs';
-import {CustomerValidator} from '../../../utils/CustomValidator';
-import {firebaseConfig} from '../../../app.module';
-import {UUID} from '../../../utils/UUID';
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {Constants} from "../../../utils/Constants";
+import {Countries, SkillType, UserType} from "../../../utils/Enums";
+import {Observable, Subject} from "rxjs";
+import {CustomerValidator} from "../../../utils/CustomValidator";
+import {firebaseConfig} from "../../../app.module";
+import {UUID} from "../../../utils/UUID";
 import * as firebase from "firebase";
-import {ModelUserPublic} from '../../../model/user-public.model';
-import {ModelStaff} from '../../../model/staff.model';
+import {ModelUserPublic} from "../../../model/user-public.model";
+import {ModelStaff} from "../../../model/staff.model";
 declare var jQuery: any;
 
 @Component({
@@ -31,7 +31,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private successMessage = 'COUNTRY_ADMIN.STAFF.SUCCESS_STAFF_MEMBER_ADDED';
   private hideSuccess = true;
 
-  private countryEnum = Country;
+  private countryEnum = Countries;
 
   private userTypeConstant = Constants.COUNTRY_ADMIN_USER_TYPE;
   private userTypeSelection = Constants.COUNTRY_ADMIN_USER_TYPE_SELECTION;

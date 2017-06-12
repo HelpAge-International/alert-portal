@@ -29,6 +29,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected countryId = null;
   protected agencyId = null;
   protected actionStatus = ActionStatus;
+  protected actionType = ActionType;
   protected ActionStatusEnum = Object.keys(ActionStatus).map(k => ActionStatus[k]).filter(v => typeof v === "string") as string[];
   protected ActionTypeEnum = Object.keys(ActionType).map(k => ActionType[k]).filter(v => typeof v === "string") as string[];
 

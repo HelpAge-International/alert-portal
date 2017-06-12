@@ -32,7 +32,7 @@
     <li class="" routerLinkActive="active">
       <a routerLink="/map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
     </li>
-    <li class="" routerLinkActive="active">
+    <li *ngIf="userType == UserType.CountryAdmin" class="" routerLinkActive="active">
       <div class="dropdown">
         <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRY_ADMINISTRATOR" | translate}}</a>

@@ -61,7 +61,7 @@
                   [required]="!hideCountry">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let country of countryList | async" [ngValue]="country"
-                    [selected]="country.location == countryOffice?.location">{{Country[country.location]}}
+                    [selected]="country.location == countryOffice?.location">{{Countries[country.location] | translate}}
             </option>
           </select>
         </div>

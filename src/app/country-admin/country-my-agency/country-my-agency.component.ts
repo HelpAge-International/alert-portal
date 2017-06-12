@@ -1,5 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AlertLevels, Countries} from "../../utils/Enums";
+import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
@@ -24,6 +25,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private countries = Constants.COUNTRIES;
   private countryOfficeData: any = [];
   private countryIDs: string[] = [];
+  protected CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
 
   private countResponsePlans: any = [];
   private count: number = 0;
@@ -41,7 +43,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer) {
   }
 
   ngOnInit() {
@@ -281,6 +283,11 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  protected getBackground(location) {
+    if (location)
+      return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[location] + '.svg)');
   }
 
 

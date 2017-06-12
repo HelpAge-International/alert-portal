@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors, Country} from "../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors, Countries} from "../../utils/Enums";
 declare var jQuery: any;
 
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
@@ -33,7 +33,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   alertMessageType = AlertMessageType;
   responsePlansSectors = ResponsePlanSectors;
   responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
-  countryEnum = Country;
+  countryEnum = Countries;
   userTitle = Constants.PERSON_TITLE;
   userTitleSelection = Constants.PERSON_TITLE_SELECTION;
 

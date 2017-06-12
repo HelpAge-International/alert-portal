@@ -1,23 +1,16 @@
 /**
  * Created by Fei on 08/03/2017.
  */
-import {
-  PersonTitle,
-  Country,
-  Currency,
-  UserType,
-  StaffPosition,
-  OfficeType,
-  DurationType,
-  ResponsePlanSectionSettings,
-  DocumentType, Countries
-} from "./Enums";
+import {Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType} from "./Enums";
 
 export class Constants {
 
   static TEMP_PASSWORD = "testtest";
   static ALERT_DURATION: number = 5000;
   static ALERT_REDIRECT_DURATION: number = 1500;
+
+  /*INFORM WORKFLOW ID*/
+  static INFORM_WORKFLOW: number = 261;
 
   /*PATHS*/
   static APP_STATUS = "/sand";

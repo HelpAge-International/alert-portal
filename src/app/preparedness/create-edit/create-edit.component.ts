@@ -429,4 +429,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
+
+  private cancel() {
+    this._location.back();
+  }
 }
