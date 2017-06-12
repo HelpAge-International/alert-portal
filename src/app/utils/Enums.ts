@@ -854,10 +854,12 @@ export enum SizeType {
   MB = 1
 }
 
+// All - Added to work with filters
 export enum AlertLevels {
   Green = 0,
   Amber = 1,
-  Red = 2
+  Red = 2,
+  All = 3
 }
 
 export enum GeoLocation {

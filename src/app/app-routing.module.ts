@@ -88,6 +88,8 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
 import {DirectorComponent} from "./director/director.component";
 import {DirectorOverviewComponent} from "./director/director-overview/director-overview.component";
+import {DonorModuleComponent} from "./donor-module/donor-module.component";
+import {DonorCountryIndexComponent} from "./donor-module/donor-country-index/donor-country-index.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -248,6 +250,12 @@ const routes: Routes = [
   {path: 'director', component: DirectorComponent},
   {path: 'director/director-overview', component: DirectorOverviewComponent},
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
+
+  /**
+   * Donor
+   */
+  {path: 'donor', component: DonorModuleComponent},
+  {path: 'donor/donor-country-index', component: DonorCountryIndexComponent},
 
   /*
    * test
