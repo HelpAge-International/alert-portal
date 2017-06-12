@@ -123,10 +123,10 @@
                        aria-describedby="basic-addon1"
                        [value]="loadResponsePlan&&impactOfCrisisObject[bulletPoint]?impactOfCrisisObject[bulletPoint]:''"
                        (change)="addToImpactOfCrisisObject(bulletPoint, $event.target.value)">
-                <a href="javascript:void(0)" class="Remove__row__cta"
+                <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
                    [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
-                  | translate}}</a>
+                  | translate}}</a></div>
               </div>
             </div>
           </div>
@@ -146,9 +146,9 @@
                        aria-describedby="basic-addon1"
                        [value]="loadResponsePlan&&availabilityOfFundsObject[bulletPoint]?availabilityOfFundsObject[bulletPoint]:''"
                        (change)="addToAvailabilityOfFundsObject(bulletPoint, $event.target.value)">
-                <a href="javascript:void(0)" class="Remove__row__cta"
+                <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="Remove__row__cta"
                    (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a>
+                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a></div>
               </div>
             </div>
           </div>
