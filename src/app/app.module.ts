@@ -128,13 +128,14 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from './response-plans/view-plan/view-plan.component';
 import {DirectorMenuComponent} from './director/director-menu/director-menu.component';
 import {DirectorComponent} from './director/director.component';
-import { DirectorHeaderComponent } from './director/director-header/director-header.component';
-import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
-import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
-import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
-import { DonorCountryIndexComponent } from './donor-module/donor-country-index/donor-country-index.component';
-import { DonorHeaderComponent } from './donor-module/donor-header/donor-header.component';
-import { DonorMenuComponent } from './donor-module/donor-menu/donor-menu.component';
+import {DirectorHeaderComponent} from './director/director-header/director-header.component';
+import {DirectorOverviewComponent} from './director/director-overview/director-overview.component';
+import {ViewCountryMenuComponent} from './commons/view-country-menu/view-country-menu.component';
+import {AlertLoaderComponent} from './commons/alert-loader/alert-loader.component';
+import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
+import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
+import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -159,6 +160,7 @@ const firebaseAuthConfig = {
   declarations: [
     AppComponent,
     LoginComponent,
+    ResetPasswordComponent,
     SystemAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,

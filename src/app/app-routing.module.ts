@@ -90,6 +90,7 @@ import {DirectorComponent} from "./director/director.component";
 import {DirectorOverviewComponent} from "./director/director-overview/director-overview.component";
 import {DonorModuleComponent} from "./donor-module/donor-module.component";
 import {DonorCountryIndexComponent} from "./donor-module/donor-country-index/donor-country-index.component";
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -99,6 +100,7 @@ const routes: Routes = [
    */
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
 
   /**
