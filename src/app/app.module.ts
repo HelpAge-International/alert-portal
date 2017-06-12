@@ -132,6 +132,9 @@ import { DirectorHeaderComponent } from './director/director-header/director-hea
 import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
 import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
 import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
+import { DonorCountryIndexComponent } from './donor-module/donor-country-index/donor-country-index.component';
+import { DonorHeaderComponent } from './donor-module/donor-header/donor-header.component';
+import { DonorMenuComponent } from './donor-module/donor-menu/donor-menu.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -264,7 +267,10 @@ const firebaseAuthConfig = {
     DirectorHeaderComponent,
     DirectorOverviewComponent,
     ViewCountryMenuComponent,
-    AlertLoaderComponent
+    AlertLoaderComponent,
+    DonorCountryIndexComponent,
+    DonorHeaderComponent,
+    DonorMenuComponent
   ],
   imports: [
     BrowserModule,

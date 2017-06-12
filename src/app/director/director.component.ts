@@ -179,7 +179,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
       }
     } else {
 
-      // TODO - Filter
+      // TODO - Filter for countries with regions
     }
   }
 
@@ -206,10 +206,16 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   }
 
-  isValidAlertLevel(countryLevel, filterLevel) {
-    // if countrylevel == green && filterlevel == green
-    //   return true;
-  }
+  // TODO - Filter for countries with regions
+  // isValidAlertLevel(countryAlertLevel, selectedFilterLevel) {
+  //
+  //   console.log(countryAlertLevel.aletLevel);
+  //   if (countryAlertLevel == selectedFilterLevel) {
+  //     return true
+  //   } else {
+  //
+  //   }
+  // }
 
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
@@ -404,6 +410,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     for (let x of this.countries) {
       if (x.countryId == holder.countryId) {
         x.location = holder.location;
+        x.alertLevel = holder.alertLevel;
         x.departments = holder.departments;
         return;
       }
