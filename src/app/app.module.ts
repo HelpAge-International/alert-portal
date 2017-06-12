@@ -136,6 +136,8 @@ import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-
 import { EquipmentService } from "./services/equipment.service";
 import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
+import { CoordinationArrangementService } from "./services/coordination-arrangement.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -189,6 +191,7 @@ const firebaseAuthConfig = {
     CountryOfficeEquipmentComponent,
     CountryOfficeAddEditEquipmentComponent,
     CountryOfficeAddEditSurgeEquipmentComponent,
+    CountryOfficeCoordinationComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
@@ -305,7 +308,8 @@ const firebaseAuthConfig = {
               MessageService,
               NotificationSettingsService,
               NoteService,
-              EquipmentService],
+              EquipmentService,
+              CoordinationArrangementService],
   bootstrap: [AppComponent]
 })
 

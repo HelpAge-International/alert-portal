@@ -1017,6 +1017,11 @@
         "SURGE_SUCCESS_DELETED": "The surge equipment was successfully deleted",
         "SURGE_DELETE_DIALOG_TITLE": "Delete Surge Equipment",
         "SURGE_DELETE_DIALOG_CONTENT": "Are you sure you want to delete this surge equipment?"
+      },
+      "COORDINATION": {
+        "TITLE_TEXT": "Coordination Arrangements",
+        "EDIT": "Edit coordination arrangements",
+        "VIEW": "View coordination arrangements"
       }
     },
     "VIEW_MY_AGENCY": {
