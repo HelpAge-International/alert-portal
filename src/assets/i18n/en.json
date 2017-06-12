@@ -1569,5 +1569,13 @@
     "DONOR": {
         "COUNTRY_INDEX": "Country Index",
         "AGENCIES_ACTIVE": "Agencies active"
+    },
+    "EXTERNAL_PARTNER": {
+        "RESPONSE_PLAN": {
+            "BAD_TOKEN": "Sorry, token inactive or time to token has expired",
+            "BAD_AUTH": "Error user authorization",
+            "SUCCESS_MESSAGE_APPROVE": "You successfully approved this response plan.",
+            "SUCCESS_MESSAGE_REJECT": "You successfully rejected this response plan."
         }
     }
+}

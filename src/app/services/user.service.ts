@@ -20,6 +20,7 @@ import {recognize} from "@angular/router/src/recognize";
 export class UserService {
   private secondApp: firebase.app.App;
   private authState: FirebaseAuthState;
+  public anonymousUserPath:any;
 
   public user: ModelUserPublic;
   public partner: PartnerModel;
