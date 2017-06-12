@@ -94,7 +94,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
-        //this.uid = auth.uid; TODO remove comment
+        this.uid = auth.uid;
 
         this.obsCountryId
           .takeUntil(this.ngUnsubscribe)
