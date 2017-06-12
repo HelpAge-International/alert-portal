@@ -18,77 +18,76 @@ import {recognize} from "@angular/router/src/recognize";
 
 @Injectable()
 export class UserService {
-    private secondApp: firebase.app.App;
-    private authState: FirebaseAuthState;
+  private secondApp: firebase.app.App;
+  private authState: FirebaseAuthState;
 
-    public user: ModelUserPublic;
-    public partner: PartnerModel;
+  public user: ModelUserPublic;
+  public partner: PartnerModel;
 
-    constructor(private af: AngularFire) {
-        this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+  constructor(private af: AngularFire) {
+    this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+  }
+
+  // FIREBASE
+  getAuthUser(): Observable<firebase.User> {
+    const userAuthSubscription = this.af.auth.map(user => {
+      this.authState = user;
+      return user.auth;
+    });
+
+    return userAuthSubscription;
+  }
+
+  createNewFirebaseUser(email: string, password: string): firebase.Promise<any> {
+    return this.secondApp.auth().createUserWithEmailAndPassword(email, password)
+      .then(newUser => {
+        this.secondApp.auth().signOut();
+        return newUser;
+      });
+  }
+
+  // PUBLIC USER
+  getUser(uid): Observable<ModelUserPublic> {
+    if (!uid) {
+      return null
     }
+    ;
+    const userSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uid)
+      .map(user => {
+        if (user.$key) {
+          let userPublic = new ModelUserPublic(null, null, null, null);
+          userPublic.id = uid;
+          userPublic.mapFromObject(user);
 
-    // FIREBASE
-    getAuthUser(): Observable<firebase.User> {
-        const userAuthSubscription = this.af.auth.map(user => {
-            this.authState = user;
-            return user.auth;
-        });
-
-        return userAuthSubscription;
-    }
-
-    createNewFirebaseUser(email: string, password: string): firebase.Promise<any> {
-        return this.secondApp.auth().createUserWithEmailAndPassword(email, password)
-            .then(newUser => {
-                this.secondApp.auth().signOut();
-                return newUser;
-            });
-    }
-
-    // PUBLIC USER
-    getUser(uid): Observable<ModelUserPublic> {
-        if (!uid) {
-            return null
+          return userPublic;
         }
-        ;
-        const userSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uid)
-            .map(user => {
-                if (user.$key) {
-                    let userPublic = new ModelUserPublic(null, null, null, null);
-                    userPublic.id = uid;
-                    userPublic.mapFromObject(user);
+        return null;
+      });
 
-                    return userPublic;
-                }
-                return null;
-            });
+    return userSubscription;
+  }
 
-        return userSubscription;
+  getUserByEmail(email): Observable<ModelUserPublic> {
+    if (!email) {
+      return null;
     }
-
-    getUserByEmail(email): Observable<ModelUserPublic> {
-        if (!email) {
-
-            return null;
+    const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
+      query: {
+        orderByChild: "email",
+        equalTo: email
+      }
+    })
+      .first()
+      .map(item => {
+        if (item.length > 0) {
+          let userPublic = new ModelUserPublic(null, null, null, null);
+          userPublic.id = item.$key;
+          userPublic.mapFromObject(item);
+          return userPublic;
+        } else {
+          return null;
         }
-        const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
-            query: {
-                orderByChild: "email",
-                equalTo: email
-            }
-        })
-            .first()
-            .map(item => {
-                if (item.length > 0) {
-                    let userPublic = new ModelUserPublic(null, null, null, null);
-                    userPublic.id = item.$key;
-                    userPublic.mapFromObject(item);
-                    return userPublic;
-                } else {
-                    return null;
-                }
-            });
+      });
 
         return userSubscription;
     }
@@ -300,71 +299,70 @@ export class UserService {
         Constants.APP_STATUS + "/globalUser/" + uid, Constants.APP_STATUS + "/countryUser/" + uid, Constants.APP_STATUS + "/ertLeader/" + uid,
         Constants.APP_STATUS + "/ert/" + uid];
 
-        if (!uid) {
-            return null;
-        }
-        const userTypeSubscription = this.af.database.object(paths[0])
-            .flatMap(adminCountry => {
-                if (adminCountry.agencyAdmin) {
-                    return Observable.of(UserType.CountryAdmin);
-                } else {
-                    return this.af.database.object(paths[1])
-                        .flatMap(directorCountry => {
-                            if (directorCountry.agencyAdmin) {
-                                return Observable.of(UserType.CountryDirector);
-                            } else {
-                                return this.af.database.object(paths[2])
-                                    .flatMap(regionDirector => {
-                                        if (regionDirector.agencyAdmin) {
-                                            return Observable.of(UserType.RegionalDirector);
-                                        } else {
-                                            return this.af.database.object(paths[3])
-                                                .flatMap(globalDirector => {
-                                                    if (globalDirector.agencyAdmin) {
-                                                        return Observable.of(UserType.GlobalDirector);
-                                                    } else {
-                                                        return this.af.database.object(paths[4])
-                                                            .flatMap(globalUser => {
-                                                                if (globalUser.agencyAdmin) {
-                                                                    return Observable.of(UserType.GlobalUser);
-                                                                } else {
-                                                                    return this.af.database.object(paths[5])
-                                                                        .flatMap(countryUser => {
-                                                                            if (countryUser.agencyAdmin) {
-                                                                                return Observable.of(UserType.CountryUser);
-                                                                            } else {
-                                                                                return this.af.database.object(paths[6])
-                                                                                    .flatMap(ertLeader => {
-                                                                                        if (ertLeader.agencyAdmin) {
-                                                                                            return Observable.of(UserType.ErtLeader);
-                                                                                        } else {
-                                                                                            return this.af.database.object(paths[7])
-                                                                                                .flatMap(ert => {
-                                                                                                    if (ert.agencyAdmin) {
-                                                                                                        return Observable.of(UserType.Ert);
-                                                                                                    } else {
-                                                                                                        return Observable.empty();
-                                                                                                    }
-                                                                                                });
-                                                                                        }
-                                                                                    });
-                                                                            }
-                                                                        });
-                                                                }
-                                                            });
-                                                    }
-                                                });
-                                        }
-                                    })
-                            }
-                        });
-                }
-            });
-        return userTypeSubscription;
+    if (!uid) {
+      return null;
     }
+    const userTypeSubscription = this.af.database.object(paths[0])
+      .flatMap(adminCountry => {
+        if (adminCountry.agencyAdmin) {
+          return Observable.of(UserType.CountryAdmin);
+        } else {
+          return this.af.database.object(paths[1])
+            .flatMap(directorCountry => {
+              if (directorCountry.agencyAdmin) {
+                return Observable.of(UserType.CountryDirector);
+              } else {
+                return this.af.database.object(paths[2])
+                  .flatMap(regionDirector => {
+                    if (regionDirector.agencyAdmin) {
+                      return Observable.of(UserType.RegionalDirector);
+                    } else {
+                      return this.af.database.object(paths[3])
+                        .flatMap(globalDirector => {
+                          if (globalDirector.agencyAdmin) {
+                            return Observable.of(UserType.GlobalDirector);
+                          } else {
+                            return this.af.database.object(paths[4])
+                              .flatMap(globalUser => {
+                                if (globalUser.agencyAdmin) {
+                                  return Observable.of(UserType.GlobalUser);
+                                } else {
+                                  return this.af.database.object(paths[5])
+                                    .flatMap(countryUser => {
+                                      if (countryUser.agencyAdmin) {
+                                        return Observable.of(UserType.CountryUser);
+                                      } else {
+                                        return this.af.database.object(paths[6])
+                                          .flatMap(ertLeader => {
+                                            if (ertLeader.agencyAdmin) {
+                                              return Observable.of(UserType.ErtLeader);
+                                            } else {
+                                              return this.af.database.object(paths[7])
+                                                .flatMap(ert => {
+                                                  if (ert.agencyAdmin) {
+                                                    return Observable.of(UserType.Ert);
+                                                  } else {
+                                                    return Observable.empty();
+                                                  }
+                                                });
+                                            }
+                                          });
+                                      }
+                                    });
+                                }
+                              });
+                          }
+                        });
+                    }
+                  })
+              }
+            });
+        }
+      });
+    return userTypeSubscription;
+  }
 
     //get user country id
-
     getCountryId(userType: string, uid): Observable<string> {
         return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
             .map(countryId => {
@@ -374,25 +372,25 @@ export class UserService {
             });
     }
 
-    getAgencyId(userType, uid): Observable<string> {
-        let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
-            .map(agencyIds => {
-                if (agencyIds.length > 0 && agencyIds[0].$value) {
-                    return agencyIds[0].$key;
-                }
-            });
-        return subscription;
-    }
+  getAgencyId(userType, uid): Observable<string> {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
+      .map(agencyIds => {
+        if (agencyIds.length > 0 && agencyIds[0].$value) {
+          return agencyIds[0].$key;
+        }
+      });
+    return subscription;
+  }
 
-    getSystemAdminId(userType, uid): Observable<string> {
-        let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
-            .map(systemIds => {
-                if (systemIds.length > 0 && systemIds[0].$value) {
-                    return systemIds[0].$key;
-                }
-            });
-        return subscription;
-    }
+  getSystemAdminId(userType, uid): Observable<string> {
+    let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
+      .map(systemIds => {
+        if (systemIds.length > 0 && systemIds[0].$value) {
+          return systemIds[0].$key;
+        }
+      });
+    return subscription;
+  }
 
 
     // Get region id os the regional director

@@ -6,8 +6,8 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-    AgeRange, BudgetCategory, Gender, MethodOfImplementation, PresenceInTheCountry,
-    SourcePlan
+  AgeRange, BudgetCategory, Gender, MethodOfImplementation, PresenceInTheCountry,
+  SourcePlan, UserType
 } from "../../utils/Enums";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 
@@ -28,15 +28,12 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
     private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
-    // TODO - Update this
-    private USER_TYPE: string = 'administratorCountry';
+  private USER_TYPE: string;
 
-    private uid: string;
-    private countryId: string;
+  private uid: string;
+  private countryId: string;
 
-    // TODO - Remove - This id needs to be forwarded from the required component
-    // private responsePlanId: string = '-KkQJxlVjMmJS9tXhiiz';
-    @Input() responsePlanId: string;
+  @Input() responsePlanId: string;
 
     private responsePlanToShow: ResponsePlan = new ResponsePlan;
 
@@ -106,38 +103,75 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
      * Private functions
      */
 
-    private loadData() {
+    // private loadData() {
+    //
+    //     this.route.params.subscribe((params: Params) => {
+    //         var countryID = params['countryID'] ? params['countryID'] : false;
+    //         var responsePlanID = params['id'] ? params['id'] : false;
+    //         var token = params['token'] ? params['token'] : false;
+    //
+    //         if (countryID && responsePlanID && token) {
+    //             this.countryId = countryID;
+    //             this.responsePlanId = responsePlanID;
+    //             this.loadResponsePlanData();
+    //         } else {
+    //             this.getCountryId().then(() => {
+    //                 if (this.responsePlanId) {
+    //                     this.loadResponsePlanData();
+    //                 } else {
+    //                     this.route.params
+    //                         .takeUntil(this.ngUnsubscribe)
+    //                         .subscribe((params: Params) => {
+    //                             if (params["id"]) {
+    //                                 this.responsePlanId = params["id"];
+    //                                 this.loadResponsePlanData();
+    //                             }
+    //                         });
+    //                 }
+    //
+    //             });
+    //         }
+    //
+    //     });
+    //
+    // }
 
-        this.route.params.subscribe((params: Params) => {
-            var countryID = params['countryID'] ? params['countryID'] : false;
-            var responsePlanID = params['id'] ? params['id'] : false;
-            var token = params['token'] ? params['token'] : false;
+  private loadData() {
+    this.userService.getUserType(this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(usertype => {
+        this.USER_TYPE = Constants.USER_PATHS[usertype];
+        if (usertype == UserType.GlobalDirector) {
+          this.route.params
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((params: Params) => {
+              if (params["countryId"]) {
+                this.countryId = params["countryId"];
+                this.handleLoadResponsePlan();
+              }
+            })
+        } else {
+          this.getCountryId().then(() => {
+            this.handleLoadResponsePlan();
+          });
+        }
+      });
+  }
 
-            if (countryID && responsePlanID && token) {
-                this.countryId = countryID;
-                this.responsePlanId = responsePlanID;
-                this.loadResponsePlanData();
-            } else {
-                this.getCountryId().then(() => {
-                    if (this.responsePlanId) {
-                        this.loadResponsePlanData();
-                    } else {
-                        this.route.params
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe((params: Params) => {
-                                if (params["id"]) {
-                                    this.responsePlanId = params["id"];
-                                    this.loadResponsePlanData();
-                                }
-                            });
-                    }
-
-                });
-            }
-
+  private handleLoadResponsePlan() {
+    if (this.responsePlanId) {
+      this.loadResponsePlanData();
+    } else {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+            this.loadResponsePlanData();
+          }
         });
-
     }
+  }
 
     private getCountryId() {
         let promise = new Promise((res, rej) => {
@@ -151,152 +185,151 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         return promise;
     }
 
-    private loadResponsePlanData() {
-//        console.log("response plan id: " + this.responsePlanId);
-//        console.log("countryID: " + this.countryId);
-        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+  private loadResponsePlanData() {
+    console.log("response plan id: " + this.responsePlanId);
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
 
-        this.af.database.object(responsePlansPath)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((responsePlan: ResponsePlan) => {
-                this.responsePlanToShow = responsePlan;
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.responsePlanToShow = responsePlan;
 
-                this.loadSection1PlanLead(responsePlan);
-                this.loadSection3(responsePlan);
-                this.loadSection7(responsePlan);
-                this.loadSection8(responsePlan);
-                this.loadSection10(responsePlan);
-            });
+        this.loadSection1PlanLead(responsePlan);
+        this.loadSection3(responsePlan);
+        this.loadSection7(responsePlan);
+        this.loadSection8(responsePlan);
+        this.loadSection10(responsePlan);
+      });
+  }
+
+  private loadSection1PlanLead(responsePlan: ResponsePlan) {
+
+    if (responsePlan.planLead) {
+      this.userService.getUser(responsePlan.planLead)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.planLeadName = user.firstName + " " + user.lastName;
+        });
+    } else {
+      this.planLeadName = 'Unassigned';
+    }
+  }
+
+  // TODO -
+  private loadSection3(responsePlan: ResponsePlan) {
+    console.log(responsePlan);
+    if (responsePlan.sectors) {
+      this.sectors = Object.keys(responsePlan.sectors).map(key => {
+        let sector = responsePlan.sectors[key];
+        sector["id"] = Number(key);
+        return sector;
+      });
+    }
+    if (responsePlan.partnerOrganisations) {
+      this.partnerList = [];
+      let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
+      partnerIds.forEach(id => {
+        this.userService.getOrganisationName(id)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(organisation => {
+            this.partnerList.push(organisation.organisationName);
+          })
+      });
+    }
+  }
+
+  // TODO -
+  private loadSection7(responsePlan: ResponsePlan) {
+    if (this.sectors) {
+      // let sectors: {} = responsePlan.sectors;
+      Object.keys(responsePlan.sectors).forEach(sectorKey => {
+
+        //activity info load back
+        // let sectorInfo = this.activityInfoMap.get(sectorKey);
+        // if (!sectorInfo) {
+        let infoData = {};
+        infoData["sourcePlan"] = responsePlan.sectors[sectorKey]["sourcePlan"];
+        infoData["bullet1"] = responsePlan.sectors[sectorKey]["bullet1"];
+        infoData["bullet2"] = responsePlan.sectors[sectorKey]["bullet2"];
+        this.activityInfoMap.set(Number(sectorKey), infoData);
+        // }
+
+        //activities list load back
+        let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
+        let moreData: {}[] = [];
+        Object.keys(activitiesData).forEach(key => {
+          let beneficiary = [];
+          activitiesData[key]["beneficiary"].forEach(item => {
+            beneficiary.push(item);
+          });
+          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+          moreData.push(model);
+          this.activityMap.set(Number(sectorKey), moreData);
+        });
+      });
     }
 
-    private loadSection1PlanLead(responsePlan: ResponsePlan) {
+  }
 
-        if (responsePlan.planLead) {
-            this.userService.getUser(responsePlan.planLead)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(user => {
-                    this.planLeadName = user.firstName + " " + user.lastName;
-                });
+  private loadSection8(responsePlan: ResponsePlan) {
+
+    if (responsePlan.monAccLearning) {
+      if (responsePlan.monAccLearning['isMedia']) {
+        if (responsePlan.monAccLearning['mediaFormat'] || responsePlan.monAccLearning['mediaFormat'] == 0) {
+          this.intendToVisuallyDoc = "GLOBAL.YES";
+          this.mediaType = Constants.MEDIA_TYPES[responsePlan.monAccLearning['mediaFormat']];
         } else {
-            this.planLeadName = 'Unassigned';
+          this.intendToVisuallyDoc = "GLOBAL.YES";
+          this.mediaType = '';
         }
+      } else {
+        this.intendToVisuallyDoc = "GLOBAL.NO";
+        this.mediaType = '';
+      }
+    } else {
+      this.intendToVisuallyDoc = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
     }
+  }
 
-    // TODO -
-    private loadSection3(responsePlan: ResponsePlan) {
-        console.log(responsePlan);
-        if (responsePlan.sectors) {
-            this.sectors = Object.keys(responsePlan.sectors).map(key => {
-                let sector = responsePlan.sectors[key];
-                sector["id"] = Number(key);
-                return sector;
-            });
-        }
-        if (responsePlan.partnerOrganisations) {
-            this.partnerList = [];
-            let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
-            partnerIds.forEach(id => {
-                this.userService.getOrganisationName(id)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(organisation => {
-                        this.partnerList.push(organisation.organisationName);
-                    })
-            });
-        }
+  // TODO -
+  private loadSection10(responsePlan: ResponsePlan) {
+
+    if (responsePlan.budget) {
+
+      this.totalInputs = responsePlan.budget['totalInputs'] ? responsePlan.budget['totalInputs'] : 0;
+      this.totalOfAllCosts = responsePlan.budget['totalOfAllCosts'] ? responsePlan.budget['totalOfAllCosts'] : 0;
+      this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
+
+      if (responsePlan.budget['item']) {
+
+        this.transportBudget = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['budget'] : 0;
+        this.transportNarrative = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+        this.securityBudget = responsePlan.budget['item'][BudgetCategory.Security] ? responsePlan.budget['item'][BudgetCategory.Security]['budget'] : 0;
+        this.securityNarrative = responsePlan.budget['item'][BudgetCategory.Security] ? responsePlan.budget['item'][BudgetCategory.Security]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+        this.logisticsAndOverheadsBudget = responsePlan.budget['item'][BudgetCategory.Logistics] ? responsePlan.budget['item'][BudgetCategory.Logistics]['budget'] : 0;
+        this.logisticsAndOverheadsNarrative = responsePlan.budget['item'][BudgetCategory.Logistics] ? responsePlan.budget['item'][BudgetCategory.Logistics]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+        this.staffingAndSupportBudget = responsePlan.budget['item'][BudgetCategory.Staffing] ? responsePlan.budget['item'][BudgetCategory.Staffing]['budget'] : 0;
+        this.staffingAndSupportNarrative = responsePlan.budget['item'][BudgetCategory.Staffing] ? responsePlan.budget['item'][BudgetCategory.Staffing]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+        this.monitoringAndEvolutionBudget = responsePlan.budget['item'][BudgetCategory.Monitoring] ? responsePlan.budget['item'][BudgetCategory.Monitoring]['budget'] : 0;
+        this.monitoringAndEvolutionNarrative = responsePlan.budget['item'][BudgetCategory.Monitoring] ? responsePlan.budget['item'][BudgetCategory.Monitoring]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+        this.capitalItemsBudget = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['budget'] : 0;
+        this.capitalItemsNarrative = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+        this.managementSupportPercentage = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['budget'] + '%' : '0%';
+        this.managementSupportNarrative = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+
+      } else {
+        this.assignDefaultValues();
+      }
+    } else {
+      this.assignDefaultValues();
     }
-
-    // TODO -
-    private loadSection7(responsePlan: ResponsePlan) {
-        if (this.sectors) {
-            // let sectors: {} = responsePlan.sectors;
-            Object.keys(responsePlan.sectors).forEach(sectorKey => {
-
-                //activity info load back
-                // let sectorInfo = this.activityInfoMap.get(sectorKey);
-                // if (!sectorInfo) {
-                let infoData = {};
-                infoData["sourcePlan"] = responsePlan.sectors[sectorKey]["sourcePlan"];
-                infoData["bullet1"] = responsePlan.sectors[sectorKey]["bullet1"];
-                infoData["bullet2"] = responsePlan.sectors[sectorKey]["bullet2"];
-                this.activityInfoMap.set(Number(sectorKey), infoData);
-                // }
-
-                //activities list load back
-                let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-                let moreData: {}[] = [];
-                Object.keys(activitiesData).forEach(key => {
-                    let beneficiary = [];
-                    activitiesData[key]["beneficiary"].forEach(item => {
-                        beneficiary.push(item);
-                    });
-                    let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-                    moreData.push(model);
-                    this.activityMap.set(Number(sectorKey), moreData);
-                });
-            });
-        }
-
-    }
-
-    private loadSection8(responsePlan: ResponsePlan) {
-
-        if (responsePlan.monAccLearning) {
-            if (responsePlan.monAccLearning['isMedia']) {
-                if (responsePlan.monAccLearning['mediaFormat'] || responsePlan.monAccLearning['mediaFormat'] == 0) {
-                    this.intendToVisuallyDoc = "GLOBAL.YES";
-                    this.mediaType = Constants.MEDIA_TYPES[responsePlan.monAccLearning['mediaFormat']];
-                } else {
-                    this.intendToVisuallyDoc = "GLOBAL.YES";
-                    this.mediaType = '';
-                }
-            } else {
-                this.intendToVisuallyDoc = "GLOBAL.NO";
-                this.mediaType = '';
-            }
-        } else {
-            this.intendToVisuallyDoc = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-        }
-    }
-
-    // TODO -
-    private loadSection10(responsePlan: ResponsePlan) {
-
-        if (responsePlan.budget) {
-
-            this.totalInputs = responsePlan.budget['totalInputs'] ? responsePlan.budget['totalInputs'] : 0;
-            this.totalOfAllCosts = responsePlan.budget['totalOfAllCosts'] ? responsePlan.budget['totalOfAllCosts'] : 0;
-            this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
-
-            if (responsePlan.budget['item']) {
-
-                this.transportBudget = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['budget'] : 0;
-                this.transportNarrative = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-                this.securityBudget = responsePlan.budget['item'][BudgetCategory.Security] ? responsePlan.budget['item'][BudgetCategory.Security]['budget'] : 0;
-                this.securityNarrative = responsePlan.budget['item'][BudgetCategory.Security] ? responsePlan.budget['item'][BudgetCategory.Security]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-                this.logisticsAndOverheadsBudget = responsePlan.budget['item'][BudgetCategory.Logistics] ? responsePlan.budget['item'][BudgetCategory.Logistics]['budget'] : 0;
-                this.logisticsAndOverheadsNarrative = responsePlan.budget['item'][BudgetCategory.Logistics] ? responsePlan.budget['item'][BudgetCategory.Logistics]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-                this.staffingAndSupportBudget = responsePlan.budget['item'][BudgetCategory.Staffing] ? responsePlan.budget['item'][BudgetCategory.Staffing]['budget'] : 0;
-                this.staffingAndSupportNarrative = responsePlan.budget['item'][BudgetCategory.Staffing] ? responsePlan.budget['item'][BudgetCategory.Staffing]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-                this.monitoringAndEvolutionBudget = responsePlan.budget['item'][BudgetCategory.Monitoring] ? responsePlan.budget['item'][BudgetCategory.Monitoring]['budget'] : 0;
-                this.monitoringAndEvolutionNarrative = responsePlan.budget['item'][BudgetCategory.Monitoring] ? responsePlan.budget['item'][BudgetCategory.Monitoring]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-                this.capitalItemsBudget = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['budget'] : 0;
-                this.capitalItemsNarrative = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-                this.managementSupportPercentage = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['budget'] + '%' : '0%';
-                this.managementSupportNarrative = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['narrative'] : "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-
-            } else {
-                this.assignDefaultValues();
-            }
-        } else {
-            this.assignDefaultValues();
-        }
-    }
+  }
 
     private assignDefaultValues() {
 
@@ -321,7 +354,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         this.managementSupportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
     }
 
-    private navigateToLogin() {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-    }
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
 }

@@ -139,6 +139,10 @@ import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/cou
 import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
 import { CoordinationArrangementService } from "./services/coordination-arrangement.service";
 import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
+import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
+import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
+import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -163,6 +167,7 @@ const firebaseAuthConfig = {
   declarations: [
     AppComponent,
     LoginComponent,
+    ResetPasswordComponent,
     SystemAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,
@@ -275,6 +280,10 @@ const firebaseAuthConfig = {
     DirectorHeaderComponent,
     DirectorOverviewComponent,
     ViewCountryMenuComponent,
+    AlertLoaderComponent,
+    DonorCountryIndexComponent,
+    DonorHeaderComponent,
+    DonorMenuComponent,
     AlertLoaderComponent,
     ExternalPartnerResponsePlan
   ],

@@ -22,7 +22,6 @@
                 <div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg"></div>
                 <p><b>{{hazardScenario[hazard.hazardScenario] | translate}}</b>Risk {{hazard.risk}}</p>
             </label>
-            <p class="col-sm-4 align-self-center" *ngIf="!key">Note: This list will only display hazards that are being monitored</p>
         </div>
 
         <!--Select Alert level-->
@@ -69,7 +68,7 @@
                                 [(ngModel)] = "location.level1">
                             <option value="undefined" disabled selected hidden>
                                 {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[0].value | translate }}</option>
-                            <option 
+                            <option
                                 *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
                                 [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
                         </option>
