@@ -5,11 +5,13 @@ import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {Router} from "@angular/router";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class ResponsePlanService {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private validPartnerMap = new Map<string, boolean>();
 
   constructor(private af: AngularFire, private userService: UserService, private router: Router) {
   }
@@ -43,6 +45,15 @@ export class ResponsePlanService {
           countryId = countryAdmin.countryId;
           return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryAdmin.countryId + "/" + plan.$key)
         })
+        .do(responsePlan => {
+          responsePlan.partnerOrganisations.forEach(partnerId => {
+            this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(partner => {
+                this.validPartnerMap.set(partner.$key, partner.isApproved);
+              });
+          });
+        })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(responsePlan => {
           let approvalData = {};
@@ -51,7 +62,9 @@ export class ResponsePlanService {
           }
           let partnerData = {};
           responsePlan.partnerOrganisations.forEach(partnerId => {
-            partnerData[partnerId] = ApprovalStatus.WaitingApproval;
+            if (this.validPartnerMap.get(partnerId)) {
+              partnerData[partnerId] = ApprovalStatus.WaitingApproval;
+            }
           });
           approvalData["partner"] = partnerData;
 
