@@ -186,44 +186,46 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(systemId => {
             this.systemId = systemId;
+
+            this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId);
+            this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId);
+            this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments")
+              .map(departments => {
+                let names = [];
+                departments.forEach(department => {
+                  names.push(department.$key);
+                });
+                return names;
+              });
+
+            this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/skills')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                _.filter(skill => skill.$value).map(skill => {
+                  this.af.database.list(Constants.APP_STATUS + '/skill/', {
+                    query: {
+                      orderByKey: true,
+                      equalTo: skill.$key
+                    }
+                  })
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(_skill => {
+                      if (_skill[0] != undefined)
+                        this.allSkills[_skill[0].$key] = _skill[0];
+                      else
+                        delete this.allSkills[skill.$key];
+
+                      this.skillKeys = Object.keys(this.allSkills);
+                    });
+                });
+              });
+
+            this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/notificationSetting");
+
           });
       });
 
-    this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
-    this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid);
-    this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
-      .map(departments => {
-        let names = [];
-        departments.forEach(department => {
-          names.push(department.$key);
-        });
-        return names;
-      });
 
-
-    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/skills')
-    .takeUntil(this.ngUnsubscribe)
-    .subscribe(_ => {
-      _.filter(skill => skill.$value).map(skill => {
-        this.af.database.list(Constants.APP_STATUS + '/skill/', {
-          query: {
-            orderByKey: true,
-            equalTo: skill.$key
-          }
-        })
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(_skill => {
-            if (_skill[0] != undefined)
-              this.allSkills[_skill[0].$key] = _skill[0];
-            else
-              delete this.allSkills[skill.$key];
-
-            this.skillKeys = Object.keys(this.allSkills);
-          });
-      });
-    });
-
-    this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
   }
 
   validateForm() {
