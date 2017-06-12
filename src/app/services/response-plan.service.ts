@@ -40,52 +40,53 @@ export class ResponsePlanService {
   private updatePartnerValidation(uid: string, user: UserType, plan: any) {
     const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
       Constants.APP_STATUS + "/directorCountry/", , , , , Constants.APP_STATUS + "/administratorCountry/",]
-    if (user == UserType.CountryAdmin) {
-      let countryId = "";
-      this.af.database.object(paths[user] + uid)
-        .flatMap(countryAdmin => {
-          countryId = countryAdmin.countryId;
-          return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryAdmin.countryId + "/" + plan.$key)
-        })
-        .flatMap(responsePlan => {
-          this.responsePlan = responsePlan;
-          let partnerIds = [];
-          responsePlan.partnerOrganisations.forEach(partner => {
-            partnerIds.push(partner);
-          });
-          return Observable.from(partnerIds);
-        })
-        .flatMap(partnerId => {
-          return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId);
-        })
-        .do(partner => {
-          this.validPartnerMap.set(partner.$key, partner.isApproved);
-        })
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(() => {
-          console.log(this.validPartnerMap);
-          console.log(this.responsePlan);
-          let approvalData = {};
-          if (this.responsePlan.approval) {
-            approvalData = this.responsePlan.approval;
-          }
-          let partnerData = {};
-          this.responsePlan.partnerOrganisations.forEach(partnerId => {
-            if (this.validPartnerMap.get(partnerId)) {
-              partnerData[partnerId] = ApprovalStatus.WaitingApproval;
-            }
-          });
-          approvalData["partner"] = partnerData;
-
-          let updateData = {};
-          updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
-          // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
-          this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-          }, error => {
-            console.log(error.message);
-          });
+    // if (user == UserType.CountryAdmin) {
+    let countryId = "";
+    this.userService.getCountryId(Constants.USER_PATHS[user], uid)
+    // this.af.database.object(paths[user] + uid)
+      .flatMap(fetchedCountryId => {
+        countryId = fetchedCountryId;
+        return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key)
+      })
+      .flatMap(responsePlan => {
+        this.responsePlan = responsePlan;
+        let partnerIds = [];
+        responsePlan.partnerOrganisations.forEach(partner => {
+          partnerIds.push(partner);
         });
-    }
+        return Observable.from(partnerIds);
+      })
+      .flatMap(partnerId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId);
+      })
+      .do(partner => {
+        this.validPartnerMap.set(partner.$key, partner.isApproved);
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(() => {
+        console.log(this.validPartnerMap);
+        console.log(this.responsePlan);
+        let approvalData = {};
+        if (this.responsePlan.approval) {
+          approvalData = this.responsePlan.approval;
+        }
+        let partnerData = {};
+        this.responsePlan.partnerOrganisations.forEach(partnerId => {
+          if (this.validPartnerMap.get(partnerId)) {
+            partnerData[partnerId] = ApprovalStatus.WaitingApproval;
+          }
+        });
+        approvalData["partner"] = partnerData;
+
+        let updateData = {};
+        updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
+        // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
+        this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+        }, error => {
+          console.log(error.message);
+        });
+      });
+    // }
   }
 
   getResponsePlan(countryId, responsePlanId) {
