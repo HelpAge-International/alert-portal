@@ -18,7 +18,7 @@ declare const jQuery: any;
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
-
+  private isGlobalDirectorMap = new Map<string, boolean>();
 
   private dialogTitle: string;
   private dialogContent: string;
@@ -102,6 +102,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private checkHaveApprovedPartners(activePlans: any[]) {
     activePlans.forEach(plan => {
+      //deal organisations
       let partnerIds = plan.partnerOrganisations;
       if (partnerIds) {
         partnerIds.forEach(partnerId => {
@@ -113,6 +114,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               }
             });
         });
+      }
+
+      //deal directors
+      if (plan.approval) {
+        let approvalKeys = Object.keys(plan.approval).filter(key => key!="partner");
+        console.log(approvalKeys);
+        if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
+          this.isGlobalDirectorMap.set(plan.$key, true);
+        }
       }
     });
   }
