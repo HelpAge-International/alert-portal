@@ -98,7 +98,27 @@ export class ResponsePlanService {
     if (approvalName) {
       let updateData = {};
       updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/approval/" + approvalName + "/" + uid] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
-      updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+      // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+      if (!isApproved) {
+        updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.NeedsReviewing;
+      }
+
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(result => {
+          if (result) {
+            let approvePair = Object.keys(result).map(key => result[key]);
+            let waitingApprovalList = [];
+            approvePair.forEach(item => {
+              let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+              waitingApprovalList = waitingApprovalList.concat(waiting);
+            });
+            if (waitingApprovalList.length == 0) {
+              updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+            }
+          }
+        });
+
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         if (rejectNoteContent) {
           this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);

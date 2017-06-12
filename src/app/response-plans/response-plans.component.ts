@@ -242,12 +242,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(id => {
-      console.log(id);
-      if (id && id.$value) {
-        approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
-      }
-      this.updatePartnerValidation(countryId, approvalData);
-    });
+        console.log(id);
+        if (id && id.$value && id.$value != "null") {
+          approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
+        }
+        this.updatePartnerValidation(countryId, approvalData);
+      });
   }
 
   private updateWithBothApproval(agencyId: string, countryId: string, approvalData: {}) {
@@ -260,7 +260,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(globalDirector => {
         console.log(globalDirector)
-        if (globalDirector.length>0 && globalDirector[0].$key) {
+        if (globalDirector.length > 0 && globalDirector[0].$key) {
           console.log(globalDirector[0].$key);
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
         }
