@@ -12098,6 +12098,7 @@ h3, h4 {
 
 .Alert, .Alert-success, .Alert-warning, .Alert-error {
   position: fixed;
+  top: 6.4%;
   left: 0;
   right: 0;
   width: 100%;
