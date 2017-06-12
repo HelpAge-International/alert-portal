@@ -273,7 +273,7 @@ const routes: Routes = [
    * Donor
    */
   {path: 'donor', component: DonorModuleComponent},
-  {path: 'donor/donor-country-index', component: DonorCountryIndexComponent},
+  {path: 'donor/donor-country-index/:countryId', component: DonorCountryIndexComponent},
 
   /*
    * test
