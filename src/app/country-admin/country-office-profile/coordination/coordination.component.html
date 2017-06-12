@@ -1,0 +1,61 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        
+        <app-country-office-profile-menu></app-country-office-profile-menu>
+
+        <div class="Header-title__wrap Spaced row">
+            <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.TITLE_TEXT' | translate }}</h2>
+            <div class="col-sm-6 Right-aligned">
+                <button type="button" class="btn btn-outline-primary text-uppercase"
+                    *ngIf="canEdit && !isEdit"
+                    (click)="editCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EDIT' | translate }}</button>
+                
+                <button type="button" class="btn btn-outline-primary text-uppercase"
+                    *ngIf="canEdit && isEdit"
+                    (click)="showCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW' | translate }}</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <p class="col-sm-2 margin-top-three"><strong>Sector</strong></p>
+            <p class="col-sm-5 margin-top-three"><strong>Sector lead</strong></p>
+            <p class="col-sm-2"><strong>Is {{ agency?.name }} a member?</strong></p>
+            <p class="col-sm-2"><strong>Staff member representing {{ agency?.name }}</strong></p>
+        </div>
+        <div class="Line-row Spaced-above"></div>
+        <div *ngFor="let coordinationArrangement of coordinationArrangements">
+            <!--Sphere India-->
+            <div class="row">
+                <div class="col-sm-2"> <!--Sector-->
+                    <div class="row">
+                        <img src="assets/images/icons/{{ responsePlansSectors[coordinationArrangement.sector] }}.svg" class="margin-bottom-one" alt="Health">
+                        <p class="margin-top-one-half margin-left-two">{{ responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="row">
+                        <p class="col-sm-4">{{ coordinationArrangement.sectorLead }}</p> <!--Lead Agency-->
+                        <div class="col-sm-8">
+                            <img src="assets/images/icons/contact.svg" alt="View lead agency contact info">
+                            <a href="#" class="margin-left-two">View lead agency contact info</a>
+                        </div>
+                    </div>
+                </div>
+                <p class="col-sm-2">{{ coordinationArrangement.isAMember ? 'Yes' : 'No' }}</p> <!--Is < agency > a member?-->
+                <p class="col-sm-2">Rajan Pydilmalla</p> <!--Staff member representing < agency >-->
+                <div class="col-sm-1"><button class="btn btn-outline-primary text-uppercase" *ngIf="canEdit && isEdit">edit</button></div>
+            </div>
+            <div class="Line-row Spaced-above"></div>
+        </div>
+
+        <button class="btn btn-outline-primary text-uppercase" 
+            *ngIf="canEdit"
+            (click)="addEditEquipment()">{{ 'GLOBAL.ADD' | translate }}</button>
+
+    </div>
+</div>

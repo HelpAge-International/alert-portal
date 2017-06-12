@@ -131,6 +131,12 @@ import {DirectorComponent} from './director/director.component';
 import {DirectorHeaderComponent} from './director/director-header/director-header.component';
 import {DirectorOverviewComponent} from './director/director-overview/director-overview.component';
 import {ViewCountryMenuComponent} from './commons/view-country-menu/view-country-menu.component';
+import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-profile/equipment/equipment.component";
+import {EquipmentService} from "./services/equipment.service";
+import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {CoordinationArrangementService} from "./services/coordination-arrangement.service";
 import {AlertLoaderComponent} from './commons/alert-loader/alert-loader.component';
 import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
 import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
@@ -187,6 +193,10 @@ const firebaseAuthConfig = {
     CountryAdminSettingsMenuComponent,
     CountryOfficeProfileMenuComponent,
     CountryOfficePartnersComponent,
+    CountryOfficeEquipmentComponent,
+    CountryOfficeAddEditEquipmentComponent,
+    CountryOfficeAddEditSurgeEquipmentComponent,
+    CountryOfficeCoordinationComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
@@ -296,7 +306,18 @@ const firebaseAuthConfig = {
       storageType: 'localStorage'
     })
   ],
-  providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService, NoteService],
+  providers: [
+              RxHelper,
+              Modal,
+              UserService,
+              SessionService,
+              CommonService,
+              SettingsService,
+              MessageService,
+              NotificationSettingsService,
+              NoteService,
+              EquipmentService,
+              CoordinationArrangementService],
   bootstrap: [AppComponent]
 })
 

@@ -91,6 +91,10 @@ import {DirectorOverviewComponent} from "./director/director-overview/director-o
 import {DonorModuleComponent} from "./donor-module/donor-module.component";
 import {DonorCountryIndexComponent} from "./donor-module/donor-country-index/donor-country-index.component";
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
+import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-profile/equipment/equipment.component";
+import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -185,9 +189,19 @@ const routes: Routes = [
   {path: 'country-admin/country-staff', component: CountryStaffComponent},
   {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
   {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
-  {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
+  // {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
+  {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
+  {
+    path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
+    component: CountryOfficeAddEditEquipmentComponent
+  },
+  {
+    path: 'country-admin/country-office-profile/equipment/add-edit-surge-equipment',
+    component: CountryOfficeAddEditSurgeEquipmentComponent
+  },
+  {path: 'country-admin/country-office-profile/coordination', component: CountryOfficeCoordinationComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 
