@@ -655,7 +655,8 @@
       "NAME_MISSING": "Please enter name of the country",
       "F_NAME_MISSING": "Please enter country administrator's first name",
       "L_NAME_MISSING": "Please enter country administrator's last name",
-      "EMAIL_MISSING": "Please enter country administrator's email address"
+      "EMAIL_MISSING": "Please enter country administrator's email address",
+      "DUPLICATE_NAME": "Region name is already exist!"
     },
     "MANDATED_PA": {
       "TITLE_TEXT": "Mandated Preparedness Actions",
@@ -711,6 +712,7 @@
       "TECHNICAL_SKILLS": "Technical Skills",
       "IS_PART_OF_RESPONSE_TEAM?": "Is this staff member part of the response team?",
       "SAVE_NEW_STAFF": "Save new staff member",
+      "GLOBAL_USERS":"Global Users",
       "NO_TITLE": "Please select a title",
       "NO_FIRST_NAME": "Please enter the first name of the staff",
       "NO_LAST_NAME": "Please enter the last name of the staff",

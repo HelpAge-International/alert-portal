@@ -27,7 +27,6 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 
 export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
-  private USER_TYPE: string = 'administratorCountry';
   SECTORS = Constants.RESPONSE_PLANS_SECTORS;
 
   private uid: string;
@@ -248,33 +247,42 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.uid = auth.uid;
         console.log("Admin uid: " + this.uid);
 
-        this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+        this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe((countryId) => {
-            this.countryId = countryId.$value;
-            this.getStaff();
-            this.setupForEdit();
-
-            this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((agencyAdminIds) => {
-                this.agencyAdminUid = agencyAdminIds[0].$key;
-                this.getSettings();
-                this.getPartners();
-
-                this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/systemAdmin')
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe((systemAdminIds) => {
-                    this.systemAdminUid = systemAdminIds[0].$key;
-                    this.getGroups();
-                  });
-
-              });
+          .subscribe(userType => {
+            let userpath = Constants.USER_PATHS[userType];
+            this.getSystemAgencyCountryIds(userpath);
           });
       } else {
         this.navigateToLogin();
       }
     });
+  }
+
+  private getSystemAgencyCountryIds(userPath: string) {
+    this.af.database.object(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + "/countryId")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((countryId) => {
+        this.countryId = countryId.$value;
+        this.getStaff();
+        this.setupForEdit();
+
+        this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/agencyAdmin')
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((agencyAdminIds) => {
+            this.agencyAdminUid = agencyAdminIds[0].$key;
+            this.getSettings();
+            this.getPartners();
+
+            this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/systemAdmin')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((systemAdminIds) => {
+                this.systemAdminUid = systemAdminIds[0].$key;
+                this.getGroups();
+              });
+
+          });
+      });
   }
 
   ngOnDestroy() {

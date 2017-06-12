@@ -10,7 +10,7 @@
 
     <div class="Header-title__wrap ">
       <h1>{{pageTitle | translate}}</h1>
-      <button *ngIf="isEdit" type="button" class="btn btn-danger">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteRegion()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
         translate}}
       </button>
     </div>
@@ -32,10 +32,10 @@
           <div *ngFor="let selectCountry of countries; let i = index" class="row no-gutters align-items-center">
             <div class="col-10 form-group">
               <select class="form-control"
-                      [(ngModel)]="countrySelected" (change)="countryChange(selectCountry)">
-                <option *ngFor="let country of countrySelections | async"
-                        [selected]="country.location === selectedCountries[i]">
-                  {{COUNTRY_NAMES[country.location]
+                       #country (change)="countryChange(selectCountry, country.value)">
+                <option *ngFor="let country of countrySelectionsNumbers | async" [value]="country"
+                        [selected]="country == selectedCountries[i]">
+                  {{COUNTRY_NAMES[country]
                   | translate}}
                 </option>
               </select>
@@ -57,7 +57,7 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="RegionalDirector">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}</label>
-          <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId ? regionalDirectorId : regionalDirectors[0]">
+          <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId ? regionalDirectorId : regionalDirectors[0]" #id (change)="selectRegionDirector(id.value)">
             <option *ngFor="let director of regionalDirectors" [value]="director?.$key"
                     [selected]="director?.$key == regionalDirectorId">
               {{showName(director)}}

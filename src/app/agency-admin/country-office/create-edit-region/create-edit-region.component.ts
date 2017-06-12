@@ -5,6 +5,7 @@ import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {Countries, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-create-edit-region',
@@ -13,9 +14,12 @@ import {ModelRegion} from "../../../model/region.model";
 })
 
 export class CreateEditRegionComponent implements OnInit, OnDestroy {
+  private agencyId: string;
+  private countrySelectionsNumbers: Observable<any[]>;
 
   private pageTitle: string = "AGENCY_ADMIN.COUNTRY_OFFICES.CREATE_NEW_REGION";
   private submitText: string = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_NEW_REGION";
+  private Countries = Countries;
   private COUNTRY_NAMES: string[] = Constants.COUNTRIES;
   private regionName: string;
   private counter: number = 0;
@@ -25,8 +29,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   private uid: string;
   private hideWarning: boolean = true;
   private errorMessage: string;
-  private countrySelected = 0;
-  private selectedCountries: string[] = [];
+  private countrySelected: Countries;
+  private selectedCountries: number[] = [];
   private officeList = [];
   private countrySelections: FirebaseListObservable<any[]>;
   private regionId: string;
@@ -38,7 +42,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
 
   ngOnInit() {
@@ -48,72 +52,59 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         return;
       }
       this.uid = user.auth.uid;
-      this.countrySelections = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
-      //regional directors
-      this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
-        query: {
-          orderByChild: "userType",
-          equalTo: UserType.RegionalDirector
-        }
-      })
-        .flatMap(staffs => {
-          let ids = [];
-          staffs.forEach(staff => {
-            ids.push(staff.$key);
-          });
-          return Observable.from(ids);
-        })
-        .flatMap(id => {
-            return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
-          }
-        )
+
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(x => {
-          this.regionalDirectors.push(x);
-        });
-      // //regional directors
-      // this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
-      //   .flatMap(countries => {
-      //     let countryIds = ["globalUser"];
-      //     countries.forEach(country => {
-      //       countryIds.push(country.$key)
-      //     });
-      //     return Observable.from(countryIds);
-      //   })
-      //   .flatMap(countryId => {
-      //     return this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {
-      //       query: {
-      //         orderByChild: "userType",
-      //         equalTo: UserType.RegionalDirector
-      //       }
-      //     });
-      //   })
-      //   .flatMap(staffs => {
-      //     let ids = [];
-      //     staffs.forEach(staff => {
-      //       ids.push(staff.$key);
-      //     });
-      //     return Observable.from(ids);
-      //   })
-      //   .flatMap(id => {
-      //       return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
-      //     }
-      //   )
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(x => {
-      //     this.regionalDirectors.push(x);
-      //   });
-      //check if edit mode
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["id"]) {
-            this.regionId = params["id"];
-            this.isEdit = true;
-            this.pageTitle = "AGENCY_ADMIN.COUNTRY_OFFICES.EDIT_REGION";
-            this.submitText = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_REGION";
-          }
-          this.fetchCountries();
+        .subscribe(agencyId => {
+          console.log(agencyId);
+          this.agencyId = agencyId.$value;
+
+          this.countrySelections = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId);
+
+          this.countrySelectionsNumbers = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
+            .map(offices => {
+              let locations = [];
+              offices.forEach(office => {
+                locations.push(office.location);
+              });
+              return locations;
+            });
+
+          //regional directors
+          this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid, {
+            query: {
+              orderByChild: "userType",
+              equalTo: UserType.RegionalDirector
+            }
+          })
+            .flatMap(staffs => {
+              let ids = [];
+              staffs.forEach(staff => {
+                ids.push(staff.$key);
+              });
+              return Observable.from(ids);
+            })
+            .flatMap(id => {
+                return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
+              }
+            )
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(x => {
+              this.regionalDirectors.push(x);
+            });
+
+          //check if edit mode
+          this.route.params
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((params: Params) => {
+              if (params["id"]) {
+                this.regionId = params["id"];
+                this.isEdit = true;
+                this.pageTitle = "AGENCY_ADMIN.COUNTRY_OFFICES.EDIT_REGION";
+                this.submitText = "AGENCY_ADMIN.COUNTRY_OFFICES.SAVE_REGION";
+              }
+              this.fetchCountries();
+            });
         });
     });
   }
@@ -139,23 +130,26 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     console.log("add new country selection");
 
     this.countrySelections
-      .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(result => {
         console.log("counter: " + this.counter + "/result: " + result.length);
+
         // if (this.isEdit) {
         if (this.counter < result.length - 1) {
           console.log("can add more country");
           this.counter++;
           this.countries.push(this.counter);
           this.selectedCountries.push(this.selectedCountries[0]);
+          console.log("countries: " + this.countries.length);
+          console.log("selectedCountries: " + this.selectedCountries.length);
         } else {
           this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_MAX_COUNTRIES';
           this.showAlert();
           return;
         }
 
-        console.log(this.countries)
+        console.log(this.countries);
+        console.log(this.selectedCountries);
         if (this.countries.length > 1) {
           this.hideRemove = false;
         }
@@ -259,8 +253,13 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       }
       modelRegion.directorId = this.regionalDirectorId;
       // modelRegion.directorId = this.regionalDirectorId.$key;
+
       this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid).push(modelRegion).then(() => {
-        this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        if (this.regionalDirectorId != "null") {
+          this.updateDirectorRegion(this.regionalDirectorId, this.officeList);
+        } else {
+          this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        }
       }, error => {
         console.log(error.message);
         this.isSubmitted = false;
@@ -292,12 +291,28 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       }
       regionData["/region/" + this.uid + "/" + this.regionId + "/countries"] = countriesData;
       this.af.database.object(Constants.APP_STATUS).update(regionData).then(() => {
-        this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        if (this.regionalDirectorId != "null") {
+          this.updateDirectorRegion(this.regionalDirectorId, this.officeList);
+        } else {
+          this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+        }
       }, error => {
         console.log(error.message);
         this.isSubmitted = false;
       });
     }
+  }
+
+  private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {
+    let directorRegion = {};
+    for (let office of officeList) {
+      directorRegion["/directorRegion/" + office + "/"] = regionalDirectorId;
+    }
+    this.af.database.object(Constants.APP_STATUS).update(directorRegion).then(() => {
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+    }, error => {
+      console.log(error.message);
+    });
   }
 
   cancel() {
@@ -321,19 +336,28 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   }
 
-  countryChange(country) {
+  countryChange(country, value) {
+    this.countrySelected = value;
+    console.log(value);
+    console.log("selected country: " + this.countrySelected);
+    console.log("country: " + country);
     console.log("selected: " + this.selectedCountries.length + "/ countries: " + this.countries.length);
     if (this.selectedCountries.length == this.countries.length) {
       console.log("update");
-      this.selectedCountries[country] = Countries[this.countrySelected];
+      this.selectedCountries[country] = Number(this.countrySelected);
+      console.log(this.selectedCountries);
     } else {
       console.log("push new country");
-      this.selectedCountries.push(Countries[this.countrySelected]);
+      this.selectedCountries.push(this.countrySelected);
     }
     console.log("country: " + country);
     console.log("country selected: " + this.countrySelected);
     console.log("country list: " + this.selectedCountries);
     this.countrySelected = 0;
+  }
+
+  selectRegionDirector(id) {
+    this.regionalDirectorId = id;
   }
 
   private loadRegionInfo(param: string) {
@@ -347,7 +371,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         console.log(region.directorId);
         console.log("***");
 
-        if (!this.isSubmitted) {
+        if (!this.isSubmitted && region.countries) {
           for (let i = 0; i < Object.keys(region.countries).length; i++) {
             this.countries.push(i);
             if (i != 0) {
@@ -366,7 +390,11 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
           });
       })
       .flatMap(region => {
-        return Observable.from(Object.keys(region.countries));
+        let countries = [];
+        if (region.countries) {
+          countries = Object.keys(region.countries);
+        }
+        return Observable.from(countries);
       })
       .flatMap(countryId => {
         console.log("country id: " + countryId);
@@ -377,7 +405,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         if (!this.isSubmitted) {
           this.selectedCountries.push(country.location);
         }
-        // console.log(this.selectedCountries);
+        console.log(this.selectedCountries);
       });
   }
 
@@ -398,6 +426,15 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     if (this.countries.length == 1) {
       this.hideRemove = true;
     }
+  }
+
+  deleteRegion() {
+    console.log("delete region: " + this.regionId + "/");
+    this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + "/" + this.regionId).remove().then(() => {
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+    }, error => {
+      console.log(error.message);
+    });
   }
 
 }

@@ -7,6 +7,7 @@ import {Observable} from "rxjs/Observable";
 import set = Reflect.set;
 import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
+import {UserService} from "../services/user.service";
 declare const jQuery: any;
 
 @Component({
@@ -35,37 +36,62 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService) {
+  constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
   }
 
   ngOnInit() {
-    console.log("NGHSUBVSCRIBOIEWJSFOIEWJGF");
-    console.log(this.ngUnsubscribe);
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        console.log("Admin uid: " + this.uid);
-        this.checkUserType(this.uid);
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.userType = userType;
+            let userPath = Constants.USER_PATHS[userType];
+            this.getSystemAgencyCountryIds(userPath);
+          });
+        // this.checkUserType(this.uid);
       } else {
         this.navigateToLogin();
       }
     });
   }
 
-  private checkUserType(uid: string) {
-    this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + uid)
-      .takeUntil(this.ngUnsubscribe).subscribe(admin => {
-      if (admin.countryId) {
-
-        this.userType = UserType.CountryAdmin;
-        this.countryId = admin.countryId;
-        console.log("user type: " + this.userType);
-        this.getResponsePlans(admin.countryId);
-      } else {
-        console.log("check other user types!")
-      }
-    });
+  private getSystemAgencyCountryIds(userPath: string) {
+    this.af.database.object(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + "/countryId")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((countryId) => {
+        this.countryId = countryId.$value;
+        this.getResponsePlans(this.countryId);
+        // this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/agencyAdmin')
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe((agencyAdminIds) => {
+        //     this.agencyId = agencyAdminIds[0].$key;
+        //
+        //     this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/systemAdmin')
+        //       .takeUntil(this.ngUnsubscribe)
+        //       .subscribe((systemAdminIds) => {
+        //         this.systemId = systemAdminIds[0].$key;
+        //       });
+        //
+        //   });
+      });
   }
+
+  // private checkUserType(uid: string) {
+  //   this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + uid)
+  //     .takeUntil(this.ngUnsubscribe).subscribe(admin => {
+  //     if (admin.countryId) {
+  //
+  //       this.userType = UserType.CountryAdmin;
+  //       this.countryId = admin.countryId;
+  //       console.log("user type: " + this.userType);
+  //       this.getResponsePlans(admin.countryId);
+  //     } else {
+  //       console.log("check other user types!")
+  //     }
+  //   });
+  // }
 
   private getResponsePlans(id: string) {
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
@@ -140,11 +166,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (this.needShowDialog) {
       jQuery("#dialog-action").modal("hide");
     }
-    if (this.userType == UserType.CountryAdmin) {
+    if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       let approvalData = {};
       let countryId = "";
       let agencyId = "";
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
+      this.af.database.object(Constants.APP_STATUS +"/"+ Constants.USER_PATHS[this.userType] +"/"+ this.uid)
         .flatMap(countryAdmin => {
           countryId = countryAdmin.countryId;
           agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
@@ -157,7 +183,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
           } else {
-            this.waringMessage = "ERROR_NO_COUNTRY_DIRECTOR";
+            this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
           }

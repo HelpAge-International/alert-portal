@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
