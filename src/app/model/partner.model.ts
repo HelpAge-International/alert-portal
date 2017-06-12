@@ -10,16 +10,11 @@ export class PartnerModel extends BaseModel {
   public notificationSettings: any[];
   public permissions: PermissionsModel;
   public hasValidationPermission: string;
-  public status: number;
-  public createdAt: number;
   public modifiedAt: number;
 
   constructor() {
     super();
     this.permissions = new PermissionsModel();
-
-    // set the default status to awaiting validations
-    this.status = PartnerStatus.AwaitingValidation;
   }
 
   validate(excludedFields = []): AlertMessageModel {

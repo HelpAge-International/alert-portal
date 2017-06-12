@@ -6,6 +6,14 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
+  	<ng-template [ngIf]="countrySelected && !agencySelected">
+        <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
+        <app-alert-widget [countryId]="countryId"></app-alert-widget>
+    </ng-template>
+    <ng-template [ngIf]="agencySelected">
+        <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
+        <app-alert-widget [countryId]="countryId"></app-alert-widget>
+    </ng-template>
 
     <app-country-office-profile-menu></app-country-office-profile-menu>
 		

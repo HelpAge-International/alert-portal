@@ -43,7 +43,10 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
           _.map(setting => {
-            this.settings[setting.$key] = setting;
+            let settingKey = setting.$key;
+            delete setting.$key;
+            delete setting.$exists;
+            this.settings[settingKey] = setting;
           });
 
           this.riskMonitorShowLogForFreq = new Frequency(this.settings['riskMonitoring']['showLogsFrom']);

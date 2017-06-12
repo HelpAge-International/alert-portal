@@ -1,0 +1,18 @@
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <!--<div class="Back&#45;&#45;button">Home</div>-->
+    <div class="Country__bar">
+      <div class="Country__icon__wrapper">
+        <img src="../assets/images/countries/malaysia.svg" alt="">
+      </div>
+      <ul>
+        <li [class.Active]="menuMap.get('officeProfile')" class="Active" (click)="menuSelection('officeProfile')">
+          Country office profile
+        </li>
+        <li [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">Risk Monitoring</li>
+        <li [class.Active]="menuMap.get('preparedness')" (click)="menuSelection('preparedness')">Preparedness</li>
+        <li [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">Plans</li>
+      </ul>
+    </div>
+  </div>
+</div>

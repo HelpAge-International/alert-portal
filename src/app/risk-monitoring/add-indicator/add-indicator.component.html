@@ -1,7 +1,7 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -150,7 +150,7 @@
 
         <div class="Form-submit__wrapper">
             <div class="btn btn-primary" (click)="saveIndicator()">{{"RISK_MONITORING.ADD_INDICATOR.SAVE_INDICATOR" | translate}}</div>
-            <div class="btn btn-outline-secondary">{{"GLOBAL.CANCEL" | translate}}</div>
+            <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>
         </div>
 
     </div>

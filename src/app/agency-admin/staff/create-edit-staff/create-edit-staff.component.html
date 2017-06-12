@@ -43,7 +43,7 @@
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0" [value]="type">
+            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0 || idx==8" [value]="type">
               {{USER_TYPE[type] | translate}}
             </option>
           </select>
@@ -61,7 +61,7 @@
                   [required]="!hideCountry">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let country of countryList | async" [ngValue]="country"
-                    [selected]="country.location == countryOffice?.location">{{Country[country.location]}}
+                    [selected]="country.location == countryOffice?.location">{{Countries[country.location] | translate}}
             </option>
           </select>
         </div>

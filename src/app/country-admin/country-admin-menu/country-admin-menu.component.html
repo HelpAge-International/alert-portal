@@ -1,42 +1,48 @@
-<!--TODO - UPDATE WHEN THE MODULES ARE COMPLETED-->
-<div class="Sub-header_bar" *ngIf="!isAnonym">
+<div class="Sub-header_bar">
     <div class="Hamburger">
         <span></span>
     </div>
     <ul>
         <li class="" routerLinkActive="active">
-            <a routerLink="/dashboard">Home</a> <!--TODO - Go to Dashboard-->
+            <a routerLink="/dashboard">{{"GLOBAL.HOME" | translate}}</a>
         </li>
         <li class="" routerLinkActive="active">
-            <a routerLink="/risk-monitoring">Risk Monitoring</a> <!--TODO - Go to Risk Monitoring-->
+            <a routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</a>
         </li>
 
         <li class="" routerLinkActive="active">
             <div class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true" aria-expanded="false">Preparedness</a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
+                   aria-expanded="false">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS" | translate}}</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" routerLink="/preparedness/minimum">Minimum preparedness</a>
-                    <a class="dropdown-item" routerLink="/preparedness/advanced">Advanced preparedness</a>
-                    <a class="dropdown-item" routerLink="/preparedness/budget">Preparedness budget</a>
+                    <a class="dropdown-item" routerLink="/preparedness/minimum">{{"HEADERS.MIN_PREP" | translate}}</a>
+                    <a class="dropdown-item" routerLink="/preparedness/advanced">{{"HEADERS.ADV_PREP" | translate}}</a>
+                    <a class="dropdown-item" routerLink="/preparedness/budget">{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET" |
+            translate}}</a>
                 </div>
             </div>
         </li>
+
         <li class="" routerLinkActive="active">
-            <a routerLink="/response-plans">Plans</a> <!--TODO - Go to Response Plans-->
+            <a routerLink="/response-plans">{{"HEADERS.PLANS" | translate}}</a>
         </li>
         <li class="" routerLinkActive="active">
-            <a routerLink="/country-admin/country-office-profile">Country Office</a> <!--TODO - Go to Country Office Profile-->
+            <a routerLink="/country-admin/country-office-profile">{{"COUNTRY_ADMIN.STAFF.COUNTRY_OFFICE" | translate}}</a>
         </li>
         <li class="" routerLinkActive="active">
-            <a routerLink="/map">Global Map</a> <!--TODO - Go to Global Maps-->
+            <a routerLink="/map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
         </li>
-        <li class="" routerLinkActive="active">
+        <li *ngIf="userType == UserType.CountryAdmin" class="" routerLinkActive="active">
             <div class="dropdown">
-                <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Country Administrator</a>
+                <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true"
+                   aria-expanded="false">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRY_ADMINISTRATOR" | translate}}</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" routerLink="/country-admin/country-staff">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" | translate}}</a>
-                    <a class="dropdown-item" routerLink="/country-admin/settings/country-permission-settings">{{"COUNTRY_ADMIN.SETTINGS.TITLE_TEXT" | translate}}</a>
-                    <a class="dropdown-item" routerLink="/country-admin/country-messages">{{"COUNTRY_ADMIN.MESSAGES.TITLE_TEXT" | translate}}</a>
+                    <a class="dropdown-item" routerLink="/country-admin/country-staff">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" |
+            translate}}</a>
+                    <a class="dropdown-item" routerLink="/country-admin/settings/country-permission-settings">{{"COUNTRY_ADMIN.SETTINGS.TITLE_TEXT"
+            | translate}}</a>
+                    <a class="dropdown-item" routerLink="/country-admin/country-messages">{{"COUNTRY_ADMIN.MESSAGES.TITLE_TEXT" |
+            translate}}</a>
                 </div>
             </div>
         </li>

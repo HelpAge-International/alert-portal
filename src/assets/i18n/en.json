@@ -67,7 +67,7 @@
         "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
         "NAME_MISSING": "Name is missing!",
         "EMAIL_NOT_VALID": "Email address is not valid!",
-        "GENERAL_ERROR": "An error occurred. Please check and try again",
+        "GENERAL_ERROR": "The email address or password you entered is incorrect. Please check and try again",
         "NO_FILTERED_RESULTS": "There are no actions for the filters your have selected",
         "PREPAREDNESS_LEVEL": {
             "ALL": "All preparedness levels",
@@ -809,6 +809,7 @@
             "IS_PART_OF_RESPONSE_TEAM": "Is this staff member part of the response team?",
             "SAVE_NEW_STAFF": "Save new staff member",
             "SAVE_CHANGES": "Save changes",
+            "EMPTY_LIST": "There are no staff users for this country office.",
             "NO_TITLE": "Please select a title",
             "NO_FIRST_NAME": "Please enter the first name of the staff",
             "NO_LAST_NAME": "Please enter the last name of the staff",
@@ -828,12 +829,14 @@
             "ADDITIONAL_INFO": "Additional Info"
         },
         "PARTNER": {
-            "ADD_NEW_PARTNER": "Add new new partner user",
+            "ADD_NEW_PARTNER": "Add new partner user",
             "TITLE_ADD_PARTNER": "Add partner user",
             "TITLE_EDIT_PARTNER": "Edit partner user",
             "TITLE_DELETE_PARTNER": "Delete partner user",
             "PARTNER_ORGANISATION": "Partner Organisation",
             "SAVE_NEW_PARTNER": "Save new partner user",
+            "PARTNER_USERS": "Partner users",
+            "EMPTY_LIST": "There are no partners for this country office.",
             "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
             "PARTNER_PLAN_VALIDATION": "Partner & Plan Validation",
             "NO_PARTNER_ORGANISATION": "Please select a partner organisation",
@@ -981,7 +984,8 @@
             "SORT_BY": "Sort by",
             "NO_COUNTRIES": "Countries doesn't",
             "NO_COUNTRIES_BY": "Countries doesn't exist by",
-            "ALL_ALERT_LEVEL": "All Alert level",
+            "ALERT_LEVEL": "Alert level",
+            "ALL_ALERT_LEVEL": "All alert levels",
             "ALERT_LEVEL": "Alert Level",
             "NO_AGENCIES": "No Agencies",
             "AGENCIES_IN": "Agencies in",
@@ -1205,6 +1209,7 @@
     "ADD_PARTNER": {
         "SELECT_A_PARTNER": "Select a partner",
         "ADD_A_PARTNER_ORGANISATION": "Add partner organisation",
+        "EDIT_PARTNER_ORGANISATION": "Edit partner organisation",
         "PARTNER_ORGANISATION": "Partner Organisation",
         "ADD_ANOTHER_PARTNER_TO_THIS_PLAN": "Add another partner to this plan",
         "ORGANISATION_DETAILS": "Organisation Details",
@@ -1234,6 +1239,8 @@
         "NO_OPERATION_AREA_LEVEL2": "Please select the second level of the country operation area",
         "SUCCESS_SAVED": "The partner organisation was successfully saved",
         "INVALID_DATE": "The project end date is invalid",
+        "DIALOG_DELETE_TITLE": "Delete this partner organisation?",
+        "DIALOG_DELETE_CONTENT": "Are you sure you want to delete this partner organisation? Any partner users will lose access to your country office",
         "DIALOG_TITLE": "Create partner user",
         "DIALOG_CONTENT": "The entered partner details do not correspond to any of the registered partners. Would you like to create an account now?"
     },
@@ -1242,6 +1249,16 @@
         "auth/invalid-email": "The email address is invalid",
         "auth/operation-not-allowed": "Operation not allowed",
         "auth/weak-password": "The password is to weak"
+    },
+    "NOTES": {
+        "NO_CONTENT": "Please insert the note content",
+        "SUCCESS_SAVED": "Note has been succesfully saved",
+        "ADD": "Add note",
+        "BY": "by",
+        "EDIT_DIALOG_TITLE": "Edit note",
+        "DELETE_DIALOG_TITLE": "Delete note",
+        "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this note?",
+        "SUCCESS_DELETED": "The note has been successfully deleted"
     },
     "COPY_ACTION_DIALOG": {
         "TITLE": "Alert",
@@ -1273,7 +1290,7 @@
         "NO_LEVEL": "Level is required",
         "NO_DEPARTMENT": "Department is required",
         "NO_DUE_DATE": "Due Date is required",
-        "NO_BUDJET": "Budjet is required",
+        "NO_BUDGET": "Budget is required",
         "NO_REQUIRE_DOC": "Require Doc is required",
         "ALL_HAZARDS": "All Hazards",
         "UNASSIGNED": "Unassigned",
@@ -1348,7 +1365,7 @@
         "APPROVE_PLAN": "Approve Plan",
         "REJECT_PLAN": "Reject Plan",
         "REJECT_PLAN_CONFIRMATION": "Please confirm you want to reject this plan",
-        "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan"
+        "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?"
     },
     "RISK_MONITORING": {
         "ADD_INDICATOR": {
@@ -1379,7 +1396,6 @@
             "SAVE_INDICATOR": "Save new indicator",
             "TITLE_EDIT_INDICATOR": "Edit Indicator"
         },
-
         "ADD_ALERT": {
             "NO_HAZARD": "Please select hazard",
             "NO_ALERT_LEVEL": "Please select alert level",
@@ -1407,7 +1423,7 @@
             "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "ADD_NEW_HAZARD": "Add new hazard",
             "INFORMATION_PROVIDED": "Information provided by ",
-            "INFORM_INDEX_FOR_PHILIPPINES": "Inform Index for Philippines",
+            "INFORM_INDEX_FOR_PHILIPPINES": "Inform Index",
             "NOTE_HAZARD": "Note: this list will only display the hazards that donâ€™t appear in your risk monitoring list (you cannot add the same hazard twice)",
             "SELECT_ANOTHER_HAZARD": "Select another hazard",
             "IS_SEASONAL_HAZARD": "Is this a seasonal hazard?",
@@ -1476,10 +1492,13 @@
         },
         "TITLE": "Risk Monitoring"
     },
-    "EXTERNAL_PARTNER": {
-        "RESPONSE_PLAN": {
-            "BAD_TOKEN": "Sorry, token inactive or time to token has expired",
-            "BAD_AUTH": "Error user authorization"
-        }
+    "DIRECTORS": {
+        "NO_COUNTRIES_TO_SHOW": "No countries to show"
+    },
+    "HEADERS": {
+        "MIN_PREP": "Minimum preparedness",
+        "ADV_PREP": "Advanced preparedness",
+        "GLOBAL_MAP": "Global Map",
+        "PLANS": "Plans"
     }
 }

@@ -129,8 +129,68 @@ export class LoginComponent implements OnInit, OnDestroy {
                               this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
                             }
                           });
-                          this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
-                          this.showAlert(true);
+                          this.af.database.list(Constants.APP_STATUS + '/globalDirector', {preserveSnapshot: true})
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe(snapshots => {
+                              snapshots.forEach(snapshot => {
+                                if (snapshot.key == success.uid) {
+                                  this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+                                }
+                              });
+                              this.af.database.list(Constants.APP_STATUS + '/regionDirector', {preserveSnapshot: true})
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(snapshots => {
+                                  snapshots.forEach(snapshot => {
+                                    if (snapshot.key == success.uid) {
+                                      this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+                                    }
+                                  });
+
+                                  this.af.database.list(Constants.APP_STATUS + '/globalUser', {preserveSnapshot: true})
+                                    .takeUntil(this.ngUnsubscribe)
+                                    .subscribe(snapshots => {
+                                      snapshots.forEach(snapshot => {
+                                        if (snapshot.key == success.uid) {
+                                          this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+                                        }
+                                      });
+
+                                      this.af.database.list(Constants.APP_STATUS + '/countryUser', {preserveSnapshot: true})
+                                        .takeUntil(this.ngUnsubscribe)
+                                        .subscribe(snapshots => {
+                                          snapshots.forEach(snapshot => {
+                                            if (snapshot.key == success.uid) {
+                                              this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+                                            }
+                                          });
+
+                                          this.af.database.list(Constants.APP_STATUS + '/ertLeader', {preserveSnapshot: true})
+                                            .takeUntil(this.ngUnsubscribe)
+                                            .subscribe(snapshots => {
+                                              snapshots.forEach(snapshot => {
+                                                if (snapshot.key == success.uid) {
+                                                  this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+                                                }
+                                              });
+
+                                              this.af.database.list(Constants.APP_STATUS + '/ert', {preserveSnapshot: true})
+                                                .takeUntil(this.ngUnsubscribe)
+                                                .subscribe(snapshots => {
+                                                  snapshots.forEach(snapshot => {
+                                                    if (snapshot.key == success.uid) {
+                                                      this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+                                                    }
+                                                  });
+                                                  this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
+                                                  this.showAlert(true);
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                          // this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
+                          // this.showAlert(true);
                         });
                     });
                 });

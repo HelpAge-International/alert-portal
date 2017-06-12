@@ -13,8 +13,8 @@ export class Action extends BaseModel {
     public department: number;
     public asignee: string;
     public dueDate: number;
-    public budjet: number;
-    public requireDoc: any;
+    public budget: number;
+    public requireDoc: Boolean;
     public documentId: string;
     public frequencyBase: number;
     public frequencyValue: number;
@@ -43,8 +43,8 @@ export class Action extends BaseModel {
             return new AlertMessageModel('PREPAREDNESS.NO_DUE_DATE');
         }
 
-        if (!this.budjet && !this.isExcluded('budjet', excludedFields)) {
-            return new AlertMessageModel('PREPAREDNESS.NO_BUDJET');
+        if (!this.budget && !this.isExcluded('budget', excludedFields)) {
+            return new AlertMessageModel('PREPAREDNESS.NO_BUDGET');
         }
 
         if (typeof (this.requireDoc) == 'undefined' && !this.isExcluded('requireDoc', excludedFields)) {

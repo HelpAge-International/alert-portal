@@ -109,6 +109,7 @@ import {CountrySubmenuComponent} from './preparedness/country-submenu/country-su
 import {AlertWidgetComponent} from './commons/alert-widget/alert-widget.component';
 import {MapCountriesListComponent} from './map/map-countries-list/map-countries-list.component';
 import {UserService} from "./services/user.service";
+import {NoteService} from "./services/note.service"
 import {DashboardSeasonalCalendarComponent} from './dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component';
 import {DashboardUpdateAlertLevelComponent} from './dashboard/dashboard-update-alert-level/dashboard-update-alert-level.component';
 import {SessionService} from "./services/session.service";
@@ -117,16 +118,28 @@ import {SettingsService} from "./services/settings.service";
 import {CountryAdminSettingsMenuComponent} from "./country-admin/settings/settings-menu/settings-menu.component";
 import {CountryOfficeProfileMenuComponent} from "./country-admin/country-office-profile/office-profile-menu/office-profile-menu.component";
 import {EnumKeyValuesPipe} from "./utils/pipes/enum-keyValues.pipe";
-import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import {MessageService} from "./services/message.service";
 import {NotificationSettingsService} from "./services/notification-settings.service";
 import {ReviewResponsePlanComponent} from './dashboard/review-response-plan/review-response-plan.component';
 import {FacetofaceMeetingRequestComponent} from './dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/country-statistics-ribbon.component';
 import {ViewResponsePlanComponent} from './commons/view-response-plan/view-response-plan.component';
-import { CountryOfficePartnersComponent } from "./country-admin/country-office-profile/partners/partners.component";
-import { ViewPlanComponent } from './response-plans/view-plan/view-plan.component';
+import {CountryOfficePartnersComponent} from "./country-admin/country-office-profile/partners/partners.component";
+import {ViewPlanComponent} from './response-plans/view-plan/view-plan.component';
+import {DirectorMenuComponent} from './director/director-menu/director-menu.component';
+import {DirectorComponent} from './director/director.component';
+import { DirectorHeaderComponent } from './director/director-header/director-header.component';
+import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
+import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
+import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
+import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-profile/equipment/equipment.component";
+import { EquipmentService } from "./services/equipment.service";
+import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
+import { CoordinationArrangementService } from "./services/coordination-arrangement.service";
 import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
+
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
 }
@@ -148,7 +161,6 @@ const firebaseAuthConfig = {
 
 @NgModule({
   declarations: [
-    ReplacePipe,
     AppComponent,
     LoginComponent,
     SystemAdminComponent,
@@ -177,6 +189,10 @@ const firebaseAuthConfig = {
     CountryAdminSettingsMenuComponent,
     CountryOfficeProfileMenuComponent,
     CountryOfficePartnersComponent,
+    CountryOfficeEquipmentComponent,
+    CountryOfficeAddEditEquipmentComponent,
+    CountryOfficeAddEditSurgeEquipmentComponent,
+    CountryOfficeCoordinationComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
@@ -254,6 +270,12 @@ const firebaseAuthConfig = {
     CountryStatisticsRibbonComponent,
     ViewResponsePlanComponent,
     ViewPlanComponent,
+    DirectorMenuComponent,
+    DirectorComponent,
+    DirectorHeaderComponent,
+    DirectorOverviewComponent,
+    ViewCountryMenuComponent,
+    AlertLoaderComponent,
     ExternalPartnerResponsePlan
   ],
   imports: [
@@ -278,7 +300,18 @@ const firebaseAuthConfig = {
       storageType: 'localStorage'
     })
   ],
-  providers: [RxHelper, Modal, UserService, SessionService, CommonService, SettingsService, MessageService, NotificationSettingsService],
+  providers: [
+              RxHelper,
+              Modal,
+              UserService,
+              SessionService,
+              CommonService,
+              SettingsService,
+              MessageService,
+              NotificationSettingsService,
+              NoteService,
+              EquipmentService,
+              CoordinationArrangementService],
   bootstrap: [AppComponent]
 })
 

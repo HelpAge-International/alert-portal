@@ -1,23 +1,16 @@
 /**
  * Created by Fei on 08/03/2017.
  */
-import {
-    PersonTitle,
-    Country,
-    Currency,
-    UserType,
-    StaffPosition,
-    OfficeType,
-    DurationType,
-    ResponsePlanSectionSettings,
-    DocumentType
-} from "./Enums";
+import {Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType} from "./Enums";
 
 export class Constants {
 
     static TEMP_PASSWORD = "testtest";
     static ALERT_DURATION: number = 5000;
     static ALERT_REDIRECT_DURATION: number = 1500;
+
+    /*INFORM WORKFLOW ID*/
+    static INFORM_WORKFLOW: number = 261;
 
     /*PATHS*/
     static APP_STATUS = "/sand";
@@ -47,6 +40,9 @@ export class Constants {
     static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
 
+    // Global director / Regional director
+    static G_OR_R_DIRECTOR_DASHBOARD = "/director";
+
     /*LIST VALUES FOR TRANSLATION*/
     static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
     static THRESHOLD_NAME = ["GLOBAL.THRESHOLD_NAME.GREEN", "GLOBAL.THRESHOLD_NAME.AMBER", "GLOBAL.THRESHOLD_NAME.RED"];
@@ -55,8 +51,8 @@ export class Constants {
         "GLOBAL.PERSON_TITLE.DR", "GLOBAL.PERSON_TITLE.PROF"];
     static PERSON_TITLE_SELECTION: number[] = [PersonTitle.Mr, PersonTitle.Miss, PersonTitle.Dr];
 
-    static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
-    static COUNTRY_SELECTION = [Country.UK, Country.France, Country.Germany];
+    // static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
+
 
     static CATEGORY: string[] = [
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ALL",
@@ -78,11 +74,15 @@ export class Constants {
     static CURRENCY: string[] = ["GBP", "EUR", "USD"];
     static CURRENCY_SELECTION = [Currency.GBP, Currency.EUR, Currency.USD];
 
+    //agency add staff
     static USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
         "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT", "GLOBAL.USER_TYPE.DONOR",
-        "GLOBAL.USER_TYPE.GLOBAL_USER", "GLOBAL.USER_TYPE.COUNTRY_ADMINS", "GLOBAL.USER_TYPE.NON_ALERT"];
+        "GLOBAL.USER_TYPE.GLOBAL_USER", "GLOBAL.USER_TYPE.COUNTRY_ADMINS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.COUNTRY_USER"];
+
     static USER_TYPE_SELECTION = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
-    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
+    UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert, UserType.CountryUser];
+
+    static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins", "countryuser"];
 
     static STAFF_POSITION = ["AGENCY_ADMIN.STAFF.ALL_POSITIONS", "AGENCY_ADMIN.STAFF.OFFICE_DIRECTOR", "AGENCY_ADMIN.STAFF.OFFICE_STAFF"];
     static STAFF_POSITION_SELECTION = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
@@ -143,7 +143,6 @@ export class Constants {
         "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO26"
     ];
 
-    static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins"];
 
     /*
      * Response Plans
@@ -184,6 +183,7 @@ export class Constants {
         "AGENCY_ADMIN.SETTINGS.DOCUMENT_TYPE.HAZARD_DOCUMENT"
     ];
 
+    static COUNTRY_SELECTION = [Countries.GB, Countries.FR, Countries.DE, Countries.AF, Countries.AX, Countries.AL, Countries.DZ, Countries.AS, Countries.AD, Countries.AO, Countries.AI, Countries.AQ, Countries.AG];
     static COUNTRIES = [
         "GLOBAL.COUNTRIES.GB",
         "GLOBAL.COUNTRIES.FR",
@@ -485,35 +485,35 @@ export class Constants {
         "GLOBAL.ALERTS.RED"
     ];
 
-  static MEDIA_TYPES = [
-    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC",
-    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO",
-    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
-  ];
+    static MEDIA_TYPES = [
+        "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC",
+        "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO",
+        "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
+    ];
 
-  static PARTNER_STATUS = ["COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION", "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED"];
-  // All = 0,
-  // GlobalDirector = 1,
-  // RegionalDirector = 2,
-  // CountryDirector = 3,
-  // ErtLeader = 4,
-  // Ert = 5,
-  // Donor = 6,
-  // GlobalUser = 7,
-  // CountryAdmin = 8,
-  // NonAlert = 9
-  static USER_TYPE_PATH = [
-    null,
-    null,
-    null,
-    "countryDirector",
-    null,
-    null,
-    null,
-    null,
-    "administratorCountry",
-    null
-  ];
+    static PARTNER_STATUS = ["COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION", "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED"];
+    // All = 0,
+    // GlobalDirector = 1,
+    // RegionalDirector = 2,
+    // CountryDirector = 3,
+    // ErtLeader = 4,
+    // Ert = 5,
+    // Donor = 6,
+    // GlobalUser = 7,
+    // CountryAdmin = 8,
+    // NonAlert = 9
+    static USER_TYPE_PATH = [
+        null,
+        null,
+        null,
+        "countryDirector",
+        null,
+        null,
+        null,
+        null,
+        "administratorCountry",
+        null
+    ];
 
     static ALERT_BUTTON_CLASS = [
         "success",
@@ -535,6 +535,24 @@ export class Constants {
         '#B8E986',
         '#9012FE'
     ];
+
+    // TODO - Check when new users are added top the database, Make sure the path is correct
+    static USER_PATHS = [
+        ,
+        'globalDirector',
+        'regionDirector',
+        'countryDirector',
+        'ertLeader',
+        'ert',
+        'donor',
+        'globalUser',
+        'administratorCountry',
+        ,
+        'countryUser'
+    ];
+
+    // Nodes List, used for saving Notes
+    static PARTNER_ORGANISATION_NODE = '/partnerOrganisation/{id}/notes';
 
 }
 

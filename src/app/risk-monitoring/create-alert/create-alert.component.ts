@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertLevels, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {AlertLevels, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
@@ -34,8 +34,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit {
     private durationType = Constants.DURATION_TYPE;
     private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
-    private countries = Constants.COUNTRY;
-    private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
+    private countries = Constants.COUNTRIES;
+    private countriesList: number[] = [Countries.UK, Countries.France, Countries.Germany];
     private frequency = new Array(100);
 
     private countryLevels: any[] = [];

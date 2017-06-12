@@ -151,7 +151,7 @@ export class RiskMonitoringComponent implements OnInit {
                 hazards.forEach((hazard: any, key) => {
                     hazard.id = hazard.$key;
                     hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
-                    
+
                     this.getIndicators(hazard.id).subscribe((indicators: any) => {
                         indicators.forEach((indicator, key) => {
                             this.getLogs(indicator.$key).subscribe((logs: any) => {
@@ -210,7 +210,7 @@ export class RiskMonitoringComponent implements OnInit {
     }
 
     collapseAll(mode: string) {
-        if(mode == 'expand') {
+        if (mode == 'expand') {
             jQuery('.collapse').collapse('show');
         } else {
             jQuery('.collapse').collapse('hide');

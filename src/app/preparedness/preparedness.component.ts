@@ -63,10 +63,6 @@ export class PreparednessComponent implements OnInit, OnDestroy {
         let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
                 this.uid = auth.uid;
-
-                console.log(this.uid);
-
-
                 this._defaultHazardCategoryValue();
                 this.getUsersForAssign();
                 this.processPage();
@@ -76,13 +72,13 @@ export class PreparednessComponent implements OnInit, OnDestroy {
         });
         this.subscriptions.add(subscription);
     }
- ngOnDestroy() {
-   try {
-     this.subscriptions.releaseAll()
-   } catch (e) {
-     console.log(e.message);
-   }
- }
+    ngOnDestroy() {
+        try {
+            this.subscriptions.releaseAll()
+        } catch (e) {
+            console.log(e.message);
+        }
+    }
     saveAction(isValid: boolean) {
         if (!isValid || !this._isValidForm()) {
             return false;
@@ -106,7 +102,7 @@ export class PreparednessComponent implements OnInit, OnDestroy {
         }
 
         let dataToSave = Object.assign({}, this.actionData);
-        if(dataToSave && dataToSave.requireDoc) {
+        if (dataToSave && dataToSave.requireDoc) {
             dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
         }
 

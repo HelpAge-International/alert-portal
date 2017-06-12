@@ -16,6 +16,7 @@ declare const jQuery: any;
 })
 
 export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
+  private isDirector: boolean;
 
   private uid: string;
   private ApprovalStatus = ApprovalStatus;
@@ -42,6 +43,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         this.route.params
           .takeUntil(this.ngUnsubscribe)
           .subscribe((params: Params) => {
+            if (params["isDirector"]) {
+              this.isDirector = params["isDirector"];
+            }
+            if (params["countryId"]) {
+              this.countryId = params["countryId"];
+            }
             if (params["id"]) {
               this.responsePlanId = params["id"];
               this.loadResponsePlan(this.responsePlanId);
@@ -54,21 +61,32 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlan(responsePlanId: string) {
-    this.userService.getUserType(this.uid)
-      .flatMap(userType => {
-        this.userType = userType;
-        return this.userService.getCountryId(Constants.USER_TYPE_PATH[userType], this.uid)
-      })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(countryId => {
-        this.countryId = countryId;
-        this.responsePlanService.getResponsePlan(countryId, responsePlanId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(responsePlan => {
-            this.loadedResponseplan = responsePlan;
-            this.handlePlanApproval(this.loadedResponseplan);
-          })
-      })
+    if (this.isDirector) {
+      this.userType = UserType.GlobalDirector;
+      this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(responsePlan => {
+          this.loadedResponseplan = responsePlan;
+          this.handlePlanApproval(this.loadedResponseplan);
+        });
+    } else {
+      this.userService.getUserType(this.uid)
+        .flatMap(userType => {
+          this.userType = userType;
+          return this.userService.getCountryId(Constants.USER_TYPE_PATH[userType], this.uid)
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryId => {
+          this.countryId = countryId;
+          this.responsePlanService.getResponsePlan(countryId, responsePlanId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(responsePlan => {
+              this.loadedResponseplan = responsePlan;
+              this.handlePlanApproval(this.loadedResponseplan);
+            });
+        })
+    }
+
   }
 
   private handlePlanApproval(responsePlan) {
@@ -131,7 +149,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   approvePlan() {
     console.log("approve plan");
     //TODO testing data, need to be updated!!!!
-    this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, "1b5mFmWq2fcdVncMwVDbNh3yY9u2", this.countryId, this.responsePlanId, true, "");
+    // this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, "1b5mFmWq2fcdVncMwVDbNh3yY9u2", this.countryId, this.responsePlanId, true, "", this.isDirector);
+    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector);
   }
 
   rejectPlan() {
@@ -152,7 +171,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     console.log("do reject update");
     jQuery("#rejectPlan").modal("hide");
     //TODO testing data, need to be updated!!!!
-    this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, "1b5mFmWq2fcdVncMwVDbNh3yY9u2", this.countryId, this.responsePlanId, false, this.rejectComment);
+    // this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, "1b5mFmWq2fcdVncMwVDbNh3yY9u2", this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector);
+    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector);
   }
 
   ngOnDestroy() {
@@ -168,4 +188,3 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 }
-

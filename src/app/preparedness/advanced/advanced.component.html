@@ -14,10 +14,8 @@
                 <div class="text-center"><p>You are about to export <strong>{{docsCount}} document(s)</strong> with a total size of <strong>{{docsSize | number:'1.0-2'}}MB</strong> are you sure you wish to continue?</p></div>
             </div>
             <div class="modal-footer">
-
                 <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
                 <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
-
             </div>
         </div>
     </div>
@@ -37,7 +35,7 @@
         <div class="Header-title__wrap">
             <h1>Advanced Preparedness Actions</h1>
             <div class="btn-group">
-                <button type="button" class="btn btn-primary">Create action</button>
+                <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Create action</button>
                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
@@ -162,7 +160,7 @@
                                         
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
@@ -353,7 +351,7 @@
                                         
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
@@ -546,7 +544,7 @@
 
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
@@ -699,7 +697,7 @@
 
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
-                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="countrySelected">
+                                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>

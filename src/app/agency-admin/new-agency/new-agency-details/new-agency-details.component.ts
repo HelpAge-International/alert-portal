@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Country, Currency} from "../../../utils/Enums";
+import {Countries, Currency} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 declare var jQuery: any;
 
@@ -35,8 +35,8 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private agencyCountry: number;
   private agencyCurrency: number;
 
-  private Country = Constants.COUNTRY;
-  private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
+  private Country = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
   private Currency = Constants.CURRENCY;
   private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
 

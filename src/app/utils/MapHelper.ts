@@ -19,6 +19,7 @@ import GeocoderStatus = google.maps.GeocoderStatus;
 import {current} from "codelyzer/util/syntaxKind";
 import {ModelSystem} from "../model/system.model";
 import {ModelRegion} from "../model/region.model";
+import {Subject} from "rxjs/Subject";
 /**
  * Created by jordan on 05/05/2017.
  */
@@ -26,7 +27,7 @@ import {ModelRegion} from "../model/region.model";
 export class SuperMapComponents {
 
   private af: AngularFire;
-  private subscriptions: RxHelper;
+  private ngUnsubscribe: Subject<void>;
   public map: google.maps.Map;
 
   public minThreshRed: number;
@@ -35,21 +36,20 @@ export class SuperMapComponents {
 
   private geocoder: google.maps.Geocoder;
 
-  public static init(af: AngularFire, handler: RxHelper) {
+  public static init(af: AngularFire, ngUnsubscribe: Subject<void>) {
     let components = new SuperMapComponents();
     components.af = af;
-    components.subscriptions = handler;
+    components.ngUnsubscribe = ngUnsubscribe;
     components.geocoder = new google.maps.Geocoder;
     return components;
   }
-
 
   /**
    *   Get the list of countries to highlight on the map based on the folder
    */
   public highlightedCountriesAgencyAdmin(uid: string, folder: string, funct: (red: string[], yellow: string[], green: string[]) => void) {
-    let sub = this
-      .getCountryOffice(uid, folder)
+    this.getCountryOffice(uid, folder)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((countryIds) => {
         let red: string[] = [];
         let yellow: string[] = [];
@@ -59,8 +59,6 @@ export class SuperMapComponents {
         }
         funct(red, yellow, green);
       });
-
-    this.subscriptions.add(sub);
   }
 
 
@@ -69,14 +67,14 @@ export class SuperMapComponents {
    */
   private markersForAgencyAdminMap: Map<string, number> = new Map<string, number>();
   public markersForAgencyAdmin(uid: string, folder: string, funct: (holder: google.maps.Marker) => void) {
-    let sub = this
-      .getCountryOffice(uid, folder)
+    this.getCountryOffice(uid, folder)
       .flatMap((countryOffice) => {
         for (let key of countryOffice) {
           this.markersForAgencyAdminMap.set(key.$key, key.location);
           return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key, { preserveSnapshot: true});
         }
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
         result.forEach(snapshot => {
           this.geocoder.geocode({"address": Countries[this.markersForAgencyAdminMap.get(result.key)]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
@@ -90,53 +88,51 @@ export class SuperMapComponents {
           })
         });
       });
-
-    this.subscriptions.add(sub);
   };
   public actionInfoForAgencyAdmin(uid: string, folder: string, funct: (location: number, marker) => void) {
-    let sub = this.getCountryOffice(uid, folder)
+    this.getCountryOffice(uid, folder)
       .flatMap((countryOffice) => {
         for (let key of countryOffice) {
           this.markersForAgencyAdminMap.set(key.$key, key.location);
           return this.af.database.object(Constants.APP_STATUS + "/hazard/" + key.$key, { preserveSnapshot: true});
         }
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
         result.forEach(snapshot => {
           funct(this.markersForAgencyAdminMap.get(result.key), snapshot.val());
         });
       });
-    this.subscriptions.add(sub);
   }
 
   /**
    *    Find the agency logo path from firebase
    */
   public logoForAgencyAdmin(uid: string, folder: string, funct: (logoPath: string) => void) {
-    let sub = this.fbgetAgencyObj(uid, folder)
+    this.fbgetAgencyObj(uid, folder)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
         if (result != null) {
           funct(result.val().logoPath);
         }
       });
-    this.subscriptions.add(sub);
   }
 
   /**
    * Get the system information
    */
   public getSystemInfo(uid: string, folder:string, funct: (red: number, yellow: number, green: number) => void) {
-    let sub = this.fbgetSystemAdminId(uid, folder)
+    this.fbgetSystemAdminId(uid, folder)
       .flatMap((systemAdmin) => {
         return this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdmin);
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((model: ModelSystem) => {
         let green: number = model.minThreshold[0];
         let yellow: number = model.minThreshold[1];
         let red: number = model.minThreshold[2];
         funct(red, yellow, green);
       });
-    this.subscriptions.add(sub);
   }
 
 
@@ -144,7 +140,7 @@ export class SuperMapComponents {
    * Get the list of departments for the country
    */
   public getDepForCountry(uid: string, folder: string, country: number, funct: (holder: SDepHolder) => void) {
-    let sub = this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
+    this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
         for (let key in result.agencyAdmin) {
@@ -162,6 +158,7 @@ export class SuperMapComponents {
           }
         }
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
         let returnObj = new SDepHolder(result.key);
         returnObj.departments = [];
@@ -174,7 +171,6 @@ export class SuperMapComponents {
         });
         funct(returnObj);
       });
-    this.subscriptions.add(sub);
   }
 
 
@@ -188,7 +184,8 @@ export class SuperMapComponents {
   public getDepsForAllCountries(uid: string, folder: string, funct: (holder: SDepHolder[]) => void) {
     this.mDepCounter = 0;
     this.mDepHolder = [];
-    let sub = this.getCountryOffice(uid, folder)
+    this.getCountryOffice(uid, folder)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
         for (let r of result) {
           this.mDepCounter++;
@@ -199,7 +196,6 @@ export class SuperMapComponents {
           })
         }
       });
-    this.subscriptions.add(sub);
   }
 
 
@@ -208,7 +204,8 @@ export class SuperMapComponents {
    *    - Could return null, and this needs to be handled! Absense determines view type
    */
   public getRegionsForAgency(uid: string, folder: string, funct: (key: string, region: ModelRegion) => void) {
-    let sub = this.fbgetRegionsForAgency(uid, folder)
+    this.fbgetRegionsForAgency(uid, folder)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
         if (result.childCount == 0) {
           funct("", null);
@@ -217,7 +214,6 @@ export class SuperMapComponents {
           funct(snapshot.key, snapshot.val());
         })
       });
-    this.subscriptions.add(sub);
   }
 
   /**

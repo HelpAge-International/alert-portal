@@ -14,6 +14,7 @@ import {UserService} from "../../services/user.service";
     styleUrls: ['./country-admin-header.component.css'],
     providers: [ActionsService]
 })
+
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
     private alertLevel: AlertLevels;

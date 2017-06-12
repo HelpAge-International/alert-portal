@@ -37,6 +37,7 @@
             <div class="col-lg-2 col-md-2"></div>
             <div class="col-lg-2 col-md-2"></div>
         </div>
+        <div class="Empty--ribbon" *ngIf="staffList?.length == 0">{{"COUNTRY_ADMIN.STAFF.EMPTY_LIST"| translate}}</div>
         <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced" [hidden] = "hideFilteredStaff(staff)">
             <div class="col-lg-2 col-md-2">{{ staffPublicUser[staff?.id]?.firstName }} {{ staffPublicUser[staff?.id]?.lastName }}</div>
             <div class="col-lg-2 col-md-2">{{ staff.department }}</div>
@@ -102,7 +103,7 @@
             </div>
         </div>
         <div class="Sub-header-title__wrap">
-            <h2>Partner users</h2>
+            <h2>{{"COUNTRY_ADMIN.PARTNER.PARTNER_USERS"| translate}}</h2>
             <button type="button" class="btn btn-primary" (click) = "addNewPartner()">{{"COUNTRY_ADMIN.PARTNER.ADD_NEW_PARTNER"| translate}}</button>
         </div>
         <div class="row Line-row Small-spaced Header">
@@ -112,6 +113,7 @@
             <div class="col-lg-2 col-md-2"></div>
             <div class="col-lg-2 col-md-2"></div>
         </div>
+        <div class="Empty--ribbon" *ngIf="partnersList?.length == 0">{{"COUNTRY_ADMIN.PARTNER.EMPTY_LIST"| translate}}</div>
         <div *ngFor="let partner of partnersList" class="row align-items-center Line-row Small-spaced">
             <div class="col-lg-2 col-md-2">{{ partnerPublicUser[partner?.id]?.firstName }} {{ partnerPublicUser[partner?.id]?.lastName }}</div>
             <div class="col-lg-2 col-md-2">{{ partner.position }}</div>

@@ -4,17 +4,17 @@
         <div class="col-md-5 Selected-part">
             <div class="row align-items-center">
                 <div class="col-2">
-                    <div class="Icon--md Icon__country" [style.background-image]="getBackground()"></div>
+                    <a routerLink="/country-admin/country-office-profile/{{countryId}}"><div class="Icon--md Icon__country" [style.background-image]="getBackground()"></div></a>
                 </div>
                 <div class="col-10">
-                    <span>{{COUNTRIES[location] | translate}}</span>
+                    <a routerLink="/country-admin/country-office-profile/{{countryId}}"><span>{{COUNTRIES[location] | translate}}</span></a>
                 </div>
             </div>
         </div>
         <div class="col-md-7">
 		    <ul>
 		        <li class="" routerLinkActive="active">
-		            <a routerLink="/country-admin/country-office-profile">Country Office Profile</a> <!--TODO - Go to Country Office Profile-->
+		            <a routerLink="/country-admin/country-office-profile/{{countryId}}">Country Office Profile</a> <!--TODO - Go to Country Office Profile-->
 		        </li>
 		        <li class="" routerLinkActive="active">
 		            <a routerLink="/risk-monitoring">Risk Monitoring</a> <!--TODO - Go to Risk Monitoring-->

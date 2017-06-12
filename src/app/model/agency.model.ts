@@ -21,6 +21,8 @@ export class ModelAgency {
   public remainApproved:number;
   public sentmessages:{};
   public notificationSetting: any = [];
+  public clockSettings:{} = {};
+  public responsePlanSettings:{} = {};
 
   constructor(name:string) {
     this.name = name;

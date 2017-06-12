@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {PersonTitle, Country} from "../../utils/Enums";
+import {PersonTitle} from "../../utils/Enums";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
@@ -35,8 +35,8 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private agencyAdminCountry: number;
   private PersonTitle = Constants.PERSON_TITLE;
   private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
-  private Country = Constants.COUNTRY;
-  private countriesList: number[] = [Country.UK, Country.France, Country.Germany];
+  private Country = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
