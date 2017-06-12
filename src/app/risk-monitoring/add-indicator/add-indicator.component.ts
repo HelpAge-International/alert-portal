@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
-import {AlertLevels, GeoLocation, Country, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
