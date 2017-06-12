@@ -101,7 +101,7 @@ import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
-import {ExportTestComponent} from './export-test/export-test.component';
+import {ExportStartFundComponent} from './export-start-fund/export-start-fund.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {AgencySubmenuComponent} from './preparedness/agency-submenu/agency-submenu.component';
@@ -250,7 +250,7 @@ const firebaseAuthConfig = {
     AlertWidgetComponent,
     CountryMyAgencyComponent,
     MapCountriesListComponent,
-    ExportTestComponent,
+    ExportStartFundComponent,
     DashboardSeasonalCalendarComponent,
     DashboardUpdateAlertLevelComponent,
     CountryAgenciesComponent,

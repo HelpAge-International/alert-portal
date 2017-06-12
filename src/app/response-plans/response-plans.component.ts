@@ -297,9 +297,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
-  testExport() {
-    this.router.navigateByUrl("/export");
+  exportStartFund() {
+    this.router.navigateByUrl("/exportStartFund");
   }
-
 
 }
