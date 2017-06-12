@@ -181,8 +181,17 @@ export class LoginComponent implements OnInit, OnDestroy {
                                                       this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
                                                     }
                                                   });
-                                                  this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
-                                                  this.showAlert(true);
+                                                  this.af.database.list(Constants.APP_STATUS + '/donor', {preserveSnapshot: true})
+                                                    .takeUntil(this.ngUnsubscribe)
+                                                    .subscribe(snapshots => {
+                                                      snapshots.forEach(snapshot => {
+                                                        if (snapshot.key == success.uid) {
+                                                          this.router.navigateByUrl(Constants.DONOR_HOME);
+                                                        }
+                                                      });
+                                                      this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
+                                                      this.showAlert(true);
+                                                    });
                                                 });
                                             });
                                         });

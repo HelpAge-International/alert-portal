@@ -18,8 +18,8 @@ export class Action extends BaseModel {
     public documentId: string;
     public frequencyBase: number;
     public frequencyValue: number;
-    public isActive: Boolean;
-    public isComplete: Boolean;
+    public isActive: boolean;
+    public isComplete: boolean;
     public progressState: number;
     public type: ActionType;
     public assignHazard: any = [];

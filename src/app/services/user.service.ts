@@ -89,85 +89,85 @@ export class UserService {
         }
       });
 
-        return userSubscription;
-    }
+    return userSubscription;
+  }
 
-    saveUserPublic(userPublic: ModelUserPublic): firebase.Promise<any> {
-        const userPublicData = {};
+  saveUserPublic(userPublic: ModelUserPublic): firebase.Promise<any> {
+    const userPublicData = {};
 
-        let uid = userPublic.id;
+    let uid = userPublic.id;
 
-        // if (!uid) {
-        //   // return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
-        //   //   .then(newUser => {
-        //   //     partner.id = newUser.uid;
-        //   //     return this.savePartnerUser(partner, userPublic);
-        //   //   })
-        //   //   .catch(err => {
-        //   //     throw new DisplayError('FIREBASE.' + (err as firebase.FirebaseError).code);
-        //   //   });
-        // } else {
-        this.getUser(uid).subscribe(oldUser => {
-            if (oldUser.email && oldUser.email !== userPublic.email) {
-                this.getAuthUser();
-                return this.authState.auth.updateEmail(userPublic.email).then(bool => {
-                    return this.saveUserPublic(userPublic);
-                },
-                    error => () => {
-                        throw new Error('Cannot update user email')
-                    })
-                    .catch(err => {
-                        throw new Error(err.message);
-                    });
-            }
+    // if (!uid) {
+    //   // return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
+    //   //   .then(newUser => {
+    //   //     partner.id = newUser.uid;
+    //   //     return this.savePartnerUser(partner, userPublic);
+    //   //   })
+    //   //   .catch(err => {
+    //   //     throw new DisplayError('FIREBASE.' + (err as firebase.FirebaseError).code);
+    //   //   });
+    // } else {
+    this.getUser(uid).subscribe(oldUser => {
+      if (oldUser.email && oldUser.email !== userPublic.email) {
+        this.getAuthUser();
+        return this.authState.auth.updateEmail(userPublic.email).then(bool => {
+            return this.saveUserPublic(userPublic);
+          },
+          error => () => {
+            throw new Error('Cannot update user email')
+          })
+          .catch(err => {
+            throw new Error(err.message);
+          });
+      }
+    });
+
+    userPublicData['/userPublic/' + uid + '/'] = userPublic;
+
+    return this.af.database.object(Constants.APP_STATUS).update(userPublicData);
+    //}
+  }
+
+  changePassword(email: string, password: ChangePasswordModel): firebase.Promise<any> {
+    return this.af.auth.login({
+        email: email,
+        password: password.currentPassword
+      },
+      {
+        provider: AuthProviders.Password,
+        method: AuthMethods.Password,
+      })
+      .then(() => {
+        this.authState.auth.updatePassword(password.newPassword).then(() => {
+        }, error => {
+          throw new Error('Cannot update password');
         });
+      }, error => {
+        throw new DisplayError('GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD')
+      })
+  }
 
-        userPublicData['/userPublic/' + uid + '/'] = userPublic;
-
-        return this.af.database.object(Constants.APP_STATUS).update(userPublicData);
-        //}
+  // COUNTRY ADMIN USER
+  getCountryAdminUser(uid: string): Observable<CountryAdminModel> {
+    if (!uid) {
+      return null;
     }
-
-    changePassword(email: string, password: ChangePasswordModel): firebase.Promise<any> {
-        return this.af.auth.login({
-            email: email,
-            password: password.currentPassword
-        },
-            {
-                provider: AuthProviders.Password,
-                method: AuthMethods.Password,
-            })
-            .then(() => {
-                this.authState.auth.updatePassword(password.newPassword).then(() => {
-                }, error => {
-                    throw new Error('Cannot update password');
-                });
-            }, error => {
-                throw new DisplayError('GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD')
-            })
-    }
-
-    // COUNTRY ADMIN USER
-    getCountryAdminUser(uid: string): Observable<CountryAdminModel> {
-        if (!uid) {
-            return null;
+    const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + uid)
+      .map(item => {
+        if (item.$key) {
+          return item as CountryAdminModel;
         }
-        const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + uid)
-            .map(item => {
-                if (item.$key) {
-                    return item as CountryAdminModel;
-                }
-                return null;
-            });
+        return null;
+      });
 
-        return countryAdminSubscription;
+    return countryAdminSubscription;
+  }
+
+  // PARTNER USER
+  getPartnerUser(uid: string): Observable<PartnerModel> {
+    if (!uid) {
+      return null;
     }
-
-    // PARTNER USER
-    getPartnerUser(uid: string): Observable<PartnerModel> {
-        if (!uid) {
-            return null;
-        }
 
         const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
             .map(item => {
@@ -189,115 +189,123 @@ export class UserService {
                 let partners: PartnerModel[] = [];
                 items.forEach(item => {
 
-                    // Add the organisation ID
-                    let partner = item as PartnerModel;
-                    partner.id = item.$key;
+          // Add the organisation ID
+          let partner = item as PartnerModel;
+          partner.id = item.$key;
 
-                    partners.push(partner);
-                });
-                return partners;
-            });
+          partners.push(partner);
+        });
+        return partners;
+      });
 
-        return partnerUsersSubscription;
-    }
+    return partnerUsersSubscription;
+  }
 
-    getPartnerUsersBy(key: string, value: string): Observable<PartnerModel[]> {
-        const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner', {
-            query: {
-                orderByChild: key,
-                equalTo: value
-            }
+  getPartnerUsersBy(key: string, value: string): Observable<PartnerModel[]> {
+    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner', {
+      query: {
+        orderByChild: key,
+        equalTo: value
+      }
+    })
+      .map(items => {
+        let partners: PartnerModel[] = [];
+        items.forEach(item => {
+
+          // Add the organisation ID
+          let partner = item as PartnerModel;
+          partner.id = item.$key;
+
+          partners.push(partner);
+        });
+        return partners;
+      });
+
+    return partnerUsersSubscription;
+  }
+
+  savePartnerUser(partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
+    let uid = partner.id || userPublic.id;
+
+    if (!uid) {
+      return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
+        .then(newUser => {
+          partner.id = newUser.uid;
+          return this.savePartnerUser(partner, userPublic);
         })
-            .map(items => {
-                let partners: PartnerModel[] = [];
-                items.forEach(item => {
+        .catch(err => {
+          return Promise.reject('FIREBASE.' + (err as firebase.FirebaseError).code);
+        });
+    } else {
+      // Check to see the email is changed
+      this.getUser(uid).subscribe(oldUser => {
+        if (oldUser.email && oldUser.email !== userPublic.email) {
+          return this.getPartnerUser(oldUser.id).subscribe(partner => {
 
-                    // Add the organisation ID
-                    let partner = item as PartnerModel;
-                    partner.id = item.$key;
-
-                    partners.push(partner);
-                });
-                return partners;
-            });
-
-        return partnerUsersSubscription;
-    }
-
-    savePartnerUser(partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
-        let uid = partner.id || userPublic.id;
-
-        if (!uid) {
-            return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
-                .then(newUser => {
-                    partner.id = newUser.uid;
-                    return this.savePartnerUser(partner, userPublic);
-                })
-                .catch(err => {
-                    return Promise.reject('FIREBASE.' + (err as firebase.FirebaseError).code);
-                });
-        } else {
-            // Check to see the email is changed
-            this.getUser(uid).subscribe(oldUser => {
-                if (oldUser.email && oldUser.email !== userPublic.email) {
-                    return this.getPartnerUser(oldUser.id).subscribe(partner => {
-
-                        let oldPartner = Object.assign(partner);
+            let oldPartner = Object.assign(partner);
 
                         partner.id = null; // force new user creation
                         userPublic.id = null;
 
-                        return this.savePartnerUser(partner, userPublic).then(delUser => {
-                            return this.deletePartnerUser(oldPartner);
-                        })
-                            .catch(err => {
-                                return firebase.Promise.reject(err);
-                            });
-                    });
-                }
-            });
-
-            // Check to see the partner organisation is changed
-            this.getPartnerUser(uid).subscribe(oldPartner => {
-                if (oldPartner.partnerOrganisationId !== partner.partnerOrganisationId
-                    && !partnerData.hasOwnProperty('/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id)) {
-                    partnerData['/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id] = null;
-                    return this.savePartnerUser(partner, userPublic, partnerData);
-                }
-            });
-
-            partner.modifiedAt = Date.now();
-
-            partnerData['/userPublic/' + uid + '/'] = userPublic; // Add the public user profile
-            partnerData['/partner/' + uid + '/'] = partner; // Add the partner profile
-            partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
-                + '/partners/' + partner.id] = true; // add the partner to the partner organisation
-
-            return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+            return this.savePartnerUser(partner, userPublic).then(delUser => {
+              return this.deletePartnerUser(oldPartner);
+            })
+              .catch(err => {
+                return firebase.Promise.reject(err);
+              });
+          });
         }
+      });
+
+      // Check to see the partner organisation is changed
+      this.getPartnerUser(uid).subscribe(oldPartner => {
+        if (oldPartner.partnerOrganisationId !== partner.partnerOrganisationId
+          && !partnerData.hasOwnProperty('/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id)) {
+          partnerData['/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id] = null;
+          return this.savePartnerUser(partner, userPublic, partnerData);
+        }
+      });
+
+      partner.modifiedAt = Date.now();
+
+      partnerData['/userPublic/' + uid + '/'] = userPublic; // Add the public user profile
+      partnerData['/partner/' + uid + '/'] = partner; // Add the partner profile
+      partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
+      + '/partners/' + partner.id] = true; // add the partner to the partner organisation
+
+      return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+    }
+  }
+
+  deletePartnerUser(partner: PartnerModel): firebase.Promise<any> {
+    const partnerData = {};
+    if (!partner) {
+      throw new Error('Partner not present');
     }
 
-    deletePartnerUser(partner: PartnerModel): firebase.Promise<any> {
-        const partnerData = {};
-        if (!partner) {
-            throw new Error('Partner not present');
-        }
+    partnerData['/userPublic/' + partner.id + '/'] = null; // remove public profile
+    partnerData['/partner/' + partner.id + '/'] = null; // remove partner profile
+    partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
+    + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
 
-        partnerData['/userPublic/' + partner.id + '/'] = null; // remove public profile
-        partnerData['/partner/' + partner.id + '/'] = null; // remove partner profile
-        partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
-            + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
+    return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+  }
 
-        return this.af.database.object(Constants.APP_STATUS).update(partnerData);
-    }
+  //return current user type enum number
+  getUserType(uid: string): Observable<any> {
 
-    //return current user type enum number
-    getUserType(uid: string): Observable<any> {
-
-        const paths = [Constants.APP_STATUS + "/administratorCountry/" + uid, Constants.APP_STATUS + "/countryDirector/" + uid,
-        Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid,
-        Constants.APP_STATUS + "/globalUser/" + uid, Constants.APP_STATUS + "/countryUser/" + uid, Constants.APP_STATUS + "/ertLeader/" + uid,
-        Constants.APP_STATUS + "/ert/" + uid];
+    const paths = [
+      Constants.APP_STATUS + "/administratorCountry/" + uid,
+      Constants.APP_STATUS + "/countryDirector/" + uid,
+      Constants.APP_STATUS + "/regionDirector/" + uid,
+      Constants.APP_STATUS + "/globalDirector/" + uid,
+      Constants.APP_STATUS + "/globalUser/" + uid,
+      Constants.APP_STATUS + "/countryUser/" + uid,
+      Constants.APP_STATUS + "/ertLeader/" + uid,
+      Constants.APP_STATUS + "/ert/" + uid,
+      Constants.APP_STATUS + "/donor/" + uid,
+      Constants.APP_STATUS + "/administratorAgency/" + uid
+    ];
 
     if (!uid) {
       return null;
@@ -342,7 +350,14 @@ export class UserService {
                                                   if (ert.agencyAdmin) {
                                                     return Observable.of(UserType.Ert);
                                                   } else {
-                                                    return Observable.empty();
+                                                    return this.af.database.object(paths[8])
+                                                      .flatMap(donor => {
+                                                        if (donor.agencyAdmin) {
+                                                          return Observable.of(UserType.Donor);
+                                                        } else {
+                                                          return Observable.empty();
+                                                        }
+                                                      });
                                                   }
                                                 });
                                             }
@@ -362,17 +377,17 @@ export class UserService {
     return userTypeSubscription;
   }
 
-    //get user country id
-    getCountryId(userType: string, uid): Observable<string> {
-        return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
-            .map(countryId => {
-                if (countryId.$value) {
-                    return countryId.$value
-                }
-            });
-    }
+  //get user country id
+  getCountryId(userType: string, uid): Observable<string> {
+    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
+      .map(countryId => {
+        if (countryId.$value) {
+          return countryId.$value
+        }
+      });
+  }
 
-  getAgencyId(userType, uid): Observable<string> {
+  getAgencyId(userType: string, uid): Observable<string> {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
       .map(agencyIds => {
         if (agencyIds.length > 0 && agencyIds[0].$value) {
@@ -382,7 +397,7 @@ export class UserService {
     return subscription;
   }
 
-  getSystemAdminId(userType, uid): Observable<string> {
+  getSystemAdminId(userType: string, uid): Observable<string> {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
       .map(systemIds => {
         if (systemIds.length > 0 && systemIds[0].$value) {
@@ -392,38 +407,37 @@ export class UserService {
     return subscription;
   }
 
+  // Get region id os the regional director
+  getRegionId(userType: string, uid): Observable<string> {
+    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/regionId")
+      .map(regionId => {
+        if (regionId.$value) {
+          return regionId.$value
+        }
+      });
+  }
 
-    // Get region id os the regional director
-    getRegionId(userType: string, uid): Observable<string> {
-        return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/regionId")
-            .map(regionId => {
-                if (regionId.$value) {
-                    return regionId.$value
-                }
-            });
-    }
+  getAllCountryIdsForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryIds = [];
+        countries.forEach(country => {
+          countryIds.push(country.$key);
+        });
+        return countryIds;
+      })
+  }
 
-    getAllCountryIdsForAgency(agencyId: string): Observable<any> {
-        return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-            .map(countries => {
-                let countryIds = [];
-                countries.forEach(country => {
-                    countryIds.push(country.$key);
-                });
-                return countryIds;
-            })
-    }
-
-    getAllCountryAlertLevelsForAgency(agencyId: string): Observable<any> {
-        return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-            .map(countries => {
-                let countryAlertLevels = [];
-                countries.forEach(country => {
-                    countryAlertLevels[country.$key] = country.alertLevel;
-                });
-                return countryAlertLevels;
-            })
-    }
+  getAllCountryAlertLevelsForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryAlertLevels = [];
+        countries.forEach(country => {
+          countryAlertLevels[country.$key] = country.alertLevel;
+        });
+        return countryAlertLevels;
+      })
+  }
 
     getOrganisationName(id) {
         return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)

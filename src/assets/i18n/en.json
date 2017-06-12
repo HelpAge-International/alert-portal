@@ -1565,5 +1565,9 @@
     "ADV_PREP": "Advanced preparedness",
     "GLOBAL_MAP": "Global Map",
     "PLANS": "Plans"
+  },
+  "DONOR": {
+    "COUNTRY_INDEX": "Country Index",
+    "AGENCIES_ACTIVE": "Agencies active"
   }
 }
