@@ -84,8 +84,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             if (user) {
                 this.uid = user.auth.uid;
                 this.loadData();
-            } else {
-                this.navigateToLogin();
             }
         });
     }

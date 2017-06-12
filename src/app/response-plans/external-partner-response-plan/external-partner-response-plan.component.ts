@@ -105,7 +105,7 @@ export class ExternalPartnerResponsePlan implements OnInit {
         //this.responsePlanID
         // query  - responsePlan/countryID/responsePlanID
 
-    }
+                }
 
     _authAnonymousUser() {
         this.af.auth.login({
@@ -120,7 +120,7 @@ export class ExternalPartnerResponsePlan implements OnInit {
         this.af.auth.logout().then(() => {
             this.router.navigate(['/login']);
         });
-    }
+        }
 
     private navigateToLogin() {
         this.router.navigateByUrl(Constants.LOGIN_PATH);

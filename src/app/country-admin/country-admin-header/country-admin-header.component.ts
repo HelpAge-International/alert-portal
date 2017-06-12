@@ -45,11 +45,13 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.af.auth.subscribe(user => {
-
-            this.isAnonym = user.anonymous ? user.anonymous : false;
-
+            this.isAnonym = user && !user.anonymous ? false : true;
             if (user) {
-                console.log(user);
+                if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
+                    this.af.auth.logout().then(() => {
+                        this.router.navigate(['/login']);
+                    });
+                }
                 if (!user.anonymous) {
                     this.uid = user.auth.uid;
                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
