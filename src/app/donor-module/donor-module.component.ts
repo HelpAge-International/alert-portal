@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Countries} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
@@ -31,7 +31,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   public minThreshYellow: number;
   public minThreshGreen: number;
 
-  private isDirector: boolean;
   private userTypePath: string;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
@@ -39,9 +38,10 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   goToListView() {
-    this.isDirector ? this.router.navigate(['map/map-countries-list', {'isDirector': true}]) : this.router.navigateByUrl('map/map-countries-list');
+    console.log('Here');
+    this.router.navigate(['/donor/donor-list-view']);
+    this.router.navigateByUrl('/donor/donor-list-view');
   }
-
 
   ngOnInit() {
     this.department = new SDepHolder("Something");
@@ -50,14 +50,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
-
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["isDirector"]) {
-              this.isDirector = params["isDirector"];
-            }
-          });
 
         this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
@@ -79,7 +71,10 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
               (mapCountryClicked) => {
                 if (this.mDepartmentMap != null) {
                   // TODO - Navigate to country index here
-                  console.log(this.mDepartmentMap.get(mapCountryClicked).countryId);
+                  // TODO - Get the clicked countries ID
+                  let countryIdToSend: string = this.mDepartmentMap.get(mapCountryClicked).countryId;
+                  console.log(countryIdToSend);
+                  this.router.navigate(["donor/donor-country-index", {"countryId": countryIdToSend}]);
                 }
                 else {
                   console.log("TODO: Map is yet to initialise properly / it failed to do so");

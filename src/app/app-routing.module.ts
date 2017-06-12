@@ -96,6 +96,7 @@ import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-pr
 import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-view.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -273,6 +274,7 @@ const routes: Routes = [
    * Donor
    */
   {path: 'donor', component: DonorModuleComponent},
+  {path: 'donor/donor-list-view', component: DonorListViewComponent},
   {path: 'donor/donor-country-index/:countryId', component: DonorCountryIndexComponent},
 
   /*
