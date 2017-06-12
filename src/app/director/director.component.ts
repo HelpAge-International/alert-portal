@@ -54,7 +54,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private AlertLevels = AlertLevels;
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
-  private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red, AlertLevels.All];
+  private alertLevelsList: number[] = Constants.ALERT_LEVELS_LIST;
 
   private overallAlertLevels: any = [];
   private alertLevelColours: any = [];

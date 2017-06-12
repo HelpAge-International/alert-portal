@@ -1,7 +1,10 @@
 /**
  * Created by Fei on 08/03/2017.
  */
-import {Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType} from "./Enums";
+import {
+  Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType,
+  AlertLevels
+} from "./Enums";
 
 export class Constants {
 
@@ -487,6 +490,13 @@ export class Constants {
     "GLOBAL.ALERTS.GREEN",
     "GLOBAL.ALERTS.AMBER",
     "GLOBAL.ALERTS.RED"
+  ];
+
+  static ALERT_LEVELS_LIST = [
+    AlertLevels.Green,
+    AlertLevels.Amber,
+    AlertLevels.Red,
+    AlertLevels.All
   ];
 
   static MEDIA_TYPES = [
