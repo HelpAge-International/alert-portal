@@ -17,6 +17,8 @@ export class PartnerOrganisationModel extends BaseModel {
   public projects: PartnerOrganisationProjectModel[];
   public notes: Array<NoteModel>;
   public partners: any[];
+  public isApproved: boolean;
+  public externalPartner: boolean;
   public modifiedAt: number;
 
   constructor(){
@@ -24,6 +26,8 @@ export class PartnerOrganisationModel extends BaseModel {
     this.projects = [new PartnerOrganisationProjectModel()];
     this.notes = [];
     this.partners = [];
+    this.isApproved = false;
+    this.externalPartner = true;
   }
 
 

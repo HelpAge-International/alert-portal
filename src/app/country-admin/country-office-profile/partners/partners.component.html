@@ -95,7 +95,7 @@
             <!-- Notes Drop Down -->
             <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
                 <div class="log_left p-3">
-                    <h3>Notes</h3>
+                    <h3>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}</h3>
                     <hr class="d-inline-flex">
                     <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
                         <input type="text" name="new_note" placeholder="Add a note"
@@ -203,7 +203,7 @@
         </div>
         <button class="btn btn-outline-primary text-uppercase" 
                 *ngIf="canEdit"
-                (click)="addPartnerOrganisation()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ADD' | translate }}</button>
+                (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}</button>
     </div>
 </div>
 
@@ -247,3 +247,4 @@
         </div>
     </div>
 </div>
+

@@ -25,16 +25,16 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-    <ng-template [ngIf]="countrySelected && !agencySelected">
-    	<app-agency-submenu [countryId]="countryId"></app-agency-submenu>
-    	<app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
-    <ng-template [ngIf]="agencySelected">
-    	<app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
-    	<app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
-    
-    	
+        <ng-template [ngIf]="countrySelected && !agencySelected">
+            <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
+            <app-alert-widget [countryId]="countryId"></app-alert-widget>
+        </ng-template>
+        <ng-template [ngIf]="agencySelected">
+            <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
+            <app-alert-widget [countryId]="countryId"></app-alert-widget>
+        </ng-template>
+
+
 
         <div class="Header-title__wrap">
             <h1>Minimum Preparedness Actions</h1>
@@ -132,6 +132,7 @@
                                         {{ACTION_STATUS[action.actionStatus] | translate}}
                                     </div>
                                     <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+
                                         <a href="javascript:void(0)" class="text-primary" data-toggle="collapse" [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false" [attr.aria-controls]="'notes_popover_' + action.key">
                                            <div class="fa-stack">
                                                 <i class="fa fa-comment fa-stack-2x"></i>
@@ -160,7 +161,7 @@
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
                                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                                        <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
+                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -353,7 +354,7 @@
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
                                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                                        <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
+                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -506,7 +507,7 @@
                                         <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit action</a>
                                     </div>
                                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                                        <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
+                                         <a href="javascript:void(0)" (click)="copyAction(action)" class="btn btn-outline-primary btn-block ">Copy action</a>
                                     </div>
                                 </div>
                                 <div class="row">

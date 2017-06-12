@@ -92,6 +92,7 @@ import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-
 import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
+import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},

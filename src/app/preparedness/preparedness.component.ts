@@ -72,13 +72,13 @@ export class PreparednessComponent implements OnInit, OnDestroy {
         });
         this.subscriptions.add(subscription);
     }
-    ngOnDestroy() {
-        try {
-            this.subscriptions.releaseAll()
-        } catch (e) {
-            console.log(e.message);
-        }
-    }
+ ngOnDestroy() {
+   try {
+     this.subscriptions.releaseAll()
+   } catch (e) {
+     console.log(e.message);
+   }
+ }
     saveAction(isValid: boolean) {
         if (!isValid || !this._isValidForm()) {
             return false;
@@ -102,8 +102,8 @@ export class PreparednessComponent implements OnInit, OnDestroy {
         }
 
         let dataToSave = Object.assign({}, this.actionData);
-        if (dataToSave && dataToSave.requireDoc) {
-            dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
+        if(dataToSave && dataToSave.requireDoc) {
+            dataToSave.requireDoc = (dataToSave.requireDoc) ? true : false;
         }
 
         if (!this.actionID) {

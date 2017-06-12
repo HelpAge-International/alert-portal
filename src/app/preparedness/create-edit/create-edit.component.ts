@@ -144,7 +144,7 @@ export class CreateEditPreparednessComponent implements OnInit {
 
         
         let dataToSave = Object.assign({}, this.actionData)
-        dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
+        dataToSave.requireDoc = (dataToSave.requireDoc) ? true : false;
         
         if (!this.actionID) {
             this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
