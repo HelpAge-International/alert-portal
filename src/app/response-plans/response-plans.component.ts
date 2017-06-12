@@ -35,6 +35,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private partnersMap = new Map();
 
   constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
   }
@@ -50,7 +51,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             let userPath = Constants.USER_PATHS[userType];
             this.getSystemAgencyCountryIds(userPath);
           });
-        // this.checkUserType(this.uid);
       } else {
         this.navigateToLogin();
       }
@@ -63,35 +63,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe((countryId) => {
         this.countryId = countryId.$value;
         this.getResponsePlans(this.countryId);
-        // this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/agencyAdmin')
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe((agencyAdminIds) => {
-        //     this.agencyId = agencyAdminIds[0].$key;
-        //
-        //     this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/systemAdmin')
-        //       .takeUntil(this.ngUnsubscribe)
-        //       .subscribe((systemAdminIds) => {
-        //         this.systemId = systemAdminIds[0].$key;
-        //       });
-        //
-        //   });
       });
   }
-
-  // private checkUserType(uid: string) {
-  //   this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + uid)
-  //     .takeUntil(this.ngUnsubscribe).subscribe(admin => {
-  //     if (admin.countryId) {
-  //
-  //       this.userType = UserType.CountryAdmin;
-  //       this.countryId = admin.countryId;
-  //       console.log("user type: " + this.userType);
-  //       this.getResponsePlans(admin.countryId);
-  //     } else {
-  //       console.log("check other user types!")
-  //     }
-  //   });
-  // }
 
   private getResponsePlans(id: string) {
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
@@ -100,13 +73,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: true
       }
     })
-      .takeUntil(this.ngUnsubscribe).subscribe(plans => {
-      this.activePlans = plans;
-      for (let x of this.activePlans) {
-        this.getNotes(x);
-      }
-      console.log(plans);
-    });
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(plans => {
+        this.activePlans = plans;
+        for (let x of this.activePlans) {
+          this.getNotes(x);
+        }
+        console.log(this.activePlans);
+        this.checkHaveApprovedPartners(this.activePlans);
+      });
 
     this.archivedPlans = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
@@ -115,6 +90,23 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       }
     });
     console.log("get response plan...");
+  }
+
+  private checkHaveApprovedPartners(activePlans: any[]) {
+    activePlans.forEach(plan => {
+      let partnerIds = plan.partnerOrganisations;
+      if (partnerIds) {
+        partnerIds.forEach(partnerId => {
+          this.service.getPartnerOrgnisation(partnerId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(partner => {
+              if (partner.isApproved) {
+                this.partnersMap.set(plan.$key, partner.isApproved);
+              }
+            });
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -170,7 +162,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       let approvalData = {};
       let countryId = "";
       let agencyId = "";
-      this.af.database.object(Constants.APP_STATUS +"/"+ Constants.USER_PATHS[this.userType] +"/"+ this.uid)
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
         .flatMap(countryAdmin => {
           countryId = countryAdmin.countryId;
           agencyId = Object.keys(countryAdmin.agencyAdmin)[0];

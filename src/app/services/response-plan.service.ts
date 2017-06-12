@@ -9,6 +9,7 @@ import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class ResponsePlanService {
+  private responsePlan: any;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private validPartnerMap = new Map<string, boolean>();
@@ -17,6 +18,7 @@ export class ResponsePlanService {
   }
 
   submitForPartnerValidation(plan, uid) {
+    console.log("submitForPartnerValidation");
     this.userService.getUserType(uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
@@ -45,23 +47,30 @@ export class ResponsePlanService {
           countryId = countryAdmin.countryId;
           return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryAdmin.countryId + "/" + plan.$key)
         })
-        .do(responsePlan => {
-          responsePlan.partnerOrganisations.forEach(partnerId => {
-            this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(partner => {
-                this.validPartnerMap.set(partner.$key, partner.isApproved);
-              });
+        .flatMap(responsePlan => {
+          this.responsePlan = responsePlan;
+          let partnerIds = [];
+          responsePlan.partnerOrganisations.forEach(partner => {
+            partnerIds.push(partner);
           });
+          return Observable.from(partnerIds);
+        })
+        .flatMap(partnerId => {
+          return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId);
+        })
+        .do(partner => {
+          this.validPartnerMap.set(partner.$key, partner.isApproved);
         })
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(responsePlan => {
+        .subscribe(() => {
+          console.log(this.validPartnerMap);
+          console.log(this.responsePlan);
           let approvalData = {};
-          if (responsePlan.approval) {
-            approvalData = responsePlan.approval;
+          if (this.responsePlan.approval) {
+            approvalData = this.responsePlan.approval;
           }
           let partnerData = {};
-          responsePlan.partnerOrganisations.forEach(partnerId => {
+          this.responsePlan.partnerOrganisations.forEach(partnerId => {
             if (this.validPartnerMap.get(partnerId)) {
               partnerData[partnerId] = ApprovalStatus.WaitingApproval;
             }
@@ -71,8 +80,8 @@ export class ResponsePlanService {
           let updateData = {};
           updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
           // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
-          this.af.database.object(Constants.APP_STATUS).update(updateData).then((_) => {
-          }, (error) => {
+          this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          }, error => {
             console.log(error.message);
           });
         });
@@ -125,6 +134,10 @@ export class ResponsePlanService {
     } else {
       return "";
     }
+  }
+
+  getPartnerOrgnisation(id) {
+    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id);
   }
 
   serviceDestroy() {
