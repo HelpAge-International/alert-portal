@@ -1038,6 +1038,12 @@
                 "TITLE_TEXT": "Coordination Arrangements",
                 "EDIT": "Edit coordination arrangements",
                 "VIEW": "View coordination arrangements"
+            },
+            "PROGRAMME": {
+                "NO_NOTE": "Note cannot be empty!",
+                "SUCCESS_SAVE_NOTE": "You successfully added new note!",
+                "SUCCESS_EDIT_NOTE": "Note Successfully updated!",
+                "SUCCESS_DELETE_NOTE": "Note Successfully deleted!"
             }
         },
         "VIEW_MY_AGENCY": {

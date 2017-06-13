@@ -47,6 +47,7 @@ export class CountryOfficeProfileComponent implements OnInit {
 	}
 
   ngOnInit() {
+      this.router.navigate(['/country-admin/country-office-profile/programme/']);
   }
 
 }

@@ -96,6 +96,7 @@ import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-pr
 import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -194,6 +195,7 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
+  {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
   {
     path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
     component: CountryOfficeAddEditEquipmentComponent

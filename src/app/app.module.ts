@@ -144,6 +144,7 @@ import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.com
 import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -287,7 +288,8 @@ const firebaseAuthConfig = {
     DonorMenuComponent,
     AlertLoaderComponent,
     ExternalPartnerResponsePlan,
-    ReplacePipe
+    ReplacePipe,
+    CountryOfficeProgrammeComponent
   ],
   imports: [
     BrowserModule,
