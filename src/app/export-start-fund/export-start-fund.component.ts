@@ -12,7 +12,7 @@ import {ModelPlanActivity} from "../model/plan-activity.model";
 
 @Component({
   selector: 'app-export-start-fund',
-  templateUrl: './export-start-fund-test.component.html',
+  templateUrl: './export-start-fund.component.html',
   styleUrls: ['./export-start-fund.component.css']
 })
 
