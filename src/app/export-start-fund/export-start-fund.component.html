@@ -1,10 +1,407 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<body style="margin: 0; overflow-x: hidden;">
+<div class="">
+<div style="width: 100%; top: 0; background-color: #131D50; padding: 1em;">
+  <img src="../../assets/images/alert_logo--white.svg" class="Login__logo">
+</div>
+  <div align="center">
+    <h1>Start Fund - Project Narrative</h1>
+    <a id="downloadLink"  style="display:none;"></a>
 
+    <input type="button" onclick="exportToExcelFile('exportTable', 'Basic Data & Narrative')" value="Download">
+  </div>
+
+<br>
+
+
+
+
+
+  <style type="text/css">
+    .tg  {border-collapse:collapse;border-spacing:0;}
+    .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+    .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border:1px solid;border-width:1px;overflow:hidden;word-break:normal;}
+  </style>
+
+  <!--Project Narrative Table-->
+  <table class="tg" style="width: 50%;" align="center" id="ProjectNarrative">
+    <tr>
+      <th class="tg" colspan="9"><img src="../../assets/images/logo/startfund.JPG" src= height="46" width="75" alt="Start Fund" style="float: right"></th>
+    </tr>
+    <tr>
+      <td class="tg" colspan="3" style="width: 40%; text-align: center;">
+        <h2>Start Fund</h2>
+        <br>
+        <h1 style="color: maroon;">Project Narrative</h1>
+      </td>
+      <td class="tg" colspan="7" style="background: darkred; color: white; text-align: left; font-weight: normal;">
+        <p>Instructions:</p>
+        <p>1. Please keep Section 2 (Narrative) under 4 pages.</p>
+        <p>2.There are strict deadlines - please submit the entire application form (Basic Data & Narrative, Activties and Budget worksheets) no later than the deadline set.</p>
+        <p>3.Refer to the Technical Guidance worksheet for help with any technical issues in filling out the form.</p></td>
+      </td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9"></td>
+    </tr>
+    <tr style="text-align: center;" colspan="9">
+      <td colspan="2" class="tg" style="width: 15%; background-color: lightgrey;"><p>Return this form to</p></td>
+      <td colspan="2" class="tg" style="width: 25%; text-align: center;"><a href="mailto:startfund@savechildren.org.uk">Start Fund startfund@savethechildren.org.uk</a></td>
+      <td colspan="3" class="tg" style="width: 30%; background-color: lightgrey;"><p>Date submitted to Start Team</p></td>
+      <td colspan="3" class="tg" style="width: 30%;"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9" style="background: darkred; text-align: center; color: white;"><h2 style="margin: 0; padding: 0; font-weight: normal;">Section 1: Basic Project Data</h2></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9"></td>
+    </tr>
+    <tr style="background: darkred;">
+      <td class="tg" colspan="9" style="margin: 0; padding: 0.25em; color: white; font-weight: normal; font-size: 1.1em;"><p style="font-weight: 100;">1.1: Basic Information</p></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="4" style="background: lightgrey;">Project Name</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="4" style="background: lightgrey;">Member Agency Name</td>
+      <td class="tg" colspan="5"></td>
+    </tr style="background: lightgrey;">
+    <tr style="border-left: 1px solid">
+      <td class="tg" colspan="4" style="border:none; background: lightgrey;">Project Lead Name</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr style="border-left: 1px solid">
+      <td class="tg" colspan="4" style="border: none; background: lightgrey;">Position</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr style="border-left: 1px solid">
+      <td class="tg" colspan="4" style="border: none; background: lightgrey;">Email</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr style="border-left: 1px solid">
+      <td class="tg" colspan="4" style="border: none; background: lightgrey;">Telephone</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr style="border-left: 1px solid">
+      <td class="tg" colspan="4" style="border: none; background: lightgrey;">Mobile</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="4" style="background: lightgrey;">Country of project</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="4" style="background: lightgrey;">Location(s) of project (city/province)</td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="4" style="background: lightgrey;">Project start date (dd/mm/yyyy)</td>
+      <td class="tg" colspan="5">This is the date of recieving the grant award notification.</td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="4" style="background: lightgrey;">Project end date (dd/mm/yyyy)</td>
+      <td class="tg" colspan="5">This is 45 days after receiving the grant award notification.</td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9"></td>
+    </tr>
+    <tr>
+      <td class="tg" colspan="9" style="background: lightgrey; font-weight: bold;"><p>1. What sectors will the intervention's activities most relate to (please tick all that apply)?</p></td>
+    </tr>
+
+    <tr style="background-color: lightgrey; text-align: center;">
+      <td class="tg" style="width: 10%;"><p>WaSH</p></td>
+      <td class="tg" style="width: 10%;"><p>Health</p></td>
+      <td class="tg" style="width: 5%;"><p>Shelter</p></td>
+      <td class="tg" style="width: 5%;"><p>Nutrition</p></td>
+      <td class="tg" style="width: 10%; padding-left: 2.5%; padding-right: 2.5%;"><p>Camp Management</p></td>
+      <td class="tg" style="width: 10%;"><p>Education</p></td>
+      <td class="tg" style="width: 10%;"><p>Protection</p></td>
+      <td class="tg" style="width: 10%;"><p>Food security & livelihoods</p></td>
+      <td class="tg" style="padding-left: 15%; padding-right: 15%; padding-left: 10%;"><p>Other (specify)</p></td>
+    </tr>
+
+    <tr style="text-align: center;">
+      <td class="tg" style="width: 10%;"></td>
+      <td class="tg" style="width: 10%;"></td>
+      <td class="tg" style="width: 5%;"></td>
+      <td class="tg" style="width: 5%;"></td>
+      <td class="tg" style="width: 10%; padding-left: 2.5%; padding-right: 2.5%;"></td>
+      <td class="tg" style="width: 10%;"></td>
+      <td class="tg" style="width: 10%;"></td>
+      <td class="tg" style="width: 10%;"></td>
+      <td class="tg" style="padding-left: 15%; padding-right: 15%; padding-left: 10%;"></td>
+    </tr>
+
+    <tr style="text-align: center; background-color: lightgrey;">
+      <td class="tg" colspan="4" style="text-align: left;"><p style="font-weight: bold;">2. Presence in country before project (tick one)</p></td>
+      <td class="tg" colspan="2"><p>Current programmers</p></td>
+      <td class="tg" colspan="2"><p>Pre-existing partner</p></td>
+      <td class="tg" colspan="2"><p>No pre-existing presence</p></td>
+    </tr>
+
+    <tr style="text-align: center;">
+      <td class="tg" colspan="4" style="background-color: lightgrey;"></td>
+      <td class="tg" colspan="2"></td>
+      <td class="tg" colspan="2"></td>
+      <td class="tg" colspan="2"></td>
+    </tr>
+
+    <tr style="text-align: center; background-color: lightgrey;">
+      <td class="tg" colspan="4" style="text-align: left;"><p style="font-weight: bold;">3. Method of implementation (tick one)</p></td>
+      <td class="tg" colspan="2"><p>Directly through field staff </p></td>
+      <td class="tg" colspan="2"><p>Sister organisation</p></td>
+      <td class="tg" colspan="2"><p>Working through external partner</p></td>
+    </tr>
+
+    <tr style="text-align: center;">
+      <td class="tg" colspan="4" style="background-color: lightgrey;"></td>
+      <td class="tg" colspan="2"></td>
+      <td class="tg" colspan="2"></td>
+      <td class="tg" colspan="2"></td>
+    </tr>
+
+    <tr style="text-align: center;">
+      <td class="tg" colspan="4" style="background-color: lightgrey; text-align: left; font-weight: bold;"><p>4. Name(s) of external partner(s) (if any)</p></td>
+      <td class="tg" colspan="5"></td>
+    </tr>
+
+    <tr style="background: darkred;">
+      <td colspan="9"><h2 style="color: white; padding: 0em; margin: 0em; text-align: center; font-weight: lighter">Section 2: Narrative Project Description</h2></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background: darkred;">
+      <td colspan="9" style="font-weight: lighter; margin: 0; padding: 0.25em; font-size: 1.1em;"><p style="color: white;">2.1: Context</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">1. Summarize the crisis event and how it is likely to develop over the next month (maximum 5 bullet points)</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">2. Explain the impact of the crisis on people you want to help (maximum 5 bullet points)</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">3. Explain the availability of funding your agency can access for this crisis (maximum 3 bullet points)</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </td>
+    </tr>
+
+    <tr style="background: darkred;">
+      <td colspan="9" style="font-weight: lighter; margin: 0; padding: 0.25em; font-size: 1.1em;"><p style="color: white;">2.2: Activity Summary</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">1. Explain your proposed project and why you have selected this particular response to the crisis.</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">2. Explain how you will start your activities in 7 days and finish within 45 days.</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">3. How are you co-ordinating and with whom?</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p style="font-weight: bold;">4. Explain how you are planning to source your goods (please tick all boxes that apply)</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="2" style="background: lightgrey;"><p>Internationally</p></td>
+      <td colspan="1"></td>
+      <td colspan="2" style="background: lightgrey;"><p>Regionally/ neighbouring country</p></td>
+      <td colspan="1"></td>
+      <td colspan="2" style="background: lightgrey;"><p>In country/locally</p></td>
+      <td colspan="1"></td>
+    </tr>
+
+    <tr>
+      <td colspan="9">
+        <p style="font-style: italic;">Please explain your answer in two bullet points:</p>
+        <ul>
+          <li></li>
+          <li></li>
+        </ul>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background: darkred;">
+      <td colspan="9" style="font-weight: lighter; margin: 0; padding: 0.25em; font-size: 1.1em;"><p style="color: white;">2.3: Description of Target Population</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-weight: bold;">1. How do you calculate the beneficiary numbers for this project?</span> <span style="font-style: italic;">For example, food and hygiene kits given to 2500 families, and 1 family = x beneficiaries.</span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-weight: bold;">2. Which vulnerable groups are you specifically targeting?</span> <span style="font-style: italic;">Please explain.</span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-weight: bold;">3. Explain how the target population has been / is involved in your proposed intervention</span> <span style="font-style: italic;">(maximum 5 bullet points)</span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"><ul>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background: darkred;">
+      <td colspan="9" style="font-weight: lighter; margin: 0; padding: 0.25em; font-size: 1.1em;"><p style="color: white;">2.4: Expected Results</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-weight: bold;">1. What will success look like and in what time frame?</span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-weight: bold;">2. Describe the risks to a successful project and how you are managing them.</span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background: darkred;">
+      <td colspan="9" style="font-weight: lighter; margin: 0; padding: 0.25em; font-size: 1.1em;"><p style="color: white;">2.5: Monitoring, Accountability & Learning</p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-weight: bold;">1. Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability.</span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background-color: lightgrey;">
+      <td colspan="9" style="padding: 0.25em;"><p><span style="font-style: italic;">Every project is eligible to receive an additional 1% on top of their project budget for learning. Please see line 19 on the Technical Guidance tab for information on the simple process for accessing this amount, earmarked for learning and sharing. </span></p></td>
+    </tr>
+
+    <tr>
+      <td colspan="9"></td>
+    </tr>
+
+    <tr style="background: lightgrey;">
+      <td colspan="5"><p>Do you intend to visually document your project? <span style="font-style: italic;">(please tick)</span></p></td>
+      <td colspan="3" style="text-align: center;"><p>Yes</p></td>
+      <td colspan="3" style="text-align: center;"><p>No</p></td>
+    </tr>
+
+    <tr style="background: lightgrey;">
+      <td colspan="5"><p>If so, will this be photographic, video, or both? <span style="font-style: italic;">(please tick)</span></p></td>
+      <td colspan="2" style="text-align: center;"><p>Photographic</p></td>
+      <td colspan="1" style="text-align: center;"><p>Video</p></td>
+      <td colspan="1" style="text-align: center;"><p>Both</p></td>
+    </tr>
+
+    <tr style="background: lightgrey; text-align: center;">
+      <td colspan="9"><p style="font-weight: bold; font-style: italic;">Please note that applicants will not be penalised if they do not have the ability to visually document their projects.</p></td>
+    </tr>
+
+  </table>
+
+
+</div>
 </body>
-</html>
