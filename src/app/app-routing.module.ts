@@ -88,10 +88,14 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from "./response-plans/view-plan/view-plan.component";
 import {DirectorComponent} from "./director/director.component";
 import {DirectorOverviewComponent} from "./director/director-overview/director-overview.component";
-import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-profile/equipment/equipment.component";
-import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
-import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
-import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
+import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
+import {DonorModuleComponent} from "./donor-module/donor-module.component";
+import {DonorCountryIndexComponent} from "./donor-module/donor-country-index/donor-country-index.component";
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
+import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-profile/equipment/equipment.component";
+import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 
 const routes: Routes = [
@@ -102,6 +106,7 @@ const routes: Routes = [
    */
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
 
   /**
@@ -190,8 +195,14 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
-  {path: 'country-admin/country-office-profile/equipment/add-edit-equipment', component: CountryOfficeAddEditEquipmentComponent},
-  {path: 'country-admin/country-office-profile/equipment/add-edit-surge-equipment', component: CountryOfficeAddEditSurgeEquipmentComponent},
+  {
+    path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
+    component: CountryOfficeAddEditEquipmentComponent
+  },
+  {
+    path: 'country-admin/country-office-profile/equipment/add-edit-surge-equipment',
+    component: CountryOfficeAddEditSurgeEquipmentComponent
+  },
   {path: 'country-admin/country-office-profile/coordination', component: CountryOfficeCoordinationComponent},
   {path: 'country-admin/country-office-profile/coordination/add-edit-coordination', component: CountryOfficeAddEditCoordinationComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
@@ -245,6 +256,7 @@ const routes: Routes = [
   {path: 'response-plans/view-response-plan/:id', component: ViewResponsePlanComponent},
   {path: 'response-plans/view-plan', component: ViewPlanComponent},
   {path: 'response-plans/view-plan/:id', component: ViewPlanComponent},
+  {path: 'response-plans/external-partner-response-plan/:countryID/:id/:token', component: ExternalPartnerResponsePlan},
 
   /**
    * Maps
@@ -258,6 +270,12 @@ const routes: Routes = [
   {path: 'director', component: DirectorComponent},
   {path: 'director/director-overview', component: DirectorOverviewComponent},
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
+
+  /**
+   * Donor
+   */
+  {path: 'donor', component: DonorModuleComponent},
+  {path: 'donor/donor-country-index', component: DonorCountryIndexComponent},
 
   /*
    * test

@@ -18,6 +18,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   private alerts = {};
   private email: string = '';
   private auth: any;
+  private loaderInactive: boolean = true;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -38,19 +39,18 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   onSubmit() {
 
     if (this.validate()) {
-
+      this.loaderInactive = false;
       this.auth.sendPasswordResetEmail(this.email)
         .then((success) => {
+          this.loaderInactive = true;
           console.log("Password reset email sent");
           this.router.navigate(['/login', {emailEntered: this.email}]);
         })
         .catch((err) => {
+          this.loaderInactive = true;
           this.errorMessage = "GLOBAL.GENERAL_ERROR";
           this.showAlert();
         });
-
-      this.inactive = true;
-
     } else {
       this.showAlert();
     }

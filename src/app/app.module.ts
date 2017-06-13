@@ -140,6 +140,12 @@ import { CountryOfficeCoordinationComponent } from "./country-admin/country-offi
 import { CoordinationArrangementService } from "./services/coordination-arrangement.service";
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import { AgencyService } from "./services/agency-service.service";
+import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
+import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
+import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
+import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
+import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
+import {ReplacePipe} from "./utils/pipes/replace.pipe";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -164,6 +170,7 @@ const firebaseAuthConfig = {
   declarations: [
     AppComponent,
     LoginComponent,
+    ResetPasswordComponent,
     SystemAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,
@@ -277,7 +284,13 @@ const firebaseAuthConfig = {
     DirectorHeaderComponent,
     DirectorOverviewComponent,
     ViewCountryMenuComponent,
-    AlertLoaderComponent
+    AlertLoaderComponent,
+    DonorCountryIndexComponent,
+    DonorHeaderComponent,
+    DonorMenuComponent,
+    AlertLoaderComponent,
+    ExternalPartnerResponsePlan,
+    ReplacePipe
   ],
   imports: [
     BrowserModule,

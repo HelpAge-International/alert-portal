@@ -3,18 +3,22 @@ import {AngularFire, FirebaseListObservable} from 'angularfire2';
 import {Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
 import {Observable, Scheduler, Subject} from 'rxjs';
+import {AgencyService} from "../../services/agency-service.service";
 declare var jQuery: any;
 
 @Component({
   selector: 'app-country-office',
   templateUrl: './country-office.component.html',
-  styleUrls: ['./country-office.component.css']
+  styleUrls: ['./country-office.component.css'],
+  providers: [AgencyService]
 })
 
 export class CountryOfficeComponent implements OnInit, OnDestroy {
 
+
   private hideLoader: boolean;
   private uid: string;
+  private agencyId: string;
   private countries: FirebaseListObservable<any[]>;
   private countryNames: string [] = Constants.COUNTRIES;
   private admins: Observable<any>[];
@@ -36,7 +40,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
@@ -47,14 +51,21 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       }
       // console.log(user.auth.uid);
       this.uid = user.auth.uid;
-      this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid);
-      this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.uid);
-      this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
-        regions.forEach(region => {
-          this.showRegionMap.set(region.$key, false);
+      this.agencyService.getAgencyId(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyId => {
+          this.agencyId = agencyId;
+
+          this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
+          this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
+          this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
+            regions.forEach(region => {
+              this.showRegionMap.set(region.$key, false);
+            });
+          });
+          this.checkAnyCountryNoRegion();
         });
-      });
-      this.checkAnyCountryNoRegion();
+
     });
   }
 
@@ -115,7 +126,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     // console.log('do have other countries, fetch data!');
     Observable.from(diff)
       .flatMap(id => {
-        return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + id);
+        return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + id);
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
@@ -140,7 +151,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     let state: boolean = !this.countryToUpdate.isActive;
 
     this.otherCountries = [];
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + this.countryToUpdate.$key + '/isActive').set(state)
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryToUpdate.$key + '/isActive').set(state)
       .then(_ => {
         console.log("Country state updated");
         jQuery("#update-country").modal("hide");
@@ -164,7 +175,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.regionCountries = [];
     this.tempCountryIdList = [];
     for (let countryId in region.countries) {
-      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + countryId)
+      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + countryId)
         .first()
         .takeUntil(this.ngUnsubscribe)
         .subscribe(country => {
@@ -182,7 +193,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       return;
     }
     let name: string = '';
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + key + '/adminId')
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + key + '/adminId')
       .flatMap(adminId => {
         return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + adminId.$value)
       })

@@ -132,10 +132,10 @@
     <div class="col-lg-8 col-md-10">
         <div class="form-group">
             <label for="n-Budget">{{"PREPAREDNESS.BUDGET" | translate}}</label>
-            <input type="text" required name="budget" #budget="ngModel" [(ngModel)]="actionData.budget" class="form-control col-sm-5" id="n-Budget" placeholder="&pound;">
+            <input type="text" required name="budjet" #budjet="ngModel" [(ngModel)]="actionData.budjet" class="form-control col-sm-5" id="n-Budget" placeholder="&pound;">
         </div>
-        <div [hidden]="budget.valid || (budget.pristine && !f.submitted)" class="alert alert-danger">
-            {{"PREPAREDNESS.NO_BUDGET" | translate}}
+        <div [hidden]="budjet.valid || (budjet.pristine && !f.submitted)" class="alert alert-danger">
+            {{"PREPAREDNESS.NO_BUDJET" | translate}}
         </div>
     </div>
 </div>
@@ -145,11 +145,11 @@
         <strong>{{"PREPAREDNESS.DOCUMENT_REQUIRED_COMPLETION" | translate}}</strong>
         <div class="row no-gutters">
             <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-                <input [disabled]="(actionID && !actionData.department) ? true : false" type="radio" #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" [(ngModel)]="actionData.requireDoc">{{"GLOBAL.YES" | translate}}</label>
+                <input [disabled]="(actionID && !actionData.department) ? true : false" type="radio" #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="1" [(ngModel)]="actionData.requireDoc">{{"GLOBAL.YES" | translate}}</label>
         </div>
         <div class="row no-gutters">
             <label for="no-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-                <input [disabled]="(actionID && !actionData.department) ? true : false" type="radio" #requireDoc="ngModel" name="requireDoc" required id="no-completion" [value]="false" [(ngModel)]="actionData.requireDoc">{{"GLOBAL.NO" | translate}}</label>
+                <input [disabled]="(actionID && !actionData.department) ? true : false" type="radio" #requireDoc="ngModel" name="requireDoc" id="no-completion" [value]="2" [(ngModel)]="actionData.requireDoc">{{"GLOBAL.NO" | translate}}</label>
         </div>
         <!--            <div [hidden]="requireDoc.valid || (requireDoc.pristine && !f.submitted)" class="alert alert-danger">
                         {{"PREPAREDNESS.NO_REQUIRE_DOC" | translate}}
@@ -163,7 +163,7 @@
 </div>
 <div class="Form-submit__wrapper">
     <button class="btn btn-primary" type="submit">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}</button>
-    <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>
+    <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}</div>
 </div>
 </form>
 </div>

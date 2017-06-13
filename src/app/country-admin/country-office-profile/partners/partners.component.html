@@ -5,19 +5,19 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-        
+
         <app-country-office-profile-menu></app-country-office-profile-menu>
 
         <div class="Header-title__wrap Spaced row">
             <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.TITLE_TEXT' | translate }}</h2>
             <div class="col-sm-8 Right-aligned">
                 <button type="button" class="btn btn-outline-primary text-uppercase"
-                    *ngIf="canEdit && !isEdit"
-                    (click)="editPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EDIT' | translate }}</button>
-                
+                        *ngIf="canEdit && !isEdit"
+                        (click)="editPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EDIT' | translate }}</button>
+
                 <button type="button" class="btn btn-outline-primary text-uppercase"
-                    *ngIf="canEdit && isEdit"
-                    (click)="showPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW' | translate }}</button>
+                        *ngIf="canEdit && isEdit"
+                        (click)="showPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW' | translate }}</button>
             </div>
         </div>
 
@@ -27,26 +27,26 @@
             <label class="col-sm-0 Spaced-above">{{ 'GLOBAL.FILTER' | translate }}</label>
             <div class="form-group-country-office-profile col-sm-3">
                 <select class="form-control" name="filterSector"
-                    [(ngModel)]="filterSector">
+                        [(ngModel)]="filterSector">
                     <option value="null">{{ 'ADD_PARTNER.SECTOR' | translate }}</option>
                     <option *ngFor="let sector of RESPONSE_PLAN_SECTORS | enumKeyValues"
-                            [value]="sector.key">{{ RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</option>
+                        [value]="sector.key">{{ RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</option>
                 </select>
             </div>
             <div class="form-group-country-office-profile col-sm-3">
                 <select class="form-control" name="areasOfOperation"
-                    [(ngModel)]="filterLocation">
+                        [(ngModel)]="filterLocation">
                     <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
                     <option *ngFor="let location of areasOfOperation" 
-                            [value]="location">{{ location }}</option>
+                        [value]="location">{{ location }}</option>
                 </select>
             </div>
             <div class="form-group-country-office-profile col-sm-3">
                 <select class="form-control" name="filterOrganisation"
-                    [(ngModel)]="filterOrganisation">
+                        [(ngModel)]="filterOrganisation">
                     <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
                     <option *ngFor="let partnerOrganisation of partnerOrganisations"
-                            [value]="partnerOrganisation.id">{{ partnerOrganisation?.organisationName }}</option>
+                        [value]="partnerOrganisation.id">{{ partnerOrganisation?.organisationName }}</option>
                 </select>
             </div>
             <div class="col-sm-4"></div>
@@ -65,7 +65,7 @@
         <div class="row Line-row"></div>
 
         <div class="row Spaced-above" *ngFor="let partnerOrganisation of partnerOrganisations; let i = index;" [hidden]="hideFilteredPartners(partnerOrganisation)">
-            <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
+             <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
             <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
             <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
             <p class="col-sm-2">{{ getAreasOfOperation(partnerOrganisation) }}</p> <!--Areas of operation-->
@@ -85,11 +85,11 @@
                 </a>
             </div> <!--Notes-->
             <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                <button class="btn btn-outline-primary text-uppercase" 
+                 <button class="btn btn-outline-primary text-uppercase" 
                     (click)="editPartnerOrganisation(partnerOrganisation.id)">
-                        {{ 'GLOBAL.EDIT' | translate }}</button>
+                    {{ 'GLOBAL.EDIT' | translate }}</button>
             </div>
-            
+
             <div class="row Line-row Spaced-above"></div>
 
             <!-- Notes Drop Down -->
@@ -99,12 +99,12 @@
                     <hr class="d-inline-flex">
                     <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
                         <input type="text" name="new_note" placeholder="Add a note"
-                            [(ngModel)] = "newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
+                           [(ngModel)] = "newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
 
-                        <!--Note post -->
-                        <div class="row Spaced log-post__wrap--risk"
-                            *ngFor="let note of partnerOrganisation.notes">
-                            <div class="log-date__wrap--risk col-lg-1">
+                           <!--Note post -->
+                           <div class="row Spaced log-post__wrap--risk"
+                           *ngFor="let note of partnerOrganisation.notes">
+                           <div class="log-date__wrap--risk col-lg-1">
                                 <p>{{ note.time | date: 'dd MMM y' }}</p>
                             </div>
                             <div class="col-lg-6">
@@ -113,10 +113,10 @@
                                 <div class="row">
                                     <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
                                     <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
-                                        (click) ="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                                       (click) ="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
                                     <p href="#" class="padding-left-one">|</p>
                                     <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
-                                        (click) ="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                                       (click) ="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                                 </div>
                             </div>
                         </div>
@@ -147,14 +147,14 @@
 
                     <!--Border box-->
                     <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above" 
-                        *ngFor="let project of partnerOrganisation?.projects">
-                        <div class="row">
+                         *ngFor="let project of partnerOrganisation?.projects">
+                         <div class="row">
                             <p class="col-sm-3 Spaced-above font-weight-bold">{{ 'ADD_PARTNER.SECTOR' | translate }}</p>
                             <div class="col-sm-0">
                                 <div class="Icon__selectable" 
-                                    *ngFor = "let sector of project.sector | keyValues" 
-                                    [hidden]="!sector.value">
-                                    <div [class] = "RESPONSE_PLAN_SECTORS[sector.key]"></div>
+                                     *ngFor = "let sector of project.sector | keyValues" 
+                                     [hidden]="!sector.value">
+                                     <div [class] = "RESPONSE_PLAN_SECTORS[sector.key]"></div>
                                     <label>{{RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</label>
                                 </div>
                             </div>
@@ -202,29 +202,29 @@
             <!--Partnership Details tooltip End-->
         </div>
         <button class="btn btn-outline-primary text-uppercase" 
-            *ngIf="canEdit"
-            (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}</button>
+                *ngIf="canEdit"
+                (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}</button>
     </div>
 </div>
 
 <!-- Delete note modal -->
 <div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
           translate}}</strong></h5>
-      </div>
-      <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-        <button type="button" class="btn btn-primary" (click)="deleteAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
-      </div>
+            </div>
+            <div class="modal-body">
+                <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+                <button type="button" class="btn btn-primary" (click)="deleteAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!--Edit Note Modal-->

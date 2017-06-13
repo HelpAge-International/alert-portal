@@ -9,143 +9,152 @@ import {ModelAlert} from "../../model/alert.model";
 import {UserService} from "../../services/user.service";
 
 @Component({
-  selector: 'app-country-admin-header',
-  templateUrl: './country-admin-header.component.html',
-  styleUrls: ['./country-admin-header.component.css'],
-  providers: [ActionsService]
+    selector: 'app-country-admin-header',
+    templateUrl: './country-admin-header.component.html',
+    styleUrls: ['./country-admin-header.component.css'],
+    providers: [ActionsService]
 })
 
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
-  private alertLevel: AlertLevels;
-  private alertTitle: string;
+    private alertLevel: AlertLevels;
+    private alertTitle: string;
 
-  // TODO - Check when other users are implemented
-  // private USER_TYPE: string = 'administratorCountry';
-  private USER_TYPE: string;
+    // TODO - Check when other users are implemented
+    // private USER_TYPE: string = 'administratorCountry';
+    private USER_TYPE: string;
 
-  private uid: string;
-  private countryId: string;
-  private agencyAdminId: string;
+    private uid: string;
+    private countryId: string;
+    private agencyAdminId: string;
 
-  private firstName: string = "";
-  private lastName: string = "";
+    private firstName: string = "";
+    private lastName: string = "";
 
-  private countryLocation: any;
-  private Countries = Countries;
+    private countryLocation: any;
+    private Countries = Countries;
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-  private isAmber: boolean;
-  private isRed: boolean;
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
+    private isAmber: boolean;
+    private isRed: boolean;
+    private isAnonym: boolean = false;
 
-  constructor(private af: AngularFire, private router: Router, private alertService: ActionsService, private userService: UserService) {
-  }
+    constructor(private af: AngularFire, private router: Router, private alertService: ActionsService, private userService: UserService) {
 
-  ngOnInit() {
-    this.af.auth.subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
-            this.firstName = user.firstName;
-            this.lastName = user.lastName;
-          });
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            if (userType == UserType.CountryAdmin) {
-              this.USER_TYPE = 'administratorCountry';
+    }
+
+    ngOnInit() {
+        this.af.auth.subscribe(user => {
+            this.isAnonym = user && !user.anonymous ? false : true;
+            if (user) {
+                if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
+                    this.af.auth.logout().then(() => {
+                        this.router.navigate(['/login']);
+                    });
+                }
+                if (!user.anonymous) {
+                    this.uid = user.auth.uid;
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(user => {
+                            this.firstName = user.firstName;
+                            this.lastName = user.lastName;
+                        });
+                    this.userService.getUserType(this.uid)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(userType => {
+                            if (userType == UserType.CountryAdmin) {
+                                this.USER_TYPE = 'administratorCountry';
+                            }
+                            //after user type check, start to do the job
+                            if (this.USER_TYPE) {
+                                this.getCountryId().then(() => {
+                                    this.getAgencyID().then(() => {
+                                        this.getCountryData();
+                                        this.checkAlerts();
+                                    });
+                                });
+                            }
+                        });
+                }
+            } else {
+                this.router.navigateByUrl(Constants.LOGIN_PATH);
             }
-            //after user type check, start to do the job
-            if (this.USER_TYPE) {
-              this.getCountryId().then(() => {
-                this.getAgencyID().then(() => {
-                  this.getCountryData();
-                  this.checkAlerts();
+        });
+    }
+
+    private checkAlerts() {
+        this.alertService.getAlerts(this.countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((alerts: ModelAlert[]) => {
+                alerts.forEach(alert => {
+                    if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
+                        this.isRed = true;
+                    }
+                    if (alert.alertLevel == AlertLevels.Amber && alert.approvalStatus == AlertStatus.Approved) {
+                        this.isAmber = true;
+                    }
                 });
-              });
-            }
-          });
+                if (this.isRed) {
+                    this.alertLevel = AlertLevels.Red;
+                    this.alertTitle = "ALERT.RED_ALERT_LEVEL";
+                } else if (this.isAmber) {
+                    this.alertLevel = AlertLevels.Amber;
+                    this.alertTitle = "ALERT.AMBER_ALERT_LEVEL";
+                } else {
+                    this.alertLevel = AlertLevels.Green;
+                    this.alertTitle = "ALERT.GREEN_ALERT_LEVEL";
+                }
+            });
+    }
 
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
-    });
-  }
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+    }
 
-  private checkAlerts() {
-    this.alertService.getAlerts(this.countryId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((alerts: ModelAlert[]) => {
-        alerts.forEach(alert => {
-          if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
-            this.isRed = true;
-          }
-          if (alert.alertLevel == AlertLevels.Amber && alert.approvalStatus == AlertStatus.Approved) {
-            this.isAmber = true;
-          }
+    logout() {
+        console.log("logout");
+        this.af.auth.logout();
+    }
+
+    /**
+     * Private functions
+     */
+
+    private getCountryId() {
+        let promise = new Promise((res, rej) => {
+            this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((countryId: any) => {
+                    this.countryId = countryId.$value;
+                    res(true);
+                });
         });
-        if (this.isRed) {
-          this.alertLevel = AlertLevels.Red;
-          this.alertTitle = "ALERT.RED_ALERT_LEVEL";
-        } else if (this.isAmber) {
-          this.alertLevel = AlertLevels.Amber;
-          this.alertTitle = "ALERT.AMBER_ALERT_LEVEL";
-        } else {
-          this.alertLevel = AlertLevels.Green;
-          this.alertTitle = "ALERT.GREEN_ALERT_LEVEL";
-        }
-      });
-  }
+        return promise;
+    }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  }
-
-  logout() {
-    console.log("logout");
-    this.af.auth.logout();
-  }
-
-  /**
-   * Private functions
-   */
-
-  private getCountryId() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryId: any) => {
-          this.countryId = countryId.$value;
-          res(true);
+    private getAgencyID() {
+        let promise = new Promise((res, rej) => {
+            this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((agencyIds: any) => {
+                    this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
+                    res(true);
+                });
         });
-    });
-    return promise;
-  }
+        return promise;
+    }
 
-  private getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIds: any) => {
-          this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
-          res(true);
+    private getCountryData() {
+        let promise = new Promise((res, rej) => {
+            this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryId + "/location")
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((location: any) => {
+                    this.countryLocation = location.$value;
+                    res(true);
+                });
         });
-    });
-    return promise;
-  }
-
-  private getCountryData() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryId + "/location")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value;
-          res(true);
-        });
-    });
-    return promise;
-  }
+        return promise;
+    }
 }

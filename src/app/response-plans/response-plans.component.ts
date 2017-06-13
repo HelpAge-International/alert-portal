@@ -7,6 +7,7 @@ import {Observable} from "rxjs/Observable";
 import set = Reflect.set;
 import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
+import {UserService} from "../services/user.service";
 declare const jQuery: any;
 
 @Component({
@@ -17,6 +18,7 @@ declare const jQuery: any;
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
+
 
   private dialogTitle: string;
   private dialogContent: string;
@@ -29,42 +31,47 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private hideWarning: boolean = true;
   private waringMessage: string;
   private countryId: string;
+  private agencyId: string;
   private notesMap = new Map();
   private needShowDialog: boolean;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private partnersMap = new Map();
 
-  constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService) {
+  constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
   }
 
   ngOnInit() {
-    console.log("NGHSUBVSCRIBOIEWJSFOIEWJGF");
-    console.log(this.ngUnsubscribe);
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        console.log("Admin uid: " + this.uid);
-        this.checkUserType(this.uid);
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.userType = userType;
+            let userPath = Constants.USER_PATHS[userType];
+            this.getSystemAgencyCountryIds(userPath);
+          });
       } else {
         this.navigateToLogin();
       }
     });
   }
 
-  private checkUserType(uid: string) {
-    this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + uid)
-      .takeUntil(this.ngUnsubscribe).subscribe(admin => {
-      if (admin.countryId) {
+  private getSystemAgencyCountryIds(userPath: string) {
+    this.userService.getAgencyId(userPath, this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyId => {
+        this.agencyId = agencyId;
+        this.af.database.object(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + "/countryId")
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((countryId) => {
+            this.countryId = countryId.$value;
+            this.getResponsePlans(this.countryId);
+          });
+      });
 
-        this.userType = UserType.CountryAdmin;
-        this.countryId = admin.countryId;
-        console.log("user type: " + this.userType);
-        this.getResponsePlans(admin.countryId);
-      } else {
-        console.log("check other user types!")
-      }
-    });
   }
 
   private getResponsePlans(id: string) {
@@ -74,13 +81,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: true
       }
     })
-      .takeUntil(this.ngUnsubscribe).subscribe(plans => {
-      this.activePlans = plans;
-      for (let x of this.activePlans) {
-        this.getNotes(x);
-      }
-      console.log(plans);
-    });
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(plans => {
+        this.activePlans = plans;
+        for (let x of this.activePlans) {
+          this.getNotes(x);
+        }
+        console.log(this.activePlans);
+        this.checkHaveApprovedPartners(this.activePlans);
+      });
 
     this.archivedPlans = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
@@ -89,6 +98,23 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       }
     });
     console.log("get response plan...");
+  }
+
+  private checkHaveApprovedPartners(activePlans: any[]) {
+    activePlans.forEach(plan => {
+      let partnerIds = plan.partnerOrganisations;
+      if (partnerIds) {
+        partnerIds.forEach(partnerId => {
+          this.service.getPartnerOrgnisation(partnerId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(partner => {
+              if (partner.isApproved) {
+                this.partnersMap.set(plan.$key, partner.isApproved);
+              }
+            });
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -140,11 +166,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (this.needShowDialog) {
       jQuery("#dialog-action").modal("hide");
     }
-    if (this.userType == UserType.CountryAdmin) {
+    if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       let approvalData = {};
       let countryId = "";
       let agencyId = "";
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
         .flatMap(countryAdmin => {
           countryId = countryAdmin.countryId;
           agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
@@ -157,7 +183,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
           } else {
-            this.waringMessage = "ERROR_NO_COUNTRY_DIRECTOR";
+            this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
           }
@@ -189,7 +215,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
             console.log("global enabled")
           } else {
-            console.log("both directors enabled")
+            console.log("both directors enabled");
+            this.updateWithBothApproval(this.agencyId, countryId, approvalData);
           }
         });
     }
@@ -210,16 +237,35 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateWithRegionalApproval(countryId: string, approvalData) {
+  private updateWithRegionalApproval(countryId: string, approvalData: {}) {
 
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
-      .takeUntil(this.ngUnsubscribe).subscribe(id => {
-      // console.log(id);
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(id => {
+      console.log(id);
       if (id && id.$value) {
         approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
-        this.updatePartnerValidation(countryId, approvalData);
       }
+      this.updatePartnerValidation(countryId, approvalData);
     });
+  }
+
+  private updateWithBothApproval(agencyId: string, countryId: string, approvalData: {}) {
+    this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
+      query: {
+        orderByChild: "agencyAdmin/" + agencyId,
+        equalTo: true
+      }
+    })
+      .first()
+      .subscribe(globalDirector => {
+        console.log(globalDirector)
+        if (globalDirector.length>0 && globalDirector[0].$key) {
+          console.log(globalDirector[0].$key);
+          approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
+        }
+        this.updateWithRegionalApproval(countryId, approvalData);
+      });
   }
 
   closeModal() {
@@ -300,6 +346,5 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   testExport() {
     this.router.navigateByUrl("/export");
   }
-
 
 }

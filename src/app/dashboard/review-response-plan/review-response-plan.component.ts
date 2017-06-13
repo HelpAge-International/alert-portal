@@ -188,4 +188,3 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 }
-

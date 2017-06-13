@@ -1,5 +1,7 @@
 input.ng-touched.ng-invalid {border:solid red 2px;}
 input.ng-touched.ng-valid {border:solid green 2px;}
+.invalid {border:solid red 2px;}
+.valid {border:solid green 2px;}
 .hideoption { display:none; visibility:hidden; height:0; font-size:0; }
 .customInput{
     padding: 0.5rem 0.5rem;

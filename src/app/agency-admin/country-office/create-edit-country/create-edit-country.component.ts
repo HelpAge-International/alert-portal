@@ -51,6 +51,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private agencyModuleSetting: {};
   private agencyClockSetting: {};
   private systemId: string;
+  private agencyId: string;
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
@@ -63,36 +64,36 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       }
       this.uid = user.auth.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, "second");
-      this.handleSettings(this.uid);
+
+
       this.agencyService.getSystemId(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(systemId => {
           this.systemId = systemId;
-        });
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((param: Params) => {
-          if (param["id"]) {
-            this.countryOfficeId = param["id"];
-            this.isEdit = true;
-            this.loadCountryInfo(this.countryOfficeId);
-          }
+
+          this.agencyService.getAgencyId(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyId => {
+              this.agencyId = agencyId;
+              this.handleSettings(this.agencyId);
+
+              this.route.params
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((param: Params) => {
+                  if (param["id"]) {
+                    this.countryOfficeId = param["id"];
+                    this.isEdit = true;
+                    this.loadCountryInfo(this.countryOfficeId);
+                  }
+                });
+            });
         });
     });
   }
 
   private handleSettings(uid: string) {
-    this.agencyService.getAgencyId(uid)
-      .do(agencyId => {
-        this.agencyService.getAgencyModuleSetting(agencyId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(setting => {
-            this.agencyModuleSetting = setting;
-          });
-      })
-      .flatMap(agencyId => {
-        return this.agencyService.getAgency(agencyId);
-      })
+    this.agencyService.getAgency(uid)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(agency => {
         this.agencyClockSetting = agency.clockSettings;
       });
@@ -107,7 +108,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private loadCountryInfo(countryOfficeId: string) {
     console.log("edit: " + countryOfficeId);
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.uid + "/" + countryOfficeId)
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryOfficeId)
       .do(result => {
         console.log(result);
         this.countryOfficeLocation = result.location;
@@ -226,7 +227,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private validateLocation() {
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid, {
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId, {
       query: {
         orderByChild: "location",
         equalTo: this.countryOfficeLocation
@@ -290,20 +291,20 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     updateAdminData["/userPublic/" + countryId] = countryAdmin;
 
     updateAdminData["/administratorCountry/" + countryId + "/firstLogin"] = true;
-    updateAdminData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
+    updateAdminData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.agencyId] = true;
     updateAdminData["/administratorCountry/" + countryId + "/countryId"] = this.countryOfficeId;
 
     // updateAdminData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
-    // updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
+    // updateAdminData["/group/agency/" + this.agencyId + "/countryadmins/" + countryId] = true;
 
-    updateAdminData["/countryOffice/" + this.uid + "/" + this.countryOfficeId + "/adminId"] = countryId;
-    updateAdminData["/countryOffice/" + this.uid + "/" + this.countryOfficeId + "/location"] = this.countryOfficeLocation;
+    updateAdminData["/countryOffice/" + this.agencyId + "/" + this.countryOfficeId + "/adminId"] = countryId;
+    updateAdminData["/countryOffice/" + this.agencyId + "/" + this.countryOfficeId + "/location"] = this.countryOfficeLocation;
 
     //previous admin data need to be removed
     updateAdminData["/userPublic/" + this.tempAdminId] = null;
     updateAdminData["/administratorCountry/" + this.tempAdminId] = null;
     // updateAdminData["/group/systemadmin/allcountryadminsgroup/" + this.tempAdminId] = null;
-    // updateAdminData["/group/agency/" + this.uid + "/countryadmins/" + this.tempAdminId] = null;
+    // updateAdminData["/group/agency/" + this.agencyId + "/countryadmins/" + this.tempAdminId] = null;
 
     this.af.database.object(Constants.APP_STATUS).update(updateAdminData).then(() => {
       this.backHome();
@@ -329,15 +330,15 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     this.countryData["/userPublic/" + countryId + "/postCode/"] = this.countryAdminPostcode;
 
 
-    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
+    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.agencyId] = true;
     this.countryData["/administratorCountry/" + countryId + "/countryId/"] = countryId;
 
     // this.countryData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
-    // this.countryData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
+    // this.countryData["/group/agency/" + this.agencyId + "/countryadmins/" + countryId] = true;
 
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/adminId/"] = countryId;
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/location/"] = this.countryOfficeLocation;
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId + "/isActive/"] = true;
+    this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/adminId/"] = countryId;
+    this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/location/"] = this.countryOfficeLocation;
+    this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/isActive/"] = true;
 
     this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
       this.backHome();
@@ -360,15 +361,15 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     countryAdmin.postCode = this.countryAdminPostcode ? this.countryAdminPostcode : "";
     this.countryData["/userPublic/" + countryId] = countryAdmin;
 
-    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.uid] = true;
+    this.countryData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.agencyId] = true;
     this.countryData["/administratorCountry/" + countryId + "/systemAdmin/" + this.systemId] = true;
     this.countryData["/administratorCountry/" + countryId + "/countryId"] = countryId;
     this.countryData["/administratorCountry/" + countryId + "/firstLogin"] = true;
 
     this.countryData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
     this.countryData["/group/systemadmin/allusersgroup/" + countryId] = true;
-    this.countryData["/group/agency/" + this.uid + "/countryadmins/" + countryId] = true;
-    this.countryData["/group/agency/" + this.uid + "/agencyallusersgroup/" + countryId] = true;
+    this.countryData["/group/agency/" + this.agencyId + "/countryadmins/" + countryId] = true;
+    this.countryData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + countryId] = true;
 
     let countryOffice = new ModelCountryOffice();
     countryOffice.adminId = countryId;
@@ -568,7 +569,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     }
 
     //actual model update
-    this.countryData["/countryOffice/" + this.uid + "/" + countryId] = countryOffice;
+    this.countryData["/countryOffice/" + this.agencyId + "/" + countryId] = countryOffice;
 
     this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
       this.backHome();

@@ -21,6 +21,7 @@ import { ModelStaff } from "../model/staff.model";
 export class UserService {
   private secondApp: firebase.app.App;
   private authState: FirebaseAuthState;
+  public anonymousUserPath:any;
 
   public user: ModelUserPublic;
   public partner: PartnerModel;
@@ -170,25 +171,25 @@ export class UserService {
       return null;
     }
 
-    const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
-      .map(item => {
-        if (item.$key) {
-          let partner = new PartnerModel();
-          partner.mapFromObject(item);
-          partner.id = uid;
-          return partner;
-        }
-        return null;
-      });
+        const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
+            .map(item => {
+                if (item.$key) {
+                    let partner = new PartnerModel();
+                    partner.mapFromObject(item);
+                    partner.id = uid;
+                    return partner;
+                }
+                return null;
+            });
 
-    return partnerUserSubscription;
-  }
+        return partnerUserSubscription;
+    }
 
-  getPartnerUsers(): Observable<PartnerModel[]> {
-    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
-      .map(items => {
-        let partners: PartnerModel[] = [];
-        items.forEach(item => {
+    getPartnerUsers(): Observable<PartnerModel[]> {
+        const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
+            .map(items => {
+                let partners: PartnerModel[] = [];
+                items.forEach(item => {
 
           // Add the organisation ID
           let partner = item as PartnerModel;
@@ -245,8 +246,8 @@ export class UserService {
 
             let oldPartner = Object.assign(partner);
 
-            partner.id = null; // force new user creation
-            userPublic.id = null;
+                        partner.id = null; // force new user creation
+                        userPublic.id = null;
 
             return this.savePartnerUser(partner, userPublic).then(delUser => {
               return this.deletePartnerUser(oldPartner);
@@ -319,10 +320,18 @@ export class UserService {
   //return current user type enum number
   getUserType(uid: string): Observable<any> {
 
-    const paths = [Constants.APP_STATUS + "/administratorCountry/" + uid, Constants.APP_STATUS + "/countryDirector/" + uid,
-      Constants.APP_STATUS + "/regionDirector/" + uid, Constants.APP_STATUS + "/globalDirector/" + uid,
-      Constants.APP_STATUS + "/globalUser/" + uid, Constants.APP_STATUS + "/countryUser/" + uid, Constants.APP_STATUS + "/ertLeader/" + uid,
-      Constants.APP_STATUS + "/ert/" + uid];
+    const paths = [
+      Constants.APP_STATUS + "/administratorCountry/" + uid,
+      Constants.APP_STATUS + "/countryDirector/" + uid,
+      Constants.APP_STATUS + "/regionDirector/" + uid,
+      Constants.APP_STATUS + "/globalDirector/" + uid,
+      Constants.APP_STATUS + "/globalUser/" + uid,
+      Constants.APP_STATUS + "/countryUser/" + uid,
+      Constants.APP_STATUS + "/ertLeader/" + uid,
+      Constants.APP_STATUS + "/ert/" + uid,
+      Constants.APP_STATUS + "/donor/" + uid,
+      Constants.APP_STATUS + "/administratorAgency/" + uid
+    ];
 
     if (!uid) {
       return null;
@@ -367,7 +376,14 @@ export class UserService {
                                                   if (ert.agencyAdmin) {
                                                     return Observable.of(UserType.Ert);
                                                   } else {
-                                                    return Observable.empty();
+                                                    return this.af.database.object(paths[8])
+                                                      .flatMap(donor => {
+                                                        if (donor.agencyAdmin) {
+                                                          return Observable.of(UserType.Donor);
+                                                        } else {
+                                                          return Observable.empty();
+                                                        }
+                                                      });
                                                   }
                                                 });
                                             }
@@ -397,7 +413,7 @@ export class UserService {
       });
   }
 
-  getAgencyId(userType, uid): Observable<string> {
+  getAgencyId(userType: string, uid): Observable<string> {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
       .map(agencyIds => {
         if (agencyIds.length > 0 && agencyIds[0].$value) {
@@ -407,7 +423,7 @@ export class UserService {
     return subscription;
   }
 
-  getSystemAdminId(userType, uid): Observable<string> {
+  getSystemAdminId(userType: string, uid): Observable<string> {
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
       .map(systemIds => {
         if (systemIds.length > 0 && systemIds[0].$value) {
@@ -449,7 +465,7 @@ export class UserService {
       })
   }
 
-  getOrganisationName(id) {
-    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
-  }
+    getOrganisationName(id) {
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
+    }
 }

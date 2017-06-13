@@ -5,22 +5,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var core_1 = require('@angular/core');
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var Constants_1 = require("../../utils/Constants");
 var system_model_1 = require("../../model/system.model");
 var SystemSettingsComponent = (function () {
-    function SystemSettingsComponent(af, router, subscriptions) {
+    function SystemSettingsComponent(af, router) {
         this.af = af;
         this.router = router;
-        this.subscriptions = subscriptions;
         this.successMessage = "SYSTEM_ADMIN.SETTING.SETTING_SAVED";
         this.isSaved = false;
         this.thresholdValue = Constants_1.Constants.THRESHOLD_VALUE;
+        this.ngUnsubscribe = new rxjs_1.Subject();
     }
     SystemSettingsComponent.prototype.ngOnInit = function () {
         var _this = this;
-        var subscription = this.af.auth.subscribe(function (x) {
+        this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(function (x) {
             if (x) {
                 _this.uid = x.uid;
                 _this.initData(_this.uid);
@@ -29,10 +30,10 @@ var SystemSettingsComponent = (function () {
                 _this.router.navigateByUrl(Constants_1.Constants.LOGIN_PATH);
             }
         });
-        this.subscriptions.add(subscription);
     };
     SystemSettingsComponent.prototype.ngOnDestroy = function () {
-        this.subscriptions.releaseAll();
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
     };
     SystemSettingsComponent.prototype.saveSetting = function () {
         if (this.uid) {
@@ -44,7 +45,8 @@ var SystemSettingsComponent = (function () {
     };
     SystemSettingsComponent.prototype.initData = function (uid) {
         var _this = this;
-        this.af.database.object(Constants_1.Constants.APP_STATUS + "/system/" + uid).subscribe(function (x) {
+        this.af.database.object(Constants_1.Constants.APP_STATUS + "/system/" + uid)
+            .takeUntil(this.ngUnsubscribe).subscribe(function (x) {
             _this.modelSystem = new system_model_1.ModelSystem();
             _this.modelSystem.advThreshold = x.advThreshold;
             _this.modelSystem.minThreshold = x.minThreshold;
@@ -75,18 +77,18 @@ var SystemSettingsComponent = (function () {
     SystemSettingsComponent.prototype.showAlert = function () {
         var _this = this;
         this.isSaved = true;
-        var subscription = rxjs_1.Observable.timer(Constants_1.Constants.ALERT_DURATION).subscribe(function () {
+        rxjs_1.Observable.timer(Constants_1.Constants.ALERT_DURATION)
+            .takeUntil(this.ngUnsubscribe).subscribe(function () {
             _this.isSaved = false;
         });
-        this.subscriptions.add(subscription);
     };
-    SystemSettingsComponent = __decorate([
-        core_1.Component({
-            selector: 'app-system-settings',
-            templateUrl: './system-settings.component.html',
-            styleUrls: ['./system-settings.component.css']
-        })
-    ], SystemSettingsComponent);
     return SystemSettingsComponent;
 }());
+SystemSettingsComponent = __decorate([
+    core_1.Component({
+        selector: 'app-system-settings',
+        templateUrl: './system-settings.component.html',
+        styleUrls: ['./system-settings.component.css']
+    })
+], SystemSettingsComponent);
 exports.SystemSettingsComponent = SystemSettingsComponent;

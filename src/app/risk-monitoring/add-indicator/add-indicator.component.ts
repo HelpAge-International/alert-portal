@@ -1,11 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
 import {AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
-import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../model/indicator-source.model";
