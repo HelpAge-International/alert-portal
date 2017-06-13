@@ -6,6 +6,7 @@ import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from 
 import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {Subject} from "rxjs";
+import {UserService} from "../../services/user.service";
 
 declare var jQuery: any;
 
@@ -16,6 +17,7 @@ declare var jQuery: any;
 })
 
 export class BudgetPreparednessComponent implements OnInit, OnDestroy {
+  private UserType: number;
 
   private uid: string;
   private countryID: string;
@@ -39,7 +41,7 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
     this.generateArray();
   }
 
@@ -47,7 +49,12 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        this._loadData();
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
+            this._loadData();
+          });
       } else {
         this.navigateToLogin();
       }
@@ -126,24 +133,24 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
 
   _getAgencyID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIDs: any) => {
-        this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-        res(true);
-      });
+          this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
 
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
-        res(true);
-      });
+          this.countryID = countryID.$value ? countryID.$value : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -153,16 +160,16 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyID + '/' + this.countryID)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((budgetSettings: any) => {
-      if (budgetSettings && budgetSettings.minPreparednessBudget) {
-        this.minimumPreparednessBudget = budgetSettings.minPreparednessBudget;
-        this.setTotal('MPA');
-      }
-      if (budgetSettings && budgetSettings.advPreparednessBudget) {
-        this.advancedPreparednessBudget = budgetSettings.advPreparednessBudget;
-        this.setTotal('APA');
-      }
+        if (budgetSettings && budgetSettings.minPreparednessBudget) {
+          this.minimumPreparednessBudget = budgetSettings.minPreparednessBudget;
+          this.setTotal('MPA');
+        }
+        if (budgetSettings && budgetSettings.advPreparednessBudget) {
+          this.advancedPreparednessBudget = budgetSettings.advPreparednessBudget;
+          this.setTotal('APA');
+        }
 
-    });
+      });
   }
 
   _loadData() {

@@ -1169,6 +1169,7 @@
             "VIEW_PLAN": "View plan",
             "EDIT_PLAN": "Edit plan",
             "REQUIRE_SUBMISSION": "Requires submission",
+            "REQUIRE_APPROVAL":"Requires approval",
             "SUBMIT_FOR_APPROVAL": "Submit for approval",
             "SUBMIT_FOR_PARTNER_VALIDATION": "Submit for partner validation",
             "EXPORT_FOR_PROPOSAL": "Export for proposal",

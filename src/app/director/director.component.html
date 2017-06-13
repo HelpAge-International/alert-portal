@@ -138,7 +138,7 @@
           <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
             <div *ngFor="let y of countries">
 
-              <div *ngIf="x.countries.has(y.countryId) && isValidAlertLevel(y, alertLevelSelected)" (click)="countryOverview(y.countryId)">
+              <div *ngIf="x.countries.has(y.countryId)" (click)="countryOverview(y.countryId)">
                 <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)"
                      aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
                   <div class="row align-items-center">
