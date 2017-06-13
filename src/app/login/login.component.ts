@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           // Fire off list of calls to check if the user id exists under any one of the nodes
           // - If all of these fail, the results are aggregated in loginAllCallsFinished();
-          // this.loginCheckingFirstLoginValue(success.uid, "administratorCountry", Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password');
+          this.loginCheckingFirstLoginValue(success.uid, "administratorCountry", Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password');
           this.loginChecking(success.uid, "system", Constants.SYSTEM_ADMIN_HOME);
           this.loginChecking(success.uid, "countryDirector", Constants.COUNTRY_ADMIN_HOME);
           this.loginChecking(success.uid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
@@ -167,11 +167,11 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.router.navigateByUrl(directToIfSuccess);
               }
               else {
-                // Account de-activated TODO
+                this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
               }
             }
             else {
-              // Agency doesn't exist under the userid TODO
+              this.showAlert(true, "LOGIN.AGENCY_DOESNT_EXIST");
             }
           });
       },
@@ -184,7 +184,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.userChecks--;
     if (this.userChecks <= 0) {
       // Run this logic
-      this.showAlert(true, "User type not found for this account");
+      this.showAlert(true, "LOGIN.USERTYPE_UNASSIGNED");
     }
   }
 
@@ -192,6 +192,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.errorMessage = errorMessage;
     this.loaderInactive = true;
     if (error) {
+      this.af.auth.logout();
       this.inactive = false;
       Observable.timer(Constants.ALERT_DURATION)
         .takeUntil(this.ngUnsubscribe)

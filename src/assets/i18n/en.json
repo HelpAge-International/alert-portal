@@ -492,7 +492,9 @@
       "INCORRECT_EMAIL": "Incorrect email address",
       "VALIDATION_ERROR": "An error occured whilst validating your information. Please re-enter your account details",
       "LOGIN_BLOCKED": "Login attempts have been temporarily blocked. Please try again later",
-        "USERTYPE_UNASSIGNED": "This email address is not associated with a user account"
+        "USERTYPE_UNASSIGNED": "This email address is not associated with a user account",
+        "AGENCY_DEACTIVATED": "Your account is deactivated - Please check with your System Administrator",
+        "AGENCY_DOESNT_EXIST": "The agency you were assigned to no longer exists"
     },
     "FORGOT_PASSWORD": {
         "TITLE_TEXT": "Forgot Password?",
