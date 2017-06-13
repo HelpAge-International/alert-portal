@@ -120,6 +120,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
   }
 
+  exportStartFund(responsePlan) {
+    this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
+  }
+
   submitForApproval(plan) {
     this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
@@ -296,9 +300,4 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
     }
   }
-
-  exportStartFund() {
-    this.router.navigateByUrl("/exportStartFund");
-  }
-
 }

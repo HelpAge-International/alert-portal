@@ -249,10 +249,10 @@ const routes: Routes = [
   {path: 'director/director-overview', component: DirectorOverviewComponent},
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
 
-  /*
-   * test
+  /**
+   * Response plan exporting
    * */
-  {path: 'exportStartFund', component: ExportStartFundComponent}
+  {path: 'export-start-fund', component: ExportStartFundComponent}
 
 ];
 
