@@ -273,9 +273,9 @@ const routes: Routes = [
   /**
    * Donor
    */
-  {path: 'donor', component: DonorModuleComponent},
-  {path: 'donor/donor-list-view', component: DonorListViewComponent},
-  {path: 'donor/donor-country-index/:countryId', component: DonorCountryIndexComponent},
+  {path: 'donor-module', component: DonorModuleComponent},
+  {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
+  {path: 'donor-module/donor-country-index/:countryId', component: DonorCountryIndexComponent},
 
   /*
    * test

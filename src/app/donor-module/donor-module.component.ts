@@ -39,8 +39,8 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   goToListView() {
     console.log('Here');
-    this.router.navigate(['/donor/donor-list-view']);
-    this.router.navigateByUrl('/donor/donor-list-view');
+    this.router.navigate(['/donor-module/donor-list-view']);
+    // this.router.navigateByUrl('/donor-module/donor-list-view');
   }
 
   ngOnInit() {
@@ -70,11 +70,12 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
               },
               (mapCountryClicked) => {
                 if (this.mDepartmentMap != null) {
+
                   // TODO - Navigate to country index here
                   // TODO - Get the clicked countries ID
                   let countryIdToSend: string = this.mDepartmentMap.get(mapCountryClicked).countryId;
                   console.log(countryIdToSend);
-                  this.router.navigate(["donor/donor-country-index", {"countryId": countryIdToSend}]);
+                  this.router.navigate(["donor-module/donor-country-index", {"countryId": countryIdToSend}]);
                 }
                 else {
                   console.log("TODO: Map is yet to initialise properly / it failed to do so");

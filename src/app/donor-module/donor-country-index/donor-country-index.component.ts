@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AlertLevels} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {Router, Params, ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
 
 @Component({
@@ -11,7 +11,9 @@ import {Subject} from "rxjs";
   styleUrls: ['./donor-country-index.component.css']
 })
 
-export class DonorCountryIndexComponent implements OnInit {
+export class DonorCountryIndexComponent implements OnInit, OnDestroy {
+
+  private countryIdReceived: string;
 
   private uid: string;
   private agencyId: string;
@@ -39,18 +41,33 @@ export class DonorCountryIndexComponent implements OnInit {
   private alertLevels = Constants.ALERT_LEVELS;
   private alertLevelsList: number[] = Constants.ALERT_LEVELS_LIST;
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
+
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["countryId"]) {
+              this.countryIdReceived = params["countryId"];
+              console.log(this.countryIdReceived);
+            }
+          });
+
         this.loadData();
       } else {
         this.navigateToLogin();
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   // TODO -

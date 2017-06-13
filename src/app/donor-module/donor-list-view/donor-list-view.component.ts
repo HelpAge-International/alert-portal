@@ -92,8 +92,8 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  countryOverview(countryId) {
-    this.router.navigate(["/director/director-overview", {"countryId": countryId, "isViewing": true}]);
+  goToCountryIndex(countryId) {
+    this.router.navigate(["donor-module/donor-country-index", {"countryId": countryId}]);
   }
 
   getCountryCodeFromLocation(location: number) {

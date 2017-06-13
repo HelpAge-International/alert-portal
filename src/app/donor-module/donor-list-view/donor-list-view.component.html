@@ -5,7 +5,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1>
-      <a href="javascript:void(0)" (click)="goToMapView()">{{"MAPS.SEE_COUNTRIES_LIST" | translate}}</a>
+      <a href="javascript:void(0)" (click)="goToMapView()">{{"MAPS.SEE_COUNTRIES_MAP" | translate}}</a>
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
@@ -33,7 +33,7 @@
           <div *ngFor="let y of countries">
 
             <div *ngIf="x.countries.has(y.countryId)"
-                 (click)="countryOverview(y.countryId)">
+                 (click)="goToCountryIndex(y.countryId)">
               <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)"
                    aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
                 <div class="row align-items-center">
@@ -120,7 +120,7 @@
 
           <div *ngIf="otherRegion.countries.size != 0">
             <div *ngFor="let y of countries">
-              <div *ngIf="otherRegion.countries.has(y.countryId)" (click)="countryOverview(y.countryId)">
+              <div *ngIf="otherRegion.countries.has(y.countryId)" (click)="goToCountryIndex(y.countryId)">
                 <div class="Accordion Map-list" data-toggle="collapse"
                      [attr.href]="otherRegion.getDepartmentIdHash(y.countryId)"
                      aria-expanded="true" id="{{otherRegion.getCountryId(y.countryId)}}">
