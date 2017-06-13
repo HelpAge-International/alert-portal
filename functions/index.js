@@ -112,3 +112,36 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
       // });
     }
   });
+
+exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlan}')
+  .onWrite(event => {
+    console.log("response plan node triggered");
+    console.log(event.data.val());
+    console.log(event.data.key);
+    console.log(event.data.previous.val());
+    console.log(event.data.current.val());
+    console.log(event.data.changed());
+    console.log(event.data.val().startDate);
+
+    // functions.database.ref('/sand/')
+    // const userId = event.params.userId;
+    // const preData = event.data.previous.val();
+    // const currData = event.data.current.val();
+    // console.log(preData);
+    // console.log(currData);
+    // if (!preData && currData) {
+    //   //add user account
+    //   console.log("user added: " + userId);
+    // } else if (preData && currData) {
+    //   //user account change
+    //   console.log("user data changed: " + userId);
+    // } else if (preData && !currData) {
+    //   //delete user account
+    //   console.log("delete user: " + userId);
+    //   // admin.auth().deleteUser(userId).then(() => {
+    //   //   console.log("successfully deleted user: " + userId);
+    //   // }, error => {
+    //   //   console.log(error.message);
+    //   // });
+    // }
+  });
