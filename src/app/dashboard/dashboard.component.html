@@ -7,7 +7,7 @@
     <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
@@ -316,7 +316,7 @@
         </div>
       </div>
     </div>
-
+    <!--       v the best typo -->
     <!--empty rubber for default dashboard-->
     <div
       *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
@@ -418,7 +418,7 @@
 
     <div class="Widget-Group" *ngIf="DashboardTypeUsed == DashboardType.default">
 
-      <div class="Widget Risk-Monitoring">
+      <div class="Widget Risk-Monitoring" [hidden]="!moduleSettings.riskMonitoring">
         <h3>{{"DASHBOARD.RISK_MONITORING" | translate}}</h3>
         <ul class="list-inline">
           <li class="list-inline-item">

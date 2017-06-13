@@ -2,8 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Privacy, ModuleName} from "../../../utils/Enums";
+import {Privacy, ModuleName, PermissionsAgency} from "../../../utils/Enums";
 import {Subject} from "rxjs";
+import {PermissionService} from "../../../services/permissions.service";
 
 @Component({
   selector: 'app-modules',
@@ -29,14 +30,22 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  private listOfEnabledEnableButtons: boolean[] = [];
+  private disableMap: Map<PermissionsAgency, PermissionsAgency[]>;
+
   constructor(private af: AngularFire, private router: Router) {
+    this.disableMap = PermissionService.agencyDisableMap();
+    this.disableMap.forEach((value, key) => {
+      this.listOfEnabledEnableButtons.push(true);
+    });
+
   }
 
   ngOnInit() {
   	this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        this.af.database.list(Constants.APP_STATUS+'/module/' + this.uid)
+        this.af.database.list(Constants.APP_STATUS + '/module/' + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
 
@@ -75,7 +84,16 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   private changeStatus(moduleId, status) {
-  	this.modules[moduleId].status = status;
+    this.modules[moduleId].status = status;
+    if (!status) {
+      let items = this.disableMap.get(moduleId);
+      if (items != null) {
+        for (let x of items) {
+          this.changeStatus(x, false);
+        }
+      }
+    }
+    this.populateEnabledButtonsList();
   }
 
   private cancelChanges() {
@@ -101,11 +119,12 @@ export class ModulesComponent implements OnInit, OnDestroy {
         this.saved = true;
         this.alertSuccess = true;
         this.alertShow = true;
-        this.alertMessage = "Module Settings succesfully saved!"
+        this.alertMessage = "Module Settings succesfully saved!";
       }
     })
   	.catch(err => console.log(err, 'You do not have access!'));
   }
+
 
 
   onAlertHidden(hidden: boolean) {
@@ -114,4 +133,20 @@ export class ModulesComponent implements OnInit, OnDestroy {
     this.alertMessage = "";
   }
 
+  /**
+   * Permissions propagation
+   */
+  populateEnabledButtonsList() {
+    this.disableMap.forEach((value, key) => {
+      console.log(key);
+      console.log("Module: " + this.modules[key].status);
+      if (!this.modules[key].status) {
+        console.log(value);
+        value.forEach((value) => {
+          console.log(value);
+          this.listOfEnabledEnableButtons[value] = false;
+        });
+      }
+    });
+  }
 }

@@ -9,6 +9,7 @@ import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {unescapeIdentifier} from "@angular/compiler";
 import {Subscription} from "rxjs/Subscription";
+import {PermissionService} from "../services/permissions.service";
 declare var jQuery: any;
 
 @Component({
@@ -89,8 +90,12 @@ export class MapComponent implements OnInit, OnDestroy {
             );
 
             /** Load in the markers on the map! */
-            this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (marker) => {
-              marker.setMap(this.mapHelper.map);
+            PermissionService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[usertype], isEnabled => {
+              if (isEnabled.riskMonitoring) {
+                this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (marker) => {
+                  marker.setMap(this.mapHelper.map);
+                });
+              }
             });
 
             /** Get the Agency logo */

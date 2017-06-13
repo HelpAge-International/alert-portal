@@ -14,6 +14,7 @@ import {
   ChronolineEvent,
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
+import {AgencyModulesEnabled, PermissionService} from "../services/permissions.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
@@ -69,6 +70,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
 
+  // Module settings
+  private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
@@ -85,6 +88,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           .subscribe(userType => {
             this.userType = userType;
             this.NODE_TO_CHECK = this.userPaths[userType];
+            PermissionService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
+              this.moduleSettings = isEnabled;
+            }));
             if (userType == UserType.CountryDirector) {
               this.DashboardTypeUsed = DashboardType.director;
             } else {

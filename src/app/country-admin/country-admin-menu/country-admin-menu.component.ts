@@ -2,7 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../../services/user.service";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
-import {UserType} from "../../utils/Enums";
+import {PermissionsAgency, UserType} from "../../utils/Enums";
+import {AgencyPermissionObject, PermissionService} from "../../services/permissions.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
 
 @Component({
   selector: 'app-country-admin-menu',
@@ -16,7 +19,18 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   private UserType = UserType;
   private userType: UserType;
 
-  constructor(private af: AngularFire, private userService: UserService) {
+  // Permissions
+  public permMinimumPreparedness = false;
+  public permAdvancedPreparedness = false;
+  public permCHSPreparedness = false;
+  public permRiskMonitoring = false;
+  public permCountryOffice = false;
+  public permResponsePlanning = false;
+
+  constructor(private af: AngularFire,
+              private userService: UserService,
+              private activatedRoute: ActivatedRoute,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -27,11 +41,37 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
           this.uid = user.auth.uid;
           this.userService.getUserType(this.uid)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(usertype =>{
+            .subscribe(usertype => {
               this.userType = usertype;
+              PermissionService.agencyBuildPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid,
+                Constants.USER_PATHS[this.userType], (list: AgencyPermissionObject[]) => {
+                  for (const value of list) {
+                    console.log(value);
+                    if (value.permission === PermissionsAgency.MinimumPreparedness) {
+                      this.permMinimumPreparedness = !value.isAuthorized;
+                    }
+                    if (value.permission === PermissionsAgency.AdvancedPreparedness) {
+                      this.permAdvancedPreparedness = !value.isAuthorized;
+                    }
+                    if (value.permission === PermissionsAgency.RiskMonitoring) {
+                      this.permRiskMonitoring = !value.isAuthorized;
+                    }
+                    if (value.permission === PermissionsAgency.CountryOffice) {
+                      this.permCountryOffice = !value.isAuthorized;
+                    }
+                    if (value.permission === PermissionsAgency.ResponsePlanning) {
+                      this.permResponsePlanning = !value.isAuthorized;
+                    }
+                    PermissionService.agencySelfCheck(this.activatedRoute, this.router, value);
+                  }
+                });
             });
         }
       });
+  }
+
+  permissionList(list: AgencyPermissionObject[]) {
+    // Check the header items and a self-aware check
   }
 
   ngOnDestroy(): void {
