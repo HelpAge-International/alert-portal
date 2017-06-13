@@ -1,11 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
 import {AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
-import {RxHelper} from "../../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../model/indicator-source.model";
@@ -14,6 +13,7 @@ import {AlertMessageModel} from '../../model/alert-message.model';
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-add-indicator',
@@ -23,6 +23,8 @@ import {Subject} from "rxjs";
 })
 
 export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
+
+  private UserType: number;
 
   alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
@@ -44,9 +46,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
 
 
-    private countries = Constants.COUNTRIES;
-    private countriesList: number[] = Constants.COUNTRY_SELECTION;
-    private frequency = new Array(100);
+  private countries = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
+  private frequency = new Array(100);
 
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
@@ -97,6 +99,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               private _commonService: CommonService,
               private route: ActivatedRoute,
               private storage: LocalStorageService,
+              private userService: UserService,
               private _location: Location) {
     this.initIndicatorData();
   }
@@ -105,18 +108,25 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        this.getCountryID().then(() => {
-          this._getHazards();
-          this.getUsersForAssign();
-        });
-
-        // get the country levels values
-        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe(content => {
-            this.countryLevelsValues = content;
-            err => console.log(err);
+          .subscribe(userType => {
+            this.UserType = userType;
+
+            this.getCountryID().then(() => {
+              this._getHazards();
+              this.getUsersForAssign();
+            });
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(content => {
+                this.countryLevelsValues = content;
+                err => console.log(err);
+              });
           });
+
 
       } else {
         this.navigateToLogin();
@@ -150,9 +160,15 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
             if (auth) {
               this.uid = auth.uid;
-              this.getCountryID().then(() => {
-                this._getIndicator(this.hazardID, this.indicatorID);
-              });
+              this.userService.getUserType(this.uid)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(userType => {
+                  this.UserType = userType;
+
+                  this.getCountryID().then(() => {
+                    this._getIndicator(this.hazardID, this.indicatorID);
+                  });
+                });
 
             } else {
               this.navigateToLogin();
@@ -210,7 +226,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryID: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').subscribe((countryID: any) => {
         this.countryID = countryID.$value ? countryID.$value : "";
         res(true);
       });

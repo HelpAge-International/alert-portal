@@ -19,7 +19,9 @@
 
       <div *ngFor="let plan of activePlans" class="Accordion Plans-list">
         <div class="row align-items-center Plans-list__item">
-          <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan.hazardScenario] | translate}}</div>
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan.hazardScenario] |
+            translate}}
+          </div>
           <div class="col-md-3 col-sm-3">{{plan.name}}</div>
           <div *ngIf="plan.status==0" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-warning" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
@@ -81,15 +83,18 @@
                     <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                       translate}}
                     </div>
-                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
-                      translate}}
+                    <div class="col-6 text-left" *ngIf="idx==1">
+                      {{isGlobalDirectorMap.get(plan.$key)?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                      translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                      translate)}}
                     </div>
                     <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                       translate}}
                     </div>
                     <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
                          [class.text-muted]="!getApproveStatus(approve)">
-                      {{getApproveStatus(approve) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL'
+                      {{getApproveStatus(approve) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
+                      ('RESPONSE_PLANS.HOME.WAITING_APPROVAL'
                       | translate)}}
                       <i class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
@@ -195,14 +200,18 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" (click)="viewResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.VIEW_PLAN" | translate}}</a>
-                <a class="dropdown-item" (click)="editResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" | translate}}</a>
+                <a class="dropdown-item" (click)="viewResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.VIEW_PLAN" |
+                  translate}}</a>
+                <a class="dropdown-item" (click)="editResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" |
+                  translate}}</a>
                 <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
-                <a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner" class="dropdown-item"
+                <a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner && partnersMap.get(plan.$key)"
+                   class="dropdown-item"
                    (click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |
                   translate}}</a>
-                <a class="dropdown-item" (click)="testExport()">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Start Fund
+                <a class="dropdown-item" (click)="testExport()">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                  translate}} <br/> Start Fund
                   (.doc, 78Kb)</a>
                 <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
                   78Kb)</a>

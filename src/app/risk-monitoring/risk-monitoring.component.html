@@ -17,8 +17,8 @@
         <div class="Ribbon__section__wrap--risk Spaced"></div>
 
         <div class="expand_collapse__wrap--risk Right-aligned">
-            <a class="openall" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.EXPAND_ALL" | translate}}</a>
-            <a class="closeall" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.COLLAPSE_ALL" | translate}}</a>
+            <a class="openall" (click)="collapseAll('expand')" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.EXPAND_ALL" | translate}}</a>
+            <a class="closeall" (click)="collapseAll('collapse')" href="javascript:void(0)">{{"RISK_MONITORING.MAIN_PAGE.COLLAPSE_ALL" | translate}}</a>
         </div>
 
         <div class="Ribbon__section__wrap--risk align-items-right" role="tablist" aria-multiselectable="true">
@@ -70,14 +70,14 @@
                                 <div class="" *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                                      <input type="radio" name="indicator_{{indicatorC.$key}}" [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
                                     <div class="btn btn-primary">{{indicatorC.trigger[0].triggerValue}}</div>
-                                    <p class="low_risk_text__wrap--risk-left-green-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}} {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p> 
+                                    <p class="low_risk_text__wrap--risk-left-green-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}} {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
                                     <input type="radio" name="indicator_{{indicatorC.$key}}" [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
                                     <div class="btn btn-amber">{{indicatorC.trigger[1].triggerValue}}</div>
                                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}} {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
-                                    <input type="radio" name="indicator_{{indicatorC.$key}}" [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2"> 
+                                    <input type="radio" name="indicator_{{indicatorC.$key}}" [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
                                     <div class="btn btn-red">{{indicatorC.trigger[2].triggerValue}}
                                     </div>
-                                    <p class="low_risk_text__wrap--risk-right-red-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}} {{durationType[indicatorC.trigger[2].durationType] | translate | lowercase}}</p> 
+                                    <p class="low_risk_text__wrap--risk-right-red-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}} {{durationType[indicatorC.trigger[2].durationType] | translate | lowercase}}</p>
                                 </div>
                                 <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned"><img
                                         src="assets/images/icons/info_source.svg">
@@ -95,6 +95,7 @@
                                      <div class="Update__button">
                                         <div class="col-sm-12 btn btn-tertiary" (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">{{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                                     </div>
+                                       <!--TODO-->
                                     <p>Last update: <strong>01 March 2016</strong></p>
                                     <p>Next update: <strong>16 June 2016</strong></p></div>
                             </div>
@@ -134,7 +135,7 @@
                                             </div>
                                         </div>
                                         <hr>
-                                    </div> 
+                                    </div>
                                 </div>
                             </div>
 
@@ -176,7 +177,7 @@
          <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + hazard.hazardScenario}}" aria-expanded="true" attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="risk-icon__components"><img src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>
+                    <div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg"></div>
                     <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
                 <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
                     <div *ngIf="hazard.isSeasonal">
@@ -184,7 +185,7 @@
                     </div>
                 </div>
                 <div class="indicators__wrap--risk col-sm-3 Right-aligned">
-                    <strong>{{hazard.indicators && hazard.indicators.length ? hazard.indicators.length : 0}}</strong> 
+                    <strong>{{hazard.indicators && hazard.indicators.length ? hazard.indicators.length : 0}}</strong>
                     {{"RISK_MONITORING.MAIN_PAGE.INDICATORS_COUNT"| translate}}
                 </div>
                 <div class="col-sm-1 Icon--align-center"><i class="fa fa-caret-down text-primary" aria-hidden="true"></i></div>
@@ -220,13 +221,13 @@
                         <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                              <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
                             <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
-                            <p class="low_risk_text__wrap--risk-left-green-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}} {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p> 
+                            <p class="low_risk_text__wrap--risk-left-green-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}} {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                             <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
                             <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
                             <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}} {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
-                            <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2"> 
+                            <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
                             <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
-                            <p class="low_risk_text__wrap--risk-right-red-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}} {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p> 
+                            <p class="low_risk_text__wrap--risk-right-red-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}} {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                         </div>
                         <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned">
                             <img src="assets/images/icons/info_source.svg">
@@ -281,7 +282,7 @@
                                         </div>
                                     </div>
                                     <hr>
-                                </div> 
+                                </div>
                             </div>
                         </div>
 
@@ -437,13 +438,13 @@
                         <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                              <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
                             <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
-                            <p class="low_risk_text__wrap--risk-left-green-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}} {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p> 
+                            <p class="low_risk_text__wrap--risk-left-green-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}} {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                             <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
                             <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
                             <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}} {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
-                            <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2"> 
+                            <input type="radio" name="indicator_{{indicator.$key}}" [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
                             <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
-                            <p class="low_risk_text__wrap--risk-right-red-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}} {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p> 
+                            <p class="low_risk_text__wrap--risk-right-red-checkbox low">{{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}} {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                         </div>
                         <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned"><img src="assets/images/icons/info_source.svg">
                             <div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
@@ -499,7 +500,7 @@
                                         </div>
                                     </div>
                                     <hr>
-                                </div> 
+                                </div>
                             </div>
                         </div>
 
@@ -628,11 +629,11 @@
             </div>
             <div class="modal-body text-center">
                 <p class="text-center col-sm-12">
-                    {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_ONE" | translate}} 
-                    {{tmpHazardData['activeStatus'] ? 'activate' : 'archive'}}  
-                    {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_TWO" | translate}}  
-                    {{tmpHazardData['activeStatus'] ? 'active' : 'inactive'}} 
-                    {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_THREE" | translate}} 
+                    {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_ONE" | translate}}
+                    {{tmpHazardData['activeStatus'] ? 'activate' : 'archive'}}
+                    {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_TWO" | translate}}
+                    {{tmpHazardData['activeStatus'] ? 'active' : 'inactive'}}
+                    {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_THREE" | translate}}
                 </p>
                 <div class="row col-sm-12">
 

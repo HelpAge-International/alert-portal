@@ -421,7 +421,7 @@
       <div class="Widget Risk-Monitoring">
         <h3>{{"DASHBOARD.RISK_MONITORING" | translate}}</h3>
         <ul class="list-inline">
-          <li class="list-inline-item active">
+          <li class="list-inline-item">
             <div class="Icon">
               <div
                 class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
@@ -434,6 +434,7 @@
               <div
                 class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
             </div>
+
             <span>{{HazardScenariosList[hazard.hazardScenario] | translate}}</span>
             {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>

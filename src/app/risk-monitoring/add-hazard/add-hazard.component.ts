@@ -1,14 +1,14 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {HazardScenario, AlertMessageType, Countries} from "../../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {NgForm} from "@angular/forms";
+import {AlertMessageType, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {ModelHazard} from "../../model/hazard.model";
-import {AlertMessageModel} from '../../model/alert-message.model';
-import {LocalStorageService} from 'angular-2-local-storage';
-import {Subject} from "rxjs";
-import {InformHolder, InformService} from "../../services/inform.service";
+import {AlertMessageModel} from "../../model/alert-message.model";
+import {LocalStorageService} from "angular-2-local-storage";
+import {Subject} from "rxjs/Subject";
+import {UserService} from "../../services/user.service";
 
 declare var jQuery: any;
 
@@ -17,16 +17,19 @@ declare var jQuery: any;
   templateUrl: './add-hazard.component.html',
   styleUrls: ['./add-hazard.component.css']
 })
-
 export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
+
+  private UserType: number;
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  private alertMsgSeasonAddToCalendar: boolean = false;
   private hazardName: string;
+  private classAlertInvalid: any;
+  private classAlertValid: any;
   private countryID: string;
   private uid: string;
-  private locationID: number;
-  private agencyID: string;
   private count: number = 1;
   private customHazards = [];
   private AllSeasons = [];
@@ -40,8 +43,11 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private isCustomDisabled: boolean = true;
   private HazardScenario = Constants.HAZARD_SCENARIOS;
   private scenarioColors = Constants.SCENARIO_COLORS;
-  private hazardScenariosListTop: InformHolder[] = [];
-
+  private hazardScenariosListTop: number[] = [
+    HazardScenario.HazardScenario4,
+    HazardScenario.HazardScenario3,
+    HazardScenario.HazardScenario24
+  ];
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
     HazardScenario.HazardScenario1,
@@ -70,71 +76,40 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   ];
   private hazardData: any = {};
 
-  // INFORM information
-  private informHandler: InformService;
-  private loaderInactive: boolean;
-
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-
-  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     this.hazardData.seasons = [];
     this.initHazardData();
-
-    // Inform Handler for the top 3 items
-    this.informHandler = new InformService();
-  }
-
-  ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this._loadData();
-      } else {
-        this.navigateToLogin();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   initHazardData() {
     this.hazardData = new ModelHazard();
   }
 
-  _getTopResults() {
-    this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
-      this.hazardScenariosListTop = list;
-      this.loaderInactive = true;
+  ngOnInit() {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
+      if (auth) {
+        this.uid = auth.uid;
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
+            this._loadData();
+          });
+      } else {
+        this.navigateToLogin();
+      }
     });
   }
 
-  _getCountryLocation() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((country) => {
-          this.locationID = country.location;
-          this._getTopResults();
-          res(true);
-        });
-    });
-    return promise;
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((country: any) => {
-          let s: string;
-          for (let key in country.agencyAdmin) {
-            s = key;
-          }
-          this.agencyID = s;
-          this.countryID = country.countryId ? country.countryId : "";
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
+        this.countryID = countryID.$value ? countryID.$value : "";
         res(true);
       });
     });
@@ -144,15 +119,12 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   _loadData() {
     this._getCountryID().then(() => {
       this._getCustomHazards();
-      this._getCountryLocation();
     });
   }
 
   _getCustomHazards() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/otherHazardScenario/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((customHazards: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/otherHazardScenario/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((customHazards: any) => {
         this.customHazards = customHazards;
         res(true);
       });
@@ -162,9 +134,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getAllSeasons() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((AllSeasons: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((AllSeasons: any) => {
         this.AllSeasons = AllSeasons;
         res(true);
       });
@@ -203,9 +173,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _checkHazard(hazard) {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((hazardFb: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazardFb: any) => {
         for (let index = 0; index < hazardFb.length; index++) {
 
           if (hazardFb[index].hazardScenario == hazard) {
@@ -236,7 +204,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   setHazardValue(event: any) {
     this._checkHazard(event.target.value);
-    console.log(event.target.value);
     this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;
@@ -339,10 +306,22 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   showActionConfirm(modalID: string) {
-    // this.hazardData.seasons = [];
     this._getAllSeasons();
     this.modalID = modalID;
     jQuery("#" + this.modalID).modal("show");
+  }
+
+  msgSeasonToCalendar(form: any) {
+    if (form.value.startTime > form.value.endTime && form.value.endTime != "" && form.value.startTime != "") {
+      this.alertMsgSeasonAddToCalendar = true;
+      this.classAlertInvalid = 'invalid';
+      this.classAlertValid = '';
+    }
+    else {
+      this.classAlertValid = 'valid';
+      this.classAlertInvalid = '';
+      this.alertMsgSeasonAddToCalendar = false;
+    }
   }
 
   createSeasonToCalendar(form: NgForm) {
@@ -350,14 +329,26 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     let dataToSave = form.value;
     dataToSave.startTime = new Date(dataToSave.startTime).getTime();
     dataToSave.endTime = new Date(dataToSave.endTime).getTime();
-    this.closeModal();
-    this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-      .push(dataToSave)
-      .then(() => {
-        console.log('success save data');
-      }).catch((error: any) => {
-      console.log(error, 'You do not have access!')
-    });
+    if (dataToSave.startTime > dataToSave.endTime) {
+      this.alertMsgSeasonAddToCalendar = false;
+    }
+    else {
+      this.alertMsgSeasonAddToCalendar = true;
+      this.closeModal();
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+        .push(dataToSave)
+        .then(() => {
+          console.log('success save data');
+        }).catch((error: any) => {
+        console.log(error, 'You do not have access!')
+      });
+    }
+
+
+  }
+
+  closeModalAddCalendar(modal: any) {
+    jQuery("#" + modal).modal("hide");
   }
 
   closeModal() {

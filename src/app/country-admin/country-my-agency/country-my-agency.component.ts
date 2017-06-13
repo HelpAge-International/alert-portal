@@ -5,6 +5,7 @@ import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -42,15 +43,21 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private advStatusColors: any = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private UserType: number;
 
-  constructor(private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer) {
+  constructor(private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer, private userService: UserService) {
   }
 
   ngOnInit() {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        this._loadData();
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
+            this._loadData();
+          });
       } else {
         this.navigateToLogin();
       }
@@ -87,7 +94,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
 
   _getAgencyID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIDs: any) => {
           this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
@@ -187,7 +194,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
 
   _getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/systemAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/systemAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIDs: any) => {
           this.systemAdminID = agencyIDs[0].$key ? agencyIDs[0].$key : "";

@@ -5,16 +5,20 @@ import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {Router} from "@angular/router";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class ResponsePlanService {
+  private responsePlan: any;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private validPartnerMap = new Map<string, boolean>();
 
   constructor(private af: AngularFire, private userService: UserService, private router: Router) {
   }
 
   submitForPartnerValidation(plan, uid) {
+    console.log("submitForPartnerValidation");
     this.userService.getUserType(uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
@@ -36,34 +40,53 @@ export class ResponsePlanService {
   private updatePartnerValidation(uid: string, user: UserType, plan: any) {
     const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
       Constants.APP_STATUS + "/directorCountry/", , , , , Constants.APP_STATUS + "/administratorCountry/",]
-    if (user == UserType.CountryAdmin) {
-      let countryId = "";
-      this.af.database.object(paths[user] + uid)
-        .flatMap(countryAdmin => {
-          countryId = countryAdmin.countryId;
-          return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryAdmin.countryId + "/" + plan.$key)
-        })
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(responsePlan => {
-          let approvalData = {};
-          if (responsePlan.approval) {
-            approvalData = responsePlan.approval;
-          }
-          let partnerData = {};
-          responsePlan.partnerOrganisations.forEach(partnerId => {
-            partnerData[partnerId] = ApprovalStatus.WaitingApproval;
-          });
-          approvalData["partner"] = partnerData;
-
-          let updateData = {};
-          updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
-          // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
-          this.af.database.object(Constants.APP_STATUS).update(updateData).then((_) => {
-          }, (error) => {
-            console.log(error.message);
-          });
+    // if (user == UserType.CountryAdmin) {
+    let countryId = "";
+    this.userService.getCountryId(Constants.USER_PATHS[user], uid)
+    // this.af.database.object(paths[user] + uid)
+      .flatMap(fetchedCountryId => {
+        countryId = fetchedCountryId;
+        return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key)
+      })
+      .flatMap(responsePlan => {
+        this.responsePlan = responsePlan;
+        let partnerIds = [];
+        responsePlan.partnerOrganisations.forEach(partner => {
+          partnerIds.push(partner);
         });
-    }
+        return Observable.from(partnerIds);
+      })
+      .flatMap(partnerId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId);
+      })
+      .do(partner => {
+        this.validPartnerMap.set(partner.$key, partner.isApproved);
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(() => {
+        console.log(this.validPartnerMap);
+        console.log(this.responsePlan);
+        let approvalData = {};
+        if (this.responsePlan.approval) {
+          approvalData = this.responsePlan.approval;
+        }
+        let partnerData = {};
+        this.responsePlan.partnerOrganisations.forEach(partnerId => {
+          if (this.validPartnerMap.get(partnerId)) {
+            partnerData[partnerId] = ApprovalStatus.WaitingApproval;
+          }
+        });
+        approvalData["partner"] = partnerData;
+
+        let updateData = {};
+        updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
+        // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
+        this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+        }, error => {
+          console.log(error.message);
+        });
+      });
+    // }
   }
 
   getResponsePlan(countryId, responsePlanId) {
@@ -75,7 +98,27 @@ export class ResponsePlanService {
     if (approvalName) {
       let updateData = {};
       updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/approval/" + approvalName + "/" + uid] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
-      updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+      // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+      if (!isApproved) {
+        updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.NeedsReviewing;
+      }
+
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(result => {
+          if (result) {
+            let approvePair = Object.keys(result).map(key => result[key]);
+            let waitingApprovalList = [];
+            approvePair.forEach(item => {
+              let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+              waitingApprovalList = waitingApprovalList.concat(waiting);
+            });
+            if (waitingApprovalList.length == 0) {
+              updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+            }
+          }
+        });
+
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         if (rejectNoteContent) {
           this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
@@ -112,6 +155,10 @@ export class ResponsePlanService {
     } else {
       return "";
     }
+  }
+
+  getPartnerOrgnisation(id) {
+    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id);
   }
 
   serviceDestroy() {

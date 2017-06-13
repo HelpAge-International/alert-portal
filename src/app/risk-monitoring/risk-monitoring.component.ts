@@ -1,12 +1,19 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {HazardScenario, AlertMessageType, DurationType} from "../utils/Enums";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Indicator} from "../model/indicator";
+import {HazardScenario, AlertMessageType, DurationType, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
+import {RxHelper} from "../utils/RxHelper";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
+import {CommonService} from "../services/common.service";
 import {AlertMessageModel} from '../model/alert-message.model';
+import {ModelHazard} from '../model/hazard.model';
 import {LogModel} from '../model/log.model';
 import {LocalStorageService} from 'angular-2-local-storage';
-import {Subject} from "rxjs";
+import {TranslateService} from "@ngx-translate/core";
+import {UserService} from "../services/user.service";
+import {Subject} from "rxjs/Subject";
+
 
 declare var jQuery: any;
 @Component({
@@ -14,8 +21,9 @@ declare var jQuery: any;
   templateUrl: './risk-monitoring.component.html',
   styleUrls: ['./risk-monitoring.component.css']
 })
-
 export class RiskMonitoringComponent implements OnInit, OnDestroy {
+  private UserType: number;
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
@@ -75,9 +83,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private successAddHazardMsg: any;
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-
-  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -98,12 +104,19 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       if (auth) {
 
         this.uid = auth.uid;
-        this._getCountryID().then(() => {
-          this._getHazards().then(() => {
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
 
+            this._getCountryID().then(() => {
+              this._getHazards().then(() => {
+
+              });
+              this._getCountryContextIndicators();
+            });
           });
-          this._getCountryContextIndicators();
-        });
+
 
       } else {
         this.navigateToLogin();
@@ -111,16 +124,14 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
         this.countryID = countryID.$value ? countryID.$value : "";
         res(true);
       });
@@ -129,17 +140,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getCountryContextIndicators() {
-    this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.countryID)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((indicators: any) => {
+    this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
       indicators.forEach((indicator, key) => {
-        this.getLogs(indicator.$key)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((logs: any) => {
+        this.getLogs(indicator.$key).subscribe((logs: any) => {
           logs.forEach((log, key) => {
-            this.getUsers(log.addedBy)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((user: any) => {
+            this.getUsers(log.addedBy).subscribe((user: any) => {
               log.addedByFullName = user.firstName + ' ' + user.lastName;
             })
           });
@@ -153,24 +158,18 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getHazards() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((hazards: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
         this.activeHazards = [];
         this.archivedHazards = [];
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
-          this.getIndicators(hazard.id)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((indicators: any) => {
+          hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+
+          this.getIndicators(hazard.id).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
-              this.getLogs(indicator.$key)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe((logs: any) => {
+              this.getLogs(indicator.$key).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
-                  this.getUsers(log.addedBy)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe((user: any) => {
+                  this.getUsers(log.addedBy).subscribe((user: any) => {
                     log.addedByFullName = user.firstName + ' ' + user.lastName;
                   })
                 });
@@ -220,6 +219,14 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       this.removeTmpHazardID();
     });
     jQuery("#" + modalID).modal("hide");
+  }
+
+  collapseAll(mode: string) {
+    if (mode == 'expand') {
+      jQuery('.collapse').collapse('show');
+    } else {
+      jQuery('.collapse').collapse('hide');
+    }
   }
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {

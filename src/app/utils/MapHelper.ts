@@ -876,6 +876,7 @@ export class SDepHolder {
   public countryId: string;
   public departments: DepHolder[];
   public location: number;
+  public alertLevel: number;
   public overallAction() {
     let diviser = 0;
     for (let dep of this.departments) {

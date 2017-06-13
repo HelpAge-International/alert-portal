@@ -1,7 +1,10 @@
 /**
  * Created by Fei on 08/03/2017.
  */
-import {Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType} from "./Enums";
+import {
+  Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType,
+  AlertLevels
+} from "./Enums";
 
 export class Constants {
 
@@ -42,6 +45,9 @@ export class Constants {
 
   // Global director / Regional director
   static G_OR_R_DIRECTOR_DASHBOARD = "/director";
+
+  // Donor
+  static DONOR_HOME = "/donor";
 
   /*LIST VALUES FOR TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
@@ -459,7 +465,8 @@ export class Constants {
   static ALERT_LEVELS = [
     "GLOBAL.ALERT_LEVELS.GREEN",
     "GLOBAL.ALERT_LEVELS.AMBER",
-    "GLOBAL.ALERT_LEVELS.RED"
+    "GLOBAL.ALERT_LEVELS.RED",
+    "GLOBAL.ALERT_LEVELS.ALL"
   ];
 
   static ALERT_COLORS = [
@@ -483,6 +490,13 @@ export class Constants {
     "GLOBAL.ALERTS.GREEN",
     "GLOBAL.ALERTS.AMBER",
     "GLOBAL.ALERTS.RED"
+  ];
+
+  static ALERT_LEVELS_LIST = [
+    AlertLevels.Green,
+    AlertLevels.Amber,
+    AlertLevels.Red,
+    AlertLevels.All
   ];
 
   static MEDIA_TYPES = [
@@ -553,7 +567,8 @@ export class Constants {
 
   // Nodes List, used for saving Notes
   static PARTNER_ORGANISATION_NODE = '/partnerOrganisation/{id}/notes';
-
+  static EQUIPMENT_NODE = '/countryOfficeProfile/equipment/{countryId}/{id}/notes';
+  static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
 }
 
 export enum FILE_SETTING {

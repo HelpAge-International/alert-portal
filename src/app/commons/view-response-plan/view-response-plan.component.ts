@@ -12,104 +12,133 @@ import {
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 
 @Component({
-  selector: 'app-view-response-plan',
-  templateUrl: 'view-response-plan.component.html',
-  styleUrls: ['view-response-plan.component.css']
+    selector: 'app-view-response-plan',
+    templateUrl: 'view-response-plan.component.html',
+    styleUrls: ['view-response-plan.component.css']
 })
 
 export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
-  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
-  private PresenceInTheCountry = PresenceInTheCountry;
-  private MethodOfImplementation = MethodOfImplementation;
-  private Gender = Gender;
-  private AgeRange = AgeRange;
-  private SourcePlan = SourcePlan;
+    private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
+    private PresenceInTheCountry = PresenceInTheCountry;
+    private MethodOfImplementation = MethodOfImplementation;
+    private Gender = Gender;
+    private AgeRange = AgeRange;
+    private SourcePlan = SourcePlan;
 
-  private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
+    private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
-  // TODO - Update this
-  private USER_TYPE: string = 'administratorCountry';
+  private USER_TYPE: string;
 
   private uid: string;
   private countryId: string;
 
-  // TODO - Remove - This id needs to be forwarded from the required component
-  // private responsePlanId: string = '-KkQJxlVjMmJS9tXhiiz';
   @Input() responsePlanId: string;
 
-  private responsePlanToShow: ResponsePlan = new ResponsePlan;
+    private responsePlanToShow: ResponsePlan = new ResponsePlan;
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  // Section 01
-  private HazardScenariosList = Constants.HAZARD_SCENARIOS;
-  private planLeadName: string = '';
+    // Section 01
+    private HazardScenariosList = Constants.HAZARD_SCENARIOS;
+    private planLeadName: string = '';
 
-  // TODO -
-  // Section 03
-  private sectors: any[];
-  private partnerList: string[] = [];
-  // Section 07
+    // TODO -
+    // Section 03
+    private sectors: any[];
+    private partnerList: string[] = [];
+    // Section 07
 
-  // Section 08
-  private intendToVisuallyDoc: string = '';
-  private mediaType: any;
+    // Section 08
+    private intendToVisuallyDoc: string = '';
+    private mediaType: any;
 
-  // Section 10
-  private BudgetCategory = BudgetCategory;
-  private SectorsList = Constants.RESPONSE_PLANS_SECTORS;
-  private totalInputs: number;
-  private totalOfAllCosts: number;
-  private total: number;
-  private transportBudget: number;
-  private securityBudget: number;
-  private logisticsAndOverheadsBudget: number;
-  private staffingAndSupportBudget: number;
-  private monitoringAndEvolutionBudget: number;
-  private capitalItemsBudget: number;
-  private managementSupportPercentage: any;
-  private transportNarrative: string;
-  private securityNarrative: string;
-  private logisticsAndOverheadsNarrative: string;
-  private staffingAndSupportNarrative: string;
-  private monitoringAndEvolutionNarrative: string;
-  private capitalItemsNarrative: string;
-  private managementSupportNarrative: string;
-  private activityInfoMap = new Map();
-  private activityMap = new Map();
+    // Section 10
+    private BudgetCategory = BudgetCategory;
+    private SectorsList = Constants.RESPONSE_PLANS_SECTORS;
+    private totalInputs: number;
+    private totalOfAllCosts: number;
+    private total: number;
+    private transportBudget: number;
+    private securityBudget: number;
+    private logisticsAndOverheadsBudget: number;
+    private staffingAndSupportBudget: number;
+    private monitoringAndEvolutionBudget: number;
+    private capitalItemsBudget: number;
+    private managementSupportPercentage: any;
+    private transportNarrative: string;
+    private securityNarrative: string;
+    private logisticsAndOverheadsNarrative: string;
+    private staffingAndSupportNarrative: string;
+    private monitoringAndEvolutionNarrative: string;
+    private capitalItemsNarrative: string;
+    private managementSupportNarrative: string;
+    private activityInfoMap = new Map();
+    private activityMap = new Map();
 
-  constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
-  }
+    constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+    }
 
-  ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.loadData();
-      } else {
-        this.navigateToLogin();
-      }
-    });
-  }
+    ngOnInit() {
+        this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
+            if (user) {
+                this.uid = user.auth.uid;
+                this.loadData();
+            }
+        });
+    }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  }
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+    }
 
-  isNumber(n) {
-    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
-  }
+    isNumber(n) {
+        return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+    }
 
-  /**
-   * Private functions
-   */
+    /**
+     * Private functions
+     */
+
+    // private loadData() {
+    //
+    //     this.route.params.subscribe((params: Params) => {
+    //         var countryID = params['countryID'] ? params['countryID'] : false;
+    //         var responsePlanID = params['id'] ? params['id'] : false;
+    //         var token = params['token'] ? params['token'] : false;
+    //
+    //         if (countryID && responsePlanID && token) {
+    //             this.countryId = countryID;
+    //             this.responsePlanId = responsePlanID;
+    //             this.loadResponsePlanData();
+    //         } else {
+    //             this.getCountryId().then(() => {
+    //                 if (this.responsePlanId) {
+    //                     this.loadResponsePlanData();
+    //                 } else {
+    //                     this.route.params
+    //                         .takeUntil(this.ngUnsubscribe)
+    //                         .subscribe((params: Params) => {
+    //                             if (params["id"]) {
+    //                                 this.responsePlanId = params["id"];
+    //                                 this.loadResponsePlanData();
+    //                             }
+    //                         });
+    //                 }
+    //
+    //             });
+    //         }
+    //
+    //     });
+    //
+    // }
 
   private loadData() {
     this.userService.getUserType(this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(usertype => {
+        this.USER_TYPE = Constants.USER_PATHS[usertype];
         if (usertype == UserType.GlobalDirector) {
           this.route.params
             .takeUntil(this.ngUnsubscribe)
@@ -142,17 +171,17 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getCountryId() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryId: any) => {
-          this.countryId = countryId.$value;
-          res(true);
+    private getCountryId() {
+        let promise = new Promise((res, rej) => {
+            this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((countryId: any) => {
+                    this.countryId = countryId.$value;
+                    res(true);
+                });
         });
-    });
-    return promise;
-  }
+        return promise;
+    }
 
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
@@ -300,28 +329,28 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  private assignDefaultValues() {
+    private assignDefaultValues() {
 
-    this.transportBudget = 0;
-    this.securityBudget = 0;
-    this.logisticsAndOverheadsBudget = 0;
-    this.staffingAndSupportBudget = 0;
-    this.monitoringAndEvolutionBudget = 0;
-    this.capitalItemsBudget = 0;
-    this.managementSupportPercentage = 0;
+        this.transportBudget = 0;
+        this.securityBudget = 0;
+        this.logisticsAndOverheadsBudget = 0;
+        this.staffingAndSupportBudget = 0;
+        this.monitoringAndEvolutionBudget = 0;
+        this.capitalItemsBudget = 0;
+        this.managementSupportPercentage = 0;
 
-    this.totalInputs = 0;
-    this.totalOfAllCosts = 0;
-    this.total = 0;
+        this.totalInputs = 0;
+        this.totalOfAllCosts = 0;
+        this.total = 0;
 
-    this.transportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-    this.securityNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-    this.logisticsAndOverheadsNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-    this.staffingAndSupportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-    this.monitoringAndEvolutionNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-    this.capitalItemsNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-    this.managementSupportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
-  }
+        this.transportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+        this.securityNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+        this.logisticsAndOverheadsNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+        this.staffingAndSupportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+        this.monitoringAndEvolutionNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+        this.capitalItemsNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+        this.managementSupportNarrative = "RESPONSE_PLANS.NO_INFO_TO_SHOW";
+    }
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);

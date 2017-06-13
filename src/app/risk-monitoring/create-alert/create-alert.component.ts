@@ -1,13 +1,15 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AlertLevels, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AlertLevels, AlertMessageType, Countries, DurationType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {ModelAlert} from "../../model/alert.model";
-import {AlertMessageModel} from '../../model/alert-message.model';
-import {Subject} from "rxjs";
+import {AlertMessageModel} from "../../model/alert-message.model";
+import {TranslateService} from "@ngx-translate/core";
+import {Subject} from "rxjs/Subject";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-create-alert',
@@ -15,6 +17,9 @@ import {Subject} from "rxjs";
   styleUrls: ['./create-alert.component.css']
 })
 export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
+
+  private UserType: number;
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
@@ -33,7 +38,58 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
   private countries = Constants.COUNTRIES;
-  private countriesList: number[] = Constants.COUNTRY_SELECTION;
+  private countriesList: number[] = [
+    Countries.GB, Countries.FR, Countries.DE, Countries.AF, Countries.AX,
+    Countries.AX, Countries.DZ, Countries.AS, Countries.AD, Countries.AO,
+    Countries.AI, Countries.AQ, Countries.AG, Countries.AR, Countries.AM,
+    Countries.AW, Countries.AU, Countries.AT, Countries.AZ, Countries.BS,
+    Countries.BH, Countries.BD, Countries.BB, Countries.BY, Countries.BY,
+    Countries.BZ, Countries.BJ, Countries.BM, Countries.BT, Countries.BO,
+    Countries.BQ, Countries.BA, Countries.BW, Countries.BV, Countries.BR,
+    Countries.IO, Countries.BN, Countries.BG, Countries.BF, Countries.BI,
+    Countries.KH, Countries.CM, Countries.CA, Countries.CV, Countries.KY,
+    Countries.CF, Countries.TD, Countries.CL, Countries.CN, Countries.CX,
+    Countries.CC, Countries.CO, Countries.KM, Countries.CG, Countries.CD,
+    Countries.CK, Countries.CR, Countries.CI, Countries.HR, Countries.CU,
+    Countries.CW, Countries.CY, Countries.CZ, Countries.DK, Countries.DJ,
+    Countries.DM, Countries.DO, Countries.EC, Countries.EG, Countries.SV,
+    Countries.GQ, Countries.ER, Countries.EE, Countries.ET, Countries.FK,
+    Countries.FO, Countries.FJ, Countries.FI, Countries.GF, Countries.PF,
+    Countries.TF, Countries.GA, Countries.GM, Countries.GE, Countries.GH,
+    Countries.GI, Countries.GR, Countries.GL, Countries.GD, Countries.GP,
+    Countries.GU, Countries.GT, Countries.GG, Countries.GN, Countries.GW,
+    Countries.GY, Countries.HT, Countries.HM, Countries.VA, Countries.HN,
+    Countries.HK, Countries.HU, Countries.IS, Countries.IN, Countries.ID,
+    Countries.IR, Countries.IQ, Countries.IE, Countries.IM, Countries.IL,
+    Countries.IT, Countries.JM, Countries.JP, Countries.JE, Countries.JO,
+    Countries.KZ, Countries.KE, Countries.KE, Countries.KI, Countries.KP,
+    Countries.KR, Countries.KW, Countries.KG, Countries.LA, Countries.LV,
+    Countries.LB, Countries.LS, Countries.LR, Countries.LY, Countries.LI,
+    Countries.LT, Countries.LU, Countries.MO, Countries.MK, Countries.MG,
+    Countries.MW, Countries.MY, Countries.MV, Countries.ML, Countries.MT,
+    Countries.MH, Countries.MQ, Countries.MR, Countries.MU, Countries.YT,
+    Countries.MX, Countries.FM, Countries.MD, Countries.MC, Countries.MN,
+    Countries.ME, Countries.MS, Countries.MA, Countries.MZ, Countries.MM,
+    Countries.NA, Countries.NR, Countries.NP, Countries.NL, Countries.NC,
+    Countries.NZ, Countries.NI, Countries.NE, Countries.NG, Countries.NU,
+    Countries.NF, Countries.MP, Countries.NO, Countries.OM, Countries.PK,
+    Countries.PW, Countries.PS, Countries.PA, Countries.PG, Countries.PY,
+    Countries.PE, Countries.PH, Countries.PN, Countries.PL, Countries.PT,
+    Countries.PR, Countries.QA, Countries.RE, Countries.RO, Countries.RU,
+    Countries.RW, Countries.BL, Countries.SH, Countries.KN, Countries.LC,
+    Countries.MF, Countries.PM, Countries.VC, Countries.WS, Countries.SM,
+    Countries.ST, Countries.SA, Countries.SN, Countries.RS, Countries.SC,
+    Countries.SL, Countries.SG, Countries.SX, Countries.SK, Countries.SI,
+    Countries.SB, Countries.SO, Countries.ZA, Countries.GS, Countries.SS,
+    Countries.ES, Countries.LK, Countries.SD, Countries.SR, Countries.SJ,
+    Countries.SZ, Countries.SE, Countries.CH, Countries.SY, Countries.TW,
+    Countries.TJ, Countries.TZ, Countries.TH, Countries.TL, Countries.TG,
+    Countries.TK, Countries.TO, Countries.TT, Countries.TN, Countries.TR,
+    Countries.TM, Countries.TC, Countries.TV, Countries.UG, Countries.UA,
+    Countries.AE, Countries.US, Countries.UM, Countries.UY, Countries.UZ,
+    Countries.VU, Countries.VE, Countries.VN, Countries.VG, Countries.VI,
+    Countries.WF, Countries.EH, Countries.YE, Countries.ZM, Countries.ZW
+  ];
   private frequency = new Array(100);
 
   private countryLevels: any[] = [];
@@ -43,38 +99,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private hazards: any[] = [];
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
-
-  constructor(private af: AngularFire, private router: Router, private _commonService: CommonService) {
+  constructor(private af: AngularFire, private router: Router, private _commonService: CommonService, private translate: TranslateService, private userService: UserService) {
     this.initAlertData();
-  }
-
-  ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this._getCountryID().then(() => {
-          this._getHazards();
-          this._getDirectorCountryID();
-        });
-
-        // get the country levels values
-        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(content => {
-            this.countryLevelsValues = content;
-            err => console.log(err);
-          });
-
-      } else {
-        this.navigateToLogin();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   initAlertData() {
@@ -88,6 +114,38 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   removeAnotherArea(key: number,) {
     this.alertData.affectedAreas.splice(key, 1);
+  }
+
+  ngOnInit() {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
+      if (auth) {
+        this.uid = auth.uid;
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
+
+            this._getCountryID().then(() => {
+              this._getHazards();
+              this._getDirectorCountryID();
+            });
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
+          });
+      } else {
+        this.navigateToLogin();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   saveAlert() {
@@ -122,9 +180,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
         this.countryID = countryID.$value ? countryID.$value : "";
         res(true);
       });
@@ -181,11 +237,10 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getHazards() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((hazards: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
         this.hazards = [];
         for (let hazard in hazards) {
+          hazards[hazard].imgName = this.translate.instant(this.hazardScenario[hazards[hazard].hazardScenario]).replace(" ", "_");
           this.hazards.push(hazards[hazard]);
         }
       });
@@ -194,9 +249,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getDirectorCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((directorCountryID: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((directorCountryID: any) => {
         this.directorCountryID = directorCountryID.$value ? directorCountryID.$value : false;
 
       });

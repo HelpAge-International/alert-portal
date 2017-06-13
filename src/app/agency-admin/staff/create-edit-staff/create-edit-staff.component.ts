@@ -54,6 +54,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   hideWarning: boolean = true;
   hideRegion: boolean = true;
   hideCountry: boolean = false;
+
   private uid: string;
   private waringMessage: string;
   private countryList: FirebaseListObservable<any[]>;
@@ -83,6 +84,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
   private systemId: string;
+  private regionOfficeList: string[];
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
@@ -184,44 +186,46 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(systemId => {
             this.systemId = systemId;
+
+            this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId);
+            this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId);
+            this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments")
+              .map(departments => {
+                let names = [];
+                departments.forEach(department => {
+                  names.push(department.$key);
+                });
+                return names;
+              });
+
+            this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/skills')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                _.filter(skill => skill.$value).map(skill => {
+                  this.af.database.list(Constants.APP_STATUS + '/skill/', {
+                    query: {
+                      orderByKey: true,
+                      equalTo: skill.$key
+                    }
+                  })
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(_skill => {
+                      if (_skill[0] != undefined)
+                        this.allSkills[_skill[0].$key] = _skill[0];
+                      else
+                        delete this.allSkills[skill.$key];
+
+                      this.skillKeys = Object.keys(this.allSkills);
+                    });
+                });
+              });
+
+            this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/notificationSetting");
+
           });
       });
 
-    this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid);
-    this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.uid);
-    this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
-      .map(departments => {
-        let names = [];
-        departments.forEach(department => {
-          names.push(department.$key);
-        });
-        return names;
-      });
 
-
-    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/skills')
-    .takeUntil(this.ngUnsubscribe)
-    .subscribe(_ => {
-      _.filter(skill => skill.$value).map(skill => {
-        this.af.database.list(Constants.APP_STATUS + '/skill/', {
-          query: {
-            orderByKey: true,
-            equalTo: skill.$key
-          }
-        })
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(_skill => {
-            if (_skill[0] != undefined)
-              this.allSkills[_skill[0].$key] = _skill[0];
-            else
-              delete this.allSkills[skill.$key];
-
-            this.skillKeys = Object.keys(this.allSkills);
-          });
-      });
-    });
-
-    this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/notificationSetting");
   }
 
   validateForm() {
@@ -450,7 +454,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     }
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
-      this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
+      if (!this.hideRegion) {
+        this.updateDirectorRegion(uid, this.regionOfficeList);
+      } else {
+        this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
+      }
     }, error => {
       this.waringMessage = error.message;
       this.showAlert();
@@ -534,6 +542,27 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     }, error => {
       this.waringMessage = error.message;
       this.showAlert();
+    });
+  }
+
+  selectRegion() {
+    console.log(this.region.$key);
+    this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + "/" + this.region.$key)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(region => {
+        this.regionOfficeList = Object.keys(region.countries);
+      });
+  }
+
+  private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {
+    let directorRegion = {};
+    for (let office of officeList) {
+      directorRegion["/directorRegion/" + office + "/"] = regionalDirectorId;
+    }
+    this.af.database.object(Constants.APP_STATUS).update(directorRegion).then(() => {
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+    }, error => {
+      console.log(error.message);
     });
   }
 }

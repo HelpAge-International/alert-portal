@@ -1,166 +1,166 @@
 <div *ngIf="!isDirector">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
 </div>
 <div *ngIf="isDirector">
-  <app-director-header></app-director-header>
-  <app-director-menu></app-director-menu>
+    <app-director-header></app-director-header>
+    <app-director-menu></app-director-menu>
 </div>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-  <div class="Full-page__wrap--inner">
+    <div class="Full-page__wrap--inner">
 
-    <div class="Back--button" routerLink="{{isDirector?'/director':'/dashboard'}}">{{"GLOBAL.HOME" | translate}}</div>
+        <div class="Back--button" routerLink="{{isDirector?'/director':'/dashboard'}}">{{"GLOBAL.HOME" | translate}}</div>
 
-    <app-view-response-plan [responsePlanId]="responsePlanId"></app-view-response-plan>
+        <app-view-response-plan [responsePlanId]="responsePlanId"></app-view-response-plan>
 
-    <br/>
+        <br/>
 
-    <div class="Container Grey">
-      <h3>{{"DIRECTOR_DASHBOARD.PLAN_APPROVAL" | translate}}</h3>
+        <div class="Container Grey">
+            <h3>{{"DIRECTOR_DASHBOARD.PLAN_APPROVAL" | translate}}</h3>
 
-      <div class="row Spaced">
-        <div class="col-lg-5">
-          <div class="row Small-spaced">
-            <div class="col-lg-5">
-              <p><b>{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</b></p>
-            </div>
-          </div>
+            <div class="row Spaced">
+                <div class="col-lg-5">
+                    <div class="row Small-spaced">
+                        <div class="col-lg-5">
+                            <p><b>{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</b></p>
+                        </div>
+                    </div>
 
-          <!-- Plan approval row -->
-          <div *ngFor="let partner of partnerApproveList" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
-              <p>{{partner.name}}</p>
-            </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[partner.status]}} <i class="fa fa-check-circle"
-                                                                          aria-hidden="true"></i></p>
-            </div>
-          </div>
+                    <!-- Plan approval row -->
+                    <div *ngFor="let partner of partnerApproveList" class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p>{{partner.name}}</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">{{ApprovalStatus[partner.status]}} <i class="fa fa-check-circle"
+                                                                                        aria-hidden="true"></i></p>
+                        </div>
+                    </div>
 
-          <!-- Plan approval row -->
-          <!--<div class="row Line-row S-small-spaced">-->
-          <!--<div class="col-lg-5">-->
-          <!--<p>Partner 1 (You)</p>-->
-          <!--</div>-->
-          <!--<div class="col-lg-5">-->
-          <!--<p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>-->
-          <!--</div>-->
-          <!--</div>-->
-        </div>
+                    <!-- Plan approval row -->
+                    <!--<div class="row Line-row S-small-spaced">-->
+                    <!--<div class="col-lg-5">-->
+                    <!--<p>Partner 1 (You)</p>-->
+                    <!--</div>-->
+                    <!--<div class="col-lg-5">-->
+                    <!--<p class="text-muted">Waiting for approval <i class="fa fa-check-circle" aria-hidden="true"></i></p>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                </div>
 
-        <div class="col-lg-1"></div>
-        <div class="col-lg-5">
-          <div class="row Small-spaced">
-            <div class="col-lg-5">
-              <p><b>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</b></p>
-            </div>
-          </div>
+                <div class="col-lg-1"></div>
+                <div class="col-lg-5">
+                    <div class="row Small-spaced">
+                        <div class="col-lg-5">
+                            <p><b>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</b></p>
+                        </div>
+                    </div>
 
-          <!-- Plan approval row -->
-          <div *ngIf="countryDirectorApproval.length > 0" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
-              <p *ngIf="uid != countryDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                    <!-- Plan approval row -->
+                    <div *ngIf="countryDirectorApproval.length > 0" class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p *ngIf="uid != countryDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                 translate}}</p>
-              <p *ngIf="uid == countryDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                            <p *ngIf="uid == countryDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                 translate}} ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
-            </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[countryDirectorApproval[0].status]}} <i class="fa fa-check-circle"
-                                                                                             aria-hidden="true"></i></p>
-            </div>
-          </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">{{ApprovalStatus[countryDirectorApproval[0].status]}} <i class="fa fa-check-circle"
+                                                                                                           aria-hidden="true"></i></p>
+                        </div>
+                    </div>
 
-          <!-- Plan approval row -->
-          <div *ngIf="regionalDirectorApproval.length > 0" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
-              <p *ngIf="uid != regionalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                    <!-- Plan approval row -->
+                    <div *ngIf="regionalDirectorApproval.length > 0" class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p *ngIf="uid != regionalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                 translate}}</p>
-              <p *ngIf="uid == regionalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                            <p *ngIf="uid == regionalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                 translate}} ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
-            </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[regionalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
-                                                                                              aria-hidden="true"></i>
-              </p>
-            </div>
-          </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">{{ApprovalStatus[regionalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
+                                                                                                            aria-hidden="true"></i>
+                            </p>
+                        </div>
+                    </div>
 
-          <!-- Plan approval row -->
-          <div *ngIf="globalDirectorApproval.length > 0" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
-              <p *ngIf="uid != globalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                    <!-- Plan approval row -->
+                    <div *ngIf="globalDirectorApproval.length > 0" class="row Line-row S-small-spaced">
+                        <div class="col-lg-5">
+                            <p *ngIf="uid != globalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                 translate}}</p>
-              <p *ngIf="uid == globalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}
-                ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
+                            <p *ngIf="uid == globalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}
+                                ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <p class="text-muted">{{ApprovalStatus[globalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
+                                                                                                          aria-hidden="true"></i></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-1"></div>
             </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[globalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
-                                                                                            aria-hidden="true"></i></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-1"></div>
-      </div>
-      <div class="Form-submit__wrapper">
-        <div class="btn btn-success btn-continue" (click)="approvePlan()">{{"DIRECTOR_DASHBOARD.APPROVE_PLAN" |
+            <div class="Form-submit__wrapper">
+                <div class="btn btn-success btn-continue" (click)="approvePlan()">{{"DIRECTOR_DASHBOARD.APPROVE_PLAN" |
           translate}}
-        </div>
-        <div class="btn btn-danger btn-continue" (click)="rejectPlan()">{{"DIRECTOR_DASHBOARD.REJECT_PLAN" |
+                </div>
+                <div class="btn btn-danger btn-continue" (click)="rejectPlan()">{{"DIRECTOR_DASHBOARD.REJECT_PLAN" |
           translate}}
-        </div>
-      </div>
-    </div>
-    <div *ngIf="rejectToggleMap.get(responsePlanId)" class="Container Blue Bordered">
-      <b>{{"DIRECTOR_DASHBOARD.REJECT_PLAN_CONFIRMATION" | translate}}</b>
-      <div class="row Small-spaced">
-        <div class="col-sm-10">
-          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
-                    [(ngModel)]="rejectComment"></textarea>
-        </div>
-        <div class="col-sm-2">
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="btn btn-primary Full" (click)="triggerRejctDialog()">{{"GLOBAL.CONFIRM" | translate}}</div>
+                </div>
             </div>
-          </div>
-          <div class="row Small-spaced">
-            <div class="col-sm-12">
-              <div class="btn btn-outline-gray Full">{{"GLOBAL.CANCEL" | translate}}</div>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
+        <div *ngIf="rejectToggleMap.get(responsePlanId)" class="Container Blue Bordered">
+            <b>{{"DIRECTOR_DASHBOARD.REJECT_PLAN_CONFIRMATION" | translate}}</b>
+            <div class="row Small-spaced">
+                <div class="col-sm-10">
+                    <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
+                              [(ngModel)]="rejectComment"></textarea>
+                </div>
+                <div class="col-sm-2">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="btn btn-primary Full" (click)="triggerRejctDialog()">{{"GLOBAL.CONFIRM" | translate}}</div>
+                        </div>
+                    </div>
+                    <div class="row Small-spaced">
+                        <div class="col-sm-12">
+                            <div class="btn btn-outline-gray Full">{{"GLOBAL.CANCEL" | translate}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  </div>
+    </div>
 </div>
 
 <div class="modal fade" id="rejectPlan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{"DIRECTOR_DASHBOARD.REJECT_PLAN" | translate}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{"DIRECTOR_DASHBOARD.REJECT_PLAN" | translate}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
-        <div class="row">
-          <div class="col-lg-12">
-            <p class="text-center">{{"DIRECTOR_DASHBOARD.ARE_YOU_SURE_REJECT" | translate}}?</p>
-          </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p class="text-center">{{"DIRECTOR_DASHBOARD.ARE_YOU_SURE_REJECT" | translate}}?</p>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="confirmReject()">{{"GLOBAL.REJECT" | translate}}</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CLOSE" | translate}}
+                </button>
+            </div>
         </div>
-
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="confirmReject()">{{"GLOBAL.REJECT" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CLOSE" | translate}}
-        </button>
-      </div>
     </div>
-  </div>
 </div>

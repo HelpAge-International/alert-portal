@@ -37,42 +37,49 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private isAmber: boolean;
   private isRed: boolean;
+  private isAnonym: boolean = false;
 
   constructor(private af: AngularFire, private router: Router, private alertService: ActionsService, private userService: UserService) {
+
   }
 
-  ngOnInit() {
-    this.af.auth.subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
-            this.firstName = user.firstName;
-            this.lastName = user.lastName;
-          });
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            if (userType == UserType.CountryAdmin) {
-              this.USER_TYPE = 'administratorCountry';
+    ngOnInit() {
+        this.af.auth.subscribe(user => {
+            this.isAnonym = user && !user.anonymous ? false : true;
+            if (user) {
+                if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
+                    this.af.auth.logout().then(() => {
+                        this.router.navigate(['/login']);
+                    });
+                }
+                if (!user.anonymous) {
+                    this.uid = user.auth.uid;
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(user => {
+                            this.firstName = user.firstName;
+                            this.lastName = user.lastName;
+                        });
+                    this.userService.getUserType(this.uid)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(userType => {
+                          this.USER_TYPE = Constants.USER_PATHS[userType];
+                            //after user type check, start to do the job
+                            if (this.USER_TYPE) {
+                                this.getCountryId().then(() => {
+                                    this.getAgencyID().then(() => {
+                                        this.getCountryData();
+                                        this.checkAlerts();
+                                    });
+                                });
+                            }
+                        });
+                }
+            } else {
+                this.router.navigateByUrl(Constants.LOGIN_PATH);
             }
-            //after user type check, start to do the job
-            if (this.USER_TYPE) {
-              this.getCountryId().then(() => {
-                this.getAgencyID().then(() => {
-                  this.getCountryData();
-                  this.checkAlerts();
-                });
-              });
-            }
-          });
-
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
-    });
-  }
+        });
+    }
 
   private checkAlerts() {
     this.alertService.getAlerts(this.countryId)

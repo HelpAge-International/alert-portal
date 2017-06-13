@@ -50,7 +50,7 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
           <label for="region">{{"AGENCY_ADMIN.STAFF.REGION"| translate}}</label>
-          <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion">
+          <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion" (change)="selectRegion()">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let region of regionList | async" [ngValue]="region">{{region.name}}</option>
           </select>

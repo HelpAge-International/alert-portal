@@ -4,6 +4,7 @@ import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -42,8 +43,9 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   private advStatusColors: any = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private UserType: number;
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
 
   }
 
@@ -51,7 +53,12 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        this._loadData();
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
+            this._loadData();
+          });
       } else {
         this.navigateToLogin();
       }
@@ -95,13 +102,13 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((user: any) => {
-        if (typeof (user.country) == 'undefined') {
-          console.log('country undefined');
-          return false;
-        }
-        this.countryKey = user.country;
-        res(true);
-      });
+          if (typeof (user.country) == 'undefined') {
+            console.log('country undefined');
+            return false;
+          }
+          this.countryKey = user.country;
+          res(true);
+        });
     });
     return promise;
   }
@@ -109,12 +116,12 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
 
   _getAgencyID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIDs: any) => {
-        this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-        res(true);
-      });
+          this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -125,26 +132,26 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryOffices: any) => {
-        this.countryOffices = [];
-        this.countryIDs = [];
-        countryOffices.forEach((countryOffice: any) => {
+          this.countryOffices = [];
+          this.countryIDs = [];
+          countryOffices.forEach((countryOffice: any) => {
 
-          if (this.filter == 'all') {
-            if (countryOffice.location == this.countryKey) {
-              this.countryIDs.push(countryOffice.$key);
-              this.countryOffices.push(countryOffice);
+            if (this.filter == 'all') {
+              if (countryOffice.location == this.countryKey) {
+                this.countryIDs.push(countryOffice.$key);
+                this.countryOffices.push(countryOffice);
+              }
+            } else {
+              if (countryOffice.location == this.countryKey && parseInt(countryOffice.alertLevel) == this.filter) {
+                this.countryOffices.push(countryOffice);
+                this.countryIDs.push(countryOffice.$key);
+              }
             }
-          } else {
-            if (countryOffice.location == this.countryKey && parseInt(countryOffice.alertLevel) == this.filter) {
-              this.countryOffices.push(countryOffice);
-              this.countryIDs.push(countryOffice.$key);
-            }
-          }
 
+          });
+
+          res(true);
         });
-
-        res(true);
-      });
     });
     return promise;
   }
@@ -155,9 +162,9 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryID)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((responsePlans: any) => {
-          this._getCountApprovalStatus(responsePlans, countryID);
-          res(true);
-        });
+            this._getCountApprovalStatus(responsePlans, countryID);
+            res(true);
+          });
       });
     });
     return promise;
@@ -194,9 +201,9 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS + "/action/" + countryID)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((actions: any) => {
-          this._getPercenteActions(actions, countryID);
-          res(true);
-        });
+            this._getPercenteActions(actions, countryID);
+            res(true);
+          });
       });
     });
     return promise;
@@ -208,20 +215,20 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminID + '/' + tresholdType)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((treshold: any) => {
-        res(treshold);
-      });
+          res(treshold);
+        });
     });
     return promise;
   }
 
   _getSystemAdminID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/systemAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/systemAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIDs: any) => {
-        this.systemAdminID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-        res(true);
-      });
+          this.systemAdminID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
+          res(true);
+        });
     });
     return promise;
   }
@@ -304,8 +311,8 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((actions: any) => {
-        res(actions);
-      });
+          res(actions);
+        });
     });
     return promise;
   }
