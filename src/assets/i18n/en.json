@@ -1430,7 +1430,8 @@
     "APPROVE_PLAN": "Approve Plan",
     "REJECT_PLAN": "Reject Plan",
     "REJECT_PLAN_CONFIRMATION": "Please confirm you want to reject this plan",
-    "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?"
+    "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?",
+    "NO_OTHER_AGENCIES": "No other agencies have a country office with your location"
   },
   "RISK_MONITORING": {
     "ADD_INDICATOR": {

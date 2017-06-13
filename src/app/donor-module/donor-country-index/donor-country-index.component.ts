@@ -1,19 +1,25 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AlertLevels} from "../../utils/Enums";
+import {AlertLevels, Countries} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router, Params, ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
+import {AgencyService} from "../../services/agency-service.service";
 
 @Component({
   selector: 'app-donor-country-index',
   templateUrl: './donor-country-index.component.html',
-  styleUrls: ['./donor-country-index.component.css']
+  styleUrls: ['./donor-country-index.component.css'],
+  providers: [AgencyService]
 })
 
 export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
   private countryIdReceived: string;
+  private agencyIdReceived: string;
+
+  private countryToShow: any;
+  private Countries = Countries;
 
   private uid: string;
   private agencyId: string;
@@ -21,6 +27,8 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
   private countryOffices: any = [];
   private countryIDs: string[] = [];
+  private agencyNames: string[] = [];
+  private agencyLogoPaths: string[] = [];
 
   private overallAlertLevels: any = [];
   private alertLevelColours: any = [];
@@ -41,7 +49,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private alertLevels = Constants.ALERT_LEVELS;
   private alertLevelsList: number[] = Constants.ALERT_LEVELS_LIST;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private af: AngularFire, private router: Router, private agencyService: AgencyService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -54,11 +62,12 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
           .subscribe((params: Params) => {
             if (params["countryId"]) {
               this.countryIdReceived = params["countryId"];
+              this.agencyIdReceived = params["agencyId"];
               console.log(this.countryIdReceived);
+              console.log(this.agencyIdReceived);
+              this.loadData();
             }
           });
-
-        this.loadData();
       } else {
         this.navigateToLogin();
       }
@@ -68,6 +77,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    this.agencyService.unSubscribeNow();
   }
 
   // TODO -
@@ -84,21 +94,36 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
    Private Functions
    */
   private loadData() {
+
+    this.getCountry();
+
     this.getAgencyID().then(() => {
-      this.getCountryOfficesWithSameLocationsInOtherAgencies().then(() => {
-        this.getResponsePlans();
-        this.getSystemAdminID().then(() => {
-          this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
-            this.minTreshold = minTreshold;
-          });
-          this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
-            this.advTreshold = advTreshold;
-          });
-        }).then(() => {
-          this.getAllActions();
+      this.getCountryOfficesWithSameLocationsInOtherAgencies();
+      this.getResponsePlans();
+      this.getSystemAdminID().then(() => {
+        this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
+          this.minTreshold = minTreshold;
         });
+        this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
+          this.advTreshold = advTreshold;
+        });
+      }).then(() => {
+        this.getAllActions();
       });
+      // });
     });
+  }
+
+  private getCountry() {
+
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyIdReceived + "/" + this.countryIdReceived)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((country) => {
+        if (country) {
+          this.countryToShow = country;
+          console.log(this.countryToShow);
+        }
+      });
   }
 
   private getAgencyID() {
@@ -125,12 +150,43 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  // TODO -
   // Getting all country offices with the same location in other agencies
   private getCountryOfficesWithSameLocationsInOtherAgencies() {
+    this.countryOffices = [];
+    this.countryIDs = [];
+    this.agencyNames = [];
+    this.agencyLogoPaths = [];
 
-    let promise;
+    let promise = this.agencyService.getAllCountryOffices()
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencies => {
+        agencies = agencies.filter(agency => agency.$key != this.agencyIdReceived);
+        agencies.forEach(agency => {
+          let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
+            let temp = agency[key];
+            temp["countryId"] = key;
+            return temp;
+          });
+          countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
+          if (countries.length > 0) {
 
+            // Ideally, an agency should only have one country office per country
+            this.countryOffices.push(countries[0]);
+            this.countryIDs.push(countries[0].countryId);
+
+            this.agencyService.getAgency(agency.$key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                console.log(agency.logoPath);
+
+                this.agencyNames[countries[0].countryId] = agency.name;
+                if (agency.logoPath) {
+                  this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
+                }
+              });
+          }
+        });
+      });
     return promise;
   }
 

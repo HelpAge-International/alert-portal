@@ -93,30 +93,53 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
           .subscribe(agencies => {
             agencies = agencies.filter(agency => agency.$key != agencyId);
             agencies.forEach(agency => {
-              let countries = Object.keys(agency).map(key => {
+              let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
                 let temp = agency[key];
                 temp["countryId"] = key;
                 return temp;
               });
+              console.log(countries);
+              console.log(Object.keys(agency).filter(key => !(key.indexOf("$")> -1)));
               countries = countries.filter(countryItem => countryItem.location == country.location);
+              console.log(countries)
               if (countries.length > 0) {
                 let faceToface = new ModelFaceToFce();
                 faceToface.agencyId = agency.$key;
                 faceToface.countryId = countries[0].countryId;
                 this.displayList.push(faceToface);
+                console.log(this.displayList);
 
                 this.agencyService.getAgency(faceToface.agencyId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(agency => {
+                    console.log("agency")
+                    console.log(faceToface.agencyId)
+                    console.log(agency)
+                    // this.displayList.forEach(item =>{
+                    //   if (item.agencyId == agency.$key) {
+                    //     item.agencyName = agency.name;
+                    //     item.agencyLogoPath = agency.logoPath;
+                    //   }
+                    // });
                     faceToface.agencyName = agency.name;
                     faceToface.agencyLogoPath = agency.logoPath;
                   });
 
-                this.agencyService.getCountryDirector(countryId)
+                console.log(faceToface.countryId)
+                this.agencyService.getCountryDirector(faceToface.countryId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(director => {
+                    console.log("director")
+                    console.log(faceToface.countryId)
+                    console.log(director)
+                    // this.displayList.forEach(item =>{
+                    //   if (item.countryId == agency.$key) {
+                    //     item.agencyName = agency.name;
+                    //     item.agencyLogoPath = agency.logoPath;
+                    //   }
+                    // });
                     faceToface.countryDirectorId = director.$key;
-                    faceToface.countryDirectorName = director.firstName + " " + director.lastName;
+                    faceToface.countryDirectorName = director.first ? (director.firstName + " " + director.lastName) : "None";
                     faceToface.countryDirectorEmail = director.email;
                   });
               }

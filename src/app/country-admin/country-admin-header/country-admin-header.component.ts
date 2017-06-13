@@ -48,7 +48,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
             if (user) {
               this.isAnonym = user.anonymous ? user.anonymous : false;
-              console.log(user);
                 if (!user.anonymous) {
                     this.uid = user.auth.uid;
                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)

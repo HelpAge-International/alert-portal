@@ -64,18 +64,13 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
                 this.minThreshYellow = this.mapHelper.minThreshYellow;
                 this.minThreshGreen = this.mapHelper.minThreshGreen;
                 this.mDepartmentMap.forEach((value, key) => {
-                  console.log(value);
                   this.departments.push(value);
                 });
               },
               (mapCountryClicked) => {
                 if (this.mDepartmentMap != null) {
-
-                  // TODO - Navigate to country index here
-                  // TODO - Get the clicked countries ID
                   let countryIdToSend: string = this.mDepartmentMap.get(mapCountryClicked).countryId;
-                  console.log(countryIdToSend);
-                  this.router.navigate(["donor-module/donor-country-index", {"countryId": countryIdToSend}]);
+                  this.router.navigate(["donor-module/donor-country-index", {countryId: countryIdToSend, agencyId: this.mapHelper.agencyAdminId}]);
                 }
                 else {
                   console.log("TODO: Map is yet to initialise properly / it failed to do so");
@@ -91,6 +86,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
             /** Get the Agency logo */
             this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (logo) => {
               this.agencyLogo = logo;
+              console.log(this.uid, Constants.USER_PATHS[usertype]);
             });
 
           });

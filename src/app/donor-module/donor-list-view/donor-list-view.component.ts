@@ -93,7 +93,7 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   goToCountryIndex(countryId) {
-    this.router.navigate(["donor-module/donor-country-index", {"countryId": countryId}]);
+    this.router.navigate(['/donor-module/donor-country-index', {countryId: countryId, agencyId: this.agencyId}]);
   }
 
   getCountryCodeFromLocation(location: number) {
@@ -101,7 +101,6 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   getDirectorName(directorId) {
-
     this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
     if (directorId && directorId != "null") {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + directorId)

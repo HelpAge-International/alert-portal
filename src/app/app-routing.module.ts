@@ -275,7 +275,7 @@ const routes: Routes = [
    */
   {path: 'donor-module', component: DonorModuleComponent},
   {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
-  {path: 'donor-module/donor-country-index/:countryId', component: DonorCountryIndexComponent},
+  {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
 
   /*
    * test

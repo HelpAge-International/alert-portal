@@ -9404,6 +9404,11 @@ h3, h4 {
   background-position: 0 center;
 }
 
+.Icon__donors--default {
+  background-image: url(../images/alert_logo--grey.svg);
+  background-size: contain;
+}
+
 .Icon__donors--care {
   background-image: url(../images/donor/care.svg);
   background-size: contain;

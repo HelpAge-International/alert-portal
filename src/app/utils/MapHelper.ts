@@ -24,6 +24,7 @@ export class SuperMapComponents {
   public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
+  public agencyAdminId: string;
 
   private geocoder: google.maps.Geocoder;
 
@@ -175,16 +176,17 @@ export class SuperMapComponents {
   public getDepsForAllCountries(uid: string, folder: string, funct: (holder: SDepHolder[]) => void) {
     this.mDepCounter = 0;
     this.mDepHolder = [];
-    this.getCountryOffice(uid, folder)
+    this.getCountryOfficePreserveSnapshot(uid, folder)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
-        for (let r of result) {
+        this.agencyAdminId = result.key;
+        for (let x in result.val()) {
           this.mDepCounter++;
           this.mDepHolder = [];
-          this.getDepForCountry(uid, folder, r.location, (holder) => {
+          this.getDepForCountry(uid, folder, result.val()[x].location, (holder) => {
             holder = this.processDepHolder(holder, 1);
             this.getDepsForAllCountriesCounterMethod(holder, funct);
-          })
+          });
         }
       });
   }
@@ -273,6 +275,9 @@ export class SuperMapComponents {
   private getCountryOffice(uid: string, agencyAdminRefFolder: string) {
     return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
   }
+  private getCountryOfficePreserveSnapshot(uid: string, agencyAdminRefFolder: string) {
+    return this.fbgetObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
+  }
   private fbgetAdministratorAgency(uid: string, agencyAdminRefFolder: string) {
     return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
   }
@@ -305,7 +310,6 @@ export class SuperMapComponents {
         return this.af.database.list(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin)
       });
   }
-
 
   /**
    * Get system admin id firebase handler
