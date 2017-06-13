@@ -26,8 +26,14 @@
                     <label for=""><div class="btn " [ngClass]="{'btn-primary': module.privacy == Network, 'btn-outline-primary': module.privacy != Network}" (click)="changePrivacy(moduleIdx, Network)">Network</div></label>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-6">
-                    <div class="btn" [ngClass]="{'btn-success': module.status == true, 'btn-outline-success': module.status == false}" (click)="changeStatus(moduleIdx, true)">Enabled</div>
-                    <div class="btn" [ngClass]="{'btn-danger': module.status == false, 'btn-outline-danger': module.status == true}" (click)="changeStatus(moduleIdx, false)">Disabled</div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="btn" [hidden]="listOfEnabledEnableButtons.get(moduleIdx)" [ngClass]="{'btn-success': module.status == true, 'btn-outline-success': module.status == false}" (click)="changeStatus(moduleIdx, true)">Enabled</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="btn" [ngClass]="{'btn-danger': module.status == false, 'btn-outline-danger': module.status == true}" (click)="changeStatus(moduleIdx, false)">Disabled</div>
+                    </div>
+                  </div>
                 </div>
             </div>
         </template>

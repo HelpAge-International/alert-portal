@@ -30,15 +30,18 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  private listOfEnabledEnableButtons: boolean[] = [];
+  public listOfEnabledEnableButtons: Map<PermissionsAgency, boolean>;
   private disableMap: Map<PermissionsAgency, PermissionsAgency[]>;
 
   constructor(private af: AngularFire, private router: Router) {
     this.disableMap = PermissionService.agencyDisableMap();
-    this.disableMap.forEach((value, key) => {
-      this.listOfEnabledEnableButtons.push(true);
-    });
-
+    this.listOfEnabledEnableButtons = new Map<PermissionsAgency, boolean>();
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.RiskMonitoring, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.CountryOffice, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.ResponsePlanning, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.MinimumPreparedness, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.AdvancedPreparedness, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.CHSPreparedness, false);
   }
 
   ngOnInit() {
@@ -56,6 +59,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
             _.map(module => {
               this.modules[module.$key] = module;
             });
+
+            this.populateEnabledButtonsList();
         });
 
       } else {
@@ -137,16 +142,14 @@ export class ModulesComponent implements OnInit, OnDestroy {
    * Permissions propagation
    */
   populateEnabledButtonsList() {
-    this.disableMap.forEach((value, key) => {
-      console.log(key);
-      console.log("Module: " + this.modules[key].status);
-      if (!this.modules[key].status) {
-        console.log(value);
-        value.forEach((value) => {
-          console.log(value);
-          this.listOfEnabledEnableButtons[value] = false;
-        });
+    console.log(this.disableMap);
+    this.disableMap.forEach((val, key) => {
+      for (let x of val) {
+        console.log("Key : " + key + " --> " + x);
+        console.log(" --> " + this.modules[key].status);
+        this.listOfEnabledEnableButtons.set(x, !this.modules[key].status);
       }
     });
+    console.log(this.listOfEnabledEnableButtons);
   }
 }
