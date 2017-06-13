@@ -73,8 +73,7 @@
         <tr style="text-align: center;" colspan="9">
           <td colspan="2" class="tg" style="width: 15%; background-color: lightgrey;"><p>Return this form to</p></td>
           <td colspan="2" class="tg" style="width: 25%; text-align: center;"><a
-            href="mailto:startfund@savechildren.org.uk">Start
-            Fund startfund@savethechildren.org.uk</a></td>
+            href="mailto:startfund@savechildren.org.uk">startfund@savethechildren.org.uk</a></td>
           <td colspan="3" class="tg" style="width: 30%; background-color: lightgrey;"><p>Date submitted to Start
             Team</p>
           </td>
@@ -108,7 +107,7 @@
         </tr>
         <tr style="border-left: 1px solid">
           <td class="tg" colspan="4" style="border:none; background: lightgrey;">Project Lead Name</td>
-          <td class="tg" colspan="5"></td>
+          <td class="tg" colspan="5"><p>{{planLeadName}}</p></td>
         </tr>
         <tr style="border-left: 1px solid">
           <td class="tg" colspan="4" style="border: none; background: lightgrey;">Position</td>
@@ -116,11 +115,11 @@
         </tr>
         <tr style="border-left: 1px solid">
           <td class="tg" colspan="4" style="border: none; background: lightgrey;">Email</td>
-          <td class="tg" colspan="5"></td>
+          <td class="tg" colspan="5"><a href="mailto:{{planLeadEmail}}"><p>{{planLeadEmail}}</p></a></td>
         </tr>
         <tr style="border-left: 1px solid">
           <td class="tg" colspan="4" style="border: none; background: lightgrey;">Telephone</td>
-          <td class="tg" colspan="5"></td>
+          <td class="tg" colspan="5"><p>{{planLeadPhone}}</p></td>
         </tr>
         <tr style="border-left: 1px solid">
           <td class="tg" colspan="4" style="border: none; background: lightgrey;">Mobile</td>
@@ -128,11 +127,11 @@
         </tr>
         <tr>
           <td class="tg" colspan="4" style="background: lightgrey;">Country of project</td>
-          <td class="tg" colspan="5"></td>
+          <td class="tg" colspan="5"><p>{{responsePlan.location}}</p></td>
         </tr>
         <tr>
           <td class="tg" colspan="4" style="background: lightgrey;">Location(s) of project (city/province)</td>
-          <td class="tg" colspan="5"></td>
+          <td class="tg" colspan="5"><p>{{responsePlan.location}}</p></td>
         </tr>
         <tr>
           <td class="tg" colspan="4" style="background: lightgrey;">Project start date (dd/mm/yyyy)</td>
@@ -153,25 +152,25 @@
         <tr style="background-color: lightgrey; text-align: center;">
           <td class="tg" style="width: 10%;"><p>WaSH</p></td>
           <td class="tg" style="width: 10%;"><p>Health</p></td>
-          <td class="tg" style="width: 5%;"><p>Shelter</p></td>
-          <td class="tg" style="width: 5%;"><p>Nutrition</p></td>
-          <td class="tg" style="width: 10%; padding-left: 2.5%; padding-right: 2.5%;"><p>Camp Management</p></td>
-          <td class="tg" style="width: 10%;"><p>Education</p></td>
-          <td class="tg" style="width: 10%;"><p>Protection</p></td>
+          <td class="tg" style="width: 10%;"><p>Shelter</p></td>
+          <td class="tg" style="width: 10%;"><p>Nutrition</p></td>
           <td class="tg" style="width: 10%;"><p>Food security & livelihoods</p></td>
-          <td class="tg" style="padding-left: 15%; padding-right: 15%; padding-left: 10%;"><p>Other (specify)</p></td>
+          <td class="tg" style="width: 10%;"><p>Protection</p></td>
+          <td class="tg" style="width: 10%;"><p>Education</p></td>
+          <td class="tg" style="width: 10%;"><p>Camp Management</p></td>
+          <td class="tg" style="width: 10%;"><p>Other (specify)</p></td>
         </tr>
 
         <tr style="text-align: center;">
-          <td class="tg" style="width: 10%;"></td>
-          <td class="tg" style="width: 10%;"></td>
-          <td class="tg" style="width: 5%;"></td>
-          <td class="tg" style="width: 5%;"></td>
-          <td class="tg" style="width: 10%; padding-left: 2.5%; padding-right: 2.5%;"></td>
-          <td class="tg" style="width: 10%;"></td>
-          <td class="tg" style="width: 10%;"></td>
-          <td class="tg" style="width: 10%;"></td>
-          <td class="tg" style="padding-left: 15%; padding-right: 15%; padding-left: 10%;"></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.wash)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.health)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.shelter)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.nutrition)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.foodSecurityAndLivelihoods)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.protection)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.education)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.campManagement)">X</p></td>
+          <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(responsePlanSectors.other)">X</p></td>
         </tr>
 
         <tr style="text-align: center; background-color: lightgrey;">
