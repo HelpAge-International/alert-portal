@@ -1021,7 +1021,31 @@
       "COORDINATION": {
         "TITLE_TEXT": "Coordination Arrangements",
         "EDIT": "Edit coordination arrangements",
-        "VIEW": "View coordination arrangements"
+        "VIEW": "View coordination arrangements",
+        "UPDATED": "Updated",
+        "SECTOR": "Sector",
+        "SECTOR_LEAD": "Sector lead",
+        "IS_AGENCY_MEMBER": "Is {{value}} a member?",
+        "STAFF_MEMBER": "Staff member representing {{value}}",
+        "VIEW_LEAD_AGENCY": "View lead agency contact info",
+        "CONTACT_NAME": "Contact's Name",
+        "CONTACT_EMAIL": "Contact's Email",
+        "CONTACT_PHONE": "Contact's Telephone",
+        "SECTOR_LEAD_CONTACT_INFO": "Sector lead contact info",
+        "GO_BACK_TITLE": "Edit Coordination Arrangement",
+        "ADD_TITLE": "Add coordination arrangement",
+        "EDIT_TITLE": "Edit coordination arrangement",
+        "NO_SECTOR": "Please select the sector",
+        "NO_SECTOR_LEAD": "Please enter the sector lead",
+        "NO_IS_AGENCY_MEMBER": "Please select if the agency is a member",
+        "NO_CONTACT_NAME": "Please enter the contact name",
+        "NO_CONTACT_EMAIL": "Please enter the contact email",
+        "NO_CONTACT_PHONE": "Please enter the contact phone",
+        "NO_STAFF_MEMBER": "Please select a staff member",
+        "DELETE_DIALOG_TITLE": "Delete coordination arrangement",
+        "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this coordination arrangement?",
+        "SUCCESS_SAVED": "The coordination arrangement was successfully saved",
+        "SUCCESS_DELETED": "The coordination arrangement was successfully deleted"
       }
     },
     "VIEW_MY_AGENCY": {

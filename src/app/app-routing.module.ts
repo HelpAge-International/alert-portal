@@ -92,6 +92,7 @@ import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-
 import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
+import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -192,6 +193,7 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile/equipment/add-edit-equipment', component: CountryOfficeAddEditEquipmentComponent},
   {path: 'country-admin/country-office-profile/equipment/add-edit-surge-equipment', component: CountryOfficeAddEditSurgeEquipmentComponent},
   {path: 'country-admin/country-office-profile/coordination', component: CountryOfficeCoordinationComponent},
+  {path: 'country-admin/country-office-profile/coordination/add-edit-coordination', component: CountryOfficeAddEditCoordinationComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 

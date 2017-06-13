@@ -22,15 +22,19 @@
         </div>
 
         <div class="row">
-            <p class="col-sm-2 margin-top-three"><strong>Sector</strong></p>
-            <p class="col-sm-5 margin-top-three"><strong>Sector lead</strong></p>
-            <p class="col-sm-2"><strong>Is {{ agency?.name }} a member?</strong></p>
-            <p class="col-sm-2"><strong>Staff member representing {{ agency?.name }}</strong></p>
+            <p class="col-sm-1 margin-top-three" *ngIf="!isEdit"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.UPDATED' | translate }}</strong></p>
+            <p class="col-sm-2 margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR' | translate }}</strong></p>
+            <p class="col-sm-5 margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate }}</strong></p>
+            <p class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.IS_AGENCY_MEMBER' | translate: { value: agency?.name} }}</strong></p>
+            <p class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.STAFF_MEMBER' | translate: { value: agency?.name} }}</strong></p>
         </div>
         <div class="Line-row Spaced-above"></div>
-        <div *ngFor="let coordinationArrangement of coordinationArrangements">
-            <!--Sphere India-->
+        <div *ngFor="let coordinationArrangement of coordinationArrangements; let i = index">
+            
             <div class="row">
+                <div class="col-sm-1" *ngIf="!isEdit">
+                    {{ coordinationArrangement.updatedAt | date: 'MM/yy'}}
+                </div>
                 <div class="col-sm-2"> <!--Sector-->
                     <div class="row">
                         <img src="assets/images/icons/{{ responsePlansSectors[coordinationArrangement.sector] }}.svg" class="margin-bottom-one" alt="Health">
@@ -39,23 +43,51 @@
                 </div>
                 <div class="col-sm-5">
                     <div class="row">
-                        <p class="col-sm-4">{{ coordinationArrangement.sectorLead }}</p> <!--Lead Agency-->
-                        <div class="col-sm-8">
-                            <img src="assets/images/icons/contact.svg" alt="View lead agency contact info">
-                            <a href="#" class="margin-left-two">View lead agency contact info</a>
-                        </div>
+                        <div class="col-sm-5"><p>{{ coordinationArrangement.sectorLead }}</p></div>
+                        <div class="col-sm-0"><img src="assets/images/icons/contact.svg" alt="{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW_LEAD_AGENCY' | translate }}"></div>
+                        <div class="col-sm-6"><a class="col-sm-0" href="#contact_{{ i }}" data-toggle="collapse">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW_LEAD_AGENCY' | translate }}</a></div>
                     </div>
                 </div>
-                <p class="col-sm-2">{{ coordinationArrangement.isAMember ? 'Yes' : 'No' }}</p> <!--Is < agency > a member?-->
-                <p class="col-sm-2">Rajan Pydilmalla</p> <!--Staff member representing < agency >-->
-                <div class="col-sm-1"><button class="btn btn-outline-primary text-uppercase" *ngIf="canEdit && isEdit">edit</button></div>
+                
+                 <!--Is < agency > a member?-->
+                <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'GLOBAL.YES' | translate }}</div>
+                <div class="col-sm-2" *ngIf="!coordinationArrangement.isAMember">{{ 'GLOBAL.NO' | translate }}</div>
+
+                <div class="col-sm-2"><p>{{ getStaffName(coordinationArrangement.staffMember)}}</p></div> <!--Staff member representing < agency >-->
+                <div class="col-sm-1" *ngIf="canEdit && isEdit">
+                    <button class="btn btn-outline-primary text-uppercase" 
+                        (click)="addEditCoordinationArrangement(coordinationArrangement.id)">{{ 'GLOBAL.EDIT' | translate }}</button>
+                </div>
             </div>
             <div class="Line-row Spaced-above"></div>
+
+            <!--Lead agency contact info tooltip-->
+            <div class="Tooltip__bubble contact-agency-arrangement collapse margin-top-two" data-toggle="collapse" id="contact_{{ i }}">
+                <div class="row">
+                    <h3 class="font-weight-bold col-sm-10  text-capitalize">{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD_CONTACT_INFO" | translate}}</h3>
+                    <div class="col-sm-2"><a data-toggle="collapse" href="#contact_{{ i }}">{{ "GLOBAL.CLOSE" | translate}}</a> </div>
+                </div>
+
+                <div class="row Spaced-above"> <!--Name-->
+                    <p class="col-sm-0 margin-left-three text-capitalize"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_NAME" | translate}}</strong></p>
+                    <p class="col-sm-5 margin-left-five">{{ coordinationArrangement?.contactName }}</p>
+                </div>
+
+                <div class="row"> <!--Telephone-->
+                    <p class="col-sm-0 margin-left-three  text-capitalize"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" | translate}}</strong></p>
+                    <p class="col-sm-2">{{ coordinationArrangement?.contactPhone }}</p>
+                </div>
+
+                <div class="row"> <!--Email-->
+                    <p class="col-sm-0 margin-left-three  text-capitalize"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" | translate}}</strong></p>
+                    <p class="col-sm-5 margin-left-five"><a href="mailto:{{ coordinationArrangement?.contactEmail }}">{{ coordinationArrangement?.contactEmail }}</a></p>
+                </div>
+            </div>
         </div>
 
         <button class="btn btn-outline-primary text-uppercase" 
             *ngIf="canEdit"
-            (click)="addEditEquipment()">{{ 'GLOBAL.ADD' | translate }}</button>
+            (click)="addEditCoordinationArrangement()">{{ 'GLOBAL.ADD' | translate }}</button>
 
     </div>
 </div>
