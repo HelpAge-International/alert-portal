@@ -6,8 +6,9 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../model/responsePlan";
 import {UserService} from "../services/user.service";
 import {
-  BudgetCategory, ResponsePlanSectors, UserType
+  BudgetCategory, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
 } from "../utils/Enums";
+import {ModelPlanActivity} from "../model/plan-activity.model";
 
 @Component({
   selector: 'app-export-start-fund',
@@ -17,18 +18,26 @@ import {
 
 export class ExportStartFundComponent implements OnInit, OnDestroy {
 
+  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private USER_TYPE: string = 'administratorCountry';
   private uid: string;
   private countryId: string;
   @Input() responsePlanId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  private responsePlanSectors = ResponsePlanSectors;
+  private ResponsePlanSectors = ResponsePlanSectors;
   private responsePlan: ResponsePlan = new ResponsePlan;
   private planLeadName: string = '';
   private planLeadEmail: string = '';
   private planLeadPhone: string = '';
-  private sectorsRelatedToMap = new Map<number,boolean>();
+  private sectorsRelatedToMap = new Map<number, boolean>();
+  private PresenceInTheCountry = PresenceInTheCountry;
+  private MethodOfImplementation = MethodOfImplementation;
+  private partnersList: string[] = [];
+  private sourcePlanId: number;
+  private sourcePlanInfo1: string;
+  private sourcePlanInfo2: string;
+  private SourcePlan = SourcePlan;
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -95,11 +104,16 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
 
-        responsePlan.sectorsRelatedTo.forEach(sector =>{
-          this.sectorsRelatedToMap.set(sector,true);
+        responsePlan.sectorsRelatedTo.forEach(sector => {
+          this.sectorsRelatedToMap.set(sector, true);
         });
 
         this.bindProjectLeadData(responsePlan);
+
+        this.bindPartnersData(responsePlan);
+
+        this.bindSourcePlanData(responsePlan);
+
       });
   }
 
@@ -113,6 +127,33 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
         });
+    }
+  }
+
+  private bindPartnersData(responsePlan: ResponsePlan) {
+    this.partnersList = [];
+
+    if (responsePlan.partnerOrganisations) {
+      let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
+      partnerIds.forEach(id => {
+        this.userService.getOrganisationName(id)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(organisation => {
+            if (organisation.organisationName) {
+              this.partnersList.push(organisation.organisationName);
+            }
+          })
+      });
+    }
+  }
+
+  private bindSourcePlanData(responsePlan: ResponsePlan) {
+    if (responsePlan.sectors) {
+      Object.keys(responsePlan.sectors).forEach(sectorKey => {
+        this.sourcePlanId = responsePlan.sectors[sectorKey]["sourcePlan"];
+        this.sourcePlanInfo1 = responsePlan.sectors[sectorKey]["bullet1"];
+        this.sourcePlanInfo2 = responsePlan.sectors[sectorKey]["bullet2"];
+      });
     }
   }
 
@@ -130,6 +171,10 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
   private navigateToLogin() {
