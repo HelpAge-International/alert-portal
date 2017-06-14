@@ -1,351 +1,361 @@
-import {Component, OnInit} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {NgForm} from "@angular/forms";
+import {AlertMessageType, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {RxHelper} from "../../utils/RxHelper";
 import {Router} from "@angular/router";
 import {ModelHazard} from "../../model/hazard.model";
-import {AlertMessageModel} from '../../model/alert-message.model';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {AlertMessageModel} from "../../model/alert-message.model";
+import {LocalStorageService} from "angular-2-local-storage";
+import {Subject} from "rxjs/Subject";
+import {UserService} from "../../services/user.service";
 
 declare var jQuery: any;
 
 @Component({
-    selector: 'app-add-hazard',
-    templateUrl: './add-hazard.component.html',
-    styleUrls: ['./add-hazard.component.css']
+  selector: 'app-add-hazard',
+  templateUrl: './add-hazard.component.html',
+  styleUrls: ['./add-hazard.component.css']
 })
-export class AddHazardRiskMonitoringComponent implements OnInit {
-    alertMessageType = AlertMessageType;
-    private alertMessage: AlertMessageModel = null;
-    private alertMsgSeasonAddToCalendar: boolean = false;
-    private hazardName: string;
-    private classAlertInvalid: any;
-    private classAlertValid: any;
-    private countryID: string;
-    private uid: string;
-    private count: number = 1;
-    private customHazards = [];
-    private AllSeasons = [];
-    private checkedSeasons = [];
-    private modalID: string;
-    private otherHazard: boolean = false;
-    private saveSelectSeasonsBtn: boolean = true;
-    private selectHazard: boolean = false;
-    private season: boolean = false;
-    private addHazardSeason: string;
-    private isCustomDisabled: boolean = true;
-    private HazardScenario = Constants.HAZARD_SCENARIOS;
-    private scenarioColors = Constants.SCENARIO_COLORS;
-    private hazardScenariosListTop: number[] = [
-        HazardScenario.HazardScenario4,
-        HazardScenario.HazardScenario3,
-        HazardScenario.HazardScenario24
-    ];
-    private hazardScenariosList: number[] = [
-        HazardScenario.HazardScenario0,
-        HazardScenario.HazardScenario1,
-        HazardScenario.HazardScenario2,
-        HazardScenario.HazardScenario5,
-        HazardScenario.HazardScenario6,
-        HazardScenario.HazardScenario7,
-        HazardScenario.HazardScenario8,
-        HazardScenario.HazardScenario9,
-        HazardScenario.HazardScenario10,
-        HazardScenario.HazardScenario11,
-        HazardScenario.HazardScenario12,
-        HazardScenario.HazardScenario13,
-        HazardScenario.HazardScenario14,
-        HazardScenario.HazardScenario15,
-        HazardScenario.HazardScenario16,
-        HazardScenario.HazardScenario17,
-        HazardScenario.HazardScenario18,
-        HazardScenario.HazardScenario19,
-        HazardScenario.HazardScenario20,
-        HazardScenario.HazardScenario21,
-        HazardScenario.HazardScenario22,
-        HazardScenario.HazardScenario23,
-        HazardScenario.HazardScenario25,
-        HazardScenario.HazardScenario26,
-    ];
-    private hazardData: any = {};
+export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
-    constructor(private af: AngularFire, private subscriptions: RxHelper, private router: Router, private storage: LocalStorageService) {
-        this.hazardData.seasons = [];
-        this.initHazardData();
+  private UserType: number;
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  alertMessageType = AlertMessageType;
+  private alertMessage: AlertMessageModel = null;
+  private alertMsgSeasonAddToCalendar: boolean = false;
+  private hazardName: string;
+  private classAlertInvalid: any;
+  private classAlertValid: any;
+  private countryID: string;
+  private uid: string;
+  private count: number = 1;
+  private customHazards = [];
+  private AllSeasons = [];
+  private checkedSeasons = [];
+  private modalID: string;
+  private otherHazard: boolean = false;
+  private saveSelectSeasonsBtn: boolean = true;
+  private selectHazard: boolean = false;
+  private season: boolean = false;
+  private addHazardSeason: string;
+  private isCustomDisabled: boolean = true;
+  private HazardScenario = Constants.HAZARD_SCENARIOS;
+  private scenarioColors = Constants.SCENARIO_COLORS;
+  private hazardScenariosListTop: number[] = [
+    HazardScenario.HazardScenario4,
+    HazardScenario.HazardScenario3,
+    HazardScenario.HazardScenario24
+  ];
+  private hazardScenariosList: number[] = [
+    HazardScenario.HazardScenario0,
+    HazardScenario.HazardScenario1,
+    HazardScenario.HazardScenario2,
+    HazardScenario.HazardScenario5,
+    HazardScenario.HazardScenario6,
+    HazardScenario.HazardScenario7,
+    HazardScenario.HazardScenario8,
+    HazardScenario.HazardScenario9,
+    HazardScenario.HazardScenario10,
+    HazardScenario.HazardScenario11,
+    HazardScenario.HazardScenario12,
+    HazardScenario.HazardScenario13,
+    HazardScenario.HazardScenario14,
+    HazardScenario.HazardScenario15,
+    HazardScenario.HazardScenario16,
+    HazardScenario.HazardScenario17,
+    HazardScenario.HazardScenario18,
+    HazardScenario.HazardScenario19,
+    HazardScenario.HazardScenario20,
+    HazardScenario.HazardScenario21,
+    HazardScenario.HazardScenario22,
+    HazardScenario.HazardScenario23,
+    HazardScenario.HazardScenario25,
+    HazardScenario.HazardScenario26,
+  ];
+  private hazardData: any = {};
+
+  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
+    this.hazardData.seasons = [];
+    this.initHazardData();
+  }
+
+  initHazardData() {
+    this.hazardData = new ModelHazard();
+  }
+
+  ngOnInit() {
+    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
+      if (auth) {
+        this.uid = auth.uid;
+        this.userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+            this.UserType = userType;
+            this._loadData();
+          });
+      } else {
+        this.navigateToLogin();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  _getCountryID() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
+        this.countryID = countryID.$value ? countryID.$value : "";
+        res(true);
+      });
+    });
+    return promise;
+  }
+
+  _loadData() {
+    this._getCountryID().then(() => {
+      this._getCustomHazards();
+    });
+  }
+
+  _getCustomHazards() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/otherHazardScenario/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((customHazards: any) => {
+        this.customHazards = customHazards;
+        res(true);
+      });
+    });
+    return promise;
+  }
+
+  _getAllSeasons() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((AllSeasons: any) => {
+        this.AllSeasons = AllSeasons;
+        res(true);
+      });
+    });
+    return promise;
+  }
+
+  _validateData() {
+    let promise = new Promise((res, rej) => {
+      this.alertMessage = this.hazardData.validate(this.count);
+      if (this.alertMessage) {
+        res(false);
+      }
+      if (!this.alertMessage) {
+        if (!this.alertMessage) {
+        }
+        if (!this.alertMessage) {
+          res(true);
+        }
+      }
+    });
+    return promise;
+  }
+
+  submit() {
+    this._validateData().then((isValid: boolean) => {
+      if (isValid) {
+        this.count = 2;
+      }
+    });
+  }
+
+  cancel() {
+    this.count = 1;
+  }
+
+  _checkHazard(hazard) {
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazardFb: any) => {
+        for (let index = 0; index < hazardFb.length; index++) {
+
+          if (hazardFb[index].hazardScenario == hazard) {
+            this.hazardData.isActive = false;
+            return promise;
+          }
+          else {
+            this.hazardData.isActive = true;
+          }
+        }
+        res(true);
+      });
+    });
+    return promise;
+  }
+
+  stateIsCustom(isCustom: boolean, event: any, hazard) {
+    this.hazardName = event.target.value;
+    this.hazardData.hazardScenario = '';
+    this._checkHazard(hazard);
+    this.isCustomDisabled = isCustom;
+    if (event.target.value != 'on') {
+      this.hazardData.hazardScenario = hazard;
+      this.otherHazard = false;
+    } else {
     }
+  }
 
-    initHazardData() {
-        this.hazardData = new ModelHazard();
+  setHazardValue(event: any) {
+    this._checkHazard(event.target.value);
+    this.hazardData.hazardScenario = event.target.value;
+
+    this.otherHazard = false;
+    if (this.hazardData.hazardScenario == 'Other') {
+      this.otherHazard = true;
     }
+  }
 
-    ngOnInit() {
-        let subscription = this.af.auth.subscribe(auth => {
-            if (auth) {
-                this.uid = auth.uid;
-                this._loadData();
-            } else {
-                this.navigateToLogin();
-            }
+  addHazardBtn() {
+    this._validateData().then((isValid: boolean) => {
+      if (isValid) {
+        this.hazardData.timeCreated = this._getCurrentTimestamp();
+        this.hazardData.hazardScenario = parseInt(this.hazardData.hazardScenario);
+        /* TODO RISK PARAM */
+        this.hazardData.risk = 10;
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
+          .push(this.hazardData)
+          .then(() => {
+            this.storage.set('successAddHazard', this.hazardData.hazardScenario);
+            this.router.navigate(['/risk-monitoring/']);
+          }).catch((error: any) => {
+          console.log(error, 'You do not have access!')
         });
-        this.subscriptions.add(subscription);
+      }
+    });
+    if (this.addHazardSeason == 'true') {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+
+  _getCurrentTimestamp() {
+    var currentTimeStamp = new Date().getTime();
+    return currentTimeStamp;
+  }
+
+  seasonHazard(event: any) {
+    this.hazardData.seasons = [];
+    this.addHazardSeason = event.target.value;
+    if (this.addHazardSeason == 'true') {
+      this.hazardData.isSeasonal = false;
+      this.selectHazard = false;
+      this.season = false;
+    }
+    else {
+      this.hazardData.isSeasonal = true;
+      this.selectHazard = true;
+      this.season = false;
+    }
+  }
+
+  saveSelectSeasons(modalID: string) {
+    this.checkedSeasons = [];
+    for (let i in this.hazardData.seasons) {
+      this.checkedSeasons.push(this.AllSeasons[i])
+    }
+    this.modalID = modalID;
+    this.addHazardSeason = 'true';
+    this.selectHazard = false;
+    this.season = true;
+    if (this.checkedSeasons.length == 0) {
+      this.season = false;
+      this.selectHazard = true;
+    }
+    else {
+      this.season = true;
+    }
+    this.closeModal();
+  }
+
+  selectSeason(event: any, seasonKey: string) {
+    if (event.target.checked) {
+      this.hazardData.seasons[seasonKey] = true;
+    } else {
+      delete this.hazardData.seasons[seasonKey];
+    }
+    if (Object.keys(this.hazardData.seasons).length == 0) {
+      this.saveSelectSeasonsBtn = true;
+    }
+    else {
+      this.saveSelectSeasonsBtn = false;
+    }
+  }
+
+  detected(i) {
+    for (let key in this.hazardData.seasons) {
+      if (i == key) {
+        return true;
+      }
+    }
+  }
+
+  newCustomHazard(event: any) {
+    if (event.target.value.length > 3) {
+      this.hazardData.hazardScenario = event.target.value;
+      this.hazardName = event.target.value;
+    }
+  }
+
+  showActionConfirm(modalID: string) {
+    this._getAllSeasons();
+    this.modalID = modalID;
+    jQuery("#" + this.modalID).modal("show");
+  }
+
+  msgSeasonToCalendar(form: any) {
+    if (form.value.startTime > form.value.endTime && form.value.endTime != "" && form.value.startTime != "") {
+      this.alertMsgSeasonAddToCalendar = true;
+      this.classAlertInvalid = 'invalid';
+      this.classAlertValid = '';
+    }
+    else {
+      this.classAlertValid = 'valid';
+      this.classAlertInvalid = '';
+      this.alertMsgSeasonAddToCalendar = false;
+    }
+  }
+
+  createSeasonToCalendar(form: NgForm) {
+    this.saveSelectSeasonsBtn = true;
+    let dataToSave = form.value;
+    dataToSave.startTime = new Date(dataToSave.startTime).getTime();
+    dataToSave.endTime = new Date(dataToSave.endTime).getTime();
+    if (dataToSave.startTime > dataToSave.endTime) {
+      this.alertMsgSeasonAddToCalendar = false;
+    }
+    else {
+      this.alertMsgSeasonAddToCalendar = true;
+      this.closeModal();
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+        .push(dataToSave)
+        .then(() => {
+          console.log('success save data');
+        }).catch((error: any) => {
+        console.log(error, 'You do not have access!')
+      });
     }
 
-    _getCountryID() {
-        let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryID: any) => {
-                this.countryID = countryID.$value ? countryID.$value : "";
-                res(true);
-            });
-            this.subscriptions.add(subscription);
-        });
-        return promise;
-    }
 
-    _loadData() {
-        this._getCountryID().then(() => {
-            this._getCustomHazards();
-        });
-    }
+  }
 
-    _getCustomHazards() {
-        let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/otherHazardScenario/" + this.countryID).subscribe((customHazards: any) => {
-                this.customHazards = customHazards;
-                res(true);
-            });
-            this.subscriptions.add(subscription);
-        });
-        return promise;
-    }
+  closeModalAddCalendar(modal: any) {
+    jQuery("#" + modal).modal("hide");
+  }
 
-    _getAllSeasons() {
-        let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID).subscribe((AllSeasons: any) => {
-                this.AllSeasons = AllSeasons;
-                res(true);
-            });
-            this.subscriptions.add(subscription);
-        });
-        return promise;
-    }
+  closeModal() {
+    jQuery("#" + this.modalID).modal("hide");
+  }
 
-    _validateData() {
-        let promise = new Promise((res, rej) => {
-            this.alertMessage = this.hazardData.validate(this.count);
-            if (this.alertMessage) {
-                res(false);
-            }
-            if (!this.alertMessage) {
-                if (!this.alertMessage) {
-                }
-                if (!this.alertMessage) {
-                    res(true);
-                }
-            }
-        });
-        return promise;
-    }
-
-    submit() {
-        this._validateData().then((isValid: boolean) => {
-            if (isValid) {
-                this.count = 2;
-            }
-        });
-    }
-
-    cancel() {
-        this.count = 1;
-    }
-
-    _checkHazard(hazard) {
-        let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazardFb: any) => {
-                for (let index = 0; index < hazardFb.length; index++) {
-
-                    if (hazardFb[index].hazardScenario == hazard) {
-                        this.hazardData.isActive = false;
-                        return promise;
-                    }
-                    else {
-                        this.hazardData.isActive = true;
-                    }
-                }
-                res(true);
-            });
-            this.subscriptions.add(subscription);
-        });
-        return promise;
-    }
-
-    stateIsCustom(isCustom: boolean, event: any, hazard) {
-        this.hazardName = event.target.value;
-        this.hazardData.hazardScenario = '';
-        this._checkHazard(hazard);
-        this.isCustomDisabled = isCustom;
-        if (event.target.value != 'on') {
-            this.hazardData.hazardScenario = hazard;
-            this.otherHazard = false;
-        } else {
-        }
-    }
-
-    setHazardValue(event: any) {
-        this._checkHazard(event.target.value);
-        this.hazardData.hazardScenario = event.target.value;
-
-        this.otherHazard = false;
-        if (this.hazardData.hazardScenario == 'Other') {
-            this.otherHazard = true;
-        }
-    }
-
-    addHazardBtn() {
-        this._validateData().then((isValid: boolean) => {
-            if (isValid) {
-                this.hazardData.timeCreated = this._getCurrentTimestamp();
-                this.hazardData.hazardScenario = parseInt(this.hazardData.hazardScenario);
-                /* TODO RISK PARAM */
-                this.hazardData.risk = 10;
-                this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
-                    .push(this.hazardData)
-                    .then(() => {
-                        this.storage.set('successAddHazard', this.hazardData.hazardScenario);
-                        this.router.navigate(['/risk-monitoring/']);
-                    }).catch((error: any) => {
-                        console.log(error, 'You do not have access!')
-                    });
-            }
-        });
-        if (this.addHazardSeason == 'true') {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    _getCurrentTimestamp() {
-        var currentTimeStamp = new Date().getTime();
-        return currentTimeStamp;
-    }
-
-    seasonHazard(event: any) {
-        this.hazardData.seasons = [];
-        this.addHazardSeason = event.target.value;
-        if (this.addHazardSeason == 'true') {
-            this.hazardData.isSeasonal = false;
-            this.selectHazard = false;
-            this.season = false;
-        }
-        else {
-            this.hazardData.isSeasonal = true;
-            this.selectHazard = true;
-            this.season = false;
-        }
-    }
-
-    saveSelectSeasons(modalID: string) {
-        this.checkedSeasons = [];
-        for (let i in this.hazardData.seasons) {
-            this.checkedSeasons.push(this.AllSeasons[i])
-        }
-        this.modalID = modalID;
-        this.addHazardSeason = 'true';
-        this.selectHazard = false;
-        this.season = true;
-        if (this.checkedSeasons.length == 0) {
-            this.season = false;
-            this.selectHazard = true;
-        }
-        else {
-            this.season = true;
-        }
-        this.closeModal();
-    }
-
-    selectSeason(event: any, seasonKey: string) {
-        if (event.target.checked) {
-            this.hazardData.seasons[seasonKey] = true;
-        } else {
-            delete this.hazardData.seasons[seasonKey];
-        }
-        if (Object.keys(this.hazardData.seasons).length == 0) {
-            this.saveSelectSeasonsBtn = true;
-        }
-        else {
-            this.saveSelectSeasonsBtn = false;
-        }
-    }
-
-    detected(i) {
-        for (let key in this.hazardData.seasons) {
-            if (i == key) {
-                return true;
-            }
-        }
-    }
-
-    newCustomHazard(event: any) {
-        if (event.target.value.length > 3) {
-            this.hazardData.hazardScenario = event.target.value;
-            this.hazardName = event.target.value;
-        }
-    }
-
-    showActionConfirm(modalID: string) {
-        this._getAllSeasons();
-        this.modalID = modalID;
-        jQuery("#" + this.modalID).modal("show");
-    }
-
-    msgSeasonToCalendar(form: any) {
-        if (form.value.startTime > form.value.endTime && form.value.endTime != "" && form.value.startTime != "") {
-            this.alertMsgSeasonAddToCalendar = true;
-            this.classAlertInvalid = 'invalid';
-            this.classAlertValid = '';
-        }
-        else {
-            this.classAlertValid = 'valid';
-            this.classAlertInvalid = '';
-            this.alertMsgSeasonAddToCalendar = false;
-        }
-    }
-
-    createSeasonToCalendar(form: NgForm) {
-        this.saveSelectSeasonsBtn = true;
-        let dataToSave = form.value;
-        dataToSave.startTime = new Date(dataToSave.startTime).getTime();
-        dataToSave.endTime = new Date(dataToSave.endTime).getTime();
-        if (dataToSave.startTime > dataToSave.endTime) {
-            this.alertMsgSeasonAddToCalendar = false;
-        }
-        else {
-            this.alertMsgSeasonAddToCalendar = true;
-            this.closeModal();
-            this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-                .push(dataToSave)
-                .then(() => {
-                    console.log('success save data');
-                }).catch((error: any) => {
-                    console.log(error, 'You do not have access!')
-                });
-        }
-
-
-    }
-
-    closeModalAddCalendar(modal: any) {
-        jQuery("#" + modal).modal("hide");
-    }
-
-    closeModal() {
-        jQuery("#" + this.modalID).modal("hide");
-    }
-
-    private navigateToLogin() {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-    }
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
 }

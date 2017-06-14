@@ -83,8 +83,10 @@
                     <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                       translate}}
                     </div>
-                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
-                      translate}}
+                    <div class="col-6 text-left" *ngIf="idx==1">
+                      {{isGlobalDirectorMap.get(plan.$key)?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                      translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                      translate)}}
                     </div>
                     <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                       translate}}
