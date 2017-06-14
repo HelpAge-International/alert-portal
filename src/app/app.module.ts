@@ -134,6 +134,7 @@ import { ViewCountryMenuComponent } from './commons/view-country-menu/view-count
 import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
+import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -268,7 +269,8 @@ const firebaseAuthConfig = {
     ViewCountryMenuComponent,
     AlertLoaderComponent,
     ProjectNarrativeComponent,
-    ProjectBudgetComponent
+    ProjectBudgetComponent,
+    ProjectReportComponent
   ],
   imports: [
     BrowserModule,
