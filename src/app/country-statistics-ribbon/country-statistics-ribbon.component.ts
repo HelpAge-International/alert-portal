@@ -5,6 +5,7 @@ import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {ApprovalStatus, AlertLevels, Countries, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
+import {AgencyModulesEnabled, PermissionService} from "../services/permissions.service";
 
 @Component({
   selector: 'app-country-statistics-ribbon',
@@ -37,8 +38,10 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
   private userPaths = Constants.USER_PATHS;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private userPermissions: AgencyModulesEnabled;
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService) {
+    this.userPermissions = new AgencyModulesEnabled();
   }
 
   ngOnInit() {
@@ -52,6 +55,11 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
             this.NODE_TO_CHECK = this.userPaths[userType];
             this.loadData();
+            PermissionService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, this.userPaths[userType], (isEnabled => {
+              console.log("User permissions updates");
+              this.userPermissions = isEnabled;
+              console.log(this.userPermissions);
+            }));
           });
       } else {
         this.navigateToLogin();

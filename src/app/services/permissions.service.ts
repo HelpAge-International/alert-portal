@@ -36,6 +36,8 @@ export class PermissionService {
       [
         "preparedness/advanced"
       ]));
+    list.push(new AgencyPermissionObject(PermissionsAgency.CHSPreparedness,
+      []));
     return list;
   }
   static agencyDisableMap(): Map<PermissionsAgency, PermissionsAgency[]> {
