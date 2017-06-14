@@ -6,9 +6,8 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-  BudgetCategory, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
+  MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
 } from "../../utils/Enums";
-import {ModelPlanActivity} from "../../model/plan-activity.model";
 
 @Component({
   selector: 'app-export-start-fund-project-narrative',
@@ -33,6 +32,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private sectorsRelatedToMap = new Map<number, boolean>();
   private PresenceInTheCountry = PresenceInTheCountry;
   private MethodOfImplementation = MethodOfImplementation;
+  private MediaFormat = MediaFormat;
+
   private partnersList: string[] = [];
   private sourcePlanId: number;
   private sourcePlanInfo1: string;

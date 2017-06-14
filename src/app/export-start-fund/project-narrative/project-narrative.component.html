@@ -457,19 +457,22 @@
     <td colspan="5" style="background-color: lightgrey;"><p>Do you intend to visually document your project? <span
       style="font-style: italic;">(please mark)</span>
     </p></td>
-    <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>Yes  {{responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p></td>
-    <td colspan="1"></td>
-    <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>No  {{!responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p></td>
-    <td colspan="1"></td>
+    <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>Yes</p></td>
+    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p></td>
+    <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>No</p></td>
+    <td colspan="1" style="text-align: center;"><p>{{!responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p></td>
   </tr>
 
   <tr>
-    <td colspan="5" style="background: lightgrey;"><p>If so, will this be photographic, video, or both? <span
+    <td colspan="3" style="background: lightgrey;"><p>If so, will this be photographic, video, or both? <span
       style="font-style: italic;">(please mark)</span>
     </p></td>
-    <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Photographic</p></td>
+    <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>Photographic</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
     <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>Video</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
     <td colspan="1" style="text-align: center; background-color: lightgrey;"><p>Both</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
   </tr>
 
   <tr>
