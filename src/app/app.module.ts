@@ -133,6 +133,7 @@ import { DirectorOverviewComponent } from './director/director-overview/director
 import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
 import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
+import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -266,7 +267,8 @@ const firebaseAuthConfig = {
     DirectorOverviewComponent,
     ViewCountryMenuComponent,
     AlertLoaderComponent,
-    ProjectNarrativeComponent
+    ProjectNarrativeComponent,
+    ProjectBudgetComponent
   ],
   imports: [
     BrowserModule,

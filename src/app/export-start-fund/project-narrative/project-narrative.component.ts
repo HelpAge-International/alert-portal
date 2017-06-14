@@ -23,9 +23,9 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private countryId: string;
   @Input() responsePlanId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-
   private ResponsePlanSectors = ResponsePlanSectors;
   private responsePlan: ResponsePlan = new ResponsePlan;
+
   private planLeadName: string = '';
   private planLeadEmail: string = '';
   private planLeadPhone: string = '';
@@ -33,7 +33,6 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private PresenceInTheCountry = PresenceInTheCountry;
   private MethodOfImplementation = MethodOfImplementation;
   private MediaFormat = MediaFormat;
-
   private partnersList: string[] = [];
   private sourcePlanId: number;
   private sourcePlanInfo1: string;
