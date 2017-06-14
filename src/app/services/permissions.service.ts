@@ -42,7 +42,6 @@ export class PermissionService {
   }
   static agencyDisableMap(): Map<PermissionsAgency, PermissionsAgency[]> {
     let map: Map<PermissionsAgency, PermissionsAgency[]> = new Map<PermissionsAgency, PermissionsAgency[]>();
-    map.set(PermissionsAgency.RiskMonitoring, [PermissionsAgency.AdvancedPreparedness]);
     map.set(PermissionsAgency.MinimumPreparedness, [PermissionsAgency.CHSPreparedness]);
     return map;
   }
