@@ -9,6 +9,8 @@ import { DisplayError } from "../../../errors/display.error";
 import { UserService } from "../../../services/user.service";
 import { StockCapacityModel } from "../../../model/stock-capacity.model";
 import { StockService } from "../../../services/stock.service";
+import { NoteModel } from "../../../model/note.model";
+import { NoteService } from "../../../services/note.service";
 declare var jQuery: any;
 
 @Component({
@@ -33,12 +35,18 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private stockCapacitiesIN: StockCapacityModel[];
   private stockCapacitiesOUT: StockCapacityModel[];
   
-  // Helpers  
+  // Helpers
+  private newNote: NoteModel[];
+  private activeNote: NoteModel;
+  private activeStockCapacity: StockCapacityModel;
+   
   constructor(private _userService: UserService,
               private _stockService: StockService,
+              private _noteService: NoteService,
               private router: Router,
               private route: ActivatedRoute,
-              private subscriptions: RxHelper){
+              private subscriptions: RxHelper) {
+                this.newNote = [];
   }
 
   ngOnDestroy() {
@@ -61,6 +69,21 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         this._stockService.getStockCapacities(this.agencyId, this.countryId).subscribe(stockCapacities => {
             this.stockCapacitiesIN = stockCapacities.filter(x => x.type == StockType.Country);
             this.stockCapacitiesOUT = stockCapacities.filter(x => x.type == StockType.External);
+            
+            // Get notes
+            stockCapacities.forEach(stockCapacity => {
+              const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                                                    .replace('{agencyId}', this.agencyId)
+                                                    .replace('{countryId}', this.countryId)
+                                                    .replace('{id}', stockCapacity.id);
+              this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                      stockCapacity.notes = notes;
+
+                      // Create the new note model for partner organisation
+                      this.newNote[stockCapacity.id] = new NoteModel();
+                      this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                    });
+            })
         })
       });
     });
@@ -103,5 +126,87 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
       this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
                                   {stockType: stockType}], {skipLocationChange: true});
     }
+  }
+
+  validateNote(note: NoteModel): boolean {
+    this.alertMessage = note.validate();
+
+    return !this.alertMessage;
+  }
+
+  addNote(stockCapacity: StockCapacityModel, note: NoteModel)
+  {
+    if(this.validateNote(note))
+    {
+      const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                                                    .replace('{agencyId}', this.agencyId)
+                                                    .replace('{countryId}', this.countryId)
+                                                    .replace('{id}', stockCapacity.id);
+      this._noteService.saveNote(stockCapacityNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+  }
+
+  editNote(stockCapacity: StockCapacityModel, note: NoteModel) {
+    jQuery('#edit-action').modal('show');
+    this.activeStockCapacity = stockCapacity;
+    this.activeNote = note;
+  }
+
+editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
+    this.closeEditModal();
+
+    if(this.validateNote(note))
+    {
+      const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                                                    .replace('{agencyId}', this.agencyId)
+                                                    .replace('{countryId}', this.countryId)
+                                                    .replace('{id}', stockCapacity.id);
+      this._noteService.saveNote(stockCapacityNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+ }
+
+  closeEditModal() {
+    jQuery('#edit-action').modal('hide');
+  }
+
+  deleteNote(stockCapacity: StockCapacityModel, note: NoteModel) {
+    jQuery('#delete-action').modal('show');
+    this.activeStockCapacity = stockCapacity;
+    this.activeNote = note;
+  }
+
+  deleteAction(stockCapacity: StockCapacityModel, note: NoteModel) {
+    this.closeDeleteModal();
+
+    const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                                                    .replace('{agencyId}', this.agencyId)
+                                                    .replace('{countryId}', this.countryId)
+                                                    .replace('{id}', stockCapacity.id);
+
+    this._noteService.deleteNote(stockCapacityNode, note)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+ }
+
+  closeDeleteModal() {
+    jQuery('#delete-action').modal('hide');
+  }
+
+getUserName(userId) {
+    let userName = "";
+
+    this._userService.getUser(userId).subscribe(user => {
+      userName = user.firstName + ' ' + user.lastName;
+    });
+
+    return userName;
   }
 }

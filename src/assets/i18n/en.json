@@ -1374,6 +1374,7 @@
         "NO_CONTENT": "Please insert the note content",
         "SUCCESS_SAVED": "Note has been succesfully saved",
         "ADD": "Add note",
+        "ADD_A_NOTE": "Add a note",
         "BY": "by",
         "EDIT_DIALOG_TITLE": "Edit note",
         "DELETE_DIALOG_TITLE": "Delete note",
