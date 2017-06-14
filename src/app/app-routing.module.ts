@@ -97,6 +97,8 @@ import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-of
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
+import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
+import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -205,6 +207,8 @@ const routes: Routes = [
   },
   {path: 'country-admin/country-office-profile/coordination', component: CountryOfficeCoordinationComponent},
   {path: 'country-admin/country-office-profile/coordination/add-edit-coordination', component: CountryOfficeAddEditCoordinationComponent},
+  {path: 'country-admin/country-office-profile/stock-capacity', component: CountryOfficeStockCapacityComponent},
+  {path: 'country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity', component: CountryOfficeAddEditStockCapacityComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 

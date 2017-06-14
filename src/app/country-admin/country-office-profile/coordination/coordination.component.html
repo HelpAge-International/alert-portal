@@ -29,6 +29,9 @@
             <p class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.STAFF_MEMBER' | translate: { value: agency?.name} }}</strong></p>
         </div>
         <div class="Line-row Spaced-above"></div>
+        <div class="row" *ngIf="!coordinationArrangements">
+            <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EMPTY_LIST' | translate }}</p>
+        </div>
         <div *ngFor="let coordinationArrangement of coordinationArrangements; let i = index">
             
             <div class="row">

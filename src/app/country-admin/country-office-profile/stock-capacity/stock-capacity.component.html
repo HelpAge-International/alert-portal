@@ -1,0 +1,107 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        
+        <app-country-office-profile-menu></app-country-office-profile-menu>
+
+        <div class="Header-title__wrap Spaced row">
+            <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT' | translate }}</h2>
+            <div class="col-sm-6 Right-aligned">
+                <button type="button" class="btn btn-outline-primary text-uppercase"
+                    *ngIf="canEdit && !isEdit"
+                    (click)="editCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT' | translate }}</button>
+                
+                <button type="button" class="btn btn-outline-primary text-uppercase"
+                    *ngIf="canEdit && isEdit"
+                    (click)="showCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.VIEW' | translate }}</button>
+            </div>
+        </div>
+
+        <h6><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_IN' | translate }}</strong></h6>
+
+        <div class="row" *ngIf="!stockCapacitiesIN">
+            <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EMPTY_LIST' | translate }}</p>
+        </div>
+
+        <div class="row Spaced-above" *ngIf="stockCapacitiesIN">
+            <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.UPDATED' | translate }}</strong></p></div>
+            <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' | translate }}</strong></p></div>
+            <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' | translate }}</strong></p></div>
+            <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></p></div>
+            <div class="col-sm-2"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p></div>
+        </div>
+        <div class="row Line-row"></div><br>
+
+        <div *ngFor="let stockCapacity of stockCapacitiesIN">
+            <div class="row Spaced-above">
+                <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
+                <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
+                <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
+                <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
+                <div class="col-sm-3"><p>{{ stockCapacity.eta }}</p></div> <!--Lead time for delivery to affected population-->
+                <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+                    <p class="notes-number__components--country-office-profile">1</p>
+                    <a href="#notesOne" data-toggle="collapse" class="row margin-left-one-half">
+                        {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
+                    </a>
+                </div> <!--Notes-->
+                <div class="col-sm-1" *ngIf="canEdit && isEdit">
+                 <button class="btn btn-outline-primary text-uppercase" 
+                    (click)="addEditStockCapacity(STOCK_TYPE.Country, stockCapacity.id)">
+                    {{ 'GLOBAL.EDIT' | translate }}</button>
+            </div>
+            </div>
+            <div class="row Line-row"></div><br>
+        </div>
+
+        <button class="btn btn-outline-primary text-uppercase" 
+            *ngIf="canEdit"
+            (click)="addEditStockCapacity(STOCK_TYPE.Country)">{{ 'GLOBAL.ADD' | translate }}</button>
+            
+        <br><h6 class="Spaced-above"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_OUT' | translate }}</strong></h6><br>
+        
+        <div class="row" *ngIf="!stockCapacitiesOUT">
+            <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EMPTY_LIST' | translate }}</p>
+        </div>
+
+        <div class="row" *ngIf="stockCapacitiesOUT">
+            <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.UPDATED' | translate }}</strong></p></div>
+            <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' | translate }}</strong></p></div>
+            <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' | translate }}</strong></p></div>
+            <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></p></div>
+            <div class="col-sm-2"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_OUT' | translate }}</strong></p></div>
+        </div>
+        <div class="row Line-row"></div>
+
+        <div *ngFor="let stockCapacity of stockCapacitiesOUT">
+            <div class="row Spaced-above">
+                <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
+                <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
+                <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
+                <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
+                <div class="col-sm-3"><p>{{ stockCapacity.eta }}</p></div> <!--Lead time for delivery to affected population-->
+                <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+                    <p class="notes-number__components--country-office-profile">1</p>
+                    <a href="#notesOne" data-toggle="collapse" class="row margin-left-one-half">
+                        {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
+                    </a>
+                </div> <!--Notes-->
+                <div class="col-sm-1" *ngIf="canEdit && isEdit">
+                    <button class="btn btn-outline-primary text-uppercase" 
+                        (click)="addEditStockCapacity(STOCK_TYPE.External, stockCapacity.id)">
+                        {{ 'GLOBAL.EDIT' | translate }}</button>
+                </div>
+            </div>
+            <div class="row Line-row"></div><br>
+        </div>
+
+        <button class="btn btn-outline-primary text-uppercase" 
+            *ngIf="canEdit"
+            (click)="addEditStockCapacity(STOCK_TYPE.External)">{{ 'GLOBAL.ADD' | translate }}</button>
+
+    </div>
+</div>
