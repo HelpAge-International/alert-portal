@@ -884,3 +884,8 @@ export enum DashboardType {
   director = 1
 }
 
+export enum StockType {
+  Country = 0,
+  External = 1
+}
+

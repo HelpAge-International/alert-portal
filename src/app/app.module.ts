@@ -146,6 +146,9 @@ import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.com
 import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
+import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
+import { StockService } from "./services/stock.service";
+import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -202,6 +205,8 @@ const firebaseAuthConfig = {
     CountryOfficeAddEditSurgeEquipmentComponent,
     CountryOfficeCoordinationComponent,
     CountryOfficeAddEditCoordinationComponent,
+    CountryOfficeStockCapacityComponent,
+    CountryOfficeAddEditStockCapacityComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
@@ -326,7 +331,8 @@ const firebaseAuthConfig = {
               NoteService,
               EquipmentService,
               CoordinationArrangementService,
-              AgencyService],
+              AgencyService,
+              StockService],
   bootstrap: [AppComponent]
 })
 

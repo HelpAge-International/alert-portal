@@ -67,7 +67,7 @@
                     <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
                     <hr class="d-inline-flex">
                     <form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id])">
-                        <input type="text" name="new_note" placeholder="Add a note"
+                        <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                             [(ngModel)] = "newNote[equipment.id] && newNote[equipment.id].content">
 
                         <!--Note post-->
@@ -183,7 +183,7 @@
                     <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
                     <hr class="d-inline-flex">
                     <form (ngSubmit)="addNote('surgeEquipment', surgeEquipment.id, newNote[surgeEquipment.id])">
-                        <input type="text" name="new_note" placeholder="Add a note"
+                        <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                             [(ngModel)] = "newNote[surgeEquipment.id] && newNote[surgeEquipment.id].content">
 
                         <!--Note post-->
