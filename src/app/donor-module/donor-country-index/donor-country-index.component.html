@@ -22,7 +22,8 @@
 
         <div class="text-center padding-one col-sm-6">
           <div class="Icon__circle Icon--blue Icon--lg">
-            <h1 class="margin-top-one">{{countryOffices.length}}</h1>
+            <!--<h1 class="margin-top-one">{{countryOffices.length}}</h1>-->
+            <h1 class="margin-top-one">{{numOfCountryOffices}}</h1>
           </div>
           <div class="margin-top-three">
             <b>
@@ -58,15 +59,17 @@
 
             <div class="col-sm-2 col-6 Preparedness__agency-list__item border-center">
               <!--<div class="Icon&#45;&#45;md Icon&#45;&#45;align-center Icon__donors&#45;&#45;default"></div>-->
-              <div *ngIf="!agencyLogoPaths[country.countryId]" class="Icon--md Icon--align-center Icon__donors--default"></div>
+              <div *ngIf="!agencyLogoPaths[country.countryId]"
+                   class="Icon--md Icon--align-center Icon__donors--default"></div>
               <!--<div class="Agency-logo" [style.background-image]="agencyLogoPaths[country.countryId] ? 'url(' + agencyLogoPaths[country.countryId] + ')' : 'url(assets/images/alert_logo--grey.svg)'"></div>-->
-              <img *ngIf="agencyLogoPaths[country.countryId]" height="50" width="100" src="{{agencyLogoPaths[country.countryId]}}" class="Charity__logo Face-to-face__item" alt="">
+              <img *ngIf="agencyLogoPaths[country.countryId]" height="50" width="100"
+                   src="{{agencyLogoPaths[country.countryId]}}" class="Charity__logo Face-to-face__item" alt="">
               <span *ngIf="agencyNames[country.countryId]">{{agencyNames[country.countryId]}}</span>
             </div>
 
-            <!--TODO-->
             <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-              <div class="Icon--md Icon__circle--transparent Icon--align-center Icon--alert Icon--b-{{alertLevelColours[country.countryId]}}"></div>
+              <div
+                class="Icon--md Icon__circle--transparent Icon--align-center Icon--alert Icon--b-{{alertLevelColours[country.countryId]}}"></div>
               <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
             </div>
 
@@ -88,11 +91,16 @@
               <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
             </div>
 
-            <!--TODO-->
             <div class="col-sm-2 col-6 Preparedness__agency-list__item">
               <div class="Icon">
-                <div class="Icon__circle Icon--align-center Icon--b-orange Icon--md"><i
-                  class="fa fa-ellipsis-h fa-inverse fa-2x" aria-hidden="true"></i></div>
+                <div *ngIf="overallAlertLevels[country.countryId] == AlertLevels.Red"
+                     class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[country.countryId]}} Icon--md">
+                  <i class="fa {{advStatusIcons[country.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                </div>
+                <div *ngIf="overallAlertLevels[country.countryId] != AlertLevels.Red"
+                     class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
+                  <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
+                </div>
               </div>
               <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
             </div>
