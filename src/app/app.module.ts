@@ -128,16 +128,16 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from './response-plans/view-plan/view-plan.component';
 import {DirectorMenuComponent} from './director/director-menu/director-menu.component';
 import {DirectorComponent} from './director/director.component';
-import { DirectorHeaderComponent } from './director/director-header/director-header.component';
-import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
-import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
-import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
-import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-profile/equipment/equipment.component";
-import { EquipmentService } from "./services/equipment.service";
-import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
-import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
-import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
-import { CoordinationArrangementService } from "./services/coordination-arrangement.service";
+import {DirectorHeaderComponent} from './director/director-header/director-header.component';
+import {DirectorOverviewComponent} from './director/director-overview/director-overview.component';
+import {ViewCountryMenuComponent} from './commons/view-country-menu/view-country-menu.component';
+import {AlertLoaderComponent} from './commons/alert-loader/alert-loader.component';
+import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-profile/equipment/equipment.component";
+import {EquipmentService} from "./services/equipment.service";
+import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {CoordinationArrangementService} from "./services/coordination-arrangement.service";
 import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
 import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
 import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
@@ -145,187 +145,191 @@ import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
+import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
+import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 
 export function HttpLoaderFactory(http: Http) {
-  return new TranslateHttpLoader(http);
+    return new TranslateHttpLoader(http);
 }
 
 // Must export the config
 export const firebaseConfig = {
-  apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-  authDomain: "alert-190fa.firebaseapp.com",
-  // authDomain: "test.alertplatform.co.uk",
-  databaseURL: "https://alert-190fa.firebaseio.com",
-  storageBucket: "alert-190fa.appspot.com",
-  messagingSenderId: "305491871378"
+    apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+    authDomain: "alert-190fa.firebaseapp.com",
+    // authDomain: "test.alertplatform.co.uk",
+    databaseURL: "https://alert-190fa.firebaseio.com",
+    storageBucket: "alert-190fa.appspot.com",
+    messagingSenderId: "305491871378"
 };
 
 const firebaseAuthConfig = {
-  provider: AuthProviders.Google,
-  method: AuthMethods.Redirect
+    provider: AuthProviders.Google,
+    method: AuthMethods.Redirect
 };
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    ResetPasswordComponent,
-    SystemAdminComponent,
-    DashboardComponent,
-    ResponsePlansComponent,
-    PreparednessComponent,
-    RiskMonitoringComponent,
-    CountryOfficeProfileComponent,
-    MapComponent,
-    DonorModuleComponent,
-    ForgotPasswordComponent,
-    AddAgencyComponent,
-    MessagesComponent,
-    SystemAdminMenuComponent,
-    MessagesCreateComponent,
-    MinPrepComponent,
-    MpaComponent,
-    CreateActionComponent,
-    CreateMpaActionComponent,
-    SystemSettingsComponent,
-    SystemAdminHeaderComponent,
-    CountryOfficeComponent,
-    CreateEditCountryComponent,
-    CreateEditMpaComponent,
-    SettingsMenuComponent,
-    CountryAdminSettingsMenuComponent,
-    CountryOfficeProfileMenuComponent,
-    CountryOfficePartnersComponent,
-    CountryOfficeEquipmentComponent,
-    CountryOfficeAddEditEquipmentComponent,
-    CountryOfficeAddEditSurgeEquipmentComponent,
-    CountryOfficeCoordinationComponent,
-    AgencyAdminMenuComponent,
-    DepartmentComponent,
-    SkillsComponent,
-    ModulesComponent,
-    ClockSettingsComponent,
-    DocumentsComponent,
-    NetworkComponent,
-    CreateEditNetworkComponent,
-    NotificationComponent,
-    CreateEditNotificationComponent,
-    StaffComponent,
-    CreateEditStaffComponent,
-    AgencyMpaComponent,
-    AgencyMessagesComponent,
-    CreateEditMessageComponent,
-    AgencyAdminHeaderComponent,
-    AccountSettingsComponent,
-    ChangePasswordComponent,
-    GlobalNetworksComponent,
-    CreateEditGlobalNetworkComponent,
-    CreateEditRegionComponent,
-    AddGenericActionComponent,
-    AgencyAccountSettingsComponent,
-    AgencyAccountDetailsComponent,
-    AgencyChangePasswordComponent,
-    AgencyAdminSettingsResponsePlanComponent,
-    SystemSettingsResponsePlansComponent,
-    SystemSettingsDocumentsComponent,
-    NewAgencyPasswordComponent,
-    NewAgencyDetailsComponent,
-    KeysPipe,
-    EnumKeysPipe,
-    EnumKeyValuesPipe,
-    KeyValuesPipe,
-    NewCountryDetailsComponent,
-    NewCountryPasswordComponent,
-    CountryAccountSettingsComponent,
-    CountryChangePasswordComponent,
-    CountryAdminHeaderComponent,
-    CountryAdminMenuComponent,
-    CountryMessagesComponent,
-    CountryCreateEditMessageComponent,
-    CountryPermissionSettingsComponent,
-    CountryModulesSettingsComponent,
-    CountryClockSettingsComponent,
-    CountryNotificationSettingsComponent,
-    CountryAddExternalRecipientComponent,
-    CountryStaffComponent,
-    CountryAddEditPartnerComponent,
-    CountryAddEditStaffComponent,
-    CreateEditResponsePlanComponent,
-    AddPartnerOrganisationComponent,
-    OrdinalPipe,
-    StatusAlertComponent,
-    AgencyNotificationsComponent,
-    MinimumPreparednessComponent,
-    AdvancedPreparednessComponent,
-    BudgetPreparednessComponent,
-    SelectPreparednessComponent,
-    CreateEditPreparednessComponent,
-    CreateAlertRiskMonitoringComponent,
-    AddIndicatorRiskMonitoringComponent,
-    AddHazardRiskMonitoringComponent,
-    AgencySubmenuComponent,
-    CountrySubmenuComponent,
-    AlertWidgetComponent,
-    CountryMyAgencyComponent,
-    MapCountriesListComponent,
-    ExportTestComponent,
-    DashboardSeasonalCalendarComponent,
-    DashboardUpdateAlertLevelComponent,
-    CountryAgenciesComponent,
-    ReviewResponsePlanComponent,
-    FacetofaceMeetingRequestComponent,
-    CountryStatisticsRibbonComponent,
-    ViewResponsePlanComponent,
-    ViewPlanComponent,
-    DirectorMenuComponent,
-    DirectorComponent,
-    DirectorHeaderComponent,
-    DirectorOverviewComponent,
-    ViewCountryMenuComponent,
-    AlertLoaderComponent,
-    DonorCountryIndexComponent,
-    DonorHeaderComponent,
-    DonorMenuComponent,
-    AlertLoaderComponent,
-    ExternalPartnerResponsePlan,
-    ReplacePipe,
-    CountryOfficeProgrammeComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-    AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
-    NgbModule.forRoot(),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [Http]
-      }
-    }),
-    ModalModule.forRoot(),
-    BootstrapModalModule,
-    DatepickerModule,
-    LocalStorageModule.withConfig({
-      prefix: 'my-app',
-      storageType: 'localStorage'
-    })
-  ],
-  providers: [
-              RxHelper,
-              Modal,
-              UserService,
-              SessionService,
-              CommonService,
-              SettingsService,
-              MessageService,
-              NotificationSettingsService,
-              NoteService,
-              EquipmentService,
-              CoordinationArrangementService],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        LoginComponent,
+        ResetPasswordComponent,
+        SystemAdminComponent,
+        DashboardComponent,
+        ResponsePlansComponent,
+        PreparednessComponent,
+        RiskMonitoringComponent,
+        CountryOfficeProfileComponent,
+        MapComponent,
+        DonorModuleComponent,
+        ForgotPasswordComponent,
+        AddAgencyComponent,
+        MessagesComponent,
+        SystemAdminMenuComponent,
+        MessagesCreateComponent,
+        MinPrepComponent,
+        MpaComponent,
+        CreateActionComponent,
+        CreateMpaActionComponent,
+        SystemSettingsComponent,
+        SystemAdminHeaderComponent,
+        CountryOfficeComponent,
+        CreateEditCountryComponent,
+        CreateEditMpaComponent,
+        SettingsMenuComponent,
+        CountryAdminSettingsMenuComponent,
+        CountryOfficeProfileMenuComponent,
+        CountryOfficePartnersComponent,
+        CountryOfficeEquipmentComponent,
+        CountryOfficeAddEditEquipmentComponent,
+        CountryOfficeAddEditSurgeEquipmentComponent,
+        CountryOfficeCoordinationComponent,
+        AgencyAdminMenuComponent,
+        DepartmentComponent,
+        SkillsComponent,
+        ModulesComponent,
+        ClockSettingsComponent,
+        DocumentsComponent,
+        NetworkComponent,
+        CreateEditNetworkComponent,
+        NotificationComponent,
+        CreateEditNotificationComponent,
+        StaffComponent,
+        CreateEditStaffComponent,
+        AgencyMpaComponent,
+        AgencyMessagesComponent,
+        CreateEditMessageComponent,
+        AgencyAdminHeaderComponent,
+        AccountSettingsComponent,
+        ChangePasswordComponent,
+        GlobalNetworksComponent,
+        CreateEditGlobalNetworkComponent,
+        CreateEditRegionComponent,
+        AddGenericActionComponent,
+        AgencyAccountSettingsComponent,
+        AgencyAccountDetailsComponent,
+        AgencyChangePasswordComponent,
+        AgencyAdminSettingsResponsePlanComponent,
+        SystemSettingsResponsePlansComponent,
+        SystemSettingsDocumentsComponent,
+        NewAgencyPasswordComponent,
+        NewAgencyDetailsComponent,
+        KeysPipe,
+        EnumKeysPipe,
+        EnumKeyValuesPipe,
+        KeyValuesPipe,
+        NewCountryDetailsComponent,
+        NewCountryPasswordComponent,
+        CountryAccountSettingsComponent,
+        CountryChangePasswordComponent,
+        CountryAdminHeaderComponent,
+        CountryAdminMenuComponent,
+        CountryMessagesComponent,
+        CountryCreateEditMessageComponent,
+        CountryPermissionSettingsComponent,
+        CountryModulesSettingsComponent,
+        CountryClockSettingsComponent,
+        CountryNotificationSettingsComponent,
+        CountryAddExternalRecipientComponent,
+        CountryStaffComponent,
+        CountryAddEditPartnerComponent,
+        CountryAddEditStaffComponent,
+        CreateEditResponsePlanComponent,
+        AddPartnerOrganisationComponent,
+        OrdinalPipe,
+        StatusAlertComponent,
+        AgencyNotificationsComponent,
+        MinimumPreparednessComponent,
+        AdvancedPreparednessComponent,
+        BudgetPreparednessComponent,
+        SelectPreparednessComponent,
+        CreateEditPreparednessComponent,
+        CreateAlertRiskMonitoringComponent,
+        AddIndicatorRiskMonitoringComponent,
+        AddHazardRiskMonitoringComponent,
+        AgencySubmenuComponent,
+        CountrySubmenuComponent,
+        AlertWidgetComponent,
+        CountryMyAgencyComponent,
+        MapCountriesListComponent,
+        ExportTestComponent,
+        DashboardSeasonalCalendarComponent,
+        DashboardUpdateAlertLevelComponent,
+        CountryAgenciesComponent,
+        ReviewResponsePlanComponent,
+        FacetofaceMeetingRequestComponent,
+        CountryStatisticsRibbonComponent,
+        ViewResponsePlanComponent,
+        ViewPlanComponent,
+        DirectorMenuComponent,
+        DirectorComponent,
+        DirectorHeaderComponent,
+        DirectorOverviewComponent,
+        ViewCountryMenuComponent,
+        AlertLoaderComponent,
+        DonorCountryIndexComponent,
+        DonorHeaderComponent,
+        DonorMenuComponent,
+        AlertLoaderComponent,
+        ExternalPartnerResponsePlan,
+        ReplacePipe,
+        CountryOfficeProgrammeComponent,
+        CountryOfficeEditProgrammeComponent,
+        AddEditMappingProgrammeComponent
+    ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+        AppRoutingModule,
+        AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
+        NgbModule.forRoot(),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [Http]
+            }
+        }),
+        ModalModule.forRoot(),
+        BootstrapModalModule,
+        DatepickerModule,
+        LocalStorageModule.withConfig({
+            prefix: 'my-app',
+            storageType: 'localStorage'
+        })
+    ],
+    providers: [
+        RxHelper,
+        Modal,
+        UserService,
+        SessionService,
+        CommonService,
+        SettingsService,
+        MessageService,
+        NotificationSettingsService,
+        NoteService,
+        EquipmentService,
+        CoordinationArrangementService],
+    bootstrap: [AppComponent]
 })
 
 export class AppModule {

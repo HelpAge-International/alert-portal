@@ -1,0 +1,98 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Back--button Spaced-above">
+            <a href="javascript:void(0)" (click)="backButton()">{{'COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.BACK_BUTTON'  | translate}}</a>
+        </div>
+        <div class="Header-title__wrap row">
+            <h1 class="col-sm-0">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SECTOR" | translate}}</h1>
+            <div class="col-sm-1 col-md-7 Right-aligned" *ngIf="programmeId">
+                <button href="#deleteMapping" data-toggle="modal" class="btn btn-danger cold-sm-1 text-uppercase">{{"GLOBAL.DELETE" | translate}}</button>
+            </div>
+        </div>
+
+        <div class="Spaced-above margin-left-minus-one">
+            <h6 class="text-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TITLE" | translate}}</h6>
+        </div>
+
+        <div class="row">
+            <div class="Item__selectable Icon__selectable" *ngFor="let sector of ResponsePlanSectorsList">
+                 <div (click)="isActive(sector)" [ngClass]="setSelectorClass(sector)" class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
+                <label>{{ResponsePlanSectors[sector] | translate}}</label>
+            </div>
+        </div>
+
+
+        <br>
+        <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHAT" | translate}}</h6></div>
+        <div class="row">
+            <textarea class="col-sm-7" rows="5" type="text" placeholder="Please enter" [(ngModel)]="programme.what"></textarea>
+        </div>
+        <br>
+        <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" | translate}}</h6></div>
+        <div class="row">
+            <input class="col-sm-4" type="text" placeholder="Please enter" [(ngModel)]="programme.where">
+        </div>
+        <br>
+        <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" | translate}}</h6></div>
+        <div class="row">
+            <input class="col-sm-4" type="text" placeholder="Please enter" [(ngModel)]="programme.toWho">
+        </div>
+        <br>
+        <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" | translate}}</h6></div>
+        <div class="row">
+            <div class="col-sm-3 padding-left-none">
+                <select class="form-control" id="select1" (change)="setMonth($event)" [(ngModel)]="when['month']">
+                    <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                    <option *ngFor="let m of MonthList" [value]="m">{{Month[m] | translate}}</option>
+                </select>
+            </div>
+            <div class="form-group-country-office-profile col-sm-2">
+                <select class="form-control" id="select1" (change)="setYear($event)" [(ngModel)]="when['year']">
+                    <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                    <option [value]="2017">2017</option>
+                    <option [value]="2018">2018</option>
+                    <option [value]="2019">2019</option>
+                    <option [value]="2020">2020</option>
+                    <option [value]="2021">2021</option>
+                </select>
+            </div>
+        </div>
+
+        <br><br><br>
+        <div class="row Spaced-above">
+            <button class="btn btn-primary text-uppercase col-sm-2" (click)="saveMapping()">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}</button>
+            <a class="padding-left-two margin-top-one" href="#">{{"GLOBAL.CANCEL" | translate}}</a>
+        </div>
+
+        <!--Delete 4W Mapping Modal-->
+        <div class="modal fade" id="deleteMapping" tabindex="-1" role="dialog" aria-labelledby="deleteMapping" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.MODAL_TITLE" | translate}}</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.MODAL_TEXT_PART_ONE" | translate}}
+                            <br>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.MODAL_TEXT_PART_TWO" | translate}}
+                        </p>
+                    </div>
+                    <div class="row Right-aligned Spaced col-sm-12">
+                        <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+                        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="deleteMapping()">{{"GLOBAL.CONFIRM" | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+

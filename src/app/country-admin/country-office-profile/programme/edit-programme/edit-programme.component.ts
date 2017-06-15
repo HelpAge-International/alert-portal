@@ -1,20 +1,20 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {RxHelper} from '../../../utils/RxHelper';
+import {RxHelper} from '../../../../utils/RxHelper';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {UserService} from "../../../services/user.service";
-import {Constants} from '../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType} from '../../../utils/Enums';
-import {AlertMessageModel} from '../../../model/alert-message.model';
+import {UserService} from "../../../../services/user.service";
+import {Constants} from '../../../../utils/Constants';
+import {ResponsePlanSectors, AlertMessageType} from '../../../../utils/Enums';
+import {AlertMessageModel} from '../../../../model/alert-message.model';
 import {AngularFire} from "angularfire2";
 declare var jQuery: any;
 
 @Component({
-    selector: 'app-country-office-programme',
-    templateUrl: './programme.component.html',
-    styleUrls: ['./programme.component.css']
+    selector: 'app-country-office-edit-programme',
+    templateUrl: './edit-programme.component.html',
+    styleUrls: ['./edit-programme.component.css']
 })
 
-export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
+export class CountryOfficeEditProgrammeComponent implements OnInit, OnDestroy {
 
     private alertMessageType = AlertMessageType;
     private alertMessage: AlertMessageModel = null;
@@ -37,6 +37,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     private sectorExpertise: any[] = [];
     private logContent: any[] = [];
     private noteTmp: any[] = [];
+    private TmpSectorExpertise: any[] = [];
 
     constructor(
         private subscriptions: RxHelper,
@@ -86,10 +87,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             });
     }
 
-    goToEditProgramme() {
-        this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
-    }
-
 
     _getProgramme() {
         let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID).subscribe((programms: any) => {
@@ -98,22 +95,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             var mapping = programms['4WMapping'];
             for (let m in mapping) {
                 mapping[m].key = m;
-                mapping[m].notes = [];
-                var notes = mapping[m].programmeNotes;
-                var arrayNotes = [];
-
-                for (let n in notes) {
-                    notes[n].key = n;
-                    arrayNotes.push(notes[n]);
-                }
-
-                arrayNotes.forEach((note, key) => {
-                    this.getUsers(note.uploadBy).subscribe((user: any) => {
-                        note.uploadByFullName = user.firstName + ' ' + user.lastName;
-                    });
-                });
-                arrayNotes = this._sortLogsByDate(arrayNotes);
-                mapping[m].notes = arrayNotes;
                 this.mapping.push(mapping[m]);
             }
 
@@ -122,8 +103,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
                 var obj = {key: parseInt(s), val: sectorExpertise[s]};
                 this.sectorExpertise.push(obj);
             }
-
-            console.log(this.mapping);
 
         });
         this.subscriptions.add(subscription);
@@ -188,6 +167,68 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         });
 
         return result;
+    }
+
+    backButton() {
+        this.router.navigate(['/country-admin/country-office-profile/']);
+    }
+
+    selectedSectors(event: any, sectorID: any) {
+
+        if (this.sectorExpertise && this.sectorExpertise.length > 0) {
+            this.sectorExpertise.forEach((val, key) => {
+                this.TmpSectorExpertise[val.key] = true;
+            });
+        }
+
+        var stateElement: boolean = true;
+
+        var className = event.srcElement.className;
+        const pattern = /.Selected/;
+
+        if (!pattern.test(className)) {
+            stateElement = false;
+        }
+
+        if (stateElement) {
+            this.TmpSectorExpertise[sectorID] = true;
+        } else {
+            if (this.TmpSectorExpertise && this.TmpSectorExpertise.length > 0) {
+                this.TmpSectorExpertise.forEach((val, key) => {
+                    if (key == sectorID) {
+                        delete this.TmpSectorExpertise[sectorID];
+                    }
+                });
+            }
+        }
+
+    }
+
+    saveSectors() {
+
+        if (!this.TmpSectorExpertise || !this.TmpSectorExpertise.length) {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
+            return false;
+        }
+
+        var dataToUpdate = this.TmpSectorExpertise;
+        this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
+            .set(dataToUpdate)
+            .then(_ => {
+                this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);
+            }).catch(error => {
+                console.log("Message creation unsuccessful" + error);
+            });
+    }
+
+    setSelectorClass(sectorID: any) {
+        var selected = '';
+        this.sectorExpertise.forEach((val, key) => {
+            if (val.key == sectorID) {
+                selected = 'Selected';
+            }
+        });
+        return selected;
     }
 
 }
