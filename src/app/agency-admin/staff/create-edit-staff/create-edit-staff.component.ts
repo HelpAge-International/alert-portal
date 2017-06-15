@@ -228,67 +228,70 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   }
 
-  validateForm() {
+  validateForm():boolean {
     console.log("validate form");
     if (!this.title) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_TITLE";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.firstName) {
+    else if (!this.firstName) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_FIRST_NAME";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.lastName) {
+    else if (!this.lastName) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_LAST_NAME";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.userType) {
+    else if (!this.userType) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_USER_TYPE";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.region && !this.hideRegion) {
+    else if (!this.region && !this.hideRegion) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_REGION";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.countryOffice && !this.hideCountry) {
+    else if (!this.countryOffice && !this.hideCountry) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_COUNTRY_OFFICE";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.department) {
+    else if (!this.department) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_DEPARTMENT";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.position) {
+    else if (!this.position) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_POSITION";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.officeType) {
+    else if (!this.officeType) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_OFFICE_TYPE";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.email) {
+    else if (!this.email) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_EMAIL";
       this.showAlert();
-      return;
+      return false;
     }
-    if (!this.phone) {
+    else if (!this.phone) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_PHONE";
       this.showAlert();
-      return;
+      return false;
     }
-    if (typeof (this.isResponseMember) == "undefined") {
+    else if (typeof (this.isResponseMember) == "undefined") {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_REPONSE_TEAM_ANSWER";
       this.showAlert();
-      return;
+      return false;
+    }
+    else {
+      return true;
     }
   }
 
@@ -297,6 +300,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (!CustomerValidator.EmailValidator(this.email)) {
       this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
+      return;
+    }
+    if (!this.validateForm()) {
       return;
     }
     console.log("submit");
