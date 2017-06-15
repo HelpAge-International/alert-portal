@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExportTestComponent } from './export-test.component';
+import { DonorListViewComponent } from './donor-list-view.component';
 
-describe('ExportTestComponent', () => {
-  let component: ExportTestComponent;
-  let fixture: ComponentFixture<ExportTestComponent>;
+describe('DonorListViewComponent', () => {
+  let component: DonorListViewComponent;
+  let fixture: ComponentFixture<DonorListViewComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExportTestComponent ]
+      declarations: [ DonorListViewComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExportTestComponent);
+    fixture = TestBed.createComponent(DonorListViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

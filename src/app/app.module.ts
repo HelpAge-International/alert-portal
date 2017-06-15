@@ -101,7 +101,7 @@ import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
-import {ExportTestComponent} from './export-test/export-test.component';
+import {ExportStartFundComponent} from './export-start-fund/export-start-fund.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {AgencySubmenuComponent} from './preparedness/agency-submenu/agency-submenu.component';
@@ -145,10 +145,15 @@ import {DonorCountryIndexComponent} from './donor-module/donor-country-index/don
 import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
 import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
+import {DonorListViewComponent} from './donor-module/donor-list-view/donor-list-view.component';
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { StockService } from "./services/stock.service";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
+import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
+import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -275,7 +280,7 @@ const firebaseAuthConfig = {
     AlertWidgetComponent,
     CountryMyAgencyComponent,
     MapCountriesListComponent,
-    ExportTestComponent,
+    ExportStartFundComponent,
     DashboardSeasonalCalendarComponent,
     DashboardUpdateAlertLevelComponent,
     CountryAgenciesComponent,
@@ -295,7 +300,13 @@ const firebaseAuthConfig = {
     DonorMenuComponent,
     AlertLoaderComponent,
     ExternalPartnerResponsePlan,
-    ReplacePipe
+    ReplacePipe,
+    CountryOfficeProgrammeComponent,
+    DonorListViewComponent,
+    ReplacePipe,
+    ProjectNarrativeComponent,
+    ProjectBudgetComponent,
+    ProjectReportComponent
   ],
   imports: [
     BrowserModule,

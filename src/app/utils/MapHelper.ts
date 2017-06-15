@@ -1,22 +1,13 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
-import {RxHelper} from "../utils/RxHelper";
 import {} from '@types/googlemaps';
-import {ModelAdministratorCountry} from "../model/administrator.country.model";
-import {ModelCountryOffice} from "../model/countryoffice.model";
-import {ModelHazard} from "../model/hazard.model";
-import {Countries, HazardScenario} from "../utils/Enums";
+import {Countries} from "../utils/Enums";
 import {HazardImages} from "../utils/HazardImages";
 import Marker = google.maps.Marker;
-import {FirebaseWrapper, SubscriptionHandler} from "./SubscriptionHandler";
-import {forEach} from "@angular/router/src/utils/collection";
 import {ModelAgency} from "../model/agency.model";
 import Geocoder = google.maps.Geocoder;
 import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
-import {current} from "codelyzer/util/syntaxKind";
 import {ModelSystem} from "../model/system.model";
 import {ModelRegion} from "../model/region.model";
 import {Subject} from "rxjs/Subject";
@@ -33,6 +24,7 @@ export class SuperMapComponents {
   public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
+  public agencyAdminId: string;
 
   private geocoder: google.maps.Geocoder;
 
@@ -184,16 +176,17 @@ export class SuperMapComponents {
   public getDepsForAllCountries(uid: string, folder: string, funct: (holder: SDepHolder[]) => void) {
     this.mDepCounter = 0;
     this.mDepHolder = [];
-    this.getCountryOffice(uid, folder)
+    this.getCountryOfficePreserveSnapshot(uid, folder)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
-        for (let r of result) {
+        this.agencyAdminId = result.key;
+        for (let x in result.val()) {
           this.mDepCounter++;
           this.mDepHolder = [];
-          this.getDepForCountry(uid, folder, r.location, (holder) => {
+          this.getDepForCountry(uid, folder, result.val()[x].location, (holder) => {
             holder = this.processDepHolder(holder, 1);
             this.getDepsForAllCountriesCounterMethod(holder, funct);
-          })
+          });
         }
       });
   }
@@ -282,6 +275,9 @@ export class SuperMapComponents {
   private getCountryOffice(uid: string, agencyAdminRefFolder: string) {
     return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
   }
+  private getCountryOfficePreserveSnapshot(uid: string, agencyAdminRefFolder: string) {
+    return this.fbgetObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "countryOffice");
+  }
   private fbgetAdministratorAgency(uid: string, agencyAdminRefFolder: string) {
     return this.fbgetListBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "administratorAgency");
   }
@@ -314,7 +310,6 @@ export class SuperMapComponents {
         return this.af.database.list(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin)
       });
   }
-
 
   /**
    * Get system admin id firebase handler

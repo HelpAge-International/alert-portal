@@ -20,8 +20,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private alertLevel: AlertLevels;
   private alertTitle: string;
 
-  // TODO - Check when other users are implemented
-  // private USER_TYPE: string = 'administratorCountry';
   private USER_TYPE: string;
 
   private uid: string;
@@ -40,7 +38,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private isAnonym: boolean = false;
 
   constructor(private af: AngularFire, private router: Router, private alertService: ActionsService, private userService: UserService) {
-
   }
 
     ngOnInit() {

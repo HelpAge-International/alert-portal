@@ -70,7 +70,7 @@ import {SelectPreparednessComponent} from "./preparedness/select/select.componen
 import {CreateEditPreparednessComponent} from "./preparedness/create-edit/create-edit.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
-import {ExportTestComponent} from "./export-test/export-test.component";
+import {ExportStartFundComponent} from "./export-start-fund/export-start-fund.component";
 
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
@@ -96,9 +96,11 @@ import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-pr
 import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-view.component";
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -197,6 +199,7 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
+  {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
   {
     path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
     component: CountryOfficeAddEditEquipmentComponent
@@ -278,13 +281,14 @@ const routes: Routes = [
   /**
    * Donor
    */
-  {path: 'donor', component: DonorModuleComponent},
-  {path: 'donor/donor-country-index', component: DonorCountryIndexComponent},
+  {path: 'donor-module', component: DonorModuleComponent},
+  {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
+  {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
 
-  /*
-   * test
+  /**
+   * Response plan exporting
    * */
-  {path: 'export', component: ExportTestComponent}
+  {path: 'export-start-fund', component: ExportStartFundComponent}
 
 ];
 
