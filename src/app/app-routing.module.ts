@@ -96,6 +96,7 @@ import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-pr
 import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-view.component";
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
@@ -278,8 +279,9 @@ const routes: Routes = [
   /**
    * Donor
    */
-  {path: 'donor', component: DonorModuleComponent},
-  {path: 'donor/donor-country-index', component: DonorCountryIndexComponent},
+  {path: 'donor-module', component: DonorModuleComponent},
+  {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
+  {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
 
   /*
    * test

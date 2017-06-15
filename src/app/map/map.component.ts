@@ -2,13 +2,10 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {RxHelper} from "../utils/RxHelper";
 import {Countries} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
-import {unescapeIdentifier} from "@angular/compiler";
-import {Subscription} from "rxjs/Subscription";
 declare var jQuery: any;
 
 @Component({
@@ -75,12 +72,14 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.minThreshYellow = this.mapHelper.minThreshYellow;
                 this.minThreshGreen = this.mapHelper.minThreshGreen;
                 this.mDepartmentMap.forEach((value, key) => {
+                  console.log(value);
                   this.departments.push(value);
                 });
               },
               (mapCountryClicked) => {
                 if (this.mDepartmentMap != null) {
                   this.openMinimumPreparednessModal(mapCountryClicked);
+                  console.log(this.mDepartmentMap.get(mapCountryClicked).countryId);
                 }
                 else {
                   console.log("TODO: Map is yet to initialise properly / it failed to do so");

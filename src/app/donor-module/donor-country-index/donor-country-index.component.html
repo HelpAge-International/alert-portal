@@ -3,24 +3,26 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
+    <div class="Back--button row Spaced-above" routerLink="/donor-module">{{"HEADERS.GLOBAL_MAP" | translate}}</div>
     <div class="Header-title__wrap">
-      <h1>Philippines</h1>
+      <h1 *ngIf="countryToShow">{{"GLOBAL.COUNTRIES." + Countries[countryToShow.location] | translate}}</h1>
     </div>
 
     <div class="Bordered-box light-grey padding-one col-sm-4 Spaced-above">
       <div class="row margin-left-two">
-        <div class="col-sm-6 text-center padding-one">
-          <i class="Icon__square--transparent  Icon__country--philippines Icon--lg"></i>
+        <div *ngIf="countryToShow" class="col-sm-6 text-center padding-one">
+          <i class="Icon__square--transparent  Icon__country--{{Countries[countryToShow.location]}} Icon--lg"></i>
           <div class="Spaced-above">
             <b>
-              <p>Philippines (PH)</p>
+              <p>{{"GLOBAL.COUNTRIES." + Countries[countryToShow.location] | translate}}
+                ({{Countries[countryToShow.location]}})</p>
             </b>
           </div>
         </div>
 
         <div class="text-center padding-one col-sm-6">
           <div class="Icon__circle Icon--blue Icon--lg">
-            <h1 class="margin-top-one">10</h1>
+            <h1 class="margin-top-one">{{countryOffices.length}}</h1>
           </div>
           <div class="margin-top-three">
             <b>
@@ -46,44 +48,68 @@
 
     <div class="Ribbon__section__wrap Spaced">
 
-      <div class="Accordion Preparedness__agency-list">
-        <div class="row">
-          <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right">
-            <div class="Icon--md Icon--align-center Icon__donors--ocha"></div>
-            <span>OCHA</span>
-          </div>
-          <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-            <div class="Icon--md Icon__circle--transparent Icon--align-center Icon--alert Icon--b-red"></div>
-            <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
-          </div>
-          <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-            <div class="Icon">
-              <div class="Icon__circle Icon--align-center Icon--blue Icon--md">9</div>
+      <div *ngIf="countryOffices.length == 0" class="My-Tasks container-fluid">
+        <div class="Empty--ribbon">{{"DIRECTORS.NO_COUNTRIES_TO_SHOW" | translate}}</div>
+      </div>
+
+      <div *ngIf="countryOffices.length > 0">
+        <div *ngFor="let country of countryOffices" class="Accordion Preparedness__agency-list">
+          <div class="row">
+
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item border-center">
+              <!--<div class="Icon&#45;&#45;md Icon&#45;&#45;align-center Icon__donors&#45;&#45;default"></div>-->
+              <div *ngIf="!agencyLogoPaths[country.countryId]" class="Icon--md Icon--align-center Icon__donors--default"></div>
+              <!--<div class="Agency-logo" [style.background-image]="agencyLogoPaths[country.countryId] ? 'url(' + agencyLogoPaths[country.countryId] + ')' : 'url(assets/images/alert_logo--grey.svg)'"></div>-->
+              <img *ngIf="agencyLogoPaths[country.countryId]" height="50" width="100" src="{{agencyLogoPaths[country.countryId]}}" class="Charity__logo Face-to-face__item" alt="">
+              <span *ngIf="agencyNames[country.countryId]">{{agencyNames[country.countryId]}}</span>
             </div>
-            <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.RESPONSE_PLANS" | translate}}</span>
-          </div>
-          <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-            <div class="Icon">
-              <div class="Icon__circle Icon--align-center Icon--b-green Icon--md"><i
-                class="fa fa-check fa-inverse fa-2x" aria-hidden="true"></i></div>
+
+            <!--TODO-->
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+              <div class="Icon--md Icon__circle--transparent Icon--align-center Icon--alert Icon--b-red"></div>
+              <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
             </div>
-            <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
-          </div>
-          <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-            <div class="Icon">
-              <div class="Icon__circle Icon--align-center Icon--b-orange Icon--md"><i
-                class="fa fa-ellipsis-h fa-inverse fa-2x" aria-hidden="true"></i></div>
+
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+              <div class="Icon">
+                <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
+                  {{countResponsePlans[country.countryId] ? countResponsePlans[country.countryId] : 0}}
+                </div>
+              </div>
+              <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
             </div>
-            <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
-          </div>
-          <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-            <div class="Icon">
-              <div class="Icon__circle Icon--align-center Icon--blue Icon--md">94%</div>
+
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+              <div class="Icon">
+                <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[country.countryId]}} Icon--md">
+                  <i class="fa {{mpaStatusIcons[country.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
+                </div>
+              </div>
+              <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
             </div>
-            <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+
+            <!--TODO-->
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+              <div class="Icon">
+                <div class="Icon__circle Icon--align-center Icon--b-orange Icon--md"><i
+                  class="fa fa-ellipsis-h fa-inverse fa-2x" aria-hidden="true"></i></div>
+              </div>
+              <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
+            </div>
+
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+              <div class="Icon">
+                <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
+                  {{percentageCHS[country.countryId]}}%
+                </div>
+              </div>
+              <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+            </div>
+
           </div>
         </div>
       </div>
+
     </div>
 
   </div>

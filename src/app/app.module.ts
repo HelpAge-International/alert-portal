@@ -145,6 +145,7 @@ import {DonorCountryIndexComponent} from './donor-module/donor-country-index/don
 import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
 import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
+import {DonorListViewComponent} from './donor-module/donor-list-view/donor-list-view.component';
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { StockService } from "./services/stock.service";
@@ -295,6 +296,7 @@ const firebaseAuthConfig = {
     DonorMenuComponent,
     AlertLoaderComponent,
     ExternalPartnerResponsePlan,
+    DonorListViewComponent,
     ReplacePipe
   ],
   imports: [
