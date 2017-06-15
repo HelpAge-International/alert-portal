@@ -1104,7 +1104,56 @@
             "NO_NOTE": "Note cannot be empty!",
             "SUCCESS_SAVE_NOTE": "You successfully added new note!",
             "SUCCESS_EDIT_NOTE": "Note Successfully updated!",
-            "SUCCESS_DELETE_NOTE": "Note Successfully deleted!"
+            "SUCCESS_DELETE_NOTE": "Note Successfully deleted!",
+            "SAVE_SELECTORS": "Please select at least one sector!",
+            "SUCCESS_SAVE_SELECTORS": "You successfully updated expertise sectors",
+            "NO_SECTOR": "Sector cannot be empty!",
+            "NO_WHAT": "Field What cannot be empty!",
+            "NO_TO_WHO": "Field To Who cannot be empty",
+            "NO_WHEN": "Field When cannot be empty!",
+            "NO_WHERE": "Field Where cannot be empty!",
+            "SUCCESS_SAVE_MAPPING": "You sucessfully added new 4W mapping programme",
+            "SUCCESS_EDIT_MAPPING": "You successfully updated 4W mapping programme",
+            "EDIT_MAPPING": {
+              "BACK_BUTTON": "Edit Programme",
+              "TITLE": "Edit 4W mapping",
+              "SECTOR": "Sector",
+              "WHAT": "What",
+              "WHERE": "Where",
+              "TO_WHO": "To Who",
+              "WHEN": "When",
+              "SAVE_CHANGES": "Save Changes",
+              "MODAL_TITLE": "Delete this 4W Mapping?",
+              "MODAL_TEXT_PART_ONE": "Are you sure you want to delete this 4W Mapping?",
+              "MODAL_TEXT_PART_TWO": "This action cannot be undone"
+            },
+            "EDIT_PROGRAMME": {
+              "BACK_BUTTON": "Country Office Profile",
+              "TITLE": "Edit Programme",
+              "MODAL_EDIT_SECTOR_TITLE": "Sector Expertise Selection"
+            },
+            "TITLE": "Programme",
+            "COMMON": {
+              "SECTOR_EXPERTISE": "Sector expertise",
+              "4WMAPPING": "4W Mapping",
+              "NO_SECTOR_SELECTED": "No sector expertise selected",
+              "NO_4WMAPPING" : "Use the edit programme button to enter your 4W mapping",
+              "TABLE_SECTOR": "Sector",
+              "TABLE_WHAT": "What",
+              "TABLE_WHERE": "Where",
+              "TABLE_TO_WHO": "To Who",
+              "TABLE_WHEN": "When",
+              "TABLE_UPDATED": "Updated"
+            },
+            "NOTE": "Note",
+            "ADD_NOTE": "Add note",
+            "MODALS": {
+              "EDIT_NOTE_MODAL_TITLE": "Edit note",
+              "DELETE_NOTE_MODAL_TITLE": "Delete this note?",
+              "DELETE_NOTE_TEXT_PART_ONE": "Are you sure you want to delete this note?",
+              "DELETE_NOTE_TEXT_PART_TWO": "This action cannot be undone"
+            },
+            "EDIT_PROGRAMME_BUTTON" : "Edit Programme"
           }
         },
         "VIEW_MY_AGENCY": {
@@ -1647,5 +1696,19 @@
             "SUCCESS_MESSAGE_APPROVE": "You successfully approved this response plan.",
             "SUCCESS_MESSAGE_REJECT": "You successfully rejected this response plan."
         }
+    },
+    "MONTH": {
+        "JANUARY": "January",
+        "FEBRUARY": "February",
+        "MARCH": "March",
+        "APRIL": "April",
+        "MAY": "May",
+        "JUNE": "June",
+        "JULY": "July",
+        "AUGUST": "August",
+        "SEPTEMBER": "September",
+        "OCTOBER": "October",
+        "NOVEMBER": "November",
+        "DECEMBER": "December"
     }
 }

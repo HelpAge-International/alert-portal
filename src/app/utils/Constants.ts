@@ -570,6 +570,23 @@ export class Constants {
   static EQUIPMENT_NODE = '/countryOfficeProfile/equipment/{countryId}/{id}/notes';
   static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
   static STOCK_CAPACITY_NODE = '/countryOffice/{agencyId}/{countryId}/{id}/notes';
+
+  static MONTH = [
+    null,
+    "MONTH.JANUARY",
+    "MONTH.FEBRUARY",
+    "MONTH.MARCH",
+    "MONTH.APRIL",
+    "MONTH.MAY",
+    "MONTH.JUNE",
+    "MONTH.JULY",
+    "MONTH.AUGUST",
+    "MONTH.SEPTEMBER",
+    "MONTH.OCTOBER",
+    "MONTH.NOVEMBER",
+    "MONTH.DECEMBER",
+  ];
+
 }
 
 export enum FILE_SETTING {
