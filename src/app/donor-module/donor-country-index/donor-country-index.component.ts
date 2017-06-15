@@ -30,6 +30,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private agencyNames: string[] = [];
   private agencyLogoPaths: string[] = [];
 
+  private AlertLevels = AlertLevels;
   private overallAlertLevels: any = [];
   private alertLevelColours: any = [];
   private countResponsePlans: any = [];
@@ -63,8 +64,6 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
             if (params["countryId"]) {
               this.countryIdReceived = params["countryId"];
               this.agencyIdReceived = params["agencyId"];
-              console.log(this.countryIdReceived);
-              console.log(this.agencyIdReceived);
               this.loadData();
             }
           });
@@ -98,19 +97,20 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     this.getCountry();
 
     this.getAgencyID().then(() => {
-      this.getCountryOfficesWithSameLocationsInOtherAgencies();
-      this.getResponsePlans();
-      this.getSystemAdminID().then(() => {
-        this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
-          this.minTreshold = minTreshold;
+      this.getCountryOfficesWithSameLocationsInOtherAgencies().then(_ => {
+        this.setupAlertLevelColours();
+        this.getResponsePlans();
+        this.getSystemAdminID().then(() => {
+          this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
+            this.minTreshold = minTreshold;
+          });
+          this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
+            this.advTreshold = advTreshold;
+          });
+        }).then(() => {
+          this.getAllActions();
         });
-        this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
-          this.advTreshold = advTreshold;
-        });
-      }).then(() => {
-        this.getAllActions();
       });
-      // });
     });
   }
 
@@ -154,39 +154,45 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private getCountryOfficesWithSameLocationsInOtherAgencies() {
     this.countryOffices = [];
     this.countryIDs = [];
+    this.overallAlertLevels = [];
     this.agencyNames = [];
     this.agencyLogoPaths = [];
 
-    let promise = this.agencyService.getAllCountryOffices()
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(agencies => {
-        agencies = agencies.filter(agency => agency.$key != this.agencyIdReceived);
-        agencies.forEach(agency => {
-          let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
-            let temp = agency[key];
-            temp["countryId"] = key;
-            return temp;
+    let promise = new Promise((res, rej) => {
+      this.agencyService.getAllCountryOffices()
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencies => {
+          agencies = agencies.filter(agency => agency.$key != this.agencyIdReceived);
+          agencies.forEach(agency => {
+            let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
+              let temp = agency[key];
+              temp["countryId"] = key;
+              return temp;
+            });
+            countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
+            if (countries.length > 0) {
+
+              // Ideally, an agency should only have one country office per country
+              this.countryOffices.push(countries[0]);
+              console.log('countries[0]');
+              console.log(countries[0]);
+              console.log(countries[0].alertLevel);
+              this.countryIDs.push(countries[0].countryId);
+              this.overallAlertLevels[countries[0].countryId] = countries[0].alertLevel;
+
+              this.agencyService.getAgency(agency.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => {
+                  this.agencyNames[countries[0].countryId] = agency.name;
+                  if (agency.logoPath) {
+                    this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
+                  }
+                });
+              res(true);
+            }
           });
-          countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
-          if (countries.length > 0) {
-
-            // Ideally, an agency should only have one country office per country
-            this.countryOffices.push(countries[0]);
-            this.countryIDs.push(countries[0].countryId);
-
-            this.agencyService.getAgency(agency.$key)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agency => {
-                console.log(agency.logoPath);
-
-                this.agencyNames[countries[0].countryId] = agency.name;
-                if (agency.logoPath) {
-                  this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
-                }
-              });
-          }
         });
-      });
+    });
     return promise;
   }
 
@@ -325,6 +331,22 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     return promise;
   }
 
+  private setupAlertLevelColours() {
+
+    for (let country in this.overallAlertLevels) {
+      if (this.overallAlertLevels[country] == AlertLevels.Green) {
+        this.alertLevelColours[country] = 'green';
+      } else if (this.overallAlertLevels[country] == AlertLevels.Amber) {
+        this.alertLevelColours[country] = 'orange';
+      } else if (this.overallAlertLevels[country] == AlertLevels.Red) {
+        this.alertLevelColours[country] = 'red';
+      } else {
+        this.alertLevelColours[country] = 'grey'; // Default
+      }
+    }
+    console.log(this.overallAlertLevels);
+  }
+
   private getActionsBySystemAdmin() {
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminId)
@@ -335,6 +357,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     });
     return promise;
   }
+
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
