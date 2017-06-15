@@ -15,15 +15,17 @@ import {AgencyService} from "../../services/agency-service.service";
 
 export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
+  private loaderInactive: boolean;
+
   private countryIdReceived: string;
   private agencyIdReceived: string;
-
-  private countryToShow: any;
-  private Countries = Countries;
 
   private uid: string;
   private agencyId: string;
   private systemAdminId: string;
+
+  private countryToShow: any;
+  private Countries = Countries;
 
   private numOfCountryOffices: number = 0;
 
@@ -94,36 +96,47 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
    */
   private loadData() {
 
-    this.getCountry();
+    this.getCountry().then(() => {
+      this.getAgencyID().then(() => {
+        this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
 
-    this.getAgencyID().then(() => {
-      this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
-        this.setupAlertLevelColours();
-        this.getResponsePlans();
-        this.getSystemAdminID().then(() => {
-          this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
-            this.minTreshold = minTreshold;
-          });
-          this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
-            this.advTreshold = advTreshold;
-          });
-        }).then(() => {
-          this.getAllActions();
+          if (this.countryOffices.length > 0) {
+
+            this.setupAlertLevelColours();
+            this.getResponsePlans();
+            this.getSystemAdminID().then(() => {
+              this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
+                this.minTreshold = minTreshold;
+              });
+              this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
+                this.advTreshold = advTreshold;
+              });
+            }).then(() => {
+              this.getAllActions().then(_ => {
+                this.loaderInactive = true;
+              });
+            });
+          } else {
+            this.loaderInactive = true;
+          }
+
         });
       });
     });
   }
 
   private getCountry() {
-
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyIdReceived + "/" + this.countryIdReceived)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((country) => {
-        if (country) {
-          this.countryToShow = country;
-          console.log(this.countryToShow);
-        }
-      });
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyIdReceived + "/" + this.countryIdReceived)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((country) => {
+          if (country) {
+            this.countryToShow = country;
+            res(true);
+          }
+        });
+    });
+    return promise;
   }
 
   private getAgencyID() {
@@ -194,7 +207,6 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
                       this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
                     }
                   });
-                res(true);
 
               } else {
 
@@ -214,9 +226,9 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
                       }
                     });
                 }
-                res(true);
               }
             }
+            res(true);
           });
         });
     });

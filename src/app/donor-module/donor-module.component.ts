@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {Countries} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
@@ -14,9 +14,13 @@ declare var jQuery: any;
   styleUrls: ['./donor-module.component.css']
 })
 
+// TODO  - Notifications
+
 export class DonorModuleComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  private loaderInactive: boolean;
 
   public uid: string;
   public mapHelper: SuperMapComponents;
@@ -25,15 +29,13 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   private agencyMap: Map<string, string> = new Map<string, string>();
   private departments: SDepHolder[];
 
-  public agencyLogo: string;
-
   public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
 
   private userTypePath: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
+  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
 
@@ -66,6 +68,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
                 this.mDepartmentMap.forEach((value, key) => {
                   this.departments.push(value);
                 });
+                this.loaderInactive = true;
               },
               (mapCountryClicked) => {
                 if (this.mDepartmentMap != null) {
@@ -77,18 +80,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
                 }
               }
             );
-
-            /** Load in the markers on the map! */
-            this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (marker) => {
-              marker.setMap(this.mapHelper.map);
-            });
-
-            /** Get the Agency logo */
-            this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (logo) => {
-              this.agencyLogo = logo;
-              console.log(this.uid, Constants.USER_PATHS[usertype]);
-            });
-
           });
 
 

@@ -16,7 +16,7 @@ import {UserService} from "../../services/user.service";
 
 export class DonorListViewComponent implements OnInit, OnDestroy {
 
-  private loaderInactive: boolean = true;
+  private loaderInactive: boolean;
 
   private uid: string;
   private agencyId: string;
@@ -60,11 +60,6 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-    console.log("In List View");
-
-    //set initial loader status
-    this.loaderInactive = false;
 
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
@@ -144,8 +139,9 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
     this.getAllRegionsAndCountries();
     this.setupAlertLevelColours();
     this.getResponsePlans();
-    this.getThresholds();
-    this.loaderInactive = true;
+    this.getThresholds().then(_ => {
+      this.loaderInactive = true;
+    });
   }
 
   private getAllRegionsAndCountries() {
@@ -268,14 +264,18 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
 
   private getThresholds() {
 
-    this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
-      this.minTreshold = minTreshold;
-      this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
-        this.advTreshold = advTreshold;
-        this.getAllActions();
+    let promise = new Promise((res, rej) => {
+      this.getSystemThreshold('minThreshold').then((minTreshold: any) => {
+        this.minTreshold = minTreshold;
+        this.getSystemThreshold('advThreshold').then((advTreshold: any) => {
+          this.advTreshold = advTreshold;
+          this.getAllActions().then(_ => {
+            res(true);
+          });
+        });
       });
     });
-
+    return promise;
   }
 
   private getSystemThreshold(tresholdType: string) {

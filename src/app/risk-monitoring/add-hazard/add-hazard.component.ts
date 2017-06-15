@@ -244,9 +244,9 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-    setHazardValue(event: any) {
-        this._checkHazard(event.target.value);
-        this.hazardData.hazardScenario = event.target.value;
+  setHazardValue(event: any) {
+    this._checkHazard(event.target.value);
+    this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;
     if (this.hazardData.hazardScenario == 'Other') {
