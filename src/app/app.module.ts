@@ -154,6 +154,7 @@ import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/p
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
+import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -305,7 +306,8 @@ const firebaseAuthConfig = {
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
     ProjectReportComponent,
-    BudgetReportComponent
+    BudgetReportComponent,
+    ProjectActivitiesComponent
   ],
   imports: [
     BrowserModule,
