@@ -153,6 +153,7 @@ import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/coun
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
+import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -303,7 +304,8 @@ const firebaseAuthConfig = {
     ReplacePipe,
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
-    ProjectReportComponent
+    ProjectReportComponent,
+    BudgetReportComponent
   ],
   imports: [
     BrowserModule,
