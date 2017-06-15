@@ -70,7 +70,7 @@ import {SelectPreparednessComponent} from "./preparedness/select/select.componen
 import {CreateEditPreparednessComponent} from "./preparedness/create-edit/create-edit.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
-import {ExportTestComponent} from "./export-test/export-test.component";
+import {ExportStartFundComponent} from "./export-start-fund/export-start-fund.component";
 
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
@@ -283,10 +283,10 @@ const routes: Routes = [
   {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
   {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
 
-  /*
-   * test
+  /**
+   * Response plan exporting
    * */
-  {path: 'export', component: ExportTestComponent}
+  {path: 'export-start-fund', component: ExportStartFundComponent}
 
 ];
 
