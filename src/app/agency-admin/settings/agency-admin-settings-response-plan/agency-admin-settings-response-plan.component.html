@@ -1,53 +1,62 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
+                  (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
+  <div class="Full-page__wrap--inner">
 
-		<app-settings-menu></app-settings-menu>
+    <app-settings-menu></app-settings-menu>
 
 
-
-        <div class="Sub-header-title__wrap">
-            <h2>Response Plan Settings</h2>
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">Cancel</button>
-            <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">Save Response Plan Settings</button>
-        </div>
-        <h4 class="System-admin--form-wrap">Sections selection</h4>
-        <div class="row Small-spaced align-items-center Header no-gutters">
-            <div class="col-lg-9 col-md-9 col-sm-6 col-6">Sections</div>
-            <div class="col-lg-3 col-md-3 col-sm-6 col-6">Status</div>
-        </div>
-
-        <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let section of sections">
-            <div class="col-lg-1 col-md-1 col-sm-1 col-1 text-center">{{section.$key | ordinal}}.</div>
-            <div class="col-lg-8 col-md-8 col-sm-5 col-5">{{RESPONSE_PLANS_SECTION_SETTINGS[section.$key] | translate}}</div>
-            <div class="col-lg-3 col-md-3 col-sm-6 col-6">
-                <div class="btn btn_fixed_width" 
-                        [ngClass]="{'btn-success': section.$value == true, 'btn-outline-success': section.$value == false}" 
-                        (click)="changeStatus(section.$key, true)">Enabled</div>
-                <div class="btn btn_fixed_width" 
-                        [ngClass]="{'btn-danger': section.$value == false, 'btn-outline-danger': section.$value == true}" 
-                        (click)="changeStatus(section.$key, false)">Disabled</div>
-            </div>
-        </div>
-        <h4 class="System-admin--form-wrap">Approval Hierarchy</h4>
-        <div class="row Small-spaced align-items-center Header no-gutters">
-            <div class="col-lg-9 col-md-9 col-sm-6 col-6">User type</div>
-            <div class="col-lg-3 col-md-3 col-sm-6 col-6">Required</div>
-        </div>
-        <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let approval of approvals">
-            <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 0">Regional Director</div>
-            <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 1">Global Director</div>
-            <div class="col-lg-3 col-md-3 col-sm-6 col-6">
-                <div class="btn btn-outline-success btn_fixed_width"
-                        [ngClass]="{'btn-success': approval.$value == true, 'btn-outline-success': approval.$value == false}" 
-                        (click)="changeApproval(approval.$key, true)">Yes</div>
-                <div class="btn btn-danger btn_fixed_width" 
-                        [ngClass]="{'btn-danger': approval.$value == false, 'btn-outline-danger': approval.$value == true}" 
-                        (click)="changeApproval(approval.$key, false)">No</div>
-            </div>
-        </div>
+    <div class="Sub-header-title__wrap">
+      <h2>Response Plan Settings</h2>
+      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">Cancel
+      </button>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">Save Response Plan
+        Settings
+      </button>
     </div>
+    <h4 class="System-admin--form-wrap">Sections selection</h4>
+    <br>
+    <div class="row Small-spaced align-items-center Header no-gutters">
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6">Sections</div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">Status</div>
+    </div>
+
+    <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let section of sections">
+      <div class="col-lg-1 col-md-1 col-sm-1 col-1 text-center">{{section.$key | ordinal}}.</div>
+      <div class="col-lg-8 col-md-8 col-sm-5 col-5">{{RESPONSE_PLANS_SECTION_SETTINGS[section.$key] | translate}}</div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">
+        <div class="btn btn_fixed_width"
+             [ngClass]="{'btn-success': section.$value == true, 'btn-outline-success': section.$value == false}"
+             (click)="changeStatus(section.$key, true)">Enabled
+        </div>
+        <div class="btn btn_fixed_width"
+             [ngClass]="{'btn-danger': section.$value == false, 'btn-outline-danger': section.$value == true}"
+             (click)="changeStatus(section.$key, false)">Disabled
+        </div>
+      </div>
+    </div>
+    <h4 class="System-admin--form-wrap">Approval Hierarchy</h4>
+    <br>
+    <div class="row Small-spaced align-items-center Header no-gutters">
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6">User type</div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">Required</div>
+    </div>
+    <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let approval of approvals">
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 0">Regional Director</div>
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 1">Global Director</div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">
+        <div class="btn btn-outline-success btn_fixed_width"
+             [ngClass]="{'btn-success': approval.$value == true, 'btn-outline-success': approval.$value == false}"
+             (click)="changeApproval(approval.$key, true)">Yes
+        </div>
+        <div class="btn btn-danger btn_fixed_width"
+             [ngClass]="{'btn-danger': approval.$value == false, 'btn-outline-danger': approval.$value == true}"
+             (click)="changeApproval(approval.$key, false)">No
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -755,6 +755,7 @@
             "DEPARTMENTS": {
                 "TITLE_TEXT": "Departments",
                 "DELETE_DEPARTMENTS": "Delete Departments",
+                "DELETE_DEPARTMENTS_INFO": "Departments which has actions assigned to them can not be deleted",
                 "EDIT_DEPARTMENTS": "Edit Departments"
             },
             "SKILLS": {
