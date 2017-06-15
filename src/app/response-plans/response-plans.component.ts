@@ -345,7 +345,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         }
       });
     }
-  }   
+  }
 
   getNotes(plan) {
     if (plan.status == ApprovalStatus.NeedsReviewing) {
