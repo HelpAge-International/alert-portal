@@ -9,6 +9,9 @@ const mailTransport = nodemailer.createTransport(
   `smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
 
 const APP_NAME = 'Alert';
+const WEEK = 0;
+const MONTH = 1;
+const YEAR = 2;
 
 exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
 
@@ -124,11 +127,31 @@ exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countr
     console.log(event.data.val().startDate);
     console.log(event.params["countryId"]);
 
-    functions.database.ref('/sand/countryOffice/{agencyId}/{countryId}')
-      .onWrite(event =>{
-        console.log("**********");
-        console.log(event);
+    let countryId = event.params["countryId"];
+
+    admin.database().ref('/sand/administratorCountry').orderByChild("countryId").equalTo(countryId)
+      .on("value", snapshot => {
+        console.log("********");
+        console.log(snapshot.val());
+        let administratorCountry = snapshot.val()[countryId];
+        let agencyId = Object.keys(administratorCountry['agencyAdmin'])[0];
+        console.log("agency id: " + agencyId);
+
+        admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryId + '/clockSettings/responsePlans')
+          .on('value', snapshot => {
+            console.log(snapshot.val());
+            let durationType = snapshot.val()['durationType'];
+            let value = snapshot.val()['value'];
+          })
+
       });
+
+    // admin.database().ref('/sand/countryOffice/')
+    //   .on("value", snapshot => {
+    //     console.log("******");
+    //     console.log(snapshot.val());
+    //   });
+
     // functions.database.ref('/sand/')
     // const userId = event.params.userId;
     // const preData = event.data.previous.val();
