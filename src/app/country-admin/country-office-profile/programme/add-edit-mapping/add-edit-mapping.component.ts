@@ -147,6 +147,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
                         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
                         this.programme = new ProgrammeMappingModel();
                         this.when = [];
+                        this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
                     }).catch((error: any) => {
                         console.log(error, 'You do not have access!')
                     });
@@ -157,7 +158,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
                     .update(dataToSave)
                     .then(() => {
                         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
-                        return true;
+                        this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
                     }).catch((error: any) => {
                         console.log(error, 'You do not have access!')
                     });
