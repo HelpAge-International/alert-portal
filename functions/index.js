@@ -122,7 +122,13 @@ exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countr
     console.log(event.data.current.val());
     console.log(event.data.changed());
     console.log(event.data.val().startDate);
+    console.log(event.params["countryId"]);
 
+    functions.database.ref('/sand/countryOffice/{agencyId}/{countryId}')
+      .onWrite(event =>{
+        console.log("**********");
+        console.log(event);
+      });
     // functions.database.ref('/sand/')
     // const userId = event.params.userId;
     // const preData = event.data.previous.val();
