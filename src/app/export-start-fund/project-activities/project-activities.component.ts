@@ -91,8 +91,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
 
-        //this.bindBudgetReportData(responsePlan);
+        this.bindProjectActivitiesData(responsePlan);
       });
+  }
+
+  private bindProjectActivitiesData(responsePlan: ResponsePlan){
+
   }
 
   /**
