@@ -100,6 +100,7 @@ import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -198,6 +199,7 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
   {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
   {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
+  {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
   {
     path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
     component: CountryOfficeAddEditEquipmentComponent

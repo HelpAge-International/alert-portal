@@ -153,6 +153,7 @@ import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/coun
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -299,6 +300,8 @@ const firebaseAuthConfig = {
     DonorMenuComponent,
     AlertLoaderComponent,
     ExternalPartnerResponsePlan,
+    ReplacePipe,
+    CountryOfficeProgrammeComponent,
     DonorListViewComponent,
     ReplacePipe,
     ProjectNarrativeComponent,
