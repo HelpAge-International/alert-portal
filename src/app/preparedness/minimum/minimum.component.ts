@@ -7,6 +7,7 @@ import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'angular-2-local-storage';
 import * as firebase from 'firebase';
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 
@@ -92,6 +93,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+      console.log("We're allowed on this page!");
+    });
+
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;

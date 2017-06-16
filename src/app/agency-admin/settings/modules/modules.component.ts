@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Privacy, ModuleName, PermissionsAgency} from "../../../utils/Enums";
 import {Subject} from "rxjs";
-import {PermissionService} from "../../../services/permissions.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-modules',
@@ -34,7 +34,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   private disableMap: Map<PermissionsAgency, PermissionsAgency[]>;
 
   constructor(private af: AngularFire, private router: Router) {
-    this.disableMap = PermissionService.agencyDisableMap();
+    this.disableMap = PageControlService.agencyDisableMap();
     this.listOfEnabledEnableButtons = new Map<PermissionsAgency, boolean>();
     this.listOfEnabledEnableButtons.set(PermissionsAgency.RiskMonitoring, false);
     this.listOfEnabledEnableButtons.set(PermissionsAgency.CountryOffice, false);

@@ -292,6 +292,41 @@ export class UserService {
     return this.af.database.object(Constants.APP_STATUS).update(partnerData);
   }
 
+  /**
+   * Static method for getting the user type
+   */
+  static getUserType(af: AngularFire, uid: string): Observable<any> {
+    const paths = [
+      {path: Constants.APP_STATUS + "/administratorCountry/" + uid, type: UserType.CountryAdmin},
+      {path: Constants.APP_STATUS + "/countryDirector/" + uid, type: UserType.CountryDirector},
+      {path: Constants.APP_STATUS + "/regionDirector/" + uid, type: UserType.RegionalDirector},
+      {path: Constants.APP_STATUS + "/globalDirector/" + uid, type: UserType.GlobalDirector},
+      {path: Constants.APP_STATUS + "/globalUser/" + uid, type: UserType.GlobalUser},
+      {path: Constants.APP_STATUS + "/countryUser/" + uid, type: UserType.CountryUser},
+      {path: Constants.APP_STATUS + "/ertLeader/" + uid, type: UserType.ErtLeader},
+      {path: Constants.APP_STATUS + "/ert/" + uid, type: UserType.Ert},
+      {path: Constants.APP_STATUS + "/donor/" + uid, type: UserType.Donor}
+      // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
+    ];
+    return UserService.recursiveUserMap(af, paths, 0);
+  }
+  private static recursiveUserMap(af: AngularFire, paths, index: number) {
+    return af.database.object(paths[index].path)
+      .flatMap(obj => {
+        if (obj.agencyAdmin) {
+          return Observable.of(paths[index].type);
+        }
+        else {
+          if (index == paths.length) {
+            return Observable.empty();
+          }
+          else {
+            return UserService.recursiveUserMap(af, paths, index + 1);
+          }
+        }
+      });
+  }
+
   //return current user type enum number
   getUserType(uid: string): Observable<any> {
 
@@ -304,8 +339,8 @@ export class UserService {
       Constants.APP_STATUS + "/countryUser/" + uid,
       Constants.APP_STATUS + "/ertLeader/" + uid,
       Constants.APP_STATUS + "/ert/" + uid,
-      Constants.APP_STATUS + "/donor/" + uid,
-      Constants.APP_STATUS + "/administratorAgency/" + uid
+      Constants.APP_STATUS + "/donor/" + uid
+      // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
     ];
 
     if (!uid) {

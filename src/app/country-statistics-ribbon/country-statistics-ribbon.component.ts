@@ -5,7 +5,7 @@ import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {ApprovalStatus, AlertLevels, Countries, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
-import {AgencyModulesEnabled, PermissionService} from "../services/permissions.service";
+import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
 
 @Component({
   selector: 'app-country-statistics-ribbon',
@@ -55,7 +55,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
 
             this.NODE_TO_CHECK = this.userPaths[userType];
             this.loadData();
-            PermissionService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, this.userPaths[userType], (isEnabled => {
+            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, this.userPaths[userType], (isEnabled => {
               console.log("User permissions updates");
               this.userPermissions = isEnabled;
               console.log(this.userPermissions);

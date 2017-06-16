@@ -4,13 +4,15 @@ import {HazardScenario, AlertMessageType, DurationType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {RxHelper} from "../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {CommonService} from "../services/common.service";
 import {AlertMessageModel} from '../model/alert-message.model';
 import {ModelHazard} from '../model/hazard.model';
 import {LogModel} from '../model/log.model';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {TranslateService} from "@ngx-translate/core";
+import {PageControlService} from "../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 
 
 declare var jQuery: any;
@@ -77,9 +79,10 @@ export class RiskMonitoringComponent implements OnInit {
     private tmpHazardData: any[] = [];
     private tmpLogData: any[] = [];
 
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
     private successAddHazardMsg: any;
 
-    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private storage: LocalStorageService, private translate: TranslateService) {
+    constructor(private subscriptions: RxHelper, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService) {
         this.tmpLogData['content'] = '';
         this.successAddNewHazardMessage();
     }
@@ -96,7 +99,12 @@ export class RiskMonitoringComponent implements OnInit {
     }
 
     ngOnInit() {
-        let subscription = this.af.auth.subscribe(auth => {
+
+      PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+        console.log("We're allowed on this page!");
+      });
+
+      let subscription = this.af.auth.subscribe(auth => {
             if (auth) {
 
                 this.uid = auth.uid;

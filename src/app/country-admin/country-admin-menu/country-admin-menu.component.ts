@@ -3,9 +3,9 @@ import {UserService} from "../../services/user.service";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {PermissionsAgency, UserType} from "../../utils/Enums";
-import {AgencyPermissionObject, PermissionService} from "../../services/permissions.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
+import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-country-admin-menu',
@@ -43,10 +43,9 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(usertype => {
               this.userType = usertype;
-              PermissionService.agencyBuildPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid,
+              PageControlService.agencyBuildPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid,
                 Constants.USER_PATHS[this.userType], (list: AgencyPermissionObject[]) => {
                   for (const value of list) {
-                    console.log(value);
                     if (value.permission === PermissionsAgency.MinimumPreparedness) {
                       this.permMinimumPreparedness = !value.isAuthorized;
                     }
@@ -62,7 +61,7 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
                     if (value.permission === PermissionsAgency.ResponsePlanning) {
                       this.permResponsePlanning = !value.isAuthorized;
                     }
-                    PermissionService.agencySelfCheck(this.activatedRoute, this.router, value);
+                    PageControlService.agencySelfCheck(usertype, this.activatedRoute, this.router, value);
                   }
                 });
             });

@@ -17,7 +17,7 @@ import {
   ChronolineEvent,
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
-import {AgencyModulesEnabled, PermissionService} from "../services/permissions.service";
+import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
@@ -81,7 +81,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    // TODO - New Subscriptions - Remove subscriptions and add '.takeUntil(this.ngUnsubscribe)' before every .subscribe()
+    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router,
+      (auth, userType) => {
+        console.log("We're allowed on this page!");
+      }
+    );
+
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
@@ -91,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           .subscribe(userType => {
             this.userType = userType;
             this.NODE_TO_CHECK = this.userPaths[userType];
-            PermissionService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
+            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
               this.moduleSettings = isEnabled;
             }));
             if (userType == UserType.CountryDirector) {
