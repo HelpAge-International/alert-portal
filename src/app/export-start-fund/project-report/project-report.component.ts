@@ -107,16 +107,15 @@ export class ProjectReportComponent implements OnInit, OnDestroy {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
 
-        responsePlan.sectorsRelatedTo.forEach(sector => {
-          this.sectorsRelatedToMap.set(sector, true);
-        });
+        if (responsePlan.sectorsRelatedTo) {
+          responsePlan.sectorsRelatedTo.forEach(sector => {
+            this.sectorsRelatedToMap.set(sector, true);
+          });
 
-        this.bindProjectLeadData(responsePlan);
-
-        this.bindPartnersData(responsePlan);
-
-        this.bindSourcePlanData(responsePlan);
-
+          this.bindProjectLeadData(responsePlan);
+          this.bindPartnersData(responsePlan);
+          this.bindSourcePlanData(responsePlan);
+        }
       });
   }
 

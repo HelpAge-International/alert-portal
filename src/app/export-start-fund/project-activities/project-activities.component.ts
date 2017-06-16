@@ -134,18 +134,19 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
         });
       });
 
-      this.totalFemaleUnder18 = this.getTotalFemaleUnder18(this.activityMap);
-      this.totalFemale18To50 = this.getTotalFemaleUnder18To50(this.activityMap);
-      this.totalFemaleOver50 = this.getTotalFemaleOver50(this.activityMap);
+      if (this.activityMap) {
+        this.totalFemaleUnder18 = this.getTotalFemaleUnder18(this.activityMap);
+        this.totalFemale18To50 = this.getTotalFemaleUnder18To50(this.activityMap);
+        this.totalFemaleOver50 = this.getTotalFemaleOver50(this.activityMap);
 
-      this.totalMaleUnder18 = this.getTotalMaleUnder18(this.activityMap);
-      this.totalMale18To50 = this.getTotalMaleUnder18To50(this.activityMap);
-      this.totalMaleOver50 = this.getTotalMaleOver50(this.activityMap);
+        this.totalMaleUnder18 = this.getTotalMaleUnder18(this.activityMap);
+        this.totalMale18To50 = this.getTotalMaleUnder18To50(this.activityMap);
+        this.totalMaleOver50 = this.getTotalMaleOver50(this.activityMap);
 
-      this.totalOverallFemale = this.getOverallFemaleTotal(this.activityMap);
-      this.totalOverallMale = this.getOverallMaleTotal(this.activityMap);
-      this.totalOverallPopulation = this.getOverallPopulationTotal(this.activityMap);
-
+        this.totalOverallFemale = this.getOverallFemaleTotal(this.activityMap);
+        this.totalOverallMale = this.getOverallMaleTotal(this.activityMap);
+        this.totalOverallPopulation = this.getOverallPopulationTotal(this.activityMap);
+      }
     }
   }
 
@@ -154,19 +155,19 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
    */
 
   getTotalFemalePopulation(activity){
-    return (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
-    + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
-    + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+        return (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+      + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+      + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
   }
 
   getTotalMalePopulation(activity){
-    return (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-      +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-      +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+      return (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+        + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+        + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
   }
 
   getOverallTotalPopulation(activity){
-    return this.getTotalFemalePopulation(activity) + this.getTotalMalePopulation(activity);
+      return this.getTotalFemalePopulation(activity) + this.getTotalMalePopulation(activity);
   }
 
   private getTotalFemaleUnder18(activityMap){
