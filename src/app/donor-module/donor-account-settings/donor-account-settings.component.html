@@ -62,21 +62,24 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="AddressLine1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}</label>
-            <input type="text" class="form-control" id="AddressLine1" name="AddressLine1" placeholder="Optional"
+            <input type="text" class="form-control" id="AddressLine1" name="AddressLine1"
+                   placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                    [(ngModel)]="userPublic && userPublic.addressLine1">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="AddressLine2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
-            <input type="text" class="form-control" id="AddressLine2" name="AddressLine2" placeholder="Optional"
+            <input type="text" class="form-control" id="AddressLine2" name="AddressLine2"
+                   placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                    [(ngModel)]="userPublic && userPublic.addressLine2">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="AddressLine3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
-            <input type="text" class="form-control" id="AddressLine3" name="AddressLine3" placeholder="Optional"
+            <input type="text" class="form-control" id="AddressLine3" name="AddressLine3"
+                   placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                    [(ngModel)]="userPublic && userPublic.addressLine3">
           </div>
         </div>
@@ -88,7 +91,8 @@
 
             <select name="Country" id="Country" class="form-control"
                     [(ngModel)]="userPublic && userPublic.country">
-              <option value="null" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}
+              </option>
               <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}
               </option>
             </select>
@@ -98,14 +102,16 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
-            <input type="text" class="form-control" id="City" name="City" placeholder="Optional"
+            <input type="text" class="form-control" id="City" name="City"
+                   placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                    [(ngModel)]="userPublic && userPublic.city">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="l-Name">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
-            <input type="text" class="form-control" id="p-code" name="p-code" placeholder="Optional"
+            <input type="text" class="form-control" id="p-code" name="p-code"
+                   placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                    [(ngModel)]="userPublic && userPublic.postCode">
           </div>
         </div>
