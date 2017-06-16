@@ -73,12 +73,6 @@ export enum FileType {
     GB = 1
 }
 
-// export enum Country {
-//   UK = 0,
-//   France = 1,
-//   Germany = 2
-// }
-
 export enum Currency {
     GBP = 0,
     EUR = 1,

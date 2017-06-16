@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.loginChecking(success.uid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
           this.loginChecking(success.uid, "ertLeader", Constants.COUNTRY_ADMIN_HOME);
           this.loginChecking(success.uid, "ert", Constants.COUNTRY_ADMIN_HOME);
-          this.loginChecking(success.uid, "donor", Constants.DONOR_HOME);
+          this.loginCheckingFirstLoginValue(success.uid, "donor", Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password');
           this.loginCheckingAgency(success.uid, "administratorAgency", Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
         })
 

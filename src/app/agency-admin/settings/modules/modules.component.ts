@@ -101,7 +101,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
         this.saved = true;
         this.alertSuccess = true;
         this.alertShow = true;
-        this.alertMessage = "Module Settings succesfully saved!"
+        this.alertMessage = "AGENCY_ADMIN.SETTINGS.MODULE_NAME.SAVE_SUCCESS";
       }
     })
   	.catch(err => console.log(err, 'You do not have access!'));

@@ -87,7 +87,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
         this.saved = true;
         this.alertSuccess = true;
         this.alertShow = true;
-        this.alertMessage = "Departments succesfully removed!"
+        this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_REMOVED_SUCCESS";
       }
     })
     .catch(err => console.log(err, 'You do not have access!'));
@@ -132,7 +132,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
-          this.alertMessage = "Departments succesfully saved!"
+          this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_SAVED_SUCCESS";
         }
       })
       .catch(err => console.log(err, 'You do not have access!'));
@@ -160,7 +160,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
-          this.alertMessage = "New department succesfully created!"
+          this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_NEW_SUCCESS";
         }
       })
       .catch(err => console.log(err, 'You do not have access!'));

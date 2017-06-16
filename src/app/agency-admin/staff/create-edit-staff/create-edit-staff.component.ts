@@ -50,6 +50,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   trainingNeeds: string;
   notifications: number[] = [];
   isResponseMember: boolean;
+  isFirstLogin: boolean;
 
   hideWarning: boolean = true;
   hideRegion: boolean = true;
@@ -174,6 +175,14 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           this.countryOffice = x;
         });
     }
+
+    this.userService.getUserType(staffId).subscribe(userType => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + '/' + staffId + '/firstLogin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(value => {
+        this.isFirstLogin = value.$value;
+      })
+    });
   }
 
   private initData() {
@@ -228,7 +237,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   }
 
-  validateForm():boolean {
+  validateForm(): boolean {
     console.log("validate form");
     if (!this.title) {
       this.waringMessage = "AGENCY_ADMIN.STAFF.NO_TITLE";
@@ -429,6 +438,17 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     let agency = {};
     agency[this.agencyId] = true;
     userData["agencyAdmin"] = agency;
+
+    if (!this.isEdit) {
+      userData["firstLogin"] = true;
+    } else {
+      if (this.isEmailChange) {
+        userData["firstLogin"] = true;
+      } else {
+        userData["firstLogin"] = this.isFirstLogin;
+      }
+    }
+
     if (!this.hideCountry) {
       userData["countryId"] = this.countryOffice.$key;
     } else if (!this.hideRegion) {

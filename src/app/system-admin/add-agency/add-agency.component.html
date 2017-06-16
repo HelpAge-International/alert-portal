@@ -94,6 +94,7 @@
           <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
           <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
                   name="agencyAdminCountry">
+            <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
             <option *ngFor="let country of countryList" [ngValue]="country">{{Country[country] | translate}}</option>
           </select>
         </div>

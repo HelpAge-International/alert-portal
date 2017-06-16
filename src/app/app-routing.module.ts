@@ -106,6 +106,9 @@ import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/cou
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {DonorAccountSettingsComponent} from "./donor-module/donor-account-settings/donor-account-settings.component";
+import {DonorChangePasswordComponent} from "./donor-module/donor-account-settings/donor-change-password/donor-change-password.component";
+import {NewDonorPasswordComponent} from "./donor-module/new-donor-password/new-donor-password.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -295,6 +298,9 @@ const routes: Routes = [
   {path: 'donor-module', component: DonorModuleComponent},
   {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
   {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
+  {path: 'donor-module/donor-account-settings', component: DonorAccountSettingsComponent},
+  {path: 'donor-module/donor-account-settings/donor-change-password', component: DonorChangePasswordComponent},
+  {path: 'donor-module/donor-account-settings/new-donor-password', component: NewDonorPasswordComponent},
 
   /**
    * Response plan exporting
