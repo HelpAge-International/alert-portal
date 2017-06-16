@@ -10,13 +10,20 @@
         <h1>Start Fund</h1>
         <a id="downloadLink" style="display:none;"></a>
 
-        <input type="button" onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport', 'tableBudgetReport', 'tableProjectActivities', 'tableTechnicalGuidance'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative', 'Report Budget', 'Project Activities', 'Technical Guidance'])"
+        <input type="button" onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport', 'tableBudgetReport', 'tableProjectActivities', 'tableTechnicalGuidance','tableGuidanceReport'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative', 'Report Budget', 'Project Activities', 'Technical Guidance', 'Guidance Report'])"
                value="Download All">
       </div>
 
       <br>
 
       <div>
+        <!--Guidance Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-guidance-report></app-export-start-fund-guidance-report>
+        </div>
+
+        <br>
+        <br>
 
         <!--Technical Guidance-->
         <div class="scrollingDiv">
