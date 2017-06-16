@@ -99,6 +99,7 @@ import {CountryOfficeCoordinationComponent} from "./country-admin/country-office
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -201,6 +202,7 @@ const routes: Routes = [
     {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
     {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
     {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
+    {path: 'country-admin/country-office-profile/office-capacity', component: CountryOfficeCapacityComponent},
 
     {
         path: 'country-admin/country-office-profile/equipment/add-edit-equipment',

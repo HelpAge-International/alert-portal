@@ -147,6 +147,7 @@ import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -293,7 +294,8 @@ const firebaseAuthConfig = {
         ReplacePipe,
         CountryOfficeProgrammeComponent,
         CountryOfficeEditProgrammeComponent,
-        AddEditMappingProgrammeComponent
+        AddEditMappingProgrammeComponent,
+        CountryOfficeCapacityComponent
     ],
     imports: [
         BrowserModule,
