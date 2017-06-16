@@ -10,7 +10,7 @@ export class Action extends BaseModel {
     public id: string;
     public task: string;
     public level: number;
-    public department: number;
+    public department: string;
     public asignee: string;
     public dueDate: number;
     public budget: number;

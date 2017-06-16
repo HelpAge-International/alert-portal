@@ -156,6 +156,9 @@ export class CreateEditPreparednessComponent implements OnInit {
                     console.log(error, 'You do not have access!')
                 });
         } else {
+            delete dataToSave["$key"];
+            delete dataToSave["$exists"];
+            console.log(dataToSave);
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
                 .set(dataToSave)
                 .then(() => {
@@ -172,6 +175,7 @@ export class CreateEditPreparednessComponent implements OnInit {
         this.getCountryID().then(() => {
             this.getUsersForAssign();
             this.getAgencyID().then(() => {
+                this.getDepartments();
                 this._getPreparednessFrequency().then(() => {
                     if (this.actionID) {
                         this.getActionData().then(() => {
@@ -200,7 +204,7 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     selectDepartment(event: any) {
-        this.actionData.department = parseInt(event.target.value);
+        this.actionData.department = event.target.value;
         return true;
     }
 
@@ -295,6 +299,10 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     copyAction() {
+        
+        delete this.actionData["$key"];
+        delete this.actionData["$exists"];
+        
         /* added route for create action page */
         this.storage.set('copyActionData', this.actionData);
         this.router.navigate(["/preparedness/create-edit-preparedness"]);
@@ -305,6 +313,9 @@ export class CreateEditPreparednessComponent implements OnInit {
         
         this.closeModal();
         this.actionData.isActive = false;
+
+        delete this.actionData["$key"];
+        delete this.actionData["$exists"];
 
         this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
             .set(this.actionData)
@@ -325,6 +336,24 @@ export class CreateEditPreparednessComponent implements OnInit {
                  
                 this.level = action.level; 
                 this.dueDate = this._convertTimestampToDate(action.dueDate);
+                res(true);
+            });
+            this.subscriptions.add(subscription);
+        });
+        return promise;
+    }
+
+    private getDepartments() {
+        console.log(Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments');
+        let promise = new Promise((res, rej) => {
+
+            let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments').subscribe((departments) => {
+                this.departmentList = departments.map(department => {
+                    return department.$key;
+                });
+
+                console.log(this.departmentList);
+                
                 res(true);
             });
             this.subscriptions.add(subscription);

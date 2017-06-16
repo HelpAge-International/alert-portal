@@ -899,3 +899,8 @@ export enum Month {
     december = 12
 }
 
+export enum StockType {
+  Country = 0,
+  External = 1
+}
+

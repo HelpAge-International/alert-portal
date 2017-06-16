@@ -1,0 +1,81 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Back--button row" (click)="goBack()">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.GO_BACK_TITLE' | translate }}</div> <!-- Back button-->
+        <div class="Header-title__wrap">
+            <h1 *ngIf="!stockCapacity.id && stockCapacity.type == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
+            <h1 *ngIf="!stockCapacity.id && stockCapacity.type == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_OUT_TITLE' | translate }}</h1>
+            
+            <div class="col-sm-11" *ngIf="stockCapacity.id">
+                <h1 *ngIf="stockCapacity.type == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
+                <h1 *ngIf="stockCapacity.type == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_OUT_TITLE' | translate }}</h1>
+            </div>
+
+            <div class="col-sm-1 Right-aligned" *ngIf="stockCapacity.id">
+                <button class="btn btn-danger text-uppercase" (click)="deleteStockCapacity()">{{ 'GLOBAL.DELETE' | translate }}</button>
+            </div>
+        </div><br>
+
+        <form (ngSubmit)="submit()">
+            <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' | translate }}</strong></p>
+            <div>
+                <input type="text" class="form-control col-sm-4" placeholder="Please enter" name="description"
+                    [(ngModel)]="stockCapacity && stockCapacity.description">
+            </div><br>
+
+            <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' | translate }}</strong></p>
+            <div>
+                <input type="text" class="form-control col-sm-4" placeholder="Please enter" name="quantity"
+                    [(ngModel)]="stockCapacity && stockCapacity.quantity">
+            </div><br>
+
+            <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></p>
+            <div>
+                <input type="text" class="form-control col-sm-4" placeholder="Please enter" name="location"
+                    [(ngModel)]="stockCapacity && stockCapacity.location">
+            </div><br>
+
+            <p *ngIf="stockCapacity.type == 0"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
+            <p *ngIf="stockCapacity.type == 1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_OUT' | translate }}</strong></p>
+            <div>
+                <input type="text" class="form-control col-sm-4" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="eta"
+                    [(ngModel)]="stockCapacity && stockCapacity.eta">
+            </div><br>
+
+            <!--Save and cancel-->
+            <div class="row margin-top-ten margin-left-one">
+                <button class="btn btn-primary text-uppercase Spaced col-sm-0" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <div class="col-sm-1 margin-top-five">
+                    <a href="javascript:void(0)" (click)="goBack()">
+                        {{ 'GLOBAL.CANCEL' | translate }}
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+

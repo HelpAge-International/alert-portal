@@ -1,7 +1,10 @@
 /**
  * Created by Fei on 21/03/2017.
  */
-export class ModelStaff {
+import { BaseModel } from "./base.model";
+import { AlertMessageModel } from "./alert-message.model";
+
+export class ModelStaff extends BaseModel {
   public id: string;
   public userType: number;
   public region: string;
@@ -14,4 +17,9 @@ export class ModelStaff {
   public notification: number[] =[];
   public isResponseMember: boolean;
   public updatedAt:number;
+
+  validate(excludedFields = []): AlertMessageModel {
+    // TODO add validation
+    return null;
+  }
 }

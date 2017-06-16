@@ -18,7 +18,7 @@ declare const jQuery: any;
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
-
+  private isGlobalDirectorMap = new Map<string, boolean>();
 
   private dialogTitle: string;
   private dialogContent: string;
@@ -102,6 +102,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private checkHaveApprovedPartners(activePlans: any[]) {
     activePlans.forEach(plan => {
+      //deal organisations
       let partnerIds = plan.partnerOrganisations;
       if (partnerIds) {
         partnerIds.forEach(partnerId => {
@@ -113,6 +114,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               }
             });
         });
+      }
+
+      //deal directors
+      if (plan.approval) {
+        let approvalKeys = Object.keys(plan.approval).filter(key => key!="partner");
+        console.log(approvalKeys);
+        if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
+          this.isGlobalDirectorMap.set(plan.$key, true);
+        }
       }
     });
   }
@@ -144,6 +154,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   editResponsePlan(responsePlan) {
     this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
+  }
+
+  exportStartFund(responsePlan) {
+    this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
   }
 
   submitForApproval(plan) {
@@ -242,12 +256,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(id => {
-      console.log(id);
-      if (id && id.$value) {
-        approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
-      }
-      this.updatePartnerValidation(countryId, approvalData);
-    });
+        console.log(id);
+        if (id && id.$value && id.$value != "null") {
+          approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
+        }
+        this.updatePartnerValidation(countryId, approvalData);
+      });
   }
 
   private updateWithBothApproval(agencyId: string, countryId: string, approvalData: {}) {
@@ -260,7 +274,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(globalDirector => {
         console.log(globalDirector)
-        if (globalDirector.length>0 && globalDirector[0].$key) {
+        if (globalDirector.length > 0 && globalDirector[0].$key) {
           console.log(globalDirector[0].$key);
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
         }
@@ -331,7 +345,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         }
       });
     }
-  }
+  }   
 
   getNotes(plan) {
     if (plan.status == ApprovalStatus.NeedsReviewing) {
@@ -341,10 +355,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         this.notesMap.set(plan.$key, list);
       });
     }
-  }
-
-  testExport() {
-    this.router.navigateByUrl("/export");
   }
 
 }

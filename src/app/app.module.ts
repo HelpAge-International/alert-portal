@@ -101,7 +101,7 @@ import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
 import {AddHazardRiskMonitoringComponent} from './risk-monitoring/add-hazard/add-hazard.component';
 import {CountryMyAgencyComponent} from "./country-admin/country-my-agency/country-my-agency.component";
-import {ExportTestComponent} from './export-test/export-test.component';
+import {ExportStartFundComponent} from './export-start-fund/export-start-fund.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {CountryAgenciesComponent} from "./country-admin/country-agencies/country-agencies.component";
 import {AgencySubmenuComponent} from './preparedness/agency-submenu/agency-submenu.component';
@@ -138,12 +138,21 @@ import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-of
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
 import {CoordinationArrangementService} from "./services/coordination-arrangement.service";
+import {CountryOfficeAddEditCoordinationComponent} from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
+import {AgencyService} from "./services/agency-service.service";
 import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
 import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
 import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
 import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component';
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
+import {DonorListViewComponent} from './donor-module/donor-list-view/donor-list-view.component';
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
+import {CountryOfficeStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
+import {StockService} from "./services/stock.service";
+import {CountryOfficeAddEditStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
+import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
+import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
@@ -203,6 +212,9 @@ const firebaseAuthConfig = {
         CountryOfficeAddEditEquipmentComponent,
         CountryOfficeAddEditSurgeEquipmentComponent,
         CountryOfficeCoordinationComponent,
+        CountryOfficeAddEditCoordinationComponent,
+        CountryOfficeStockCapacityComponent,
+        CountryOfficeAddEditStockCapacityComponent,
         AgencyAdminMenuComponent,
         DepartmentComponent,
         SkillsComponent,
@@ -271,7 +283,7 @@ const firebaseAuthConfig = {
         AlertWidgetComponent,
         CountryMyAgencyComponent,
         MapCountriesListComponent,
-        ExportTestComponent,
+        ExportStartFundComponent,
         DashboardSeasonalCalendarComponent,
         DashboardUpdateAlertLevelComponent,
         CountryAgenciesComponent,
@@ -293,6 +305,11 @@ const firebaseAuthConfig = {
         ExternalPartnerResponsePlan,
         ReplacePipe,
         CountryOfficeProgrammeComponent,
+        DonorListViewComponent,
+        ReplacePipe,
+        ProjectNarrativeComponent,
+        ProjectBudgetComponent,
+        ProjectReportComponent,
         CountryOfficeEditProgrammeComponent,
         AddEditMappingProgrammeComponent,
         CountryOfficeCapacityComponent
@@ -330,7 +347,9 @@ const firebaseAuthConfig = {
         NotificationSettingsService,
         NoteService,
         EquipmentService,
-        CoordinationArrangementService],
+        CoordinationArrangementService,
+        AgencyService,
+        StockService],
     bootstrap: [AppComponent]
 })
 

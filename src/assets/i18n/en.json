@@ -488,7 +488,13 @@
         "NO_EMAIL_ERROR": "Please enter your email address",
         "NO_PASSWORD_ERROR": "Please enter your password",
         "UNRECOGNISED_ERROR": "This email address is not recognised",
-        "GENERIC_ERROR": "An error occured. Please try again"
+        "INCORRECT_PASSWORD": "Incorrect password",
+      "INCORRECT_EMAIL": "Incorrect email address",
+      "VALIDATION_ERROR": "An error occured whilst validating your information. Please re-enter your account details",
+      "LOGIN_BLOCKED": "Login attempts have been temporarily blocked. Please try again later",
+        "USERTYPE_UNASSIGNED": "This email address is not associated with a user account",
+        "AGENCY_DEACTIVATED": "Your account is deactivated - Please check with your System Administrator",
+        "AGENCY_DOESNT_EXIST": "The agency you were assigned to no longer exists"
     },
     "FORGOT_PASSWORD": {
         "TITLE_TEXT": "Forgot Password?",
@@ -1034,66 +1040,121 @@
                 "SURGE_DELETE_DIALOG_TITLE": "Delete Surge Equipment",
                 "SURGE_DELETE_DIALOG_CONTENT": "Are you sure you want to delete this surge equipment?"
             },
-            "COORDINATION": {
-                "TITLE_TEXT": "Coordination Arrangements",
-                "EDIT": "Edit coordination arrangements",
-                "VIEW": "View coordination arrangements"
+          "COORDINATION": {
+            "TITLE_TEXT": "Coordination Arrangements",
+            "EDIT": "Edit coordination arrangements",
+            "VIEW": "View coordination arrangements",
+            "UPDATED": "Updated",
+            "SECTOR": "Sector",
+            "SECTOR_LEAD": "Sector lead",
+            "IS_AGENCY_MEMBER": "Is {{value}} a member?",
+            "STAFF_MEMBER": "Staff member representing {{value}}",
+            "VIEW_LEAD_AGENCY": "View lead agency contact info",
+            "CONTACT_NAME": "Contact's Name",
+            "CONTACT_EMAIL": "Contact's Email",
+            "CONTACT_PHONE": "Contact's Telephone",
+            "SECTOR_LEAD_CONTACT_INFO": "Sector lead contact info",
+            "GO_BACK_TITLE": "Edit Coordination Arrangement",
+            "ADD_TITLE": "Add coordination arrangement",
+            "EDIT_TITLE": "Edit coordination arrangement",
+            "EMPTY_LIST": "Use the Add button to add your coordination arrangement",
+            "NO_SECTOR": "Please select the sector",
+            "NO_SECTOR_LEAD": "Please enter the sector lead",
+            "NO_IS_AGENCY_MEMBER": "Please select if the agency is a member",
+            "NO_CONTACT_NAME": "Please enter the contact name",
+            "NO_CONTACT_EMAIL": "Please enter the contact email",
+            "NO_CONTACT_PHONE": "Please enter the contact phone",
+            "NO_STAFF_MEMBER": "Please select a staff member",
+            "DELETE_DIALOG_TITLE": "Delete coordination arrangement",
+            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this coordination arrangement?",
+            "SUCCESS_SAVED": "The coordination arrangement was successfully saved",
+            "SUCCESS_DELETED": "The coordination arrangement was successfully deleted"
+          },
+          "STOCK_CAPACITY":{
+            "TITLE_TEXT": "Stock Capacity",
+            "EDIT": "Edit stock capacity",
+            "VIEW": "View stock capacity",
+            "UPDATED": "Updated",
+            "STOCK_IN": "In-country stock",
+            "UPDATED": "Updated",
+            "DESCRIPTION": "Description",
+            "QUANTITY": "Quantity",
+            "LOCATION": "Location",
+            "ETA_IN": "Lead time for delivery to affected population",
+            "NOTES": "Notes",
+            "STOCK_OUT": "External country stock",
+            "ETA_OUT": "Lead time to warehouse",
+            "GO_BACK_TITLE": "Edit Stock Capacity",
+            "ADD_IN_TITLE": "Add in-country stock",
+            "ADD_OUT_TITLE": "Add external country stock",
+            "EDIT_IN_TITLE": "Edit in-country stock",
+            "EDIT_OUT_TITLE": "Edit external country stock",
+            "EMPTY_LIST": "Use the Add button to add stock",
+            "NO_DESCRIPTION": "Please enter the stock description",
+            "NO_QUANTITY": "Please enter the stock quantity",
+            "NO_LOCATION": "Please enter the stock location",
+            "NO_ETA": "Please enter the ETA",
+            "NO_TYPE": "Stock type not found!",
+            "DELETE_DIALOG_TITLE": "Delete stock capacity",
+            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this stock capacity?",
+            "SUCCESS_SAVED": "The stock capacity was successfully saved",
+            "SUCCESS_DELETED": "The stock capacity was successfully deleted"
+          },
+          "PROGRAMME": {
+            "NO_NOTE": "Note cannot be empty!",
+            "SUCCESS_SAVE_NOTE": "You successfully added new note!",
+            "SUCCESS_EDIT_NOTE": "Note Successfully updated!",
+            "SUCCESS_DELETE_NOTE": "Note Successfully deleted!",
+            "SAVE_SELECTORS": "Please select at least one sector!",
+            "SUCCESS_SAVE_SELECTORS": "You successfully updated expertise sectors",
+            "NO_SECTOR": "Sector cannot be empty!",
+            "NO_WHAT": "Field What cannot be empty!",
+            "NO_TO_WHO": "Field To Who cannot be empty",
+            "NO_WHEN": "Field When cannot be empty!",
+            "NO_WHERE": "Field Where cannot be empty!",
+            "SUCCESS_SAVE_MAPPING": "You sucessfully added new 4W mapping programme",
+            "SUCCESS_EDIT_MAPPING": "You successfully updated 4W mapping programme",
+            "EDIT_MAPPING": {
+              "BACK_BUTTON": "Edit Programme",
+              "TITLE": "Edit 4W mapping",
+              "SECTOR": "Sector",
+              "WHAT": "What",
+              "WHERE": "Where",
+              "TO_WHO": "To Who",
+              "WHEN": "When",
+              "SAVE_CHANGES": "Save Changes",
+              "MODAL_TITLE": "Delete this 4W Mapping?",
+              "MODAL_TEXT_PART_ONE": "Are you sure you want to delete this 4W Mapping?",
+              "MODAL_TEXT_PART_TWO": "This action cannot be undone"
             },
-            "PROGRAMME": {
-                "NO_NOTE": "Note cannot be empty!",
-                "SUCCESS_SAVE_NOTE": "You successfully added new note!",
-                "SUCCESS_EDIT_NOTE": "Note Successfully updated!",
-                "SUCCESS_DELETE_NOTE": "Note Successfully deleted!",
-                "SAVE_SELECTORS": "Please select at least one sector!",
-                "SUCCESS_SAVE_SELECTORS": "You successfully updated expertise sectors",
-                "NO_SECTOR": "Sector cannot be empty!",
-                "NO_WHAT": "Field What cannot be empty!",
-                "NO_TO_WHO": "Field To Who cannot be empty",
-                "NO_WHEN": "Field When cannot be empty!",
-                "NO_WHERE": "Field Where cannot be empty!",
-                "SUCCESS_SAVE_MAPPING": "You sucessfully added new 4W mapping programme",
-                "SUCCESS_EDIT_MAPPING": "You successfully updated 4W mapping programme",
-                "EDIT_MAPPING": {
-                    "BACK_BUTTON": "Edit Programme",
-                    "TITLE": "Edit 4W mapping",
-                    "SECTOR": "Sector",
-                    "WHAT": "What",
-                    "WHERE": "Where",
-                    "TO_WHO": "To Who",
-                    "WHEN": "When",
-                    "SAVE_CHANGES": "Save Changes",
-                    "MODAL_TITLE": "Delete this 4W Mapping?",
-                    "MODAL_TEXT_PART_ONE": "Are you sure you want to delete this 4W Mapping?",
-                    "MODAL_TEXT_PART_TWO": "This action cannot be undone"
-                },
-                "EDIT_PROGRAMME": {
-                    "BACK_BUTTON": "Country Office Profile",
-                    "TITLE": "Edit Programme",                
-                    "MODAL_EDIT_SECTOR_TITLE": "Sector Expertise Selection" 
-                },
-                "TITLE": "Programme",
-                "COMMON": {
-                    "SECTOR_EXPERTISE": "Sector expertise",
-                    "4WMAPPING": "4W Mapping",
-                    "NO_SECTOR_SELECTED": "No sector expertise selected",
-                    "NO_4WMAPPING" : "Use the edit programme button to enter your 4W mapping",
-                    "TABLE_SECTOR": "Sector",
-                    "TABLE_WHAT": "What",
-                    "TABLE_WHERE": "Where",
-                    "TABLE_TO_WHO": "To Who",
-                    "TABLE_WHEN": "When",
-                    "TABLE_UPDATED": "Updated"
-                },
-                "NOTE": "Note",
-                "ADD_NOTE": "Add note",
-                "MODALS": {
-                    "EDIT_NOTE_MODAL_TITLE": "Edit note",
-                    "DELETE_NOTE_MODAL_TITLE": "Delete this note?",
-                    "DELETE_NOTE_TEXT_PART_ONE": "Are you sure you want to delete this note?",
-                    "DELETE_NOTE_TEXT_PART_TWO": "This action cannot be undone"
-                },
-                "EDIT_PROGRAMME_BUTTON" : "Edit Programme"
-            }
+            "EDIT_PROGRAMME": {
+              "BACK_BUTTON": "Country Office Profile",
+              "TITLE": "Edit Programme",
+              "MODAL_EDIT_SECTOR_TITLE": "Sector Expertise Selection"
+            },
+            "TITLE": "Programme",
+            "COMMON": {
+              "SECTOR_EXPERTISE": "Sector expertise",
+              "4WMAPPING": "4W Mapping",
+              "NO_SECTOR_SELECTED": "No sector expertise selected",
+              "NO_4WMAPPING" : "Use the edit programme button to enter your 4W mapping",
+              "TABLE_SECTOR": "Sector",
+              "TABLE_WHAT": "What",
+              "TABLE_WHERE": "Where",
+              "TABLE_TO_WHO": "To Who",
+              "TABLE_WHEN": "When",
+              "TABLE_UPDATED": "Updated"
+            },
+            "NOTE": "Note",
+            "ADD_NOTE": "Add note",
+            "MODALS": {
+              "EDIT_NOTE_MODAL_TITLE": "Edit note",
+              "DELETE_NOTE_MODAL_TITLE": "Delete this note?",
+              "DELETE_NOTE_TEXT_PART_ONE": "Are you sure you want to delete this note?",
+              "DELETE_NOTE_TEXT_PART_TWO": "This action cannot be undone"
+            },
+            "EDIT_PROGRAMME_BUTTON" : "Edit Programme"
+          }
         },
         "VIEW_MY_AGENCY": {
             "TITLE": "Helpage International: Overview",
@@ -1200,6 +1261,7 @@
             "VIEW_PLAN": "View plan",
             "EDIT_PLAN": "Edit plan",
             "REQUIRE_SUBMISSION": "Requires submission",
+            "REQUIRE_APPROVAL":"Requires approval",
             "SUBMIT_FOR_APPROVAL": "Submit for approval",
             "SUBMIT_FOR_PARTNER_VALIDATION": "Submit for partner validation",
             "EXPORT_FOR_PROPOSAL": "Export for proposal",
@@ -1374,6 +1436,7 @@
         "NO_CONTENT": "Please insert the note content",
         "SUCCESS_SAVED": "Note has been succesfully saved",
         "ADD": "Add note",
+        "ADD_A_NOTE": "Add a note",
         "BY": "by",
         "EDIT_DIALOG_TITLE": "Edit note",
         "DELETE_DIALOG_TITLE": "Delete note",
@@ -1468,6 +1531,7 @@
             "VIEW_AS_WEEKS": "View as weeks",
             "VIEW_AS_MONTHS": "View as months",
             "ADD_SEASON": "Add season to the calendar",
+            "EDIT_SEASON": "Edit season",
             "SEASON_NAME": "Season Name",
             "START_DATE": "Start Date",
             "END_DATE": "End Date",
@@ -1485,7 +1549,8 @@
         "APPROVE_PLAN": "Approve Plan",
         "REJECT_PLAN": "Reject Plan",
         "REJECT_PLAN_CONFIRMATION": "Please confirm you want to reject this plan",
-        "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?"
+        "ARE_YOU_SURE_REJECT": "Are you sure you want to reject this plan?",
+        "NO_OTHER_AGENCIES": "No other agencies have a country office with your location"
     },
     "RISK_MONITORING": {
         "ADD_INDICATOR": {
@@ -1543,7 +1608,7 @@
             "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "ADD_NEW_HAZARD": "Add new hazard",
             "INFORMATION_PROVIDED": "Information provided by ",
-            "INFORM_INDEX_FOR_PHILIPPINES": "Inform Index",
+            "INFORM_INDEX": "Inform Index",
             "NOTE_HAZARD": "Note: this list will only display the hazards that donâ€™t appear in your risk monitoring list (you cannot add the same hazard twice)",
             "SELECT_ANOTHER_HAZARD": "Select another hazard",
             "IS_SEASONAL_HAZARD": "Is this a seasonal hazard?",
@@ -1622,7 +1687,6 @@
         "PLANS": "Plans"
     },
     "DONOR": {
-        "COUNTRY_INDEX": "Country Index",
         "AGENCIES_ACTIVE": "Agencies active"
     },
     "EXTERNAL_PARTNER": {

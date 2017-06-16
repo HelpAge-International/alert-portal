@@ -60,7 +60,6 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        console.log(countryAdminUser);
         this.countryId = countryAdminUser.countryId;
         this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
 
@@ -70,7 +69,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
               })
               .subscribe(agency => {
                 this.agency = agency;
-                
+
                 this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
                         .subscribe(coordinationArrangements => { this.coordinationArrangements = coordinationArrangements; });
               });
@@ -91,21 +90,28 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
     this.isEdit = false;
   }
 
-  addEditEquipment(equipmentId?: string) {
-    if(equipmentId)
-    {
-      this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
-    }else{
-      this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
-    }
-  }
+  getStaffName(id) {
+    let staffName = '';
 
-  addEditSurgeEquipment(surgeEquipmentId?: string) {
-    if(surgeEquipmentId)
+    if (!id) {
+      return staffName;
+    }
+
+    this._userService.getUser(id).subscribe(user => {
+      if (user) {
+        staffName = user.firstName + ' ' + user.lastName;
+      }
+    });
+
+    return staffName;
+  }
+  addEditCoordinationArrangement(coordinationArrangementId?: string) {
+    if(coordinationArrangementId)
     {
-      this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
+      this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
+                                  {id: coordinationArrangementId}], {skipLocationChange: true});
     }else{
-      this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
+      this.router.navigateByUrl('/country-admin/country-office-profile/coordination/add-edit-coordination');
     }
   }
 }

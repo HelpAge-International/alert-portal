@@ -8,6 +8,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 declare var jQuery: any;
 import {LocalStorageService} from 'angular-2-local-storage';
 import {MinimumPreparednessComponent} from '../minimum/minimum.component';
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-advanced',
@@ -29,8 +30,8 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
 
   firebase: any;
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService) {
-    super(firebaseApp, af, router, route, storage);
+  constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService:UserService) {
+    super(firebaseApp, af, router, route, storage, userService);
     this.firebase = firebaseApp;
 
     this.docFilterSubject = new BehaviorSubject(undefined);

@@ -44,7 +44,6 @@ export class DonorHeaderComponent implements OnInit {
         this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(userType => {
-            console.log(UserType[userType]);
             this.NODE_TO_CHECK = this.userPaths[userType];
             if (this.NODE_TO_CHECK) {
               this.getAgencyName();

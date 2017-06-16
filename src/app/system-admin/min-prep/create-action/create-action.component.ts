@@ -3,7 +3,7 @@ import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction';
 import {Constants} from '../../../utils/Constants';
-import {ActionType} from '../../../utils/Enums';
+import {ActionType, ActionLevel} from '../../../utils/Enums';
 import {Observable, Subject} from "rxjs";
 
 @Component({
@@ -91,6 +91,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
     let newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
     newAction.task = this.textArea;
     newAction.type = ActionType.chs;
+    newAction.level = ActionLevel.MPA;
     newAction.createdAt = currentDateTime;
 
     this.af.database.list(this.path).push(newAction)
@@ -105,6 +106,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
     let editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
     editedAction.task = this.textArea;
     editedAction.type = ActionType.chs;
+    editedAction.level = ActionLevel.MPA;
     this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).update(editedAction).then(_ => {
         console.log('CHS action updated');
         this.router.navigateByUrl("/system-admin/min-prep");

@@ -14,6 +14,7 @@ declare var jQuery: any;
   styleUrls: ['./dashboard-seasonal-calendar.component.css']
 })
 
+
 export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
   private static WEEK_SPAN_DAY_MULTIPLIER = 30;
@@ -29,14 +30,16 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   private init: boolean = false;
   private currentChronolineInstance;
 
-  private addSeasonName: string;
-  private addSeasonStart: string;
-  private addSeasonEnd: string;
+  public addSeasonName: string;
+  public addSeasonStart: string;
+  public addSeasonEnd: string;
   private seasons: string;
-  private addSeasonColour: string;
+  public addSeasonColour: string;
   private colours: ColourSelector[] = ColourSelector.list();
   private seasonEvents = [];
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  public edit: boolean = false;
+  public editSeasonKey: string;
 
   constructor(private af: AngularFire, private router: Router) {
   }
@@ -87,6 +90,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     }
   }
 
+
   /**
    * Pulls all the data from /seasons/ node in firebase and initialises the calendar
    * Note: Object is used here because the map needs to be re-initialised. Object allows
@@ -95,13 +99,13 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public getAllSeasonsForCountryId(countryId: string) {
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(snapshot => {
+      .subscribe(snapshot => { 
         this.seasonEvents = [
-          ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar())
+          ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
         ];
         let i = 2;
         snapshot.forEach((seasonInfo) => {
-          let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+          let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val(), <DashboardSeasonalCalendarComponent> this, seasonInfo.key);
           this.seasonEvents.push(x);
           i++;
         });
@@ -195,12 +199,65 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     // jQuery("#add_calendar").modal("hide");
   }
 
+  public editCalendarInfo() {
+    console.log("Saving edited!");
+    if (this.addSeasonName == null) {
+      //TODO: Error handling!
+      console.error("Season Name Error Handling!");
+      return;
+    }
+    if (this.addSeasonColour == null) {
+      //TODO: Error handling!
+      console.error("Season Colour Error Handling!");
+      return;
+    }
+    if (this.addSeasonStart == null) {
+      //TODO: Error handling
+      console.error("Start Season Error Handling!");
+      return;
+    }
+    if (this.addSeasonEnd == null) {
+      //TODO: Error handling
+      console.error("End Season Error Handling!");
+      return;
+    }
+    let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName,
+      DashboardSeasonalCalendarComponent.convertYYYYMMDDToUTC(this.addSeasonStart),
+      DashboardSeasonalCalendarComponent.convertYYYYMMDDToUTC(this.addSeasonEnd));
+
+    console.log("edit for key " + this.editSeasonKey);
+    console.log(season);
+    console.log(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey);
+
+    this.af.database.object(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey).update(season);
+    // Below line wasn't working when I was trying to hide it!
+    // jQuery("#add_calendar").modal("hide");
+  }
+
+  public deleteSeason() {
+    this.af.database.object(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey).remove();
+  }
+
   public setCurrentColour(colourCode: string) {
     this.addSeasonColour = colourCode;
   }
 
   public static convertYYYYMMDDToUTC(date: string) {
     return new Date(date).getTime();
+  }
+
+  public static convertUTCToYYYYMMDD(date: number) {
+    return  new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
+  }
+
+  private addCalendar() {
+    this.addSeasonColour = undefined;
+    this.addSeasonEnd = undefined;
+    this.addSeasonStart = undefined;
+    this.addSeasonName = undefined;
+    this.edit = false;
+    this.editSeasonKey = undefined;
+    jQuery("#add_calendar").modal("show");
   }
 }
 
@@ -213,6 +270,7 @@ export class ChronolineEvent {
   private eventHeight: number;
   private section: 1;
   private attrs: {fill: string, stroke: string};
+  private click;
 
   constructor() {
     this.attrs = {
@@ -221,7 +279,7 @@ export class ChronolineEvent {
     }
   }
 
-  public static create(index: number, season: ModelSeason): ChronolineEvent {
+  public static create(index: number, season: ModelSeason, component?: DashboardSeasonalCalendarComponent, seasonKey?: string): ChronolineEvent {
     let event: ChronolineEvent = new ChronolineEvent();
     event.dates = [new Date(season.startTime), new Date(season.endTime)];
     if (season.endTime < season.startTime) {
@@ -229,12 +287,21 @@ export class ChronolineEvent {
         "This will cause the item to still be rendered correctly)");
       event.dates = [new Date(season.endTime), new Date(season.startTime)];
     }
+    let self = this;
     event.title = season.name;
     event.eventHeight = index * 10;
     event.section = 1;
     event.attrs.fill = season.colorCode;
     event.attrs.stroke = season.colorCode;
+    event.click = function() {
+      component.addSeasonName = season.name;
+      component.addSeasonStart = DashboardSeasonalCalendarComponent.convertUTCToYYYYMMDD(season.startTime);
+      component.addSeasonEnd = DashboardSeasonalCalendarComponent.convertUTCToYYYYMMDD(season.endTime);
+      component.addSeasonColour = season.colorCode;
+      component.edit = true;
+      component.editSeasonKey = seasonKey;
+      jQuery("#add_calendar").modal("show");
+    };
     return event;
   }
 }
-

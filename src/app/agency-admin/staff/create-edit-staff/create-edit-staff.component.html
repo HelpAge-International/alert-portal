@@ -131,7 +131,7 @@
           <label *ngIf="allSkills[skillKey].type == TechSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
           type="checkbox" #box (change)="techSkillCheck(allSkills[skillKey],box.checked)" [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
       </template>
-        
+
       </div>
 
       <div class="row Spaced">

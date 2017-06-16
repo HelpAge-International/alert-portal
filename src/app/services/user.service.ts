@@ -15,6 +15,7 @@ import {UserType} from "../utils/Enums";
 import {Subscription} from "rxjs/Subscription";
 import {ChangePasswordModel} from "../model/change-password.model";
 import {recognize} from "@angular/router/src/recognize";
+import { ModelStaff } from "../model/staff.model";
 
 @Injectable()
 export class UserService {
@@ -290,6 +291,30 @@ export class UserService {
     + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
 
     return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+  }
+
+  // STAFF MEMBER
+
+  getStaffList(countryId: string): Observable<ModelStaff[]> {
+    if(!countryId)
+    {
+      return;
+    }
+
+    const staffListSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/' + countryId)
+      .map(items => {
+        let staffList: ModelStaff[] = [];
+        items.forEach(item => {
+
+          let staff = new ModelStaff();
+          staff.mapFromObject(item);
+          staff.id = item.$key;
+          staffList.push(staff);
+        });
+        return staffList;
+      });
+
+    return staffListSubscription;
   }
 
   //return current user type enum number
