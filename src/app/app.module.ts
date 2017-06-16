@@ -157,6 +157,7 @@ import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-offic
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import { DonorAccountSettingsComponent } from './donor-module/donor-account-settings/donor-account-settings.component';
 import { DonorChangePasswordComponent } from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
+import { NewDonorPasswordComponent } from './donor-module/new-donor-password/new-donor-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -312,7 +313,8 @@ const firebaseAuthConfig = {
     CountryOfficeEditProgrammeComponent,
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
-    DonorChangePasswordComponent
+    DonorChangePasswordComponent,
+    NewDonorPasswordComponent
   ],
   imports: [
     BrowserModule,
