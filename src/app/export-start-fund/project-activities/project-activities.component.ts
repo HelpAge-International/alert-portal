@@ -9,6 +9,8 @@ import {
   BudgetCategory,
   UserType
 } from "../../utils/Enums";
+import {ModelPlanActivity} from "../../model/plan-activity.model";
+import {forEach} from "@angular/router/src/utils/collection";
 
 @Component({
   selector: 'app-export-start-fund-project-activities',
@@ -18,12 +20,24 @@ import {
 
 export class ProjectActivitiesComponent implements OnInit, OnDestroy {
 
+  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private USER_TYPE: string = 'administratorCountry';
   private uid: string;
   private countryId: string;
   @Input() responsePlanId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private responsePlan: ResponsePlan = new ResponsePlan;
+  private activityMap = new Map();
+  private sectors: any[];
+  private totalFemaleUnder18 : number;
+  private totalFemale18To50 : number;
+  private totalFemaleOver50 : number;
+  private totalMaleUnder18 : number;
+  private totalMale18To50 : number;
+  private totalMaleOver50 : number;
+  private totalOverallMale : number;
+  private totalOverallFemale : number;
+  private totalOverallPopulation : number;
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -96,12 +110,173 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   }
 
   private bindProjectActivitiesData(responsePlan: ResponsePlan){
+    if (responsePlan.sectors) {
+      this.sectors = Object.keys(responsePlan.sectors).map(key => {
+        let sector = responsePlan.sectors[key];
+        sector["id"] = Number(key);
+        return sector;
+      });
+    }
 
+    if (this.sectors) {
+      Object.keys(responsePlan.sectors).forEach(sectorKey => {
+
+        let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
+        let moreData: {}[] = [];
+        Object.keys(activitiesData).forEach(key => {
+          let beneficiary = [];
+          activitiesData[key]["beneficiary"].forEach(item => {
+            beneficiary.push(item);
+          });
+          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+          moreData.push(model);
+          this.activityMap.set(Number(sectorKey), moreData);
+        });
+      });
+
+      this.totalFemaleUnder18 = this.getTotalFemaleUnder18(this.activityMap);
+      this.totalFemale18To50 = this.getTotalFemaleUnder18To50(this.activityMap);
+      this.totalFemaleOver50 = this.getTotalFemaleOver50(this.activityMap);
+
+      this.totalMaleUnder18 = this.getTotalMaleUnder18(this.activityMap);
+      this.totalMale18To50 = this.getTotalMaleUnder18To50(this.activityMap);
+      this.totalMaleOver50 = this.getTotalMaleOver50(this.activityMap);
+
+      this.totalOverallFemale = this.getOverallFemaleTotal(this.activityMap);
+      this.totalOverallMale = this.getOverallMaleTotal(this.activityMap);
+      this.totalOverallPopulation = this.getOverallPopulationTotal(this.activityMap);
+
+    }
   }
 
   /**
    * Utility Functions
    */
+
+  getTotalFemalePopulation(activity){
+    return (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+    + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+    + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+  }
+
+  getTotalMalePopulation(activity){
+    return (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+      +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+      +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+  }
+
+  getOverallTotalPopulation(activity){
+    return this.getTotalFemalePopulation(activity) + this.getTotalMalePopulation(activity);
+  }
+
+  private getTotalFemaleUnder18(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getTotalFemaleUnder18To50(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getTotalFemaleOver50(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getTotalMaleUnder18(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getTotalMaleUnder18To50(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getTotalMaleOver50(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getOverallFemaleTotal(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+          + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+          + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getOverallMaleTotal(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+          +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+          +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
+
+  private getOverallPopulationTotal(activityMap){
+    var total = 0;
+    this.sectors.forEach(function (sector){
+      activityMap.get(sector.id).forEach(function(activity) {
+        total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+          + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+          + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0)
+
+          + (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+          +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+          +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+      });
+    });
+
+    return total;
+  }
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
