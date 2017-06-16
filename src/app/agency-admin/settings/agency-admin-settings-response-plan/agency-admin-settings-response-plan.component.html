@@ -1,6 +1,6 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
+<app-status-alert [message]="alertMessage | translate" [success]="alertSuccess" [(show)]="alertShow"
                   (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -8,20 +8,22 @@
 
     <app-settings-menu></app-settings-menu>
 
-
     <div class="Sub-header-title__wrap">
-      <h2>Response Plan Settings</h2>
-      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">Cancel
+      <h2>{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.TITLE_TEXT" | translate}}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">
+        {{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.SAVE" | translate}}
       </button>
-      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">Save Response Plan
-        Settings
+      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">
+        {{"GLOBAL.CANCEL" | translate}}
       </button>
     </div>
-    <h4 class="System-admin--form-wrap">Sections selection</h4>
+    <h4 class="System-admin--form-wrap">
+      {{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.SECTIONS_SELECTION" | translate}}
+    </h4>
     <br>
     <div class="row Small-spaced align-items-center Header no-gutters">
-      <div class="col-lg-9 col-md-9 col-sm-6 col-6">Sections</div>
-      <div class="col-lg-3 col-md-3 col-sm-6 col-6">Status</div>
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.SECTIONS" | translate}}</div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">{{"GLOBAL.STATUS" | translate}}</div>
     </div>
 
     <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let section of sections">
@@ -30,31 +32,31 @@
       <div class="col-lg-3 col-md-3 col-sm-6 col-6">
         <div class="btn btn_fixed_width"
              [ngClass]="{'btn-success': section.$value == true, 'btn-outline-success': section.$value == false}"
-             (click)="changeStatus(section.$key, true)">Enabled
+             (click)="changeStatus(section.$key, true)">{{"GLOBAL.ENABLED" | translate}}
         </div>
         <div class="btn btn_fixed_width"
              [ngClass]="{'btn-danger': section.$value == false, 'btn-outline-danger': section.$value == true}"
-             (click)="changeStatus(section.$key, false)">Disabled
+             (click)="changeStatus(section.$key, false)">{{"GLOBAL.DISABLED" | translate}}
         </div>
       </div>
     </div>
-    <h4 class="System-admin--form-wrap">Approval Hierarchy</h4>
+    <h4 class="System-admin--form-wrap">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.APPROVAL_HIERARCHY" | translate}}</h4>
     <br>
     <div class="row Small-spaced align-items-center Header no-gutters">
-      <div class="col-lg-9 col-md-9 col-sm-6 col-6">User type</div>
-      <div class="col-lg-3 col-md-3 col-sm-6 col-6">Required</div>
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.USER_TYPE" | translate}}</div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.REQUIRED" | translate}}</div>
     </div>
     <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let approval of approvals">
-      <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 0">Regional Director</div>
-      <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 1">Global Director</div>
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 0">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" | translate}}</div>
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6" *ngIf="approval.$key == 1">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}</div>
       <div class="col-lg-3 col-md-3 col-sm-6 col-6">
         <div class="btn btn-outline-success btn_fixed_width"
              [ngClass]="{'btn-success': approval.$value == true, 'btn-outline-success': approval.$value == false}"
-             (click)="changeApproval(approval.$key, true)">Yes
+             (click)="changeApproval(approval.$key, true)">{{"GLOBAL.YES" | translate}}
         </div>
         <div class="btn btn-danger btn_fixed_width"
              [ngClass]="{'btn-danger': approval.$value == false, 'btn-outline-danger': approval.$value == true}"
-             (click)="changeApproval(approval.$key, false)">No
+             (click)="changeApproval(approval.$key, false)">{{"GLOBAL.NO" | translate}}
         </div>
       </div>
     </div>

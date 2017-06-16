@@ -1,6 +1,6 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+<app-status-alert [message]="alertMessage | translate" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
@@ -9,15 +9,15 @@
 
 		<div class="Sub-header-title__wrap">
             <h2>{{"AGENCY_ADMIN.SETTINGS.SKILLS.TITLE_TEXT" | translate}}</h2>
+            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedSkills($event)">{{"GLOBAL.DELETE" | translate | uppercase}}</button>
             <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting" (click)="cancelDeleteSkills($event)">{{"GLOBAL.CANCEL" | translate}}</button>
-            <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting" (click)="deleteSelectedSkills($event)">{{"GLOBAL.DELETE" | translate}}</button>
 
             <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteSkills($event)" *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.SKILLS.DELETE_SKILLS" | translate | uppercase}}</button>
             <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="editSkills($event)" *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.SKILLS.EDIT_SKILLS" | translate | uppercase}}</button>
 
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing" (click)="cancelEditSkills($event)">{{"GLOBAL.CANCEL" | translate}}</button>
             <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing" (click)="saveEditedSkills($event)">{{"GLOBAL.SAVE" | translate | uppercase}}</button>
-        </div>
+            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing" (click)="cancelEditSkills($event)">{{"GLOBAL.CANCEL" | translate}}</button>
+    </div>
 
         <h4>{{"AGENCY_ADMIN.SETTINGS.SKILLS.SUPPORT_SKILLS" | translate}}</h4>
         <div class="Agency-settings_skills">

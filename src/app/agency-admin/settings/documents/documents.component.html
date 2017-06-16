@@ -1,24 +1,29 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+<app-status-alert [message]="alertMessage | translate" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Export selected documents</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.EXPORT_DOCS" | translate}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>You are about to export <strong>{{docsCount}} document(s)</strong> with a total size of <strong>{{docsSize | number:'1.0-2'}}MB</strong> are you sure you wish to continue?</p></div>
+        <div class="text-center">
+          <p>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.YOU_ARE_ABOUT_TO_EXPORT" | translate}}
+            <strong>{{docsCount}} {{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.DOCUMENT(S)" | translate}}</strong>
+            {{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.WITH_SIZE" | translate}}
+            <strong>{{docsSize | number:'1.0-2'}}MB</strong>
+            {{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.DO_YOU_WISH_TO_CONTINUE?" | translate}}
+          </p>
+        </div>
       </div>
       <div class="modal-footer">
-
-        <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
-
+        <button type="button" class="btn btn-primary" (click)="export()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">{{"GLOBAL.CANCEL" | translate}}</button>
       </div>
     </div>
   </div>
@@ -29,18 +34,18 @@
 
     <app-settings-menu></app-settings-menu>
         <div class="Sub-header-title__wrap">
-            <h2>Documents</h2>
-            <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable"  *ngIf="exporting" (click)="cancelExportDocuments($event)">Cancel</button>
-            <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="exporting" (click)="exportSelectedDocuments($event)">Export selected documents</button>
-            <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!exporting" (click)="selectDocuments($event)">Select documents</button>
+            <h2>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.TITLE_TEXT" | translate}}</h2>
+             <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="exporting" (click)="exportSelectedDocuments($event)">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.EXPORT_DOCS" | translate | uppercase}}</button>
+             <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable"  *ngIf="exporting" (click)="cancelExportDocuments($event)">{{"GLOBAL.CANCEL" | translate}}</button>
+             <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!exporting" (click)="selectDocuments($event)">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.SELECT_DOCS" | translate | uppercase}}</button>
         </div>
         <div class="row align-items-center Filter-form System-admin--form-wrap">
             <div class="col-lg-1 col-md-1">
-                Filter:
+              {{"GLOBAL.FILTER" | translate}}
             </div>
             <div class="col-lg-2 col-md-2">
               <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
-                  <option value="-1" selected>All countries</option>
+                  <option value="-1" selected>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.ALL_COUNTRIES" | translate}}</option>
                   <template ngFor let-country [ngForOf]="CountriesEnum" let-countryIdx="index">
                     <option value="{{country}}">{{COUNTRIES[countryIdx] | translate}}</option>
                   </template>
@@ -50,7 +55,7 @@
             <div class="col-lg-2 col-md-3">
 
                 <select class="form-control" id="Documents" [(ngModel)]="docTypeSelected" (change)="filter()">
-                   <option value="-1" selected>All documents</option>
+                   <option value="-1" selected>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.ALL_MODULES" | translate}}</option>
                     <template ngFor let-docType [ngForOf]="DocTypeEnum" let-docTypeIdx="index">
                       <option value="{{docType}}">{{DOCUMENT_TYPE[docTypeIdx] | translate}}</option>
                     </template>
@@ -58,20 +63,20 @@
             </div>
             <div class="col-lg-3 col-md-3">
                 <select class="form-control" id="Uploader"  [(ngModel)]="userSelected" (change)="filter()">
-                    <option value="-1" selected>Uploaded by everyone</option>
+                    <option value="-1" selected>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.UPLOADED_BY_EVERYONE" | translate}}</option>
                     <template ngFor let-user [ngForOf]="users" let-userIdx="index">
                       <option value="{{users[userIdx].key}}">{{users[userIdx].fullName}}</option>
                     </template>
                 </select>
             </div>
             <div class="offset-lg-1 col-lg-3 col-md-3">
-                <input #searchField type="text" class="form-control" onkeyup="collapseAll('.collapse', 'show')" name="search" (keyup)="searchByNameOrTitle(searchField.value)" placeholder="Search here">
+                <input #searchField type="text" class="form-control" onkeyup="collapseAll('.collapse', 'show')" name="search" (keyup)="searchByNameOrTitle(searchField.value)" placeholder="{{'GLOBAL.SEARCH_HERE' | translate}}">
             </div>
         </div>
 
         <div class="Ribbon__section__wrap Spaced">
         <template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
-        
+
           <div class="Accordion--b-white Accordion__hide-links" >
               <div class="row align-items-center no-gutters">
                   <div class="col-sm-1 text-center" *ngIf="exporting">
@@ -81,20 +86,20 @@
                   </div>
                   <div class="col-sm-11">
                       <h2>{{COUNTRIES[country.location] | translate}}</h2>
-                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all" *ngIf="country.hasDocs">Hide all</a>
-                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all" *ngIf="country.hasDocs">Show all</a>
+                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all" *ngIf="country.hasDocs">{{"GLOBAL.HIDE_ALL" | translate}}</a>
+                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all" *ngIf="country.hasDocs">{{"GLOBAL.SHOW_ALL" | translate}}</a>
                   </div>
               </div>
           </div>
           <div class="Accordion__Content collapse" id="collapse{{country.$key}}">
                   <div class="row Line-row Small-spaced Header">
                   <div class="col-lg-1 col-md-1" *ngIf="exporting"></div>
-                  <div class="col-lg-1 col-md-1">Module</div>
-                  <div class="col-lg-3 col-md-3">Title</div>
-                  <div class="col-lg-2 col-md-2">Name</div>
-                  <div class="col-lg-1 col-md-1">Size</div>
-                  <div class="col-lg-2 col-md-2">Uploaded By</div>
-                  <div class="col-lg-1 col-md-2">Date</div>
+                  <div class="col-lg-1 col-md-1">{{"COUNTRY_ADMIN.SETTINGS.SETTINGS.MODULE" | translate}}</div>
+                  <div class="col-lg-3 col-md-3">{{"GLOBAL.TITLE" | translate}}</div>
+                  <div class="col-lg-2 col-md-2">{{"GLOBAL.NAME" | translate}}</div>
+                  <div class="col-lg-1 col-md-1">{{"GLOBAL.SIZE" | translate}}</div>
+                  <div class="col-lg-2 col-md-2">{{"GLOBAL.UPLOADED_BY" | translate}}</div>
+                  <div class="col-lg-1 col-md-2">{{"GLOBAL.DATE" | translate}}</div>
               </div>
 
               <div class="row Line-row Small-spaced"  *ngFor="let doc of country.docsfiltered; let docIdx=index">
@@ -108,7 +113,7 @@
                     <div class="col-lg-2 col-md-2">{{doc.fileName}}</div>
                     <div class="col-lg-1 col-md-1">{{doc.size}}</div>
                     <div class="col-lg-2 col-md-2">{{doc.uploadedBy}}</div>
-                    <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>                    
+                    <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>
               </div>
           </div>
         </template>

@@ -1,6 +1,6 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
+<app-status-alert [message]="alertMessage | translate" [success]="alertSuccess" [(show)]="alertShow"
                   (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -10,11 +10,11 @@
 
     <div class="Sub-header-title__wrap">
       <h2>{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.TITLE_TEXT" | translate}}</h2>
+      <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting"
+      (click)="deleteSelectedDepartments($event)">{{"GLOBAL.DELETE" | translate | uppercase}}
+      </button>
       <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting"
               (click)="cancelDeleteDepartments($event)">{{"GLOBAL.CANCEL" | translate}}
-      </button>
-      <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting"
-              (click)="deleteSelectedDepartments($event)">{{"GLOBAL.DELETE" | translate}}
       </button>
 
       <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)"
@@ -25,12 +25,12 @@
               *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.EDIT_DEPARTMENTS" | translate |
         uppercase}}
       </button>
+      <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing"
+              (click)="saveEditedDepartments($event)">{{"GLOBAL.SAVE" | translate | uppercase}}
+      </button>
 
       <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing"
               (click)="cancelEditDepartments($event)">{{"GLOBAL.CANCEL" | translate}}
-      </button>
-      <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing"
-              (click)="saveEditedDepartments($event)">{{"GLOBAL.SAVE" | translate | uppercase}}
       </button>
     </div>
 

@@ -11,8 +11,8 @@
 
         <div class="Header-title__wrap">
             <h2>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.TITLE_TEXT" | translate}}</h2>
-            <button type="button" class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>  
-            <button type="submit" class="btn btn-primary" (click)="validateForm()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SAVE_SETTINGS" | translate}}</button> 
+            <button type="submit" class="btn btn-primary" (click)="validateForm()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SAVE_SETTINGS" | translate}}</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>
         </div>
 
         <div class="Spaced">
@@ -28,7 +28,7 @@
                     [hidden]="userType.value === false">
                         {{ USER_TYPE[userType.key] | translate }}</p>
                 </div>
-                <div class="col-sm-2"><a href="javascript:void(0)" 
+                <div class="col-sm-2"><a href="javascript:void(0)"
                         (click) = "selectUserType(notificationSettings[notificationSetting.key], notificationSetting.key, NOTIFICATION_SETTINGS_SELECTION[notificationSetting.key])">
                         <p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SELECT_USER_TYPE" | translate}}</p></a>
                 </div>
@@ -37,8 +37,8 @@
       </form>
 
       <div class="Header-title__wrap">
-            <h2>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EXTERNAL_NOTIFICATIONS" | translate}}</h2>  
-            <button type="button" class="btn btn-outline-primary" (click) = "addRecipient()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</button> 
+            <h2>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EXTERNAL_NOTIFICATIONS" | translate}}</h2>
+            <button type="button" class="btn btn-outline-primary" (click) = "addRecipient()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</button>
         </div>
 
         <div class="Spaced">
