@@ -58,15 +58,27 @@ export class NewDonorPasswordComponent implements OnInit, OnDestroy {
 
     if (this.validate()) {
       this.authState.auth.updatePassword(this.passwordEntered).then(() => {
-        this.successInactive = false;
-        Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(() => {
-            this.successInactive = true;
-            this.router.navigateByUrl('/donor-module');
-          });
+
+        let donorData = {};
+        donorData['/donor/' + this.uid + '/firstLogin'] = false;
+
+        this.af.database.object(Constants.APP_STATUS).update(donorData).then(() => {
+          this.successInactive = false;
+          Observable.timer(Constants.ALERT_REDIRECT_DURATION)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(() => {
+              this.successInactive = true;
+              this.router.navigateByUrl('/donor-module');
+            });
+
+        }, error => {
+          this.errorMessage = 'GLOBAL.GENERAL_ERROR';
+          this.showAlert();
+          console.log(error.message);
+        });
+
       }, error => {
-        console.log("An error occurred" )
+        console.log("An error occurred -- " + error.message);
         this.router.navigateByUrl('/login');
       });
     } else {
