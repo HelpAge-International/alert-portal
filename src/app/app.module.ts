@@ -155,6 +155,8 @@ import {ProjectReportComponent} from "./export-start-fund/project-report/project
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import { DonorAccountSettingsComponent } from './donor-module/donor-account-settings/donor-account-settings.component';
+import { DonorChangePasswordComponent } from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -308,7 +310,9 @@ const firebaseAuthConfig = {
     ProjectBudgetComponent,
     ProjectReportComponent,
     CountryOfficeEditProgrammeComponent,
-    AddEditMappingProgrammeComponent
+    AddEditMappingProgrammeComponent,
+    DonorAccountSettingsComponent,
+    DonorChangePasswordComponent
   ],
   imports: [
     BrowserModule,
