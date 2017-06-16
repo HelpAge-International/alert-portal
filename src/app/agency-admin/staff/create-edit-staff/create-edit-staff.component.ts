@@ -12,6 +12,7 @@ import * as firebase from "firebase";
 import {ModelStaff} from "../../../model/staff.model";
 import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
+import {map} from "rxjs/operator/map";
 declare var jQuery: any;
 
 @Component({
@@ -189,7 +190,15 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
             this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId);
             this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId)
-              .filter(region => region.directorId == "null");
+              .map(region => {
+                let filteredRegions = [];
+                region.forEach(item => {
+                  if (item.directorId == "null") {
+                    filteredRegions.push(item);
+                  }
+                });
+                return filteredRegions;
+              });
             this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments")
               .map(departments => {
                 let names = [];
