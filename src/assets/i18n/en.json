@@ -742,7 +742,8 @@
             "NO_COUNTRY": "Please select a country",
             "NO_CITY": "Please enter the name of the city",
             "NO_PHONE": "Please enter the phone number",
-            "NO_CURRENCY": "Please select a currency type"
+            "NO_CURRENCY": "Please select a currency type",
+            "NO_POSTCODE": "Please enter the postal code"
         },
         "SETTINGS": {
             "TITLE_TEXT": "Agency Settings",
@@ -1093,6 +1094,28 @@
                 "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this stock capacity?",
                 "SUCCESS_SAVED": "The stock capacity was successfully saved",
                 "SUCCESS_DELETED": "The stock capacity was successfully deleted"
+            },
+            "CONTACTS":{
+                "EDIT_COUNTRY_OFFICE_DETAILS": "Edit country office details",
+                "GO_BACK_TITLE": "Edit contacts",
+                "EDIT": "Edit contacts",
+                "VIEW": "View contacts",
+                "TITLE_TEXT": "Contacts",
+                "OFFICE_DETAILS": "office details",
+                "POINT_OF_CONTACT": "Point of contact",
+                "TITLE_ADD": "Add point of contact",
+                "TITLE_EDIT": "Edit point of contact",
+                "SUCCESS_SAVED_OFFICE_DETAILS": "The office details were successfully updated",
+                "SUCCESS_SAVED_CONTACT": "The point of contact was successfully saved",
+                "NAME": "Name of contact",
+                "SKYPE_NAME": "Skype name",
+                "PHONE": "Office telephone",
+                "NO_STAFF_MEMBER": "Please select a staff member",
+                "NO_PHONE": "Please enter the phone number",
+                "NO_SKYPE": "Please enter the skype name",
+                "DELETE_DIALOG_TITLE": "Delete point of contact",
+                "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this point of contact?",
+                "SUCCESS_DELETED": "The point of contact was successfully deleted"
             }
         },
         "VIEW_MY_AGENCY": {

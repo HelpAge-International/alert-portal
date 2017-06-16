@@ -99,6 +99,9 @@ import {CountryOfficeCoordinationComponent} from "./country-admin/country-office
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import { CountryOfficeContactsComponent } from "./country-admin/country-office-profile/contacts/contacts.component";
+import { CountryOfficeEditOfficeDetailsComponent } from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
+import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -209,6 +212,9 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile/coordination/add-edit-coordination', component: CountryOfficeAddEditCoordinationComponent},
   {path: 'country-admin/country-office-profile/stock-capacity', component: CountryOfficeStockCapacityComponent},
   {path: 'country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity', component: CountryOfficeAddEditStockCapacityComponent},
+  {path: 'country-admin/country-office-profile/contacts', component: CountryOfficeContactsComponent},
+  {path: 'country-admin/country-office-profile/contacts/edit-office-details', component: CountryOfficeEditOfficeDetailsComponent},
+  {path: 'country-admin/country-office-profile/contacts/add-edit-point-of-contact', component: CountryOfficeAddEditPointOfContactComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
 

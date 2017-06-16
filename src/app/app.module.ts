@@ -149,6 +149,10 @@ import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { StockService } from "./services/stock.service";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import { CountryOfficeContactsComponent } from "./country-admin/country-office-profile/contacts/contacts.component";
+import { CountryOfficeEditOfficeDetailsComponent } from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
+import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
+import { ContactService } from "./services/contact.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -207,6 +211,9 @@ const firebaseAuthConfig = {
     CountryOfficeAddEditCoordinationComponent,
     CountryOfficeStockCapacityComponent,
     CountryOfficeAddEditStockCapacityComponent,
+    CountryOfficeContactsComponent,
+    CountryOfficeEditOfficeDetailsComponent,
+    CountryOfficeAddEditPointOfContactComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
@@ -332,7 +339,8 @@ const firebaseAuthConfig = {
               EquipmentService,
               CoordinationArrangementService,
               AgencyService,
-              StockService],
+              StockService,
+              ContactService],
   bootstrap: [AppComponent]
 })
 
