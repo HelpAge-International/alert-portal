@@ -3,7 +3,10 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute} from "@angular/router";
 import {Observable} from "rxjs";
-import {AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
+import {
+  ActionLevel, ActionStatus, ActionType, AlertLevels, AlertStatus, Countries, DashboardType,
+  UserType
+} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -275,6 +278,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
         });
     }
+  }
+
+  shouldShow(level: number, action: number) {
+    if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
+      return false;
+    }
+    if (level == ActionLevel.APA && !this.moduleSettings.advancedPreparedness) {
+      return false;
+    }
+    if (action == ActionType.chs && !this.moduleSettings.chsPreparedness) {
+      return false;
+    }
+    return true;
   }
 
   private getHazards() {

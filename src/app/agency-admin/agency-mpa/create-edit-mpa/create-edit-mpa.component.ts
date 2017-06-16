@@ -5,6 +5,7 @@ import {MandatedPreparednessAction} from '../../../model/mandatedPA';
 import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
 import {Observable, Subject} from "rxjs";
+import {AgencyModulesEnabled, PermissionService} from "../../../services/permissions.service";
 declare var jQuery: any;
 
 @Component({
@@ -36,6 +37,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private departmentSelected: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private modules: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
@@ -44,6 +46,8 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
+
+        PermissionService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, );
 
         this.uid = auth.uid;
         this.path = Constants.APP_STATUS + '/action/' + this.uid;
