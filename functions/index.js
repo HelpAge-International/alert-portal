@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 const admin = require('firebase-admin');
+const moment = require('moment');
 admin.initializeApp(functions.config().firebase);
 
 const gmailEmail = encodeURIComponent(functions.config().gmail.email);
@@ -47,8 +48,6 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
     const userId = event.params.userId;
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
-    console.log(preData);
-    console.log(currData);
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
@@ -72,8 +71,6 @@ exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId
     const userId = event.params.userId;
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
-    console.log(preData);
-    console.log(currData);
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
@@ -97,8 +94,6 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
     const userId = event.params.userId;
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
-    console.log(preData);
-    console.log(currData);
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
@@ -116,20 +111,23 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
     }
   });
 
-exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlan}')
+exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlan}/isActive')
   .onWrite(event => {
-    if (event.data.current.val()['isActive'] && event.data.changed()) {
+    // if (event.data.current.val()['isActive'] && event.data.changed()) {
+    let isActive = event.data.val();
+    if (isActive && event.data.changed()) {
       console.log("response plan node triggered");
-      console.log(event.data.val());
-      console.log(event.data.key);
+      // console.log(event.data.val());
+      // console.log(event.data.key);
       // console.log(event.data.previous.val());
       // console.log(event.data.current.val());
       // console.log(event.data.changed());
-      console.log(event.data.val().startDate);
-      console.log(event.params["countryId"]);
+      // console.log(event.data.val().startDate);
+      // console.log(event.params["countryId"]);
 
       let countryId = event.params["countryId"];
-      let responsePlanId = event.data.key;
+      // let responsePlanId = event.data.key;
+      let responsePlanId = event.params['responsePlan'];
 
       admin.database().ref('/sand/administratorCountry').orderByChild("countryId").equalTo(countryId)
         .on("value", snapshot => {
@@ -144,36 +142,81 @@ exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countr
               console.log(snapshot.val());
               let durationType = Number(snapshot.val()['durationType']);
               let value = Number(snapshot.val()['value']);
-              let oneDayTime = 24 * 60 * 60 * 1000;
-              let timeDifference = 0;
-              switch (durationType) {
-                case WEEK:
-                  timeDifference = value * 7 * oneDayTime;
-                  break;
-                case MONTH:
-                  timeDifference = value * 30 * oneDayTime; // one month has 30 days
-                  break;
-                case YEAR:
-                  timeDifference = value * 365 * oneDayTime; // one year has 365 days
-                  break;
-              }
+              let timeDifference = calculateTime(durationType, value);
               console.log(timeDifference);
 
               setTimeout(() => {
                 admin.database().ref('/sand/responsePlan/' + countryId + '/' + responsePlanId)
                   .on('value', snapshot => {
                     if (snapshot.val() && snapshot.val()['isActive']) {
-                      admin.database().ref('/sand/responsePlan/' + countryId + '/' + responsePlanId + '/isActive').set(false).then(() => {
-                        console.log("expire success");
-                      }, error => {
-                        console.log(error.message);
-                      });
+                      // admin.database().ref('/sand/responsePlan/' + countryId + '/' + responsePlanId + '/isActive').set(false).then(() => {
+                      //   console.log("expire success");
+                      // }, error => {
+                      //   console.log(error.message);
+                      // });
                     }
                   });
-              }, 5000);
+              }, timeDifference); //TODO this needs to be checked!!!
 
             })
         });
     }
   });
+
+exports.handleClockSettins = functions.database.ref('/sand/countryOffice/{agencyId}/{countryId}/clockSettings/responsePlans')
+  .onWrite(event => {
+    // console.log(event.data.val());
+    let serverTime = moment.utc().valueOf();
+    let countryId = event.params['countryId'];
+    let responsePlanSetting = event.data.val();
+    let durationType = Number(responsePlanSetting.durationType);
+    let value = Number(responsePlanSetting.value);
+    let timeDifference = calculateTime(durationType, value);
+    // console.log("duration type: " + durationType);
+    // console.log("value: " + value);
+    // console.log("time difference: " + timeDifference);
+    // console.log("country id: " + countryId);
+    // console.log("server time: " + serverTime);
+    updateResponsePlans(serverTime, timeDifference, countryId);
+  });
+
+function updateResponsePlans(serverTimeNow, timeDifference, countryId) {
+  admin.database().ref('sand/responsePlan/' + countryId)
+    .once('value', snapshot => {
+      console.log(snapshot.val());
+      let plansNeedToInactive = Object.keys(snapshot.val())
+        .map(key => {
+          let responsePlan = snapshot.val()[key];
+          responsePlan['id'] = key;
+          return responsePlan;
+        })
+        .filter(plan => (serverTimeNow - plan.startDate) > timeDifference && plan.isActive);
+      console.log(plansNeedToInactive);
+      plansNeedToInactive.forEach(plan => {
+        console.log(plan);
+        admin.database().ref('sand/responsePlan/' + countryId + '/' + plan['id'] + '/isActive').set(false).then(() => {
+          console.log('success de-active');
+        }, error => {
+          console.log(error.message);
+        });
+      });
+    });
+}
+
+function calculateTime(durationType, value) {
+  let timeDifference = 0;
+  let oneDayTime = 24 * 60 * 60 * 1000;
+  switch (durationType) {
+    case WEEK:
+      timeDifference = value * 7 * oneDayTime;
+      break;
+    case MONTH:
+      timeDifference = value * 30 * oneDayTime; // one month has 30 days
+      break;
+    case YEAR:
+      timeDifference = value * 365 * oneDayTime; // one year has 365 days
+      break;
+  }
+  return timeDifference;
+}
 
