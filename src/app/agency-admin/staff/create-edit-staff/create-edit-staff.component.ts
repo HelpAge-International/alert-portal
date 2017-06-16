@@ -177,8 +177,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     }
 
     this.userService.getUserType(staffId).subscribe(userType => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + '/' + staffId + '/firstLogin').subscribe(value => {
-        console.log(value);
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + '/' + staffId + '/firstLogin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(value => {
         this.isFirstLogin = value.$value;
       })
     });
