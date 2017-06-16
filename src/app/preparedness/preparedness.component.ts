@@ -158,7 +158,7 @@ export class PreparednessComponent implements OnInit, OnDestroy {
     }
 
     selectDepartment(event: any) {
-        this.actionData.department = parseInt(event.target.value);
+        this.actionData.department = event.target.value;
         return true;
     }
 

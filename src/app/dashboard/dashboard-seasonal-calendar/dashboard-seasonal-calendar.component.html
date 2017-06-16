@@ -5,8 +5,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Back--button" routerLink="/dashboard">{{"GLOBAL.HOME" | translate}}</div>
     <div class="Header-title__wrap">
-      <h1>Seasonal calendar <a href="javascript:void(0)" class="btn btn-outline-primary" data-toggle="modal"
-                               data-target="#add_calendar">{{"DASHBOARD.CALENDAR.ADD_TO_CALENDAR" | translate}}</a></h1>
+      <h1>Seasonal calendar <a class="btn btn-outline-primary" (click)="addCalendar()">{{"DASHBOARD.CALENDAR.ADD_TO_CALENDAR" | translate}}</a></h1>
       <div class="Header-title__wrap__Inline-links">
         <a href="javascript:void(0)" class="{{!currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setWeekView()">{{"DASHBOARD.CALENDAR.VIEW_AS_WEEKS" | translate}}</a> |
         <a href="javascript:void(0)" class="{{currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setMonthView()">{{"DASHBOARD.CALENDAR.VIEW_AS_MONTHS" | translate}}</a>
@@ -22,7 +21,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><b>{{"DASHBOARD.CALENDAR.ADD_SEASON" | translate}}</b></h5>
+      <h5 class="modal-title" id="exampleModalLabel" *ngIf="!edit"><b>{{"DASHBOARD.CALENDAR.ADD_SEASON" | translate}}</b></h5>
+        <h5 class="modal-title" id="exampleModalLabel" *ngIf="edit"><b>{{"DASHBOARD.CALENDAR.EDIT_SEASON" | translate}}</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -41,13 +41,13 @@
           <div class="col-sm-6">
             <div class="form-group">
               <label for="S-date">{{"DASHBOARD.CALENDAR.START_DATE" | translate}}:</label>
-              <input type="date" [(ngModel)]="addSeasonStart" class="form-control form-control-danger" id="S-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <input type="date" [ngModel] ="addSeasonStart | date:'yyyy-MM-dd'" (ngModelChange)="addSeasonStart = $event" class="form-control form-control-danger" id="S-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
               <label for="E-date">{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
-              <input type="date" [(ngModel)]="addSeasonEnd" class="form-control form-control-danger" id="E-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <input type="date" [ngModel] ="addSeasonEnd | date:'yyyy-MM-dd'" (ngModelChange)="addSeasonEnd = $event" class="form-control form-control-danger" id="E-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
             </div>
           </div>
         </div>
@@ -64,7 +64,9 @@
       <div class="modal-footer">
 
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
-        <button type="button" (click)="saveCalendarInfo()" class="btn btn-success" data-dismiss="modal">{{"GLOBAL.SAVE" | translate}}</button>
+        <button type="button" (click)="saveCalendarInfo()" class="btn btn-success" data-dismiss="modal" *ngIf="!edit">{{"GLOBAL.SAVE" | translate}}</button>
+        <button type="button" (click)="editCalendarInfo()" class="btn btn-success" data-dismiss="modal" *ngIf="edit">{{"GLOBAL.SAVE" | translate}}</button>
+        <button type="button" (click)="deleteSeason()" class="btn btn-danger" data-dismiss="modal" *ngIf="edit">{{"GLOBAL.DELETE" | translate}}</button>
 
       </div>
     </div>

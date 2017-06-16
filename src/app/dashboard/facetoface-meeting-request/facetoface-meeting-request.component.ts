@@ -98,11 +98,13 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
           .subscribe(agencies => {
             agencies = agencies.filter(agency => agency.$key != agencyId);
             agencies.forEach(agency => {
-              let countries = Object.keys(agency).map(key => {
+              let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
                 let temp = agency[key];
                 temp["countryId"] = key;
                 return temp;
               });
+              console.log(countries);
+              console.log(Object.keys(agency).filter(key => !(key.indexOf("$")> -1)));
               countries = countries.filter(countryItem => countryItem.location == country.location);
               console.log(countries)
               if (countries.length > 0) {

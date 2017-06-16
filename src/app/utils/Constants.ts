@@ -47,7 +47,7 @@ export class Constants {
   static G_OR_R_DIRECTOR_DASHBOARD = "/director";
 
   // Donor
-  static DONOR_HOME = "/donor";
+  static DONOR_HOME = "/donor-module";
 
   /*LIST VALUES FOR TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
@@ -570,6 +570,23 @@ export class Constants {
   static EQUIPMENT_NODE = '/countryOfficeProfile/equipment/{countryId}/{id}/notes';
   static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
   static STOCK_CAPACITY_NODE = '/countryOffice/{agencyId}/{countryId}/{id}/notes';
+
+  static MONTH = [
+    null,
+    "MONTH.JANUARY",
+    "MONTH.FEBRUARY",
+    "MONTH.MARCH",
+    "MONTH.APRIL",
+    "MONTH.MAY",
+    "MONTH.JUNE",
+    "MONTH.JULY",
+    "MONTH.AUGUST",
+    "MONTH.SEPTEMBER",
+    "MONTH.OCTOBER",
+    "MONTH.NOVEMBER",
+    "MONTH.DECEMBER",
+  ];
+
 }
 
 export enum FILE_SETTING {

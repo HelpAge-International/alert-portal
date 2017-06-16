@@ -66,7 +66,7 @@
                 <label for="n-Done">{{"PREPAREDNESS.DEPARTMENT_SELECT_TEXT" | translate}}</label>
                 <select class="form-control form-control-sm col-sm-5" (change)="selectDepartment($event)" [disabled]="(actionID && !actionData.department) ? true : false">
                         <option selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                    <option *ngFor="let dList of departmentList" [selected]="dList == actionData.department ? true : false" [value]="dList">{{department[dList] | translate}}</option>
+                    <option *ngFor="let dList of departmentList" [selected]="dList == actionData.department ? true : false" [value]="dList">{{dList}}</option>
                     <option class="add-department">{{"PREPAREDNESS.ADD_A_DEPARTMENT" | translate}}</option>
                 </select>
             </div>

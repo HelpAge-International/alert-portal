@@ -1,0 +1,47 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="">
+      <div class="Back--button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</div>
+
+      <div align="center">
+        <h1>Start Fund</h1>
+        <a id="downloadLink" style="display:none;"></a>
+
+        <input type="button" onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative'])"
+               value="Download All">
+      </div>
+
+      <br>
+
+      <div>
+
+        <!--Project Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-report></app-export-start-fund-project-report>
+        </div>
+
+        <br>
+        <br>
+
+        <!--Project Budget-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-budget></app-export-start-fund-project-budget>
+        </div>
+
+        <br>
+        <br>
+
+        <!--Project Narrative-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-narrative></app-export-start-fund-project-narrative>
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+</div>

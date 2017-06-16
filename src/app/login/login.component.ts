@@ -25,10 +25,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     userEmail: '',
     password: ''
   };
-
+  private userChecks: number = 0;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private mErrorCodes: Map<string, string> = new Map<string, string>();
 
   constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
+    this.mErrorCodes.set("password", "LOGIN.INCORRECT_PASSWORD");
+    this.mErrorCodes.set("no user record", "LOGIN.INCORRECT_EMAIL");
+    this.mErrorCodes.set("blocked", "LOGIN.LOGIN_BLOCKED");
   }
 
   ngOnInit() {
@@ -38,7 +42,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (params["emailEntered"]) {
           this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
           this.emailEntered = params["emailEntered"];
-          this.showAlert(false);
+          this.showAlert(false, "");
           console.log("From Forgot Password");
         }
       });
@@ -64,163 +68,131 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
         .then((success) => {
 
-          this.af.database.list(Constants.APP_STATUS + '/system', {preserveSnapshot: true})
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(snapshots => {
-              snapshots.forEach(snapshot => {
-                if (snapshot.key == success.uid) {
-                  this.router.navigateByUrl(Constants.SYSTEM_ADMIN_HOME);
-                }
-              });
-              this.af.database.list(Constants.APP_STATUS + '/administratorAgency', {preserveSnapshot: true})
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(snapshots => {
-                  snapshots.forEach(snapshot => {
-                    if (snapshot.key == success.uid) {
-
-                      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + snapshot.key + '/firstLogin')
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe((value) => {
-                          let firstLogin: boolean = value.$value;
-                          if (firstLogin) {
-                            this.router.navigateByUrl('agency-admin/new-agency/new-agency-password');
-                          } else {
-                            this.agencyService.getAgencyId(snapshot.key)
-                              .takeUntil(this.ngUnsubscribe)
-                              .subscribe(agencyId => {
-                                this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + '/isActive')
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe((value) => {
-                                    let isActive: boolean = value.$value;
-                                    if (isActive) {
-                                      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
-                                    } else {
-                                      this.errorMessage = 'Your account is deactivated - Please check with your system administrator'; // TODO - Translate
-                                      this.showAlert(true);
-                                    }
-                                  });
-                              });
-                          }
-                        });
-                    }
-                  });
-                  this.af.database.list(Constants.APP_STATUS + '/administratorCountry', {preserveSnapshot: true})
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(snapshots => {
-                      snapshots.forEach(snapshot => {
-                        if (snapshot.key == success.uid) {
-                          this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + snapshot.key + '/firstLogin')
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe((value) => {
-                              let firstLogin: boolean = value.$value;
-                              if (firstLogin) {
-                                this.router.navigateByUrl('country-admin/new-country/new-country-password');
-                              } else {
-                                this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
-                              }
-                            });
-                        }
-                      });
-                      this.af.database.list(Constants.APP_STATUS + '/countryDirector', {preserveSnapshot: true})
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(snapshots => {
-                          snapshots.forEach(snapshot => {
-                            if (snapshot.key == success.uid) {
-                              this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
-                            }
-                          });
-                          this.af.database.list(Constants.APP_STATUS + '/globalDirector', {preserveSnapshot: true})
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(snapshots => {
-                              snapshots.forEach(snapshot => {
-                                if (snapshot.key == success.uid) {
-                                  this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
-                                }
-                              });
-                              this.af.database.list(Constants.APP_STATUS + '/regionDirector', {preserveSnapshot: true})
-                                .takeUntil(this.ngUnsubscribe)
-                                .subscribe(snapshots => {
-                                  snapshots.forEach(snapshot => {
-                                    if (snapshot.key == success.uid) {
-                                      this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
-                                    }
-                                  });
-
-                                  this.af.database.list(Constants.APP_STATUS + '/globalUser', {preserveSnapshot: true})
-                                    .takeUntil(this.ngUnsubscribe)
-                                    .subscribe(snapshots => {
-                                      snapshots.forEach(snapshot => {
-                                        if (snapshot.key == success.uid) {
-                                          this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
-                                        }
-                                      });
-
-                                      this.af.database.list(Constants.APP_STATUS + '/countryUser', {preserveSnapshot: true})
-                                        .takeUntil(this.ngUnsubscribe)
-                                        .subscribe(snapshots => {
-                                          snapshots.forEach(snapshot => {
-                                            if (snapshot.key == success.uid) {
-                                              this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
-                                            }
-                                          });
-
-                                          this.af.database.list(Constants.APP_STATUS + '/ertLeader', {preserveSnapshot: true})
-                                            .takeUntil(this.ngUnsubscribe)
-                                            .subscribe(snapshots => {
-                                              snapshots.forEach(snapshot => {
-                                                if (snapshot.key == success.uid) {
-                                                  this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
-                                                }
-                                              });
-
-                                              this.af.database.list(Constants.APP_STATUS + '/ert', {preserveSnapshot: true})
-                                                .takeUntil(this.ngUnsubscribe)
-                                                .subscribe(snapshots => {
-                                                  snapshots.forEach(snapshot => {
-                                                    if (snapshot.key == success.uid) {
-                                                      this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
-                                                    }
-                                                  });
-                                                  this.af.database.list(Constants.APP_STATUS + '/donor', {preserveSnapshot: true})
-                                                    .takeUntil(this.ngUnsubscribe)
-                                                    .subscribe(snapshots => {
-                                                      snapshots.forEach(snapshot => {
-                                                        if (snapshot.key == success.uid) {
-                                                          this.router.navigateByUrl(Constants.DONOR_HOME);
-                                                        }
-                                                      });
-                                                      this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
-                                                      this.showAlert(true);
-                                                    });
-                                                });
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                          // this.errorMessage = "LOGIN.UNRECOGNISED_ERROR";
-                          // this.showAlert(true);
-                        });
-                    });
-                });
-            });
+          // Fire off list of calls to check if the user id exists under any one of the nodes
+          // - If all of these fail, the results are aggregated in loginAllCallsFinished();
+          this.loginCheckingFirstLoginValue(success.uid, "administratorCountry", Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password');
+          this.loginChecking(success.uid, "system", Constants.SYSTEM_ADMIN_HOME);
+          this.loginChecking(success.uid, "countryDirector", Constants.COUNTRY_ADMIN_HOME);
+          this.loginChecking(success.uid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+          this.loginChecking(success.uid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+          this.loginChecking(success.uid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+          this.loginChecking(success.uid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+          this.loginChecking(success.uid, "ertLeader", Constants.COUNTRY_ADMIN_HOME);
+          this.loginChecking(success.uid, "ert", Constants.COUNTRY_ADMIN_HOME);
+          this.loginChecking(success.uid, "donor", Constants.DONOR_HOME);
+          this.loginCheckingAgency(success.uid, "administratorAgency", Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
         })
+
         .catch((error) => {
-          // error.message can't be used here as they won't be translated. A global message is shown here instead.
-          this.errorMessage = "GLOBAL.GENERAL_LOGIN_ERROR";
+          // An error occured with logging in the user
           console.log(error.message);
-          this.showAlert(true);
+          let ran: boolean = false;
+          this.mErrorCodes.forEach((val, key) => {
+            console.log(key);
+            console.log(error.message.indexOf(key));
+            if (error.message.indexOf(key) != -1) {
+              this.showAlert(true, this.mErrorCodes.get(key));
+              ran = true;
+            }
+          });
+          if (!ran) {
+            this.showAlert(true, "GLOBAL.GENERAL_LOGIN_ERROR");
+          }
         });
       this.inactive = true;
     }
     else {
-      this.showAlert(true);
+      this.showAlert(true, "LOGIN.VALIDATION_ERROR");
     }
   }
 
-  private showAlert(error: boolean) {
+  /**
+   * Generic login checking methods.
+   */
+  private loginChecking(successUid: string, userNodeName: string, directToIfSuccess: string) {
+    this.loginCheckingFirstLoginValue(successUid, userNodeName, directToIfSuccess, null);
+  }
+  private loginCheckingFirstLoginValue(successUid: string, userNodeName: string, directToIfSuccess: string, directToIfFirst: string) {
+    this.userChecks++;
+    this.af.database.object(Constants.APP_STATUS + "/" + userNodeName + "/" + successUid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snapshot => {
+        if (snapshot.val() != null) {
+          if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
+            // If there's no first directory or firstLogin is not defined or false, go to success (as if it's a regular login)
+            this.router.navigateByUrl(directToIfSuccess);
+          }
+          else {
+            // firstLogin = true, go to the first login page
+            this.router.navigateByUrl(directToIfFirst);
+          }
+        }
+        else {
+          // It's not this user type. Notify the finish method
+          this.loginAllCallsFinished();
+        }
+      });
+  }
+  private loginCheckingCustom(successUid: string, userNodeName: string, success: (snap) => void, firstLogin: (snap) => void) {
+    this.userChecks++;
+    this.af.database.object(Constants.APP_STATUS + "/" + userNodeName + "/" + successUid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        if (snapshot.val() != null) {
+          if (snapshot.val().firstLogin != null && snapshot.val().firstLogin) {
+            firstLogin(snapshot.val());
+          }
+          else {
+            success(snapshot.val());
+          }
+        }
+        else {
+          // It's not this user type. Notify the finish method
+          this.loginAllCallsFinished();
+        }
+      });
+  }
+
+  /**
+   * Custom agency login check - Required custom /agency/ authentication for if the account is disabled or not
+   */
+  private loginCheckingAgency(successUid: string, userNodeName: string, directToIfSuccess: string, directToIfFirst: string) {
+    this.loginCheckingCustom(successUid, userNodeName,
+      (snap) => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + snap.agencyId, {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((snapshot) => {
+            if (snapshot.val() != null) {
+              if (snapshot.val().isActive != null && snapshot.val().isActive) {
+                this.router.navigateByUrl(directToIfSuccess);
+              }
+              else {
+                this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+              }
+            }
+            else {
+              this.showAlert(true, "LOGIN.AGENCY_DOESNT_EXIST");
+            }
+          });
+      },
+      (snap) => {
+        this.router.navigateByUrl(directToIfFirst);
+      });
+  }
+
+  private loginAllCallsFinished() {
+    this.userChecks--;
+    if (this.userChecks <= 0) {
+      // Run this logic
+      this.showAlert(true, "LOGIN.USERTYPE_UNASSIGNED");
+    }
+  }
+
+  private showAlert(error: boolean, errorMessage: string) {
+    this.errorMessage = errorMessage;
     this.loaderInactive = true;
     if (error) {
+      this.af.auth.logout();
       this.inactive = false;
       Observable.timer(Constants.ALERT_DURATION)
         .takeUntil(this.ngUnsubscribe)
@@ -244,7 +216,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    * if the password field is empty,
    * @returns {boolean}
    */
-  validate() {
+    validate() {
     if ((!(this.localUser.userEmail)) && (!(this.localUser.password))) {
       this.alerts[this.localUser.userEmail] = true;
       this.alerts[this.localUser.password] = true;

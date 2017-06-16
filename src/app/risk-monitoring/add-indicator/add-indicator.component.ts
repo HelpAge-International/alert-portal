@@ -305,6 +305,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazards: any) => {
       this.hazards = [];
       this.hazardsObject = {};
+
+      hazards["countryContext"] = { key: "countryContext" };
+      this.hazards.push(hazards["countryContext"]);
+      this.hazardsObject["countryContext"] = hazards["countryContext"];
+
       for (let hazard in hazards) {
         hazards[hazard].key = hazard;
         this.hazards.push(hazards[hazard]);

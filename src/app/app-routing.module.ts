@@ -70,7 +70,7 @@ import {SelectPreparednessComponent} from "./preparedness/select/select.componen
 import {CreateEditPreparednessComponent} from "./preparedness/create-edit/create-edit.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {AgencyNotificationsComponent} from "./agency-admin/agency-notifications/agency-notifications.component";
-import {ExportTestComponent} from "./export-test/export-test.component";
+import {ExportStartFundComponent} from "./export-start-fund/export-start-fund.component";
 
 import {CreateAlertRiskMonitoringComponent} from './risk-monitoring/create-alert/create-alert.component';
 import {AddIndicatorRiskMonitoringComponent} from './risk-monitoring/add-indicator/add-indicator.component';
@@ -96,23 +96,27 @@ import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-pr
 import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-view.component";
 import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
 import { CountryOfficeContactsComponent } from "./country-admin/country-office-profile/contacts/contacts.component";
 import { CountryOfficeEditOfficeDetailsComponent } from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
 import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
+import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
+import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
+import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: '/login', pathMatch: 'full'},
+    {path: '', redirectTo: '/login', pathMatch: 'full'},
 
-  /**
-   * Login
-   */
-  {path: 'forgot-password', component: ForgotPasswordComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'reset-password', component: ResetPasswordComponent},
-  {path: 'login/:emailEntered', component: LoginComponent},
+    /**
+     * Login
+     */
+    {path: 'forgot-password', component: ForgotPasswordComponent},
+    {path: 'login', component: LoginComponent},
+    {path: 'reset-password', component: ResetPasswordComponent},
+    {path: 'login/:emailEntered', component: LoginComponent},
 
   /**
    * System admin
@@ -172,34 +176,34 @@ const routes: Routes = [
   {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
   {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
 
-  /**
-   * Country admin
-   */
-  {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
-  {path: 'country-admin/new-country/new-country-details', component: NewCountryDetailsComponent},
-  {path: 'country-admin/country-account-settings', component: CountryAccountSettingsComponent},
-  {path: 'country-admin/country-account-settings/country-change-password', component: CountryChangePasswordComponent},
-  {path: 'country-admin/country-messages', component: CountryMessagesComponent},
-  {path: 'country-admin/country-messages/country-create-edit-message', component: CountryCreateEditMessageComponent},
-  {
-    path: 'country-admin/country-messages/country-create-edit-message/:id',
-    component: CountryCreateEditMessageComponent
-  },
-  {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
-  {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
-  {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
-  {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
-  {
-    path: 'country-admin/settings/country-notification-settings/country-add-external-recipient',
-    component: CountryAddExternalRecipientComponent
-  },
-  {path: 'country-admin/country-staff', component: CountryStaffComponent},
-  {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
-  {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
-  // {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
-  {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
-  {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
-  {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
+    /**
+     * Country admin
+     */
+    {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
+    {path: 'country-admin/new-country/new-country-details', component: NewCountryDetailsComponent},
+    {path: 'country-admin/country-account-settings', component: CountryAccountSettingsComponent},
+    {path: 'country-admin/country-account-settings/country-change-password', component: CountryChangePasswordComponent},
+    {path: 'country-admin/country-messages', component: CountryMessagesComponent},
+    {path: 'country-admin/country-messages/country-create-edit-message', component: CountryCreateEditMessageComponent},
+    {
+        path: 'country-admin/country-messages/country-create-edit-message/:id',
+        component: CountryCreateEditMessageComponent
+    },
+    {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
+    {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
+    {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
+    {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
+    {
+        path: 'country-admin/settings/country-notification-settings/country-add-external-recipient',
+        component: CountryAddExternalRecipientComponent
+    },
+    {path: 'country-admin/country-staff', component: CountryStaffComponent},
+    {path: 'country-admin/country-staff/country-add-edit-partner', component: CountryAddEditPartnerComponent},
+    {path: 'country-admin/country-staff/country-add-edit-staff', component: CountryAddEditStaffComponent},
+    // {path: 'country-admin/country-office-profile/:countryId', component: CountryOfficeProfileComponent},
+    {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
+    {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
+    {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
   {
     path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
     component: CountryOfficeAddEditEquipmentComponent
@@ -217,6 +221,10 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile/contacts/add-edit-point-of-contact', component: CountryOfficeAddEditPointOfContactComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
+    {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
+    {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
+    {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
+    {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
 
   /**
    * Dashboard
@@ -284,13 +292,14 @@ const routes: Routes = [
   /**
    * Donor
    */
-  {path: 'donor', component: DonorModuleComponent},
-  {path: 'donor/donor-country-index', component: DonorCountryIndexComponent},
+  {path: 'donor-module', component: DonorModuleComponent},
+  {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
+  {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
 
-  /*
-   * test
+  /**
+   * Response plan exporting
    * */
-  {path: 'export', component: ExportTestComponent}
+  {path: 'export-start-fund', component: ExportStartFundComponent}
 
 ];
 
