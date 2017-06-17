@@ -106,6 +106,7 @@ import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/cou
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-profile/documents/documents.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -221,10 +222,11 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile/contacts/add-edit-point-of-contact', component: CountryOfficeAddEditPointOfContactComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
-    {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
-    {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
-    {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
-    {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
+  {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
+  {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
+  {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
+  {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
+  {path: 'country-admin/country-office-profile/documents', component: CountryOfficeDocumentsComponent},
 
   /**
    * Dashboard

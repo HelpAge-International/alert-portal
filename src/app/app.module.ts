@@ -153,6 +153,7 @@ import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/coun
 import { CountryOfficeContactsComponent } from "./country-admin/country-office-profile/contacts/contacts.component";
 import { CountryOfficeEditOfficeDetailsComponent } from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
 import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
+import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-profile/documents/documents.component";
 import { ContactService } from "./services/contact.service";
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
@@ -221,6 +222,7 @@ const firebaseAuthConfig = {
     CountryOfficeContactsComponent,
     CountryOfficeEditOfficeDetailsComponent,
     CountryOfficeAddEditPointOfContactComponent,
+    CountryOfficeDocumentsComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
