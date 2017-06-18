@@ -7,7 +7,7 @@
     <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
@@ -316,7 +316,7 @@
         </div>
       </div>
     </div>
-
+    <!--       v the best typo -->
     <!--empty rubber for default dashboard-->
     <div
       *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
@@ -372,43 +372,51 @@
         *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ">
 
         <div *ngFor="let action of actionsToday" class="row alert-danger">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">{{getActionTitle(action)}}
-            <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
-          <div class="col-md-3">
-            <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
-              translate}}
-            </button>
+          <div *ngIf="shouldShow(indicator.level, indicator.action)">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getActionTitle(action)}}
+              <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
+            <div class="col-md-3">
+              <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+                translate}}
+              </button>
+            </div>
           </div>
         </div>
 
         <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
-          </div>
-          <div class="col-md-3">
-            <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
-              translate}}
-            </button>
+          <div *ngIf="shouldShow(indicator.level, indicator.action)">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+                translate}}
+              </button>
+            </div>
           </div>
         </div>
 
         <div *ngFor="let action of actionsThisWeek" class="row">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
-            )</strong>.<span>{{action.task}}</span></a></div>
-          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
-            | translate}}</a>
+          <div *ngIf="shouldShow(action.level, action.action)">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
+              )</strong>.<span>{{action.task}}</span></a></div>
+            <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              | translate}}</a>
+            </div>
           </div>
         </div>
 
         <div *ngFor="let indicator of indicatorsThisWeek" class="row">
-          <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-          <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
-            translate}}</strong>.<span>{{indicator?.name}}</span></a>
-          </div>
-          <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
-            | translate}}</a>
+          <div *ngIf="shouldShow(indicator.level, indicator.action)">
+            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
+              translate}}</strong>.<span>{{indicator?.name}}</span></a>
+            </div>
+            <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              | translate}}</a>
+            </div>
           </div>
         </div>
 
@@ -418,7 +426,7 @@
 
     <div class="Widget-Group" *ngIf="DashboardTypeUsed == DashboardType.default">
 
-      <div class="Widget Risk-Monitoring">
+      <div class="Widget Risk-Monitoring" [hidden]="!moduleSettings.riskMonitoring">
         <h3>{{"DASHBOARD.RISK_MONITORING" | translate}}</h3>
         <ul class="list-inline">
           <li class="list-inline-item">

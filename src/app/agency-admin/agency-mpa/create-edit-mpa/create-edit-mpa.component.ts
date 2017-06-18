@@ -44,7 +44,6 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
-
         this.uid = auth.uid;
         this.path = Constants.APP_STATUS + '/action/' + this.uid;
         this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";

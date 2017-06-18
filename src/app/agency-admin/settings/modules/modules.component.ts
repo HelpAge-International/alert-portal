@@ -2,8 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Privacy, ModuleName} from "../../../utils/Enums";
+import {Privacy, ModuleName, PermissionsAgency} from "../../../utils/Enums";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-modules',
@@ -29,14 +30,25 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  public listOfEnabledEnableButtons: Map<PermissionsAgency, boolean>;
+  private disableMap: Map<PermissionsAgency, PermissionsAgency[]>;
+
   constructor(private af: AngularFire, private router: Router) {
+    this.disableMap = PageControlService.agencyDisableMap();
+    this.listOfEnabledEnableButtons = new Map<PermissionsAgency, boolean>();
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.RiskMonitoring, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.CountryOffice, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.ResponsePlanning, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.MinimumPreparedness, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.AdvancedPreparedness, false);
+    this.listOfEnabledEnableButtons.set(PermissionsAgency.CHSPreparedness, false);
   }
 
   ngOnInit() {
   	this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        this.af.database.list(Constants.APP_STATUS+'/module/' + this.uid)
+        this.af.database.list(Constants.APP_STATUS + '/module/' + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
 
@@ -47,6 +59,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
             _.map(module => {
               this.modules[module.$key] = module;
             });
+
+            this.populateEnabledButtonsList();
         });
 
       } else {
@@ -75,7 +89,16 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   private changeStatus(moduleId, status) {
-  	this.modules[moduleId].status = status;
+    this.modules[moduleId].status = status;
+    if (!status) {
+      let items = this.disableMap.get(moduleId);
+      if (items != null) {
+        for (let x of items) {
+          this.changeStatus(x, false);
+        }
+      }
+    }
+    this.populateEnabledButtonsList();
   }
 
   private cancelChanges() {
@@ -108,10 +131,25 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
 
+
   onAlertHidden(hidden: boolean) {
     this.alertShow = !hidden;
     this.alertSuccess = true;
     this.alertMessage = "";
   }
 
+  /**
+   * Permissions propagation
+   */
+  populateEnabledButtonsList() {
+    console.log(this.disableMap);
+    this.disableMap.forEach((val, key) => {
+      for (let x of val) {
+        console.log("Key : " + key + " --> " + x);
+        console.log(" --> " + this.modules[key].status);
+        this.listOfEnabledEnableButtons.set(x, !this.modules[key].status);
+      }
+    });
+    console.log(this.listOfEnabledEnableButtons);
+  }
 }

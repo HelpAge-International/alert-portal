@@ -3,7 +3,10 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute} from "@angular/router";
 import {Observable} from "rxjs";
-import {AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
+import {
+  ActionLevel, ActionStatus, ActionType, AlertLevels, AlertStatus, Countries, DashboardType,
+  UserType
+} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -14,6 +17,7 @@ import {
   ChronolineEvent,
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
+import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
@@ -69,13 +73,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
 
+  // Module settings
+  private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
 
-    // TODO - New Subscriptions - Remove subscriptions and add '.takeUntil(this.ngUnsubscribe)' before every .subscribe()
+    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router,
+      (auth, userType) => {
+        console.log("We're allowed on this page!");
+      }
+    );
+
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
       if (user) {
         this.uid = user.auth.uid;
@@ -85,6 +96,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           .subscribe(userType => {
             this.userType = userType;
             this.NODE_TO_CHECK = this.userPaths[userType];
+            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
+              this.moduleSettings = isEnabled;
+            }));
             if (userType == UserType.CountryDirector) {
               this.DashboardTypeUsed = DashboardType.director;
             } else {
@@ -269,6 +283,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
         });
     }
+  }
+
+  shouldShow(level: number, action: number) {
+    if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
+      return false;
+    }
+    if (level == ActionLevel.APA && !this.moduleSettings.advancedPreparedness) {
+      return false;
+    }
+    if (action == ActionType.chs && !this.moduleSettings.chsPreparedness) {
+      return false;
+    }
+    return true;
   }
 
   private getHazards() {

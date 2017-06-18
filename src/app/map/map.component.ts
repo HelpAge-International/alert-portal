@@ -6,6 +6,7 @@ import {Countries} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
+import {PageControlService} from "../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -88,8 +89,12 @@ export class MapComponent implements OnInit, OnDestroy {
             );
 
             /** Load in the markers on the map! */
-            this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (marker) => {
-              marker.setMap(this.mapHelper.map);
+            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[usertype], isEnabled => {
+              if (isEnabled.riskMonitoring) {
+                this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (marker) => {
+                  marker.setMap(this.mapHelper.map);
+                });
+              }
             });
 
             /** Get the Agency logo */

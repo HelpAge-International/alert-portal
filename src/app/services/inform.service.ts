@@ -1,13 +1,16 @@
 import {Countries, Countries3ISO, HazardScenario, InformCodes} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
+import {Http, Response} from "@angular/http";
 declare var jQuery: any;
 
 export class InformService {
 
   public info: Countries3ISO;
   public informInfo: InformCodes;
+  private http: Http;
 
-  constructor() {
+  constructor(http: Http) {
+    this.http = http;
     this.info = Countries3ISO.init();
     this.informInfo = InformCodes.init();
   }
@@ -19,33 +22,42 @@ export class InformService {
     this.sendForTopHazards3digit(countryCode, numberOfItems, fun);
   }
   private sendForTopHazards3digit(countryCode: string, numberOfItems: number, fun: (list: InformHolder[]) => void) {
-    jQuery.getJSON('http://inform.jrc.ec.europa.eu/gnasystem/api001.aspx?' +
-        'service=InfoRM' +
-        '&workflow=' + Constants.INFORM_WORKFLOW +
-        '&request=GetData' +
-        '&iso3=' + countryCode +
-        '&indicators=all' +
-        '&format=json', (response) => {
-      let holder: InformHolder[] = [];
-      for (let x of this.informInfo.list) {
-        let val = this.getFromResponse(response, x);
-        if (val != null) {
-          holder.push(InformHolder.create(this.informInfo.get(x), val));
+    this.http.get(this.buildUrl(countryCode))
+      .map((res: Response) => {
+        return res.json();
+      })
+      .subscribe(response => {
+        console.log("This");
+        console.log(response);
+        let holder: InformHolder[] = [];
+        for (let x of this.informInfo.list) {
+          let val = this.getFromResponse(response, x);
+          if (val != null) {
+            holder.push(InformHolder.create(this.informInfo.get(x), val));
+          }
         }
-      }
-      holder = holder
-        .sort((a,b) => {
-          if (a.value < b.value) {
-            return 1;
-          }
-          if (a.value > b.value) {
-            return -1;
-          }
-          return 0;
-        })
-        .slice(0, numberOfItems);
-      fun(holder);
-    });
+        holder = holder
+          .sort((a,b) => {
+            if (a.value < b.value) {
+              return 1;
+            }
+            if (a.value > b.value) {
+              return -1;
+            }
+            return 0;
+          })
+          .slice(0, numberOfItems);
+        fun(holder);
+      });
+  }
+  private buildUrl(countryCode: string) {
+    return 'http://inform.jrc.ec.europa.eu/gnasystem/api001.aspx?' +
+      'service=InfoRM' +
+      '&workflow=' + Constants.INFORM_WORKFLOW +
+      '&request=GetData' +
+      '&iso3=' + countryCode +
+      '&indicators=all' +
+      '&format=json';
   }
   private validResponse(response) {
     return response != null && response.data != null && response.data.length === 1;
