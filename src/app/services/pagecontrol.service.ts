@@ -86,6 +86,9 @@ export class PageControlService {
     "country-admin/country-office-profile/equipment/add-edit-equipment",
     "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
     "country-admin/country-office-profile/equipment",
+    "country-admin/country-agencies",
+    "country-admin/country-my-agency",
+    "country-admin/country-account-settings",
     "response-plans",
     "response-plans/create-edit-response-plan",
     "response-plans/view-plan",
@@ -111,7 +114,9 @@ export class PageControlService {
   public static ModuleAdvancedPreparedness = new AgencyPermissionObject(PermissionsAgency.AdvancedPreparedness, [
     "preparedness/advanced"
   ]);
-  public static ModuleCHSPreparedness = new AgencyPermissionObject(PermissionsAgency.CHSPreparedness, []);
+  public static ModuleCHSPreparedness = new AgencyPermissionObject(PermissionsAgency.CHSPreparedness, [
+
+  ]);
   public static ModuleResponsePlanning = new AgencyPermissionObject(PermissionsAgency.ResponsePlanning, [
     "response-plans",
     "response-plans/create-edit-response-plan",
