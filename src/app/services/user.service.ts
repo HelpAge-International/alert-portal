@@ -31,15 +31,6 @@ export class UserService {
   }
 
   // FIREBASE
-  getAuthUser(): Observable<firebase.User> {
-    const userAuthSubscription = this.af.auth.map(user => {
-      this.authState = user;
-      return user.auth;
-    });
-
-    return userAuthSubscription;
-  }
-
   createNewFirebaseUser(email: string, password: string): firebase.Promise<any> {
     return this.secondApp.auth().createUserWithEmailAndPassword(email, password)
       .then(newUser => {
@@ -111,7 +102,7 @@ export class UserService {
     // } else {
     this.getUser(uid).subscribe(oldUser => {
       if (oldUser.email && oldUser.email !== userPublic.email) {
-        this.getAuthUser();
+        // this.getAuthUser();
         return this.authState.auth.updateEmail(userPublic.email).then(bool => {
             return this.saveUserPublic(userPublic);
           },

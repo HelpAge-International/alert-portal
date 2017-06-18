@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {SuperMapComponents, SDepHolder} from "../../utils/MapHelper";
 import {RegionHolder} from "../../map/map-countries-list/map-countries-list.component";
@@ -7,6 +7,7 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Countries, AlertLevels} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-donor-list-view',
@@ -53,17 +54,15 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
 
   private countryIds: string[] = [];
 
-  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
 
         this.userService.getAgencyId('donor', this.uid)
           .takeUntil(this.ngUnsubscribe)
@@ -76,9 +75,6 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
                 this.loadData();
               });
           });
-      } else {
-        this.navigateToLogin();
-      }
     });
   }
 

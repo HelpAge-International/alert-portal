@@ -5,6 +5,7 @@ import {AngularFire} from "angularfire2";
 import {Router, Params, ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-donor-country-index',
@@ -54,13 +55,12 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private alertLevels = Constants.ALERT_LEVELS;
   private alertLevelsList: number[] = Constants.ALERT_LEVELS_LIST;
 
-  constructor(private af: AngularFire, private router: Router, private agencyService: AgencyService, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private agencyService: AgencyService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
 
         this.route.params
           .takeUntil(this.ngUnsubscribe)
@@ -71,9 +71,6 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
               this.loadData();
             }
           });
-      } else {
-        this.navigateToLogin();
-      }
     });
   }
 

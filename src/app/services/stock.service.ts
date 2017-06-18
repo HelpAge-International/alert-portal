@@ -35,7 +35,7 @@ export class StockService {
         return;
       }
 
-      const getStockCapacitySubscription = 
+      const getStockCapacitySubscription =
               this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/stock/' + stockCapacityId)
       .map(item => {
         let stockCapacity = new StockCapacityModel();
@@ -52,10 +52,10 @@ export class StockService {
     {
       return Promise.reject('Missing agencyId, countryId or coordinationArrangement');
     }
-    
+
     // Update the timestamp
     stockCapacity.updatedAt = new Date().getTime();
-    
+
     if(stockCapacity.id)
     {
       const stockCapacityData = {};
@@ -71,7 +71,7 @@ export class StockService {
     {
       return Promise.reject('Missing agencyId, countryId or coordinationArrangement');
     }
-    
+
     const stockCapacityData = {};
 
     stockCapacityData['/countryOffice/' + agencyId + '/' + countryId + '/stock/' + stockCapacity.id] = null;

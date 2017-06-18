@@ -6,6 +6,7 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ResponsePlanService} from "../../services/response-plan.service";
 import {ApprovalStatus, UserType} from "../../utils/Enums";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare const jQuery: any;
 
 @Component({
@@ -33,30 +34,26 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private rejectToggleMap = new Map();
   private rejectComment: string = "";
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private responsePlanService: ResponsePlanService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private responsePlanService: ResponsePlanService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["isDirector"]) {
-              this.isDirector = params["isDirector"];
-            }
-            if (params["countryId"]) {
-              this.countryId = params["countryId"];
-            }
-            if (params["id"]) {
-              this.responsePlanId = params["id"];
-              this.loadResponsePlan(this.responsePlanId);
-            }
-          });
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["isDirector"]) {
+            this.isDirector = params["isDirector"];
+          }
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
+          }
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+            this.loadResponsePlan(this.responsePlanId);
+          }
+        });
     });
   }
 

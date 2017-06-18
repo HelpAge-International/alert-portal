@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from 'angularfire2';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Constants} from '../../utils/Constants';
-import {Observable, Scheduler, Subject} from 'rxjs';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Observable, Scheduler, Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
@@ -41,14 +41,13 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
-    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router,
-      (user, userType) => {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         // console.log(user.auth.uid);
-        this.uid = user.auth.uid;
+        this.uid = user.uid;
         this.agencyService.getAgencyId(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(agencyId => {

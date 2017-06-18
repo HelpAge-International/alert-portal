@@ -1,9 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../utils/Constants";
-import {AngularFire} from "angularfire2"
-import {Router} from "@angular/router";
+import {AngularFire} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from "../../model/message";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 @Component({
@@ -21,18 +22,13 @@ export class AgencyNotificationsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.getMessages();
-      } else {
-        this.navigateToLogin();
-      }
     });
   }
 

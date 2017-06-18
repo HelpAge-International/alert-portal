@@ -10,6 +10,7 @@ import {UUID} from "../../../utils/UUID";
 import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelStaff} from "../../../model/staff.model";
+import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -77,18 +78,13 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
-      this.uid = user.auth.uid;
+      this.uid = user.uid;
 
       this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
         .takeUntil(this.ngUnsubscribe)

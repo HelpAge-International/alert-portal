@@ -7,6 +7,7 @@ import {Countries} from "../../utils/Enums";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelFaceToFce} from "./facetoface.model";
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-facetoface-meeting-request',
@@ -29,28 +30,22 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
   private countryLocation: any;
   private CountriesList = Constants.COUNTRIES;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
 
   ngOnInit() {
-    this.af.auth
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(auth => {
-        if (auth) {
-          this.uid = auth.uid;
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((params: Params) => {
-              if (params["countryId"] && params["agencyId"]) {
-                this.countryId = params["countryId"];
-                this.agencyId = params["agencyId"];
-                this.initData(this.countryId, this.agencyId);
-              }
-            });
-        } else {
-          this.router.navigateByUrl(Constants.LOGIN_PATH);
-        }
-      });
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["countryId"] && params["agencyId"]) {
+            this.countryId = params["countryId"];
+            this.agencyId = params["agencyId"];
+            this.initData(this.countryId, this.agencyId);
+          }
+        });
+    });
   }
 
   private initData(countryId, agencyId) {
@@ -104,7 +99,7 @@ export class FacetofaceMeetingRequestComponent implements OnInit, OnDestroy {
                 return temp;
               });
               console.log(countries);
-              console.log(Object.keys(agency).filter(key => !(key.indexOf("$")> -1)));
+              console.log(Object.keys(agency).filter(key => !(key.indexOf("$") > -1)));
               countries = countries.filter(countryItem => countryItem.location == country.location);
               console.log(countries)
               if (countries.length > 0) {

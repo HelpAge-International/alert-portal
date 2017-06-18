@@ -1,9 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from '../../../model/message';
 import {Constants} from '../../../utils/Constants';
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-messages-create',
@@ -31,19 +32,12 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        console.log("uid: " + this.uid);
-      } else {
-        console.log("Error occurred - User isn't logged in");
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
     });
   }
 

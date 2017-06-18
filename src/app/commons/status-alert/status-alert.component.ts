@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angu
 import {Constants} from "../../utils/Constants";
 import {TimerObservable} from "rxjs/observable/TimerObservable";
 import {RxHelper} from '../../utils/RxHelper';
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'app-status-alert',
@@ -15,8 +16,9 @@ export class StatusAlertComponent implements OnInit {
   @Input() success: boolean;
   @Output() onAlertHidden = new EventEmitter<boolean>();
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   constructor() {
-  	this._subscriptions = new RxHelper;
   }
 
 
@@ -25,23 +27,16 @@ export class StatusAlertComponent implements OnInit {
   	this._show = show;
 
     if (this._show)
-    	this._subscriptions.add(
-  		TimerObservable.create(Constants.ALERT_DURATION).subscribe(t => {
+  		TimerObservable.create(Constants.ALERT_DURATION).takeUntil(this.ngUnsubscribe).subscribe(t => {
   	      this._show = false;
   	      this.onAlertHidden.emit(true);
-  	    })
-      );
+  	    });
   }
 
   ngOnInit() {
   }
 
   ngOnDestroy() {
-  	try{
-  		this._subscriptions.releaseAll();
-  	} catch(e){
-  		console.log('Unable to releaseAll');
-  	}
   }
 
 }

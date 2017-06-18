@@ -8,6 +8,7 @@ import {SettingsService} from "../../../services/settings.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {DisplayError} from "../../../errors/display.error";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -40,21 +41,14 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService,
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _settingsService: SettingsService,
               private router: Router,
               private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this._userService.getAuthUser()
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid)

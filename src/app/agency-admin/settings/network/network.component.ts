@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from "@angular/core";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-network',
@@ -6,10 +9,20 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./network.component.css']
 })
 export class NetworkComponent implements OnInit {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor() { }
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+
+    });
   }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 
 }

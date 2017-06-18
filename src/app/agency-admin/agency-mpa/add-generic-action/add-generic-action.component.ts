@@ -1,10 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enums";
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -62,14 +63,12 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
         this.af.database.list(Constants.APP_STATUS + "/administratorAgency/" + this.uid + '/systemAdmin')
           .takeUntil(this.ngUnsubscribe)
@@ -83,9 +82,6 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
           });
           this.getDepartments();
         });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

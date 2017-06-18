@@ -10,6 +10,7 @@ import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelCountryOffice} from "../../../model/countryoffice.model";
 import {Observable, Subject} from "rxjs";
 import {AgencyService} from "../../../services/agency-service.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-edit-country',
@@ -53,16 +54,12 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private systemId: string;
   private agencyId: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-      this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, "second");
 
 

@@ -76,39 +76,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Module settings
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
-
-    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router,
-      (auth, userType) => {
-        console.log("We're allowed on this page!");
-      }
-    );
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.userType = userType;
-            this.NODE_TO_CHECK = this.userPaths[userType];
-            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
-              this.moduleSettings = isEnabled;
-            }));
-            if (userType == UserType.CountryDirector) {
-              this.DashboardTypeUsed = DashboardType.director;
-            } else {
-              this.DashboardTypeUsed = DashboardType.default;
-            }
-            this.loadData();
-          });
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      console.log(user);
+      this.uid = user.uid;
+      this.userType = userType;
+      this.NODE_TO_CHECK = this.userPaths[userType];
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
+        this.moduleSettings = isEnabled;
+      }));
+      if (userType == UserType.CountryDirector) {
+        this.DashboardTypeUsed = DashboardType.director;
       } else {
-        this.navigateToLogin();
+        this.DashboardTypeUsed = DashboardType.default;
       }
+      this.loadData();
     });
   }
 
@@ -134,6 +119,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.getCountryId().then(() => {
+      console.log("Country ID: " + this.countryId);
       if (this.DashboardTypeUsed == DashboardType.default) {
         this.getAllSeasonsForCountryId(this.countryId);
       }

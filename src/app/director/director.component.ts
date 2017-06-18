@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -10,6 +10,7 @@ import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
 import {AgencyService} from "../services/agency-service.service";
 import {UserService} from "../services/user.service";
+import {PageControlService} from "../services/pagecontrol.service";
 
 @Component({
   selector: 'app-director',
@@ -76,7 +77,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryIds: string[] = [];
 
-  constructor(private af: AngularFire, private router: Router, private actionService: ActionsService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private actionService: ActionsService, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
@@ -96,30 +97,24 @@ export class DirectorComponent implements OnInit, OnDestroy {
     //set initial loader status
     this.loaderInactive = false;
 
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.userService.getUserType(this.uid)
-          .flatMap(userType => {
-            this.userType = userType;
-            return this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid);
-          })
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(agencyId => {
-            this.agencyId = agencyId;
-            this.userService.getUserType(this.uid)
-              .flatMap(userType => {
-                return this.userService.getSystemAdminId(Constants.USER_PATHS[userType], this.uid);
-              })
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(systemAdminId => {
-                this.systemAdminId = systemAdminId;
-                this.loadData();
-              });
-          });
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      console.log("Auth found!");
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyId => {
+          this.agencyId = agencyId;
+          this.userService.getUserType(this.uid)
+            .flatMap(userType => {
+              return this.userService.getSystemAdminId(Constants.USER_PATHS[userType], this.uid);
+            })
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(systemAdminId => {
+              this.systemAdminId = systemAdminId;
+              this.loadData();
+            });
+        });
     });
   }
 

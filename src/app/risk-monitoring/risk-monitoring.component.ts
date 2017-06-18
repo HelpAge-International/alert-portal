@@ -85,7 +85,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private successAddHazardMsg: any;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -102,29 +102,16 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
-      console.log("We're allowed on this page!");
-    });
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
 
-            this._getCountryID().then(() => {
-              this._getHazards().then(() => {
+      this._getCountryID().then(() => {
+        this._getHazards().then(() => {
 
-              });
-              this._getCountryContextIndicators();
-            });
-          });
-
-
-      } else {
-        this.navigateToLogin();
-      }
+        });
+        this._getCountryContextIndicators();
+      });
     });
   }
 

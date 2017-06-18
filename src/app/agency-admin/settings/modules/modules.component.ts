@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Privacy, ModuleName, PermissionsAgency} from "../../../utils/Enums";
+import {ModuleName, PermissionsAgency, Privacy} from "../../../utils/Enums";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
@@ -33,7 +33,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   public listOfEnabledEnableButtons: Map<PermissionsAgency, boolean>;
   private disableMap: Map<PermissionsAgency, PermissionsAgency[]>;
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
     this.disableMap = PageControlService.agencyDisableMap();
     this.listOfEnabledEnableButtons = new Map<PermissionsAgency, boolean>();
     this.listOfEnabledEnableButtons.set(PermissionsAgency.RiskMonitoring, false);
@@ -45,9 +45,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-  	this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.af.database.list(Constants.APP_STATUS + '/module/' + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
@@ -62,12 +61,6 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
             this.populateEnabledButtonsList();
         });
-
-      } else {
-        // user is not logged in
-        console.log('Error occurred - User is not logged in');
-        this.navigateToLogin();
-      }
     });
   }
 

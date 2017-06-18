@@ -8,6 +8,7 @@ import {MessageModel} from "../../model/message.model";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -31,41 +32,33 @@ export class CountryMessagesComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService,
-              private _messageService: MessageService,
+  constructor(private pageControl: PageControlService, private _userService: UserService, private route: ActivatedRoute,
               private router: Router,
-              private route: ActivatedRoute) {
+              private _messageService: MessageService) {
     this.sentMessages = [new MessageModel()]
   }
 
   ngOnInit() {
-    this._userService.getAuthUser()
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        if (!user) {
-          this.router.navigateByUrl(Constants.LOGIN_PATH);
-          return;
-        }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
 
-        this.uid = user.uid;
+      this._userService.getCountryAdminUser(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryAdminUser => {
+          if (countryAdminUser) {
+            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+            this.countryId = countryAdminUser.countryId;
 
-        this._userService.getCountryAdminUser(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(countryAdminUser => {
-            if (countryAdminUser) {
-              this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-              this.countryId = countryAdminUser.countryId;
-
-              this._messageService.getCountrySentMessages(this.countryId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(sentMessages => {
-                  if (sentMessages) {
-                    this.sentMessages = sentMessages;
-                  }
-                });
-            }
-          });
-      });
+            this._messageService.getCountrySentMessages(this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(sentMessages => {
+                if (sentMessages) {
+                  this.sentMessages = sentMessages;
+                }
+              });
+          }
+        });
+    });
   }
 
   ngOnDestroy() {

@@ -15,6 +15,7 @@ import {PartnerModel} from "../../model/partner.model";
 import {SessionService} from "../../services/session.service";
 import {CommonService} from "../../services/common.service";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-add-partner-organisation',
@@ -48,7 +49,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService,
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _sessionService: SessionService,
@@ -58,14 +59,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._userService.getAuthUser()
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {

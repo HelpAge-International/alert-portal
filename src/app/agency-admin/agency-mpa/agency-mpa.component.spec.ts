@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { AgencyMpaComponent } from './agency-mpa.component';
+import {AgencyMpaComponent} from "./agency-mpa.component";
 
 describe('AgencyMpaComponent', () => {
   let component: AgencyMpaComponent;

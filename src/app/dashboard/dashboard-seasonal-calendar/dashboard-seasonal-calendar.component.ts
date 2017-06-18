@@ -1,10 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {ModelSeason} from "../../model/season.model";
 import {ColourSelector} from "../../utils/ColourSelector";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
 
@@ -41,20 +42,15 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public edit: boolean = false;
   public editSeasonKey: string;
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    console.log(this.colours);
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.getCountryId().then(() => {
           this.getAllSeasonsForCountryId(this.countryId);
         });
-      } else {
-        this.navigateToLogin();
-      }
     });
   }
 
@@ -99,7 +95,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public getAllSeasonsForCountryId(countryId: string) {
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(snapshot => { 
+      .subscribe(snapshot => {
         this.seasonEvents = [
           ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
         ];

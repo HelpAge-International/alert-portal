@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
@@ -7,6 +7,7 @@ import {Constants} from "../../utils/Constants";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {DisplayError} from "../../errors/display.error";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-donor-account-settings',
@@ -31,18 +32,13 @@ export class DonorAccountSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService, private router: Router) {
   }
 
+
   ngOnInit() {
-    this._userService.getAuthUser().takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-
       this._userService.getUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(userPublic => {
         if (userPublic.id) {
           this.userPublic = userPublic;

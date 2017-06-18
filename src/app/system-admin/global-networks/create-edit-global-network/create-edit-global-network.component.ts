@@ -9,6 +9,7 @@ import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {UUID} from "../../../utils/UUID";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-edit-global-network',
@@ -52,16 +53,12 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-      this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
         console.log("load: " + params["id"]);

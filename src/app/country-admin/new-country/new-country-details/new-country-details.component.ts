@@ -1,10 +1,11 @@
 import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {AngularFire, FirebaseApp} from 'angularfire2';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
 import {Countries, PhonePrefix} from '../../../utils/Enums';
 import {Observable, Subject} from 'rxjs';
 import {CountryOfficeAddressModel} from '../../../model/countryoffice.address.model';
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-new-country-details',
@@ -34,15 +35,13 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
 
   firebase: any;
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
     this.firebase = firebaseApp;
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
@@ -66,9 +65,6 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
               });
             // If there are any errors raised by firebase, the Country select will not be disabled and will allow user input
           });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

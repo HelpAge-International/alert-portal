@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { AgencyAdminSettingsResponsePlanComponent } from './agency-admin-settings-response-plan.component';
+import {AgencyAdminSettingsResponsePlanComponent} from "./agency-admin-settings-response-plan.component";
 
 describe('AgencyAdminSettingsResponsePlanComponent', () => {
   let component: AgencyAdminSettingsResponsePlanComponent;

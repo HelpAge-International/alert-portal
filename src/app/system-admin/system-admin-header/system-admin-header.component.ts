@@ -1,9 +1,10 @@
 import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-system-admin-header',
@@ -20,22 +21,18 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private translate: TranslateService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

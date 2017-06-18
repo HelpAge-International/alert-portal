@@ -8,6 +8,8 @@ import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AlertMessageModel} from '../../model/alert-message.model';
+import {PageControlService} from "../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 @Component({
     selector: 'app-preparedness',
@@ -54,7 +56,9 @@ export class CreateEditPreparednessComponent implements OnInit {
     private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
     private allowedDurationList: number[] = [];
 
-    constructor(private af: AngularFire, private subscriptions: RxHelper, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService) {
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private subscriptions: RxHelper, private router: Router, private storage: LocalStorageService) {
         this.actionData = new Action();
         this.setDefaultActionDataValue();
         /* if selected generic action */
@@ -94,16 +98,11 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     ngOnInit() {
-        let subscription = this.af.auth.subscribe(auth => {
-            if (auth) {
-                this.uid = auth.uid;
-                this._defaultHazardCategoryValue();
-                this.processPage();
-            } else {
-                this.navigateToLogin();
-            }
-        });
-        this.subscriptions.add(subscription);
+      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
+        this._defaultHazardCategoryValue();
+        this.processPage();
+      });
     }
 
     setDefaultActionDataValue() {
@@ -121,7 +120,7 @@ export class CreateEditPreparednessComponent implements OnInit {
         if (!isValid || !this._isValidForm()) {
             return false;
         }
-        
+
         if (!this.actionID) {
             if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
                 this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
@@ -142,10 +141,10 @@ export class CreateEditPreparednessComponent implements OnInit {
             this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
         }
 
-        
+
         let dataToSave = Object.assign({}, this.actionData)
         dataToSave.requireDoc = (dataToSave.requireDoc) ? true : false;
-        
+
         if (!this.actionID) {
             this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
                 .push(dataToSave)
@@ -277,7 +276,7 @@ export class CreateEditPreparednessComponent implements OnInit {
                 console.log('1111111111111111111111');
                 console.log(this.uid);
                 console.log(this.countryID);
-                
+
                 res(true);
             });
             this.subscriptions.add(subscription);
@@ -287,8 +286,8 @@ export class CreateEditPreparednessComponent implements OnInit {
 
     getAgencyID() {
         let promise = new Promise((res, rej) => {
-            
-            
+
+
             let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyIDs: any) => {
                 this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
                 res(true);
@@ -299,10 +298,10 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     copyAction() {
-        
+
         delete this.actionData["$key"];
         delete this.actionData["$exists"];
-        
+
         /* added route for create action page */
         this.storage.set('copyActionData', this.actionData);
         this.router.navigate(["/preparedness/create-edit-preparedness"]);
@@ -310,7 +309,7 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     archiveAction() {
-        
+
         this.closeModal();
         this.actionData.isActive = false;
 
@@ -331,10 +330,10 @@ export class CreateEditPreparednessComponent implements OnInit {
         let promise = new Promise((res, rej) => {
 
             let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).subscribe((action: Action) => {
-                this.actionData = action; 
-                this.actionData.requireDoc = action.requireDoc ? 1 : 2;        
-                 
-                this.level = action.level; 
+                this.actionData = action;
+                this.actionData.requireDoc = action.requireDoc ? 1 : 2;
+
+                this.level = action.level;
                 this.dueDate = this._convertTimestampToDate(action.dueDate);
                 res(true);
             });
@@ -353,7 +352,7 @@ export class CreateEditPreparednessComponent implements OnInit {
                 });
 
                 console.log(this.departmentList);
-                
+
                 res(true);
             });
             this.subscriptions.add(subscription);

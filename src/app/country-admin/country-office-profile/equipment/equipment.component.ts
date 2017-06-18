@@ -12,6 +12,8 @@ import { UserService } from "../../../services/user.service";
 import { EquipmentService } from "../../../services/equipment.service";
 import { EquipmentModel } from "../../../model/equipment.model";
 import { SurgeEquipmentModel } from "../../../model/equipment-surge.model";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -28,38 +30,35 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private equipments: EquipmentModel[];
   private surgeEquipments: SurgeEquipmentModel[];
-  
+
   // Helpers
   private newNote: NoteModel[];
   private activeNote: NoteModel;
   private activeEquipmentId: string;
   private activeEquipmentType: string;
-  
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
               private _noteService: NoteService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper){
+              private route: ActivatedRoute){
     this.newNote = [];
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
@@ -85,7 +84,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
         this._equipmentService.getSurgeEquipments(this.countryId)
               .subscribe(surgeEquipments => {
                 this.surgeEquipments = surgeEquipments;
-                
+
                 this.surgeEquipments.forEach(surgeEquipment => {
                   const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
 
@@ -100,8 +99,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
               });
       });
-    })
-    this.subscriptions.add(authSubscription);
+    });
   }
 
   goBack() {
@@ -137,7 +135,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
 getUserName(userId) {
     let userName = "";
-    
+
     if(!userId) return userName;
 
     this._userService.getUser(userId).subscribe(user => {
@@ -146,7 +144,7 @@ getUserName(userId) {
 
     return userName;
   }
-  
+
   validateNote(note: NoteModel): boolean {
     this.alertMessage = note.validate();
 
@@ -159,14 +157,14 @@ getUserName(userId) {
     if(this.validateNote(note))
     {
       let equipmentNode = "";
-      
+
       if(equipmentType == 'equipment')
       {
         equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
       }else{
         equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
       }
-    
+
       this._noteService.saveNote(equipmentNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
@@ -187,14 +185,14 @@ editAction(equipmentType: string, equipmentId: string, note: NoteModel) {
     if(this.validateNote(note))
     {
       let equipmentNode = "";
-      
+
       if(equipmentType == 'equipment')
       {
         equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
       }else{
         equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
       }
-      
+
       this._noteService.saveNote(equipmentNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })

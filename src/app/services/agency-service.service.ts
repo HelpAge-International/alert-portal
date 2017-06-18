@@ -92,7 +92,7 @@ export class AgencyService {
     {
       return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');
     }
-    
+
     return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
   }
 

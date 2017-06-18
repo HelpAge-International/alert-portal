@@ -1,9 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
-import {Router} from '@angular/router';
-import {Constants} from '../../../utils/Constants';
-import {Observable, Subject} from 'rxjs';
-import {CustomerValidator} from '../../../utils/CustomValidator';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire, FirebaseAuthState} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../../utils/Constants";
+import {Observable, Subject} from "rxjs";
+import {CustomerValidator} from "../../../utils/CustomValidator";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-new-agency-password',
@@ -29,24 +30,19 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.authState = auth;
-        this.uid = auth.uid;
-        console.log('New agency admin uid: ' + this.uid);
-        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+      this.authState = auth;
+      this.uid = auth.auth.uid;
+      console.log('New agency admin uid: ' + this.uid);
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
           this.agencyAdminName = user.firstName;
         });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

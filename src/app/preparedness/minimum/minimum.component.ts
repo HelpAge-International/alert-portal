@@ -67,7 +67,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
 
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
+  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
     this.firebase = firebaseApp;
 
     this.docFilterSubject = new BehaviorSubject(undefined);
@@ -95,157 +95,143 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    PageControlService.auth(this.af, this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
-      console.log("We're allowed on this page!");
-    });
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
 
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
-
-            this.obsCountryId
+      this.obsCountryId
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(
+          value => {
+            this.assignedToUsers = [];
+            this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(
-                value => {
-                  this.assignedToUsers = [];
-                  this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+              .subscribe(staff => {
+                this.assignedToUsers = staff.map(member => {
+                  let userId = member.$key;
+                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
                     .takeUntil(this.ngUnsubscribe)
-                    .subscribe(staff => {
-                      this.assignedToUsers = staff.map(member => {
-                        let userId = member.$key;
-                        this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(_ => {
-                            if (_.$exists()) {
-                              member.fullName = _.firstName + " " + _.lastName;
-                            }
-                            else {
-                              member.fullName = "";
-                            }
-                          });
-
-                        return member;
-                      });
-
+                    .subscribe(_ => {
+                      if (_.$exists()) {
+                        member.fullName = _.firstName + " " + _.lastName;
+                      }
+                      else {
+                        member.fullName = "";
+                      }
                     });
-                },
-                error => console.log(error),
-                () => console.log("finished")
-              );
 
-            if (!this.countrySelected)
-              this.af.database.object(Constants.APP_STATUS + '/' + Constants.USER_PATHS[this.UserType] + '/' + this.uid + '/countryId')
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(country => {
-                  if (country.$exists()) {
-                    this.countryId = country.$value;
-
-                    this.obsCountryId.next(this.countryId);
-                  }
+                  return member;
                 });
 
+              });
+          },
+          error => console.log(error),
+          () => console.log("finished")
+        );
 
-            this.assignedToUserKey = this.uid;
-            this.af.database.list(Constants.APP_STATUS + '/action/')
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(_ => {
-                this.actions = [];
-                _.map(actions => {
-                  let agencyId = actions.$key
-                  Object.keys(actions).map(action => {
-                    if (typeof actions[action] !== 'object')
-                      return;
+      if (!this.countrySelected)
+        this.af.database.object(Constants.APP_STATUS + '/' + Constants.USER_PATHS[this.UserType] + '/' + this.uid + '/countryId')
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(country => {
+            if (country.$exists()) {
+              this.countryId = country.$value;
 
-                    actions[action].agencyId = agencyId;
-                    actions[action].key = action;
-                    actions[action].docsCount = 0;
-                    let userKey = actions[action].assignee;
-                    try {
-                      actions[action].docsCount = Object.keys(actions[action].documents).length;
-
-                      Object.keys(actions[action].documents).map(docId => {
-                        this.af.database.object(Constants.APP_STATUS + '/document/' + agencyId + '/' + docId)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(_ => {
-                            actions[action].documents[docId] = _;
-                          });
-                      });
-                    } catch (e) {
-                      console.log('No docs');
-                    }
+              this.obsCountryId.next(this.countryId);
+            }
+          });
 
 
-                    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+      this.assignedToUserKey = this.uid;
+      this.af.database.list(Constants.APP_STATUS + '/action/')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(_ => {
+          this.actions = [];
+          _.map(actions => {
+            let agencyId = actions.$key
+            Object.keys(actions).map(action => {
+              if (typeof actions[action] !== 'object')
+                return;
+
+              actions[action].agencyId = agencyId;
+              actions[action].key = action;
+              actions[action].docsCount = 0;
+              let userKey = actions[action].assignee;
+              try {
+                actions[action].docsCount = Object.keys(actions[action].documents).length;
+
+                Object.keys(actions[action].documents).map(docId => {
+                  this.af.database.object(Constants.APP_STATUS + '/document/' + agencyId + '/' + docId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(_ => {
+                      actions[action].documents[docId] = _;
+                    });
+                });
+              } catch (e) {
+                console.log('No docs');
+              }
+
+
+              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(_ => {
+                  if (_.$exists()) {
+                    this.users[userKey] = _.firstName + " " + _.lastName;
+                    actions[action].assigned = true;
+                  }
+                  else {
+                    this.users[userKey] = "Unassigned";//TODO translate somehow
+                    actions[action].assigned = false;
+                  }
+
+                });
+
+              this.af.database.list(Constants.APP_STATUS + '/note/' + action, {
+                query: {
+                  orderByChild: "time"
+                }
+              })
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(_ => {
+                  actions[action].notesCount = _.length;
+                  actions[action].notes = _;
+                  actions[action].notes.map(note => {
+                    let uploadByUser = note.uploadBy;
+                    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadByUser)
                       .takeUntil(this.ngUnsubscribe)
                       .subscribe(_ => {
                         if (_.$exists()) {
-                          this.users[userKey] = _.firstName + " " + _.lastName;
-                          actions[action].assigned = true;
+                          note.uploadByUser = _.firstName + " " + _.lastName;
                         }
                         else {
-                          this.users[userKey] = "Unassigned";//TODO translate somehow
-                          actions[action].assigned = false;
+                          note.uploadByUser = "N/A";
                         }
-
                       });
 
-                    this.af.database.list(Constants.APP_STATUS + '/note/' + action, {
-                      query: {
-                        orderByChild: "time"
-                      }
-                    })
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(_ => {
-                        actions[action].notesCount = _.length;
-                        actions[action].notes = _;
-                        actions[action].notes.map(note => {
-                          let uploadByUser = note.uploadBy;
-                          this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadByUser)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(_ => {
-                              if (_.$exists()) {
-                                note.uploadByUser = _.firstName + " " + _.lastName;
-                              }
-                              else {
-                                note.uploadByUser = "N/A";
-                              }
-                            });
-
-                          return note;
-                        });
-
-                      });
-
-
-                    if (actions[action].level == this.actionLevel) {
-                      this.actions.push(actions[action]);
-                    }
+                    return note;
                   });
+
                 });
-              });
 
-            this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(_ => {
-                if (_.$exists()) {
-                  //console.log(_);
-                  this.departments = Object.keys(_);
-                }
-                else {
-                  this.departments = [];
-                }
 
-              });
+              if (actions[action].level == this.actionLevel) {
+                this.actions.push(actions[action]);
+              }
+            });
           });
-      } else {
-        // user is not logged in
-        console.log('Error occurred - User is not logged in');
-        this.navigateToLogin();
-      }
+        });
+
+      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(_ => {
+          if (_.$exists()) {
+            //console.log(_);
+            this.departments = Object.keys(_);
+          }
+          else {
+            this.departments = [];
+          }
+
+        });
     });
   }
 

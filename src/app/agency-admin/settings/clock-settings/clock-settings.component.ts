@@ -1,9 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Frequency} from "../../../utils/Frequency";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-clock-settings',
@@ -32,13 +33,12 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/clockSettings/')
           .takeUntil(this.ngUnsubscribe)
           .subscribe(_ => {
@@ -55,12 +55,6 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
 
         });
-
-      } else {
-        // user is not logged in
-        console.log('Error occurred - User is not logged in');
-        this.navigateToLogin();
-      }
     });
   }
 

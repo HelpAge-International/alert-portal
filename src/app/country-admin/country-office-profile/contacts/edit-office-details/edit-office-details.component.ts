@@ -9,6 +9,8 @@ import { DisplayError } from "../../../../errors/display.error";
 import { UserService } from "../../../../services/user.service";
 import { CountryOfficeAddressModel } from "../../../../model/countryoffice.address.model";
 import { AgencyService } from "../../../../services/agency-service.service";
+import {PageControlService} from "../../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 @Component({
   selector: 'app-country-office-edit-office-details',
   templateUrl: './edit-office-details.component.html',
@@ -24,35 +26,31 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
   private alertMessageType = AlertMessageType;
   COUNTRY_SELECTION = Constants.COUNTRY_SELECTION;
   COUNTRIES = Constants.COUNTRIES;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private countryOfficeAddress: CountryOfficeAddressModel;
-  
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
-              private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
+              private router: Router) {
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
         this.countryId = countryAdminUser.countryId;
         this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
-              
+
         this._agencyService.getCountryOffice(this.countryId, this.agencyId)
               .map(countryOffice => {
                 let countryOfficeAddress = new CountryOfficeAddressModel();
@@ -65,7 +63,6 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
               })
       });
     })
-    this.subscriptions.add(authSubscription);
   }
 
   validateForm(): boolean {
@@ -79,8 +76,8 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_OFFICE_DETAILS', AlertMessageType.Success);
               setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            }, 
-            err => 
+            },
+            err =>
             {
               if(err instanceof DisplayError) {
                 this.alertMessage = new AlertMessageModel(err.message);

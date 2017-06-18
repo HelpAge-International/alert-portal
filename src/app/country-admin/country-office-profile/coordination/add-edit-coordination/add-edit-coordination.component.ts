@@ -14,6 +14,8 @@ import { CoordinationArrangementModel } from "../../../../model/coordination-arr
 import { ModelStaff } from "../../../../model/staff.model";
 import { AgencyService } from "../../../../services/agency-service.service";
 import { ModelAgency } from "../../../../model/agency.model";
+import {PageControlService} from "../../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -31,36 +33,33 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
   private alertMessageType = AlertMessageType;
   responsePlansSectors = ResponsePlanSectors;
   responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private coordinationArrangement: CoordinationArrangementModel;
   private staffList: ModelStaff[];
   private staffNamesList: any[];
   private agency: ModelAgency;
-  
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _coordinationArrangementService: CoordinationArrangementService,
               private _agencyService: AgencyService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
+              private route: ActivatedRoute) {
                 this.coordinationArrangement = new CoordinationArrangementModel();
                 this.staffList = [];
                 this.staffNamesList = [];
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
@@ -77,13 +76,13 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
                 this._userService.getStaffList(this.countryId).subscribe(staffList => {
                 this.staffList = staffList;
                 this.staffList.forEach(staff => {
-                  
+
                   this._userService.getUser(staff.id).subscribe(user => {
                     this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
                   });
                 });
               });
-              
+
               const editSubscription = this.route.params.subscribe((params: Params) => {
                     if (params['id']) {
                       this._coordinationArrangementService.getCoordinationArrangement(this.countryId, params['id'])
@@ -93,7 +92,6 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
             });
       });
     })
-    this.subscriptions.add(authSubscription);
   }
 
   validateForm(): boolean {
@@ -107,8 +105,8 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            }, 
-            err => 
+            },
+            err =>
             {
               if(err instanceof DisplayError) {
                 this.alertMessage = new AlertMessageModel(err.message);

@@ -18,6 +18,7 @@ import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -237,25 +238,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        console.log("Admin uid: " + this.uid);
-
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            let userpath = Constants.USER_PATHS[userType];
-            this.getSystemAgencyCountryIds(userpath);
-          });
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      let userpath = Constants.USER_PATHS[userType];
+      this.getSystemAgencyCountryIds(userpath);
     });
   }
 

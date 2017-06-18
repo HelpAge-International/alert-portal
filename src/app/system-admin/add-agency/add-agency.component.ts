@@ -14,6 +14,7 @@ import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NotificationSettingsModel} from "../../model/notification-settings.model";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -55,14 +56,13 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router,
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router,
               private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.systemAdminUid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.systemAdminUid = user.uid;
         this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
         this.inactive = true;
         this.route.params
@@ -74,9 +74,6 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
               this.loadAgencyInfo(params["id"]);
             }
           });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

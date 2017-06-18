@@ -10,6 +10,8 @@ import { UserService } from "../../../../services/user.service";
 import { PointOfContactModel } from "../../../../model/point-of-contact.model";
 import { ModelStaff } from "../../../../model/staff.model";
 import { ContactService } from "../../../../services/contact.service";
+import {Subject} from "rxjs/Subject";
+import {PageControlService} from "../../../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -24,58 +26,56 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private pointOfContact: PointOfContactModel;
   private staffList: ModelStaff[];
   private staffNamesList: any[];
-  
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService,
+              private _userService: UserService,
               private _contactService: ContactService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
-                this.pointOfContact = new PointOfContactModel();
-                this.staffList = [];
-                this.staffNamesList = [];
+              private route: ActivatedRoute) {
+    this.pointOfContact = new PointOfContactModel();
+    this.staffList = [];
+    this.staffNamesList = [];
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
         this.countryId = countryAdminUser.countryId;
-        
-        this._userService.getStaffList(this.countryId).subscribe(staffList => {
-                this.staffList = staffList;
-                this.staffList.forEach(staff => {
 
-                  this._userService.getUser(staff.id).subscribe(user => {
-                    this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
-                  });
-                });
+        this._userService.getStaffList(this.countryId).subscribe(staffList => {
+          this.staffList = staffList;
+          this.staffList.forEach(staff => {
+
+            this._userService.getUser(staff.id).subscribe(user => {
+              this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
+            });
+          });
         });
 
         const editSubscription = this.route.params.subscribe((params: Params) => {
-                    if (params['id']) {
-                      this._contactService.getPointOfContact(this.countryId, params['id'])
-                            .subscribe(pointOfContact => { this.pointOfContact = pointOfContact; });
-                    }
-              });
+          if (params['id']) {
+            this._contactService.getPointOfContact(this.countryId, params['id'])
+              .subscribe(pointOfContact => { this.pointOfContact = pointOfContact; });
+          }
+        });
       });
-    })
-    this.subscriptions.add(authSubscription);
+    });
   }
 
   validateForm(): boolean {
@@ -85,26 +85,26 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   }
 
   submit() {
-      this._contactService.savePointOfContact(this.countryId, this.pointOfContact)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
-              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            }, 
-            err => 
-            {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
+    this._contactService.savePointOfContact(this.countryId, this.pointOfContact)
+      .then(() => {
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
+        err =>
+        {
+          if(err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          }else{
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
   }
 
   goBack() {
     this.router.navigateByUrl('/country-admin/country-office-profile/contacts');
   }
 
-  
+
   deletePointOfContact() {
     jQuery('#delete-action').modal('show');
   }
@@ -118,7 +118,7 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeModal() {
     jQuery('#delete-action').modal('hide');

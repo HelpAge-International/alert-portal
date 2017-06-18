@@ -1,11 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseAuthState} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {PersonTitle} from "../../utils/Enums";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-agency-account-settings',
@@ -40,19 +40,15 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.authState = auth;
-        this.uid = auth.uid;
-        console.log("Agency admin uid: " + this.uid);
-        this.loadAgencyAdminData(this.uid);
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.authState = user;
+      this.uid = user.auth.uid;
+      console.log("Agency admin uid: " + this.uid);
+      this.loadAgencyAdminData(this.uid);
     });
   }
 
@@ -93,7 +89,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
           if (emailChanged) {
             this.authState.auth.updateEmail(this.agencyAdminEmail).then(_ => {
-              this.af.database.object(Constants.APP_STATUS+'/userPublic/' + this.uid).update(editedUser).then(() => {
+              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
                 this.showAlert(false);
               }, error => {
                 this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -102,7 +98,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
               });
             })
           } else {
-            this.af.database.object(Constants.APP_STATUS+'/userPublic/' + this.uid).update(editedUser).then(() => {
+            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
               this.showAlert(false)
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -119,22 +115,22 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   private loadAgencyAdminData(uid) {
 
-    this.af.database.object(Constants.APP_STATUS+"/userPublic/" + uid)
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((agencyAdmin: ModelUserPublic) => {
 
-      this.userPublic = agencyAdmin;
-      this.agencyAdminTitle = agencyAdmin.title;
-      this.agencyAdminFirstName = agencyAdmin.firstName;
-      this.agencyAdminLastName = agencyAdmin.lastName;
-      this.agencyAdminEmail = agencyAdmin.email;
-      this.agencyAdminAddressLine1 = agencyAdmin.addressLine1;
-      this.agencyAdminAddressLine2 = agencyAdmin.addressLine2;
-      this.agencyAdminAddressLine3 = agencyAdmin.addressLine3;
-      this.agencyAdminCountry = agencyAdmin.country;
-      this.agencyAdminCity = agencyAdmin.city;
-      this.agencyAdminPostCode = agencyAdmin.postCode;
-    });
+        this.userPublic = agencyAdmin;
+        this.agencyAdminTitle = agencyAdmin.title;
+        this.agencyAdminFirstName = agencyAdmin.firstName;
+        this.agencyAdminLastName = agencyAdmin.lastName;
+        this.agencyAdminEmail = agencyAdmin.email;
+        this.agencyAdminAddressLine1 = agencyAdmin.addressLine1;
+        this.agencyAdminAddressLine2 = agencyAdmin.addressLine2;
+        this.agencyAdminAddressLine3 = agencyAdmin.addressLine3;
+        this.agencyAdminCountry = agencyAdmin.country;
+        this.agencyAdminCity = agencyAdmin.city;
+        this.agencyAdminPostCode = agencyAdmin.postCode;
+      });
   }
 
   private showAlert(error: boolean) {

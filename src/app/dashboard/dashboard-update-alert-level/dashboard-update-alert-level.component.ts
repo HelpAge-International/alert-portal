@@ -8,6 +8,7 @@ import {ModelAlert} from "../../model/alert.model";
 import {ModelAffectedArea} from "../../model/affectedArea.model";
 import {AlertLevels, AlertStatus, ApprovalStatus} from "../../utils/Enums";
 import {isNumber} from "util";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-dashboard-update-alert-level',
@@ -34,29 +35,23 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private preAlertLevel: AlertLevels;
   private isDirector: boolean;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private alertService: ActionsService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private alertService: ActionsService) {
   }
 
   ngOnInit() {
-    this.af.auth
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(auth => {
-        if (auth) {
-          this.uid = auth.uid;
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((param: Params) => {
-              if (param['id']) {
-                this.alertId = param['id'];
-                this.countryId = param['countryId'];
-                this.isDirector = param['isDirector'];
-                this.loadAlert(this.alertId, this.countryId);
-              }
-            })
-        } else {
-          this.router.navigateByUrl(Constants.LOGIN_PATH);
-        }
-      });
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((param: Params) => {
+          if (param['id']) {
+            this.alertId = param['id'];
+            this.countryId = param['countryId'];
+            this.isDirector = param['isDirector'];
+            this.loadAlert(this.alertId, this.countryId);
+          }
+        })
+    });
   }
 
   private loadAlert(alertId: string, countryId: string) {

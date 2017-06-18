@@ -1,9 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Observable, Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {ModelSystem} from "../../model/system.model";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-system-settings',
@@ -30,18 +31,13 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(x => {
-      if (x) {
-        this.uid = x.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.initData(this.uid);
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH)
-      }
     });
   }
 

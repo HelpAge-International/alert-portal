@@ -5,6 +5,7 @@ import {GenericMpaOrApaAction} from '../../../model/genericMPAAPA';
 import {Constants} from "../../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-mpa-action',
@@ -32,19 +33,12 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.path = Constants.APP_STATUS+"/action/" + auth.uid;
-        console.log("uid: " + auth.uid);
-      } else {
-        console.log("Error occurred - User isn't logged in");
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.path = Constants.APP_STATUS+"/action/" + user.uid;
     });
 
     this.route.params

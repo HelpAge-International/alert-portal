@@ -1,9 +1,11 @@
 import {PermissionsAgency, UserType} from "../utils/Enums";
-import {AngularFire, AngularFireAuth, FirebaseAuthState} from "angularfire2";
+import {AngularFire, AngularFireAuth, FirebaseAuth, FirebaseAuthState} from "angularfire2";
 import {UserService} from "./user.service";
 import {Subject} from "rxjs/Subject";
 import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import {Constants} from "../utils/Constants";
+import {Inject, Injectable} from "@angular/core";
+import {DOCUMENT} from "@angular/platform-browser";
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -57,25 +59,33 @@ export class AgencyPermissionObject {
  *  Used to handle both page access and dynamic module permissions
  */
 
+@Injectable()
 export class PageControlService {
 
   /**
    * Permissions objects for the page control
    *  =========================================================================================
    */
-  public static GlobalDirector = PageUserType.create(UserType.GlobalDirector, "dashboard", [
+  public static GlobalDirector = PageUserType.create(UserType.GlobalDirector, "director", [
+    "director"
   ]);
-  public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "dashboard", [
+  public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
+    "director"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
+    "dashboard"
   ]);
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
+    "dashboard"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
+    "dashboard"
   ]);
-  public static Donor = PageUserType.create(UserType.Donor, "dashboard", [
+  public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
+    "donor-module"
   ]);
-  public static GlobalUser = PageUserType.create(UserType.GlobalUser, "dashboard", [
+  public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
+    "director"
   ]);
   public static CountryAdmin = PageUserType.create(UserType.CountryAdmin, "dashboard", [
     "dashboard",
@@ -83,22 +93,41 @@ export class PageControlService {
     "preparedness/advanced",
     "map",
     "map/map-countries-list",
+    "country-admin/country-office-profile",
     "country-admin/country-office-profile/equipment/add-edit-equipment",
     "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
     "country-admin/country-office-profile/equipment",
+    "country-admin/country-office-profile/programme",
+    "country-admin/country-office-profile/partners",
+    "country-admin/country-office-profile/office-capacity",
+    "country-admin/country-office-profile/coordination",
+    "country-admin/country-office-profile/stock-capacity",
+    "country-admin/country-office-profile/office-documents",
+    "country-admin/country-office-profile/contacts",
     "country-admin/country-agencies",
     "country-admin/country-my-agency",
     "country-admin/country-account-settings",
+    "country-admin/country-staff",
+    "country-admin/settings",
+    "country-admin/settings/country-permission-settings",
+    "country-admin/settings/country-clock-settings",
+    "country-admin/settings/country-modules-settings",
+    "country-admin/settings/country-notification-settings",
+    "country-admin/settings/country-notification-settings/country-add-external-recipient",
+    "country-admin/country-messages",
+    "country-admin/country-messages/country-create-edit-messages",
     "response-plans",
     "response-plans/create-edit-response-plan",
     "response-plans/view-plan",
     "risk-monitoring",
+    "risk-monitoring/create-alert",
     "risk-monitoring/add-hazard",
     "risk-monitoring/create-alert/countryCode"
   ]);
   public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", [
   ]);
-  public static CountryUser = PageUserType.create(UserType.CountryUser, "dashboard", [
+  public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
+    "director"
   ]);
   /**
    *  =========================================================================================
@@ -130,6 +159,7 @@ export class PageControlService {
   public static ModuleRiskMonitoring= new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
     "risk-monitoring",
     "risk-monitoring/add-hazard",
+    "risk-monitoring/create-alert",
     "risk-monitoring/create-alert/countryCode"
   ]);
   /**
@@ -167,20 +197,36 @@ export class PageControlService {
     return this.moduleControlMap;
   }
 
-  public static auth(af: AngularFire, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType) => void) {
-    af.auth.takeUntil(ngUnsubscribe).subscribe((user) => {
-      if (user) {
-        UserService.getUserType(af, user.auth.uid).subscribe(userType => {
+  constructor(private af: AngularFire) {
+  }
+
+  public auth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
+    PageControlService.auth(this.af, ngUnsubscribe, route, router, func, null);
+  }
+  public authObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType) => void) {
+    PageControlService.auth(this.af, ngUnsubscribe, route, router, null, func);
+  }
+  private static auth(af: AngularFire, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
+                     authUser: (auth: firebase.User, userType: UserType) => void,
+                     authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
+    af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+      if (auth) {
+        UserService.getUserType(af, auth.auth.uid).subscribe(userType => {
           //TODO: Check this if it's null! If it's null then there's no user type authentication
           if (userType == null) {
-            func(user, null);
+            if (authUser != null) {
+              authUser(auth.auth, null);
+            }
+            else if (authObj != null){
+              authObj(auth, null);
+            }
           }
           else {
             let type: PageUserType = PageControlService.initPageControlMap().get(userType);
             if (PageControlService.checkUrl(route, userType, type)) {
-              PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, user.auth.uid, Constants.USER_PATHS[userType], (list) => {
+              PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, auth.auth.uid, Constants.USER_PATHS[userType], (list) => {
                 let s = PageControlService.buildEndUrl(route);
-                let skip = true;
+                let skip = false;
                 // We have [AgencyPermissionObj], need to iterate through those.
                 //  For every one of those, check if our current URL is contained in one of thise
                 //   If so and we're not authorised to view it, kick us out
@@ -188,12 +234,17 @@ export class PageControlService {
                   for (let y of x.urls) {
                     if (s == y && !x.isAuthorized) {
                       router.navigateByUrl(type.redirectTo);
-                      skip = false;
+                      skip = true;
                     }
                   }
                 }
                 if (!skip) {
-                  func(user, userType);
+                  if (authUser != null) {
+                    authUser(auth.auth, userType);
+                  }
+                  else if (authObj != null) {
+                    authObj(auth, userType);
+                  }
                 }
               });
             }
@@ -207,7 +258,6 @@ export class PageControlService {
       }
     });
   }
-
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
     for (let x of type.urls) {
@@ -224,7 +274,7 @@ export class PageControlService {
     let parts: string = "";
     route.url.forEach((segments: UrlSegment[]) => {
       segments.forEach((value) => {
-        parts += value.path + "/";
+        parts += value.path.trim() + "/";
       });
     });
     if (parts.length != 0) {

@@ -1,5 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AgencyAdminHeaderComponent } from './agency-admin-header.component';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import {AgencyAdminHeaderComponent} from "./agency-admin-header.component";
 
 describe('AgencyAdminHeaderComponent', () => {
   let component: AgencyAdminHeaderComponent;

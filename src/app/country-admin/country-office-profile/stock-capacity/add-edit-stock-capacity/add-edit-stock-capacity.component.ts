@@ -9,6 +9,8 @@ import { DisplayError } from "../../../../errors/display.error";
 import { UserService } from "../../../../services/user.service";
 import { StockCapacityModel } from "../../../../model/stock-capacity.model";
 import { StockService } from "../../../../services/stock.service";
+import {PageControlService} from "../../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -24,37 +26,34 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private stockCapacity: StockCapacityModel;
-  
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
+              private route: ActivatedRoute) {
                 this.stockCapacity = new StockCapacityModel();
                 this.stockCapacity.type = StockType.Country; // set default stock type
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
         this.countryId = countryAdminUser.countryId;
         this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
-              
+
         const editSubscription = this.route.params.subscribe((params: Params) => {
           if (params['id']) {
             this._stockService.getStockCapacity(this.agencyId, this.countryId, params['id'])
@@ -65,8 +64,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
           }
         });
       });
-    })
-    this.subscriptions.add(authSubscription);
+    });
   }
 
   validateForm(): boolean {
@@ -80,8 +78,8 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            }, 
-            err => 
+            },
+            err =>
             {
               if(err instanceof DisplayError) {
                 this.alertMessage = new AlertMessageModel(err.message);

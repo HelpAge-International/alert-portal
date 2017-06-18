@@ -1,11 +1,12 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {NotificationSettingEvents, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {ModelAgency} from "../../../model/agency.model";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -46,17 +47,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private translate: TranslateService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.loadAgencyData(this.uid);
-      } else {
-        this.navigateToLogin();
-      }
     });
   }
 

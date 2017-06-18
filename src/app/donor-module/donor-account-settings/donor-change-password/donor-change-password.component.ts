@@ -1,11 +1,12 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../../services/user.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
 import {ChangePasswordModel} from "../../../model/change-password.model";
 import {DisplayError} from "../../../errors/display.error";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-donor-change-password',
@@ -21,7 +22,7 @@ export class DonorChangePasswordComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService, private router: Router) {
     this.changePassword = new ChangePasswordModel();
   }
 
@@ -33,7 +34,7 @@ export class DonorChangePasswordComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    this._userService.getAuthUser().takeUntil(this.ngUnsubscribe).subscribe(user => {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       const changePasswordSubscription = this._userService.changePassword(user.email, this.changePassword)
         .then(() => {
           this.alertMessage = new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PASSWORD', AlertMessageType.Success);
@@ -46,7 +47,7 @@ export class DonorChangePasswordComponent implements OnInit, OnDestroy {
             this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
           }
         });
-    }).unsubscribe(); // prevent calling the changePassword() twice
+    }) // prevent calling the changePassword() twice
   }
 
   validateForm(): boolean {

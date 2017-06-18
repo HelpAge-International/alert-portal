@@ -2,8 +2,9 @@ import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -31,22 +32,18 @@ export class MpaComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.actions = this.af.database.list(Constants.APP_STATUS+"/action/" + this.uid, {
           query: {
             orderByChild: "type",
             equalTo: ActionType.mandated
           }
         });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

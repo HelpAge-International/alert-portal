@@ -9,6 +9,7 @@ import {Constants} from "../../../../utils/Constants";
 import {NotificationSettingsService} from "../../../../services/notification-settings.service";
 import {DisplayError} from "../../../../errors/display.error";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -37,7 +38,7 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService,
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _notificationSettingsService: NotificationSettingsService,
               private _messageService: MessageService,
               private router: Router,
@@ -46,14 +47,8 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._userService.getAuthUser().takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-
       try {
         this._userService.getCountryAdminUser(this.uid)
           .takeUntil(this.ngUnsubscribe)

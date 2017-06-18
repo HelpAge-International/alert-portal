@@ -4,6 +4,8 @@ import {Constants} from "../../utils/Constants";
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
 import {Countries, DocumentType, SizeType} from "../../utils/Enums";
 import {AgencySubmenuComponent} from '../agency-submenu/agency-submenu.component';
+import {PageControlService} from "../../services/pagecontrol.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-country-submenu',
@@ -19,8 +21,8 @@ export class CountrySubmenuComponent extends AgencySubmenuComponent implements O
   @Input() countryId: string;
   @Input() agencyId: string;
 
-  constructor(protected af: AngularFire, protected _sanitizer: DomSanitizer) {
-    super(af, _sanitizer);
+  constructor(protected pageControl: PageControlService, protected route: ActivatedRoute, protected router: Router, protected af: AngularFire, protected _sanitizer: DomSanitizer) {
+    super(pageControl, route, router, af, _sanitizer);
   }
 
   ngOnInit() {

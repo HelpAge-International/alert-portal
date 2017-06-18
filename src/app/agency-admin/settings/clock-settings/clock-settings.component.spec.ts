@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { ClockSettingsComponent } from './clock-settings.component';
+import {ClockSettingsComponent} from "./clock-settings.component";
 
 describe('ClockSettingsComponent', () => {
   let component: ClockSettingsComponent;

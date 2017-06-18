@@ -5,6 +5,7 @@ import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction'
 import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-action',
@@ -26,19 +27,12 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.path = Constants.APP_STATUS + "/action/" + auth.uid;
-        console.log("uid: " + auth.uid);
-      } else {
-        console.log("Error occurred - User isn't logged in");
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.path = Constants.APP_STATUS + "/action/" + user.uid;
     });
 
     this.route.params

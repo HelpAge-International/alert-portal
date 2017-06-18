@@ -162,6 +162,7 @@ import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-p
 import { DonorAccountSettingsComponent } from './donor-module/donor-account-settings/donor-account-settings.component';
 import { DonorChangePasswordComponent } from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
 import { NewDonorPasswordComponent } from './donor-module/new-donor-password/new-donor-password.component';
+import {PageControlService} from "./services/pagecontrol.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -359,6 +360,7 @@ const firebaseAuthConfig = {
               CoordinationArrangementService,
               AgencyService,
               StockService,
+              PageControlService,
               ContactService],
   bootstrap: [AppComponent]
 })

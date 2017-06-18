@@ -34,7 +34,7 @@ export class ContactService {
         return;
       }
 
-      const getPointsOfContactubscription = 
+      const getPointsOfContactubscription =
               this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContactId)
       .map(item => {
         let pointOfContact = new PointOfContactModel();
@@ -51,16 +51,16 @@ export class ContactService {
     {
       return Promise.reject('Missing countryId or point of contact');
     }
-    
+
     // Update the timestamp
     pointOfContact.updatedAt = new Date().getTime();
-    
+
     if(pointOfContact.id)
     {
       const pointOfContactData = {};
-      
+
       pointOfContactData['/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContact.id] = pointOfContact;
-      
+
       return this.af.database.object(Constants.APP_STATUS).update(pointOfContactData);
     }else{
       return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId).push(pointOfContact);
@@ -72,7 +72,7 @@ export class ContactService {
     {
       return Promise.reject('Missing countryId or pointOfContact');
     }
-    
+
     const pointOfContactData = {};
 
     pointOfContactData['/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContact.id] = null;

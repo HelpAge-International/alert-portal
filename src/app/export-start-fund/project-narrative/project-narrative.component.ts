@@ -8,6 +8,7 @@ import {UserService} from "../../services/user.service";
 import {
   MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
 } from "../../utils/Enums";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-export-start-fund-project-narrative',
@@ -39,7 +40,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private sourcePlanInfo2: string;
   private SourcePlan = SourcePlan;
 
-  constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
   /**
@@ -47,13 +48,9 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.downloadData();
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.downloadData();
     });
   }
 

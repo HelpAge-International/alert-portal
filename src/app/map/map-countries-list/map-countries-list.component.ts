@@ -11,6 +11,7 @@ import {HazardImages} from "../../utils/HazardImages";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -38,7 +39,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
   private isDirector: boolean;
   private userTypePath: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
@@ -46,8 +47,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
 
         this.route.params
@@ -58,12 +58,9 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
             }
           });
 
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(usertype => {
 
             /** Setup the minimum threshold **/
-            this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[usertype], (red, yellow, green) => {
+            this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[userType], (red, yellow, green) => {
               this.minThreshGreen = green;
               this.minThreshYellow = yellow;
               this.minThreshRed = red;
@@ -73,7 +70,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
             this.otherRegion = new RegionHolder();
             this.otherRegion.regionId = "unassigned";
             this.otherRegion.regionName = "Other";
-            this.mapHelper.getRegionsForAgency(this.uid, Constants.USER_PATHS[usertype], (key, obj) => {
+            this.mapHelper.getRegionsForAgency(this.uid, Constants.USER_PATHS[userType], (key, obj) => {
               console.log("Updating Region");
               // this.showRegionHeaders = key != "";
               // if (!this.showRegionHeaders) return;
@@ -89,7 +86,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
             });
 
             /** Country list **/
-            this.mapHelper.initCountries(this.uid, Constants.USER_PATHS[usertype], (departments => {
+            this.mapHelper.initCountries(this.uid, Constants.USER_PATHS[userType], (departments => {
               console.log("Updating country");
               this.allCountries.clear();
               for (let x of departments) {
@@ -100,14 +97,11 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
             }));
 
             /** Markers */
-            this.mapHelper.actionInfoForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (location, marker) => {
+            this.mapHelper.actionInfoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (location, marker) => {
               let hazard: RegionHazard = new RegionHazard(location, marker);
               this.addOrUpdateHazard(hazard);
               console.log(this.hazards);
             });
-
-          });
-      }
     });
   }
 

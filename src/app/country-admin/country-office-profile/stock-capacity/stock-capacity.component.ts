@@ -11,6 +11,8 @@ import { StockCapacityModel } from "../../../model/stock-capacity.model";
 import { StockService } from "../../../services/stock.service";
 import { NoteModel } from "../../../model/note.model";
 import { NoteService } from "../../../services/note.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -29,37 +31,34 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   // Constants and enums
   private alertMessageType = AlertMessageType;
   STOCK_TYPE = StockType;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private stockCapacitiesIN: StockCapacityModel[];
   private stockCapacitiesOUT: StockCapacityModel[];
-  
+
   // Helpers
   private newNote: NoteModel[];
   private activeNote: NoteModel;
   private activeStockCapacity: StockCapacityModel;
-   
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private _noteService: NoteService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
+              private route: ActivatedRoute) {
                 this.newNote = [];
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
@@ -69,7 +68,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         this._stockService.getStockCapacities(this.agencyId, this.countryId).subscribe(stockCapacities => {
             this.stockCapacitiesIN = stockCapacities.filter(x => x.type == StockType.Country);
             this.stockCapacitiesOUT = stockCapacities.filter(x => x.type == StockType.External);
-            
+
             // Get notes
             stockCapacities.forEach(stockCapacity => {
               const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
@@ -87,7 +86,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         })
       });
     });
-    this.subscriptions.add(authSubscription);
   }
 
   goBack() {

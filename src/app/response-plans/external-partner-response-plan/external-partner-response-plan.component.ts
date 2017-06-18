@@ -8,6 +8,7 @@ import {AlertMessageModel} from '../../model/alert-message.model';
 import {AngularFireAuth} from 'angularfire2/auth';
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
     selector: 'app-external-partner-response-plan',
@@ -36,7 +37,7 @@ export class ExternalPartnerResponsePlan implements OnInit, OnDestroy {
     private whoApprove:any;
     private whoApproveId:any;
 
-    constructor(// private subscriptions: RxHelper,
+    constructor(private pageControl: PageControlService, // private subscriptions: RxHelper,
         private af:AngularFire,
         private router:Router,
         private route:ActivatedRoute,
@@ -56,7 +57,7 @@ export class ExternalPartnerResponsePlan implements OnInit, OnDestroy {
     }
 
     initData() {
-        let subscription = this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params:Params) => {
+        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params:Params) => {
             this.token = params['token'] ? params['token'] : false;
             this.countryID = params['countryID'] ? params['countryID'] : false;
             this.responsePlanID = params['responsePlanID'] ? params['responsePlanID'] : false;
@@ -75,9 +76,7 @@ export class ExternalPartnerResponsePlan implements OnInit, OnDestroy {
                     this._authAnonymousUser();
                 }
             });
-            // this._checkResponsePlanData();
         });
-        // this.subscriptions.add(subscription);
     }
 
     _checkToken() {
