@@ -353,18 +353,16 @@ export class UserService {
     return UserService.recursiveUserMap(af, paths, 0);
   }
   private static recursiveUserMap(af: AngularFire, paths, index: number) {
+    if (index == paths.length) {
+      return Observable.of(null);
+    }
     return af.database.object(paths[index].path)
       .flatMap(obj => {
         if (obj.agencyAdmin) {
           return Observable.of(paths[index].type);
         }
         else {
-          if (index == paths.length) {
-            return Observable.empty();
-          }
-          else {
-            return UserService.recursiveUserMap(af, paths, index + 1);
-          }
+          return UserService.recursiveUserMap(af, paths, index + 1);
         }
       });
   }
