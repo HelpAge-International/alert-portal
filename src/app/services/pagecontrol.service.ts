@@ -128,7 +128,7 @@ export class PageControlService {
   ]);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
     "director"
-  ]); 
+  ]);
   /**
    *  =========================================================================================
    */
