@@ -801,7 +801,7 @@ export class Constants {
         '#9012FE'
     ];
 
-    // TODO - Check when new users are added top the database, Make sure the path is correct
+    // TODO - Check when new users are added to the database, Make sure the path is correct
     static USER_PATHS = [
         ,
         'globalDirector',
@@ -837,6 +837,11 @@ export class Constants {
         "MONTH.NOVEMBER",
         "MONTH.DECEMBER",
     ];
+
+  static SKILL_TYPE = [
+    "AGENCY_ADMIN.STAFF.SUPPORT_SKILLS",
+    "AGENCY_ADMIN.STAFF.SUPPORT_TECH"
+  ];
 
 }
 
