@@ -6,38 +6,40 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-  MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
+  MediaFormat,
+  MethodOfImplementation,
+  PresenceInTheCountry,
+  ResponsePlanSectors, SourcePlan,
+  UserType
 } from "../../utils/Enums";
 
 @Component({
-  selector: 'app-export-start-fund-project-narrative',
-  templateUrl: './project-narrative.component.html',
-  styleUrls: ['./project-narrative.component.css']
+  selector: 'app-export-start-fund-guidance-report',
+  templateUrl: './guidance-report.component.html',
+  styleUrls: ['./guidance-report.component.css']
 })
 
-export class ProjectNarrativeComponent implements OnInit, OnDestroy {
+export class GuidanceReportComponent implements OnInit, OnDestroy {
 
-  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private USER_TYPE: string = 'administratorCountry';
   private uid: string;
   private countryId: string;
+  private ResponsePlanSectors = ResponsePlanSectors;
+  private PresenceInTheCountry = PresenceInTheCountry;
+  private MethodOfImplementation = MethodOfImplementation;
+
   @Input() responsePlanId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  private ResponsePlanSectors = ResponsePlanSectors;
   private responsePlan: ResponsePlan = new ResponsePlan;
-
   private planLeadName: string = '';
   private planLeadEmail: string = '';
   private planLeadPhone: string = '';
-  private sectorsRelatedToMap = new Map<number, boolean>();
-  private PresenceInTheCountry = PresenceInTheCountry;
-  private MethodOfImplementation = MethodOfImplementation;
-  private MediaFormat = MediaFormat;
   private partnersList: string[] = [];
   private sourcePlanId: number;
-  private sourcePlanInfo1: string;
-  private sourcePlanInfo2: string;
   private SourcePlan = SourcePlan;
+  private MediaFormat = MediaFormat;
+
+  private sectorsRelatedToMap = new Map<number, boolean>();
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -109,16 +111,14 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           responsePlan.sectorsRelatedTo.forEach(sector => {
             this.sectorsRelatedToMap.set(sector, true);
           });
+
+          this.bindProjectLeadData(responsePlan);
+          this.bindPartnersData(responsePlan);
+          this.bindSourcePlanData(responsePlan);
         }
-
-        this.bindProjectLeadData(responsePlan);
-
-        this.bindPartnersData(responsePlan);
-
-        this.bindSourcePlanData(responsePlan);
-
       });
   }
+
 
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
@@ -154,8 +154,6 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
     if (responsePlan.sectors) {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
         this.sourcePlanId = responsePlan.sectors[sectorKey]["sourcePlan"];
-        this.sourcePlanInfo1 = responsePlan.sectors[sectorKey]["bullet1"];
-        this.sourcePlanInfo2 = responsePlan.sectors[sectorKey]["bullet2"];
       });
     }
   }

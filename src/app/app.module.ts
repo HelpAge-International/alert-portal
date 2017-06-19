@@ -163,6 +163,10 @@ import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-p
 import { DonorAccountSettingsComponent } from './donor-module/donor-account-settings/donor-account-settings.component';
 import { DonorChangePasswordComponent } from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
 import { NewDonorPasswordComponent } from './donor-module/new-donor-password/new-donor-password.component';
+import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
+import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
+import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance/technical-guidance.component";
+import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -324,6 +328,10 @@ const firebaseAuthConfig = {
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
     NewDonorPasswordComponent
+    BudgetReportComponent,
+    ProjectActivitiesComponent,
+    TechnicalGuidanceComponent,
+    GuidanceReportComponent
   ],
   imports: [
     BrowserModule,
