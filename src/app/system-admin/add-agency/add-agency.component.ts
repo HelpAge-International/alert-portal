@@ -51,7 +51,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private secondApp: firebase.app.App;
   private systemAdminUid: string;
   private preAgencyName: string;
-  private isDonor: boolean = true;
+  private isDonor: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
