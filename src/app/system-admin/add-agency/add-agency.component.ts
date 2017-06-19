@@ -347,7 +347,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agency.clockSettings = clockSetting;
 
       //init response plan settings
-      let hierachy: boolean[] = [true, true];
+      let hierachy: boolean[] = [false, false];
       let sections: boolean[] = [true, true, true, true, true, true, true, true, true, true];
       let responseSetting = {};
       responseSetting["approvalHierachy"] = hierachy;
