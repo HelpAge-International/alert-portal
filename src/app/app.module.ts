@@ -327,7 +327,7 @@ const firebaseAuthConfig = {
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
-    NewDonorPasswordComponent
+    NewDonorPasswordComponent,
     BudgetReportComponent,
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
