@@ -42,7 +42,6 @@ import {DocumentsComponent} from "./agency-admin/settings/documents/documents.co
 import {NetworkComponent} from "./agency-admin/settings/network/network.component";
 import {CreateEditNetworkComponent} from "./agency-admin/settings/network/create-edit-network/create-edit-network.component";
 import {NotificationComponent} from "./agency-admin/settings/notification/notification.component";
-import {CreateEditNotificationComponent} from "./agency-admin/settings/notification/create-edit-notification/create-edit-notification.component";
 import {StaffComponent} from "./agency-admin/staff/staff.component";
 import {CreateEditStaffComponent} from "./agency-admin/staff/create-edit-staff/create-edit-staff.component";
 import {AgencyMpaComponent} from "./agency-admin/agency-mpa/agency-mpa.component";
@@ -161,6 +160,9 @@ import {ProjectReportComponent} from "./export-start-fund/project-report/project
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import { DonorAccountSettingsComponent } from './donor-module/donor-account-settings/donor-account-settings.component';
+import { DonorChangePasswordComponent } from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
+import { NewDonorPasswordComponent } from './donor-module/new-donor-password/new-donor-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -232,7 +234,6 @@ const firebaseAuthConfig = {
     NetworkComponent,
     CreateEditNetworkComponent,
     NotificationComponent,
-    CreateEditNotificationComponent,
     StaffComponent,
     CreateEditStaffComponent,
     AgencyMpaComponent,
@@ -319,7 +320,10 @@ const firebaseAuthConfig = {
     ProjectBudgetComponent,
     ProjectReportComponent,
     CountryOfficeEditProgrammeComponent,
-    AddEditMappingProgrammeComponent
+    AddEditMappingProgrammeComponent,
+    DonorAccountSettingsComponent,
+    DonorChangePasswordComponent,
+    NewDonorPasswordComponent
   ],
   imports: [
     BrowserModule,

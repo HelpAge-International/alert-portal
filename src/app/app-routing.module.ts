@@ -106,6 +106,9 @@ import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/cou
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {DonorAccountSettingsComponent} from "./donor-module/donor-account-settings/donor-account-settings.component";
+import {DonorChangePasswordComponent} from "./donor-module/donor-account-settings/donor-change-password/donor-change-password.component";
+import {NewDonorPasswordComponent} from "./donor-module/new-donor-password/new-donor-password.component";
 import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-profile/documents/documents.component";
 
 const routes: Routes = [
@@ -220,13 +223,13 @@ const routes: Routes = [
   {path: 'country-admin/country-office-profile/contacts', component: CountryOfficeContactsComponent},
   {path: 'country-admin/country-office-profile/contacts/edit-office-details', component: CountryOfficeEditOfficeDetailsComponent},
   {path: 'country-admin/country-office-profile/contacts/add-edit-point-of-contact', component: CountryOfficeAddEditPointOfContactComponent},
+  {path: 'country-admin/country-office-profile/documents', component: CountryOfficeDocumentsComponent},
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
   {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
   {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
   {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
   {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
-  {path: 'country-admin/country-office-profile/documents', component: CountryOfficeDocumentsComponent},
 
   /**
    * Dashboard
@@ -297,6 +300,9 @@ const routes: Routes = [
   {path: 'donor-module', component: DonorModuleComponent},
   {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
   {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
+  {path: 'donor-module/donor-account-settings', component: DonorAccountSettingsComponent},
+  {path: 'donor-module/donor-account-settings/donor-change-password', component: DonorChangePasswordComponent},
+  {path: 'donor-module/donor-account-settings/new-donor-password', component: NewDonorPasswordComponent},
 
   /**
    * Response plan exporting

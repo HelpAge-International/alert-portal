@@ -23,6 +23,9 @@
         "EDIT": "Edit",
         "SAVE": "Save",
         "FROM": "From: ",
+        "DATE": "Date",
+        "SIZE": "Size",
+        "UPLOADED_BY": "Uploaded By",
         "SENT_AT": "Sent At: ",
         "AT": "At: ",
         "STATUS": "Status",
@@ -31,15 +34,20 @@
         "SKILLS": "Skills",
         "EDIT_SECTION": "Edit region",
         "NOTES": "Notes",
+        "SEARCH_HERE": "Search here",
         "FILTER": "Filter: ",
         "ACTIVE": "Active",
         "DEACTIVE": "Deactive",
         "ACTIVATE": "Activate",
         "RE_ACTIVATE": "Re-activate",
         "DEACTIVATE": "Deactivate",
+        "PUBLIC": "Public",
+        "PRIVATE": "Private",
+        "NETWORK": "Network",
         "DEPARTMENT": "Department",
         "DEPARTMENT:": "Department: ",
         "NOTIFICATIONS": "Notifications",
+        "CLOCK_SETTINGS": "Clock Settings",
         "CATEGORY:": "Category: ",
         "CURRENCY": "Currency",
         "PLEASE_ENTER": "Please enter",
@@ -752,17 +760,27 @@
         },
         "SETTINGS": {
             "TITLE_TEXT": "Agency Settings",
+            "DEFAULT_AGENCY_CLOCK_SETTINGS_TEXT": "These are the default clock settings for your agency however countries have the ability to make these more frequent if they wish",
+            "SAVE_SUCCESS_CLOCK_SETTINGS": "Clock Settings successfully saved",
+            "SAVE_SUCCESS_RES_PLAN_SETTINGS": "Response Plan Settings successfully saved",
             "DEPARTMENTS": {
                 "TITLE_TEXT": "Departments",
                 "DELETE_DEPARTMENTS": "Delete Departments",
-                "EDIT_DEPARTMENTS": "Edit Departments"
+                "DELETE_DEPARTMENTS_INFO": "Departments which has actions assigned to them can not be deleted",
+                "EDIT_DEPARTMENTS": "Edit Departments",
+                "DEPARTMENT_NEW_SUCCESS": "New department added",
+                "DEPARTMENT_SAVED_SUCCESS": "Department successfully saved",
+                "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed"
             },
             "SKILLS": {
                 "TITLE_TEXT": "Skills",
                 "SUPPORT_SKILLS": "Support Skills",
                 "TECHNICAL_SKILLS": "Technical Skills",
                 "DELETE_SKILLS": "Delete Skills",
-                "EDIT_SKILLS": "Edit Skills"
+                "EDIT_SKILLS": "Edit Skills",
+                "SKILLS_SAVED": "Skills successfully saved",
+                "SKILLS_REMOVED": "Skills successfully removed",
+                "SKILL_NEW": "New skill added"
             },
             "MODULE_NAME": {
                 "MINIMUM_PREP_ACTIONS": "Minimum preparedness actions",
@@ -774,7 +792,8 @@
                 "HAZARD_INDICATOR": "Hazard indicator",
                 "COUNTRY_OFFICE_PROFILE": "Country office profile",
                 "RESPONSE_PLANNING": "Response planning",
-                "GLOBAL_MAPS": "Global maps"
+                "GLOBAL_MAPS": "Global maps",
+                "SAVE_SUCCESS": "Module Settings successfully saved"
             },
             "DURATION_TYPE": {
                 "DAYS": "Days",
@@ -783,6 +802,13 @@
                 "YEARS": "Years"
             },
             "RESPONSE_PLAN_SECTION_SETTINGS": {
+                "TITLE_TEXT": "Response Plan Settings",
+                "SAVE": "Save Response Plan Settings",
+                "SECTIONS_SELECTION": "Sections selection",
+                "SECTIONS": "Sections",
+                "REQUIRED": "Required",
+                "USER_TYPE": "User type",
+                "APPROVAL_HIERARCHY": "Approval Hierarchy",
                 "PLAN_DETAILS": "Plan Details",
                 "PLAN_CONTEXT": "Plan Context",
                 "BASIC_INFORMATION": "Basic Information",
@@ -793,6 +819,18 @@
                 "MONITORING_ACC_LEARNING": "Monitoring, Accountability and Learning",
                 "DOUBLE_COUNTING": "Adjust Beneficiaries for Double Counting",
                 "BUDGET": "Budget"
+            },
+           "DOCUMENTS": {
+                  "TITLE_TEXT": "Documents",
+                  "ALL_COUNTRIES": "All countries",
+                  "ALL_MODULES": "All modules",
+                  "UPLOADED_BY_EVERYONE": "Uploaded by everyone",
+                  "EXPORT_DOCS": "Export selected documents",
+                  "SELECT_DOCS": "Select documents",
+                  "YOU_ARE_ABOUT_TO_EXPORT": "You are about to export",
+                  "DOCUMENT(S)": "document(s)",
+                  "WITH_SIZE": "with a total size of",
+                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?"
             },
             "DOCUMENT_TYPE": {
                 "MPA": "MPA",

@@ -104,6 +104,7 @@
             <div class="form-group">
               <label for="Country"> {{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
               <select name="Country" id="Country" class="form-control" [(ngModel)]="adminCountry">
+                <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                 <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}</option>
               </select>
 

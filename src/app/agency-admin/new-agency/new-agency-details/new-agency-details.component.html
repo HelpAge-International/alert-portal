@@ -57,6 +57,7 @@
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCountry]}">
             <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
             <select name="Country" id="Country" class="form-control" [(ngModel)]="agencyCountry">
+              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
               <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
             </select>
           </div>
@@ -67,6 +68,7 @@
             <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyCity">
           </div>
         </div>
+
         <div class="col-lg-4 col-md-6">
           <div class="form-group" >
             <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
@@ -92,6 +94,7 @@
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCurrency]}">
             <label for="Country">{{"GLOBAL.CURRENCY" | translate}}*</label>
             <select name="Country" id="Currency" class="form-control" [(ngModel)]="agencyCurrency">
+              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
               <option *ngFor="let currency of currenciesList" [ngValue]="currency">{{Currency[currency] | translate}}
               </option>
             </select>
