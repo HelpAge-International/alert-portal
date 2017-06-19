@@ -6,38 +6,34 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-  MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
+  BudgetCategory,
+  UserType
 } from "../../utils/Enums";
 
 @Component({
-  selector: 'app-export-start-fund-project-narrative',
-  templateUrl: './project-narrative.component.html',
-  styleUrls: ['./project-narrative.component.css']
+  selector: 'app-export-start-fund-budget-report',
+  templateUrl: './budget-report.component.html',
+  styleUrls: ['./budget-report.component.css']
 })
 
-export class ProjectNarrativeComponent implements OnInit, OnDestroy {
+export class BudgetReportComponent implements OnInit, OnDestroy {
 
-  private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private USER_TYPE: string = 'administratorCountry';
   private uid: string;
   private countryId: string;
   @Input() responsePlanId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  private ResponsePlanSectors = ResponsePlanSectors;
   private responsePlan: ResponsePlan = new ResponsePlan;
 
-  private planLeadName: string = '';
-  private planLeadEmail: string = '';
-  private planLeadPhone: string = '';
-  private sectorsRelatedToMap = new Map<number, boolean>();
-  private PresenceInTheCountry = PresenceInTheCountry;
-  private MethodOfImplementation = MethodOfImplementation;
-  private MediaFormat = MediaFormat;
-  private partnersList: string[] = [];
-  private sourcePlanId: number;
-  private sourcePlanInfo1: string;
-  private sourcePlanInfo2: string;
-  private SourcePlan = SourcePlan;
+  private totalInputs: number;
+  private totalOfAllCosts: number;
+  private total: number;
+  private transportBudget: number;
+  private securityBudget: number;
+  private logisticsAndOverheadsBudget: number;
+  private staffingAndSupportBudget: number;
+  private monitoringAndEvolutionBudget: number;
+  private capitalItemsBudget: number;
 
   constructor(private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -105,58 +101,24 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
 
-        if (responsePlan.sectorsRelatedTo) {
-          responsePlan.sectorsRelatedTo.forEach(sector => {
-            this.sectorsRelatedToMap.set(sector, true);
-          });
-        }
-
-        this.bindProjectLeadData(responsePlan);
-
-        this.bindPartnersData(responsePlan);
-
-        this.bindSourcePlanData(responsePlan);
-
+        this.bindBudgetReportData(responsePlan);
       });
   }
 
-  private bindProjectLeadData(responsePlan: ResponsePlan) {
-    if (responsePlan.planLead) {
-      this.userService.getUser(responsePlan.planLead)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(user => {
-          console.log(user);
-          this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
-          this.planLeadEmail = user.email;
-          this.planLeadPhone = user.phone;
-        });
-    }
-  }
+  private bindBudgetReportData(responsePlan: ResponsePlan) {
+    if (responsePlan.budget) {
+      this.totalInputs = responsePlan.budget['totalInputs'] ? responsePlan.budget['totalInputs'] : 0;
+      this.totalOfAllCosts = responsePlan.budget['totalOfAllCosts'] ? responsePlan.budget['totalOfAllCosts'] : 0;
+      this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
 
-  private bindPartnersData(responsePlan: ResponsePlan) {
-    this.partnersList = [];
-
-    if (responsePlan.partnerOrganisations) {
-      let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
-      partnerIds.forEach(id => {
-        this.userService.getOrganisationName(id)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(organisation => {
-            if (organisation.organisationName) {
-              this.partnersList.push(organisation.organisationName);
-            }
-          })
-      });
-    }
-  }
-
-  private bindSourcePlanData(responsePlan: ResponsePlan) {
-    if (responsePlan.sectors) {
-      Object.keys(responsePlan.sectors).forEach(sectorKey => {
-        this.sourcePlanId = responsePlan.sectors[sectorKey]["sourcePlan"];
-        this.sourcePlanInfo1 = responsePlan.sectors[sectorKey]["bullet1"];
-        this.sourcePlanInfo2 = responsePlan.sectors[sectorKey]["bullet2"];
-      });
+      if (responsePlan.budget['item']) {
+        this.transportBudget = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['budget'] : 0;
+        this.securityBudget = responsePlan.budget['item'][BudgetCategory.Security] ? responsePlan.budget['item'][BudgetCategory.Security]['budget'] : 0;
+        this.logisticsAndOverheadsBudget = responsePlan.budget['item'][BudgetCategory.Logistics] ? responsePlan.budget['item'][BudgetCategory.Logistics]['budget'] : 0;
+        this.staffingAndSupportBudget = responsePlan.budget['item'][BudgetCategory.Staffing] ? responsePlan.budget['item'][BudgetCategory.Staffing]['budget'] : 0;
+        this.monitoringAndEvolutionBudget = responsePlan.budget['item'][BudgetCategory.Monitoring] ? responsePlan.budget['item'][BudgetCategory.Monitoring]['budget'] : 0;
+        this.capitalItemsBudget = responsePlan.budget['item'][BudgetCategory.CapitalItems] ? responsePlan.budget['item'][BudgetCategory.CapitalItems]['budget'] : 0;
+      }
     }
   }
 
@@ -174,10 +136,6 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
-  }
-
-  isNumber(n) {
-    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
   private navigateToLogin() {
