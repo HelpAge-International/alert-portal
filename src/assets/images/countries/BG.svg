@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="43px" height="28px" viewBox="0 0 43 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>BG</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1462.000000, -923.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="BG" points="1465.0293 923.641659 1466.94166 927.419232 1469.49148 926.734547 1474.59112 928.174747 1484.31821 928.646943 1487.59992 926.30957 1495.39103 924.184685 1500.20736 927.513671 1504.10292 928.481674 1500.65594 932.235637 1498.24778 938.681121 1500.37263 943.780845 1494.68275 942.576743 1487.93045 945.362704 1487.85962 949.754132 1481.83922 950.580476 1477.18816 947.511198 1471.87603 949.943011 1466.98888 949.683303 1466.51669 943.851674 1463.18776 940.994885 1464.2974 939.719954 1463.56551 938.657512 1464.67516 935.800722 1467.20137 932.991152 1463.99048 929.07192 1463.40025 925.719324"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 43 43" style="enable-background:new 0 0 43 43;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>BG</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1462.000000, -923.000000)">
+		<polygon id="BG" class="st0" points="1465,931.1 1466.9,934.9 1469.5,934.2 1474.6,935.7 1484.3,936.1 1487.6,933.8 1495.4,931.7 
+			1500.2,935 1504.1,936 1500.7,939.7 1498.2,946.2 1500.4,951.3 1494.7,950.1 1487.9,952.9 1487.9,957.3 1481.8,958.1 1477.2,955 
+			1471.9,957.4 1467,957.2 1466.5,951.4 1463.2,948.5 1464.3,947.2 1463.6,946.2 1464.7,943.3 1467.2,940.5 1464,936.6 
+			1463.4,933.2 		"/>
+	</g>
+</g>
 </svg>

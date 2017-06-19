@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="38px" height="33px" viewBox="0 0 38 33" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>AZ</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1611.000000, -944.000000)" stroke="#FFFFFF" stroke-width="0.5" fill="#B1B2B3">
-            <path d="M1612.94243,963.542273 L1614.90201,965.832427 L1617.82958,965.808817 L1617.80597,967.130968 L1620.49745,972.041813 L1615.96443,970.908541 L1612.61189,966.989309 L1611.57308,963.754762 L1612.94243,963.542273 L1612.94243,963.542273 Z M1628.6427,950.722135 L1631.57027,951.312381 L1632.70353,949.069447 L1636.6463,945.504363 L1640.11689,950.155499 L1643.49304,956.341275 L1646.58588,956.742642 L1648.61629,959.080015 L1643.16251,959.7647 L1642.00564,966.422673 L1640.87239,969.397512 L1638.44062,971.380737 L1638.62949,975.559677 L1636.97683,975.984654 L1632.84518,971.569616 L1635.1353,967.367066 L1633.17571,964.864424 L1630.69672,965.501889 L1622.882,971.782104 L1622.74034,965.879647 L1619.76555,964.486667 L1616.95603,962.149293 L1618.82118,959.410553 L1615.30337,956.435714 L1616.6255,954.26361 L1614.09929,952.752581 L1612.72994,950.462427 L1614.35899,949.022227 L1619.29337,951.548479 L1622.85839,952.067896 L1623.75555,951.052673 L1620.49745,946.283487 L1622.22094,945.055776 L1624.08608,945.362704 L1628.6427,950.722135 L1628.6427,950.722135 Z" id="AZ"></path>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 38 38" style="enable-background:new 0 0 38 38;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>AZ</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1611.000000, -944.000000)">
+		<path id="AZ" class="st0" d="M1612.9,966l2,2.3l2.9,0l0,1.3l2.7,4.9l-4.5-1.1l-3.4-3.9l-1-3.2L1612.9,966L1612.9,966z
+			 M1628.6,953.2l2.9,0.6l1.1-2.2l3.9-3.6l3.5,4.7l3.4,6.2l3.1,0.4l2,2.3l-5.5,0.7l-1.2,6.7l-1.1,3l-2.4,2l0.2,4.2l-1.7,0.4
+			l-4.1-4.4l2.3-4.2l-2-2.5l-2.5,0.6l-7.8,6.3l-0.1-5.9l-3-1.4l-2.8-2.3l1.9-2.7l-3.5-3l1.3-2.2l-2.5-1.5l-1.4-2.3l1.6-1.4l4.9,2.5
+			l3.6,0.5l0.9-1l-3.3-4.8l1.7-1.2l1.9,0.3L1628.6,953.2L1628.6,953.2z"/>
+	</g>
+</g>
 </svg>

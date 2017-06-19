@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="57px" height="60px" viewBox="0 0 57 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>PY</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-899.000000, -1378.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="PY" points="900.079057 1399.21449 902.699705 1390.73856 902.864971 1386.96098 906.028635 1380.77521 917.57365 1378.74476 923.712104 1378.86281 929.897777 1382.4279 929.992215 1384.57639 931.951798 1388.49562 931.526828 1398.08121 938.515222 1399.45058 941.206698 1398.0576 945.668882 1399.99361 946.920182 1402.11849 947.534027 1408.65842 948.313139 1411.44438 950.76852 1411.75131 953.247511 1410.59442 955.632064 1411.89296 955.632064 1415.85942 954.734906 1420.15641 953.436387 1424.35896 952.350353 1430.85166 946.353555 1436.51802 941.11226 1437.69851 933.675287 1436.56524 927.017426 1434.5584 933.533631 1423.39095 932.565644 1420.15641 925.766125 1417.32323 917.668088 1411.9874 912.261527 1410.90135"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 60 60" style="enable-background:new 0 0 60 60;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>PY</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-899.000000, -1378.000000)">
+		<polygon id="PY" class="st0" points="901.6,1399.2 904.2,1390.7 904.4,1387 907.5,1380.8 919.1,1378.7 925.2,1378.9 931.4,1382.4 
+			931.5,1384.6 933.5,1388.5 933,1398.1 940,1399.5 942.7,1398.1 947.2,1400 948.4,1402.1 949,1408.7 949.8,1411.4 952.3,1411.8 
+			954.7,1410.6 957.1,1411.9 957.1,1415.9 956.2,1420.2 954.9,1424.4 953.9,1430.9 947.9,1436.5 942.6,1437.7 935.2,1436.6 
+			928.5,1434.6 935,1423.4 934.1,1420.2 927.3,1417.3 919.2,1412 913.8,1410.9 		"/>
+	</g>
+</g>
 </svg>

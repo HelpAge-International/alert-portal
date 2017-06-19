@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="57px" height="49px" viewBox="0 0 57 49" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>EH</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1201.000000, -1059.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="EH" points="1228.43912 1059.39819 1236.98574 1059.4218 1257.64399 1059.49263 1257.64399 1059.49263 1257.64399 1059.49263 1236.98574 1059.4218 1228.43912 1059.39819 1228.17942 1059.61068 1228.06137 1059.70512 1223.85889 1067.26026 1219.46753 1069.95178 1217.05937 1074.46126 1216.91771 1078.35688 1215.14701 1082.58304 1212.92772 1083.73992 1209.24465 1088.32023 1206.97814 1093.39634 1207.40311 1095.80455 1205.23104 1099.51129 1202.68122 1101.4473 1202.3743 1104.72906 1202.09099 1107.72751 1203.53116 1105.36653 1229.45433 1105.41375 1228.20303 1095.14347 1229.83208 1091.48395 1236.01775 1090.84648 1235.80526 1072.28916 1257.54956 1072.69052 1257.54956 1061.52307 1257.69121 1060.08287 1257.69121 1059.58707"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 57 57" style="enable-background:new 0 0 57 57;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>EH</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1201.000000, -1059.000000)">
+		<polygon id="EH" class="st0" points="1228.4,1063.4 1237,1063.4 1257.6,1063.5 1257.6,1063.5 1257.6,1063.5 1237,1063.4 
+			1228.4,1063.4 1228.2,1063.6 1228.1,1063.7 1223.9,1071.3 1219.5,1074 1217.1,1078.5 1216.9,1082.4 1215.1,1086.6 1212.9,1087.7 
+			1209.2,1092.3 1207,1097.4 1207.4,1099.8 1205.2,1103.5 1202.7,1105.4 1202.4,1108.7 1202.1,1111.7 1203.5,1109.4 1229.5,1109.4 
+			1228.2,1099.1 1229.8,1095.5 1236,1094.8 1235.8,1076.3 1257.5,1076.7 1257.5,1065.5 1257.7,1064.1 1257.7,1063.6 		"/>
+	</g>
+</g>
 </svg>

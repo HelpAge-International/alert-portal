@@ -1,12 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="7px" height="13px" viewBox="0 0 7 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>QA</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1650.000000, -1070.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="QA" points="1651.4022 1080.88313 1650.95362 1075.59453 1652.74794 1071.76974 1654.54226 1070.967 1656.54906 1073.25716 1656.66711 1077.53054 1655.22693 1081.80392 1653.38539 1082.32333"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 13 13" style="enable-background:new 0 0 13 13;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>QA</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1650.000000, -1070.000000)">
+		<polygon id="QA" class="st0" points="1654.4,1080.9 1654,1075.6 1655.7,1071.8 1657.5,1071 1659.5,1073.3 1659.7,1077.5 
+			1658.2,1081.8 1656.4,1082.3 		"/>
+	</g>
+</g>
 </svg>

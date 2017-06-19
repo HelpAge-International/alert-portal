@@ -1,12 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="46px" height="24px" viewBox="0 0 46 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>GE</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1579.000000, -929.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="GE" points="1590.1121 947.936175 1591.1037 944.158602 1589.45104 938.090876 1585.62631 934.761889 1581.96684 933.723057 1579.53507 930.960707 1580.33779 929.874654 1585.93323 931.432903 1595.68393 932.896713 1604.70273 937.217312 1605.85959 938.89361 1609.8732 937.47702 1616.05887 939.365806 1618.06567 943.02533 1622.24454 945.079386 1620.52106 946.283487 1623.77916 951.052673 1622.882 952.067896 1619.31697 951.548479 1614.3826 949.045837 1612.75355 950.462427 1603.54587 951.831797 1597.17132 947.534808"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 46 46" style="enable-background:new 0 0 46 46;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>GE</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1579.000000, -929.000000)">
+		<polygon id="GE" class="st0" points="1590.1,958.9 1591.1,955.2 1589.5,949.1 1585.6,945.8 1582,944.7 1579.5,942 1580.3,940.9 
+			1585.9,942.4 1595.7,943.9 1604.7,948.2 1605.9,949.9 1609.9,948.5 1616.1,950.4 1618.1,954 1622.2,956.1 1620.5,957.3 
+			1623.8,962.1 1622.9,963.1 1619.3,962.5 1614.4,960 1612.8,961.5 1603.5,962.8 1597.2,958.5 		"/>
+	</g>
+</g>
 </svg>

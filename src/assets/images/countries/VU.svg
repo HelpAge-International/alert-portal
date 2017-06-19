@@ -1,12 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="10px" height="15px" viewBox="0 0 10 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>VU</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-2417.000000, -1346.000000)" stroke="#FFFFFF" stroke-width="0.5" fill="#B1B2B3">
-            <path d="M2426.14591,1358.86528 L2423.97384,1359.76246 L2421.75455,1356.76401 L2421.99065,1354.92244 L2426.14591,1358.86528 L2426.14591,1358.86528 Z M2421.25875,1348.38252 L2422.34479,1353.88361 L2420.57408,1353.03366 L2419.20473,1353.41141 L2418.26035,1351.52263 L2418.1187,1346.30485 L2421.25875,1348.38252 L2421.25875,1348.38252 Z" id="VU"></path>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 15 15" style="enable-background:new 0 0 15 15;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>VU</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-2417.000000, -1346.000000)">
+		<path id="VU" class="st0" d="M2428.6,1358.9l-2.2,0.9l-2.2-3l0.2-1.8L2428.6,1358.9L2428.6,1358.9z M2423.8,1348.4l1.1,5.5
+			l-1.8-0.8l-1.4,0.4l-0.9-1.9l-0.1-5.2L2423.8,1348.4L2423.8,1348.4z"/>
+	</g>
+</g>
 </svg>

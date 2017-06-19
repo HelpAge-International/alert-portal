@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="73px" height="37px" viewBox="0 0 73 37" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>KG</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1774.000000, -931.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="KG" points="1784.79552 941.467081 1786.28292 937.547849 1790.62706 936.272919 1801.53462 939.365806 1802.54982 934.077204 1806.30372 932.188418 1815.7475 935.989601 1818.15566 934.997988 1829.13405 935.234086 1838.95558 936.178479 1842.2609 939.413026 1846.34533 940.711567 1845.42456 942.742012 1834.98919 947.534808 1832.62825 951.029063 1824.12885 952.067896 1821.62625 957.616206 1814.61425 956.459324 1810.05762 958.159232 1803.73029 962.220123 1804.65106 964.226959 1802.76231 966.186575 1790.24931 967.485115 1782.05683 964.722765 1774.87956 965.38384 1775.51702 960.425776 1782.71789 961.865975 1785.14967 959.198065 1790.17848 960.048018 1798.65427 953.815023 1790.81593 949.187496 1786.09404 951.38321 1781.20689 948.077834 1786.75511 942.340645"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 73 73" style="enable-background:new 0 0 73 73;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>KG</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1774.000000, -931.000000)">
+		<polygon id="KG" class="st0" points="1784.8,959.5 1786.3,955.5 1790.6,954.3 1801.5,957.4 1802.5,952.1 1806.3,950.2 1815.7,954 
+			1818.2,953 1829.1,953.2 1839,954.2 1842.3,957.4 1846.3,958.7 1845.4,960.7 1835,965.5 1832.6,969 1824.1,970.1 1821.6,975.6 
+			1814.6,974.5 1810.1,976.2 1803.7,980.2 1804.7,982.2 1802.8,984.2 1790.2,985.5 1782.1,982.7 1774.9,983.4 1775.5,978.4 
+			1782.7,979.9 1785.1,977.2 1790.2,978 1798.7,971.8 1790.8,967.2 1786.1,969.4 1781.2,966.1 1786.8,960.3 		"/>
+	</g>
+</g>
 </svg>

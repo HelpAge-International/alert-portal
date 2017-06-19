@@ -1,12 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="26px" height="21px" viewBox="0 0 26 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>BE</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1331.000000, -852.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="BE" points="1336.99532 853.63851 1341.83525 854.464854 1347.9737 852.26914 1352.15257 856.873057 1355.81204 859.328479 1355.05654 866.340599 1353.33305 866.718356 1352.60115 872.455545 1346.81684 867.804409 1343.41708 868.607143 1338.78963 863.743518 1335.72041 859.564578 1332.65118 859.399309 1331.68319 855.716175"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 26 26" style="enable-background:new 0 0 26 26;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>BE</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1331.000000, -852.000000)">
+		<polygon id="BE" class="st0" points="1337,856.1 1341.8,857 1348,854.8 1352.2,859.4 1355.8,861.8 1355.1,868.8 1353.3,869.2 
+			1352.6,875 1346.8,870.3 1343.4,871.1 1338.8,866.2 1335.7,862.1 1332.7,861.9 1331.7,858.2 		"/>
+	</g>
+</g>
 </svg>
