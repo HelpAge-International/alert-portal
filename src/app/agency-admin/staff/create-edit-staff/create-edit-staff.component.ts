@@ -12,6 +12,7 @@ import * as firebase from "firebase";
 import {ModelStaff} from "../../../model/staff.model";
 import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
+import {map} from "rxjs/operator/map";
 declare var jQuery: any;
 
 @Component({
@@ -59,7 +60,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private uid: string;
   private waringMessage: string;
   private countryList: FirebaseListObservable<any[]>;
-  private regionList: FirebaseListObservable<any[]>;
+  private regionList: Observable<any[]>;
   private departmentList: Observable<any[]>;
   private notificationList: FirebaseListObservable<any[]>;
   private notificationSettings: boolean[] = [];
@@ -197,7 +198,16 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
             this.systemId = systemId;
 
             this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId);
-            this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId);
+            this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId)
+              .map(region => {
+                let filteredRegions = [];
+                region.forEach(item => {
+                  if (item.directorId == "null") {
+                    filteredRegions.push(item);
+                  }
+                });
+                return filteredRegions;
+              });
             this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments")
               .map(departments => {
                 let names = [];

@@ -84,8 +84,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(plans => {
         this.activePlans = plans;
-        console.log("e2fe");
-        console.log(this.activePlans);
         for (let x of this.activePlans) {
           this.getNotes(x);
         }
@@ -120,7 +118,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
       //deal directors
       if (plan.approval) {
-        let approvalKeys = Object.keys(plan.approval).filter(key => key!="partner");
+        let approvalKeys = Object.keys(plan.approval).filter(key => key != "partner");
         console.log(approvalKeys);
         if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
           this.isGlobalDirectorMap.set(plan.$key, true);
@@ -315,38 +313,40 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   activatePlan(plan) {
-    if (this.userType == UserType.CountryAdmin) {
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
-      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
-        .map(list => {
-          let newList = [];
-          list.forEach(item => {
-            let data = {};
-            data[item.$key] = Object.keys(item)[0];
-            newList.push(data);
-          });
-          return newList;
-        })
-        .first()
-        .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
-        for (let approval of approvalList) {
-          console.log(approval);
-          if (approval["countryDirector"]) {
-            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
-              .set(ApprovalStatus.NeedsReviewing);
-          }
-          if (approval["regionDirector"]) {
-            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
-              .set(ApprovalStatus.NeedsReviewing);
-          }
-          if (approval["globalDirector"]) {
-            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
-              .set(ApprovalStatus.NeedsReviewing);
-          }
+    console.log("activate plan");
+    console.log(plan);
+    // if (this.userType == UserType.CountryAdmin) {
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.InProgress);
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
+      .map(list => {
+        let newList = [];
+        list.forEach(item => {
+          let data = {};
+          data[item.$key] = Object.keys(item)[0];
+          newList.push(data);
+        });
+        return newList;
+      })
+      .first()
+      .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
+      for (let approval of approvalList) {
+        console.log(approval);
+        if (approval["countryDirector"]) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
+            .set(ApprovalStatus.InProgress);
         }
-      });
-    }
+        if (approval["regionDirector"]) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
+            .set(ApprovalStatus.InProgress);
+        }
+        if (approval["globalDirector"]) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
+            .set(ApprovalStatus.InProgress);
+        }
+      }
+    });
+    // }
   }
 
   getNotes(plan) {
