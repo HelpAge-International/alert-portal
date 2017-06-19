@@ -258,9 +258,14 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       this.writeToFirebase(uid);
       // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
       this.secondApp.auth().signOut();
-    }, error => {
+    }, (error:any) => {
       console.log(error.message);
-      this.errorMessage = "GLOBAL.GENERAL_ERROR";
+      console.log(error.code);
+      if (error.code == 'auth/email-already-in-use') {
+        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
+      } else {
+        this.errorMessage = "GLOBAL.GENERAL_ERROR";
+      }
       this.showAlert();
     });
   }

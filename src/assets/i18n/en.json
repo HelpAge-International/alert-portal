@@ -552,7 +552,8 @@
             "L_NAME_MISSING": "Please enter agency administrator's last name",
             "EMAIL_MISSING": "Please enter agency administrator's email address",
             "EMAIL_INVALID": "Please enter a correct email address",
-            "NO_AGENCY": "No agencies have been added to the ALERT"
+            "NO_AGENCY": "No agencies have been added to the ALERT",
+            "EMAIL_IN_USE_ERROR": "The agency administrator email address you entered is already in use, please enter another email address to continue"
         },
         "GLOBAL_NETWORKS": {
             "GLOBAL_NETWORKS": "Global Networks",
