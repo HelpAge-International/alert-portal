@@ -202,10 +202,10 @@
                 <div class="col-lg-8 col-md-10">
                     <div class="form-group">
                         <label for="n-Budget">{{"PREPAREDNESS.BUDGET" | translate}}</label>
-                        <input type="text" required name="budjet" #budjet="ngModel" [(ngModel)]="actionData.budjet"
-                               class="form-control col-sm-5" id="n-Budget" placeholder="&pound;">
+                        <input type="number" required name="budget" #budget="ngModel" [(ngModel)]="actionData.budget"
+                               class="form-control col-sm-5" id="n-Budget" min="0" placeholder="&pound;">
                     </div>
-                    <div [hidden]="budjet.valid || (budjet.pristine && !f.submitted)" class="alert alert-danger">
+                    <div [hidden]="budget.valid || (budget.pristine && !f.submitted)" class="alert alert-danger">
                         {{"PREPAREDNESS.NO_BUDJET" | translate}}
                     </div>
                 </div>

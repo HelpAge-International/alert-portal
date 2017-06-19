@@ -80,7 +80,7 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
                 actions[action].agencyId = agencyId;
                 actions[action].key = action;
                 actions[action].docsCount = 0;
-                let userKey = actions[action].assignee;
+                let userKey = actions[action].asignee;
                 try {
                   actions[action].docsCount = Object.keys(actions[action].documents).length;
 

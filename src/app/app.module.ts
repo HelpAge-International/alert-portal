@@ -168,6 +168,7 @@ import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-re
 import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
 import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance/technical-guidance.component";
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -352,6 +353,7 @@ const firebaseAuthConfig = {
     ModalModule.forRoot(),
     BootstrapModalModule,
     DatepickerModule,
+    BrowserAnimationsModule,
     LocalStorageModule.withConfig({
       prefix: 'my-app',
       storageType: 'localStorage'
