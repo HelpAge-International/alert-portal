@@ -129,6 +129,23 @@ export class PageControlService {
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
     "director"
   ]);
+  public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
+    "agency-admin/country-office"
+  ]);
+  public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
+    "system-admin/agency",
+    "system-admin/add-agency",
+    "system-admin/network",
+    "system-admin/min-prep",
+    "system-admin/min-prep/create",
+    "system-admin/mpa",
+    "system-admin/mpa/create",
+    "system-admin/system-settings",
+    "system-admin/system-settings/system-settings-documents",
+    "system-admin/system-settings/system-settings-response-plans",
+    "system-admin/messages",
+    "system-admin/messages/create"
+  ]);
   /**
    *  =========================================================================================
    */
@@ -180,6 +197,8 @@ export class PageControlService {
       this.pageControlMap.set(UserType.CountryAdmin, PageControlService.CountryAdmin);
       this.pageControlMap.set(UserType.NonAlert, PageControlService.NonAlert);
       this.pageControlMap.set(UserType.CountryUser, PageControlService.CountryUser);
+      this.pageControlMap.set(UserType.AgencyAdmin, PageControlService.AgencyAdmin);
+      this.pageControlMap.set(UserType.SystemAdmin, PageControlService.SystemAdmin);
     }
     return this.pageControlMap;
   }
@@ -212,7 +231,6 @@ export class PageControlService {
     af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
       if (auth) {
         UserService.getUserType(af, auth.auth.uid).subscribe(userType => {
-          //TODO: Check this if it's null! If it's null then there's no user type authentication
           if (userType == null) {
             if (authUser != null) {
               authUser(auth.auth, null);
@@ -232,7 +250,7 @@ export class PageControlService {
                 //   If so and we're not authorised to view it, kick us out
                 for (let x of list) {
                   for (let y of x.urls) {
-                    if (s == y && !x.isAuthorized) {
+                    if (s.match(y) && !x.isAuthorized) {
                       router.navigateByUrl(type.redirectTo);
                       skip = true;
                     }

@@ -96,7 +96,9 @@ export enum UserType {
     GlobalUser = 7,
     CountryAdmin = 8,
     NonAlert = 9,
-    CountryUser = 10
+    CountryUser = 10,
+    AgencyAdmin = 11,
+    SystemAdmin = 12
 }
 export enum OfficeType {
     All = 0,
