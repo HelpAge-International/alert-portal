@@ -7,12 +7,12 @@
     <div class="Full-page__wrap--inner">
         <div class="Back--button row" (click)="goBack()">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.GO_BACK_TITLE' | translate }}</div> <!-- Back button-->
         <div class="Header-title__wrap">
-            <h1 *ngIf="!stockCapacity.id && stockCapacity.type == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
-            <h1 *ngIf="!stockCapacity.id && stockCapacity.type == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_OUT_TITLE' | translate }}</h1>
+            <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
+            <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_OUT_TITLE' | translate }}</h1>
             
             <div class="col-sm-11" *ngIf="stockCapacity.id">
-                <h1 *ngIf="stockCapacity.type == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
-                <h1 *ngIf="stockCapacity.type == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_OUT_TITLE' | translate }}</h1>
+                <h1 *ngIf="stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
+                <h1 *ngIf="stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_OUT_TITLE' | translate }}</h1>
             </div>
 
             <div class="col-sm-1 Right-aligned" *ngIf="stockCapacity.id">
@@ -39,11 +39,11 @@
                     [(ngModel)]="stockCapacity && stockCapacity.location">
             </div><br>
 
-            <p *ngIf="stockCapacity.type == 0"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
-            <p *ngIf="stockCapacity.type == 1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_OUT' | translate }}</strong></p>
+            <p *ngIf="stockCapacity.stockType == 0"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
+            <p *ngIf="stockCapacity.stockType == 1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_OUT' | translate }}</strong></p>
             <div>
-                <input type="text" class="form-control col-sm-4" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="eta"
-                    [(ngModel)]="stockCapacity && stockCapacity.eta">
+                <input type="text" class="form-control col-sm-4" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="leadTime"
+                    [(ngModel)]="stockCapacity && stockCapacity.leadTime">
             </div><br>
 
             <!--Save and cancel-->

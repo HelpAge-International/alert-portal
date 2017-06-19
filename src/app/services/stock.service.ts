@@ -9,34 +9,35 @@ export class StockService {
 
   constructor(private af: AngularFire) { }
 
-    public getStockCapacities(agencyId: string, countryId: string): Observable<StockCapacityModel[]> {
-      if (!countryId || !agencyId) {
+    public getStockCapacities(countryId: string): Observable<StockCapacityModel[]> {
+      if (!countryId) {
         return;
       }
 
-      const stockCapacitiesSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/stock')
-      .map(items => {
-        const stockCapacities: StockCapacityModel[] = [];
-        items.forEach(item => {
-          let stockCapacity = new StockCapacityModel();
-          stockCapacity.mapFromObject(item);
-          stockCapacity.id = item.$key;
-          stockCapacities.push(stockCapacity);
-        });
-        return stockCapacities;
-      });
+      const stockCapacitiesSubscription = 
+            this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + countryId)
+                      .map(items => {
+                        const stockCapacities: StockCapacityModel[] = [];
+                        items.forEach(item => {
+                          let stockCapacity = new StockCapacityModel();
+                          stockCapacity.mapFromObject(item);
+                          stockCapacity.id = item.$key;
+                          stockCapacities.push(stockCapacity);
+                        });
+                        return stockCapacities;
+                      });
 
     return stockCapacitiesSubscription;
   }
 
 
-  public getStockCapacity(agencyId: string, countryId: string, stockCapacityId: string): Observable<StockCapacityModel> {
+  public getStockCapacity(countryId: string, stockCapacityId: string): Observable<StockCapacityModel> {
       if (!countryId || !stockCapacityId) {
         return;
       }
 
       const getStockCapacitySubscription = 
-              this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/stock/' + stockCapacityId)
+              this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + countryId + '/' + stockCapacityId)
       .map(item => {
         let stockCapacity = new StockCapacityModel();
         stockCapacity.mapFromObject(item);
@@ -47,10 +48,10 @@ export class StockService {
     return getStockCapacitySubscription;
   }
 
-  public saveStockCapacity(agencyId: string, countryId: string, stockCapacity: StockCapacityModel): firebase.Promise<any>{
-    if(!agencyId || !countryId || !stockCapacity)
+  public saveStockCapacity(countryId: string, stockCapacity: StockCapacityModel): firebase.Promise<any>{
+    if(!countryId || !stockCapacity)
     {
-      return Promise.reject('Missing agencyId, countryId or coordinationArrangement');
+      return Promise.reject('Missing countryId or stockCapacity');
     }
     
     // Update the timestamp
@@ -59,22 +60,22 @@ export class StockService {
     if(stockCapacity.id)
     {
       const stockCapacityData = {};
-      stockCapacityData['/countryOffice/' + agencyId + '/' + countryId + '/stock/' + stockCapacity.id] = stockCapacity;
+      stockCapacityData['/countryOfficeProfile/capacity/stockCapacity/' + countryId + '/' + stockCapacity.id] = stockCapacity;
       return this.af.database.object(Constants.APP_STATUS).update(stockCapacityData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/stock').push(stockCapacity);
+      return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + countryId).push(stockCapacity);
     }
   }
 
-  public deleteStockCapacity(agencyId: string, countryId: string, stockCapacity: StockCapacityModel): firebase.Promise<any>{
-    if(!agencyId || !countryId || !stockCapacity || !stockCapacity.id )
+  public deleteStockCapacity(countryId: string, stockCapacity: StockCapacityModel): firebase.Promise<any>{
+    if(!countryId || !stockCapacity || !stockCapacity.id )
     {
-      return Promise.reject('Missing agencyId, countryId or coordinationArrangement');
+      return Promise.reject('Missing countryId or coordinationArrangement');
     }
     
     const stockCapacityData = {};
 
-    stockCapacityData['/countryOffice/' + agencyId + '/' + countryId + '/stock/' + stockCapacity.id] = null;
+    stockCapacityData['/countryOfficeProfile/capacity/stockCapacity/' + countryId + '/' + stockCapacity.id] = null;
 
     return this.af.database.object(Constants.APP_STATUS).update(stockCapacityData);
   }

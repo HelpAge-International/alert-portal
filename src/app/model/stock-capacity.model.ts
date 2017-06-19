@@ -1,15 +1,14 @@
 import {BaseModel} from "./base.model";
 import {AlertMessageModel} from "./alert-message.model";
 import { NoteModel } from "./note.model";
-import { StockType } from "../utils/Enums";
 
 export class StockCapacityModel extends BaseModel {
     public id: string;
     public description: string;
     public quantity: number;
     public location: string;
-    public eta: string;
-    public type: number;
+    public leadTime: string;
+    public stockType: number;
     public notes: NoteModel[];
     public updatedAt: number;
 
@@ -23,11 +22,11 @@ export class StockCapacityModel extends BaseModel {
         if (!this.location && !this.isExcluded('location', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_LOCATION');
         }
-        if (!this.eta && !this.isExcluded('eta', excludedFields)) {
+        if (!this.leadTime && !this.isExcluded('leadTime', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_ETA');
         }
-        if (this.type == null && !this.isExcluded('type', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_TYPE');
+        if (this.stockType == null && !this.isExcluded('stockType', excludedFields)) {
+            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_stockType');
         }
         return null;
     }

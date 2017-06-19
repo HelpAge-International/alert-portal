@@ -42,7 +42,7 @@
                 <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
                 <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
                 <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
-                <div class="col-sm-3"><p>{{ stockCapacity.eta }}</p></div> <!--Lead time for delivery to affected population-->
+                <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div> <!--Lead time for delivery to affected population-->
                 <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
                     <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
                     <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
@@ -122,10 +122,10 @@
                 <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
                 <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
                 <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
-                <div class="col-sm-3"><p>{{ stockCapacity.eta }}</p></div> <!--Lead time for delivery to affected population-->
+                <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div> <!--Lead time for delivery to affected population-->
                 <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
                     <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
-                    <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+                    <a href="#notes_ext_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
                         {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
                     </a>
                 </div> <!--Notes-->
@@ -137,7 +137,7 @@
             </div>
             <div class="row Line-row"></div><br>
             <!-- Notes Drop Down -->
-            <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+            <div id="notes_ext_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
                 <div class="log_left p-3">
                     <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
                     <hr class="d-inline-flex">
