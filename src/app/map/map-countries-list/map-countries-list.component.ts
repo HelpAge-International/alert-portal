@@ -122,13 +122,14 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
 
   private evaluateOthers() {
     if (this.allCountries.size > 0) {
-      for (let x in this.allCountries) {
-        if (!this.countryIdsForOther.has(x)) {
-          this.otherRegion.countries.add(x);
+      this.allCountries.forEach(country => {
+        if (!this.countryIdsForOther.has(country)) {
+          this.otherRegion.countries.add(country);
         } else {
-          this.otherRegion.countries.delete(x);
+          this.otherRegion.countries.delete(country);
         }
-      }
+
+      });
     }
   }
 
