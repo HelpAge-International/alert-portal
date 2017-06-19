@@ -1,10 +1,11 @@
 /**
- * Created by dongishan on 12/06/2017.
+ * Created by dongishan on 19/06/2017.
  */
-var exportToExcelFile = (function () {
-  var uri = 'data:application/vnd.ms-excel;base64,'
+
+var exportToWordFile = (function () {
+  var uri = 'data:application/vnd.ms-word;base64,'
     ,
-    template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=windows-1252"><meta name=ProgId content=Excel.Sheet> <meta name=Generator content="Microsoft Excel 11"/></head><body><table>{table}</table></body></html>' +
+    template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head></head><body><table>{table}</table></body></html>' +
       '</head><body><table>{table}</table></body></html>'
     , base64 = function (s) {
       return window.btoa(unescape(encodeURIComponent(s)))
@@ -20,7 +21,7 @@ var exportToExcelFile = (function () {
       if (!table.nodeType) table = document.getElementById(table);
       var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML};
       document.getElementById("downloadLink").href = uri + base64(format(template, ctx));
-      document.getElementById("downloadLink").download = "Start Fund Project Application Form-"+name+".xls";
+      document.getElementById("downloadLink").download = "Start Fund Project Application Form-"+name+".doc";
       document.getElementById("downloadLink").click();
     });
   }
