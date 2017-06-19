@@ -664,7 +664,7 @@
             "ERROR_NO_NAME": "Please enter the name",
             "ERROR_DUPLICATE_NAME": "Name is duplicate",
             "ERROR_NO_COUNTRY": "No country was selected for this region",
-            "ERROR_DUPLICATE_COUNTRY": "Country can not be duplicate for the same region",
+            "ERROR_DUPLICATE_COUNTRY": "A country office for this country already exists under your agency",
             "ERROR_MAX_COUNTRIES": "No more countries can be selected",
             "NAME_MISSING": "Please enter name of the country",
             "F_NAME_MISSING": "Please enter country administrator's first name",

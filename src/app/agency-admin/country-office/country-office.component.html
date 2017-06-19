@@ -142,10 +142,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 *ngIf="countryToUpdate" class="modal-title" id="exampleModalLabel">
-          <strong>{{alertTitle | translate}} {{countryNames[countryToUpdate.location] | translate}}</strong>
+          <strong>{{alertTitle | translate}} {{countryToUpdate}}</strong>
         </h5>
-        <h5 *ngIf="!countryToUpdate" class="modal-title" id="exampleModalLabelDefault">
-          <strong>{{alertTitle | translate}}</strong>
+        <h5 *ngIf="!countryToUpdate" class="modal-title" id="exampleModalLabel">
+          <strong>{{alertTitle | translate}} {{countryToUpdate}}</strong>
         </h5>
       </div>
       <div class="modal-body">
