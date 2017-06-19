@@ -127,18 +127,18 @@ import {CountryOfficePartnersComponent} from "./country-admin/country-office-pro
 import {ViewPlanComponent} from './response-plans/view-plan/view-plan.component';
 import {DirectorMenuComponent} from './director/director-menu/director-menu.component';
 import {DirectorComponent} from './director/director.component';
-import { DirectorHeaderComponent } from './director/director-header/director-header.component';
-import { DirectorOverviewComponent } from './director/director-overview/director-overview.component';
-import { ViewCountryMenuComponent } from './commons/view-country-menu/view-country-menu.component';
-import { AlertLoaderComponent } from './commons/alert-loader/alert-loader.component';
-import { CountryOfficeEquipmentComponent } from "./country-admin/country-office-profile/equipment/equipment.component";
-import { EquipmentService } from "./services/equipment.service";
-import { CountryOfficeAddEditEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
-import { CountryOfficeAddEditSurgeEquipmentComponent } from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
-import { CountryOfficeCoordinationComponent } from "./country-admin/country-office-profile/coordination/coordination.component";
-import { CoordinationArrangementService } from "./services/coordination-arrangement.service";
-import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
-import { AgencyService } from "./services/agency-service.service";
+import {DirectorHeaderComponent} from './director/director-header/director-header.component';
+import {DirectorOverviewComponent} from './director/director-overview/director-overview.component';
+import {ViewCountryMenuComponent} from './commons/view-country-menu/view-country-menu.component';
+import {AlertLoaderComponent} from './commons/alert-loader/alert-loader.component';
+import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-profile/equipment/equipment.component";
+import {EquipmentService} from "./services/equipment.service";
+import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
+import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
+import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import {CoordinationArrangementService} from "./services/coordination-arrangement.service";
+import {CountryOfficeAddEditCoordinationComponent} from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
+import {AgencyService} from "./services/agency-service.service";
 import {ExternalPartnerResponsePlan} from "./response-plans/external-partner-response-plan/external-partner-response-plan.component";
 import {DonorCountryIndexComponent} from './donor-module/donor-country-index/donor-country-index.component';
 import {DonorHeaderComponent} from './donor-module/donor-header/donor-header.component';
@@ -146,45 +146,46 @@ import {DonorMenuComponent} from './donor-module/donor-menu/donor-menu.component
 import {ResetPasswordComponent} from "./login/reset-password/reset-password.component";
 import {DonorListViewComponent} from './donor-module/donor-list-view/donor-list-view.component';
 import {ReplacePipe} from "./utils/pipes/replace.pipe";
-import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
-import { StockService } from "./services/stock.service";
-import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
-import { CountryOfficeContactsComponent } from "./country-admin/country-office-profile/contacts/contacts.component";
-import { CountryOfficeEditOfficeDetailsComponent } from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
-import { CountryOfficeAddEditPointOfContactComponent } from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
-import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-profile/documents/documents.component";
-import { ContactService } from "./services/contact.service";
+import {CountryOfficeStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
+import {StockService} from "./services/stock.service";
+import {CountryOfficeAddEditStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {CountryOfficeContactsComponent} from "./country-admin/country-office-profile/contacts/contacts.component";
+import {CountryOfficeEditOfficeDetailsComponent} from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
+import {CountryOfficeAddEditPointOfContactComponent} from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
+import {CountryOfficeDocumentsComponent} from "./country-admin/country-office-profile/documents/documents.component";
+import {ContactService} from "./services/contact.service";
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
-import { DonorAccountSettingsComponent } from './donor-module/donor-account-settings/donor-account-settings.component';
-import { DonorChangePasswordComponent } from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
-import { NewDonorPasswordComponent } from './donor-module/new-donor-password/new-donor-password.component';
+import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
+import {DonorChangePasswordComponent} from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
+import {NewDonorPasswordComponent} from './donor-module/new-donor-password/new-donor-password.component';
+import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
 import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
 import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance/technical-guidance.component";
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 
 export function HttpLoaderFactory(http: Http) {
-  return new TranslateHttpLoader(http);
+    return new TranslateHttpLoader(http);
 }
 
 // Must export the config
 export const firebaseConfig = {
-  apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-  authDomain: "alert-190fa.firebaseapp.com",
-  // authDomain: "test.alertplatform.co.uk",
-  databaseURL: "https://alert-190fa.firebaseio.com",
-  storageBucket: "alert-190fa.appspot.com",
-  messagingSenderId: "305491871378"
+    apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+    authDomain: "alert-190fa.firebaseapp.com",
+    // authDomain: "test.alertplatform.co.uk",
+    databaseURL: "https://alert-190fa.firebaseio.com",
+    storageBucket: "alert-190fa.appspot.com",
+    messagingSenderId: "305491871378"
 };
 
 const firebaseAuthConfig = {
-  provider: AuthProviders.Google,
-  method: AuthMethods.Redirect
+    provider: AuthProviders.Google,
+    method: AuthMethods.Redirect
 };
 
 @NgModule({
@@ -229,6 +230,7 @@ const firebaseAuthConfig = {
     CountryOfficeEditOfficeDetailsComponent,
     CountryOfficeAddEditPointOfContactComponent,
     CountryOfficeDocumentsComponent,
+    CountryOfficeCapacityComponent,
     AgencyAdminMenuComponent,
     DepartmentComponent,
     SkillsComponent,
