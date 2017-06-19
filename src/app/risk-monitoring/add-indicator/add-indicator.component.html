@@ -70,7 +70,7 @@
                     <div class="form-group-risk-frequency">
                         <select class="form-control" id="select1" name="frequencyValue" [(ngModel)]="indicatorData.trigger[alertLevelKey].frequencyValue">
                             <option value="undefined" disabled selected hidden>0</option>
-                            <option *ngFor="let f of frequency; let index = index" [value]="index">{{index + 1}}</option>
+                            <option *ngFor="let f of frequency; let index = index" [value]="index + 1">{{index + 1}}</option>
                         </select>
                     </div>
                     <!--frequency-->

@@ -118,6 +118,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
         if (snapshot.val() != null) {
+          // TODO: Logic for if it's deactivated or not
           if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
             // If there's no first directory or firstLogin is not defined or false, go to success (as if it's a regular login)
             this.router.navigateByUrl(directToIfSuccess);
