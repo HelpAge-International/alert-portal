@@ -58,6 +58,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
+
   /**
    * Private Functions
    */
@@ -66,6 +67,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
     this.userService.getUserType(this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(usertype => {
+        this.USER_TYPE = Constants.USER_PATHS[usertype];
         if (usertype == UserType.GlobalDirector) {
           this.route.params
             .takeUntil(this.ngUnsubscribe)
@@ -100,9 +102,11 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
 
-        responsePlan.sectorsRelatedTo.forEach(sector => {
-          this.sectorsRelatedToMap.set(sector, true);
-        });
+        if (responsePlan.sectorsRelatedTo) {
+          responsePlan.sectorsRelatedTo.forEach(sector => {
+            this.sectorsRelatedToMap.set(sector, true);
+          });
+        }
 
         this.bindProjectLeadData(responsePlan);
 

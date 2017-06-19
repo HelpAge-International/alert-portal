@@ -552,7 +552,8 @@
             "L_NAME_MISSING": "Please enter agency administrator's last name",
             "EMAIL_MISSING": "Please enter agency administrator's email address",
             "EMAIL_INVALID": "Please enter a correct email address",
-            "NO_AGENCY": "No agencies have been added to the ALERT"
+            "NO_AGENCY": "No agencies have been added to the ALERT",
+            "EMAIL_IN_USE_ERROR": "The agency administrator email address you entered is already in use, please enter another email address to continue"
         },
         "GLOBAL_NETWORKS": {
             "GLOBAL_NETWORKS": "Global Networks",
@@ -659,12 +660,12 @@
             "UNASSIGNED": "Unassigned",
             "COUNTRIES": "Countries",
             "OTHER_COUNTRIES": "Other Countries",
-            "DEACTIVATE_ALERT": "Are you sure you want to deactivate this region? The associated regional director will no longer be able to approve response plans from the country offices within this region.",
-            "ACTIVATE_ALERT": "Are you sure you want to activate this region?",
+            "DEACTIVATE_ALERT": "Are you sure you want to deactivate this country office? The country office users will be unable to login to ALERT",
+            "ACTIVATE_ALERT": "Are you sure you want to activate this country office?",
             "ERROR_NO_NAME": "Please enter the name",
             "ERROR_DUPLICATE_NAME": "Name is duplicate",
             "ERROR_NO_COUNTRY": "No country was selected for this region",
-            "ERROR_DUPLICATE_COUNTRY": "Country can not be duplicate for the same region",
+            "ERROR_DUPLICATE_COUNTRY": "A country office for this country already exists under your agency",
             "ERROR_MAX_COUNTRIES": "No more countries can be selected",
             "NAME_MISSING": "Please enter name of the country",
             "F_NAME_MISSING": "Please enter country administrator's first name",
@@ -1214,7 +1215,6 @@
           }
         },
         "VIEW_MY_AGENCY": {
-            "TITLE": "Helpage International: Overview",
             "RESPONSE_PLANS": "Response plans",
             "MPA": "Minimum Preparedness",
             "APA": "Advanced preparedness",
@@ -1232,7 +1232,9 @@
     },
     "DIALOG": {
         "TITLE": "Alert",
-        "CONTENT": "Are you sure you want to proceed this action?"
+        "CONTENT": "Are you sure you want to proceed this action?",
+        "ACTIVATE_AGENCY": "Are you sure you want to activate this agency?",
+        "DEACTIVATE_AGENCY": "Are you sure you want to deactivate this agency? The agency users will be unable to login to ALERT"
     },
     "DELETE_ACTION_DIALOG": {
         "TITLE": "Alert",
@@ -1499,6 +1501,21 @@
         "DELETE_DIALOG_TITLE": "Delete note",
         "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this note?",
         "SUCCESS_DELETED": "The note has been successfully deleted"
+    },
+    "DOCUMENTS": {
+        "TITLE_TEXT": "Documents",
+        "EXPORT": "Export selected documents",
+        "ALL_COUNTRIES": "All countries",
+        "ALL_DOCUMENTS": "All documents",
+        "UPLOADED_BY_EVERYONE": "Uploaded by everyone",
+        "MODULE": "Module",
+        "TITLE": "Title",
+        "NAME": "Name",
+        "SIZE": "Size",
+        "UPLOADED_BY": "Uploaded by",
+        "DATE": "Date",
+        "DIALOG_EXPORT_TITLE": "Export selected documents",
+        "DIALOG_EXPORT_CONTENT": "You are about to export {{value}} document(s) with a total size of {{value2}}MB. Are you sure you wish to continue?"
     },
     "COPY_ACTION_DIALOG": {
         "TITLE": "Alert",
@@ -1767,5 +1784,12 @@
         "OCTOBER": "October",
         "NOVEMBER": "November",
         "DECEMBER": "December"
-    }
+    },
+     "EXPORT": {
+       "START_FUND": "Start Fund",
+       "TECHNICAL_GUIDANCE": {
+         "TITLE_TEXT": "Start Fund",
+         "START_FUND_APP_FORM": "Start Fund Project Application Form"
+       }
+     }
 }

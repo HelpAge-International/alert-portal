@@ -1,12 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="36px" height="29px" viewBox="0 0 36 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>KH</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1992.000000, -1151.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="KH" points="2000.16082 1178.72227 1997.46934 1175.22802 1994.14041 1168.28673 1992.55858 1160.14134 1996.80828 1154.5222 2005.35489 1153.22366 2011.56418 1154.19166 2017.01796 1156.85957 2020.01636 1152.16121 2025.89511 1154.66386 2027.42972 1159.19694 2026.60339 1167.27151 2015.48334 1172.44206 2018.3873 1176.52656 2011.44613 1176.99876 2005.70904 1179.69028"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>KH</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1992.000000, -1151.000000)">
+		<polygon id="KH" class="st0" points="2000.2,1182.2 1997.5,1178.7 1994.1,1171.8 1992.6,1163.6 1996.8,1158 2005.4,1156.7 
+			2011.6,1157.7 2017,1160.4 2020,1155.7 2025.9,1158.2 2027.4,1162.7 2026.6,1170.8 2015.5,1175.9 2018.4,1180 2011.4,1180.5 
+			2005.7,1183.2 		"/>
+	</g>
+</g>
 </svg>

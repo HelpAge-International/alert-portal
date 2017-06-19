@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="51px" height="27px" viewBox="0 0 51 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>AT</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1377.000000, -877.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="AT" points="1427.44307 886.550614 1426.94727 890.587896 1423.21698 890.611505 1424.49189 892.71278 1422.29621 898.969386 1421.04491 900.598464 1415.2606 900.834562 1411.90806 903.006667 1406.43067 902.274762 1396.96329 899.79573 1395.4995 896.419524 1388.95969 898.119432 1388.18058 899.937389 1384.16697 898.568018 1380.79082 898.30831 1377.79242 896.561183 1378.80763 894.17659 1378.54793 892.429462 1380.55473 891.910046 1383.90727 894.601567 1384.85165 892.028095 1390.68318 892.453072 1395.42867 890.705945 1398.59234 890.989263 1400.64636 892.996098 1401.28382 891.34341 1400.33944 884.921536 1402.72399 883.646605 1405.03772 879.042688 1409.97209 882.277235 1413.67877 878.169124 1416.0161 877.41361 1421.16296 880.482888 1424.2558 879.963472 1427.32503 881.852258 1426.78201 883.127189"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 51 51" style="enable-background:new 0 0 51 51;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>AT</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1377.000000, -877.000000)">
+		<polygon id="AT" class="st0" points="1427.4,898.6 1426.9,902.6 1423.2,902.6 1424.5,904.7 1422.3,911 1421,912.6 1415.3,912.8 
+			1411.9,915 1406.4,914.3 1397,911.8 1395.5,908.4 1389,910.1 1388.2,911.9 1384.2,910.6 1380.8,910.3 1377.8,908.6 1378.8,906.2 
+			1378.5,904.4 1380.6,903.9 1383.9,906.6 1384.9,904 1390.7,904.5 1395.4,902.7 1398.6,903 1400.6,905 1401.3,903.3 1400.3,896.9 
+			1402.7,895.6 1405,891 1410,894.3 1413.7,890.2 1416,889.4 1421.2,892.5 1424.3,892 1427.3,893.9 1426.8,895.1 		"/>
+	</g>
+</g>
 </svg>

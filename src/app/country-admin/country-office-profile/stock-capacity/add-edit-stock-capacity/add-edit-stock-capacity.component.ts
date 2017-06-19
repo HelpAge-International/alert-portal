@@ -38,7 +38,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
               private router: Router,
               private route: ActivatedRoute) {
                 this.stockCapacity = new StockCapacityModel();
-                this.stockCapacity.type = StockType.Country; // set default stock type
+                this.stockCapacity.stockType = StockType.Country; // set default stock type
   }
 
   ngOnDestroy() {
@@ -56,11 +56,11 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
         const editSubscription = this.route.params.subscribe((params: Params) => {
           if (params['id']) {
-            this._stockService.getStockCapacity(this.agencyId, this.countryId, params['id'])
+            this._stockService.getStockCapacity(this.countryId, params['id'])
                   .subscribe(stockCapacity => { this.stockCapacity = stockCapacity; });
           }
           if (params['stockType']) {
-            this.stockCapacity.type = Number(params['stockType']);
+            this.stockCapacity.stockType = Number(params['stockType']);
           }
         });
       });
@@ -74,7 +74,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   submit() {
-      this._stockService.saveStockCapacity(this.agencyId, this.countryId, this.stockCapacity)
+      this._stockService.saveStockCapacity(this.countryId, this.stockCapacity)
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
@@ -100,7 +100,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   deleteAction() {
     this.closeModal();
 
-    this._stockService.deleteStockCapacity(this.agencyId, this.countryId, this.stockCapacity)
+    this._stockService.deleteStockCapacity(this.countryId, this.stockCapacity)
       .then(() => {
         this.goBack();
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_DELETED', AlertMessageType.Success);

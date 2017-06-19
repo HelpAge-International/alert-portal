@@ -1,5 +1,5 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {ApprovalStatus, UserType} from "../utils/Enums";
@@ -19,6 +19,10 @@ declare const jQuery: any;
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
+
+  @Input() isViewing: boolean;
+  @Input() countryIdForViewing: string;
+
   private isGlobalDirectorMap = new Map<string, boolean>();
 
   private dialogTitle: string;
@@ -77,8 +81,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(plans => {
         this.activePlans = plans;
-        console.log("e2fe");
-        console.log(this.activePlans);
         for (let x of this.activePlans) {
           this.getNotes(x);
         }

@@ -1,12 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="33px" height="27px" viewBox="0 0 33 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>AE</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1656.000000, -1071.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="AE" points="1656.47823 1084.56627 1657.6587 1084.21212 1657.91841 1086.19535 1663.08887 1085.06207 1668.56626 1085.25095 1672.55626 1085.46344 1677.08927 1080.57621 1682.04725 1075.90146 1686.22612 1071.41559 1687.47742 1073.89462 1688.37458 1079.65542 1684.99843 1079.67903 1684.45541 1084.401 1685.63589 1085.39261 1682.63749 1086.8092 1682.61388 1089.76043 1680.6779 1092.73527 1680.51264 1095.59206 1679.1669 1097.10309 1659.28775 1093.51439 1656.73793 1086.24257"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 33 33" style="enable-background:new 0 0 33 33;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>AE</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1656.000000, -1071.000000)">
+		<polygon id="AE" class="st0" points="1656.5,1087.6 1657.7,1087.2 1657.9,1089.2 1663.1,1088.1 1668.6,1088.3 1672.6,1088.5 
+			1677.1,1083.6 1682,1078.9 1686.2,1074.4 1687.5,1076.9 1688.4,1082.7 1685,1082.7 1684.5,1087.4 1685.6,1088.4 1682.6,1089.8 
+			1682.6,1092.8 1680.7,1095.7 1680.5,1098.6 1679.2,1100.1 1659.3,1096.5 1656.7,1089.2 		"/>
+	</g>
+</g>
 </svg>

@@ -140,8 +140,15 @@
      aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{alertTitle | translate}}</strong></h5>
+      <div *ngIf="countryToUpdate" class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          <strong>{{alertTitle | translate}} {{countryNames[countryToUpdate.location] | translate}}</strong>
+        </h5>
+      </div>
+      <div *ngIf="!countryToUpdate" class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabelDefault">
+          <strong>{{alertTitle | translate}}</strong>
+        </h5>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{alertContent | translate}}</p></div>

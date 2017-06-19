@@ -61,6 +61,7 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
+
   /**
    * Private Functions
    */
@@ -69,6 +70,7 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
     this.userService.getUserType(this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(usertype => {
+        this.USER_TYPE = Constants.USER_PATHS[usertype];
         if (usertype == UserType.GlobalDirector) {
           this.route.params
             .takeUntil(this.ngUnsubscribe)

@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="27px" height="29px" viewBox="0 0 27 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>LR</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1239.000000, -1192.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="LR" points="1263.99493 1220.3228 1262.24783 1220.37002 1255.42471 1217.22991 1249.42791 1212.20101 1243.78525 1208.58871 1239.32307 1204.31533 1240.9049 1202.19045 1241.25904 1200.27805 1244.23383 1196.66575 1247.32667 1193.57286 1248.74324 1193.40759 1250.46673 1192.67568 1253.22903 1196.73657 1252.80406 1199.40449 1254.07897 1200.82108 1255.96772 1200.84469 1257.31346 1198.17677 1259.17861 1198.34204 1258.87169 1200.27805 1259.53275 1203.48899 1258.09257 1206.41661 1260.02855 1208.23456 1262.12979 1208.68315 1264.93931 1211.4455 1265.12819 1214.06619 1264.49073 1214.89253"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 29 29" style="enable-background:new 0 0 29 29;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>LR</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1239.000000, -1192.000000)">
+		<polygon id="LR" class="st0" points="1265,1220.3 1263.2,1220.4 1256.4,1217.2 1250.4,1212.2 1244.8,1208.6 1240.3,1204.3 
+			1241.9,1202.2 1242.3,1200.3 1245.2,1196.7 1248.3,1193.6 1249.7,1193.4 1251.5,1192.7 1254.2,1196.7 1253.8,1199.4 
+			1255.1,1200.8 1257,1200.8 1258.3,1198.2 1260.2,1198.3 1259.9,1200.3 1260.5,1203.5 1259.1,1206.4 1261,1208.2 1263.1,1208.7 
+			1265.9,1211.4 1266.1,1214.1 1265.5,1214.9 		"/>
+	</g>
+</g>
 </svg>

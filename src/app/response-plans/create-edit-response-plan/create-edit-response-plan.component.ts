@@ -19,6 +19,7 @@ import {ModelBudgetItem} from "../../model/budget-item.model";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -492,12 +493,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
     if (!this.forEditing) {
-      newResponsePlan.startDate = Date.now();
-      newResponsePlan.timeCreated = Date.now();
+      newResponsePlan.startDate = moment.utc().valueOf();
+      newResponsePlan.timeCreated = moment.utc().valueOf();
       newResponsePlan.createdBy = this.uid;
     }
     if (this.forEditing) {
-      newResponsePlan.timeUpdated = Date.now();
+      newResponsePlan.timeUpdated = moment.utc().valueOf();
       newResponsePlan.updatedBy = this.uid;
     }
 

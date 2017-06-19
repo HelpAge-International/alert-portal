@@ -1,12 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="26px" height="17px" viewBox="0 0 26 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>DO</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-838.000000, -1115.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="DO" points="840.32357 1116.74647 841.1499 1115.54237 846.320367 1115.58959 850.239533 1117.38393 851.986632 1117.19505 853.190713 1119.67409 856.802957 1119.53243 856.590472 1121.61009 859.541652 1121.8698 862.799754 1124.41966 860.344373 1127.25284 857.180708 1125.74181 854.1587 1126.02513 851.986632 1125.69459 850.782551 1126.96952 848.232731 1127.3945 847.241135 1125.69459 845.045457 1126.70982 842.4012 1131.43178 840.701321 1130.34573 840.347179 1128.3625 840.488836 1126.47372 838.788956 1124.39605 840.394398 1123.21556 840.913805 1120.54765"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 26 26" style="enable-background:new 0 0 26 26;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>DO</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-838.000000, -1115.000000)">
+		<polygon id="DO" class="st0" points="840.3,1121.2 841.1,1120 846.3,1120.1 850.2,1121.9 852,1121.7 853.2,1124.2 856.8,1124 
+			856.6,1126.1 859.5,1126.4 862.8,1128.9 860.3,1131.8 857.2,1130.2 854.2,1130.5 852,1130.2 850.8,1131.5 848.2,1131.9 
+			847.2,1130.2 845,1131.2 842.4,1135.9 840.7,1134.8 840.3,1132.9 840.5,1131 838.8,1128.9 840.4,1127.7 840.9,1125 		"/>
+	</g>
+</g>
 </svg>

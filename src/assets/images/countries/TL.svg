@@ -1,12 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="16px" height="9px" viewBox="0 0 16 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>TL</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-2142.000000, -1303.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="TL" points="2142.31324 1307.75 2143.09236 1306.19175 2148.78223 1304.70433 2153.40968 1304.46823 2155.4637 1303.64189 2157.9663 1304.46823 2155.53453 1306.26258 2148.64057 1309.16659 2143.09236 1311.1026 2142.97431 1309.07215"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>TL</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-2142.000000, -1303.000000)">
+		<polygon id="TL" class="st0" points="2142.3,1311.2 2143.1,1309.7 2148.8,1308.2 2153.4,1308 2155.5,1307.1 2158,1308 
+			2155.5,1309.8 2148.6,1312.7 2143.1,1314.6 2143,1312.6 		"/>
+	</g>
+</g>
 </svg>

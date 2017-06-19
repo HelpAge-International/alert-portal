@@ -214,7 +214,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.agencyAddressLine1] = true;
       this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
-    } else if (!(this.agencyCountry)) {
+    } else if (!(this.agencyCountry) && (this.agencyCountry != 0)) {
       this.alerts[this.agencyCountry] = true;
       this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_COUNTRY";
       return false;
@@ -226,7 +226,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.agencyPhone] = true;
       this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_PHONE";
       return false;
-    } else if (!(this.agencyCurrency)) {
+    } else if (!(this.agencyCurrency) && (this.agencyCurrency != 0)) {
       this.alerts[this.agencyCurrency] = true;
       this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_CURRENCY";
       return false;

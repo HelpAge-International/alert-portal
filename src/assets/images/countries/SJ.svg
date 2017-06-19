@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="114px" height="134px" viewBox="0 0 114 134" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>SJ</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1383.000000, -301.000000)" stroke="#FFFFFF" stroke-width="0.5" fill="#B1B2B3">
-            <path d="M1478.72277,401.699124 L1463.94326,414.353994 L1452.25659,407.223825 L1456.83682,399.149263 L1452.84683,388.902596 L1466.56391,382.339063 L1469.18456,394.568955 L1478.72277,401.699124 L1478.72277,401.699124 Z M1435.87164,338.708095 L1457.66315,365.363594 L1440.99489,378.726759 L1437.31182,402.549078 L1431.5039,408.427926 L1428.36384,433.241859 L1420.38385,434.375131 L1406.14736,416.33722 L1412.14416,405.429478 L1402.22819,396.316083 L1389.33744,368.409263 L1384.19058,340.573272 L1402.22819,327.139278 L1405.86405,340.266344 L1415.28421,339.746928 L1417.78681,326.92679 L1427.5139,325.604639 L1435.87164,338.708095 L1435.87164,338.708095 Z M1483.49188,311.651229 L1496.47707,325.344931 L1486.65554,345.460507 L1467.46107,349.733886 L1447.93606,343.68977 L1446.75559,333.490323 L1437.2646,332.829247 L1430.0165,315.169094 L1450.46227,304.025253 L1460.07132,313.658065 L1466.7764,301.640661 L1483.49188,311.651229 L1483.49188,311.651229 Z" id="SJ"></path>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 134 134" style="enable-background:new 0 0 134 134;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>SJ</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1383.000000, -301.000000)">
+		<path id="SJ" class="st0" d="M1488.7,401.7l-14.8,12.7l-11.7-7.1l4.6-8.1l-4-10.2l13.7-6.6l2.6,12.2L1488.7,401.7L1488.7,401.7z
+			 M1445.9,338.7l21.8,26.7l-16.7,13.4l-3.7,23.8l-5.8,5.9l-3.1,24.8l-8,1.1l-14.2-18l6-10.9l-9.9-9.1l-12.9-27.9l-5.1-27.8l18-13.4
+			l3.6,13.1l9.4-0.5l2.5-12.8l9.7-1.3L1445.9,338.7L1445.9,338.7z M1493.5,311.7l13,13.7l-9.8,20.1l-19.2,4.3l-19.5-6l-1.2-10.2
+			l-9.5-0.7l-7.2-17.7l20.4-11.1l9.6,9.6l6.7-12L1493.5,311.7L1493.5,311.7z"/>
+	</g>
+</g>
 </svg>

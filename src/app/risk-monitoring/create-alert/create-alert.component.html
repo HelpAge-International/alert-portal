@@ -7,7 +7,7 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-        <div class="Back--button row" routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</div> <!-- Back button-->
+        <!--<div class="Back&#45;&#45;button row" routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</div> &lt;!&ndash; Back button&ndash;&gt;-->
         <div class="Header-title__wrap--risk Spaced-above">
             <h1>{{"RISK_MONITORING.ADD_ALERT.TITLE_PAGE" | translate}}</h1>
         </div>
@@ -114,7 +114,7 @@
 <br>
 <div class="Form-submit__wrapper">
     <div class="btn btn-primary" (click)="saveAlert()">{{"RISK_MONITORING.ADD_ALERT.CONFIRM_ALERT_LEVEL" | translate}}</div>
-    <div class="btn btn-outline-secondary">{{"GLOBAL.CANCEL" | translate}}</div>
+    <div class="btn btn-outline-secondary" routerLink="/risk-monitoring">{{"GLOBAL.CANCEL" | translate}}</div>
 </div>
 
 </div>

@@ -6,6 +6,10 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
+  MediaFormat,
+  MethodOfImplementation,
+  PresenceInTheCountry,
+  ResponsePlanSectors, SourcePlan,
   UserType
 } from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -21,9 +25,22 @@ export class ProjectReportComponent implements OnInit, OnDestroy {
   private USER_TYPE: string = 'administratorCountry';
   private uid: string;
   private countryId: string;
+  private ResponsePlanSectors = ResponsePlanSectors;
+  private PresenceInTheCountry = PresenceInTheCountry;
+  private MethodOfImplementation = MethodOfImplementation;
+
   @Input() responsePlanId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private responsePlan: ResponsePlan = new ResponsePlan;
+  private planLeadName: string = '';
+  private planLeadEmail: string = '';
+  private planLeadPhone: string = '';
+  private partnersList: string[] = [];
+  private sourcePlanId: number;
+  private SourcePlan = SourcePlan;
+  private MediaFormat = MediaFormat;
+
+  private sectorsRelatedToMap = new Map<number, boolean>();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -43,6 +60,7 @@ export class ProjectReportComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
+
   /**
    * Private Functions
    */
@@ -51,6 +69,7 @@ export class ProjectReportComponent implements OnInit, OnDestroy {
     this.userService.getUserType(this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(usertype => {
+        this.USER_TYPE = Constants.USER_PATHS[usertype];
         if (usertype == UserType.GlobalDirector) {
           this.route.params
             .takeUntil(this.ngUnsubscribe)
@@ -85,12 +104,55 @@ export class ProjectReportComponent implements OnInit, OnDestroy {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
 
-        this.bindProjectReportData(responsePlan);
+        if (responsePlan.sectorsRelatedTo) {
+          responsePlan.sectorsRelatedTo.forEach(sector => {
+            this.sectorsRelatedToMap.set(sector, true);
+          });
+
+          this.bindProjectLeadData(responsePlan);
+          this.bindPartnersData(responsePlan);
+          this.bindSourcePlanData(responsePlan);
+        }
       });
   }
 
-  private bindProjectReportData(responsePlan: ResponsePlan){
-    //TODO: From here
+
+  private bindProjectLeadData(responsePlan: ResponsePlan) {
+    if (responsePlan.planLead) {
+      this.userService.getUser(responsePlan.planLead)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          console.log(user);
+          this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
+          this.planLeadEmail = user.email;
+          this.planLeadPhone = user.phone;
+        });
+    }
+  }
+
+  private bindPartnersData(responsePlan: ResponsePlan) {
+    this.partnersList = [];
+
+    if (responsePlan.partnerOrganisations) {
+      let partnerIds = Object.keys(responsePlan.partnerOrganisations).map(key => responsePlan.partnerOrganisations[key]);
+      partnerIds.forEach(id => {
+        this.userService.getOrganisationName(id)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(organisation => {
+            if (organisation.organisationName) {
+              this.partnersList.push(organisation.organisationName);
+            }
+          })
+      });
+    }
+  }
+
+  private bindSourcePlanData(responsePlan: ResponsePlan) {
+    if (responsePlan.sectors) {
+      Object.keys(responsePlan.sectors).forEach(sectorKey => {
+        this.sourcePlanId = responsePlan.sectors[sectorKey]["sourcePlan"];
+      });
+    }
   }
 
   /**
@@ -107,6 +169,10 @@ export class ProjectReportComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
   private navigateToLogin() {

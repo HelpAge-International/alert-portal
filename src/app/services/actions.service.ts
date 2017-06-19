@@ -27,7 +27,15 @@ export class ActionsService {
         startAt: moment().startOf('day').valueOf()
       }
     })
-      .filter(action => action.assignee === uid);
+      .map(actions => {
+        let filteredActions = [];
+        actions.forEach(action => {
+            if (action.assignee === uid) {
+              filteredActions.push(action);
+            }
+        });
+        return filteredActions;
+      })
   }
 
   getIndicatorsDueInWeek(countryId, uid) {
@@ -38,7 +46,15 @@ export class ActionsService {
         startAt: startOfToday
       }
     })
-      .filter(indicator => indicator.assignee === uid);
+      .map(indicators => {
+        let filteredIndicators = [];
+        indicators.forEach(indicator => {
+          if (indicator.assignee === uid) {
+            filteredIndicators.push(indicator);
+          }
+        });
+        return filteredIndicators;
+      });
 
     let countryIndicators = this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
       .flatMap(hazards => {
@@ -53,7 +69,13 @@ export class ActionsService {
         })
       })
       .map(indicators => {
-        return indicators.filter(indicator => indicator.assignee === uid);
+        let filteredIndicators = [];
+        indicators.forEach(indicator => {
+          if (indicator.assignee === uid) {
+            filteredIndicators.push(indicator);
+          }
+        });
+        return filteredIndicators;
       });
 
     return countryContextIndicators.merge(countryIndicators);

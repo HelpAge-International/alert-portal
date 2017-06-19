@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyService} from "../../services/agency-service.service";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -20,6 +21,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private agencyID: string;
   private systemAdminID: string;
 
+  private agencyName: string = '';
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
   private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
@@ -46,19 +48,15 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private UserType: number;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private agencyService: AgencyService, private route: ActivatedRoute, private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.userService.getUserType(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(userType => {
-          this.UserType = userType;
-          this._loadData();
-        });
-    });
+        this.UserType = userType;
+        this._loadData();
+      });
   }
 
   ngOnDestroy() {
@@ -95,10 +93,22 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIDs: any) => {
           this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
+          this.getAgencyName();
           res(true);
         });
     });
     return promise;
+  }
+
+  private getAgencyName() {
+
+    if (this.agencyID) {
+      this.agencyService.getAgency(this.agencyID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agency => {
+        this.agencyName = agency.name;
+      })
+    }
   }
 
   _getCountryList() {

@@ -1,12 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29px" height="29px" viewBox="0 0 29 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>SR</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-930.000000, -1209.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="SR" points="936.744514 1209.69837 944.677285 1211.02052 945.385568 1209.81642 950.744911 1209.34422 957.851352 1211.13857 954.404374 1216.80493 954.923781 1221.31441 957.544429 1225.23364 956.387566 1228.06682 955.79733 1231.06527 954.097451 1233.82762 950.319941 1232.43464 947.179886 1233.11932 944.512019 1232.52908 943.850955 1234.44147 944.960598 1235.74002 944.370363 1237.08578 940.758119 1236.54275 936.720905 1230.82917 935.847355 1227.12243 933.746115 1227.09882 930.794936 1222.32963 932.022626 1218.90621 931.668485 1217.37157 935.682089 1215.64805"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 29 29" style="enable-background:new 0 0 29 29;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>SR</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-930.000000, -1209.000000)">
+		<polygon id="SR" class="st0" points="936.7,1209.7 944.7,1211 945.4,1209.8 950.7,1209.3 957.9,1211.1 954.4,1216.8 954.9,1221.3 
+			957.5,1225.2 956.4,1228.1 955.8,1231.1 954.1,1233.8 950.3,1232.4 947.2,1233.1 944.5,1232.5 943.9,1234.4 945,1235.7 
+			944.4,1237.1 940.8,1236.5 936.7,1230.8 935.8,1227.1 933.7,1227.1 930.8,1222.3 932,1218.9 931.7,1217.4 935.7,1215.6 		"/>
+	</g>
+</g>
 </svg>

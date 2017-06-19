@@ -1,5 +1,13 @@
 <app-director-header></app-director-header>
 <app-director-menu></app-director-menu>
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Back--button" routerLink="/director">{{"GLOBAL.HOME" | translate}}</div>
+  </div>
+</div>
 <app-view-country-menu (onMenuSelected)="menuSelection($event)"></app-view-country-menu>
-<app-response-plans></app-response-plans>
+<app-country-office-programme *ngIf="tabMap.get('officeProfile')"></app-country-office-programme>
+<app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
+<app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
+                    [countryIdForViewing]="countryId"></app-response-plans>
 

@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="46px" height="28px" viewBox="0 0 46 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>CZ</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Map-countries" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-1395.000000, -855.000000)" stroke-width="0.5" stroke="#FFFFFF" fill="#B1B2B3">
-            <polygon id="CZ" points="1427.32503 881.852258 1424.2558 879.963472 1421.16296 880.482888 1416.0161 877.41361 1413.67877 878.169124 1409.97209 882.277235 1405.03772 879.042688 1401.30742 874.722089 1397.93127 872.266667 1397.22299 867.969677 1396.06613 864.900399 1400.88245 862.657465 1403.33784 860.060384 1408.08333 858.029939 1409.7596 856.046713 1411.5067 857.250814 1414.45788 856.141152 1417.59794 859.517358 1422.53231 860.438141 1422.13095 863.294931 1425.71958 865.419816 1426.71118 862.751905 1431.24419 863.908786 1431.88165 867.143333 1436.79241 867.757189 1439.83803 872.786083 1437.87844 872.809693 1436.83963 874.62765 1435.32862 875.076237 1434.90365 877.36639 1433.62875 877.862197 1433.43987 878.78298 1431.19697 879.821813 1428.24579 879.656544"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 46 46" style="enable-background:new 0 0 46 46;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#B1B2B3;stroke:#FFFFFF;stroke-width:0.5;}
+</style>
+<title>CZ</title>
+<desc>Created with Sketch.</desc>
+<g id="Map-countries">
+	<g id="Artboard" transform="translate(-1395.000000, -855.000000)">
+		<polygon id="CZ" class="st0" points="1427.3,890.9 1424.3,889 1421.2,889.5 1416,886.4 1413.7,887.2 1410,891.3 1405,888 
+			1401.3,883.7 1397.9,881.3 1397.2,877 1396.1,873.9 1400.9,871.7 1403.3,869.1 1408.1,867 1409.8,865 1411.5,866.3 1414.5,865.1 
+			1417.6,868.5 1422.5,869.4 1422.1,872.3 1425.7,874.4 1426.7,871.8 1431.2,872.9 1431.9,876.1 1436.8,876.8 1439.8,881.8 
+			1437.9,881.8 1436.8,883.6 1435.3,884.1 1434.9,886.4 1433.6,886.9 1433.4,887.8 1431.2,888.8 1428.2,888.7 		"/>
+	</g>
+</g>
 </svg>

@@ -66,7 +66,7 @@
   </tr>
   <tr>
     <td class="tg" colspan="4" style="border:none; background: lightgrey;border-left: 1px solid;">Project Lead Name</td>
-    <td class="tg" colspan="5"></td>
+    <td class="tg" colspan="5"><p>{{planLeadName}}</p></td>
   </tr>
   <tr>
     <td class="tg" colspan="4" style="border: none; background: lightgrey;border-left: 1px solid;">Position</td>
@@ -74,23 +74,23 @@
   </tr>
   <tr>
     <td class="tg" colspan="4" style="border: none; background: lightgrey;border-left: 1px solid;">Email</td>
-    <td class="tg" colspan="5"></td>
+    <td class="tg" colspan="5"><a href="mailto:{{planLeadEmail}}"><p>{{planLeadEmail}}</p></a></td>
   </tr>
   <tr>
     <td class="tg" colspan="4" style="border: none; background: lightgrey;border-left: 1px solid;">Telephone</td>
-    <td class="tg" colspan="5"></td>
+    <td class="tg" colspan="5" style="text-align: left;"><p>{{planLeadPhone}}</p></td>
   </tr>
   <tr>
     <td class="tg" colspan="4" style="border: none; background: lightgrey;border-left: 1px solid;">Mobile</td>
-    <td class="tg" colspan="5"></td>
+    <td class="tg" colspan="5" style="text-align: left;"></td>
   </tr>
   <tr>
     <td class="tg" colspan="4" style="background: lightgrey;">Country of project</td>
-    <td class="tg" colspan="5"></td>
+    <td class="tg" colspan="5"><p>{{responsePlan.location}}</p></td>
   </tr>
   <tr>
     <td class="tg" colspan="4" style="background: lightgrey;">Location(s) of project (city/province)</td>
-    <td class="tg" colspan="5"></td>
+    <td class="tg" colspan="5"><p>{{responsePlan.location}}</p></td>
   </tr>
   <tr>
     <td class="tg" colspan="4" style="background: lightgrey;">Project start date (dd/mm/yyyy)</td>
@@ -110,30 +110,35 @@
 
   <tr>
     <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>WaSH</p></td>
-    <td class="tg" style="width: 10%;padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Health</p></td>
-    <td class="tg" style="width: 5%;padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Shelter</p></td>
-    <td class="tg" style="width: 5%;padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Nutrition</p></td>
-    <td class="tg" style="width: 10%; padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Camp Management</p></td>
-    <td class="tg" style="width: 10%;padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Education</p></td>
-    <td class="tg" style="width: 10%;padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Protection</p></td>
-    <td class="tg" style="width: 10%;padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Food security & livelihoods</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Health</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Shelter</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Nutrition</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Food security & livelihoods</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Protection</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Education</p></td>
+    <td class="tg" style="width: 10%; padding: 0em 0.25em; background-color: lightgrey; text-align: center;"><p>Camp Management</p></td>
     <td class="tg" style="padding: 0em 0.25em;background-color: lightgrey; text-align: center;"><p>Other (specify)</p></td>
   </tr>
 
   <tr style="text-align: center;">
-    <td class="tg" style="width: 10%;"></td>
-    <td class="tg" style="width: 10%;"></td>
-    <td class="tg" style="width: 5%;"></td>
-    <td class="tg" style="width: 5%;"></td>
-    <td class="tg" style="width: 10%; padding-left: 2.5%; padding-right: 2.5%;"></td>
-    <td class="tg" style="width: 10%;"></td>
-    <td class="tg" style="width: 10%;"></td>
-    <td class="tg" style="width: 10%;"></td>
-    <td class="tg" style="padding-left: 15%; padding-right: 15%; padding-left: 10%;"></td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.wash)">X</p></td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.health)">X</p></td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.shelter)">X</p></td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.nutrition)">X</p>
+    </td>
+    <td class="tg" style="width: 10%;"><p
+      *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.foodSecurityAndLivelihoods)">X</p></td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.protection)">X</p>
+    </td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.education)">X</p>
+    </td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.campManagement)">
+      X</p></td>
+    <td class="tg" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.other)">X</p></td>
   </tr>
 
   <tr>
-    <td class="tg" colspan="3" style="text-align: left;text-align: center; background-color: lightgrey;"><p style="font-weight: bold;">2. Presence in country
+    <td class="tg" colspan="3" style="text-align: left; background-color: lightgrey;"><p style="font-weight: bold;">2. Presence in country
       before project (mark one)</p></td>
     <td class="tg" colspan="2" style="text-align: center; background-color: lightgrey;"><p>Current programmers</p></td>
     <td class="tg" colspan="2" style="text-align: center; background-color: lightgrey;"><p>Pre-existing partner</p></td>
@@ -142,13 +147,16 @@
 
   <tr style="text-align: center;">
     <td class="tg" colspan="3" style="background-color: lightgrey; border-style: hidden;border-left: 1px solid; border-right: 1px solid;border-bottom: 1px solid;"></td>
-    <td class="tg" colspan="2"></td>
-    <td class="tg" colspan="2"></td>
-    <td class="tg" colspan="2"></td>
+    <td class="tg" colspan="2"><p
+      *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">X</p></td>
+    <td class="tg" colspan="2"><p
+      *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">X</p></td>
+    <td class="tg" colspan="2"><p
+      *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">X</p></td>
   </tr>
 
   <tr>
-    <td class="tg" colspan="3" style="text-align: left; background-color: lightgrey;"><p style="font-weight: bold; text-align: center;">3. Method of implementation
+    <td class="tg" colspan="3" style="text-align: left; background-color: lightgrey;"><p style="font-weight: bold; text-align: left;">3. Method of implementation
       (mark one)</p></td>
     <td class="tg" colspan="2" style="text-align: center; background-color: lightgrey;"><p>Directly through field staff </p></td>
     <td class="tg" colspan="2" style="text-align: center; background-color: lightgrey;"><p>Sister organisation</p></td>
@@ -157,37 +165,43 @@
 
   <tr style="text-align: center;">
     <td class="tg" colspan="3" style="background-color: lightgrey; border-style: hidden;border-left: 1px solid; border-right: 1px solid;border-bottom: 1px solid;"></td>
+    <td class="tg" colspan="2"><p
+      *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">X</p></td>
     <td class="tg" colspan="2"></td>
-    <td class="tg" colspan="2"></td>
-    <td class="tg" colspan="2"></td>
+    <td class="tg" colspan="2"><p
+      *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">X</p></td>
   </tr>
 
   <tr style="text-align: center;">
     <td class="tg" colspan="5" style="background-color: lightgrey; text-align: left; font-weight: bold;"><p>4. Name(s) of external partner(s) (if any)</p></td>
-    <td class="tg" colspan="4"></td>
+    <td class="tg" colspan="4" style="text-align: left;">
+      <ol *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner && responsePlan.partnerOrganisations" >
+      <li *ngFor="let name of partnersList;">{{name}}</li>
+    </ol>
+    </td>
   </tr>
 
   <tr style="text-align: center;">
     <td class="tg" colspan="9" style="background-color: lightgrey; text-align: left; font-weight: bold;"><p>5. Project Timeframe</p></td>
   </tr>
 
-  <tr style="text-align: center;">
-    <td class="tg" colspan="5" style="background-color: lightgrey; text-align: left;"><p>On what date were you able to complete a needs assessment related to the project? (dd/mm/yyyy)</p></td>
+  <tr style="text-align: left;">
+    <td class="tg" colspan="5" style="background-color: lightgrey;"><p>On what date were you able to complete a needs assessment related to the project? (dd/mm/yyyy)</p></td>
     <td class="tg" colspan="4"></td>
   </tr>
 
-  <tr style="text-align: center;">
-    <td class="tg" colspan="5" style="background-color: lightgrey; text-align: left;"><p>On what date were you able to begin implementation? (dd/mm/yyyy)</p></td>
+  <tr style="text-align: left;">
+    <td class="tg" colspan="5" style="background-color: lightgrey;"><p>On what date were you able to begin implementation? (dd/mm/yyyy)</p></td>
     <td class="tg" colspan="4"></td>
   </tr>
 
-  <tr style="text-align: center;">
-    <td class="tg" colspan="5" style="background-color: lightgrey; text-align: left;"><p>On what date was funding made available to your agency? (dd/mm/yyyy)</p></td>
+  <tr style="text-align: left;">
+    <td class="tg" colspan="5" style="background-color: lightgrey;"><p>On what date was funding made available to your agency? (dd/mm/yyyy)</p></td>
     <td class="tg" colspan="4"></td>
   </tr>
 
-  <tr style="text-align: center;">
-    <td class="tg" colspan="5" style="background-color: lightgrey; text-align: left;"><p>On what date were beneficiaries first in receipt of assistance? (dd/mm/yyyy)</p></td>
+  <tr style="text-align: left;">
+    <td class="tg" colspan="5" style="background-color: lightgrey;"><p>On what date were beneficiaries first in receipt of assistance? (dd/mm/yyyy)</p></td>
     <td class="tg" colspan="4"></td>
   </tr>
 
@@ -216,8 +230,7 @@
   </tr>
 
   <tr>
-    <td colspan="9">
-    </td>
+    <td colspan="9"></td>
   </tr>
 
   <tr>
@@ -225,8 +238,7 @@
   </tr>
 
   <tr>
-    <td colspan="9">
-    </td>
+    <td colspan="9"></td>
   </tr>
 
   <tr>
@@ -235,8 +247,7 @@
   </tr>
 
   <tr>
-    <td colspan="9">
-    </td>
+    <td colspan="9"></td>
   </tr>
 
   <tr>
@@ -246,21 +257,17 @@
 
   <tr>
     <td colspan="2" style="background-color: lightgrey;"><p>Internationally</p></td>
-    <td colspan="1"></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="sourcePlanId == SourcePlan.Internationally">X</p></td>
     <td colspan="2" style="background-color: lightgrey;"><p>Regionally/ neighbouring country</p></td>
-    <td colspan="1"></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="sourcePlanId == SourcePlan.Regionally">X</p></td>
     <td colspan="2" style="background-color: lightgrey;"><p>In country/locally</p></td>
-    <td colspan="1"></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="sourcePlanId == SourcePlan.Locally">X</p></td>
   </tr>
 
 
   <tr>
     <td colspan="9"><p>If this is different to how you planned it, why did you change procurement plans and what how did this affect the project?
-      <span style="font-style: italic;">Please explain your answer in two points:</span></p>
-      <ul>
-        <li></li>
-        <li></li>
-      </ul>
+      <span style="font-style: italic;">Please explain your answer in 2 points:</span></p>
     </td>
   </tr>
 
@@ -327,13 +334,17 @@
   </tr>
 
   <tr>
-    <td colspan="9" style="padding: 0.25em; background-color: lightgrey;"><p><span style="font-weight: bold;">1. How do you calculate the beneficiary numbers for this project?</span>
-      <span style="font-style: italic;">For example, food and hygiene kits given to 2500 families, and 1 family = x beneficiaries.</span>
+    <td colspan="9" style="padding: 0.25em; background-color: lightgrey;"><p><span style="font-weight: bold;">1. How many beneficiaries are you targeting?</span>
+      <span style="font-style: italic;">(Beneficiaries = People Per Household * Number Of Households)</span>
     </p></td>
   </tr>
 
   <tr>
-    <td colspan="9"></td>
+    <td colspan="9">
+      <p style="text-align: left;" *ngIf="responsePlan.peoplePerHousehold && responsePlan.numOfHouseholds &&
+              isNumber(responsePlan.peoplePerHousehold) && isNumber(responsePlan.numOfHouseholds)">{{responsePlan.peoplePerHousehold * responsePlan.numOfHouseholds}}
+      </p>
+    </td>
   </tr>
 
   <tr>
@@ -342,7 +353,11 @@
   </tr>
 
   <tr>
-    <td colspan="9"></td>
+    <td colspan="9">
+      <ol *ngIf="responsePlan.vulnerableGroups">
+        <li *ngFor="let group of responsePlan.vulnerableGroups">{{group}}</li>
+      </ol>
+    </td>
   </tr>
 
   <tr>
@@ -351,13 +366,7 @@
   </tr>
 
   <tr>
-    <td colspan="9">
-      <ul>
-        <li></li>
-        <li></li>
-        <li></li>
-      </ul>
-    </td>
+    <td colspan="9"></td>
   </tr>
 
   <tr>
@@ -398,15 +407,19 @@
   </tr>
 
   <tr>
-    <td colspan="6" style="background-color: lightgrey;"><p>1. Do you have any <span style="font-weight: bold;">photographic material</span> from the project to share?</p></td>
-    <td colspan="2" style="background-color: lightgrey; text-align: center;"><p>Yes</p></td>
+    <td colspan="5" style="background-color: lightgrey;"><p>1. Do you have any <span style="font-weight: bold;">photographic material</span> from the project to share?</p></td>
+    <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>Yes</p></td>
+    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
     <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>No</p></td>
+    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographic && responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
   </tr>
 
   <tr>
-    <td colspan="6" style="background-color: lightgrey;"><p>2. Do you have any <span style="font-weight: bold;">video material</span> from the project to share?</p></td>
-    <td colspan="2" style="background-color: lightgrey; text-align: center;"><p>Yes</p></td>
+    <td colspan="5" style="background-color: lightgrey;"><p>2. Do you have any <span style="font-weight: bold;">video material</span> from the project to share?</p></td>
+    <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>Yes</p></td>
+    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
     <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>No</p></td>
+    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.video && responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
   </tr>
 
   <tr>

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {RxHelper} from "../../utils/RxHelper";
+// import {RxHelper} from "../../utils/RxHelper";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Department, ActionType, ActionLevel, HazardCategory, DurationType, AlertMessageType} from "../../utils/Enums";
@@ -9,8 +9,10 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AlertMessageModel} from '../../model/alert-message.model';
 import {PageControlService} from "../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
+import {Observable, Subject} from "rxjs";
+
+declare var jQuery:any;
 @Component({
     selector: 'app-preparedness',
     templateUrl: './create-edit.component.html',
@@ -19,46 +21,51 @@ declare var jQuery: any;
 export class CreateEditPreparednessComponent implements OnInit {
 
     private alertMessageType = AlertMessageType;
-    private alertMessage: AlertMessageModel = null;
+    private alertMessage:AlertMessageModel = null;
 
-    private uid: string;
+    private uid:string;
 
-    private actionID: string;
-    private modalID: string;
+    private actionID:string;
+    private modalID:string;
+    private departmentsPath:string;
+    private departments:Observable<any>;
+    private newDepartmentErrorInactive:boolean = true;
 
-    private actionSelected: any = {};
-    private copyActionData: any = {};
 
-    private countryID: string;
-    private agencyID: string;
-    private actionData: Action;
-    private dueDate: any;
+    private actionSelected:any = {};
+    private copyActionData:any = {};
 
-    private frequencyDefaultSettings: any = {};
-    private allowedFrequencyValue: any = [];
+    private countryID:string;
+    private agencyID:string;
+    private actionData:Action;
+    private dueDate:any;
 
-    private level: number;
-    private frequencyActive: boolean = false;
-    private usersForAssign: any = [];
+    private frequencyDefaultSettings:any = {};
+    private allowedFrequencyValue:any = [];
+
+    private level:number;
+    private frequencyActive:boolean = false;
+    private usersForAssign:any = [];
     private frequency = new Array(100);
 
     private department = Constants.DEPARTMENT;
-    private departmentList: number[] = [Department.CHS, Department.Finance, Department.HR, Department.Logistics, Department.Programme];
+    private departmentList:any = [];
+    private successMessage:string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
     private actionLevel = Constants.ACTION_LEVEL;
-    private actionLevelList: number[] = [ActionLevel.MPA, ActionLevel.APA];
+    private actionLevelList:number[] = [ActionLevel.MPA, ActionLevel.APA];
 
     private hazardCategory = Constants.HAZARD_CATEGORY;
-    private hazardCategoryList: number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
+    private hazardCategoryList:number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
     private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
     private durationType = Constants.DURATION_TYPE;
-    private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
-    private allowedDurationList: number[] = [];
+    private durationTypeList:number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
+    private allowedDurationList:number[] = [];
 
     private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private subscriptions: RxHelper, private router: Router, private storage: LocalStorageService) {
+    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
         this.actionData = new Action();
         this.setDefaultActionDataValue();
         /* if selected generic action */
@@ -82,15 +89,12 @@ export class CreateEditPreparednessComponent implements OnInit {
             this.setDefaultActionDataValue();
         }
 
-        let subscription = this.route.params.subscribe((params: Params) => {
+        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params:Params) => {
             if (params['id']) {
                 /* TODO remove hardcode actionID */
                 this.actionID = params['id'];
-//                this.actionID = '-KjwQyhlExYqstjk75GD';
             }
         });
-        this.subscriptions.add(subscription);
-
     }
 
     processSave() {
@@ -105,6 +109,17 @@ export class CreateEditPreparednessComponent implements OnInit {
       });
     }
 
+    _departmentList() {
+        this.af.database.object(this.departmentsPath).takeUntil(this.ngUnsubscribe).subscribe((departments:any) => {
+            this.departmentList = [];
+            for (let department in departments) {
+                if (department != '$key' && department != '$exists') {
+                    this.departmentList.push(department)
+                }
+            }
+        });
+    }
+
     setDefaultActionDataValue() {
         this.actionData.type = 2;
         this.actionData.isComplete = false;
@@ -116,11 +131,10 @@ export class CreateEditPreparednessComponent implements OnInit {
         }
     }
 
-    saveAction(isValid: boolean) {
+    saveAction(isValid:boolean) {
         if (!isValid || !this._isValidForm()) {
             return false;
         }
-
         if (!this.actionID) {
             if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
                 this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
@@ -131,18 +145,14 @@ export class CreateEditPreparednessComponent implements OnInit {
         if (typeof (this.actionData.level) == 'undefined') {
             this.actionData.level = this.level;
         }
-
         if (!this.actionData.level) {
             this._defaultHazardCategoryValue();
         }
-
         if (!this.frequencyActive) {
             this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
             this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
         }
-
-
-        let dataToSave = Object.assign({}, this.actionData)
+        let dataToSave = Object.assign({}, this.actionData);
         dataToSave.requireDoc = (dataToSave.requireDoc) ? true : false;
 
         if (!this.actionID) {
@@ -151,89 +161,84 @@ export class CreateEditPreparednessComponent implements OnInit {
                 .then(() => {
                     this.backButtonAction();
                     console.log('success save data');
-                }).catch((error: any) => {
-                    console.log(error, 'You do not have access!')
-                });
+                }).catch((error:any) => {
+                console.log(error, 'You do not have access!')
+            });
         } else {
-            delete dataToSave["$key"];
-            delete dataToSave["$exists"];
-            console.log(dataToSave);
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
                 .set(dataToSave)
                 .then(() => {
                     this.backButtonAction();
                     console.log('success update');
-                }).catch((error: any) => {
-                    console.log(error, 'You do not have access!')
-                });
+                }).catch((error:any) => {
+                console.log(error, 'You do not have access!')
+            });
         }
-
     }
 
     processPage() {
         this.getCountryID().then(() => {
             this.getUsersForAssign();
             this.getAgencyID().then(() => {
-                this.getDepartments();
                 this._getPreparednessFrequency().then(() => {
                     if (this.actionID) {
                         this.getActionData().then(() => {
-                            console.log('test');
                         });
                     }
-                    console.log('1111111111111111111111');
                     this._parseSelectParams();
-                    console.log('2222222222222222222');
                     this._frequencyIsActive();
                 });
             });
         });
     }
 
-    selectHazardCategory(hazardKey: number, event: any) {
+    selectHazardCategory(hazardKey:number, event:any) {
         var val = event.target.checked ? event.target.checked : false;
         this.actionData.assignHazard[hazardKey] = val;
     }
 
-    selectAllHazard(event: any) {
+    selectAllHazard(event:any) {
         var value = event.target.checked ? event.target.checked : false;
         this.actionData.assignHazard.forEach((val, key) => {
             this.actionData.assignHazard[key] = value;
         });
     }
 
-    selectDepartment(event: any) {
+    selectDepartment(event:any) {
         this.actionData.department = event.target.value;
+        if (event.target.value == '+ Add a department') {
+            this.modalID = 'add_department';
+            jQuery("#" + this.modalID).modal("show");
+        }
         return true;
     }
 
-    selectActionLevel(levelKey: number) {
+    selectActionLevel(levelKey:number) {
         this.actionData.level = levelKey;
         return true;
     }
 
-    selectDate(date: any) {
+    selectDate(date:any) {
         var dueDateTimestamp = this._convertDateToTimestamp(date);
         this.actionData.dueDate = dueDateTimestamp;
         return true;
     }
 
-    selectFrequencyBase(event: any) {
+    selectFrequencyBase(event:any) {
         var frequencyBase = event.target.value;
         this.actionData.frequencyBase = parseInt(frequencyBase);
-
         if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
             this.frequency = new Array(this.allowedFrequencyValue[frequencyBase]);
         }
         return true;
     }
 
-    selectFrequency(event: any) {
+    selectFrequency(event:any) {
         this.actionData.frequencyValue = parseInt(event.target.value);
         return;
     }
 
-    selectAssignUser(event: any) {
+    selectAssignUser(event:any) {
         var selectedUser = event.target.value ? event.target.value : "";
         if (!selectedUser) {
             delete this.actionData.asignee;
@@ -243,7 +248,7 @@ export class CreateEditPreparednessComponent implements OnInit {
         return true;
     }
 
-    checkTypeOf(departmentKey: any) {
+    checkTypeOf(departmentKey:any) {
         if (typeof (departmentKey) == 'undefined') {
             return false;
         } else {
@@ -253,55 +258,44 @@ export class CreateEditPreparednessComponent implements OnInit {
 
     getUsersForAssign() {
         /* TODO if user ERT OR Partner, assign only me */
-        let subscription = this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+        this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((data:any) => {
             for (let userID in data) {
-                this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user:ModelUserPublic) => {
                     var userToPush = {userID: userID, firstName: user.firstName};
                     this.usersForAssign.push(userToPush);
                 });
             }
         });
-        this.subscriptions.add(subscription);
     }
 
-    frequencyIsActive(event: any) {
+    frequencyIsActive(event:any) {
         this.frequencyActive = event.target.checked;
         return true;
     }
 
     getCountryID() {
         let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').subscribe((countryID: any) => {
+            this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID:any) => {
                 this.countryID = countryID.$value ? countryID.$value : "";
-                console.log('1111111111111111111111');
-                console.log(this.uid);
-                console.log(this.countryID);
-
                 res(true);
             });
-            this.subscriptions.add(subscription);
         });
         return promise;
     }
 
     getAgencyID() {
         let promise = new Promise((res, rej) => {
-
-
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').subscribe((agencyIDs: any) => {
+            this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe).subscribe((agencyIDs:any) => {
                 this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
+                this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments/';
+                this._departmentList();
                 res(true);
             });
-            this.subscriptions.add(subscription);
         });
         return promise;
     }
 
     copyAction() {
-
-        delete this.actionData["$key"];
-        delete this.actionData["$exists"];
-
         /* added route for create action page */
         this.storage.set('copyActionData', this.actionData);
         this.router.navigate(["/preparedness/create-edit-preparedness"]);
@@ -312,55 +306,30 @@ export class CreateEditPreparednessComponent implements OnInit {
 
         this.closeModal();
         this.actionData.isActive = false;
-
-        delete this.actionData["$key"];
-        delete this.actionData["$exists"];
-
         this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
             .set(this.actionData)
             .then(() => {
                 console.log('success update archive');
-            }).catch((error: any) => {
-                console.log(error, 'You do not have access!')
-            });
-
+            }).catch((error:any) => {
+            console.log(error, 'You do not have access!')
+        });
     }
 
     getActionData() {
         let promise = new Promise((res, rej) => {
 
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).subscribe((action: Action) => {
+            this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).takeUntil(this.ngUnsubscribe).subscribe((action:Action) => {
                 this.actionData = action;
                 this.actionData.requireDoc = action.requireDoc ? 1 : 2;
-
                 this.level = action.level;
                 this.dueDate = this._convertTimestampToDate(action.dueDate);
                 res(true);
             });
-            this.subscriptions.add(subscription);
         });
         return promise;
     }
 
-    private getDepartments() {
-        console.log(Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments');
-        let promise = new Promise((res, rej) => {
-
-            let subscription = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments').subscribe((departments) => {
-                this.departmentList = departments.map(department => {
-                    return department.$key;
-                });
-
-                console.log(this.departmentList);
-
-                res(true);
-            });
-            this.subscriptions.add(subscription);
-        });
-        return promise;
-    }
-
-    showActionConfirm(modalID: string) {
+    showActionConfirm(modalID:string) {
         this.modalID = modalID;
         jQuery("#" + this.modalID).modal("show");
     }
@@ -382,11 +351,9 @@ export class CreateEditPreparednessComponent implements OnInit {
     }
 
     _parseSelectParams() {
-
         this.allowedFrequencyValue = [];
-
         if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
-            let multipliers: any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
+            let multipliers:any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
             multipliers[this.frequencyDefaultSettings.type].forEach((val, key) => {
                 var result = Math.trunc(val * this.frequencyDefaultSettings.value);
                 if (result) {
@@ -394,18 +361,26 @@ export class CreateEditPreparednessComponent implements OnInit {
                     this.allowedFrequencyValue.push(Math.min(100, result));
                 }
             });
-
             var frequencyBaseKey = this.actionID ? this.actionData.frequencyBase : 0;
             this.frequency = new Array(this.allowedFrequencyValue[frequencyBaseKey]);
         } else {
             this.allowedDurationList = this.durationTypeList;
         }
+    }
 
+    createNewDepartment(newDepartment) {
+        if (newDepartment.value != '') {
+            let key = newDepartment.value;
+            let saveDepartment = {[key]: false};
+            this.af.database.object(this.departmentsPath).update(saveDepartment);
+            this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS', AlertMessageType.Success);
+        }
+        this.closeModal();
     }
 
     _getPreparednessFrequency() {
         let promise = new Promise((res, rej) => {
-            let subscription = this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + '/' + this.countryID + '/clockSettings/preparedness').subscribe((frequencySetting: any) => {
+            this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + '/' + this.countryID + '/clockSettings/preparedness').takeUntil(this.ngUnsubscribe).subscribe((frequencySetting:any) => {
                 if (typeof (frequencySetting.durationType) != 'undefined' && typeof (frequencySetting.value) != 'undefined') {
                     this.frequencyDefaultSettings.type = frequencySetting.durationType;
                     this.frequencyDefaultSettings.value = frequencySetting.value;
@@ -413,17 +388,16 @@ export class CreateEditPreparednessComponent implements OnInit {
                 res(true);
             });
 
-            this.subscriptions.add(subscription);
 
         });
         return promise;
     }
 
-    _convertDateToTimestamp(date: any) {
+    _convertDateToTimestamp(date:any) {
         return date.getTime();
     }
 
-    _convertTimestampToDate(timestamp: number) {
+    _convertTimestampToDate(timestamp:number) {
         return new Date(timestamp);
     }
 

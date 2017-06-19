@@ -26,7 +26,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private countryId: string;
-  private agencyId: string;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -63,16 +62,14 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
         this.countryId = countryAdminUser.countryId;
-        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
 
-        this._stockService.getStockCapacities(this.agencyId, this.countryId).subscribe(stockCapacities => {
-            this.stockCapacitiesIN = stockCapacities.filter(x => x.type == StockType.Country);
-            this.stockCapacitiesOUT = stockCapacities.filter(x => x.type == StockType.External);
+        this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
+            this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
+            this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
 
             // Get notes
             stockCapacities.forEach(stockCapacity => {
               const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{agencyId}', this.agencyId)
                                                     .replace('{countryId}', this.countryId)
                                                     .replace('{id}', stockCapacity.id);
               this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
@@ -137,7 +134,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
     if(this.validateNote(note))
     {
       const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{agencyId}', this.agencyId)
                                                     .replace('{countryId}', this.countryId)
                                                     .replace('{id}', stockCapacity.id);
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
@@ -159,7 +155,6 @@ editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     if(this.validateNote(note))
     {
       const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{agencyId}', this.agencyId)
                                                     .replace('{countryId}', this.countryId)
                                                     .replace('{id}', stockCapacity.id);
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
@@ -183,7 +178,6 @@ editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     this.closeDeleteModal();
 
     const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{agencyId}', this.agencyId)
                                                     .replace('{countryId}', this.countryId)
                                                     .replace('{id}', stockCapacity.id);
 
