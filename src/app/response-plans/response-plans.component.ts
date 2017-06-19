@@ -21,6 +21,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   @Input() isViewing: boolean;
   @Input() countryIdForViewing: string;
+  @Input() agencyIdForViewing: string;
 
   private isGlobalDirectorMap = new Map<string, boolean>();
 
@@ -50,15 +51,21 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
-        console.log("isViewing: "+this.isViewing);
-        console.log("received country id: "+this.countryIdForViewing);
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.userType = userType;
-            let userPath = Constants.USER_PATHS[userType];
-            this.getSystemAgencyCountryIds(userPath);
-          });
+        console.log("isViewing: " + this.isViewing);
+        console.log("received country id: " + this.countryIdForViewing);
+        if (this.isViewing) {
+          this.countryId = this.countryIdForViewing;
+          this.agencyId = this.agencyIdForViewing;
+          this.getResponsePlans(this.countryId);
+        } else {
+          this.userService.getUserType(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(userType => {
+              this.userType = userType;
+              let userPath = Constants.USER_PATHS[userType];
+              this.getSystemAgencyCountryIds(userPath);
+            });
+        }
       } else {
         this.navigateToLogin();
       }
@@ -154,8 +161,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('response-plans/create-edit-response-plan');
   }
 
-  viewResponsePlan(plan) {
-    this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
+  viewResponsePlan(plan, isViewing) {
+    isViewing ? this.router.navigate(["/response-plans/view-plan", {
+      "id": plan.$key,
+      "isViewing": isViewing,
+      "countryId": this.countryIdForViewing,
+      "agencyId": this.agencyId
+    }]) : this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
   }
 
   editResponsePlan(responsePlan) {

@@ -9,7 +9,6 @@ import {Subject} from "rxjs/Subject";
 })
 export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
-
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private menuTab = "officeProfile";
@@ -17,6 +16,8 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
   private countryId: string;
   private isViewing: boolean;
+  private agencyId: string;
+  private from: string;
 
   constructor(private route: ActivatedRoute) {
     this.tabMap.set("officeProfile", true);
@@ -32,9 +33,15 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
         }
-
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
+        }
+        if (params["from"]) {
+          this.from = params["from"];
+          this.menuSelection(this.from);
         }
       });
   }
