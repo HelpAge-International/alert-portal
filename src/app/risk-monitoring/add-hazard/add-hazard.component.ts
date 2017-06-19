@@ -10,6 +10,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {InformHolder, InformService} from "../../services/inform.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
+import {Http} from "@angular/http";
 
 declare var jQuery: any;
 
@@ -81,12 +82,12 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
+  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService, private http:Http) {
     this.hazardData.seasons = [];
     this.initHazardData();
 
     // Inform Handler for the top 3 items
-    this.informHandler = new InformService();
+    this.informHandler = new InformService(http);
   }
 
   ngOnInit() {
