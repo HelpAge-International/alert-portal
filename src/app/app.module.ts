@@ -42,7 +42,6 @@ import {DocumentsComponent} from "./agency-admin/settings/documents/documents.co
 import {NetworkComponent} from "./agency-admin/settings/network/network.component";
 import {CreateEditNetworkComponent} from "./agency-admin/settings/network/create-edit-network/create-edit-network.component";
 import {NotificationComponent} from "./agency-admin/settings/notification/notification.component";
-import {CreateEditNotificationComponent} from "./agency-admin/settings/notification/create-edit-notification/create-edit-notification.component";
 import {StaffComponent} from "./agency-admin/staff/staff.component";
 import {CreateEditStaffComponent} from "./agency-admin/staff/create-edit-staff/create-edit-staff.component";
 import {AgencyMpaComponent} from "./agency-admin/agency-mpa/agency-mpa.component";
@@ -150,12 +149,19 @@ import {ReplacePipe} from "./utils/pipes/replace.pipe";
 import {CountryOfficeStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
 import {StockService} from "./services/stock.service";
 import {CountryOfficeAddEditStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {CountryOfficeContactsComponent} from "./country-admin/country-office-profile/contacts/contacts.component";
+import {CountryOfficeEditOfficeDetailsComponent} from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
+import {CountryOfficeAddEditPointOfContactComponent} from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
+import {ContactService} from "./services/contact.service";
 import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/project-narrative.component";
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
+import {DonorChangePasswordComponent} from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
+import {NewDonorPasswordComponent} from './donor-module/new-donor-password/new-donor-password.component';
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 
 export function HttpLoaderFactory(http: Http) {
@@ -215,6 +221,9 @@ const firebaseAuthConfig = {
         CountryOfficeAddEditCoordinationComponent,
         CountryOfficeStockCapacityComponent,
         CountryOfficeAddEditStockCapacityComponent,
+        CountryOfficeContactsComponent,
+        CountryOfficeEditOfficeDetailsComponent,
+        CountryOfficeAddEditPointOfContactComponent,
         AgencyAdminMenuComponent,
         DepartmentComponent,
         SkillsComponent,
@@ -224,7 +233,6 @@ const firebaseAuthConfig = {
         NetworkComponent,
         CreateEditNetworkComponent,
         NotificationComponent,
-        CreateEditNotificationComponent,
         StaffComponent,
         CreateEditStaffComponent,
         AgencyMpaComponent,
@@ -312,6 +320,9 @@ const firebaseAuthConfig = {
         ProjectReportComponent,
         CountryOfficeEditProgrammeComponent,
         AddEditMappingProgrammeComponent,
+        DonorAccountSettingsComponent,
+        DonorChangePasswordComponent,
+        NewDonorPasswordComponent,
         CountryOfficeCapacityComponent
     ],
     imports: [
@@ -349,7 +360,8 @@ const firebaseAuthConfig = {
         EquipmentService,
         CoordinationArrangementService,
         AgencyService,
-        StockService],
+        StockService,
+        ContactService],
     bootstrap: [AppComponent]
 })
 

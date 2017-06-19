@@ -41,7 +41,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
             this.ResponsePlanSectionSettings.map(sectionSetting => {
               this.sections[sectionSetting] = {$key: sectionSetting, $value: false};
             });
-            
+
             _.map(section => {
               this.sections[section.$key] = section;
             });
@@ -116,7 +116,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
-          this.alertMessage = "Response Plan Settings succesfully saved!"
+          this.alertMessage = "AGENCY_ADMIN.SETTINGS.SAVE_SUCCESS_RES_PLAN_SETTINGS";
         }
       })
       .catch(err => console.log(err, 'You do not have access!'));
@@ -136,7 +136,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
-          this.alertMessage = "Response Plan Settings succesfully saved!"
+          this.alertMessage = "AGENCY_ADMIN.SETTINGS.SAVE_SUCCESS_RES_PLAN_SETTINGS";
         }
       })
       .catch(err => console.log(err, 'You do not have access!'));

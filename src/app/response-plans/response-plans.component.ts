@@ -84,6 +84,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(plans => {
         this.activePlans = plans;
+        console.log("e2fe");
+        console.log(this.activePlans);
         for (let x of this.activePlans) {
           this.getNotes(x);
         }
@@ -345,7 +347,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         }
       });
     }
-  }   
+  }
 
   getNotes(plan) {
     if (plan.status == ApprovalStatus.NeedsReviewing) {

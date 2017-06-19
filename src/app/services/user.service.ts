@@ -317,6 +317,25 @@ export class UserService {
     return staffListSubscription;
   }
 
+  getStaff(countryId: string, staffId: string): Observable<ModelStaff> {
+    if(!countryId || !staffId)
+    {
+      return;
+    }
+
+    const staffSubscription = this.af.database.object(Constants.APP_STATUS + '/staff/' + countryId + '/' + staffId)
+      .map(item => {
+
+        let staff = new ModelStaff();
+        staff.mapFromObject(item);
+        staff.id = item.$key;
+     
+        return staff;
+      });
+
+    return staffSubscription;
+  }
+
   //return current user type enum number
   getUserType(uid: string): Observable<any> {
 

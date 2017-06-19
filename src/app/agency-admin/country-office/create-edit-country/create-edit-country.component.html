@@ -7,8 +7,8 @@
   <div class="Full-page__wrap--inner">
 
     <div class="Header-title__wrap">
-      <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_NEW_COUNTRY_OFFICE" | translate | uppercase}}</h1>
-      <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.COUNTRY_OFFICES.EDIT_COUNTRY_OFFICE" | translate | uppercase}}</h1>
+      <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_NEW_COUNTRY_OFFICE" | translate}}</h1>
+      <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.COUNTRY_OFFICES.EDIT_COUNTRY_OFFICE" | translate}}</h1>
     </div>
 
     <h3 class="System-admin__Sub-title--spaced">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRY_OFFICE_DETAILS" | translate}}</h3>
@@ -96,6 +96,7 @@
             <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
             <div>
               <select class="form-control" id="Country" [(ngModel)]="countryAdminCountry" name="countryAdminCountry">
+                <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                 <option *ngFor="let country of countrySelections" [value]="country">{{countryNames[country] |
                   translate}}
                 </option>

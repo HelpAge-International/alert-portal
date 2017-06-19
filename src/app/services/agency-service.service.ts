@@ -3,6 +3,7 @@ import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
+import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
 import {Observable} from "rxjs/Observable";
 
 @Injectable()
@@ -84,6 +85,15 @@ export class AgencyService {
           });
       });
     return displayList;
+  }
+
+  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any>{
+    if(!agencyId || !countryId || !countryOfficeAddress)
+    {
+      return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');
+    }
+    
+    return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
   }
 
   unSubscribeNow() {

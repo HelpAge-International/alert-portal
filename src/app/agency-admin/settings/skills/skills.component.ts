@@ -100,7 +100,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
           if (!this.alertShow) {
             this.alertSuccess = true;
             this.alertShow = true;
-            this.alertMessage = "Skills succesfully removed!"
+            this.alertMessage = "AGENCY_ADMIN.SETTINGS.SKILLS.SKILLS_REMOVED";
           }
         })
         .catch(err => console.log(err, 'You do not have access!'));
@@ -134,7 +134,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
           if (!this.alertShow) {
             this.alertSuccess = true;
             this.alertShow = true;
-            this.alertMessage = "Skills succesfully saved!"
+            this.alertMessage = "AGENCY_ADMIN.SETTINGS.SKILLS.SKILLS_SAVED";
           }
         })
         .catch(err => console.log(err, 'You do not have access!'));
@@ -163,7 +163,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
           if (!this.alertShow) {
             this.alertSuccess = true;
             this.alertShow = true;
-            this.alertMessage = "Skill succesfully added!"
+            this.alertMessage = "AGENCY_ADMIN.SETTINGS.SKILLS.SKILL_NEW";
           }
         })
         .catch(err => console.log(err, 'You do not have access!'));

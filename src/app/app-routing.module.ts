@@ -97,12 +97,18 @@ import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-of
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
 import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-view.component";
-import { CountryOfficeAddEditCoordinationComponent } from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
-import { CountryOfficeStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
-import { CountryOfficeAddEditStockCapacityComponent } from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {CountryOfficeAddEditCoordinationComponent} from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
+import {CountryOfficeStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
+import {CountryOfficeAddEditStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity/add-edit-stock-capacity.component";
+import {CountryOfficeContactsComponent} from "./country-admin/country-office-profile/contacts/contacts.component";
+import {CountryOfficeEditOfficeDetailsComponent} from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
+import {CountryOfficeAddEditPointOfContactComponent} from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {DonorAccountSettingsComponent} from "./donor-module/donor-account-settings/donor-account-settings.component";
+import {DonorChangePasswordComponent} from "./donor-module/donor-account-settings/donor-change-password/donor-change-password.component";
+import {NewDonorPasswordComponent} from "./donor-module/new-donor-password/new-donor-password.component";
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 
 const routes: Routes = [
@@ -116,63 +122,63 @@ const routes: Routes = [
     {path: 'reset-password', component: ResetPasswordComponent},
     {path: 'login/:emailEntered', component: LoginComponent},
 
-  /**
-   * System admin
-   */
-  {path: 'system-admin/min-prep/create', component: CreateActionComponent},
-  {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
-  {path: 'system-admin/min-prep', component: MinPrepComponent},
-  {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
-  {path: 'system-admin/mpa/create/:id', component: CreateMpaActionComponent},
-  {path: 'system-admin/mpa', component: MpaComponent},
-  {path: 'system-admin/add-agency', component: AddAgencyComponent},
-  {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
-  {path: 'system-admin/messages/create', component: MessagesCreateComponent},
-  {path: 'system-admin/messages', component: MessagesComponent},
-  {path: 'system-admin/agency', component: SystemAdminComponent},
-  {path: 'system-admin/account-settings', component: AccountSettingsComponent},
-  {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
-  {path: 'system-admin/network', component: GlobalNetworksComponent},
-  {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
-  {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
-  {path: 'system-admin/system-settings', component: SystemSettingsComponent},
-  {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
-  {
-    path: 'system-admin/system-settings/system-settings-response-plans',
-    component: SystemSettingsResponsePlansComponent
-  },
+    /**
+     * System admin
+     */
+    {path: 'system-admin/min-prep/create', component: CreateActionComponent},
+    {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
+    {path: 'system-admin/min-prep', component: MinPrepComponent},
+    {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
+    {path: 'system-admin/mpa/create/:id', component: CreateMpaActionComponent},
+    {path: 'system-admin/mpa', component: MpaComponent},
+    {path: 'system-admin/add-agency', component: AddAgencyComponent},
+    {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
+    {path: 'system-admin/messages/create', component: MessagesCreateComponent},
+    {path: 'system-admin/messages', component: MessagesComponent},
+    {path: 'system-admin/agency', component: SystemAdminComponent},
+    {path: 'system-admin/account-settings', component: AccountSettingsComponent},
+    {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
+    {path: 'system-admin/network', component: GlobalNetworksComponent},
+    {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
+    {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
+    {path: 'system-admin/system-settings', component: SystemSettingsComponent},
+    {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
+    {
+        path: 'system-admin/system-settings/system-settings-response-plans',
+        component: SystemSettingsResponsePlansComponent
+    },
 
-  /**
-   * Agency admin
-   */
-  {path: 'agency-admin/new-agency/new-agency-password', component: NewAgencyPasswordComponent},
-  {path: 'agency-admin/new-agency/new-agency-details', component: NewAgencyDetailsComponent},
-  {path: 'agency-admin/country-office', component: CountryOfficeComponent},
-  {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
-  {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
-  {path: 'agency-admin/country-office/create-edit-region:id', component: CreateEditRegionComponent},
-  {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
-  {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
-  {path: 'agency-admin/agency-mpa/add-generic-action', component: AddGenericActionComponent},
-  {path: 'agency-admin/country-office/create-edit-country/:id', component: CreateEditCountryComponent},
-  {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
-  {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
-  {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
-  {path: 'agency-admin/settings/departments', component: DepartmentComponent},
-  {path: 'agency-admin/settings/skills', component: SkillsComponent},
-  {path: 'agency-admin/settings/modules', component: ModulesComponent},
-  {path: 'agency-admin/settings/clock-settings', component: ClockSettingsComponent},
-  {path: 'agency-admin/settings/response-plans', component: AgencyAdminSettingsResponsePlanComponent},
-  {path: 'agency-admin/settings/documents', component: DocumentsComponent},
-  {path: 'agency-admin/settings/notifications', component: NotificationComponent},
-  {path: 'agency-admin/settings', redirectTo: 'agency-admin/settings/departments', pathMatch: 'full'},
-  {path: 'agency-admin/staff', component: StaffComponent},
-  {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
-  {path: 'agency-admin/staff/create-edit-staff:id', component: CreateEditStaffComponent},
-  {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
-  {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
-  {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
-  {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
+    /**
+     * Agency admin
+     */
+    {path: 'agency-admin/new-agency/new-agency-password', component: NewAgencyPasswordComponent},
+    {path: 'agency-admin/new-agency/new-agency-details', component: NewAgencyDetailsComponent},
+    {path: 'agency-admin/country-office', component: CountryOfficeComponent},
+    {path: 'agency-admin/country-office/create-edit-country', component: CreateEditCountryComponent},
+    {path: 'agency-admin/country-office/create-edit-region', component: CreateEditRegionComponent},
+    {path: 'agency-admin/country-office/create-edit-region:id', component: CreateEditRegionComponent},
+    {path: 'agency-admin/agency-mpa', component: AgencyMpaComponent},
+    {path: 'agency-admin/agency-mpa/create-edit-mpa', component: CreateEditMpaComponent},
+    {path: 'agency-admin/agency-mpa/add-generic-action', component: AddGenericActionComponent},
+    {path: 'agency-admin/country-office/create-edit-country/:id', component: CreateEditCountryComponent},
+    {path: 'agency-admin/agency-messages/create-edit-message', component: CreateEditMessageComponent},
+    {path: 'agency-admin/agency-messages/create-edit-message/:id', component: CreateEditMessageComponent},
+    {path: 'agency-admin/agency-messages', component: AgencyMessagesComponent},
+    {path: 'agency-admin/settings/departments', component: DepartmentComponent},
+    {path: 'agency-admin/settings/skills', component: SkillsComponent},
+    {path: 'agency-admin/settings/modules', component: ModulesComponent},
+    {path: 'agency-admin/settings/clock-settings', component: ClockSettingsComponent},
+    {path: 'agency-admin/settings/response-plans', component: AgencyAdminSettingsResponsePlanComponent},
+    {path: 'agency-admin/settings/documents', component: DocumentsComponent},
+    {path: 'agency-admin/settings/notifications', component: NotificationComponent},
+    {path: 'agency-admin/settings', redirectTo: 'agency-admin/settings/departments', pathMatch: 'full'},
+    {path: 'agency-admin/staff', component: StaffComponent},
+    {path: 'agency-admin/staff/create-edit-staff', component: CreateEditStaffComponent},
+    {path: 'agency-admin/staff/create-edit-staff:id', component: CreateEditStaffComponent},
+    {path: 'agency-admin/agency-account-settings', component: AgencyAccountSettingsComponent},
+    {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
+    {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
+    {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
 
     /**
      * Country admin
@@ -202,12 +208,6 @@ const routes: Routes = [
     {path: 'country-admin/country-office-profile', component: CountryOfficeProfileComponent},
     {path: 'country-admin/country-office-profile/partners', component: CountryOfficePartnersComponent},
     {path: 'country-admin/country-office-profile/equipment', component: CountryOfficeEquipmentComponent},
-    {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
-    {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
-    {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
-    {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
-    {path: 'country-admin/country-office-profile/office-capacity', component: CountryOfficeCapacityComponent},
-
     {
         path: 'country-admin/country-office-profile/equipment/add-edit-equipment',
         component: CountryOfficeAddEditEquipmentComponent
@@ -217,95 +217,109 @@ const routes: Routes = [
         component: CountryOfficeAddEditSurgeEquipmentComponent
     },
     {path: 'country-admin/country-office-profile/coordination', component: CountryOfficeCoordinationComponent},
+    {path: 'country-admin/country-office-profile/coordination/add-edit-coordination', component: CountryOfficeAddEditCoordinationComponent},
+    {path: 'country-admin/country-office-profile/stock-capacity', component: CountryOfficeStockCapacityComponent},
+    {path: 'country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity', component: CountryOfficeAddEditStockCapacityComponent},
+    {path: 'country-admin/country-office-profile/contacts', component: CountryOfficeContactsComponent},
+    {path: 'country-admin/country-office-profile/contacts/edit-office-details', component: CountryOfficeEditOfficeDetailsComponent},
+    {path: 'country-admin/country-office-profile/contacts/add-edit-point-of-contact', component: CountryOfficeAddEditPointOfContactComponent},
     {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
     {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
+    {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
+    {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
+    {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
+    {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
+    {path: 'country-admin/country-office-profile/office-capacity', component: CountryOfficeCapacityComponent},
 
-  /**
-   * Dashboard
-   */
-  {path: 'dashboard', component: DashboardComponent},
-  {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
-  {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
-  {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
-  {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
-  {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
-  {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+    /**
+     * Dashboard
+     */
+    {path: 'dashboard', component: DashboardComponent},
+    {path: 'dashboard/dashboard-seasonal-calendar', component: DashboardSeasonalCalendarComponent},
+    {path: 'dashboard/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
+    {path: 'dashboard/dashboard-update-alert-level/:id/:countryId', component: DashboardUpdateAlertLevelComponent},
+    {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
+    {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
+    {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
 
 
-  /**
-   * Risk Monitoring
-   */
-  {path: 'risk-monitoring', component: RiskMonitoringComponent},
-  {path: 'risk-monitoring/create-alert', component: CreateAlertRiskMonitoringComponent},
-  {path: 'risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorRiskMonitoringComponent},
-  {path: 'risk-monitoring/add-indicator/:hazardID', component: AddIndicatorRiskMonitoringComponent},
-  {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
+    /**
+     * Risk Monitoring
+     */
+    {path: 'risk-monitoring', component: RiskMonitoringComponent},
+    {path: 'risk-monitoring/create-alert', component: CreateAlertRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-indicator/:hazardID', component: AddIndicatorRiskMonitoringComponent},
+    {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
 
-  /**
-   * Preparedness
-   */
-  {path: 'preparedness/minimum/:countryId/:agencyId', component: MinimumPreparednessComponent},
-  {path: 'preparedness/minimum/:countryId', component: MinimumPreparednessComponent},
-  {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
-  {path: 'preparedness/advanced/:countryId/:agencyId', component: AdvancedPreparednessComponent},
-  {path: 'preparedness/advanced/:countryId', component: AdvancedPreparednessComponent},
-  {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
-  {path: 'preparedness/budget', component: BudgetPreparednessComponent},
-  {path: 'preparedness/select', component: SelectPreparednessComponent},
-  {path: 'preparedness/create-edit-preparedness', component: CreateEditPreparednessComponent},
-  {path: 'preparedness/create-edit-preparedness/:id', component: CreateEditPreparednessComponent},
-  {path: 'preparedness', component: PreparednessComponent},
+    /**
+     * Preparedness
+     */
+    {path: 'preparedness/minimum/:countryId/:agencyId', component: MinimumPreparednessComponent},
+    {path: 'preparedness/minimum/:countryId', component: MinimumPreparednessComponent},
+    {path: 'preparedness/minimum', component: MinimumPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId/:agencyId', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/advanced/:countryId', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/advanced', component: AdvancedPreparednessComponent},
+    {path: 'preparedness/budget', component: BudgetPreparednessComponent},
+    {path: 'preparedness/select', component: SelectPreparednessComponent},
+    {path: 'preparedness/create-edit-preparedness', component: CreateEditPreparednessComponent},
+    {path: 'preparedness/create-edit-preparedness/:id', component: CreateEditPreparednessComponent},
+    {path: 'preparedness', component: PreparednessComponent},
 
-  /**
-   * Response Plans
-   */
-  {path: 'response-plans', component: ResponsePlansComponent},
-  {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
-  {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
-  {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
-  {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
-  {path: 'response-plans/view-response-plan', component: ViewResponsePlanComponent},
-  {path: 'response-plans/view-response-plan/:id', component: ViewResponsePlanComponent},
-  {path: 'response-plans/view-plan', component: ViewPlanComponent},
-  {path: 'response-plans/view-plan/:id', component: ViewPlanComponent},
-  {path: 'response-plans/external-partner-response-plan/:countryID/:id/:token', component: ExternalPartnerResponsePlan},
+    /**
+     * Response Plans
+     */
+    {path: 'response-plans', component: ResponsePlansComponent},
+    {path: 'response-plans/create-edit-response-plan', component: CreateEditResponsePlanComponent},
+    {path: 'response-plans/create-edit-response-plan/:id', component: CreateEditResponsePlanComponent},
+    {path: 'response-plans/add-partner-organisation', component: AddPartnerOrganisationComponent},
+    {path: 'response-plans/add-partner-organisation/:fromResponsePlans', component: AddPartnerOrganisationComponent},
+    {path: 'response-plans/view-response-plan', component: ViewResponsePlanComponent},
+    {path: 'response-plans/view-response-plan/:id', component: ViewResponsePlanComponent},
+    {path: 'response-plans/view-plan', component: ViewPlanComponent},
+    {path: 'response-plans/view-plan/:id', component: ViewPlanComponent},
+    {path: 'response-plans/external-partner-response-plan/:countryID/:id/:token', component: ExternalPartnerResponsePlan},
 
-  /**
-   * Maps
-   */
-  {path: 'map', component: MapComponent},
-  {path: 'map/map-countries-list', component: MapCountriesListComponent},
+    /**
+     * Maps
+     */
+    {path: 'map', component: MapComponent},
+    {path: 'map/map-countries-list', component: MapCountriesListComponent},
 
-  /**
-   * Directors
-   */
-  {path: 'director', component: DirectorComponent},
-  {path: 'director/director-overview', component: DirectorOverviewComponent},
-  {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
+    /**
+     * Directors
+     */
+    {path: 'director', component: DirectorComponent},
+    {path: 'director/director-overview', component: DirectorOverviewComponent},
+    {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
 
-  /**
-   * Donor
-   */
-  {path: 'donor-module', component: DonorModuleComponent},
-  {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
-  {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
+    /**
+     * Donor
+     */
+    {path: 'donor-module', component: DonorModuleComponent},
+    {path: 'donor-module/donor-list-view', component: DonorListViewComponent},
+    {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
+    {path: 'donor-module/donor-account-settings', component: DonorAccountSettingsComponent},
+    {path: 'donor-module/donor-account-settings/donor-change-password', component: DonorChangePasswordComponent},
+    {path: 'donor-module/donor-account-settings/new-donor-password', component: NewDonorPasswordComponent},
 
-  /**
-   * Response plan exporting
-   * */
-  {path: 'export-start-fund', component: ExportStartFundComponent}
+    /**
+     * Response plan exporting
+     * */
+    {path: 'export-start-fund', component: ExportStartFundComponent}
 
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forRoot(routes)
-  ],
-  exports: [
-    RouterModule
-  ],
-  declarations: []
+    imports: [
+        CommonModule,
+        RouterModule.forRoot(routes)
+    ],
+    exports: [
+        RouterModule
+    ],
+    declarations: []
 })
 export class AppRoutingModule {
 }
