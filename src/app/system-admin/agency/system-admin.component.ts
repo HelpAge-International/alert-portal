@@ -18,6 +18,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   agencies: FirebaseListObservable<any>;
   uid: string;
   private agencyToUpdate;
+  private doActivate;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -44,8 +45,9 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
     console.log(this.ngUnsubscribe);
   }
 
-  update(agency) {
+  update(agency, doActivate) {
     this.agencyToUpdate = agency;
+    this.doActivate = doActivate;
     jQuery("#update-agency").modal("show");
   }
 
