@@ -51,7 +51,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private secondApp: firebase.app.App;
   private systemAdminUid: string;
   private preAgencyName: string;
-  private isDonor: boolean = true;
+  private isDonor: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -258,9 +258,14 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       this.writeToFirebase(uid);
       // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
       this.secondApp.auth().signOut();
-    }, error => {
+    }, (error:any) => {
       console.log(error.message);
-      this.errorMessage = "GLOBAL.GENERAL_ERROR";
+      console.log(error.code);
+      if (error.code == 'auth/email-already-in-use') {
+        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
+      } else {
+        this.errorMessage = "GLOBAL.GENERAL_ERROR";
+      }
       this.showAlert();
     });
   }
@@ -342,7 +347,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agency.clockSettings = clockSetting;
 
       //init response plan settings
-      let hierachy: boolean[] = [true, true];
+      let hierachy: boolean[] = [false, false];
       let sections: boolean[] = [true, true, true, true, true, true, true, true, true, true];
       let responseSetting = {};
       responseSetting["approvalHierachy"] = hierachy;

@@ -21,6 +21,9 @@
           <label for="CountryOffice">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
           <select class="form-control" id="CountryOffice" required [(ngModel)]="countryOfficeLocation"
                   name="countryOfficeLocation">
+            <!--<option *ngFor="let country of countrySelections" [ngValue]="country">-->
+              <!--{{countryNames[country] | translate}}-->
+            <!--</option>-->
             <option *ngFor="let country of countrySelections" [ngValue]="country">
               {{countryNames[country] | translate}}
             </option>

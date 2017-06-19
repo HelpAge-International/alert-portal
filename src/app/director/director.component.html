@@ -223,7 +223,7 @@
               </div>
             </div>
 
-            <div *ngIf="otherRegion.countries.size != 0">
+            <div *ngIf="otherRegion.countries.size > 0">
               <div *ngFor="let y of countries">
                 <div *ngIf="otherRegion.countries.has(y.countryId)" (click)="countryOverview(y.countryId)">
                   <div class="Accordion Map-list" data-toggle="collapse"
