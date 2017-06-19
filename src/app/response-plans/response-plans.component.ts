@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
@@ -18,6 +18,10 @@ declare const jQuery: any;
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
+
+  @Input() isViewing: boolean;
+  @Input() countryIdForViewing: string;
+
   private isGlobalDirectorMap = new Map<string, boolean>();
 
   private dialogTitle: string;
@@ -46,6 +50,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
       if (auth) {
         this.uid = auth.uid;
+        console.log("isViewing: "+this.isViewing);
+        console.log("received country id: "+this.countryIdForViewing);
         this.userService.getUserType(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(userType => {
@@ -118,7 +124,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
       //deal directors
       if (plan.approval) {
-        let approvalKeys = Object.keys(plan.approval).filter(key => key!="partner");
+        let approvalKeys = Object.keys(plan.approval).filter(key => key != "partner");
         console.log(approvalKeys);
         if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
           this.isGlobalDirectorMap.set(plan.$key, true);
