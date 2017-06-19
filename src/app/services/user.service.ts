@@ -344,16 +344,12 @@ export class UserService {
     // Check if it's a system admin
     return af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
       .flatMap((snap) => {
-        console.log("System");
-        console.log(snap.val());
         if (snap.val() != null) {
           return Observable.of(UserType.SystemAdmin);
         }
         else {
           return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
-              console.log("Agency");
-              console.log(mySnap.val());
               if (mySnap.val() != null) {
                 return Observable.of(UserType.AgencyAdmin);
               }

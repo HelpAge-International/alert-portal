@@ -67,84 +67,75 @@ export class PageControlService {
    *  =========================================================================================
    */
   public static GlobalDirector = PageUserType.create(UserType.GlobalDirector, "director", [
-    "director"
+    "director*",
+    "map;isDirector=true",
+    "map/map-countries-list;isDirector=true"
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
-    "director"
+    "director*",
+    "map;isDirector=true",
+    "map/map-countries-list;isDirector=true"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
-    "dashboard"
+    "dashboard*",
+    "map",
+    "map/map-country-list",
+    "risk-monitoring*",
+    "export-start-fund*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
-    "dashboard"
+    "dashboard*",
+    "map",
+    "map/map-country-list",
+    "risk-monitoring*",
+    "export-start-fund*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
-    "dashboard"
+    "dashboard*",
+    "map",
+    "map/map-country-list",
+    "risk-monitoring*",
+    "export-start-fund*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
-    "donor-module"
+    "donor-module*"
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
-    "director"
+    "director*",
+    "map;isDirector=true",
+    "map/map-countries-list;isDirector=true"
   ]);
   public static CountryAdmin = PageUserType.create(UserType.CountryAdmin, "dashboard", [
-    "dashboard",
-    "preparedness/minimum",
-    "preparedness/advanced",
+    "dashboard*",
+    "preparedness*",
     "map",
-    "map/map-countries-list",
-    "country-admin/country-office-profile",
-    "country-admin/country-office-profile/equipment/add-edit-equipment",
-    "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
-    "country-admin/country-office-profile/equipment",
-    "country-admin/country-office-profile/programme",
-    "country-admin/country-office-profile/partners",
-    "country-admin/country-office-profile/office-capacity",
-    "country-admin/country-office-profile/coordination",
-    "country-admin/country-office-profile/stock-capacity",
-    "country-admin/country-office-profile/office-documents",
-    "country-admin/country-office-profile/contacts",
-    "country-admin/country-agencies",
-    "country-admin/country-my-agency",
-    "country-admin/country-account-settings",
-    "country-admin/country-staff",
-    "country-admin/settings",
-    "country-admin/settings/country-permission-settings",
-    "country-admin/settings/country-clock-settings",
-    "country-admin/settings/country-modules-settings",
-    "country-admin/settings/country-notification-settings",
-    "country-admin/settings/country-notification-settings/country-add-external-recipient",
-    "country-admin/country-messages",
-    "country-admin/country-messages/country-create-edit-messages",
-    "response-plans",
-    "response-plans/create-edit-response-plan",
-    "response-plans/view-plan",
-    "risk-monitoring",
-    "risk-monitoring/create-alert",
-    "risk-monitoring/add-hazard",
-    "risk-monitoring/create-alert/countryCode"
+    "map/map-country-list",
+    "country-admin*",
+    "response-plans*",
+    "risk-monitoring*",
+    "export-start-fund*",
   ]);
   public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", [
   ]);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
-    "director"
+    "director*",
+    "map;isDirector=true",
+    "map/map-countries-list;isDirector=true"
   ]);
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
-    "agency-admin/country-office"
+    "agency-admin*"
   ]);
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
-    "system-admin/agency",
-    "system-admin/add-agency",
-    "system-admin/network",
-    "system-admin/min-prep",
-    "system-admin/min-prep/create",
-    "system-admin/mpa",
-    "system-admin/mpa/create",
-    "system-admin/system-settings",
-    "system-admin/system-settings/system-settings-documents",
-    "system-admin/system-settings/system-settings-response-plans",
-    "system-admin/messages",
-    "system-admin/messages/create"
+    "system-admin*"
   ]);
   /**
    *  =========================================================================================
@@ -250,7 +241,8 @@ export class PageControlService {
                 //   If so and we're not authorised to view it, kick us out
                 for (let x of list) {
                   for (let y of x.urls) {
-                    if (s.match(y) && !x.isAuthorized) {
+                    // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
+                    if ((s == y) && !x.isAuthorized) {
                       router.navigateByUrl(type.redirectTo);
                       skip = true;
                     }
@@ -279,7 +271,7 @@ export class PageControlService {
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
     for (let x of type.urls) {
-      if (x == current) {
+      if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {
         // Current page matches which URL is checked
         return true;
       }
@@ -292,7 +284,11 @@ export class PageControlService {
     let parts: string = "";
     route.url.forEach((segments: UrlSegment[]) => {
       segments.forEach((value) => {
-        parts += value.path.trim() + "/";
+        parts += value.path.trim();
+        for (let x in value.parameters) {
+          parts += ";" + x + "=" + value.parameters[x];
+        }
+        parts += "/";
       });
     });
     if (parts.length != 0) {
