@@ -9,6 +9,7 @@ import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
+import {ResponsePlan} from "../model/responsePlan";
 declare const jQuery: any;
 
 @Component({
@@ -103,6 +104,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
+
     console.log("get response plan...");
   }
 
@@ -185,6 +187,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   submitForPartnerValidation(plan) {
     this.service.submitForPartnerValidation(plan, this.uid);
+  }
+
+  archivePlan(plan) {
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
   }
 
   confirmDialog() {

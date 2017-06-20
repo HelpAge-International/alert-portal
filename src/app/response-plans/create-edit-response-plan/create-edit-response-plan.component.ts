@@ -45,6 +45,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private responsePlanSettings = {};
   private ResponsePlanSectionSettings = ResponsePlanSectionSettings;
   private totalSections: number = 0;
+  private currentSectionNum: number = 0;
   private numberOfCompletedSections: number = 0;
 
   private MAX_BULLET_POINTS_VAL_1: number = Constants.MAX_BULLET_POINTS_VAL_1;
@@ -62,6 +63,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private staffMemberSelected: any;
   private hazardScenarioSelected: number;
   private HazardScenario = Constants.HAZARD_SCENARIOS;
+
   private hazardScenariosList = [
     HazardScenario.HazardScenario0,
     HazardScenario.HazardScenario1,
@@ -126,6 +128,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private presenceInTheCountry: PresenceInTheCountry;
   private isDirectlyThroughFieldStaff: boolean;
+  private isWorkingWithPartners: boolean;
 
   private partnersDropDownsCounter: number = 1;
   private partnersDropDowns: number[] = [this.partnersDropDownsCounter];
@@ -236,6 +239,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private section10Status: string = "GLOBAL.INCOMPLETE";
   private loadResponsePlan: ResponsePlan;
+  private sectionOneNum: number = 0;
+  private sectionTwoNum: number = 0;
+  private sectionThreeNum: number = 0;
+  private sectionFourNum: number = 0;
+  private sectionFiveNum: number = 0;
+  private sectionSixNum: number = 0;
+  private sectionSevenNum: number = 0;
+  private sectionEightNum: number = 0;
+  private sectionNineNum: number = 0;
+  private sectionTenNum: number = 0;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -308,10 +321,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 3
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
-
-    if (this.presenceInTheCountry) {
-      newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
-    }
+    newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
 
     // newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
     // newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
@@ -489,6 +499,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.budget["total"] = this.totalBudget;
 
     newResponsePlan.totalSections = this.totalSections;
+
     newResponsePlan.isActive = true;
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
@@ -673,22 +684,27 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   currentProgrammesSelected() {
+    console.log("Pressed on currentProgrammes");
     this.presenceInTheCountry = PresenceInTheCountry.currentProgrammes;
   }
 
   preExistingPartnerSelected() {
+    console.log("Pressed on preExistingPartner");
     this.presenceInTheCountry = PresenceInTheCountry.preExistingPartner;
   }
 
   noPreExistingPartnerSelected() {
+    console.log("Pressed on noPreExistingPresence");
     this.presenceInTheCountry = PresenceInTheCountry.noPreExistingPresence;
   }
 
   methodOfImplementationSelectedDirect() {
     this.isDirectlyThroughFieldStaff = true;
+    this.isWorkingWithPartners = false;
   }
 
   methodOfImplementationSelectedWithPartners() {
+    this.isWorkingWithPartners = true;
     this.isDirectlyThroughFieldStaff = false;
   }
 
@@ -715,7 +731,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     let sectionsSelected: boolean = (this.sectorsRelatedTo.length != 0) || (this.otherRelatedSector != '');
     let presenceSelected: boolean = this.presenceInTheCountry != null;
-    let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff != null;
+    let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff || this.isWorkingWithPartners;
 
     if (sectionsSelected && presenceSelected && methodOfImplementationSelected && !this.otherSectorSelected ||
       sectionsSelected && presenceSelected && methodOfImplementationSelected && this.otherSectorSelected && this.otherRelatedSector != "") {
@@ -1175,6 +1191,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
               this.totalSections++;
             }
           });
+          this.storeAvailableSettingSections();
         });
     }
   }
@@ -1259,7 +1276,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       let sectorKeys = Object.keys(sectors);
       this.updateSectorSelections(sectorKeys, responsePlan);
       this.presenceInTheCountry = responsePlan.presenceInTheCountry;
-      this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+      this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff;
+      this.isWorkingWithPartners = responsePlan.methodOfImplementation === MethodOfImplementation.withPartner;
+
     }
     if (!responsePlan.sectors && responsePlan.sectorsRelatedTo) {
       this.sectorsRelatedTo = responsePlan.sectorsRelatedTo;
@@ -1267,7 +1286,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       // let sectorKeys = Object.keys(this.sectorsRelatedTo);
       this.updateSectorSelections(this.sectorsRelatedTo, responsePlan);
       this.presenceInTheCountry = responsePlan.presenceInTheCountry;
-      this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff ? true : false;
+      this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff;
+      this.isWorkingWithPartners = responsePlan.methodOfImplementation === MethodOfImplementation.withPartner;
+
     }
   }
 
@@ -1625,6 +1646,50 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       }
     });
     return counter;
+  }
+
+  private storeAvailableSettingSections() {
+    var counter = 0;
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanDetails]){
+      counter = counter + 1;
+      this.sectionOneNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanContext]){
+      counter = counter + 1;
+      this.sectionTwoNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.BasicInformation]){
+      counter = counter + 1;
+      this.sectionThreeNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]){
+      counter = counter + 1;
+      this.sectionFourNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.TargetPopulation]){
+      counter = counter + 1;
+      this.sectionFiveNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.ExpectedResults]){
+      counter = counter + 1;
+      this.sectionSixNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.Activities]){
+      counter = counter + 1;
+      this.sectionSevenNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.MonitoringAccLearning]){
+      counter = counter + 1;
+      this.sectionEightNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.DoubleCounting]){
+      counter = counter + 1;
+      this.sectionNineNum = counter;
+    }
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.Budget]){
+      counter = counter + 1;
+      this.sectionTenNum = counter;
+    }
   }
 
   private navigateToLogin() {
