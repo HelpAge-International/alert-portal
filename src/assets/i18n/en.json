@@ -8,6 +8,7 @@
         "CANCEL": "Cancel",
         "CONFIRM": "Confirm",
         "CONTINUE": "Continue",
+        "OK": "OK",
         "COMPLETE": "Complete",
         "INCOMPLETE": "Incomplete",
         "ENABLED": "Enabled",
@@ -1330,7 +1331,9 @@
             "ARCHIVED": "Archived",
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE": "Submit without partner validation",
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
-            "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!"
+            "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!",
+            "EDIT_WHILE_ANOTHER_EDITING_TITLE": "Editing is not allowed",
+            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by another member. Please try again later."
         },
         "VIEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Scenario Based Response Plan"

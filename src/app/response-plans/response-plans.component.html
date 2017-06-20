@@ -292,7 +292,26 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal(false)">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--dialog modal-->
+<div class="modal fade" id="dialog-acknowledge" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><strong>{{dialogTitle | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{dialogContent | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="closeModal(true)">{{"GLOBAL.OK" | translate}}
         </button>
       </div>
     </div>

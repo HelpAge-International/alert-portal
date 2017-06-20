@@ -290,6 +290,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.forEditing) {
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(false);
+    }
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
@@ -501,6 +504,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.totalSections = this.totalSections;
 
     newResponsePlan.isActive = true;
+    newResponsePlan.isEditing = false;
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
     if (!this.forEditing) {
@@ -1205,6 +1209,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.forEditing = true;
           this.pageTitle = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.EDIT_RESPONSE_PLAN";
           this.idOfResponsePlanToEdit = params["id"];
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
+
           this.loadResponsePlanInfo(this.idOfResponsePlanToEdit);
         }
       });
@@ -1592,6 +1598,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (numOfSectionsCompleted > 0) {
       if (this.forEditing) {
         let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
+        newResponsePlan.isEditing = false;
         this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
           console.log("Response plan successfully updated");
           this.router.navigateByUrl('response-plans');
@@ -1611,7 +1618,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       this.alertMessage = new AlertMessageModel('RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ERROR_NO_COMPLETED_SECTIONS');
     }
-
   }
 
   private checkSectorInfo() {

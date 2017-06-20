@@ -9,7 +9,6 @@ import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
-import {ResponsePlan} from "../model/responsePlan";
 declare const jQuery: any;
 
 @Component({
@@ -166,6 +165,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   editResponsePlan(responsePlan) {
+    if(responsePlan.isEditing){
+      jQuery("#dialog-acknowledge").modal("show");
+      this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
+      this.dialogContent = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_CONTENT";
+      return;
+    }
     this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
   }
 
@@ -299,8 +304,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
   }
 
-  closeModal() {
-    jQuery("#dialog-action").modal("hide");
+  closeModal(isAckModel: boolean) {
+    if (isAckModel){
+      jQuery("#dialog-acknowledge").modal("hide");
+    }else{
+      jQuery("#dialog-action").modal("hide");
+    }
   }
 
   private navigateToLogin() {
