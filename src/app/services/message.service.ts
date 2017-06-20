@@ -178,6 +178,38 @@ export class MessageService {
       });
     return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
   }
+  
+  getAgencyNotifications() {
+
+  }
+
+  private getNotifications(node: string)  {
+    if(!node) {
+      return;
+    }
+
+    this.af.database.list(node)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => {
+      list.forEach((x) => {
+        this.getNotificationMessage(x.$key);
+      });
+
+    });
+  }
+  
+  private getNotificationMessage(messageId: string){
+    this.af.database.object(Constants.APP_STATUS + "/message/" + messageId)
+      // .takeUntil(this.ngUnsubscribe)
+      // .subscribe((message: Message) => {
+      // if (message.time > messageTime) {
+      //   this._updateReadMessageTime(groupType, messageID);
+      // }
+      // message.groupType = groupType;
+      // this.messages.push(message);
+      // this._sortMessages();
+    // });
+  }
 
   private saveCountryUserTypeMessage(countryId: string, message: MessageModel, messageKey: string, userType: string, messageRefData: Object) {
     return this.af.database.list(Constants.APP_STATUS + '/group/country/' + countryId + '/' + userType)
