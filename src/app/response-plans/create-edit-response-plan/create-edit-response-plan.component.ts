@@ -1616,7 +1616,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         });
       }
     } else {
-      this.alertMessage = new AlertMessageModel('RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ERROR_NO_COMPLETED_SECTIONS');
+      this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
     }
   }
 

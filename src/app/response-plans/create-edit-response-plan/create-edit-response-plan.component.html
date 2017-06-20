@@ -1,15 +1,23 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
     <div class="Back--button" (click)="goBack()">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</div>
 
-    <div class="Header-title__wrap">
-      <h1>{{pageTitle | translate}}</h1>
+    <div class="row">
+      <div class="col-sm-9">
+        <div class="Header-title__wrap">
+          <h1>{{pageTitle | translate}}</h1>
+        </div>
+      </div>
+      <div class="col-sm-3">
+          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="onSubmit()">{{"GLOBAL.SAVE" | translate}}</div></span>
+      </div>
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
@@ -19,7 +27,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.PlanDetails]">
         <div class="Ribbon__response" id="Ribbon__response__1">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionOneNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionOneNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section1Status | translate}}</div>
@@ -79,7 +89,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.PlanContext]">
         <div class="Ribbon__response" id="Ribbon__response__2">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionTwoNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionTwoNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
@@ -100,8 +112,8 @@
                        [value]="loadResponsePlan&&scenarioCrisisObject[bulletPoint]?scenarioCrisisObject[bulletPoint]:''"
                        (change)="addToSummarizeScenarioObject(bulletPoint, $event.target.value)">
                 <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="Remove__row__cta"
-                   (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
+                                                        (click)="removeSummarizeScenarioBulletPoint(bulletPoint)"
+                                                        [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
                   | translate}}</a></div>
               </div>
 
@@ -124,8 +136,8 @@
                        [value]="loadResponsePlan&&impactOfCrisisObject[bulletPoint]?impactOfCrisisObject[bulletPoint]:''"
                        (change)="addToImpactOfCrisisObject(bulletPoint, $event.target.value)">
                 <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="Remove__row__cta"
-                   (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
+                                                        (click)="removeImpactOfCrisisBulletPoint(bulletPoint)"
+                                                        [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE"
                   | translate}}</a></div>
               </div>
             </div>
@@ -147,8 +159,9 @@
                        [value]="loadResponsePlan&&availabilityOfFundsObject[bulletPoint]?availabilityOfFundsObject[bulletPoint]:''"
                        (change)="addToAvailabilityOfFundsObject(bulletPoint, $event.target.value)">
                 <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="Remove__row__cta"
-                   (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
-                   [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a></div>
+                                                        (click)="removeAvailabilityOfFundsBulletPoint(bulletPoint)"
+                                                        [hidden]="bulletPoint == 1">{{"GLOBAL.REMOVE" | translate}}</a>
+                </div>
               </div>
             </div>
           </div>
@@ -172,7 +185,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.BasicInformation]">
         <div class="Ribbon__response" id="Ribbon__response__3">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionThreeNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionThreeNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
@@ -320,7 +335,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]">
         <div class="Ribbon__response" id="Ribbon__response__4">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionFourNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionFourNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
@@ -372,7 +389,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.TargetPopulation]">
         <div class="Ribbon__response" id="Ribbon__response__5">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionFiveNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionFiveNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section5Status | translate}}</div>
@@ -484,7 +503,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ExpectedResults]">
         <div class="Ribbon__response" id="Ribbon__response__6">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionSixNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionSixNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section6Status | translate}}</div>
@@ -516,7 +537,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.Activities]">
         <div class="Ribbon__response" id="Ribbon__response__7">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionSevenNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionSevenNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
@@ -702,13 +725,15 @@
                         translate}}</label>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">1</span>
-                        <input type="text" class="form-control" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" #pointOne
+                        <input type="text" class="form-control" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+                               #pointOne
                                [value]="activityInfoMap.get(sector)&&activityInfoMap.get(sector)['bullet1'] ? activityInfoMap.get(sector)['bullet1']:''"
                                (change)="getBulletOne(sector, pointOne.value)">
                       </div>
                       <div class="input-group Small-spaced">
                         <span class="input-group-addon">2</span>
-                        <input type="text" class="form-control" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" #pointTwo
+                        <input type="text" class="form-control" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+                               #pointTwo
                                [value]="activityInfoMap.get(sector)&&activityInfoMap.get(sector)['bullet2'] ? activityInfoMap.get(sector)['bullet2']:''"
                                (change)="getBulletTwo(sector, pointTwo.value)">
                       </div>
@@ -733,7 +758,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.MonitoringAccLearning]">
         <div class="Ribbon__response" id="Ribbon__response__8">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionEightNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionEightNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
@@ -804,7 +831,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.DoubleCounting]">
         <div class="Ribbon__response" id="Ribbon__response__9">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionNineNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionNineNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
@@ -930,7 +959,9 @@
       <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.Budget]">
         <div class="Ribbon__response" id="Ribbon__response__10">
           <div class="Ribbon__header__wrap">
-            <div class="Ribbon__header__number"><span>{{sectionTenNum}}</span>{{"GLOBAL.OF" | translate}} {{totalSections}}</div>
+            <div class="Ribbon__header__number"><span>{{sectionTenNum}}</span>{{"GLOBAL.OF" | translate}}
+              {{totalSections}}
+            </div>
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
@@ -956,7 +987,9 @@
             </div>
             <div *ngIf="sectorsRelatedTo&&sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
               <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan&&loadResponsePlan.sectors?(SECTORS[sector] | translate):''}}</div>
+                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan&&loadResponsePlan.sectors?(SECTORS[sector] |
+                  translate):''}}
+                </div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
                          [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:0"
@@ -1095,8 +1128,9 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)" (click)="onSubmit()">
-              {{"GLOBAL.FINISH" |
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+                 (click)="checkSection10Status()">
+              {{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
