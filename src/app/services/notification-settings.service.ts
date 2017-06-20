@@ -10,7 +10,6 @@ export class NotificationSettingsService {
   }
 
   getNotificationSettings(agencyId: string): Observable<any> {
-
     const notificationSettingsSubscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/notificationSetting')
       .map(items => {
         const notificationSettings: any[] = [];
