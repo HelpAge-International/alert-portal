@@ -9,7 +9,7 @@ import { AlertMessageModel } from '../../../model/alert-message.model';
 import { PartnerOrganisationService } from '../../../services/partner-organisation.service';
 import { PartnerOrganisationModel } from '../../../model/partner-organisation.model';
 import { PartnerModel } from '../../../model/partner.model';
-import { NotificationSettingsService } from '../../../services/notification-settings.service';
+import { NotificationService } from '../../../services/notification.service';
 import { ModelUserPublic } from '../../../model/user-public.model';
 import { UserService } from "../../../services/user.service";
 import { CountryAdminModel } from "../../../model/country-admin.model";
@@ -23,7 +23,7 @@ declare var jQuery: any;
   selector: 'app-country-add-edit-partner',
   templateUrl: './country-add-edit-partner.component.html',
   styleUrls: ['./country-add-edit-partner.component.css'],
-  providers: [PartnerOrganisationService, NotificationSettingsService, UserService]
+  providers: [PartnerOrganisationService, NotificationService, UserService]
 })
 
 export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
@@ -50,7 +50,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
-              private _notificationSettingsService: NotificationSettingsService,
+              private _notificationSettingsService: NotificationService,
               private _sessionService: SessionService,
               private router: Router,
               private route: ActivatedRoute,

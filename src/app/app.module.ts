@@ -118,7 +118,7 @@ import {CountryAdminSettingsMenuComponent} from "./country-admin/settings/settin
 import {CountryOfficeProfileMenuComponent} from "./country-admin/country-office-profile/office-profile-menu/office-profile-menu.component";
 import {EnumKeyValuesPipe} from "./utils/pipes/enum-keyValues.pipe";
 import {MessageService} from "./services/message.service";
-import {NotificationSettingsService} from "./services/notification-settings.service";
+import {NotificationService} from "./services/notification.service";
 import {ReviewResponsePlanComponent} from './dashboard/review-response-plan/review-response-plan.component';
 import {FacetofaceMeetingRequestComponent} from './dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/country-statistics-ribbon.component';
@@ -170,6 +170,7 @@ import {ProjectActivitiesComponent} from "./export-start-fund/project-activities
 import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance/technical-guidance.component";
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -335,7 +336,8 @@ const firebaseAuthConfig = {
     BudgetReportComponent,
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
-    GuidanceReportComponent
+    GuidanceReportComponent,
+    TimeAgoPipe
   ],
   imports: [
     BrowserModule,
@@ -368,7 +370,7 @@ const firebaseAuthConfig = {
               CommonService,
               SettingsService,
               MessageService,
-              NotificationSettingsService,
+              NotificationService,
               NoteService,
               EquipmentService,
               CoordinationArrangementService,

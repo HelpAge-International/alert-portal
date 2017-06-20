@@ -743,7 +743,9 @@
             "NO_REPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'"
         },
         "MESSAGES": {
-            "TITLE_TEXT": "Agency Messages"
+            "TITLE_TEXT": "Agency Messages",
+            "NO_MESSAGES": "No messages",
+            "SUCCESS_DELETED": "The message has been successfully deleted"
         },
         "UPDATE_DETAILS": {
             "AGENCY_LOGO": "Agency Logo",
@@ -1250,7 +1252,7 @@
     "MESSAGES": {
         "TITLE_TEXT": "System Messages",
         "CREATE_NEW_MESSAGE": "Create new message",
-        "NO_MESSAGES": "No sent messages",
+        "NO_MESSAGES": "No messages",
         "MESSAGE_CONTENT": "Message content",
         "RECIPIENTS": "Recipients",
         "SEND_MESSAGE": "Send message",
