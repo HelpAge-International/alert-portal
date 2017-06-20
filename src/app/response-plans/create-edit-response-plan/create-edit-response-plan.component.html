@@ -283,8 +283,8 @@
                      [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
-            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
+            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part" [hidden]="!moduleAccess.countryOffice"
                      [checked]="isWorkingWithPartners"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>

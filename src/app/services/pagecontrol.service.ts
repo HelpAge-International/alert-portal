@@ -165,7 +165,8 @@ export class PageControlService {
   public static ModuleCountryOffice = new AgencyPermissionObject(PermissionsAgency.CountryOffice, [
     "country-admin/country-office-profile/equipment/add-edit-equipment",
     "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
-    "country-admin/country-office-profile/equipment"
+    "country-admin/country-office-profile/equipment",
+    "response-plans/add-partner-organisation;fromResponsePlans=true"
   ]);
   public static ModuleRiskMonitoring= new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
     "risk-monitoring",
