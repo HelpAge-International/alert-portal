@@ -14,6 +14,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../services/pagecontrol.service";
+import moment = require("moment");
 
 
 declare var jQuery: any;
@@ -373,6 +374,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     });
     jQuery("#" + modalID).modal("hide");
 
+  }
+
+  getTimeStamp(utc: number) {
+    let myDate: Date = new Date(utc);
+    return moment(myDate).format("DD MMM YYYY");
   }
 
   _getCurrentTimestamp() {
