@@ -241,9 +241,9 @@
           </div>
         </div>
       </div>
-      <div *ngFor="let plan of archivedPlans | async" class="Accordion__Content collapse" id="collapseThree">
+      <div class="Accordion__Content collapse" id="collapseThree">
 
-        <div class="Accordion Plans-list">
+        <div *ngFor="let plan of archivedPlans | async" class="Accordion Plans-list">
           <div class="row align-items-center Plans-list__item">
             <div class="col-md-2 col-sm-2 Plans-list__item--type">{{plan?.hazardScenario}}</div>
             <div class="col-md-3 col-sm-3">{{plan?.name}}</div>

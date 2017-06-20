@@ -98,6 +98,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
+
     console.log("get response plan...");
   }
 
