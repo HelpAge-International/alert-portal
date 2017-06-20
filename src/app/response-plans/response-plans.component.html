@@ -1,5 +1,5 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<app-country-admin-header *ngIf="!isViewing"></app-country-admin-header>
+<app-country-admin-menu *ngIf="!isViewing"></app-country-admin-menu>
 
 <div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
 
@@ -7,7 +7,7 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"RESPONSE_PLANS.HOME.TITLE" | translate}}</h1>
-      <button class="btn btn-primary" (click)="goToCreateNewResponsePlan()">
+      <button *ngIf="!isViewing" class="btn btn-primary" (click)="goToCreateNewResponsePlan()">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
       </button>
     </div>
@@ -190,11 +190,14 @@
           </div>
           <div class="col-sm-3">
             <div class="btn-group btn-block">
-              <button type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
+              <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
+                      (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
+              </button>
+              <button *ngIf="!isViewing" type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
                       [class.btn-primary]="plan.status!=2" data-toggle="dropdown" aria-haspopup="true"
                       aria-expanded="false">{{"RESPONSE_PLANS.HOME.OPTIONS" | translate}}
               </button>
-              <button type="button" class="btn dropdown-toggle dropdown-toggle-split"
+              <button *ngIf="!isViewing" type="button" class="btn dropdown-toggle dropdown-toggle-split"
                       [class.btn-success]="plan.status==2" [class.btn-primary]="plan.status!=2"
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>

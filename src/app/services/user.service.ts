@@ -15,13 +15,13 @@ import {UserType} from "../utils/Enums";
 import {Subscription} from "rxjs/Subscription";
 import {ChangePasswordModel} from "../model/change-password.model";
 import {recognize} from "@angular/router/src/recognize";
-import { ModelStaff } from "../model/staff.model";
+import {ModelStaff} from "../model/staff.model";
 
 @Injectable()
 export class UserService {
   private secondApp: firebase.app.App;
   private authState: FirebaseAuthState;
-  public anonymousUserPath:any;
+  public anonymousUserPath: any;
 
   public user: ModelUserPublic;
   public partner: PartnerModel;
@@ -171,25 +171,25 @@ export class UserService {
       return null;
     }
 
-        const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
-            .map(item => {
-                if (item.$key) {
-                    let partner = new PartnerModel();
-                    partner.mapFromObject(item);
-                    partner.id = uid;
-                    return partner;
-                }
-                return null;
-            });
+    const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
+      .map(item => {
+        if (item.$key) {
+          let partner = new PartnerModel();
+          partner.mapFromObject(item);
+          partner.id = uid;
+          return partner;
+        }
+        return null;
+      });
 
-        return partnerUserSubscription;
-    }
+    return partnerUserSubscription;
+  }
 
-    getPartnerUsers(): Observable<PartnerModel[]> {
-        const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
-            .map(items => {
-                let partners: PartnerModel[] = [];
-                items.forEach(item => {
+  getPartnerUsers(): Observable<PartnerModel[]> {
+    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
+      .map(items => {
+        let partners: PartnerModel[] = [];
+        items.forEach(item => {
 
           // Add the organisation ID
           let partner = item as PartnerModel;
@@ -246,8 +246,8 @@ export class UserService {
 
             let oldPartner = Object.assign(partner);
 
-                        partner.id = null; // force new user creation
-                        userPublic.id = null;
+            partner.id = null; // force new user creation
+            userPublic.id = null;
 
             return this.savePartnerUser(partner, userPublic).then(delUser => {
               return this.deletePartnerUser(oldPartner);
@@ -296,8 +296,7 @@ export class UserService {
   // STAFF MEMBER
 
   getStaffList(countryId: string): Observable<ModelStaff[]> {
-    if(!countryId)
-    {
+    if (!countryId) {
       return;
     }
 
@@ -318,8 +317,7 @@ export class UserService {
   }
 
   getStaff(countryId: string, staffId: string): Observable<ModelStaff> {
-    if(!countryId || !staffId)
-    {
+    if (!countryId || !staffId) {
       return;
     }
 
@@ -329,7 +327,7 @@ export class UserService {
         let staff = new ModelStaff();
         staff.mapFromObject(item);
         staff.id = item.$key;
-     
+
         return staff;
       });
 
@@ -484,7 +482,11 @@ export class UserService {
       })
   }
 
-    getOrganisationName(id) {
-        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
-    }
+  getOrganisationName(id) {
+    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
+  }
+
+  getCountryDetail(countryId, agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
+  }
 }

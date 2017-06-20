@@ -1320,6 +1320,7 @@
             "APPROVAL": "Approval",
             "REVIEW_NOTES": "Review notes",
             "OPTIONS": "Options",
+            "VIEW": "VIEW",
             "VIEW_PLAN": "View plan",
             "EDIT_PLAN": "Edit plan",
             "REQUIRE_SUBMISSION": "Requires submission",

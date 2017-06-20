@@ -23,7 +23,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   ACTION_LEVEL = Constants.ACTION_LEVEL;
   ACTION_TYPE = Constants.ACTION_TYPE;
   protected actionLevel = ActionLevel.MPA;
-  protected uid: string = "C1T4Mx2gZFTFSq8CTxSEsyJDr2j2"; // Country Admin TODO remove
+  protected uid: string; // Country Admin TODO remove
   protected actions: any[] = [];
   protected users: any[] = [];
   protected assignedToUsers: any[] = [];
@@ -158,7 +158,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                     actions[action].agencyId = agencyId;
                     actions[action].key = action;
                     actions[action].docsCount = 0;
-                    let userKey = actions[action].assignee;
+                    //TODO "assignee??"
+                    // let userKey = actions[action].assignee;
+                    let userKey = actions[action].asignee;
+                    // console.log("user key: "+userKey);
+                    // console.log(actions[action]);
                     try {
                       actions[action].docsCount = Object.keys(actions[action].documents).length;
 
@@ -180,6 +184,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                         if (_.$exists()) {
                           this.users[userKey] = _.firstName + " " + _.lastName;
                           actions[action].assigned = true;
+                          // console.log("user: "+this.users[userKey]);
                         }
                         else {
                           this.users[userKey] = "Unassigned";//TODO translate somehow
