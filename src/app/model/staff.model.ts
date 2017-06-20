@@ -17,6 +17,7 @@ export class ModelStaff extends BaseModel {
   public notification: number[] =[];
   public isResponseMember: boolean;
   public updatedAt:number;
+  public notes = {};
 
   validate(excludedFields = []): AlertMessageModel {
     // TODO add validation

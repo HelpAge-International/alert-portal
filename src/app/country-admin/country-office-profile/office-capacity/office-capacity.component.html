@@ -57,7 +57,7 @@
     <div class="row Line-row margin-top-two"></div>
 
     <!--Abigall Taylor-->
-    <div *ngFor="let staff of responseStaffs">
+    <div *ngFor="let staff of responseStaffs; index as i">
       <div class="row">
         <div class="col-sm-1">{{staff.updatedAt | date:"MM/yy"}}</div> <!--Updated-->
         <div class="col-sm-2">{{userMap.get(staff.id)}}</div> <!--Name-->
@@ -67,62 +67,111 @@
           <div class="row">
             <div class="col-sm-1"><img class="margin-left-two" style="width: 1.85em;"
                                        src="assets/images/icons/skills_bubble.svg" alt="Skills">
-              <p class="notes-number__components--country-office-profile skills">2</p>
+              <p class="notes-number__components--country-office-profile skills">
+                {{skillTechMap.get(staff.id).length}}</p>
               <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
                  data-content="-WaSh" title="Technical skills" class="col-sm-0">Technical</a></div>
             <div class="col-sm-1 margin-left-six"><img class="margin-left-two" style="width: 1.85em;"
-                                                       src="assets/images/icons/skills_bubble.svg" alt="Skills"><a
-              class="col-sm-0" href="#"><p class="notes-number__components--country-office-profile skills">3</p>
-              Support</a></div>
-          </div>
-        </div> <!--Skills-->
-        <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> <!--Training Needs-->
-        <div class="col-sm-1">
-          <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-          <p class="notes-number__components--country-office-profile">1</p>
-          <a href="#" class="row margin-left-one-half">Notes</a>
-        </div>
-      </div>
-      <div class="row Line-row"></div>
-    </div>
-
-
-    <div *ngFor="let officeCapacity of countryOfficeCapacity">
-      <div class="row">
-        <div class="col-sm-1">{{ officeCapacity.updatedAt ? (officeCapacity.updatedAt | date: 'MM/yy') : '-'}}</div>
-        <!--Updated-->
-        <div class="col-sm-2">{{officeCapacity.name}}</div> <!--Name-->
-        <div class="col-sm-1">{{officeCapacity.position}}</div> <!--Position-->
-        <div class="col-sm-2">{{officeType[officeCapacity.officeType] | translate}}</div> <!--Office Type-->
-        <div class="col-sm-2">
-          <div class="row">
-            <div class="col-sm-1">
-              <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
-                   alt="Skills">
+                                                       src="assets/images/icons/skills_bubble.svg" alt="Skills">
               <p class="notes-number__components--country-office-profile skills">
-                {{officeCapacity.skills.tech.length}}</p>
+                {{skillSupoMap.get(staff.id).length}}</p>
               <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
-                 data-content="-WaSh" title="Technical skills" class="col-sm-0">Technical</a>
-            </div>
-            <div class="col-sm-1 margin-left-six">
-              <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
-                   alt="Skills">
-              <a class="col-sm-0" href="javascript:void(0)">
-                <p class="notes-number__components--country-office-profile skills">
-                  {{officeCapacity.skills.support.length}}</p>Support
-              </a>
-            </div>
+                 data-content="-WaSh" title="Technical skills" class="col-sm-0">Support</a></div>
           </div>
         </div> <!--Skills-->
-        <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> <!--Training Needs-->
+        <div class="col-sm-3">{{staff.trainingNeeds}}</div> <!--Training Needs-->
         <div class="col-sm-1">
           <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-          <p class="notes-number__components--country-office-profile">1</p>
-          <a href="#" class="row margin-left-one-half">Notes</a>
+          <p class="notes-number__components--country-office-profile">{{getNotesNumber(staff)}}</p>
+          <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
+          <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+            {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+          </a>
         </div>
       </div>
       <div class="row Line-row"></div>
+
+      <!-- Notes Drop Down -->
+      <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div class="log_left p-3">
+          <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+          <hr class="d-inline-flex">
+          <!--<form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id])">-->
+          <!--<input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"-->
+          <!--[(ngModel)] = "newNote[equipment.id] && newNote[equipment.id].content">-->
+
+          <!--Note post-->
+          <div class="row Spaced log-post__wrap--risk"
+               *ngFor="let note of staffNoteMap.get(staff.id)">
+            <div class="log-date__wrap--risk col-lg-1">
+              <p>{{ note.time | date: 'dd MMM y' }}</p>
+            </div>
+            <div class="col-lg-6">
+              <p>{{ note.content }}</p>
+              <br>
+              <div class="row">
+                <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
+                <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                   (click)="editNote(note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                <p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>
+                <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
+                   (click)="deleteNote(note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+              </div>
+            </div>
+          </div>
+          <hr>
+
+          <!--add Note button-->
+          <!--<div class="add_log mt-auto p-2 text-right float-right">-->
+          <!--<button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>-->
+          <!--<br>-->
+          <!--<br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate-->
+          <!--}}</a>-->
+          <!--</div>-->
+          <!--</form>-->
+        </div>
+      </div>
+      <!--Notes Drop Down End-->
+
     </div>
+
+
+    <!--<div *ngFor="let officeCapacity of countryOfficeCapacity">-->
+    <!--<div class="row">-->
+    <!--<div class="col-sm-1">{{ officeCapacity.updatedAt ? (officeCapacity.updatedAt | date: 'MM/yy') : '-'}}</div>-->
+    <!--&lt;!&ndash;Updated&ndash;&gt;-->
+    <!--<div class="col-sm-2">{{officeCapacity.name}}</div> &lt;!&ndash;Name&ndash;&gt;-->
+    <!--<div class="col-sm-1">{{officeCapacity.position}}</div> &lt;!&ndash;Position&ndash;&gt;-->
+    <!--<div class="col-sm-2">{{officeType[officeCapacity.officeType] | translate}}</div> &lt;!&ndash;Office Type&ndash;&gt;-->
+    <!--<div class="col-sm-2">-->
+    <!--<div class="row">-->
+    <!--<div class="col-sm-1">-->
+    <!--<img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"-->
+    <!--alt="Skills">-->
+    <!--<p class="notes-number__components&#45;&#45;country-office-profile skills">-->
+    <!--{{officeCapacity.skills?.tech.length}}</p>-->
+    <!--<a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"-->
+    <!--data-content="-WaSh" title="Technical skills" class="col-sm-0">Technical</a>-->
+    <!--</div>-->
+    <!--<div class="col-sm-1 margin-left-six">-->
+    <!--<img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"-->
+    <!--alt="Skills">-->
+    <!--<a class="col-sm-0" href="javascript:void(0)">-->
+    <!--<p class="notes-number__components&#45;&#45;country-office-profile skills">-->
+    <!--{{officeCapacity.skills?.support.length}}</p>Support-->
+    <!--</a>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div> &lt;!&ndash;Skills&ndash;&gt;-->
+    <!--<div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> &lt;!&ndash;Training Needs&ndash;&gt;-->
+    <!--<div class="col-sm-1">-->
+    <!--<img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">-->
+    <!--<p class="notes-number__components&#45;&#45;country-office-profile">1</p>-->
+    <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="row Line-row"></div>-->
+    <!--</div>-->
 
 
     <!--        Abigall Taylor

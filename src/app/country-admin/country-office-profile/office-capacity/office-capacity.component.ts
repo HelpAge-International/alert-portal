@@ -8,6 +8,7 @@ import {AlertMessageModel} from '../../../model/alert-message.model';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {NoteModel} from "../../../model/note.model";
 declare var jQuery: any;
 
 @Component({
@@ -21,6 +22,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private isViewing: boolean;
   private userMap = new Map<string, string>();
+  private skillTechMap = new Map<string, string[]>();
+  private skillSupoMap = new Map<string, string[]>();
+  private staffNoteMap = new Map<string, any[]>();
 
   private UserType: number;
   private alertMessageType = AlertMessageType;
@@ -135,18 +139,45 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         this.totalResponseStaff = this.responseStaffs.length;
 
         this.responseStaffs.forEach(staff => {
+
+          this.skillTechMap.set(staff.id, []);
+          this.skillSupoMap.set(staff.id, []);
+          this.staffNoteMap.set(staff.id, []);
+
+          //get staff name
           this._userService.getUser(staff.id)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(user => {
               this.userMap.set(user.id, user.firstName + " " + user.lastName);
             });
 
+          //get staff skills
           staff.skill.forEach(skill => {
-            //TODO ADD SKILLS
-          })
+            this.af.database.object(Constants.APP_STATUS + "/skill/" + skill)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(skill => {
+                if (skill.type == SkillType.Tech) {
+                  this.skillTechMap.get(staff.id).push(skill.name);
+                } else {
+                  this.skillSupoMap.get(staff.id).push(skill.name);
+                }
+              });
+          });
 
+          //get staff notes
+          if (staff.notes) {
+            console.log(staff.notes);
+            let notes = Object.keys(staff.notes).map(key =>{
+              let note = new NoteModel();
+              note.id = key;
+              note.content = staff.notes[key]["content"];
+              note.time = staff.notes[key]["time"];
+              note.uploadedBy = staff.notes[key]["uploadedBy"];
+              return note;
+            });
+            this.staffNoteMap.set(staff.id, notes);
+          }
         });
-
       });
   }
 
@@ -193,27 +224,32 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((CountryOfficeStaff: any) => {
           for (let staff in CountryOfficeStaff) {
-            CountryOfficeStaff[staff].skills = [];
-            CountryOfficeStaff[staff].skills.support = [];
-            CountryOfficeStaff[staff].skills.tech = [];
-            CountryOfficeStaff[staff].key = staff;
-            /* getUser FullName */
-            this._getUserName(staff).takeUntil(this.ngUnsubscribe)
-              .subscribe((user: any) => {
-                CountryOfficeStaff[staff].name = user.firstName + ' ' + user.lastName;
-              });
-            /* get skills */
-            var skills = CountryOfficeStaff[staff].skill;
-            skills.forEach((skillID, key) => {
-              this._getSkill(skillID).takeUntil(this.ngUnsubscribe)
-                .subscribe((skill: any) => {
-                  if (!skill.type) {
-                    CountryOfficeStaff[staff].skills.support.push(skill.name);
-                  } else {
-                    CountryOfficeStaff[staff].skills.tech.push(skill.name);
-                  }
+            console.log(staff);
+            if (staff.indexOf("$") < 0) {
+              CountryOfficeStaff[staff].skills = [];
+              CountryOfficeStaff[staff].skills.support = [];
+              CountryOfficeStaff[staff].skills.tech = [];
+              CountryOfficeStaff[staff].key = staff;
+              /* getUser FullName */
+              this._getUserName(staff).takeUntil(this.ngUnsubscribe)
+                .subscribe((user: any) => {
+                  CountryOfficeStaff[staff].name = user.firstName + ' ' + user.lastName;
                 });
-            });
+              /* get skills */
+              var skills = CountryOfficeStaff[staff].skill;
+              if (skills) {
+                skills.forEach((skillID, key) => {
+                  this._getSkill(skillID).takeUntil(this.ngUnsubscribe)
+                    .subscribe((skill: any) => {
+                      if (!skill.type) {
+                        CountryOfficeStaff[staff].skills.support.push(skill.name);
+                      } else {
+                        CountryOfficeStaff[staff].skills.tech.push(skill.name);
+                      }
+                    });
+                });
+              }
+            }
           }
 
           this.countryOfficeCapacity = this._convertObjectToArray(CountryOfficeStaff);
@@ -289,5 +325,20 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     return arr;
   }
 
+  getNotesNumber(staff): number {
+    return staff.notes ? Object.keys(staff.notes).length : 0;
+  }
+
+  getUserName(userId) {
+    let userName = "";
+
+    if(!userId) return userName;
+
+    this._userService.getUser(userId).takeUntil(this.ngUnsubscribe).subscribe(user => {
+      userName = user.firstName + ' ' + user.lastName;
+    });
+
+    return userName;
+  }
 
 }
