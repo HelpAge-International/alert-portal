@@ -1,5 +1,5 @@
+import {ActivatedRoute, Router} from "@angular/router";
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {ApprovalStatus, UserType} from "../utils/Enums";
@@ -8,6 +8,7 @@ import set = Reflect.set;
 import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
+import {PageControlService} from "../services/pagecontrol.service";
 declare const jQuery: any;
 
 @Component({
@@ -44,30 +45,22 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
 
-  constructor(private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        console.log("isViewing: " + this.isViewing);
-        console.log("received country id: " + this.countryIdForViewing);
-        if (this.isViewing) {
-          this.countryId = this.countryIdForViewing;
-          this.agencyId = this.agencyIdForViewing;
-          this.getResponsePlans(this.countryId);
-        } else {
-          this.userService.getUserType(this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(userType => {
-              this.userType = userType;
-              let userPath = Constants.USER_PATHS[userType];
-              this.getSystemAgencyCountryIds(userPath);
-            });
-        }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      console.log("isViewing: " + this.isViewing);
+      console.log("received country id: " + this.countryIdForViewing);
+      if (this.isViewing) {
+        this.countryId = this.countryIdForViewing;
+        this.agencyId = this.agencyIdForViewing;
+        this.getResponsePlans(this.countryId);
       } else {
-        this.navigateToLogin();
+        this.userType = userType;
+        let userPath = Constants.USER_PATHS[userType];
+        this.getSystemAgencyCountryIds(userPath);
       }
     });
   }

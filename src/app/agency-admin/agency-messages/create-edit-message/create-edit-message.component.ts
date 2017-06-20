@@ -1,9 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire} from 'angularfire2';
-import {Router} from '@angular/router';
-import {Message} from '../../../model/message';
-import {Constants} from '../../../utils/Constants';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Message} from "../../../model/message";
+import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-edit-message',
@@ -37,21 +38,15 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         console.log('uid: ' + this.uid);
         this.agencyGroupPath = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
         this.agencyMessageRefPath = '/messageRef/agency/' + this.uid + '/';
-      } else {
-        console.log("Error occurred - User isn't logged in");
-        this.navigateToLogin();
-      }
     });
   }
 

@@ -3,7 +3,7 @@ import {NgForm} from '@angular/forms';
 import {HazardScenario, AlertMessageType, Countries} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {ModelHazard} from "../../model/hazard.model";
 import {AlertMessageModel} from '../../model/alert-message.model';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -11,6 +11,7 @@ import {InformHolder, InformService} from "../../services/inform.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {Http} from "@angular/http";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -82,7 +83,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService, private http:Http) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private http: Http, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     this.hazardData.seasons = [];
     this.initHazardData();
 
@@ -91,18 +92,10 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
-            this._loadData();
-          });
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
+      this._loadData();
     });
   }
 

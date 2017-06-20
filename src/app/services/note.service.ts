@@ -30,10 +30,10 @@ export class NoteService {
     {
       return Promise.reject('Missing node or note');
     }
-    
+
     // Update the timestamp
     note.time = new Date().getTime();
-    
+
     if(note.id)
     {
       const nodeData = {};

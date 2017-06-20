@@ -1,11 +1,12 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {PersonTitle} from "../../utils/Enums";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-account-settings',
@@ -33,19 +34,15 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
         this.authState = auth;
         this.uid = auth.uid;
         console.log("System admin uid: " + this.uid);
         this.loadSystemAdminData(this.uid);
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

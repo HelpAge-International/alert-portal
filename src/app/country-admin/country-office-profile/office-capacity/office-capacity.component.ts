@@ -7,6 +7,7 @@ import {ResponsePlanSectors, AlertMessageType, SkillType, OfficeType} from '../.
 import {AlertMessageModel} from '../../../model/alert-message.model';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -54,8 +55,10 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
 
     constructor(
+      private pageControl: PageControlService,
         private subscriptions: RxHelper,
         private router: Router,
+        private route: ActivatedRoute,
         private _userService: UserService,
         private af: AngularFire
     ) {
@@ -67,29 +70,20 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const authSubscription = this._userService.getAuthUser().subscribe(user => {
-            if (!user) {
-                this.router.navigateByUrl(Constants.LOGIN_PATH);
-            }
-            this.uid = user.uid;
-            this._getCountryID().then(() => {
-                this.getStaff();
-                this._getCountryOfficeCapacity().then(() => {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) =>{
+          this.uid = user.uid;
+          this.UserType = userType;
+          this._getAgencyID().then(() => {
+            this._getTotalStaff();
+          });
+          this._getCountryID().then(() => {
+            this.getStaff();
+            this._getCountryOfficeCapacity().then(() => {
 
-                });
             });
-            this._getSkills();
-
-            this._userService.getUserType(this.uid)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(userType => {
-                    this.UserType = userType;
-                    this._getAgencyID().then(() => {
-                        this._getTotalStaff();
-                    });
-                });
+          });
+          this._getSkills();
         });
-        this.subscriptions.add(authSubscription);
     }
 
     ngAfterViewInit() {

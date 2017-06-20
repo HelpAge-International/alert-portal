@@ -4,7 +4,7 @@ import {HazardScenario, AlertMessageType, DurationType, UserType} from "../utils
 import {Constants} from "../utils/Constants";
 import {RxHelper} from "../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {CommonService} from "../services/common.service";
 import {AlertMessageModel} from '../model/alert-message.model';
 import {ModelHazard} from '../model/hazard.model';
@@ -13,6 +13,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
+import {PageControlService} from "../services/pagecontrol.service";
 
 
 declare var jQuery: any;
@@ -21,6 +22,7 @@ declare var jQuery: any;
   templateUrl: './risk-monitoring.component.html',
   styleUrls: ['./risk-monitoring.component.css']
 })
+
 export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private UserType: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -83,7 +85,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private successAddHazardMsg: any;
 
-  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -100,27 +102,16 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
 
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
+      this._getCountryID().then(() => {
+        this._getHazards().then(() => {
 
-            this._getCountryID().then(() => {
-              this._getHazards().then(() => {
-
-              });
-              this._getCountryContextIndicators();
-            });
-          });
-
-
-      } else {
-        this.navigateToLogin();
-      }
+        });
+        this._getCountryContextIndicators();
+      });
     });
   }
 

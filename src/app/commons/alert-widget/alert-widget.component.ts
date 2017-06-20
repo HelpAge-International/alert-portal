@@ -6,6 +6,9 @@ import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType, Threshold
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import {Observable} from 'rxjs';
 import {HazardImages} from "../../utils/HazardImages";
+import {PageControlService} from "../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-alert-widget',
@@ -15,7 +18,6 @@ import {HazardImages} from "../../utils/HazardImages";
 export class AlertWidgetComponent implements OnInit {
 
 	@Input() countryId: string;
-	private subscriptions: RxHelper;
 	private RedAlertStatus = ThresholdName.Red;
 	private AmberAlertStatus = ThresholdName.Amber;
 	private alertLevels = Constants.ALERTS;
@@ -23,29 +25,28 @@ export class AlertWidgetComponent implements OnInit {
 
 	private alerts: any[] = [];
 
-	constructor(private af: AngularFire, private sanitizer: DomSanitizer) {
-		this.subscriptions = new RxHelper;
+	private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+	constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router, private af: AngularFire, private sanitizer: DomSanitizer) {
 	}
 
 	ngOnInit() {
-		this.subscriptions.add(this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryId).subscribe(alerts => {
-			this.alerts = alerts.map (alert => {
-				console.log(alert.alertLevel);
-				console.log(ThresholdName.Red);
-				if (alert.alertLevel == ThresholdName.Red || alert.alertLevel == ThresholdName.Amber){
-					return alert;
-				}
-			});			
-
-        }));
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryId).takeUntil(this.ngUnsubscribe).subscribe(alerts => {
+        this.alerts = alerts.map(alert => {
+          console.log(alert.alertLevel);
+          console.log(ThresholdName.Red);
+          if (alert.alertLevel == ThresholdName.Red || alert.alertLevel == ThresholdName.Amber) {
+            return alert;
+          }
+        });
+      });
+    });
 	}
 
 	ngOnDestroy() {
-		try{
-			this.subscriptions.releaseAll();
-		} catch(e){
-			console.log('Unable to releaseAll');
-		}
+	  this.ngUnsubscribe.next();
+	  this.ngUnsubscribe.complete();
 	}
 
 	public getCSSHazard(hazard: number) {

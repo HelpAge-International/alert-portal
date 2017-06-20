@@ -1,10 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
-import {MandatedPreparednessAction} from '../../../model/mandatedPA';
-import {Constants} from '../../../utils/Constants';
-import {ActionType, ActionLevel} from '../../../utils/Enums';
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {MandatedPreparednessAction} from "../../../model/mandatedPA";
+import {Constants} from "../../../utils/Constants";
+import {ActionLevel, ActionType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
+import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -37,23 +38,16 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-
-        this.uid = auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.path = Constants.APP_STATUS + '/action/' + this.uid;
         this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
-        console.log("uid: " + auth.uid);
+        console.log("uid: " + user.uid);
         this.getDepartments();
-      } else {
-        console.log("Error occurred - User isn't logged in");
-        this.navigateToLogin();
-      }
     });
 
     this.route.params

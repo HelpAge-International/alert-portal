@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { CreateEditMessageComponent } from './create-edit-message.component';
+import {CreateEditMessageComponent} from "./create-edit-message.component";
 
 describe('CreateEditMessageComponent', () => {
   let component: CreateEditMessageComponent;

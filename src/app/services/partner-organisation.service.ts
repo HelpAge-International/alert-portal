@@ -13,7 +13,7 @@ export class PartnerOrganisationService {
 
   getCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
      let partnerOrganisationsList: PartnerOrganisationModel[] = [];
-     const partnerOrganisationSubscription = 
+     const partnerOrganisationSubscription =
           this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
       .flatMap(partnerOrganisations => {
         return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
@@ -35,7 +35,7 @@ export class PartnerOrganisationService {
       .map(items =>
         {
             let partnerOrganisations: PartnerOrganisationModel[] = [];
-            items.forEach(item => { 
+            items.forEach(item => {
               // Add the organisation ID
               let partnerOrganisation = item as PartnerOrganisationModel;
               partnerOrganisation.id = item.$key;
@@ -51,8 +51,8 @@ export class PartnerOrganisationService {
   getPartnerOrganisation(id: string): Observable<PartnerOrganisationModel> {
     if(!id) { return null; }
     const partnerOrganisationSubscription = this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + id)
-      .map(item => { 
-        if(item.$key) { 
+      .map(item => {
+        if(item.$key) {
           let partnerOrganisation = new PartnerOrganisationModel();
           partnerOrganisation.id = id;
           partnerOrganisation.mapFromObject(item);
@@ -70,7 +70,7 @@ export class PartnerOrganisationService {
     {
       throw new Error('Missing agencyId or countryId');
     }
-    
+
     partnerOrganisation.modifiedAt = new Date().getTime();
 
     if(partnerOrganisation.id)
@@ -79,7 +79,7 @@ export class PartnerOrganisationService {
 
       // Add partner organisation to the countryOffice
       partnerOrganisationData['/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations/' + partnerOrganisation.id] = true;
-    
+
       partnerOrganisationData['/partnerOrganisation/' + partnerOrganisation.id] = partnerOrganisation;
 
       return this.af.database.object(Constants.APP_STATUS).update(partnerOrganisationData);
@@ -103,12 +103,12 @@ export class PartnerOrganisationService {
     Object.keys(partnerOrganisation.partners).forEach(key => {
       partnerOrganisationData['/partner/' + key] = null;
     });
-    
+
     // Remove the partner organisation from the country office
     partnerOrganisationData['/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations/' + partnerOrganisation.id] = null;
 
     partnerOrganisationData['/partnerOrganisation/' + partnerOrganisation.id] = null;
-    
+
     return this.af.database.object(Constants.APP_STATUS).update(partnerOrganisationData);
   }
 }

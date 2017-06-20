@@ -6,6 +6,7 @@ import {Countries} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
+import {PageControlService} from "../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -34,7 +35,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private isDirector: boolean;
   private userTypePath: string;
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
 
@@ -47,62 +48,55 @@ export class MapComponent implements OnInit, OnDestroy {
     this.department = new SDepHolder("Something");
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
 
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["isDirector"]) {
-              this.isDirector = params["isDirector"];
-            }
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["isDirector"]) {
+            this.isDirector = params["isDirector"];
+          }
+        });
+
+      this.userTypePath = Constants.USER_PATHS[userType];
+      /** Initialise map and colour the relevant countries */
+      this.mapHelper.initMapFrom("global-map", this.uid, Constants.USER_PATHS[userType],
+        (departments) => {
+          this.mDepartmentMap = departments;
+          this.departments = [];
+          this.minThreshRed = this.mapHelper.minThreshRed;
+          this.minThreshYellow = this.mapHelper.minThreshYellow;
+          this.minThreshGreen = this.mapHelper.minThreshGreen;
+          this.mDepartmentMap.forEach((value, key) => {
+            console.log(value);
+            this.departments.push(value);
           });
+        },
+        (mapCountryClicked) => {
+          if (this.mDepartmentMap != null) {
+            this.openMinimumPreparednessModal(mapCountryClicked);
+            console.log(this.mDepartmentMap.get(mapCountryClicked).countryId);
+          }
+          else {
+            console.log("TODO: Map is yet to initialise properly / it failed to do so");
+          }
+        }
+      );
 
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(usertype => {
-            this.userTypePath = Constants.USER_PATHS[usertype];
-            /** Initialise map and colour the relevant countries */
-            this.mapHelper.initMapFrom("global-map", this.uid, Constants.USER_PATHS[usertype],
-              (departments) => {
-                this.mDepartmentMap = departments;
-                this.departments = [];
-                this.minThreshRed = this.mapHelper.minThreshRed;
-                this.minThreshYellow = this.mapHelper.minThreshYellow;
-                this.minThreshGreen = this.mapHelper.minThreshGreen;
-                this.mDepartmentMap.forEach((value, key) => {
-                  console.log(value);
-                  this.departments.push(value);
-                });
-              },
-              (mapCountryClicked) => {
-                if (this.mDepartmentMap != null) {
-                  this.openMinimumPreparednessModal(mapCountryClicked);
-                  console.log(this.mDepartmentMap.get(mapCountryClicked).countryId);
-                }
-                else {
-                  console.log("TODO: Map is yet to initialise properly / it failed to do so");
-                }
-              }
-            );
-
-            /** Load in the markers on the map! */
-            this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (marker) => {
-              marker.setMap(this.mapHelper.map);
-            });
-
-            /** Get the Agency logo */
-            this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[usertype], (logo) => {
-              this.agencyLogo = logo;
-            });
-
+      /** Load in the markers on the map! */
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
+        if (isEnabled.riskMonitoring) {
+          this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
+            marker.setMap(this.mapHelper.map);
           });
+        }
+      });
 
-
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
+      /** Get the Agency logo */
+      this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (logo) => {
+        this.agencyLogo = logo;
+      });
     });
   }
 

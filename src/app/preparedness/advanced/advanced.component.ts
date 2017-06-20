@@ -9,6 +9,7 @@ declare var jQuery: any;
 import {LocalStorageService} from 'angular-2-local-storage';
 import {MinimumPreparednessComponent} from '../minimum/minimum.component';
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-advanced',
@@ -30,8 +31,8 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
 
   firebase: any;
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService:UserService) {
-    super(firebaseApp, af, router, route, storage, userService);
+  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService:UserService) {
+    super(pageControl, firebaseApp, af, router, route, storage, userService);
     this.firebase = firebaseApp;
 
     this.docFilterSubject = new BehaviorSubject(undefined);
@@ -53,8 +54,7 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
 
   ngOnInit() {
     super.ngOnInit();
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.obsCountryId.subscribe(
           value => {
             this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
@@ -173,12 +173,6 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
               });
             });
           });
-
-      } else {
-        // user is not logged in
-        console.log('Error occurred - User is not logged in');
-        this.navigateToLogin();
-      }
     });
   }
 

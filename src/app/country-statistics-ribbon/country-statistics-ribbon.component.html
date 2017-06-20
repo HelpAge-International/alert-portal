@@ -7,20 +7,20 @@
       </div>
       <span>{{CountriesList[countryLocation] | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="/response-plans">
+    <li class="list-inline-item" routerLink="{{userPermissions.responsePlan ? '/response-plans' : '#'}}">
       <div class="Icon">
-        <div class="Icon__circle Icon--blue Icon--lg">{{numOfApprovedResponsePlans}}</div>
+        <div class="Icon__circle Icon--{{userPermissions.responsePlan ? 'blue' : 'grey'}} Icon--lg">{{userPermissions.responsePlan ? numOfApprovedResponsePlans : 'N/A'}}</div>
       </div>
       <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="/preparedness/minimum">
+    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/preparedness/minimum' : '#'}}">
       <div class="Icon">
-        <div class="Icon__circle Icon--b-{{mpaStatusColor}} Icon--lg">
+        <div class="Icon__circle Icon--b-{{userPermissions.minimumPreparedness ? mpaStatusColor : 'grey'}} Icon--lg">
           <i class="fa {{mpaStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i></div>
       </div>
       <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="/preparedness/advanced">
+    <li class="list-inline-item" routerLink="{{userPermissions.advancedPreparedness ? '/preparedness/advanced' : '#'}}">
       <div class="Icon">
         <div *ngIf="overallAlertLevel == AlertLevels.Red" class="Icon__circle Icon--b-{{advStatusColor}} Icon--lg">
           <i class="fa {{advStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i>
@@ -32,9 +32,9 @@
 
       <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="/preparedness/minimum">
+    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/preparedness/minimum' : '#'}}">
       <div class="Icon">
-        <div class="Icon__circle Icon--green Icon--lg">{{percentageCHS}}%</div>
+        <div class="Icon__circle Icon--{{userPermissions.chsPreparedness ? 'green' : 'grey'}} Icon--lg">{{userPermissions.chsPreparedness ? percentageCHS : 'N/A'}}%</div>
       </div>
       <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
     </li>

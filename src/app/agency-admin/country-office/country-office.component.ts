@@ -1,9 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from 'angularfire2';
-import {Router} from '@angular/router';
-import {Constants} from '../../utils/Constants';
-import {Observable, Scheduler, Subject} from 'rxjs';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Observable, Scheduler, Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -40,33 +41,28 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private agencyService: AgencyService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-      // console.log(user.auth.uid);
-      this.uid = user.auth.uid;
-      this.agencyService.getAgencyId(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyId => {
-          this.agencyId = agencyId;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        // console.log(user.auth.uid);
+        this.uid = user.uid;
+        this.agencyService.getAgencyId(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agencyId => {
+            this.agencyId = agencyId;
 
-          this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
-          this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
-          this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
-            regions.forEach(region => {
-              this.showRegionMap.set(region.$key, false);
+            this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
+            this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
+            this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
+              regions.forEach(region => {
+                this.showRegionMap.set(region.$key, false);
+              });
             });
+            this.checkAnyCountryNoRegion();
           });
-          this.checkAnyCountryNoRegion();
-        });
-
-    });
+      });
   }
 
   ngOnDestroy() {

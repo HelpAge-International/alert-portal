@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from "@angular/core";
+import {PageControlService} from "../../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-create-edit-network',
@@ -7,9 +10,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateEditNetworkComponent implements OnInit {
 
-  constructor() { }
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+
+    });
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

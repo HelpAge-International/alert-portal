@@ -31,7 +31,7 @@ export class Frequency{
 	 * @return {boolean}
 	 */
 	public gt(frequency: Frequency) : boolean {
-		
+
 		// If the frequencies are equal, then this frequency is not greater than compared one
 		if (this.et(frequency))
 			return false;
@@ -43,7 +43,7 @@ export class Frequency{
 		//E.g. If this frequency type is weeks and compared frequency type is years, this frequency is greater
 		if (this.type < frequency.type)
 			return true;
-		
+
 
 		// Type's are equal, we must check the value
 		if (this.type == frequency.type)

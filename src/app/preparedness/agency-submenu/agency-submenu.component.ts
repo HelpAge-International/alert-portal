@@ -4,6 +4,8 @@ import {Constants} from "../../utils/Constants";
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
 import {Countries, DocumentType, SizeType} from "../../utils/Enums";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-agency-submenu',
@@ -21,20 +23,21 @@ export class AgencySubmenuComponent implements OnInit, OnDestroy {
 
   @Input() countryId: string;
 
-  constructor(protected af: AngularFire, protected _sanitizer: DomSanitizer) {
+  constructor(protected pageControl: PageControlService, protected route: ActivatedRoute, protected router: Router, protected af: AngularFire, protected _sanitizer: DomSanitizer) {
   }
 
   ngOnInit() {
-    this.af.database.list(Constants.APP_STATUS + '/countryOffice/')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(offices => {
-      offices.map(office => {
-        Object.keys(office).map(countryId => {
-          if (this.countryId == countryId)
-            this.location = office[countryId].location;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, type) => {
+      this.af.database.list(Constants.APP_STATUS + '/countryOffice/')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(offices => {
+          offices.map(office => {
+            Object.keys(office).map(countryId => {
+              if (this.countryId == countryId)
+                this.location = office[countryId].location;
+            });
+          });
         });
-      });
-
     });
   }
 

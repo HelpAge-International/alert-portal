@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire} from 'angularfire2';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Constants} from '../../utils/Constants';
 import {ModelStaffDisplay} from '../../model/staff-display.model';
 import {Observable, Subject} from 'rxjs';
@@ -11,6 +11,7 @@ import {UserService} from "../../services/user.service";
 import {PartnerModel} from "../../model/partner.model";
 import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 @Component({
   selector: 'app-country-staff',
@@ -51,19 +52,15 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService,
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private af: AngularFire,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-      this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
       this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
         .subscribe(countryAdmin => {
           // Get the country id and agency administrator id

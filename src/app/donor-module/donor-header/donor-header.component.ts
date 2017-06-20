@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {UserType} from "../../utils/Enums";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-donor-header',
@@ -27,31 +28,22 @@ export class DonorHeaderComponent implements OnInit {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
-    this.af.auth.subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
-            this.firstName = user.firstName;
-            this.lastName = user.lastName;
-          });
-
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.NODE_TO_CHECK = this.userPaths[userType];
-            if (this.NODE_TO_CHECK) {
-              this.getAgencyName();
-            }
-          });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.NODE_TO_CHECK = this.userPaths[userType];
+      if (this.NODE_TO_CHECK) {
+        this.getAgencyName();
       }
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.firstName = user.firstName;
+          this.lastName = user.lastName;
+        });
     });
   }
 

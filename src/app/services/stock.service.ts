@@ -14,7 +14,7 @@ export class StockService {
         return;
       }
 
-      const stockCapacitiesSubscription = 
+      const stockCapacitiesSubscription =
             this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + countryId)
                       .map(items => {
                         const stockCapacities: StockCapacityModel[] = [];
@@ -36,7 +36,7 @@ export class StockService {
         return;
       }
 
-      const getStockCapacitySubscription = 
+      const getStockCapacitySubscription =
               this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + countryId + '/' + stockCapacityId)
       .map(item => {
         let stockCapacity = new StockCapacityModel();
@@ -53,10 +53,10 @@ export class StockService {
     {
       return Promise.reject('Missing countryId or stockCapacity');
     }
-    
+
     // Update the timestamp
     stockCapacity.updatedAt = new Date().getTime();
-    
+
     if(stockCapacity.id)
     {
       const stockCapacityData = {};
@@ -72,7 +72,7 @@ export class StockService {
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
     }
-    
+
     const stockCapacityData = {};
 
     stockCapacityData['/countryOfficeProfile/capacity/stockCapacity/' + countryId + '/' + stockCapacity.id] = null;

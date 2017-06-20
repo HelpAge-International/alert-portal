@@ -8,6 +8,7 @@ import {Subject} from 'rxjs';
 import { AlertMessageModel } from "../../model/alert-message.model";
 import { DisplayError } from "../../errors/display.error";
 import { AlertMessageType } from "../../utils/Enums";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-country-office-profile',
@@ -28,7 +29,7 @@ export class CountryOfficeProfileComponent implements OnInit {
   protected obsCountryId: Subject<string> = new Subject();
 
 
-  constructor( protected router: Router, protected route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService,  protected router: Router, protected route: ActivatedRoute) {
     this.route.params.subscribe((params: Params) => {
         console.log(params);
       if (params['countryId']) {

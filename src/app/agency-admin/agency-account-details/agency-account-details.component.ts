@@ -1,10 +1,11 @@
-import {Component, Inject, OnInit, OnDestroy} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Currency} from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -44,25 +45,21 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
     this.firebase = firebaseApp;
   }
 
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(id => {
-            this.agencyId = id.$value;
-            this.loadAgencyData(this.agencyId);
-          });
-        console.log("Agency admin uid: " + this.agencyId);
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(id => {
+          this.agencyId = id.$value;
+          this.loadAgencyData(this.agencyId);
+        });
+      console.log("Agency admin uid: " + this.agencyId);
     });
   }
 

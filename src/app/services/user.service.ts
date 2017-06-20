@@ -31,15 +31,6 @@ export class UserService {
   }
 
   // FIREBASE
-  getAuthUser(): Observable<firebase.User> {
-    const userAuthSubscription = this.af.auth.map(user => {
-      this.authState = user;
-      return user.auth;
-    });
-
-    return userAuthSubscription;
-  }
-
   createNewFirebaseUser(email: string, password: string): firebase.Promise<any> {
     return this.secondApp.auth().createUserWithEmailAndPassword(email, password)
       .then(newUser => {
@@ -111,7 +102,7 @@ export class UserService {
     // } else {
     this.getUser(uid).subscribe(oldUser => {
       if (oldUser.email && oldUser.email !== userPublic.email) {
-        this.getAuthUser();
+        // this.getAuthUser();
         return this.authState.auth.updateEmail(userPublic.email).then(bool => {
             return this.saveUserPublic(userPublic);
           },
@@ -292,7 +283,6 @@ export class UserService {
 
     return this.af.database.object(Constants.APP_STATUS).update(partnerData);
   }
-
   // STAFF MEMBER
 
   getStaffList(countryId: string): Observable<ModelStaff[]> {
@@ -332,6 +322,56 @@ export class UserService {
       });
 
     return staffSubscription;
+
+  }
+  /**
+   * Static method for getting the user type
+   */
+  static getUserType(af: AngularFire, uid: string): Observable<any> {
+    const paths = [
+      {path: Constants.APP_STATUS + "/administratorCountry/" + uid, type: UserType.CountryAdmin},
+      {path: Constants.APP_STATUS + "/countryDirector/" + uid, type: UserType.CountryDirector},
+      {path: Constants.APP_STATUS + "/regionDirector/" + uid, type: UserType.RegionalDirector},
+      {path: Constants.APP_STATUS + "/globalDirector/" + uid, type: UserType.GlobalDirector},
+      {path: Constants.APP_STATUS + "/globalUser/" + uid, type: UserType.GlobalUser},
+      {path: Constants.APP_STATUS + "/countryUser/" + uid, type: UserType.CountryUser},
+      {path: Constants.APP_STATUS + "/ertLeader/" + uid, type: UserType.ErtLeader},
+      {path: Constants.APP_STATUS + "/ert/" + uid, type: UserType.Ert},
+      {path: Constants.APP_STATUS + "/donor/" + uid, type: UserType.Donor}
+      // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
+    ];
+    // Check if it's a system admin
+    return af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
+      .flatMap((snap) => {
+        if (snap.val() != null) {
+          return Observable.of(UserType.SystemAdmin);
+        }
+        else {
+          return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+            .flatMap((mySnap) => {
+              if (mySnap.val() != null) {
+                return Observable.of(UserType.AgencyAdmin);
+              }
+              else {
+                return UserService.recursiveUserMap(af, paths, 0);
+              }
+            });
+        }
+      });
+  }
+  private static recursiveUserMap(af: AngularFire, paths, index: number) {
+    if (index == paths.length) {
+      return Observable.of(null);
+    }
+    return af.database.object(paths[index].path)
+      .flatMap(obj => {
+        if (obj.agencyAdmin) {
+          return Observable.of(paths[index].type);
+        }
+        else {
+          return UserService.recursiveUserMap(af, paths, index + 1);
+        }
+      });
   }
 
   //return current user type enum number
@@ -346,8 +386,8 @@ export class UserService {
       Constants.APP_STATUS + "/countryUser/" + uid,
       Constants.APP_STATUS + "/ertLeader/" + uid,
       Constants.APP_STATUS + "/ert/" + uid,
-      Constants.APP_STATUS + "/donor/" + uid,
-      Constants.APP_STATUS + "/administratorAgency/" + uid
+      Constants.APP_STATUS + "/donor/" + uid
+      // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
     ];
 
     if (!uid) {

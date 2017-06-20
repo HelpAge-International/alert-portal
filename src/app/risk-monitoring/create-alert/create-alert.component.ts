@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, Countries, DurationType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {CommonService} from "../../services/common.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {ModelAlert} from "../../model/alert.model";
@@ -10,6 +10,7 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-alert',
@@ -99,7 +100,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private hazards: any[] = [];
 
-  constructor(private af: AngularFire, private router: Router, private _commonService: CommonService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private _commonService: CommonService, private translate: TranslateService, private userService: UserService) {
     this.initAlertData();
   }
 
@@ -117,29 +118,21 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
 
-            this._getCountryID().then(() => {
-              this._getHazards();
-              this._getDirectorCountryID();
-            });
+      this._getCountryID().then(() => {
+        this._getHazards();
+        this._getDirectorCountryID();
+      });
 
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe).subscribe(content => {
-              this.countryLevelsValues = content;
-              err => console.log(err);
-            });
-          });
-      } else {
-        this.navigateToLogin();
-      }
+      // get the country levels values
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .takeUntil(this.ngUnsubscribe).subscribe(content => {
+        this.countryLevelsValues = content;
+        err => console.log(err);
+      });
     });
   }
 

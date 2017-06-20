@@ -160,6 +160,7 @@ import {ProjectReportComponent} from "./export-start-fund/project-report/project
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
 import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
+import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
 import {DonorChangePasswordComponent} from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
 import {NewDonorPasswordComponent} from './donor-module/new-donor-password/new-donor-password.component';
@@ -373,6 +374,7 @@ const firebaseAuthConfig = {
               CoordinationArrangementService,
               AgencyService,
               StockService,
+              PageControlService,
               ContactService],
   bootstrap: [AppComponent]
 })

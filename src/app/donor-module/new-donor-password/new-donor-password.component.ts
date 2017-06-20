@@ -1,9 +1,10 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from 'angularfire2';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
 import {Constants} from "../../utils/Constants";
 import {CustomerValidator} from "../../utils/CustomValidator";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-new-donor-password',
@@ -13,7 +14,7 @@ import {CustomerValidator} from "../../utils/CustomValidator";
 
 export class NewDonorPasswordComponent implements OnInit, OnDestroy {
 
-  constructor(private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
 
   private uid: string;
@@ -33,19 +34,15 @@ export class NewDonorPasswordComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
         this.authState = auth;
-        this.uid = auth.uid;
+        this.uid = auth.auth.uid;
 
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
             this.countryAdminName = user.firstName;
           });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

@@ -3,9 +3,10 @@ import {AlertLevels, Countries} from "../../utils/Enums";
 import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 import {AgencyService} from "../../services/agency-service.service";
 
 @Component({
@@ -47,24 +48,15 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private UserType: number;
 
-  constructor(private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer,
-              private userService: UserService, private agencyService: AgencyService) {
+  constructor(private pageControl: PageControlService, private agencyService: AgencyService, private route: ActivatedRoute, private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer, private userService: UserService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
-            this._loadData();
-          });
-      } else {
-        this.navigateToLogin();
-      }
-    });
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+        this.UserType = userType;
+        this._loadData();
+      });
   }
 
   ngOnDestroy() {
@@ -303,13 +295,11 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  private
-  navigateToLogin() {
+  private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
-  protected
-  getBackground(location) {
+  protected getBackground(location) {
     if (location)
       return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[location] + '.svg)');
   }

@@ -8,6 +8,8 @@ import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AlertMessageModel} from '../../model/alert-message.model';
+import {PageControlService} from "../../services/pagecontrol.service";
+declare var jQuery: any;
 import {Observable, Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 
@@ -63,20 +65,20 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
   private allowedDurationList: number[] = [];
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private userService: UserService) {
-    this.actionData = new Action();
-    this.setDefaultActionDataValue();
-    /* if selected generic action */
-    this.actionSelected = this.storage.get('selectedAction');
-    if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
-      this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
-      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
-      this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
-      this.storage.remove('selectedAction');
-      this.actionSelected = {};
-    }
+    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+        this.actionData = new Action();
+        this.setDefaultActionDataValue();
+        /* if selected generic action */
+        this.actionSelected = this.storage.get('selectedAction');
+        if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
+            this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+            this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
+            this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+            this.storage.remove('selectedAction');
+            this.actionSelected = {};
+        }
 
     /* if copy action */
     this.copyActionData = this.storage.get('copyActionData');
@@ -101,22 +103,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     console.log(this.actionData);
   }
 
-  ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
+    ngOnInit() {
+      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
+        this.UserType = userType;
         this._defaultHazardCategoryValue();
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
-            this.processPage();
-          });
-      } else {
-        this.navigateToLogin();
-      }
-    });
-  }
+        this.processPage();
+      });
+    }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();

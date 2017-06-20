@@ -14,6 +14,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-add-indicator',
@@ -94,7 +95,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire,
+  constructor(private pageControl: PageControlService, private af: AngularFire,
               private router: Router,
               private _commonService: CommonService,
               private route: ActivatedRoute,
@@ -105,32 +106,22 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
 
-            this.getCountryID().then(() => {
-              this._getHazards();
-              this.getUsersForAssign();
-            });
+      this.getCountryID().then(() => {
+        this._getHazards();
+        this.getUsersForAssign();
+      });
 
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(content => {
-                this.countryLevelsValues = content;
-                err => console.log(err);
-              });
-          });
-
-
-      } else {
-        this.navigateToLogin();
-      }
+      // get the country levels values
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          err => console.log(err);
+        });
     });
   }
 
@@ -306,7 +297,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.hazards = [];
       this.hazardsObject = {};
 
-      hazards["countryContext"] = { key: "countryContext" };
+      hazards["countryContext"] = {key: "countryContext"};
       this.hazards.push(hazards["countryContext"]);
       this.hazardsObject["countryContext"] = hazards["countryContext"];
 

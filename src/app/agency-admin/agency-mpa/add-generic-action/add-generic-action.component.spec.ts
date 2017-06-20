@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { AddGenericActionComponent } from './add-generic-action.component';
+import {AddGenericActionComponent} from "./add-generic-action.component";
 
 describe('AddGenericActionComponent', () => {
   let component: AddGenericActionComponent;

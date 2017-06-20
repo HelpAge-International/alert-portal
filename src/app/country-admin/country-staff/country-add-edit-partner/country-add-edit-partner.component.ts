@@ -15,6 +15,8 @@ import { UserService } from "../../../services/user.service";
 import { CountryAdminModel } from "../../../model/country-admin.model";
 import { DisplayError } from "../../../errors/display.error";
 import { SessionService } from "../../../services/session.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -44,7 +46,9 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   private userPublic: ModelUserPublic;
   private countryAdmin: CountryAdminModel;
 
-  constructor(private _userService: UserService,
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _notificationSettingsService: NotificationSettingsService,
               private _sessionService: SessionService,
@@ -63,11 +67,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
       this.uid = user.uid;
 
@@ -88,8 +88,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                 });
                 this.subscriptions.add(userSubscription);
 
-                const partnerSubscription = this._userService.getPartnerUser(params['id']).subscribe(partner => { 
-                    if(partner) { if(partner) { this.partner = partner; } } 
+                const partnerSubscription = this._userService.getPartnerUser(params['id']).subscribe(partner => {
+                    if(partner) { if(partner) { this.partner = partner; } }
                 });
                 this.subscriptions.add(partnerSubscription);
               }else{
@@ -101,8 +101,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
         });
       }
       catch(err) { console.log(err); }
-    })
-    this.subscriptions.add(authSubscription);
+    });
   }
 
 
@@ -112,7 +111,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('response-plans/add-partner-organisation');
     }
   }
-  
+
   validateForm(): boolean {
     this.alertMessage = this.partner.validate() || this.userPublic.validate(['city']);
 
@@ -133,8 +132,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
             .then(user => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.router.navigateByUrl('/country-admin/country-staff'), Constants.ALERT_REDIRECT_DURATION);
-            }, 
-            err => 
+            },
+            err =>
             {
               if(err instanceof DisplayError) {
                 this.alertMessage = new AlertMessageModel(err.message);

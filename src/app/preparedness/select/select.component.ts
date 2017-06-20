@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {Router, NavigationExtras} from "@angular/router";
+import {Router, NavigationExtras, ActivatedRoute} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Department, ActionType, ActionLevel, GenericActionCategory} from "../../utils/Enums";
 import {Action} from "../../model/action";
@@ -8,6 +8,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {Observable, Subject} from "rxjs";
 
 import {LocalStorageService} from 'angular-2-local-storage';
+import {PageControlService} from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -51,14 +52,12 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
   }
 
   ngOnInit() {
-
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (user) {
-        this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
         this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/systemAdmin')
           .takeUntil(this.ngUnsubscribe)
           .subscribe((systemAdminIds) => {
@@ -70,9 +69,6 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
               }
             });
           });
-      } else {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-      }
     });
   }
 

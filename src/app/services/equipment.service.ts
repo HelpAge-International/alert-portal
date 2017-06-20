@@ -51,10 +51,10 @@ export class EquipmentService {
     {
       return Promise.reject('Missing countryId or equipment');
     }
-    
+
     // Update the timestamp
     equipment.updatedAt = new Date().getTime();
-    
+
     if(equipment.id)
     {
       const equipmentData = {};
@@ -97,7 +97,7 @@ export class EquipmentService {
 
     return getSurgeEquipmentSubscription;
   }
-  
+
    public getSurgeEquipment(countryId: string, surgeEquipmentId: string): Observable<SurgeEquipmentModel> {
       if (!countryId || !surgeEquipmentId) {
         return;
@@ -119,10 +119,10 @@ export class EquipmentService {
     {
       return Promise.reject('Missing countryId or surge equipment');
     }
-    
+
     // Update the timestamp
     surgeEquipment.updatedAt = new Date().getTime();
-    
+
     if(surgeEquipment.id)
     {
       const surgeEquipmentData = {};
@@ -138,7 +138,7 @@ export class EquipmentService {
     {
       return Promise.reject('Missing countryId or surgeEquipment');
     }
-    
+
     const surgeEquipmentData = {};
 
     surgeEquipmentData['/countryOfficeProfile/surgeEquipment/' + countryId + '/' + surgeEquipment.id] = null;

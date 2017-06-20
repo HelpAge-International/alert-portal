@@ -7,6 +7,7 @@ import {Constants} from "../../utils/Constants";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {DisplayError} from "../../errors/display.error";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -30,18 +31,13 @@ export class CountryAccountSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private _userService: UserService,
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private router: Router,
               private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this._userService.getAuthUser().takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(userPublic => {

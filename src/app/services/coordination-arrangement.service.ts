@@ -34,7 +34,7 @@ export class CoordinationArrangementService {
         return;
       }
 
-      const getCoordinationArrangementSubscription = 
+      const getCoordinationArrangementSubscription =
               this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangementId)
       .map(item => {
         let coordinationArrangement = new CoordinationArrangementModel();
@@ -51,10 +51,10 @@ export class CoordinationArrangementService {
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
     }
-    
+
     // Update the timestamp
     coordinationArrangement.updatedAt = new Date().getTime();
-    
+
     if(coordinationArrangement.id)
     {
       const equipmentData = {};
@@ -70,7 +70,7 @@ export class CoordinationArrangementService {
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
     }
-    
+
     const coordinationArrangementData = {};
 
     coordinationArrangementData['/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;

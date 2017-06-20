@@ -1,17 +1,19 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Department, ActionType, ActionLevel, HazardCategory, DurationType} from "../../utils/Enums";
 import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {Subject} from "rxjs";
+import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 import {AlertMessageType} from "../../utils/Enums";
 
 import {AlertMessageModel} from '../../model/alert-message.model';
 
 
-declare var jQuery:any;
+declare var jQuery: any;
 
 @Component({
     selector: 'app-budget',
@@ -20,6 +22,8 @@ declare var jQuery:any;
 })
 
 export class BudgetPreparednessComponent implements OnInit, OnDestroy {
+  private UserType: number;
+
     private alertMessage:AlertMessageModel = null;
     private alertMessageType = AlertMessageType;
 
@@ -36,19 +40,17 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
     private departments:Array<string> = [];
     private ngUnsubscribe:Subject<void> = new Subject<void>();
 
-    constructor(private af:AngularFire, private router:Router) {
-    }
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+    this.generateArray();
+  }
 
-    ngOnInit() {
-        this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-            if (auth) {
-                this.uid = auth.uid;
-                this._loadData();
-            } else {
-                this.navigateToLogin();
-            }
-        });
-    }
+  ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
+      this._loadData();
+    });
+  }
 
     ngOnDestroy() {
         this.ngUnsubscribe.next();

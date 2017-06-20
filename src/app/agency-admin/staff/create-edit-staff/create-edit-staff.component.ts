@@ -12,6 +12,7 @@ import * as firebase from "firebase";
 import {ModelStaff} from "../../../model/staff.model";
 import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
 import {map} from "rxjs/operator/map";
 declare var jQuery: any;
 
@@ -88,16 +89,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private systemId: string;
   private regionOfficeList: string[];
 
-  constructor(private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-      this.uid = user.auth.uid;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.initData();
       this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {

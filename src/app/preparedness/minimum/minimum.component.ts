@@ -8,6 +8,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'angular-2-local-storage';
 import * as firebase from 'firebase';
 import {UserService} from "../../services/user.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 
@@ -66,7 +67,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
 
 
-  constructor(@Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
+  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
     this.firebase = firebaseApp;
 
     this.docFilterSubject = new BehaviorSubject(undefined);
@@ -94,34 +95,30 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-      if (auth) {
-        this.uid = auth.uid;
-        this.userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-            this.UserType = userType;
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
 
-            this.obsCountryId
+      this.obsCountryId
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(
+          value => {
+            this.assignedToUsers = [];
+            this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(
-                value => {
-                  this.assignedToUsers = [];
-                  this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+              .subscribe(staff => {
+                this.assignedToUsers = staff.map(member => {
+                  let userId = member.$key;
+                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
                     .takeUntil(this.ngUnsubscribe)
-                    .subscribe(staff => {
-                      this.assignedToUsers = staff.map(member => {
-                        let userId = member.$key;
-                        this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(_ => {
-                            if (_.$exists()) {
-                              member.fullName = _.firstName + " " + _.lastName;
-                            }
-                            else {
-                              member.fullName = "";
-                            }
-                          });
+                    .subscribe(_ => {
+                      if (_.$exists()) {
+                        member.fullName = _.firstName + " " + _.lastName;
+                      }
+                      else {
+                        member.fullName = "";
+                      }
+                    });
 
                         return member;
                       });
@@ -239,13 +236,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                   this.departments = [];
                 }
 
-              });
-          });
-      } else {
-        // user is not logged in
-        console.log('Error occurred - User is not logged in');
-        this.navigateToLogin();
-      }
+        });
     });
   }
 

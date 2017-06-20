@@ -16,6 +16,8 @@ import { SessionService } from "../../../services/session.service";
 import { CommonService } from "../../../services/common.service";
 import { NoteModel } from "../../../model/note.model";
 import { NoteService } from "../../../services/note.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -37,7 +39,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   filterOrganisation = null;
   filterSector = null;
   filterLocation = null;
-  
+
   PARTNER_STATUS = Constants.PARTNER_STATUS;
   RESPONSE_PLAN_SECTORS = ResponsePlanSectors;
   RESPONSE_PLAN_SECTORS_SELECTION = Constants.RESPONSE_PLANS_SECTORS;
@@ -55,14 +57,14 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private activeNote: NoteModel;
   private activePartnerOrganisation: PartnerOrganisationModel;
 
-  constructor(private _userService: UserService,
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _noteService: NoteService,
               private _sessionService: SessionService,
-              private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper){
+              private router: Router){
     this.areasOfOperation = [];
     this.partnerOrganisations = [];
     this.newNote = [];
@@ -71,15 +73,12 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._sessionService.partner = null;
     this._sessionService.user = null;
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
       this.uid = user.uid;
 
@@ -113,7 +112,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
           });
       });
     })
-    this.subscriptions.add(authSubscription);
   }
 
   goBack() {
@@ -124,8 +122,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     let areasOfOperation: string[] = [];
     if(partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
       partnerOrganisation.projects.forEach(project => {
-        project.operationAreas.forEach(location => { 
-          const locationName = 
+        project.operationAreas.forEach(location => {
+          const locationName =
               this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
           areasOfOperation.push(locationName);
           if(!this.areasOfOperation.find(x => x == locationName))
@@ -164,7 +162,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
       hide = true;
    }
 
-   if(this.filterSector && this.filterSector != "null" 
+   if(this.filterSector && this.filterSector != "null"
             && !this.hasOrganisationProjectSector(partnerOrganisation, this.filterSector)){
       hide = true;
    }
@@ -186,7 +184,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   {
     if(this.validateNote(note))
     {
-      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id); 
+      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
       this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
@@ -205,7 +203,7 @@ editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
 
     if(this.validateNote(note))
     {
-      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id); 
+      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
       this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
@@ -263,7 +261,7 @@ editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
 
   private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: string): boolean {
     let exists = false;
-    
+
     let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
 
     if(areasOfOperation.search(locationName) !== -1)

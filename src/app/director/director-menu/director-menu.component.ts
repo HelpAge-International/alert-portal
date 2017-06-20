@@ -1,22 +1,34 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
 import {DOCUMENT} from "@angular/platform-browser";
+import {PageControlService} from "../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'app-director-menu',
   templateUrl: './director-menu.component.html',
   styleUrls: ['./director-menu.component.css']
 })
-export class DirectorMenuComponent implements OnInit {
+export class DirectorMenuComponent implements OnInit, OnDestroy {
 
-  constructor(private route: Router, @Inject(DOCUMENT) private document: any) {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router, @Inject(DOCUMENT) private document: any) {
     console.log(this.document.location.href);
   }
 
   ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+
+    });
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   toMap() {
-    this.route.navigate(["/map", {"isDirector": true}]);
+    this.router.navigate(["/map", {"isDirector": true}]);
   }
 }

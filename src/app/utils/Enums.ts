@@ -96,9 +96,10 @@ export enum UserType {
     GlobalUser = 7,
     CountryAdmin = 8,
     NonAlert = 9,
-    CountryUser = 10
+    CountryUser = 10,
+    AgencyAdmin = 11,
+    SystemAdmin = 12
 }
-
 export enum OfficeType {
     All = 0,
     FieldOffice = 1,
@@ -178,17 +179,24 @@ export enum ResponsePlansApprovalSettings {
 }
 
 export enum ModuleName {
-    MinimumPreparednessActions = 0,
-    AdvancedPreparednessActions = 1,
-    CHSPreparednessActions = 2,
-    HazardPrioritisation = 3,
-    PreparednessBudget = 4,
-    SeasonalCalendar = 5,
-    HazardIndicator = 6,
-    CountryOfficeProfile = 7,
-    ResponsePlanning = 8,
-    GlobalMaps = 9
+  MinimumPreparednessActions = 0,
+  AdvancedPreparednessActions = 1,
+  CHSPreparednessActions = 2,
+  RiskMonitoring = 3,
+  CountryOfficeProfile = 4,
+  ResponsePlanning = 5
 }
+
+
+export enum PermissionsAgency {
+  MinimumPreparedness = 0,
+  AdvancedPreparedness = 1,
+  CHSPreparedness = 2,
+  RiskMonitoring = 3,
+  CountryOffice = 4,
+  ResponsePlanning = 5
+}
+
 
 export enum PresenceInTheCountry {
     currentProgrammes = 0,

@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { CreateEditCountryComponent } from './create-edit-country.component';
+import {CreateEditCountryComponent} from "./create-edit-country.component";
 
 describe('CreateEditCountryComponent', () => {
   let component: CreateEditCountryComponent;

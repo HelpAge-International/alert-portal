@@ -1,10 +1,11 @@
 import {Component, OnInit, OnDestroy, ViewContainerRef} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Modal} from "angular2-modal/plugins/bootstrap";
 import {Overlay} from "angular2-modal";
 import {Subject} from "rxjs";
+import {PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -22,19 +23,14 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
     overlay.defaultViewContainer = vcRef;
   }
 
   ngOnInit() {
-    this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(x => {
-      if (x) {
-        this.uid = x.auth.uid;
-        console.log("uid: " + this.uid);
-        this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
-      } else {
-        this.navigateToLogin();
-      }
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
     });
   }
 

@@ -9,6 +9,8 @@ import { DisplayError } from "../../../../errors/display.error";
 import { UserService } from "../../../../services/user.service";
 import { EquipmentService } from "../../../../services/equipment.service";
 import { EquipmentModel } from "../../../../model/equipment.model";
+import {PageControlService} from "../../../../services/pagecontrol.service";
+import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
 @Component({
@@ -23,30 +25,27 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
-  
+
   // Models
   private alertMessage: AlertMessageModel = null;
   private equipment: EquipmentModel;
-  
-  constructor(private _userService: UserService,
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
               private router: Router,
-              private route: ActivatedRoute,
-              private subscriptions: RxHelper) {
+              private route: ActivatedRoute) {
                 this.equipment = new EquipmentModel();
   }
 
   ngOnDestroy() {
-    this.subscriptions.releaseAll();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   ngOnInit() {
-    const authSubscription = this._userService.getAuthUser().subscribe(user => {
-      if (!user) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
-        return;
-      }
-
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
@@ -60,7 +59,6 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
         });
       });
     })
-    this.subscriptions.add(authSubscription);
   }
 
   validateForm(): boolean {
@@ -74,8 +72,8 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            }, 
-            err => 
+            },
+            err =>
             {
               if(err instanceof DisplayError) {
                 this.alertMessage = new AlertMessageModel(err.message);
