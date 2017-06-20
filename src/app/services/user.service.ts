@@ -44,7 +44,6 @@ export class UserService {
     if (!uid) {
       return null
     }
-    ;
     const userSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uid)
       .map(user => {
         if (user.$key) {

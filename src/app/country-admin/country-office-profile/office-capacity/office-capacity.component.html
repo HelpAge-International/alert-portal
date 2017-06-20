@@ -3,239 +3,285 @@
   <app-country-admin-menu></app-country-admin-menu>
 </div>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
+  <div class="Full-page__wrap--inner">
 
-      <app-country-office-profile-menu></app-country-office-profile-menu>
+    <app-country-office-profile-menu></app-country-office-profile-menu>
 
-      <div class="Header-title__wrap Spaced row">
-            <h2 class="col-sm-6">Office & surge capacity</h2>
-            <button type="button" class="btn btn-outline-primary">EDIT OFFICE & SURGE CAPACITY</button>
+    <div class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-6">Office & surge capacity</h2>
+      <button type="button" class="btn btn-outline-primary">EDIT OFFICE & SURGE CAPACITY</button>
+    </div>
+
+    <h3 class="Spaced-above">Country office capacity</h3>
+    <div class="row Spaced padding-left-two">
+      <label class="col-sm-0 Spaced-above">Filter:</label>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" id="select1" (change)="filterData($event, 'office')">
+          <option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>
+        </select>
       </div>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" id="select1" (change)="filterData($event, 'sSkills')">
+          <option value="0">All</option>
+          <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
+        </select>
+      </div>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" id="select1" (change)="filterData($event, 'tSkills')">
+          <option value="0">All</option>
+          <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
+        </select>
+      </div>
+      <div class="col-sm-4"></div>
+    </div>
 
-        <h3 class="Spaced-above">Country office capacity</h3>
-        <div class="row Spaced padding-left-two">
-            <label class="col-sm-0 Spaced-above">Filter:</label>
-            <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" id="select1" (change)="filterData($event, 'office')">
-                    <option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>
-                </select>
-            </div>
-            <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" id="select1" (change)="filterData($event, 'sSkills')">
-                    <option value="0">All</option>
-                    <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
-                </select>
-            </div>
-            <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" id="select1" (change)="filterData($event, 'tSkills')">
-                    <option value="0">All</option>
-                    <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
-                </select>
-            </div>
-            <div class="col-sm-4"></div>
+    <!--Staff count-->
+    <div class="row Spaced">
+      <div class="col-sm-0 padding-left-two"><strong>Total staff: {{totalStaff}}</strong></div>
+      <div class="col-sm-7"><strong>Total response staff: {{totalResponseStaff}}</strong></div>
+    </div>
+
+    <!--Staff table headers-->
+    <div class="row">
+      <div class="col-sm-1"><strong>Updated</strong></div>
+      <div class="col-sm-2"><strong>Name</strong></div>
+      <div class="col-sm-1"><strong>Position</strong></div>
+      <div class="col-sm-2"><strong>Office Type</strong></div>
+      <div class="col-sm-2"><strong>Skills</strong></div>
+      <div class="col-sm-4"><strong>Training Needs</strong></div>
+    </div>
+    <div class="row Line-row margin-top-two"></div>
+
+    <!--Abigall Taylor-->
+    <div *ngFor="let staff of responseStaffs">
+      <div class="row">
+        <div class="col-sm-1">{{staff.updatedAt | date:"MM/yy"}}</div> <!--Updated-->
+        <div class="col-sm-2">{{userMap.get(staff.id)}}</div> <!--Name-->
+        <div class="col-sm-1">{{staff.position}}</div> <!--Position-->
+        <div class="col-sm-2">{{officeType[staff.officeType] | translate}}</div> <!--Office Type-->
+        <div class="col-sm-2">
+          <div class="row">
+            <div class="col-sm-1"><img class="margin-left-two" style="width: 1.85em;"
+                                       src="assets/images/icons/skills_bubble.svg" alt="Skills">
+              <p class="notes-number__components--country-office-profile skills">2</p>
+              <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
+                 data-content="-WaSh" title="Technical skills" class="col-sm-0">Technical</a></div>
+            <div class="col-sm-1 margin-left-six"><img class="margin-left-two" style="width: 1.85em;"
+                                                       src="assets/images/icons/skills_bubble.svg" alt="Skills"><a
+              class="col-sm-0" href="#"><p class="notes-number__components--country-office-profile skills">3</p>
+              Support</a></div>
+          </div>
+        </div> <!--Skills-->
+        <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> <!--Training Needs-->
+        <div class="col-sm-1">
+          <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+          <p class="notes-number__components--country-office-profile">1</p>
+          <a href="#" class="row margin-left-one-half">Notes</a>
         </div>
+      </div>
+      <div class="row Line-row"></div>
+    </div>
 
-        <!--Staff count-->
-        <div class="row Spaced">
-            <div class="col-sm-0 padding-left-two"><strong>Total staff: {{totalStaff}}</strong></div>
-            <div class="col-sm-7"><strong>Total response staff: {{totalResponseStaff}}</strong></div>
+
+    <div *ngFor="let officeCapacity of countryOfficeCapacity">
+      <div class="row">
+        <div class="col-sm-1">{{ officeCapacity.updatedAt ? (officeCapacity.updatedAt | date: 'MM/yy') : '-'}}</div>
+        <!--Updated-->
+        <div class="col-sm-2">{{officeCapacity.name}}</div> <!--Name-->
+        <div class="col-sm-1">{{officeCapacity.position}}</div> <!--Position-->
+        <div class="col-sm-2">{{officeType[officeCapacity.officeType] | translate}}</div> <!--Office Type-->
+        <div class="col-sm-2">
+          <div class="row">
+            <div class="col-sm-1">
+              <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                   alt="Skills">
+              <p class="notes-number__components--country-office-profile skills">
+                {{officeCapacity.skills.tech.length}}</p>
+              <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
+                 data-content="-WaSh" title="Technical skills" class="col-sm-0">Technical</a>
+            </div>
+            <div class="col-sm-1 margin-left-six">
+              <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                   alt="Skills">
+              <a class="col-sm-0" href="javascript:void(0)">
+                <p class="notes-number__components--country-office-profile skills">
+                  {{officeCapacity.skills.support.length}}</p>Support
+              </a>
+            </div>
+          </div>
+        </div> <!--Skills-->
+        <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> <!--Training Needs-->
+        <div class="col-sm-1">
+          <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+          <p class="notes-number__components--country-office-profile">1</p>
+          <a href="#" class="row margin-left-one-half">Notes</a>
         </div>
-
-        <!--Staff table headers-->
-        <div class="row">
-            <div class="col-sm-1"><strong>Updated</strong></div>
-            <div class="col-sm-2"><strong>Name</strong></div>
-            <div class="col-sm-1"><strong>Position</strong></div>
-            <div class="col-sm-2"><strong>Office Type</strong></div>
-            <div class="col-sm-2"><strong>Skills</strong></div>
-            <div class="col-sm-4"><strong>Training Needs</strong></div>
-        </div>
-        <div class="row Line-row margin-top-two"></div>
+      </div>
+      <div class="row Line-row"></div>
+    </div>
 
 
-        <div *ngFor="let officeCapacity of countryOfficeCapacity">
+    <!--        Abigall Taylor
             <div class="row">
-                <div class="col-sm-1">{{ officeCapacity.updatedAt ? (officeCapacity.updatedAt | date: 'MM/yy') : '-'}}</div> <!--Updated-->
-                <div class="col-sm-2">{{officeCapacity.name}}</div> <!--Name-->
-                <div class="col-sm-1">{{officeCapacity.position}}</div> <!--Position-->
-                <div class="col-sm-2">{{officeType[officeCapacity.officeType] | translate}}</div> <!--Office Type-->
+                <div class="col-sm-1">02/17</div> Updated
+                <div class="col-sm-2">Abigail Taylor</div> Name
+                <div class="col-sm-1">Logistics</div> Position
+                <div class="col-sm-2">Field Office</div> Office Type
                 <div class="col-sm-2">
                     <div class="row">
-                        <div class="col-sm-1">
-                            <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg" alt="Skills">
-                            <p class="notes-number__components--country-office-profile skills">{{officeCapacity.skills.tech.length}}</p>
-                            <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-content="-WaSh"  title="Technical skills" class="col-sm-0">Technical</a>
-                        </div>
-                        <div class="col-sm-1 margin-left-six">
-                            <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg" alt="Skills">
-                            <a class="col-sm-0" href="javascript:void(0)">
-                                <p class="notes-number__components--country-office-profile skills">{{officeCapacity.skills.support.length}}</p>Support
-                            </a>
-                        </div>
+                        <div class="col-sm-1"><img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg" alt="Skills"><p class="notes-number__components--country-office-profile skills">2</p>
+                            <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-content="-WaSh"  title="Technical skills" class="col-sm-0">Technical</a></div>
+                        <div class="col-sm-1 margin-left-six"><img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg" alt="Skills"><a class="col-sm-0" href="#"><p class="notes-number__components--country-office-profile skills">3</p>Support</a></div>
                     </div>
-                </div> <!--Skills-->
-                <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> <!--Training Needs-->
+                </div> Skills
+                <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> Training Needs
                 <div class="col-sm-1">
                     <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
                     <p class="notes-number__components--country-office-profile">1</p>
                     <a href="#" class="row margin-left-one-half">Notes</a>
                 </div>
             </div>
-            <div class="row Line-row"></div>
-        </div>
+            <div class="row Line-row"></div>-->
 
 
-<!--        Abigall Taylor
-        <div class="row">
-            <div class="col-sm-1">02/17</div> Updated
-            <div class="col-sm-2">Abigail Taylor</div> Name
-            <div class="col-sm-1">Logistics</div> Position
-            <div class="col-sm-2">Field Office</div> Office Type
-            <div class="col-sm-2">
-                <div class="row">
-                    <div class="col-sm-1"><img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg" alt="Skills"><p class="notes-number__components--country-office-profile skills">2</p>
-                        <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-content="-WaSh"  title="Technical skills" class="col-sm-0">Technical</a></div>
-                    <div class="col-sm-1 margin-left-six"><img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg" alt="Skills"><a class="col-sm-0" href="#"><p class="notes-number__components--country-office-profile skills">3</p>Support</a></div>
-                </div>
-            </div> Skills
-            <div class="col-sm-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> Training Needs
-            <div class="col-sm-1">
-                <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                <p class="notes-number__components--country-office-profile">1</p>
-                <a href="#" class="row margin-left-one-half">Notes</a>
-            </div>
-        </div>
-        <div class="row Line-row"></div>-->
-
-
-
-        <!--Surge Capacity Section-->
-        <h3 class="Spaced-above">Surge capacity</h3>
-        <div class="row">
-            <!--Surge capacity table headers-->
-            <div class="col-sm-1"><strong>Updated</strong></div>
-            <div class="col-sm-2"><strong>Position</strong></div>
-            <div class="col-sm-2"><strong>Sector of expertise</strong></div>
-            <div class="col-sm-1"><strong>Location</strong></div>
-            <div class="col-sm-5"><strong>Estimated time of arrival</strong></div>
-        </div>
-        <div class="row Line-row"></div>
-
-        <!--Emergency Doctor-->
-        <div class="row">
-            <div class="col-sm-1 margin-top-one">02/17</div> <!--Updated-->
-            <div class="col-sm-2 margin-top-one">Emergency Doctor</div> <!--Position-->
-            <div class="col-sm-2 margin-top-one"><img src="assets/images/icons/health.svg" alt="Health"><span class="padding-left-one"></span>Health</div> <!--Sector of expertise-->
-            <div class="col-sm-1 margin-top-one">Pakistan</div> <!--Location-->
-            <div class="col-sm-1 "><p class="margin-top-one margin-top-one">48 hours</p></div>
-            <span class="col-sm-1 padding-left-two"></span>
-            <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg" alt="Surge capacity details">
-            <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityOne">Surge capacity details</a>
-            <span class="col-sm-1"></span>
-            <div class="margin-left-five col-sm-0">
-                <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                <p class="notes-number__components--country-office-profile">1</p>
-                <a href="#" class="row margin-left-one-half">Notes</a>
-            </div>
-        </div> <!--Estimated time of arrival-->
-        <div class="row Line-row"></div>
-
-        <!--Surge Capacity Dropdown tooltip-->
-        <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityOne" data-parent="#surgeCapacityOne" aria-controls="surgeCapacityOne">
-            <div class="log_left p-3 row col-sm-12">
-                <h3 class="">Surge capacity details</h3>
-                <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
-            </div>
-            <div class="Spaced">
-                <div class="row">
-                    <div class="col-sm-2"><strong>Organisation</strong></div>
-                    <div class="col-sm-2">SDA Church</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Type of relationship</strong></div>
-                    <div class="col-sm-2">Partner</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Name</strong></div>
-                    <div class="col-sm-2">Vikrant Mahajan</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Email</strong></div>
-                    <div class="col-sm-2">vik@sphereindia.org.in</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Length of deployment</strong></div>
-                    <div class="col-sm-2">3 weeks</div>
-                </div>
-            </div>
-        </div>
-        <!--Surge Capacity Dropdown tooltip-->
-
-
-        <!--Lead Food Co-ordinator-->
-        <div class="row">
-            <div class="col-sm-1 margin-top-one">02/17</div> <!--Updated-->
-            <div class="col-sm-2 margin-top-one">Lead Food Co-ordinator</div> <!--Position-->
-            <div class="col-sm-2 margin-top-one"><img src="assets/images/icons/foodsec.svg" alt="Health"><span class="padding-left-one"></span>Food security</div> <!--Sector of expertise-->
-            <div class="col-sm-1 margin-top-one">UK</div> <!--Location-->
-            <div class="col-sm-1 "><p class="margin-top-one margin-top-one">24 hours</p></div>
-            <span class="col-sm-1 padding-left-two"></span>
-            <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg" alt="Surge capacity details">
-            <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityTwo">Surge capacity details</a>
-            <span class="col-sm-1"></span>
-            <div class="col-sm-0 margin-left-five">
-                <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                <p class="notes-number__components--country-office-profile">1</p>
-                <a href="#" class="row margin-left-one-half">Notes</a>
-            </div>
-
-
-        </div> <!--Estimated time of arrival-->
-        <div class="row Line-row"></div>
-        <!--Surge Capacity Dropdown tooltip-->
-        <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityTwo" data-parent="#surgeCapacityTwo" aria-controls="surgeCapacityTwo">
-            <div class="log_left p-3 row col-sm-12">
-                <h3 class="">Surge Capacity details</h3>
-                <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
-            </div>
-            <div class="Spaced">
-                <div class="row">
-                    <div class="col-sm-2"><strong>Organisation</strong></div>
-                    <div class="col-sm-2">SDA Church</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Type of relationship</strong></div>
-                    <div class="col-sm-2">Partner</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Name</strong></div>
-                    <div class="col-sm-2">Vikrant Mahajan</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Email</strong></div>
-                    <div class="col-sm-2">vik@sphereindia.org.in</div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-2"><strong>Length of deployment</strong></div>
-                    <div class="col-sm-2">3 weeks</div>
-                </div>
-            </div>
-
-        </div>
-        <!--Surge Capacity Dropdown tooltip-->
+    <!--Surge Capacity Section-->
+    <h3 class="Spaced-above">Surge capacity</h3>
+    <div class="row">
+      <!--Surge capacity table headers-->
+      <div class="col-sm-1"><strong>Updated</strong></div>
+      <div class="col-sm-2"><strong>Position</strong></div>
+      <div class="col-sm-2"><strong>Sector of expertise</strong></div>
+      <div class="col-sm-1"><strong>Location</strong></div>
+      <div class="col-sm-5"><strong>Estimated time of arrival</strong></div>
     </div>
-
-
     <div class="row Line-row"></div>
+
+    <!--Emergency Doctor-->
+    <div class="row">
+      <div class="col-sm-1 margin-top-one">02/17</div> <!--Updated-->
+      <div class="col-sm-2 margin-top-one">Emergency Doctor</div> <!--Position-->
+      <div class="col-sm-2 margin-top-one"><img src="assets/images/icons/health.svg" alt="Health"><span
+        class="padding-left-one"></span>Health
+      </div> <!--Sector of expertise-->
+      <div class="col-sm-1 margin-top-one">Pakistan</div> <!--Location-->
+      <div class="col-sm-1 "><p class="margin-top-one margin-top-one">48 hours</p></div>
+      <span class="col-sm-1 padding-left-two"></span>
+      <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
+           src="assets/images/icons/info_source.svg" alt="Surge capacity details">
+      <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityOne">Surge capacity
+        details</a>
+      <span class="col-sm-1"></span>
+      <div class="margin-left-five col-sm-0">
+        <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+        <p class="notes-number__components--country-office-profile">1</p>
+        <a href="#" class="row margin-left-one-half">Notes</a>
+      </div>
+    </div> <!--Estimated time of arrival-->
+    <div class="row Line-row"></div>
+
+    <!--Surge Capacity Dropdown tooltip-->
+    <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityOne"
+         data-parent="#surgeCapacityOne" aria-controls="surgeCapacityOne">
+      <div class="log_left p-3 row col-sm-12">
+        <h3 class="">Surge capacity details</h3>
+        <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
+      </div>
+      <div class="Spaced">
+        <div class="row">
+          <div class="col-sm-2"><strong>Organisation</strong></div>
+          <div class="col-sm-2">SDA Church</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Type of relationship</strong></div>
+          <div class="col-sm-2">Partner</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Name</strong></div>
+          <div class="col-sm-2">Vikrant Mahajan</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Email</strong></div>
+          <div class="col-sm-2">vik@sphereindia.org.in</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Length of deployment</strong></div>
+          <div class="col-sm-2">3 weeks</div>
+        </div>
+      </div>
+    </div>
+    <!--Surge Capacity Dropdown tooltip-->
+
+
+    <!--Lead Food Co-ordinator-->
+    <div class="row">
+      <div class="col-sm-1 margin-top-one">02/17</div> <!--Updated-->
+      <div class="col-sm-2 margin-top-one">Lead Food Co-ordinator</div> <!--Position-->
+      <div class="col-sm-2 margin-top-one"><img src="assets/images/icons/foodsec.svg" alt="Health"><span
+        class="padding-left-one"></span>Food security
+      </div> <!--Sector of expertise-->
+      <div class="col-sm-1 margin-top-one">UK</div> <!--Location-->
+      <div class="col-sm-1 "><p class="margin-top-one margin-top-one">24 hours</p></div>
+      <span class="col-sm-1 padding-left-two"></span>
+      <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
+           src="assets/images/icons/info_source.svg" alt="Surge capacity details">
+      <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityTwo">Surge capacity
+        details</a>
+      <span class="col-sm-1"></span>
+      <div class="col-sm-0 margin-left-five">
+        <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+        <p class="notes-number__components--country-office-profile">1</p>
+        <a href="#" class="row margin-left-one-half">Notes</a>
+      </div>
+
+
+    </div> <!--Estimated time of arrival-->
+    <div class="row Line-row"></div>
+    <!--Surge Capacity Dropdown tooltip-->
+    <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityTwo"
+         data-parent="#surgeCapacityTwo" aria-controls="surgeCapacityTwo">
+      <div class="log_left p-3 row col-sm-12">
+        <h3 class="">Surge Capacity details</h3>
+        <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
+      </div>
+      <div class="Spaced">
+        <div class="row">
+          <div class="col-sm-2"><strong>Organisation</strong></div>
+          <div class="col-sm-2">SDA Church</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Type of relationship</strong></div>
+          <div class="col-sm-2">Partner</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Name</strong></div>
+          <div class="col-sm-2">Vikrant Mahajan</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Email</strong></div>
+          <div class="col-sm-2">vik@sphereindia.org.in</div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-2"><strong>Length of deployment</strong></div>
+          <div class="col-sm-2">3 weeks</div>
+        </div>
+      </div>
+
+    </div>
+    <!--Surge Capacity Dropdown tooltip-->
+  </div>
+
+
+  <div class="row Line-row"></div>
 </div>
