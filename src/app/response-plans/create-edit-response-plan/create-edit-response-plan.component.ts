@@ -324,7 +324,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 3
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
-    newResponsePlan.presenceInTheCountry = this.presenceInTheCountry;
+    newResponsePlan.presenceInTheCountry = this.presenceInTheCountry ? this.presenceInTheCountry : -1;
 
     // newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
     // newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
@@ -931,7 +931,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   selectNeighbour(sector, value) {
     this.checkActivityInfo(sector, value, 0, -1);
   }
-
   selectLocal(sector, value) {
     this.checkActivityInfo(sector, value, 0, -1);
   }

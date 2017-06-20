@@ -199,9 +199,9 @@ export enum PermissionsAgency {
 
 
 export enum PresenceInTheCountry {
-    currentProgrammes = 0,
-    preExistingPartner = 1,
-    noPreExistingPresence = 2
+    currentProgrammes = 1,
+    preExistingPartner = 2,
+    noPreExistingPresence = 3
 }
 
 export enum MethodOfImplementation {

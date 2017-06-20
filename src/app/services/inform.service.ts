@@ -1,6 +1,6 @@
 import {Countries, Countries3ISO, HazardScenario, InformCodes} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
-import {Http, Response} from "@angular/http";
+import {Http, RequestOptions, Response, Headers} from "@angular/http";
 declare var jQuery: any;
 
 export class InformService {
@@ -22,7 +22,12 @@ export class InformService {
     this.sendForTopHazards3digit(countryCode, numberOfItems, fun);
   }
   private sendForTopHazards3digit(countryCode: string, numberOfItems: number, fun: (list: InformHolder[]) => void) {
-    this.http.get(this.buildUrl(countryCode))
+    let headers = new Headers();
+    // headers.append('origin', '*');
+    headers.append('content-type', 'application/json');
+    headers.append('accept', '*/*');
+    let options = new RequestOptions({ headers: headers });
+    this.http.get(this.buildUrl(countryCode), options)
       .map((res: Response) => {
         return res.json();
       })

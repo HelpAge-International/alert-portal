@@ -792,6 +792,7 @@
                 "COUNTRY_OFFICE_PROFILE": "Country office profile",
                 "RESPONSE_PLANNING": "Response planning",
                 "GLOBAL_MAPS": "Global maps",
+                "PREP_BUDGET":"Prepare Budget",
                 "SAVE_SUCCESS": "Module Settings successfully saved"
             },
             "DURATION_TYPE": {

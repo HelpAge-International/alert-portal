@@ -257,17 +257,17 @@
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog"
-                     [checked]="presenceInTheCountry === 0"
+                     [checked]="presenceInTheCountry === 1"
                      (click)="currentProgrammesSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.CURRENT_PROGRAMMES" | translate}}</label>
             <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog"
-                     [checked]="presenceInTheCountry === 1"
+                     [checked]="presenceInTheCountry === 2"
                      (click)="preExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRE-EXISTING_PARTNER" | translate}}</label>
             <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog"
-                     [checked]="presenceInTheCountry === 2"
+                     [checked]="presenceInTheCountry === 3"
                      (click)="noPreExistingPartnerSelected()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.NO_PRE-EXISTING_PRESENCE" |
               translate}}</label>
