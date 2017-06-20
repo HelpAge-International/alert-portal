@@ -32,12 +32,15 @@ export class AgencyModulesEnabled {
   public responsePlan: boolean;
   public countryOffice: boolean;
   constructor() {
-    this.minimumPreparedness = false;
-    this.advancedPreparedness = false;
-    this.chsPreparedness = false;
-    this.riskMonitoring = false;
-    this.responsePlan = false;
-    this.countryOffice = false;
+    this.all(false);
+  }
+  all(type: boolean) {
+    this.minimumPreparedness = type;
+    this.advancedPreparedness = type;
+    this.chsPreparedness = type;
+    this.riskMonitoring = type;
+    this.responsePlan = type;
+    this.countryOffice = type;
   }
 }
 
@@ -79,7 +82,7 @@ export class PageControlService {
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -89,7 +92,7 @@ export class PageControlService {
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -99,7 +102,7 @@ export class PageControlService {
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -118,7 +121,7 @@ export class PageControlService {
     "dashboard*",
     "preparedness*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "country-admin*",
     "response-plans*",
     "risk-monitoring*",

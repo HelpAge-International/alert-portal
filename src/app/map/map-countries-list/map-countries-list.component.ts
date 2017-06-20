@@ -5,13 +5,13 @@ import {AngularFire} from "angularfire2";
 import {RxHelper} from "../../utils/RxHelper";
 import {ModelCountryOffice} from "../../model/countryoffice.model";
 import {ModelRegion} from "../../model/region.model";
-import {Countries} from "../../utils/Enums";
+import {Countries, UserType} from "../../utils/Enums";
 import {ModelHazard} from "../../model/hazard.model";
 import {HazardImages} from "../../utils/HazardImages";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -39,6 +39,8 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
   private isDirector: boolean;
   private userTypePath: string;
 
+  private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
@@ -48,60 +50,72 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
+      this.uid = user.uid;
 
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["isDirector"]) {
-              this.isDirector = params["isDirector"];
-            }
-          });
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["isDirector"]) {
+            this.isDirector = params["isDirector"];
+          }
+        });
 
+      /** Setup the minimum threshold **/
+      this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[userType], (red, yellow, green) => {
+        this.minThreshGreen = green;
+        this.minThreshYellow = yellow;
+        this.minThreshRed = red;
+      });
 
-            /** Setup the minimum threshold **/
-            this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[userType], (red, yellow, green) => {
-              this.minThreshGreen = green;
-              this.minThreshYellow = yellow;
-              this.minThreshRed = red;
-            });
+      /** Setup the region count **/
+      this.otherRegion = new RegionHolder();
+      this.otherRegion.regionId = "unassigned";
+      this.otherRegion.regionName = "Other";
+      this.mapHelper.getRegionsForAgency(this.uid, Constants.USER_PATHS[userType], (key, obj) => {
+        console.log("Updating Region");
+        // this.showRegionHeaders = key != "";
+        // if (!this.showRegionHeaders) return;
+        let hRegion = new RegionHolder();
+        hRegion.regionName = obj.name;
+        hRegion.regionId = key;
+        for (let x in obj.countries) {
+          hRegion.countries.add(x);
+          this.countryIdsForOther.add(x);
+        }
+        this.evaluateOthers();
+        this.addOrUpdateRegion(hRegion);
+      });
 
-            /** Setup the region count **/
-            this.otherRegion = new RegionHolder();
-            this.otherRegion.regionId = "unassigned";
-            this.otherRegion.regionName = "Other";
-            this.mapHelper.getRegionsForAgency(this.uid, Constants.USER_PATHS[userType], (key, obj) => {
-              console.log("Updating Region");
-              // this.showRegionHeaders = key != "";
-              // if (!this.showRegionHeaders) return;
-              let hRegion = new RegionHolder();
-              hRegion.regionName = obj.name;
-              hRegion.regionId = key;
-              for (let x in obj.countries) {
-                hRegion.countries.add(x);
-                this.countryIdsForOther.add(x);
-              }
-              this.evaluateOthers();
-              this.addOrUpdateRegion(hRegion);
-            });
+      /** Permissions for the minimum preparedness **/
+      if (userType != UserType.AgencyAdmin &&
+        userType != UserType.SystemAdmin &&
+        userType != UserType.All) {
+        PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+          this.moduleAccess = isEnabled;
+          console.log(this.moduleAccess);
+        });
+      }
+      else {
+        this.moduleAccess.all(true);
+      }
 
-            /** Country list **/
-            this.mapHelper.initCountries(this.uid, Constants.USER_PATHS[userType], (departments => {
-              console.log("Updating country");
-              this.allCountries.clear();
-              for (let x of departments) {
-                this.addOrUpdateCountry(x);
-                this.allCountries.add(x.countryId);
-              }
-              this.evaluateOthers();
-            }));
+      /** Country list **/
+      this.mapHelper.initCountries(this.uid, Constants.USER_PATHS[userType], (departments => {
+        console.log("Updating country");
+        this.allCountries.clear();
+        for (let x of departments) {
+          this.addOrUpdateCountry(x);
+          this.allCountries.add(x.countryId);
+        }
+        this.evaluateOthers();
+      }));
 
-            /** Markers */
-            this.mapHelper.actionInfoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (location, marker) => {
-              let hazard: RegionHazard = new RegionHazard(location, marker);
-              this.addOrUpdateHazard(hazard);
-              console.log(this.hazards);
-            });
+      /** Markers */
+      this.mapHelper.actionInfoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (location, marker) => {
+        let hazard: RegionHazard = new RegionHazard(location, marker);
+        this.addOrUpdateHazard(hazard);
+        console.log(this.hazards);
+      });
     });
   }
 
@@ -206,21 +220,27 @@ export class RegionHolder {
   public getRegionId() {
     return "mapParent-" + this.regionId;
   }
+
   public getRegionIdHash() {
     return "#" + this.getRegionId();
   }
+
   public getCountryId(id: string) {
     return "mapCountry-" + this.regionId + "-" + id;
   }
+
   public getCountryIdHash(id: string) {
     return "#" + this.getCountryId(id);
   }
+
   public getDepartmentId(id: string) {
     return "mapDepartment-" + this.regionId + "-" + id;
   }
+
   public getDepartmentIdHash(id: string) {
     return "#" + this.getDepartmentId(id);
   }
+
   public listOfCountries() {
     let r: string = "";
     r += this.getRegionIdHash() + ", ";
