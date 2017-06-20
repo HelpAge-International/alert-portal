@@ -529,4 +529,8 @@ export class UserService {
   getCountryDetail(countryId, agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
   }
+
+  getAgencyDetail(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
 }

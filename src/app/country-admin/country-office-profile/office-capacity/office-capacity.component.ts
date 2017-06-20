@@ -17,8 +17,10 @@ declare var jQuery: any;
 })
 
 export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
+  private agencyId: string;
+  private isViewing: boolean;
 
-    private UserType: number;
+  private UserType: number;
     private alertMessageType = AlertMessageType;
     private alertMessage: AlertMessageModel = null;
     private uid: string;
@@ -70,6 +72,19 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["countryId"]) {
+            this.countryID = params["countryId"];
+          }
+          if (params["isViewing"]) {
+            this.isViewing = params["isViewing"];
+          }
+          if (params["agencyId"]) {
+            this.agencyId = params["agencyId"];
+          }
+        });
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) =>{
           this.uid = user.uid;
           this.UserType = userType;

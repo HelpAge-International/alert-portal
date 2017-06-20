@@ -31,6 +31,7 @@ export class AgencyModulesEnabled {
   public riskMonitoring: boolean;
   public responsePlan: boolean;
   public countryOffice: boolean;
+
   constructor() {
     this.minimumPreparedness = false;
     this.advancedPreparedness = false;
@@ -69,12 +70,20 @@ export class PageControlService {
   public static GlobalDirector = PageUserType.create(UserType.GlobalDirector, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
     "dashboard*",
@@ -112,7 +121,11 @@ export class PageControlService {
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static CountryAdmin = PageUserType.create(UserType.CountryAdmin, "dashboard", [
     "dashboard*",
@@ -124,12 +137,15 @@ export class PageControlService {
     "risk-monitoring*",
     "export-start-fund*",
   ]);
-  public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", [
-  ]);
+  public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", []);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*"
@@ -151,9 +167,7 @@ export class PageControlService {
   public static ModuleAdvancedPreparedness = new AgencyPermissionObject(PermissionsAgency.AdvancedPreparedness, [
     "preparedness/advanced"
   ]);
-  public static ModuleCHSPreparedness = new AgencyPermissionObject(PermissionsAgency.CHSPreparedness, [
-
-  ]);
+  public static ModuleCHSPreparedness = new AgencyPermissionObject(PermissionsAgency.CHSPreparedness, []);
   public static ModuleResponsePlanning = new AgencyPermissionObject(PermissionsAgency.ResponsePlanning, [
     "response-plans",
     "response-plans/create-edit-response-plan",
@@ -164,7 +178,7 @@ export class PageControlService {
     "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
     "country-admin/country-office-profile/equipment"
   ]);
-  public static ModuleRiskMonitoring= new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
+  public static ModuleRiskMonitoring = new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
     "risk-monitoring",
     "risk-monitoring/add-hazard",
     "risk-monitoring/create-alert",
@@ -175,6 +189,7 @@ export class PageControlService {
    */
 
   public static pageControlMap: Map<UserType, PageUserType>;
+
   public static initPageControlMap() {
     if (this.pageControlMap == null) {
       this.pageControlMap = new Map<UserType, PageUserType>();
@@ -193,7 +208,9 @@ export class PageControlService {
     }
     return this.pageControlMap;
   }
+
   public static moduleControlMap: AgencyPermissionObject[];
+
   public static initModuleControlArray() {
     if (this.moduleControlMap == null) {
       this.moduleControlMap = [];
@@ -213,12 +230,14 @@ export class PageControlService {
   public auth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
     PageControlService.auth(this.af, ngUnsubscribe, route, router, func, null);
   }
+
   public authObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType) => void) {
     PageControlService.auth(this.af, ngUnsubscribe, route, router, null, func);
   }
+
   private static auth(af: AngularFire, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
-                     authUser: (auth: firebase.User, userType: UserType) => void,
-                     authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
+                      authUser: (auth: firebase.User, userType: UserType) => void,
+                      authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
     af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
       if (auth) {
         UserService.getUserType(af, auth.auth.uid).subscribe(userType => {
@@ -226,7 +245,7 @@ export class PageControlService {
             if (authUser != null) {
               authUser(auth.auth, null);
             }
-            else if (authObj != null){
+            else if (authObj != null) {
               authObj(auth, null);
             }
           }
@@ -268,6 +287,7 @@ export class PageControlService {
       }
     });
   }
+
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
     for (let x of type.urls) {

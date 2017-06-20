@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
 import {Subject} from "rxjs/Subject";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-director-overview',
@@ -18,8 +19,9 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
   private agencyId: string;
   private from: string;
+  private agencyName: string;
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private userService: UserService) {
     this.tabMap.set("officeProfile", true);
     this.tabMap.set("risk", false);
     this.tabMap.set("preparedness", false);
@@ -35,6 +37,7 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
         }
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
+          this.getAgencyInfo(this.agencyId);
         }
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
@@ -43,6 +46,14 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
           this.from = params["from"];
           this.menuSelection(this.from);
         }
+      });
+  }
+
+  private getAgencyInfo(agencyId: string) {
+    this.userService.getAgencyDetail(agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agency => {
+        this.agencyName = agency.name;
       });
   }
 
