@@ -503,7 +503,8 @@
       "LOGIN_BLOCKED": "Login attempts have been temporarily blocked. Please try again later",
         "USERTYPE_UNASSIGNED": "This email address is not associated with a user account",
         "AGENCY_DEACTIVATED": "Your account is deactivated - Please check with your System Administrator",
-        "AGENCY_DOESNT_EXIST": "The agency you were assigned to no longer exists"
+      "AGENCY_DOESNT_EXIST": "The agency you were assigned too no longer exists",
+      "COUNTRY_OFFICE_DOESNT_EXIST": "The country office you were assigned too no longer exists"
     },
     "FORGOT_PASSWORD": {
         "TITLE_TEXT": "Forgot Password?",
