@@ -50,4 +50,13 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
     // /director/director-overview;countryId=tPB9g8EwCLMceutAeAyWlYQUh8V2;isViewing=true;agencyId=qbyONHp4xqZy2eUw0kQHU7BAcov1;from=plan
   }
 
+  viewingToOfficeCapacity() {
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile"
+    }]);
+  }
+
 }
