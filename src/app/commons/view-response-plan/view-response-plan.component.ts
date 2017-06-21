@@ -76,6 +76,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private managementSupportNarrative: string;
   private activityInfoMap = new Map();
   private activityMap = new Map();
+  private vulnerableGroupsToShow = [];
+  private groups: any[] = [];
+  private systemAdminUid: string;
+  private userPath : string;
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -83,6 +87,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.userPath = Constants.USER_PATHS[userType];
       this.loadData();
     });
   }
@@ -170,6 +175,33 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private configGroups(responsePlan: ResponsePlan) {
+    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((systemAdminIds) => {
+        this.systemAdminUid = systemAdminIds[0].$key;
+        this.getGroups(responsePlan);
+      });
+  }
+
+  private getGroups(responsePlan : ResponsePlan) {
+    if (this.systemAdminUid) {
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
+        .map(groupList => {
+          let groups = [];
+          groupList.forEach(group => {
+            groups.push(group);
+          });
+          return groups;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(groups => {
+          this.groups = groups;
+          this.loadSection5(responsePlan);
+        });
+    }
+  }
+
   private getCountryId() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
@@ -190,6 +222,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlanToShow = responsePlan;
+        this.configGroups(responsePlan);
 
         this.loadSection1PlanLead(responsePlan);
         this.loadSection3(responsePlan);
@@ -212,7 +245,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO -
   private loadSection3(responsePlan: ResponsePlan) {
     console.log(responsePlan);
     if (responsePlan.sectors) {
@@ -233,6 +265,21 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           })
       });
     }
+  }
+
+  private loadSection5(responsePlan : ResponsePlan){
+    console.log(responsePlan.vulnerableGroups);
+
+    var vulnerableGroups = [];
+
+      this.groups.forEach(originalGroup => {
+        responsePlan.vulnerableGroups.forEach(resGroupKey => {
+          if (originalGroup.$key == resGroupKey){
+            vulnerableGroups.push(originalGroup);
+          }
+        });
+    });
+    this.vulnerableGroupsToShow = vulnerableGroups;
   }
 
   // TODO -

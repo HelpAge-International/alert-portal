@@ -156,7 +156,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private groups: any[] = [];
   private Other: string = "Other";
   private otherGroup: string = '';
-  private selectedVulnerableGroups = {};
+  private selectedVulnerableGroups = [];
 
   private vulnerableGroupsDropDownsCounter: number = 1;
   private vulnerableGroupsDropDowns: number[] = [this.vulnerableGroupsDropDownsCounter];
@@ -353,7 +353,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
     }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
-    newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
+
+    console.log(this.selectedVulnerableGroups);
+    newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
     newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
@@ -789,8 +791,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  setGroup(groupSelected, vulnerableGroupsDropDown) {
-    this.selectedVulnerableGroups[vulnerableGroupsDropDown] = groupSelected;
+  setGroup(groupName, vulnerableGroupsDropDown) {
+    let selectedGroup;
+    this.groups.forEach(group => {
+      if(group.name == groupName){
+        selectedGroup = group;
+      }
+    });
+
+    if(selectedGroup){
+      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = selectedGroup.$key;
+    }
   }
 
   // updateOtherGroupToGroups() {
@@ -1359,7 +1370,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.vulnerableGroupsDropDownsCounter++;
           this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
         }
-        this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
+        this.setGroup(vulnerableGroups[i].name, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1]);
       }
     }
 
@@ -1547,14 +1558,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
         .map(groupList => {
           let groups = [];
-          groupList.forEach(x => {
-            groups.push(x.$key);
+          groupList.forEach(group => {
+            groups.push(group);
           });
           return groups;
         })
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(x => {
-          this.groups = x;
+        .subscribe(groups => {
+          this.groups = groups;
         });
     }
   }

@@ -445,7 +445,7 @@
                     <select class="form-control" id="ff"
                             (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
                       <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                      <option *ngFor="let group of groups">{{group | translate}}
+                      <option *ngFor="let group of groups">{{group.name | translate}}
                       </option>
                     </select>
                   </div>

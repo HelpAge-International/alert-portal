@@ -34,7 +34,7 @@ export class ResponsePlan {
   public peoplePerHousehold: number;
   public numOfHouseholds: number;
   public beneficiariesNote: string;
-  public vulnerableGroups: string[];
+  public vulnerableGroups = [];
   public otherVulnerableGroup: string;
   public targetPopulationInvolvementList: string[];
 
