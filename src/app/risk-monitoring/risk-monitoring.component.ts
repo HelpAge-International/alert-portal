@@ -14,6 +14,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../services/pagecontrol.service";
+import * as moment from "moment";
+import _date = moment.unitOfTime._date;
 
 
 declare var jQuery: any;
@@ -128,6 +130,30 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
     });
     return promise;
+  }
+
+  _getIndicatorFutureTimestamp(indicator) {
+    let triggers: any[] = indicator.trigger;
+    let trigger = triggers[indicator.triggerSelected];
+    if (indicator.updatedAt != null) {
+      let updatedAt = new Date(indicator.updatedAt);
+      if (trigger.durationType == "0") {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * 7 * Constants.UTC_ONE_DAY * 1000));
+      }
+      else if (trigger.durationType == "1") {
+        return updatedAt.setMonth(updatedAt.getUTCMonth() + (+trigger.frequencyValue));
+      }
+      else if (trigger.durationType == "2") {
+        return updatedAt.setFullYear(updatedAt.getFullYear() + (+trigger.frequencyValue));
+      }
+      else {
+        // Error
+        return updatedAt;
+      }
+    }
+    else {
+      return new Date();
+    }
   }
 
   _getCountryContextIndicators() {
