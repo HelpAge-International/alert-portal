@@ -201,7 +201,6 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           }
           this.vulnerableGroupsToShow = vulnerableGroups;
         });
-
     }
   }
 
