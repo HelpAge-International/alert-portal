@@ -413,24 +413,61 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   protected completeAction(action) {
-    if (action.attachments != undefined) {
-      if (action.attachments.length > 0) {
-        action.attachments.map(file => {
-          this.uploadFile(action, file);
-        });
-
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
-          .update({
-            actionStatus: ActionStatus.Completed,
-            isCompleted: true
+    this.af.database.object(Constants.APP_STATUS + "/action/" + action.agencyId + "/" + action.key)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.requireDoc && action.attachments != undefined && action.attachments.length > 0) {
+          // Required Document and there's one attaches
+          action.attachments.map(file => {
+            this.uploadFile(action, file);
           });
 
-        this.addNote(action);
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
+            .update({
+              actionStatus: ActionStatus.Completed,
+              isCompleted: true
+            });
 
-      } else {
-        //TODO please attach documents popup
-      }
-    }
+          this.addNote(action);
+        }
+        else if (!snap.requireDoc) {
+          // Doesn't require doc, actions may or may not contain shit
+          if (action.attachments != null) {
+            action.attachments.map(file => {
+              this.uploadFile(action, file);
+            });
+          }
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
+            .update({
+              actionStatus: ActionStatus.Completed,
+              isCompleted: true
+            });
+
+          this.addNote(action);
+        }
+        else {
+          // TODO: Documents attach popup
+        }
+      });
+    // if (action.attachments != undefined) {
+    //   if (action.attachments.length > 0) {
+    //     action.attachments.map(file => {
+    //       this.uploadFile(action, file);
+    //     });
+    //
+    //     this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
+    //       .update({
+    //         actionStatus: ActionStatus.Completed,
+    //         isCompleted: true
+    //       });
+    //
+    //     this.addNote(action);
+    //
+    //   } else {
+    //     //TODO please attach documents popup
+    //   }
+    // }
   }
 
   protected uploadFile(action, file) {

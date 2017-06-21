@@ -173,10 +173,10 @@
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
                   </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
+                  <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                       <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                  <!--</div>-->
                 </div>
                 <div class="row">
                   <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -345,10 +345,7 @@
                   <div class="col-md-2 col-sm-2"
                        [ngClass]="
                                          {
-                                         'text-danger': action.actionStatus == actionStatus.Expired,
-                                         'text-warning': action.actionStatus == actionStatus.InProgress,
-                                         'text-success': action.actionStatus == actionStatus.Completed,
-                                         'text-muted': action.actionStatus == actionStatus.Inactive
+                                         'text-danger': true
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -356,13 +353,11 @@
                                             <i class="fa fa-stack-1x fa-inverse"
                                                [ngClass]="
                                                {
-                                               'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
-                                               'fa-check': action.actionStatus == actionStatus.Completed,
-                                               'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
+                                               'fa-times': true
                                                }
                                                "></i>
                                         </span>
-                    {{ACTION_STATUS[action.actionStatus] | translate}}
+                    {{ACTION_STATUS[0] | translate}}
                   </div>
                   <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 
@@ -398,10 +393,10 @@
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
                   </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
+                  <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                       <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                  <!--</div>-->
                 </div>
                 <div class="row">
                   <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -572,10 +567,10 @@
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
                   </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
+                  <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                       <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                  <!--</div>-->
                 </div>
                 <div class="row">
                   <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
