@@ -603,9 +603,9 @@
 
                   </div>
                   <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
-                    <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                        aria-expanded="false" aria-controls="popover_content"
-                       class="btn btn-outline-primary btn-block ">Assign this action</a>
+                       class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign this action</a>
 
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
@@ -884,3 +884,37 @@
   </div>
 
 </div><!-- end #wrap -->
+
+<!--TODO assign staff modal-->
+<!--Lead Agency Selection Modal (first time agency is invited)-->
+<div class="modal fade" id="leadAgencySelection" tabindex="-1" role="dialog" aria-labelledby="leadAgencySelection"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">Assign this action</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <div class="col-sm-12">
+          <select name="" id="" class="form-control" #assignee (change)="selectAssigneeAdv(assignee.value)">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let staff of assignedToUsers" [value]="staff.$key">{{staff.fullName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row Right-aligned Spaced col-sm-12">
+          <a class="col-sm-9 margin-top-one"
+             (click)="closeModal()">Cancel</a>
+          <button
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignee()">Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
