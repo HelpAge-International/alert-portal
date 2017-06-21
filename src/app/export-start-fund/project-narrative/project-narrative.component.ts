@@ -39,6 +39,10 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private sourcePlanInfo1: string;
   private sourcePlanInfo2: string;
   private SourcePlan = SourcePlan;
+  private groups: any[] = [];
+  private vulnerableGroupsToShow = [];
+  private userPath: string;
+  private systemAdminUid: string;
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -50,6 +54,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.userPath = Constants.USER_PATHS[userType];
       this.downloadData();
     });
   }
@@ -101,6 +106,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
+        this.configGroups(responsePlan);
 
         if (responsePlan.sectorsRelatedTo) {
           responsePlan.sectorsRelatedTo.forEach(sector => {
@@ -109,9 +115,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         }
 
         this.bindProjectLeadData(responsePlan);
-
         this.bindPartnersData(responsePlan);
-
         this.bindSourcePlanData(responsePlan);
 
       });
@@ -157,9 +161,49 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
     }
   }
 
+  private configGroups(responsePlan: ResponsePlan) {
+    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((systemAdminIds) => {
+        this.systemAdminUid = systemAdminIds[0].$key;
+        this.downloadGroups(responsePlan);
+      });
+  }
+
   /**
    * Utility Functions
    */
+
+  private downloadGroups(responsePlan: ResponsePlan) {
+    if (this.systemAdminUid) {
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
+        .map(groupList => {
+          let groups = [];
+          groupList.forEach(group => {
+            groups.push(group);
+          });
+          return groups;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(groups => {
+          this.groups = groups;
+          console.log(this.groups);
+
+          var vulnerableGroups = [];
+          if (this.groups && responsePlan.vulnerableGroups) {
+            this.groups.forEach(originalGroup => {
+              responsePlan.vulnerableGroups.forEach(resGroupKey => {
+                if (originalGroup.$key == resGroupKey) {
+                  vulnerableGroups.push(originalGroup);
+                }
+              });
+            });
+          }
+          this.vulnerableGroupsToShow = vulnerableGroups;
+        });
+
+    }
+  }
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {

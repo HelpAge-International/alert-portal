@@ -268,17 +268,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection5(responsePlan : ResponsePlan){
-    console.log(responsePlan.vulnerableGroups);
-
     var vulnerableGroups = [];
-
-      this.groups.forEach(originalGroup => {
-        responsePlan.vulnerableGroups.forEach(resGroupKey => {
-          if (originalGroup.$key == resGroupKey){
-            vulnerableGroups.push(originalGroup);
-          }
+      if (this.groups && responsePlan.vulnerableGroups){
+        this.groups.forEach(originalGroup => {
+          responsePlan.vulnerableGroups.forEach(resGroupKey => {
+            if (originalGroup.$key == resGroupKey){
+              vulnerableGroups.push(originalGroup);
+            }
+          });
         });
-    });
+      }
     this.vulnerableGroupsToShow = vulnerableGroups;
   }
 

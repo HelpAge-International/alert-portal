@@ -353,8 +353,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
     }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
-
-    console.log(this.selectedVulnerableGroups);
     newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
     newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
@@ -1450,11 +1448,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection10(responsePlan: ResponsePlan) {
-
     if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Inputs]) {
-      console.log("have inputs budget")
       let inputs: {} = responsePlan.budget["item"][BudgetCategory.Inputs];
-      console.log(inputs);
       Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
         this.totalInputs += item.budget;
       });
@@ -1462,9 +1457,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.sectorBudget.set(Number(key), inputs[key]["budget"]);
         this.sectorNarrative.set(Number(key), inputs[key]["narrative"]);
       });
-      console.log("$$$$$$$$")
-      console.log(this.sectorBudget);
-      console.log(this.sectorNarrative);
     }
 
     this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
