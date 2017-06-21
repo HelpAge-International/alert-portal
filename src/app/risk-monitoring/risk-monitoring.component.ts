@@ -256,7 +256,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
 
     var triggerSelected = this.indicatorTrigger[indicatorID];
-    var dataToSave = {triggerSelected: triggerSelected};
+    var dataToSave = {triggerSelected: triggerSelected, updatedAt: new Date().getTime()};
 
     var urlToUpdate;
 
