@@ -841,6 +841,7 @@ export class Constants {
     "AGENCY_ADMIN.STAFF.SUPPORT_TECH"
   ];
 
+  static UTC_ONE_DAY = 60 * 60 * 24;
 }
 
 export enum FILE_SETTING {

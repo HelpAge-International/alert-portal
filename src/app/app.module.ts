@@ -170,6 +170,7 @@ import {ProjectActivitiesComponent} from "./export-start-fund/project-activities
 import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance/technical-guidance.component";
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {TooltipComponent} from "./utils/tooltips/tooltip.component";
 import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
 
 export function HttpLoaderFactory(http: Http) {
@@ -336,6 +337,8 @@ const firebaseAuthConfig = {
     BudgetReportComponent,
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
+    GuidanceReportComponent,
+    TooltipComponent,
     GuidanceReportComponent,
     TimeAgoPipe
   ],
