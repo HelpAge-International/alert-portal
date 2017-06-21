@@ -1,26 +1,27 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-// import {RxHelper} from "../../utils/RxHelper";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Department, ActionType, ActionLevel, HazardCategory, DurationType, AlertMessageType} from "../../utils/Enums";
+import {ActionLevel, AlertMessageType, DurationType, HazardCategory} from "../../utils/Enums";
 import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
-import {LocalStorageService} from 'angular-2-local-storage';
-import {AlertMessageModel} from '../../model/alert-message.model';
+import {LocalStorageService} from "angular-2-local-storage";
+import {AlertMessageModel} from "../../model/alert-message.model";
 import {PageControlService} from "../../services/pagecontrol.service";
-declare var jQuery: any;
 import {Observable, Subject} from "rxjs";
-import {UserService} from "../../services/user.service";
-
+import {HazardImages} from "../../utils/HazardImages";
 declare var jQuery: any;
+
 @Component({
   selector: 'app-preparedness',
   templateUrl: './create-edit.component.html',
   styleUrls: ['./create-edit.component.css']
 })
 export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
+  private disableAll: boolean;
   private UserType: number;
+  private hazardSelectionMap = new Map<number, boolean>();
+  private requireDoc:boolean;
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
@@ -57,28 +58,30 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private actionLevel = Constants.ACTION_LEVEL;
   private actionLevelList: number[] = [ActionLevel.MPA, ActionLevel.APA];
 
-  private hazardCategory = Constants.HAZARD_CATEGORY;
-  private hazardCategoryList: number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
+  // private hazardCategory = Constants.HAZARD_CATEGORY;
+  private hazardCategory = Constants.HAZARD_SCENARIOS;
+  // private hazardCategoryList: number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
+  private hazardCategoryList = [];
   private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
   private durationType = Constants.DURATION_TYPE;
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
   private allowedDurationList: number[] = [];
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
-        this.actionData = new Action();
-        this.setDefaultActionDataValue();
-        /* if selected generic action */
-        this.actionSelected = this.storage.get('selectedAction');
-        if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
-            this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
-            this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
-            this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
-            this.storage.remove('selectedAction');
-            this.actionSelected = {};
-        }
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+    this.actionData = new Action();
+    this.setDefaultActionDataValue();
+    /* if selected generic action */
+    this.actionSelected = this.storage.get('selectedAction');
+    if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
+      this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
+      this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      this.storage.remove('selectedAction');
+      this.actionSelected = {};
+    }
 
     /* if copy action */
     this.copyActionData = this.storage.get('copyActionData');
@@ -103,14 +106,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     console.log(this.actionData);
   }
 
-    ngOnInit() {
-      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.UserType = userType;
-        this._defaultHazardCategoryValue();
-        this.processPage();
-      });
-    }
+  ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
+      this._defaultHazardCategoryValue();
+      this.processPage();
+    });
+  }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
@@ -160,8 +163,37 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
       this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
     }
+
+    //store all selected hazards
+    let selectedHazard = [];
+    if (this.hazardSelectionMap.get(-1)) {
+      for (let i = 0; i < Constants.HAZARD_SCENARIOS.length; i++) {
+        selectedHazard.push(i);
+      }
+    } else {
+      this.hazardSelectionMap.forEach((v, k) => {
+        if (v) {
+          selectedHazard.push(k);
+        }
+      });
+    }
+    this.actionData.assignHazard = selectedHazard;
+    //check at least one selected
+    let oneChecked = false;
+    this.hazardSelectionMap.forEach((v, k) => {
+      if (v) {
+        oneChecked = true;
+      }
+    });
+    if (!oneChecked) {
+      console.log("at least one need to be selected");
+      this.alertMessage = new AlertMessageModel("At least one hazard need to be selected");
+      return;
+    }
+
     let dataToSave = Object.assign({}, this.actionData);
-    dataToSave.requireDoc = (dataToSave.requireDoc) ? true : false;
+    dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
+
 
     if (!this.actionID) {
       this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
@@ -195,21 +227,38 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           }
           this._parseSelectParams();
           this._frequencyIsActive();
+
+          //get all monitored hazards
+          this.getAssociatedHazards();
         });
       });
     });
   }
 
+  private getAssociatedHazards() {
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(hazards => {
+        console.log(hazards);
+        this.hazardCategoryList = hazards;
+      });
+  }
+
   selectHazardCategory(hazardKey: number, event: any) {
-    var val = event.target.checked ? event.target.checked : false;
-    this.actionData.assignHazard[hazardKey] = val;
+    this.hazardSelectionMap.set(hazardKey, event.target.checked);
+    this.anySelected();
+    // var val = event.target.checked ? event.target.checked : false;
+    // this.actionData.assignHazard[hazardKey] = val;
   }
 
   selectAllHazard(event: any) {
-    var value = event.target.checked ? event.target.checked : false;
-    this.actionData.assignHazard.forEach((val, key) => {
-      this.actionData.assignHazard[key] = value;
-    });
+    this.hazardSelectionMap.set(-1, event.target.checked);
+    this.anySelected();
+    console.log(this.hazardSelectionMap);
+    // var value = event.target.checked ? event.target.checked : false;
+    // this.actionData.assignHazard.forEach((val, key) => {
+    //   this.actionData.assignHazard[key] = value;
+    // });
   }
 
   selectDepartment(event: any) {
@@ -442,6 +491,27 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.frequencyActive = true;
       }
     }
+  }
+
+  _getHazardImage(key) {
+    return HazardImages.init().getCSS(key);
+  }
+
+  anySelected() {
+    let temp = false;
+    this.hazardSelectionMap.forEach((v, k) => {
+      if (k != -1 && v == true) {
+        this.disableAll = true;
+        temp = true;
+      }
+    });
+    if (!temp) {
+      this.disableAll = false;
+    }
+  }
+
+  test() {
+    console.log(this.actionData.requireDoc);
   }
 
   private navigateToLogin() {
