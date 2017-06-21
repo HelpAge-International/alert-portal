@@ -104,7 +104,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyAllUsersIds => {
           agencyAllUsersIds.forEach(agencyAllUsersId => {
-            this.msgData[agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
+            this.msgData[agencyAllUsersMessageRefPath + agencyAllUsersId.$key + '/' + key] = true;
           });
 
           this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
@@ -152,7 +152,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(list => {
           list.forEach(item => {
-            this.msgData[this.agencyMessageRefPath + group + '/' + item.$key + '/' + key] = this.currentDateTimeInMilliseconds;
+            this.msgData[this.agencyMessageRefPath + group + '/' + item.$key + '/' + key] = true;
           });
 
           if (this.groups.indexOf(group) == this.groups.length - 1) {

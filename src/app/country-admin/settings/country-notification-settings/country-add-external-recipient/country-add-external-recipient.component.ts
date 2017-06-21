@@ -6,7 +6,7 @@ import {AlertMessageType} from "../../../../utils/Enums";
 import {ExternalRecipientModel} from "../../../../model/external-recipient.model";
 import {UserService} from "../../../../services/user.service";
 import {Constants} from "../../../../utils/Constants";
-import {NotificationSettingsService} from "../../../../services/notification-settings.service";
+import {NotificationService} from "../../../../services/notification.service";
 import {DisplayError} from "../../../../errors/display.error";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
@@ -39,7 +39,7 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
-              private _notificationSettingsService: NotificationSettingsService,
+              private _notificationSettingsService: NotificationService,
               private _messageService: MessageService,
               private router: Router,
               private route: ActivatedRoute) {

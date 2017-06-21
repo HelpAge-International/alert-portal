@@ -1,12 +1,14 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
 
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
         <div class="Header-title__wrap">
             <h1>{{"GLOBAL.YOUR_NOTIFICATIONS" | translate}}</h1>
         </div>
-        <div class="Data--ribbon" *ngFor="let message of sortedMessages">
+        <div class="Data--ribbon" *ngFor="let message of messages">
              <div class="row">
                 <div class="Info--ribbon--wrap">
                     <div class="col-sm-5">{{"GLOBAL.RECEIVED" | translate}}: <b>{{message.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
@@ -17,8 +19,11 @@
                 </div>
             </div>
             <div class="col-sm-3 Right-aligned">
-                <div class="btn btn-danger" (click)="deleteMessage(message.$key, message.groupType)">{{"GLOBAL.DELETE" | translate}}</div>
+                <div class="btn btn-danger" (click)="deleteMessage(message.id, message.userType)">{{"GLOBAL.DELETE" | translate}}</div>
             </div>
+        </div>
+        <div class="Empty--ribbon" *ngIf="!messages || messages.length < 1">
+            {{ 'AGENCY_ADMIN.MESSAGES.NO_MESSAGES' | translate}}
         </div>
     </div>
 </div>
@@ -35,7 +40,7 @@
                 <div class="text-center"><p>{{"DELETE_MESSAGE_DIALOG.CONTENT" | translate}}</p></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" (click)="processDeleteMessage()">{{"GLOBAL.CONFIRM" | translate}}</button>
+                <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
                 <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
             </div>
         </div>
