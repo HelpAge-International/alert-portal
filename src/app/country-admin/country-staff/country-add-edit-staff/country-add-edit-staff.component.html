@@ -6,10 +6,10 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    
+
     <div (click) = "goBack()" class="Back--button">
         {{"COUNTRY_ADMIN.STAFF.TITLE_TEXT"| translate}}</div>
-    
+
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"COUNTRY_ADMIN.STAFF.TITLE_ADD_STAFF"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"COUNTRY_ADMIN.STAFF.TITLE_EDIT_STAFF"| translate}}</h1>
@@ -55,7 +55,7 @@
                   [required]="true" [disabled] = "countryOffice?.location">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let country of countryList | async" [ngValue]="country"
-                    [selected]="country.location == countryOffice?.location">{{countryEnum[country.location]}}
+                    [selected]="country.location == countryOffice?.location">{{countryEnum[country.location] | translate}}
             </option>
           </select>
         </div>
@@ -106,7 +106,7 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
       <div class="row">
         <label *ngFor="let tech of techSkillsList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-          <input type="checkbox" #box (change)="techSkillCheck(tech,box.checked)" 
+          <input type="checkbox" #box (change)="techSkillCheck(tech,box.checked)"
               [checked]="skillsMap.get(tech.$key)">{{tech.name}}</label>
       </div>
 

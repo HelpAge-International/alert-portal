@@ -1,10 +1,9 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
-import {Constants} from '../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType} from '../../../utils/Enums';
-import {AlertMessageModel} from '../../../model/alert-message.model';
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, ResponsePlanSectors} from "../../../utils/Enums";
+import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
@@ -17,9 +16,11 @@ declare var jQuery: any;
 })
 
 export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
+  private isViewing: boolean;
+  private UserType: number;
 
   private alertMessageType = AlertMessageType;
-  private alertMessage: AlertMessageModel = null; 
+  private alertMessage: AlertMessageModel = null;
   private uid: string;
   private countryID: string;
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
@@ -41,11 +42,12 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   private noteTmp: any[] = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private agencyId: string;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private router: Router,
-              private _userService: UserService,
+              private userService: UserService,
               private af: AngularFire) {
 
   }
@@ -56,11 +58,29 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+      });
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this._getCountryID().then(() => {
+      this.UserType = userType;
+      if (this.isViewing) {
         this._getProgramme();
-      });
+      } else {
+        this._getCountryID().then(() => {
+          this._getProgramme();
+        });
+      }
     });
   }
 
@@ -166,7 +186,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryID: any) => {
           this.countryID = countryID.$value ? countryID.$value : "";

@@ -10,10 +10,12 @@
             </div>
             <ul class="subnav_country-office-profile">
                 <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/programme">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
+                    <a *ngIf="!isViewing" routerLink="/country-admin/country-office-profile/programme">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
+                    <a *ngIf="isViewing" (click)="viewingToProgramme()">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
                 </li>
                 <li class="" routerLinkActive="active">
                     <a routerLink="/country-admin/country-office-profile/office-capacity">{{ "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" | translate}}</a>
+                  <a *ngIf="isViewing" (click)="viewingToOfficeCapacity()">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
                 </li>
                 <li class="" routerLinkActive="active">
                     <a routerLink="/country-admin/country-office-profile/partners">{{ "COUNTRY_ADMIN.PROFILE.MENU.PARTNERS" | translate}}</a>

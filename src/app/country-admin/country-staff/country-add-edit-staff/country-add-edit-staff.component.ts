@@ -11,6 +11,7 @@ import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelStaff} from "../../../model/staff.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import * as moment from "moment";
 declare var jQuery: any;
 
 @Component({
@@ -32,7 +33,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private successMessage = 'COUNTRY_ADMIN.STAFF.SUCCESS_STAFF_MEMBER_ADDED';
   private hideSuccess = true;
 
-  private countryEnum = Countries;
+  // private countryEnum = Countries;
+  private countryEnum = Constants.COUNTRIES;
 
   private userTypeConstant = Constants.COUNTRY_ADMIN_USER_TYPE;
   private userTypeSelection = Constants.COUNTRY_ADMIN_USER_TYPE_SELECTION;
@@ -75,6 +77,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private isUpdateOfficeOnly: boolean;
   private hideCountry: boolean;
   private hideRegion: boolean;
+  private isFirstLogin: boolean;
+  private systemId: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -92,6 +96,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
             // Get the country id and agency administrator id
             this.countryId = countryAdmin.countryId;
             this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
+            this.systemId = countryAdmin.systemAdmin ? Object.keys(countryAdmin.systemAdmin)[0] : '';
             this.initData();
             this.route.params
               .takeUntil(this.ngUnsubscribe)
@@ -145,9 +150,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + '/skill')
       .takeUntil(this.ngUnsubscribe)
       .subscribe(skills => {
-      this.techSkillsList = skills.filter(skill => skill.type === SkillType.Tech);
-      this.supportSkillList = skills.filter(skill => skill.type === SkillType.Support);
-    });
+        this.techSkillsList = skills.filter(skill => skill.type === SkillType.Tech);
+        this.supportSkillList = skills.filter(skill => skill.type === SkillType.Support);
+      });
 
     this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
   }
@@ -325,6 +330,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     staff.training = this.trainingNeeds ? this.trainingNeeds : 'None';
     staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
+    staff.updatedAt = Date.now();
 
     if (this.isUpdateOfficeOnly) {
       staffData['/staff/' + this.selectedOfficeId + '/' + uid + '/'] = null;
@@ -349,8 +355,57 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.userType === UserType.CountryDirector) {
-      staffData['/directorCountry/' + this.countryOffice.$key + '/'] = uid;
+    //push user group
+    let userData = {};
+    let agency = {};
+    agency[this.agencyAdminId] = true;
+    userData["agencyAdmin"] = agency;
+
+    if (!this.isEdit) {
+      userData["firstLogin"] = true;
+    } else {
+      if (this.isEmailChange) {
+        userData["firstLogin"] = true;
+      } else {
+        userData["firstLogin"] = this.isFirstLogin;
+      }
+    }
+
+    if (!this.hideCountry) {
+      userData["countryId"] = this.countryOffice.$key;
+    }
+    // else if (!this.hideRegion) {
+    //   userData["regionId"] = this.region.$key;
+    // }
+    let system = {};
+    system[this.systemId] = true;
+    userData["systemAdmin"] = system;
+    if (this.userType == UserType.CountryDirector) {
+      staffData["/directorCountry/" + this.countryOffice.$key + "/"] = uid;
+      staffData["/countryDirector/" + uid] = userData;
+    }
+    // else if (this.userType == UserType.RegionalDirector) {
+    //   staffData["/directorRegion/" + this.region.$key + "/"] = uid;
+    //   staffData["/regionDirector/" + uid] = userData;
+    // }
+    else if (this.userType == UserType.ErtLeader) {
+      staffData["/ertLeader/" + uid] = userData;
+    } else if (this.userType == UserType.Ert) {
+      staffData["/ert/" + uid] = userData;
+    }
+    // else if (this.userType == UserType.GlobalDirector) {
+    //   staffData["/globalDirector/" + uid] = userData;
+    // }
+    // else if (this.userType == UserType.GlobalUser) {
+    //   staffData["/globalUser/" + uid] = userData;
+    // }
+    // else if (this.userType == UserType.Donor) {
+    //   staffData["/donor/" + uid] = userData;
+    // }
+    else if (this.userType == UserType.NonAlert) {
+      staffData["/nonAlert/" + uid] = userData;
+    } else if (this.userType == UserType.CountryUser) {
+      staffData["/countryUser/" + uid] = userData;
     }
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
@@ -359,8 +414,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       Observable.timer(1500)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(() => {
-        this.router.navigateByUrl('/country-admin/country-staff');
-      });
+          this.router.navigateByUrl('/country-admin/country-staff');
+        });
     }, error => {
       this.warningMessage = error.message;
       this.showAlert();
