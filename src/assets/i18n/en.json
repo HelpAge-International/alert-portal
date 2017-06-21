@@ -96,6 +96,11 @@
             "MANDATED": "Mandated",
             "CUSTOM": "Custom"
         },
+        "TOOLTIP": {
+            "NEED_MORE_INFORMATION": "If you need more detailed information please ",
+            "CLICK_HERE": "click here",
+            "MORE_INFO": "More info"
+        },
         "ACCOUNT_SETTING": "Account Settings",
         "LOGOUT": "Logout",
         "PERSON_TITLE": {

@@ -145,6 +145,10 @@ export class Constants {
         "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO26"
     ];
 
+    static HAZARD_ICONS: string[] = [
+
+    ]
+
 
     /*
      * Response Plans

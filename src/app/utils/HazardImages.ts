@@ -73,6 +73,10 @@ export class HazardImages {
     return HazardImages.info + this.getMapOfSVG().get(int) + HazardImages.ending;
   }
 
+  public getHazard(key: number) {
+    return "/assets/images/hazards/" + this.getMapOfCSS().get(key)  + ".svg";
+  }
+
   public getCSS(int: number) {
     return this.getMapOfCSS().get(int);
   }

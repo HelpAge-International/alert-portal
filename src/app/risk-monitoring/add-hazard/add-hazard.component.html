@@ -23,8 +23,8 @@
           <input type="radio" name="RT" (change)="stateIsCustom(true, $event,hazard.hazardScenario)"
                  id="{{HazardScenario[hazard.hazardScenario] | translate}}" [value]="HazardScenario[hazard.hazardScenario] | translate"
                  required>
-          <div class="risk-icon__components no-bg"><img
-            src="assets/images/hazards/{{HazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>
+          <div class="risk-icon__components no-bg"><img class="Black-Background-Hazard-Icon"
+            src="{{_getHazardImage(hazardData.hazardScenario)}}"></div>
           <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>Risk {{hazard.value}}</p>
         </label>
       </div>
@@ -63,8 +63,8 @@
     <form action="" *ngSwitchCase="2">
       <div class="row" style="width:100%">
         <label class="Checkbox--ribbon__alert Left col-sm-5">
-          <div class="risk-icon__components no-bg"><img
-            src="assets/images/hazards/{{HazardScenario[hazardData.hazardScenario] | translate | lowercase}}.svg"></div>
+          <div class="risk-icon__components no-bg"><img class="Black-Background-Hazard-Icon"
+            src="{{_getHazardImage(hazardData.hazardScenario)}}"></div>
           <p><b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b></p>
         </label>
       </div>
