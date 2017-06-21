@@ -6,6 +6,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {Message} from "../../model/message";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
   selector: 'app-agency-admin-header',
@@ -21,17 +22,23 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private agencyName: string = "";
   private counter: number = 0;
   private unreadMessages = [];
-  private unreadSortedMessages = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService) {
+  constructor(private pageControl: PageControlService,
+              private _notificationService: NotificationService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this.getMessages();
+        this._notificationService.getAgencyNotifications(this.uid, true).subscribe(unreadMessages => {
+          this.unreadMessages = unreadMessages;
+        });
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe).subscribe(user => {
           this.firstName = user.firstName;
@@ -64,40 +71,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   goToNotifications() {
-    this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
+    this._notificationService.setAgencyNotificationsAsRead(this.uid).subscribe(() => {
+      this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
+    })
   }
-
-  getMessages() {
-    this._getMessageByType('allagencyadminsgroup');
-    this._getMessageByType('allusersgroup');
-  }
-
-  _getMessageByType(groupType: string) {
-    this.af.database.list(Constants.APP_STATUS + "/messageRef/systemadmin/" + groupType + "/" + this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(list => {
-        list.forEach((x) => {
-          this._getMessageData(x.$key, x.$value);
-        });
-
-      });
-  }
-
-  _getMessageData(messageID: string, messageTime: number) {
-    this.af.database.object(Constants.APP_STATUS + "/message/" + messageID)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((message: Message) => {
-        if (message.time > messageTime) {
-          this.unreadMessages.push(message);
-          this._sortMessages();
-        }
-      });
-  }
-
-  _sortMessages() {
-    this.unreadSortedMessages = this.unreadMessages.sort(function (a, b) {
-      return b.time - a.time;
-    });
-  }
-
 }

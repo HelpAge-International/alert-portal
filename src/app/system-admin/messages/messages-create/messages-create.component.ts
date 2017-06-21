@@ -95,7 +95,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(allUsersIds => {
           allUsersIds.forEach(userId => {
-            this.msgData[systemAdminAllUsersMessageRefPath + userId.$key + '/' + key] = this.currentDateTimeInMilliseconds;
+            this.msgData[systemAdminAllUsersMessageRefPath + userId.$key + '/' + key] = true;
           });
           this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
             console.log("Message Ref successfully added to all nodes");
@@ -124,7 +124,7 @@ export class MessagesCreateComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(list => {
             list.forEach(item => {
-              this.msgData[this.systemAdminMessageRefPath + group + '/' + item.$key + '/' + key] = this.currentDateTimeInMilliseconds;
+              this.msgData[this.systemAdminMessageRefPath + group + '/' + item.$key + '/' + key] = true;
             });
 
             if (this.groups.indexOf(group) == this.groups.length - 1) {
