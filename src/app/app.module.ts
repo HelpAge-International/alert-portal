@@ -172,6 +172,7 @@ import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guida
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TooltipComponent} from "./utils/tooltips/tooltip.component";
 import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
+import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -340,7 +341,8 @@ const firebaseAuthConfig = {
     GuidanceReportComponent,
     TooltipComponent,
     GuidanceReportComponent,
-    TimeAgoPipe
+    TimeAgoPipe,
+    CountryNotificationsComponent
   ],
   imports: [
     BrowserModule,
