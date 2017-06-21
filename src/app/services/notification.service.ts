@@ -28,10 +28,56 @@ export class NotificationService {
     return this.getNotifications("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId, unreadOnly);
  }
 
-  setAgencyNotificationsAsRead(agencyId): Observable<any>{
-    return this.setNotificationsAsRead("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId);
-  }
+ getCountryAdminNotifications(countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
+   let messagesList: MessageModel[] = [];
 
+  //  let nodes = ["/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
+  //               "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
+  //               "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
+  //               "/messageRef/systemadmin/allusersgroup/" + countryId];
+
+  // nodes.forEach(node => {
+  //   this.getNotifications(node, unreadOnly).subscribe(messages => {
+  //     messagesList.concat(messages);
+  //   });
+  // })
+  // let nodesObservable = Observable.from(nodes);
+
+  // let messages = [];
+  
+  // return nodesObservable.flatMap( node => { return this.getNotifications(node, unreadOnly)})
+  //                       .flatMap(messageArray => {
+  //                         messageArray.forEach(message => { messages.push(message); })
+  //                         //messages = messages.concat(messageArray);
+  //                         console.log(messages);
+  //                         return messages;
+  //                       });
+                        
+  
+  // nodes.forEach(node => observables.push(this.getNotifications(node, unreadOnly)));
+
+  // return Observable.combineLatest(observables).map(messagesArray => {
+  //   let messages: MessageModel[] = [];
+    
+  //   messagesArray.forEach(messageArray => {
+  //     messageArray.forEach(message => {
+  //       messages.push(message);
+  //     });
+  //   });
+
+  //   console.log(messages);
+  //   return messages;
+  // });
+  return this.getNotifications("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId, unreadOnly);
+ }
+
+setAgencyNotificationsAsRead(agencyId): Observable<any>{
+  return this.setNotificationsAsRead("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId);
+}
+
+setCountryAdminNotificationsAsRead(countryId, agencyId, unreadOnly = false){
+   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId);
+ }
   deleteNotification(node): firebase.Promise<any>{
     if (!node) {
       Promise.reject('Missing node!');
