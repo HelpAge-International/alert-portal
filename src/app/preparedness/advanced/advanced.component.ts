@@ -18,6 +18,8 @@ import {PageControlService} from "../../services/pagecontrol.service";
 })
 
 export class AdvancedPreparednessComponent extends MinimumPreparednessComponent implements OnInit, OnDestroy {
+  private assigneeAdvId: string;
+  private selectedAction: any;
 
   protected actionLevel = ActionLevel.APA;
 
@@ -30,8 +32,9 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
   // private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   firebase: any;
+  private user_type: number;
 
-  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService:UserService) {
+  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
     super(pageControl, firebaseApp, af, router, route, storage, userService);
     this.firebase = firebaseApp;
 
@@ -55,125 +58,135 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
   ngOnInit() {
     super.ngOnInit();
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.obsCountryId.subscribe(
-          value => {
-            this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
+      this.user_type = userType;
+      this.userService.getCountryId(Constants.USER_PATHS[this.user_type], user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryId => {
+          this.countryId = countryId;
+          this.init_Data();
+        });
+    });
+  }
+
+  private init_Data() {
+    this.obsCountryId.subscribe(
+      value => {
+        this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(hazards => {
+            this.hazards.next(hazards);
+          });
+      },
+      error => console.log(error),
+      () => console.log("finished")
+    );
+
+    this.af.database.list(Constants.APP_STATUS + '/action/')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(_ => {
+        this.actions = [];
+        _.map(actions => {
+          let agencyId = actions.$key;
+          Object.keys(actions).map(action => {
+            if (typeof actions[action] !== 'object')
+              return;
+
+            actions[action].agencyId = agencyId;
+            actions[action].key = action;
+            actions[action].docsCount = 0;
+            let userKey = actions[action].asignee;
+            try {
+              actions[action].docsCount = Object.keys(actions[action].documents).length;
+
+              Object.keys(actions[action].documents).map(docId => {
+                this.af.database.object(Constants.APP_STATUS + '/document/' + agencyId + '/' + docId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(_ => {
+                    actions[action].documents[docId] = _;
+                  });
+              });
+            } catch (e) {
+
+            }
+
+            this.hazards
               .takeUntil(this.ngUnsubscribe)
               .subscribe(hazards => {
-                this.hazards.next(hazards);
-              });
-          },
-          error => console.log(error),
-          () => console.log("finished")
-        );
-
-        this.af.database.list(Constants.APP_STATUS + '/action/')
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(_ => {
-            this.actions = [];
-            _.map(actions => {
-              let agencyId = actions.$key
-              Object.keys(actions).map(action => {
-                if (typeof actions[action] !== 'object')
-                  return;
-
-                actions[action].agencyId = agencyId;
-                actions[action].key = action;
-                actions[action].docsCount = 0;
-                let userKey = actions[action].asignee;
-                try {
-                  actions[action].docsCount = Object.keys(actions[action].documents).length;
-
-                  Object.keys(actions[action].documents).map(docId => {
-                    this.af.database.object(Constants.APP_STATUS + '/document/' + agencyId + '/' + docId)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(_ => {
-                        actions[action].documents[docId] = _;
-                      });
-                  });
-                } catch (e) {
-
-                }
-
-                this.hazards
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(hazards => {
-                    actions[action].hazards = hazards.filter(hazard => {
-                      if (actions[action].hazardsAssigned) {
-                        return (Object.keys(actions[action].hazardsAssigned).indexOf(hazard.$key) > -1)
-                      }
-
-                      return false;
-                    });
-
-                    actions[action].hazards.map(hazard => {
-                      this.alertFilterSubject.next(hazard.hazardScenario);
-
-                      this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryId, this.alertFilter)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(alerts => {
-                          hazard.alerts = alerts;
-                          alerts.map(alert => {
-                            console.log(alert.alertLevel);
-                            console.log(ThresholdName.Red);
-                            if (alert.alertLevel == ThresholdName.Red)
-                              this.changeActionStatus(actions[action]);
-                          });
-
-                        });
-
-                      return hazard;
-                    });
-                  });
-
-                this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    if (_.$exists()) {
-                      this.users[userKey] = _.firstName + " " + _.lastName;
-                      actions[action].assigned = true;
-                    }
-                    else {
-                      this.users[userKey] = "Unassigned";//TODO translate somehow
-                      actions[action].assigned = false;
-                    }
-
-                  });
-
-                this.af.database.list(Constants.APP_STATUS + '/note/' + action, {
-                  query: {
-                    orderByChild: "time"
+                actions[action].hazards = hazards.filter(hazard => {
+                  if (actions[action].hazardsAssigned) {
+                    return (Object.keys(actions[action].hazardsAssigned).indexOf(hazard.$key) > -1)
                   }
-                })
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    actions[action].notesCount = _.length;
-                    actions[action].notes = _;
-                    actions[action].notes.map(note => {
-                      let uploadByUser = note.uploadBy;
-                      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadByUser)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(_ => {
-                          if (_.$exists()) {
-                            note.uploadByUser = _.firstName + " " + _.lastName;
-                          }
-                          else {
-                            note.uploadByUser = "N/A";
-                          }
-                        });
 
-                      return note;
+                  return false;
+                });
+
+                actions[action].hazards.map(hazard => {
+                  this.alertFilterSubject.next(hazard.hazardScenario);
+
+                  this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryId, this.alertFilter)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(alerts => {
+                      hazard.alerts = alerts;
+                      alerts.map(alert => {
+                        console.log(alert.alertLevel);
+                        console.log(ThresholdName.Red);
+                        if (alert.alertLevel == ThresholdName.Red)
+                          this.changeActionStatus(actions[action]);
+                      });
+
                     });
 
-                  });
-
-                if (actions[action].level == this.actionLevel) {
-                  this.actions.push(actions[action]);
-                }
+                  return hazard;
+                });
               });
-            });
+
+            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                if (_.$exists()) {
+                  this.users[userKey] = _.firstName + " " + _.lastName;
+                  actions[action].assigned = true;
+                }
+                else {
+                  this.users[userKey] = "Unassigned";//TODO translate somehow
+                  actions[action].assigned = false;
+                }
+
+              });
+
+            this.af.database.list(Constants.APP_STATUS + '/note/' + action, {
+              query: {
+                orderByChild: "time"
+              }
+            })
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                actions[action].notesCount = _.length;
+                actions[action].notes = _;
+                actions[action].notes.map(note => {
+                  let uploadByUser = note.uploadBy;
+                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadByUser)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(_ => {
+                      if (_.$exists()) {
+                        note.uploadByUser = _.firstName + " " + _.lastName;
+                      }
+                      else {
+                        note.uploadByUser = "N/A";
+                      }
+                    });
+
+                  return note;
+                });
+
+              });
+
+            if (actions[action].level == this.actionLevel && actions[action].agencyId == this.countryId) {
+              this.actions.push(actions[action]);
+            }
           });
-    });
+        });
+      });
   }
 
   ngOnDestroy() {
@@ -189,6 +202,28 @@ export class AdvancedPreparednessComponent extends MinimumPreparednessComponent 
       .update({
         actionStatus: status
       });
+  }
+
+  assignActionDialogAdv(action) {
+    this.selectedAction = action;
+  }
+
+  selectAssigneeAdv(assigneeId) {
+    console.log(assigneeId);
+    this.assigneeAdvId = assigneeId;
+  }
+
+  saveAssignee() {
+    if (this.selectedAction && this.assigneeAdvId) {
+      //TODO need double check
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.selectedAction.agencyId + "/" + this.selectedAction.key + "/asignee").set(this.assigneeAdvId).then(() => {
+        jQuery("#leadAgencySelection").modal('hide');
+      }, error => {
+        console.log(error.message);
+      });
+    } else {
+      console.log("need to select a staff!!");
+    }
   }
 
 
