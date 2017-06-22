@@ -41,7 +41,7 @@
                 <div class="col-lg-8 col-md-10">
                     <strong>{{"PREPAREDNESS.ACTION_SELECT_TEXT" | translate}}</strong>
                     <div class="row no-gutters" *ngFor="let aLevel of actionLevelList">
-                        <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
+                        <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5" *ngIf="(aLevel == actionLevelList[0] && moduleAccess.minimumPreparedness) || (aLevel == actionLevelList[1] && moduleAccess.advancedPreparedness)">
                             <input [disabled]="(actionID && !actionData.department) ? true : false" type="radio"
                                    #pActionLevel="ngModel" name="pActionLevel" required
                                    (change)="selectActionLevel(aLevel)" id="level_{{aLevel}}" [value]="aLevel"

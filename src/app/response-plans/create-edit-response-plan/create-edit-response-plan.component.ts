@@ -18,7 +18,7 @@ import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 
 @Component({
@@ -251,6 +251,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private sectionTenNum: number = 0;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
@@ -260,6 +261,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       let userpath = Constants.USER_PATHS[userType];
       this.getSystemAgencyCountryIds(userpath);
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        if (!this.moduleAccess.countryOffice) {
+          this.methodOfImplementationSelectedDirect();
+        }
+      });
     });
   }
 
@@ -708,8 +715,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   methodOfImplementationSelectedWithPartners() {
-    this.isWorkingWithPartners = true;
-    this.isDirectlyThroughFieldStaff = false;
+    if (this.moduleAccess.countryOffice) {
+      this.isWorkingWithPartners = true;
+      this.isDirectlyThroughFieldStaff = false;
+    }
+    else {
+      this.methodOfImplementationSelectedDirect();
+    }
   }
 
   addPartnersDropDown() {

@@ -8,7 +8,7 @@ import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AlertMessageModel} from '../../model/alert-message.model';
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 declare var jQuery: any;
 import {Observable, Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
@@ -65,20 +65,21 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
   private allowedDurationList: number[] = [];
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
-        this.actionData = new Action();
-        this.setDefaultActionDataValue();
-        /* if selected generic action */
-        this.actionSelected = this.storage.get('selectedAction');
-        if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
-            this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
-            this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
-            this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
-            this.storage.remove('selectedAction');
-            this.actionSelected = {};
-        }
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+    this.actionData = new Action();
+    this.setDefaultActionDataValue();
+    /* if selected generic action */
+    this.actionSelected = this.storage.get('selectedAction');
+    if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
+      this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
+      this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      this.storage.remove('selectedAction');
+      this.actionSelected = {};
+    }
 
     /* if copy action */
     this.copyActionData = this.storage.get('copyActionData');
@@ -103,14 +104,20 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     console.log(this.actionData);
   }
 
-    ngOnInit() {
-      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.UserType = userType;
-        this._defaultHazardCategoryValue();
-        this.processPage();
+  ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
+
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, user.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        this.actionData.level = 0;
       });
-    }
+
+      this._defaultHazardCategoryValue();
+      this.processPage();
+    });
+  }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
@@ -222,7 +229,15 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   selectActionLevel(levelKey: number) {
-    this.actionData.level = levelKey;
+    if (!this.moduleAccess.minimumPreparedness && levelKey == 1) {
+      // Ignore
+    }
+    else if (!this.moduleAccess.advancedPreparedness && levelKey == 2) {
+      // Ignore
+    }
+    else {
+      this.actionData.level = levelKey;
+    }
     return true;
   }
 
