@@ -134,6 +134,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           if (staff.isResponseMember) {
             responseStaffs.push(staff);
           }
+          // Create the new note model
+          this.newNote[staff.id] = new NoteModel();
+          this.newNote[staff.id].uploadedBy = this.uid;
         });
         return responseStaffs;
       })
@@ -344,22 +347,22 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     return userName;
   }
 
-  // addNote(equipmentType: string, equipmentId: string, note: NoteModel) {
-  //   if (this.validateNote(note)) {
-  //     let equipmentNode = "";
-  //
-  //     if (equipmentType == 'equipment') {
-  //       equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-  //     } else {
-  //       equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-  //     }
-  //
-  //     this._noteService.saveNote(equipmentNode, note).then(() => {
-  //       this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
-  //     })
-  //       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
-  //   }
-  // }
+  addNote(type: string, id: string, note: NoteModel) {
+    if (this.validateNote(note)) {
+      let node = "";
+
+      if (type == 'staff') {
+        node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
+      } else {
+        // equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
+
+      this._noteService.saveNote(node, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+  }
 
   validateNote(note: NoteModel): boolean {
     this.alertMessage = note.validate();

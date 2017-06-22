@@ -97,39 +97,41 @@
           <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
 
-          <!--<form (ngSubmit)="addNote('staff', staff.id, newNote[staff.id])">-->
-            <!--<input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"-->
-                   <!--[(ngModel)]="newNote[staff.id] && newNote[staff.id].content">-->
+          <form (ngSubmit)="addNote('staff', staff.id, newNote[staff.id])">
+            <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[staff.id] && newNote[staff.id].content">
 
-          <!--Note post-->
-          <div class="row Spaced log-post__wrap--risk"
-               *ngFor="let note of staffNoteMap.get(staff.id)">
-            <div class="log-date__wrap--risk col-lg-1">
-              <p>{{ note.time | date: 'dd MMM y' }}</p>
-            </div>
-            <div class="col-lg-6">
-              <p>{{ note.content }}</p>
-              <br>
-              <div class="row">
-                <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
-                <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                   (click)="editNote(note)">{{ 'GLOBAL.EDIT' | translate }}</a>
-                <p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>
-                <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
-                   (click)="deleteNote(note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+            <!--Note post-->
+            <div class="row Spaced log-post__wrap--risk"
+                 *ngFor="let note of staffNoteMap.get(staff.id)">
+              <div class="log-date__wrap--risk col-lg-1">
+                <p>{{ note.time | date: 'dd MMM y' }}</p>
+              </div>
+              <div class="col-lg-6">
+                <p>{{ note.content }}</p>
+                <br>
+                <div class="row">
+                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                     (click)="editNote(note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                  <p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>
+                  <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)"
+                     class="padding-left-one col-sm-0 text-danger"
+                     (click)="deleteNote(note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                </div>
               </div>
             </div>
-          </div>
-          <hr>
+            <hr>
 
-          <!--add Note button-->
-          <!--<div class="add_log mt-auto p-2 text-right float-right">-->
-          <!--<button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>-->
-          <!--<br>-->
-          <!--<br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate-->
-          <!--}}</a>-->
-          <!--</div>-->
-          <!--</form>-->
+            <!--add Note button-->
+            <div class="add_log mt-auto p-2 text-right float-right">
+              <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>
+              <br>
+              <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            </div>
+          </form>
         </div>
       </div>
       <!--Notes Drop Down End-->
