@@ -344,22 +344,22 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     return userName;
   }
 
-  addNote(equipmentType: string, equipmentId: string, note: NoteModel) {
-    if (this.validateNote(note)) {
-      let equipmentNode = "";
-
-      if (equipmentType == 'equipment') {
-        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      } else {
-        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      }
-
-      this._noteService.saveNote(equipmentNode, note).then(() => {
-        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
-      })
-        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
-    }
-  }
+  // addNote(equipmentType: string, equipmentId: string, note: NoteModel) {
+  //   if (this.validateNote(note)) {
+  //     let equipmentNode = "";
+  //
+  //     if (equipmentType == 'equipment') {
+  //       equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+  //     } else {
+  //       equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+  //     }
+  //
+  //     this._noteService.saveNote(equipmentNode, note).then(() => {
+  //       this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+  //     })
+  //       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+  //   }
+  // }
 
   validateNote(note: NoteModel): boolean {
     this.alertMessage = note.validate();
