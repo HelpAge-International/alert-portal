@@ -26,13 +26,13 @@
       </div>
       <div class="form-group-country-office-profile col-sm-3">
         <select class="form-control" id="select1" (change)="filterData($event, 'sSkills')">
-          <option value="0">All</option>
+          <option value="0">Support Skills</option>
           <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
         <select class="form-control" id="select1" (change)="filterData($event, 'tSkills')">
-          <option value="0">All</option>
+          <option value="0">Technical Skills</option>
           <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
         </select>
       </div>
@@ -69,7 +69,7 @@
                                        src="assets/images/icons/skills_bubble.svg" alt="Skills">
               <p class="notes-number__components--country-office-profile skills">
                 {{skillTechMap.get(staff.id).length}}</p>
-              <a placement="bottom" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
+              <a placement="bottom" id="{{i}}" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
                  data-content="-WaSh" title="Technical skills" class="col-sm-0">Technical</a></div>
             <div class="col-sm-1 margin-left-six"><img class="margin-left-two" style="width: 1.85em;"
                                                        src="assets/images/icons/skills_bubble.svg" alt="Skills">
@@ -114,7 +114,7 @@
                   <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                     (click)="editNote(note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                     (click)="editNote('staff', staff.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
                   <p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>
                   <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)"
                      class="padding-left-one col-sm-0 text-danger"
@@ -296,6 +296,7 @@
 
     </div> <!--Estimated time of arrival-->
     <div class="row Line-row"></div>
+
     <!--Surge Capacity Dropdown tooltip-->
     <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityTwo"
          data-parent="#surgeCapacityTwo" aria-controls="surgeCapacityTwo">
@@ -332,9 +333,11 @@
 
     </div>
     <!--Surge Capacity Dropdown tooltip-->
+
+    <button class="btn btn-outline-primary text-uppercase"
+            (click)="addEditSurgeCapacity()">{{ 'GLOBAL.ADD' | translate }}
+    </button>
   </div>
-
-
   <div class="row Line-row"></div>
 </div>
 
@@ -351,8 +354,38 @@
         <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-        <button type="button" class="btn btn-primary" (click)="deleteAction(activeType, activeId, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
+          translate}}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction(activeType, activeId, activeNote)">
+          {{"GLOBAL.CONFIRM" | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Edit Note Modal-->
+<div class="modal fade" id="edit-action" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center form-group input-lg">
+        <textarea type="text" rows="6" class="form-text form-control"
+                  [(ngModel)]="activeNote && activeNote.content"></textarea>
+      </div>
+      <div class="row Right-aligned Spaced col-sm-12">
+        <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL"
+          |
+          translate}}</a>
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                (click)="editAction(activeType, activeId, activeNote)">{{"GLOBAL.SAVE" | translate}}
+        </button>
       </div>
     </div>
   </div>

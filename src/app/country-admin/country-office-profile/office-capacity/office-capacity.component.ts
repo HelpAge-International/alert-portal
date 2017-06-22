@@ -400,8 +400,48 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
   }
 
+  editNote(type: string, id: string, note: NoteModel) {
+    jQuery('#edit-action').modal('show');
+    this.activeId = id;
+    this.activeNote = note;
+    this.activeType = type;
+  }
+
+  editAction(type: string, id: string, note: NoteModel) {
+    this.closeEditModal();
+
+    if (this.validateNote(note)) {
+      let node = "";
+
+      if (type == 'staff') {
+        node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
+      } else {
+        // equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
+
+      this._noteService.saveNote(node, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+  }
+
   closeDeleteModal() {
     jQuery('#delete-action').modal('hide');
+  }
+
+  closeEditModal() {
+    jQuery('#edit-action').modal('hide');
+  }
+
+  addEditSurgeCapacity(id?: string) {
+    if(id)
+    {
+      this.router.navigate(['/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity', {id: id}], {skipLocationChange: true});
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity');
+    }
+
   }
 
 }

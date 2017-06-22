@@ -1,0 +1,142 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="row Spaced-above">
+      <div class="Back--button"><a routerLink="/country-admin/country-office-profile/office-capacity">Edit Office &
+        surge capacity</a></div>
+    </div>
+
+    <div class="Header-title__wrap row">
+      <h1>Add surge capacity</h1>
+    </div>
+
+    <div class="row Spaced-above">
+      <strong>Organisation</strong>
+    </div>
+
+    <div class="row Spaced-above">
+      <input class="col-sm-3 form-control" type="text" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.orgnization">
+    </div>
+
+    <div class="row Spaced-above">
+      <strong>Type of relationship</strong>
+    </div>
+
+    <div class="row Spaced-above">
+      <input class="col-sm-3 form-control" type="text" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.relationship">
+    </div>
+
+    <div class="row Spaced-above">
+      <!--Name-->
+      <div class="col-sm-3">
+        <strong class="row">Name</strong>
+      </div>
+
+      <!--Position-->
+      <div class="col-sm-3 margin-left-two">
+        <strong class="row">Position</strong>
+      </div>
+
+      <!--Email Address-->
+      <div class="col-sm-3 margin-left-two">
+        <strong class="row">Email Address</strong>
+      </div>
+    </div>
+
+    <div class="row">
+      <input class="col-sm-3 Small-spaced form-control" type="text" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.name">
+      <input class="col-sm-3 margin-left-two Small-spaced form-control" type="text" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.position">
+      <input class="col-sm-3 margin-left-two Small-spaced form-control" type="email" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.email">
+    </div>
+
+    <div class="row Spaced-above">
+      <strong>Sector of expertise</strong>
+    </div>
+
+    <div class="row Selection-row">
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="water"></div>
+        <label>WaSH</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="health"></div>
+        <label>Health</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="shelter"></div>
+        <label>Shelter</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="nutrition"></div>
+        <label>Nutrition</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="food"></div>
+        <label>Food Security &amp; Livelihoods</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="protection"></div>
+        <label>Protection</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="education"></div>
+        <label>Education</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="camp"></div>
+        <label>Camp Management</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="misc"></div>
+        <label>Other</label></div>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <strong>Location</strong>
+    </div>
+
+    <div class="row Spaced-above">
+      <input class="col-sm-4 form-control" type="text" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.location">
+    </div>
+    <br>
+    <div class="row Spaced-above">
+      <strong>Estimated time of arrival</strong>
+    </div>
+
+    <div class="row Spaced-above">
+      <input class="col-sm-2" type="number" min="0" placeholder="Please enter" [(ngModel)]="timeValue">
+      <div class="form-group-country-office-profile col-sm-2">
+        <select class="form-control" id="select1" [(ngModel)]="timeType">
+          <option value="1">Hours</option>
+          <option value="2">Days</option>
+          <option value="3">Weeks</option>
+          <option value="4">Months</option>
+          <option value="5">Years</option>
+        </select>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="row Spaced-above">
+      <strong>Duration of deployment</strong>
+    </div>
+
+    <div class="row Spaced-above">
+      <input class="col-sm-4 form-control" type="text" placeholder="Please enter"
+             [(ngModel)]="modelSurgeCapacity.durationOfDeployment">
+    </div>
+    <br>
+    <br>
+    <div class="row Spaced-above">
+      <button class="btn btn-primary text-uppercase col-sm-1" (click)="saveSurgeCapacity()">save</button>
+      <a class="padding-left-two margin-top-one" href="#">Cancel</a>
+    </div>
+
+    <br>
+
+  </div> <!--full page wrap inner end-->
+</div>
+
