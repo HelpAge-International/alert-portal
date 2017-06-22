@@ -96,9 +96,10 @@
         <div class="log_left p-3">
           <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
-          <!--<form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id])">-->
-          <!--<input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"-->
-          <!--[(ngModel)] = "newNote[equipment.id] && newNote[equipment.id].content">-->
+
+          <form (ngSubmit)="addNote('staff', staff.id, newNote[staff.id])">
+            <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[staff.id] && newNote[staff.id].content">
 
           <!--Note post-->
           <div class="row Spaced log-post__wrap--risk"

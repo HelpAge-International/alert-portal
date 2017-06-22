@@ -132,7 +132,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
   }
 
   countryOverview(countryId) {
-    this.router.navigate(["/director/director-overview", {"countryId": countryId, "isViewing": true, "agencyId":this.agencyId}]);
+    //TODO disabled for uat
+    // this.router.navigate(["/director/director-overview", {"countryId": countryId, "isViewing": true, "agencyId":this.agencyId}]);
   }
 
   getCountryCodeFromLocation(location: number) {

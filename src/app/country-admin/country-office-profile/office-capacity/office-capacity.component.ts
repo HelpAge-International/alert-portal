@@ -9,6 +9,7 @@ import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NoteModel} from "../../../model/note.model";
+import {NoteService} from "../../../services/note.service";
 declare var jQuery: any;
 
 @Component({
@@ -25,6 +26,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private skillTechMap = new Map<string, string[]>();
   private skillSupoMap = new Map<string, string[]>();
   private staffNoteMap = new Map<string, any[]>();
+  private newNote: NoteModel[] = [];
 
   private UserType: number;
   private alertMessageType = AlertMessageType;
@@ -65,6 +67,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   constructor(private pageControl: PageControlService,
               private subscriptions: RxHelper,
               private router: Router,
+              private _noteService: NoteService,
               private route: ActivatedRoute,
               private _userService: UserService,
               private af: AngularFire) {
@@ -167,7 +170,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           //get staff notes
           if (staff.notes) {
             console.log(staff.notes);
-            let notes = Object.keys(staff.notes).map(key =>{
+            let notes = Object.keys(staff.notes).map(key => {
               let note = new NoteModel();
               note.id = key;
               note.content = staff.notes[key]["content"];
@@ -332,13 +335,36 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   getUserName(userId) {
     let userName = "";
 
-    if(!userId) return userName;
+    if (!userId) return userName;
 
     this._userService.getUser(userId).takeUntil(this.ngUnsubscribe).subscribe(user => {
       userName = user.firstName + ' ' + user.lastName;
     });
 
     return userName;
+  }
+
+  addNote(equipmentType: string, equipmentId: string, note: NoteModel) {
+    if (this.validateNote(note)) {
+      let equipmentNode = "";
+
+      if (equipmentType == 'equipment') {
+        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      } else {
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
+
+      this._noteService.saveNote(equipmentNode, note).then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+      })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    }
+  }
+
+  validateNote(note: NoteModel): boolean {
+    this.alertMessage = note.validate();
+
+    return !this.alertMessage;
   }
 
 }
