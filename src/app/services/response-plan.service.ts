@@ -98,7 +98,8 @@ export class ResponsePlanService {
     if (approvalName) {
       let updateData = {};
       updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/approval/" + approvalName + "/" + uid] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
-      // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
+
+      // Updating status if the plan is rejected
       if (!isApproved) {
         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.NeedsReviewing;
       }
@@ -107,29 +108,31 @@ export class ResponsePlanService {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(result => {
           if (result) {
-            let approvePair = Object.keys(result).map(key => result[key]);
+            let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
             let waitingApprovalList = [];
             approvePair.forEach(item => {
               let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
               waitingApprovalList = waitingApprovalList.concat(waiting);
             });
+
             if (waitingApprovalList.length == 0) {
               updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
             }
+
+            this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+              if (rejectNoteContent) {
+                this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
+              } else {
+                isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+              }
+            }, error => {
+              console.log(error.message);
+            });
           }
         });
 
-      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-        if (rejectNoteContent) {
-          this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
-        } else {
-          isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
-        }
-      }, error => {
-        console.log(error.message);
-      });
     } else {
-      console.log("user type is empty!!!");
+      console.log("user type is empty");
     }
   }
 
