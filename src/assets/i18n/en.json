@@ -96,6 +96,11 @@
             "MANDATED": "Mandated",
             "CUSTOM": "Custom"
         },
+        "TOOLTIP": {
+            "NEED_MORE_INFORMATION": "If you need more detailed information please ",
+            "CLICK_HERE": "click here",
+            "MORE_INFO": "More info"
+        },
         "ACCOUNT_SETTING": "Account Settings",
         "LOGOUT": "Logout",
         "PERSON_TITLE": {
@@ -503,7 +508,8 @@
       "LOGIN_BLOCKED": "Login attempts have been temporarily blocked. Please try again later",
         "USERTYPE_UNASSIGNED": "This email address is not associated with a user account",
         "AGENCY_DEACTIVATED": "Your account is deactivated - Please check with your System Administrator",
-        "AGENCY_DOESNT_EXIST": "The agency you were assigned to no longer exists"
+      "AGENCY_DOESNT_EXIST": "The agency you were assigned too no longer exists",
+      "COUNTRY_OFFICE_DOESNT_EXIST": "The country office you were assigned too no longer exists"
     },
     "FORGOT_PASSWORD": {
         "TITLE_TEXT": "Forgot Password?",
@@ -1243,6 +1249,12 @@
     "DELETE_ACTION_DIALOG": {
         "TITLE": "Alert",
         "CONTENT": "Are you sure you want to delete this action?"
+    },
+    "DELETE_INDICATOR_DIALOG": {
+      "UNABLE_TO_DELETE": "Unable to delete your indicator. Please try again",
+      "DIALOG": "Delete indicator",
+      "TITLE": "Delete Indicator?",
+      "CONTENT": "Are you sure you want to delete this indicator?"
     },
     "DELETE_MESSAGE_DIALOG": {
         "TITLE": "Alert",

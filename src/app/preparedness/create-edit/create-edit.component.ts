@@ -192,7 +192,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         oneChecked = true;
       }
     });
-    if (!oneChecked) {
+    if (!oneChecked && this.actionData.level == ActionLevel.APA) {
       console.log("at least one need to be selected");
       this.alertMessage = new AlertMessageModel("At least one hazard need to be selected");
       return;
@@ -337,13 +337,39 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         console.log(data);
         for (let userID in data) {
           if (userID.indexOf("$") < 0) {
-            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID)
-              .subscribe((user: ModelUserPublic) => {
-                let userToPush = {userID: userID, firstName: user.firstName};
-                this.usersForAssign.push(userToPush);
-              });
+            this.addUsersToAssign(userID);
           }
+        }
+      });
+    this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((data) => {
+        let cId = data.val().countryId;
+        let aId = "";
+        for (let x in data.val().agencyAdmin) {
+          aId = x;
+        }
+        this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + aId + "/" + cId, {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((snap) => {
+            this.addUsersToAssign(snap.val().adminId);
+          })
+      });
+  }
 
+  addUsersToAssign(userID: string) {
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID)
+      .subscribe((data: ModelUserPublic) => {
+      let skip = false;
+        for (let x of this.usersForAssign) {
+          if (x.userID == userID) {
+            x.firstName = data.firstName;
+            skip = true;
+          }
+        }
+        if (!skip) {
+          let userToPush = {userID: userID, firstName: data.firstName};
+          this.usersForAssign.push(userToPush);
         }
       });
   }

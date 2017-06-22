@@ -8,6 +8,8 @@ import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NotificationService} from "../../services/notification.service";
+import { MessageModel } from "../../model/message.model";
 
 @Component({
   selector: 'app-country-admin-header',
@@ -32,13 +34,20 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private countryLocation: any;
   private Countries = Countries;
+  private unreadMessages: MessageModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private isAmber: boolean;
   private isRed: boolean;
   private isAnonym: boolean = false;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private alertService: ActionsService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private _notificationService: NotificationService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private alertService: ActionsService,
+              private userService: UserService) {
   }
 
   ngOnInit() {
@@ -68,6 +77,10 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
                   this.getAgencyID().then(() => {
                     this.getCountryData();
                     this.checkAlerts();
+                    this._notificationService.getCountryAdminNotifications(this.countryId, this.agencyAdminId, true)
+                            .subscribe(unreadMessages => {
+                              this.unreadMessages = unreadMessages;
+                            });
                   });
                 });
               }
@@ -112,6 +125,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   logout() {
     console.log("logout");
     this.af.auth.logout();
+  }
+
+  goToNotifications() {
+    this._notificationService.setCountryAdminNotificationsAsRead(this.countryId, this.agencyAdminId).subscribe(() => {
+      this.router.navigateByUrl("country-admin/country-notifications");
+    });
   }
 
   /**

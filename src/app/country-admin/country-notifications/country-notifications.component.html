@@ -1,0 +1,48 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+        <div class="Header-title__wrap">
+            <h1>{{"GLOBAL.YOUR_NOTIFICATIONS" | translate}}</h1>
+        </div>
+        <div class="Data--ribbon" *ngFor="let message of messages">
+             <div class="row">
+                <div class="Info--ribbon--wrap">
+                    <div class="col-sm-5">{{"GLOBAL.RECEIVED" | translate}}: <b>{{message.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
+                </div>
+                <div class="col-sm-12">
+                    <h5>{{message.title}}</h5>
+                    <p>{{message.content}}</p>
+                </div>
+            </div>
+            <div class="col-sm-3 Right-aligned">
+                <div class="btn btn-danger" (click)="deleteMessage(message.id, message.userType)">{{"GLOBAL.DELETE" | translate}}</div>
+            </div>
+        </div>
+        <div class="Empty--ribbon" *ngIf="!messages || messages.length < 1">
+            {{ 'AGENCY_ADMIN.MESSAGES.NO_MESSAGES' | translate}}
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="delete-message" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_MESSAGE_DIALOG.TITLE" | translate}}</strong></h5>
+            </div>
+            <div class="modal-body">
+                <div class="text-center"><p>{{"DELETE_MESSAGE_DIALOG.CONTENT" | translate}}</p></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

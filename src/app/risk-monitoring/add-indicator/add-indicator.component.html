@@ -8,10 +8,15 @@
     <div class="Full-page__wrap--inner">
         <br>
         <div class="Back--button" routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</div>
-        <div class="Header-title__wrap">
+        <div class="row">
+        <div class="Header-title col-sm-10 col-xs-2">
             <h1 *ngIf="!isEdit">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE" | translate}}</h1>
             <h1 *ngIf="isEdit">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_EDIT_INDICATOR" | translate}}</h1>
         </div>
+          <div class="col-sm-2 col-xs-6" *ngIf="isEdit">
+            <button href="#" class="btn btn-block btn-danger" (click)="showDeleteDialog('delete-indicator')">{{"DELETE_INDICATOR_DIALOG.DIALOG" | translate}}</button>
+          </div>
+    </div>
 
         <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.HAZARD" | translate}}</b></h6>
         <div class="Spaced-above form-group col-sm-12 row" *ngIf="checkTypeof(indicatorData.category)">
@@ -156,4 +161,23 @@
         </div>
 
     </div>
+</div>
+
+
+<div class="modal fade" id="delete-indicator" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_INDICATOR_DIALOG.TITLE" | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"DELETE_INDICATOR_DIALOG.CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="_deleteIndicator()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="_closeModal('delete-indicator')">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
+  </div>
 </div>
