@@ -118,7 +118,7 @@
                   <p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>
                   <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)"
                      class="padding-left-one col-sm-0 text-danger"
-                     (click)="deleteNote(note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                     (click)="deleteNote('staff', staff.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -336,4 +336,24 @@
 
 
   <div class="row Line-row"></div>
+</div>
+
+<!-- Delete note modal -->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction(activeType, activeId, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
 </div>

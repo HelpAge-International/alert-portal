@@ -19,6 +19,7 @@ declare var jQuery: any;
 })
 
 export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
+
   private responseStaffs: any[];
   private agencyId: string;
   private isViewing: boolean;
@@ -62,6 +63,10 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private totalStaff: number;
   private totalResponseStaff: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  private activeType: string;
+  private activeId: string;
+  private activeNote: NoteModel;
 
 
   constructor(private pageControl: PageControlService,
@@ -368,6 +373,35 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     this.alertMessage = note.validate();
 
     return !this.alertMessage;
+  }
+
+  deleteNote(type: string, id: string, note: NoteModel) {
+    jQuery('#delete-action').modal('show');
+    this.activeType = type;
+    this.activeId = id;
+    this.activeNote = note;
+  }
+
+  deleteAction(type: string, id: string, note: NoteModel) {
+    this.closeDeleteModal();
+
+    let node = '';
+
+    if (type == 'staff') {
+      node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
+    } else {
+      // equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+    }
+
+    this._noteService.deleteNote(node, note)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+  }
+
+  closeDeleteModal() {
+    jQuery('#delete-action').modal('hide');
   }
 
 }
