@@ -18,6 +18,7 @@
         "CLOSE": "Close",
         "REMOVE": "Remove",
         "REJECT": "Reject",
+        "COUNTRY": "Country",
         "MALE": "Male",
         "FEMALE": "Female",
         "TITLE": "Title",
