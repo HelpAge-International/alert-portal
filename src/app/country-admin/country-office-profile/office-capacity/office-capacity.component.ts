@@ -1,21 +1,23 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
-import {Constants} from '../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType, SkillType, OfficeType} from '../../../utils/Enums';
-import {AlertMessageModel} from '../../../model/alert-message.model';
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType} from "../../../utils/Enums";
+import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
+import {SurgeCapacityService} from "../../../services/surge-capacity.service";
+import * as moment from "moment";
 declare var jQuery: any;
 
 @Component({
   selector: 'app-country-office-capacity',
   templateUrl: './office-capacity.component.html',
-  styleUrls: ['./office-capacity.component.css']
+  styleUrls: ['./office-capacity.component.css'],
+  providers: [SurgeCapacityService]
 })
 
 export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
@@ -28,6 +30,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private skillSupoMap = new Map<string, string[]>();
   private staffNoteMap = new Map<string, any[]>();
   private newNote: NoteModel[] = [];
+  private ArrivalTimeType = ["hours", "days", "weeks", "months", "years"];
+  private ResponseSectors = ResponsePlanSectors;
+  private sectorImgPathMap = new Map<number, string>();
 
   private UserType: number;
   private alertMessageType = AlertMessageType;
@@ -67,12 +72,13 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private activeType: string;
   private activeId: string;
   private activeNote: NoteModel;
+  private surgeCapacities = [];
 
 
   constructor(private pageControl: PageControlService,
-              private subscriptions: RxHelper,
               private router: Router,
               private _noteService: NoteService,
+              private surgeService: SurgeCapacityService,
               private route: ActivatedRoute,
               private _userService: UserService,
               private af: AngularFire) {
@@ -106,6 +112,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           });
           this._getCountryID().then(() => {
             this.getStaff();
+            this.getSurgeCapacity();
             this._getCountryOfficeCapacity().then(() => {
 
             });
@@ -115,6 +122,50 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
       });
 
+  }
+
+  private getSurgeCapacity() {
+    this.surgeService.getSuregeCapacity(this.countryID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(surgeCapacities => {
+        this.surgeCapacities = surgeCapacities;
+        this.surgeCapacities.forEach(surge => {
+          surge.updatedAt = this.convertToLocal(surge.updatedAt);
+          this.handleSectorImgPath(surge, surge.sectors[0]);
+          // Create the new note model
+          this.newNote[surge.$key] = new NoteModel();
+          this.newNote[surge.$key].uploadedBy = this.uid;
+        });
+      });
+  }
+
+  private handleSectorImgPath(surge, sector) {
+    switch (sector) {
+      case ResponsePlanSectors.wash:
+        this.sectorImgPathMap.set(surge.$key, "water.svg");
+        break;
+      case ResponsePlanSectors.health:
+        this.sectorImgPathMap.set(surge.$key, "health.svg");
+        break;
+      case ResponsePlanSectors.shelter:
+        this.sectorImgPathMap.set(surge.$key, "shelter.svg");
+        break;
+      case ResponsePlanSectors.nutrition:
+        this.sectorImgPathMap.set(surge.$key, "nutrition.svg");
+        break;
+      case ResponsePlanSectors.foodSecurityAndLivelihoods:
+        this.sectorImgPathMap.set(surge.$key, "food.svg");
+        break;
+      case ResponsePlanSectors.protection:
+        this.sectorImgPathMap.set(surge.$key, "protection.svg");
+        break;
+      case ResponsePlanSectors.education:
+        this.sectorImgPathMap.set(surge.$key, "education.svg");
+        break;
+      case ResponsePlanSectors.campManagement:
+        this.sectorImgPathMap.set(surge.$key, "camp.svg");
+        break;
+    }
   }
 
   ngAfterViewInit() {
@@ -359,7 +410,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
       if (type == 'staff') {
         node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
       } else {
-        // equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
       }
 
       this._noteService.saveNote(node, note).then(() => {
@@ -435,13 +486,19 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditSurgeCapacity(id?: string) {
-    if(id)
-    {
+    if (id) {
       this.router.navigate(['/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity', {id: id}], {skipLocationChange: true});
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity');
     }
+  }
 
+  convertToLocal(timestamp): number {
+    return (moment().utcOffset() * 60 * 1000 + timestamp);
+  }
+
+  getSurgeNotesNumber(surge): number {
+    return surge.notes ? Object.keys(surge.notes).length : 0;
   }
 
 }

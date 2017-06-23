@@ -202,136 +202,189 @@
 
     <!--Surge Capacity Section-->
     <h3 class="Spaced-above">Surge capacity</h3>
-    <div class="row">
-      <!--Surge capacity table headers-->
-      <div class="col-sm-1"><strong>Updated</strong></div>
-      <div class="col-sm-2"><strong>Position</strong></div>
-      <div class="col-sm-2"><strong>Sector of expertise</strong></div>
-      <div class="col-sm-1"><strong>Location</strong></div>
-      <div class="col-sm-5"><strong>Estimated time of arrival</strong></div>
+    <div *ngIf="surgeCapacities.length != 0">
+      <div class="row">
+        <!--Surge capacity table headers-->
+        <div class="col-sm-1"><strong>Updated</strong></div>
+        <div class="col-sm-2"><strong>Position</strong></div>
+        <div class="col-sm-2"><strong>Sector of expertise</strong></div>
+        <div class="col-sm-1"><strong>Location</strong></div>
+        <div class="col-sm-5"><strong>Estimated time of arrival</strong></div>
+      </div>
+      <div class="row Line-row"></div>
+
+      <!--Emergency Doctor-->
+      <div *ngFor="let surge of surgeCapacities">
+        <div class="row">
+          <div class="col-sm-1 margin-top-one">{{surge.updatedAt | date:"MM/yy" }}</div> <!--Updated-->
+          <div class="col-sm-2 margin-top-one">{{surge.position}}</div> <!--Position-->
+          <div class="col-sm-2 margin-top-one"><img
+            src="assets/images/select_icon/{{sectorImgPathMap.get(surge.$key)}}" alt="Health"><span
+            class="padding-left-one"></span>{{ResponsePlanSectors[surge.sectors[0]] | translate}}
+          </div> <!--Sector of expertise-->
+          <div class="col-sm-1 margin-top-one">{{surge.location}}</div> <!--Location-->
+          <div class="col-sm-1 "><p class="margin-top-one margin-top-one">{{surge.arrivalTimeValue}}
+            {{ArrivalTimeType[surge.arrivalTimeType]}}</p></div>
+          <span class="col-sm-1 padding-left-two"></span>
+          <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
+               src="assets/images/icons/info_source.svg" alt="Surge capacity details">
+          <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#{{surge.$key}}">Surge
+            capacity
+            details</a>
+          <span class="col-sm-1"></span>
+          <div class="margin-left-five col-sm-0">
+            <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+            <p class="notes-number__components--country-office-profile">{{getSurgeNotesNumber(surge)}}</p>
+            <a href="#notes_surge_{{surge.$key}}" data-toggle="collapse" class="row margin-left-one-half">Notes</a>
+          </div>
+        </div> <!--Estimated time of arrival-->
+        <div class="row Line-row"></div>
+
+        <!--Surge Capacity Dropdown tooltip-->
+        <div class="Tooltip__bubble container-fluid Blue info log collapse" id="{{surge.$key}}"
+             [attr.data-parent]="'#'+surge.$key" [attr.aria-controls]="surge.$key">
+          <div class="log_left p-3 row col-sm-12">
+            <h3 class="">Surge capacity details</h3>
+            <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
+          </div>
+          <div class="Spaced">
+            <div class="row">
+              <div class="col-sm-2"><strong>Organisation</strong></div>
+              <div class="col-sm-2">SDA Church</div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-2"><strong>Type of relationship</strong></div>
+              <div class="col-sm-2">Partner</div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-2"><strong>Name</strong></div>
+              <div class="col-sm-2">Vikrant Mahajan</div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-2"><strong>Email</strong></div>
+              <div class="col-sm-2">vik@sphereindia.org.in</div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-2"><strong>Length of deployment</strong></div>
+              <div class="col-sm-2">3 weeks</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Drop Down -->
+        <div id="notes_surge_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
+          <div class="log_left p-3">
+            <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+            <hr class="d-inline-flex">
+
+            <form (ngSubmit)="addNote('surge', surge.$key, newNote[surge.$key])">
+              <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                     [(ngModel)]="newNote[surge.$key] && newNote[surge.$key].content">
+
+              <!--&lt;!&ndash;Note post&ndash;&gt;-->
+              <!--<div class="row Spaced log-post__wrap&#45;&#45;risk"-->
+              <!--*ngFor="let note of staffNoteMap.get(staff.id)">-->
+              <!--<div class="log-date__wrap&#45;&#45;risk col-lg-1">-->
+              <!--<p>{{ note.time | date: 'dd MMM y' }}</p>-->
+              <!--</div>-->
+              <!--<div class="col-lg-6">-->
+              <!--<p>{{ note.content }}</p>-->
+              <!--<br>-->
+              <!--<div class="row">-->
+              <!--<p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>-->
+              <!--</p>-->
+              <!--<a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"-->
+              <!--(click)="editNote('staff', staff.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>-->
+              <!--<p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>-->
+              <!--<a *ngIf="uid==note.uploadedBy" href="javascript:void(0)"-->
+              <!--class="padding-left-one col-sm-0 text-danger"-->
+              <!--(click)="deleteNote('staff', staff.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>-->
+              <!--</div>-->
+              <!--</div>-->
+              <!--</div>-->
+              <!--<hr>-->
+
+              <!--add Note button-->
+              <div class="add_log mt-auto p-2 text-right float-right">
+                <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>
+                <br>
+                <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+                translate
+                }}</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="row Line-row"></div>
-
-    <!--Emergency Doctor-->
-    <div class="row">
-      <div class="col-sm-1 margin-top-one">02/17</div> <!--Updated-->
-      <div class="col-sm-2 margin-top-one">Emergency Doctor</div> <!--Position-->
-      <div class="col-sm-2 margin-top-one"><img src="assets/images/icons/health.svg" alt="Health"><span
-        class="padding-left-one"></span>Health
-      </div> <!--Sector of expertise-->
-      <div class="col-sm-1 margin-top-one">Pakistan</div> <!--Location-->
-      <div class="col-sm-1 "><p class="margin-top-one margin-top-one">48 hours</p></div>
-      <span class="col-sm-1 padding-left-two"></span>
-      <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
-           src="assets/images/icons/info_source.svg" alt="Surge capacity details">
-      <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityOne">Surge capacity
-        details</a>
-      <span class="col-sm-1"></span>
-      <div class="margin-left-five col-sm-0">
-        <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-        <p class="notes-number__components--country-office-profile">1</p>
-        <a href="#" class="row margin-left-one-half">Notes</a>
-      </div>
-    </div> <!--Estimated time of arrival-->
-    <div class="row Line-row"></div>
-
-    <!--Surge Capacity Dropdown tooltip-->
-    <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityOne"
-         data-parent="#surgeCapacityOne" aria-controls="surgeCapacityOne">
-      <div class="log_left p-3 row col-sm-12">
-        <h3 class="">Surge capacity details</h3>
-        <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
-      </div>
-      <div class="Spaced">
-        <div class="row">
-          <div class="col-sm-2"><strong>Organisation</strong></div>
-          <div class="col-sm-2">SDA Church</div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-2"><strong>Type of relationship</strong></div>
-          <div class="col-sm-2">Partner</div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-2"><strong>Name</strong></div>
-          <div class="col-sm-2">Vikrant Mahajan</div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-2"><strong>Email</strong></div>
-          <div class="col-sm-2">vik@sphereindia.org.in</div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-2"><strong>Length of deployment</strong></div>
-          <div class="col-sm-2">3 weeks</div>
-        </div>
-      </div>
-    </div>
+    <!--Notes Drop Down End-->
     <!--Surge Capacity Dropdown tooltip-->
 
 
     <!--Lead Food Co-ordinator-->
-    <div class="row">
-      <div class="col-sm-1 margin-top-one">02/17</div> <!--Updated-->
-      <div class="col-sm-2 margin-top-one">Lead Food Co-ordinator</div> <!--Position-->
-      <div class="col-sm-2 margin-top-one"><img src="assets/images/icons/foodsec.svg" alt="Health"><span
-        class="padding-left-one"></span>Food security
-      </div> <!--Sector of expertise-->
-      <div class="col-sm-1 margin-top-one">UK</div> <!--Location-->
-      <div class="col-sm-1 "><p class="margin-top-one margin-top-one">24 hours</p></div>
-      <span class="col-sm-1 padding-left-two"></span>
-      <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
-           src="assets/images/icons/info_source.svg" alt="Surge capacity details">
-      <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityTwo">Surge capacity
-        details</a>
-      <span class="col-sm-1"></span>
-      <div class="col-sm-0 margin-left-five">
-        <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-        <p class="notes-number__components--country-office-profile">1</p>
-        <a href="#" class="row margin-left-one-half">Notes</a>
-      </div>
+    <!--<div class="row">-->
+    <!--<div class="col-sm-1 margin-top-one">02/17</div> &lt;!&ndash;Updated&ndash;&gt;-->
+    <!--<div class="col-sm-2 margin-top-one">Lead Food Co-ordinator</div> &lt;!&ndash;Position&ndash;&gt;-->
+    <!--<div class="col-sm-2 margin-top-one"><img src="assets/images/icons/foodsec.svg" alt="Health"><span-->
+    <!--class="padding-left-one"></span>Food security-->
+    <!--</div> &lt;!&ndash;Sector of expertise&ndash;&gt;-->
+    <!--<div class="col-sm-1 margin-top-one">UK</div> &lt;!&ndash;Location&ndash;&gt;-->
+    <!--<div class="col-sm-1 "><p class="margin-top-one margin-top-one">24 hours</p></div>-->
+    <!--<span class="col-sm-1 padding-left-two"></span>-->
+    <!--<img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"-->
+    <!--src="assets/images/icons/info_source.svg" alt="Surge capacity details">-->
+    <!--<a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#surgeCapacityTwo">Surge capacity-->
+    <!--details</a>-->
+    <!--<span class="col-sm-1"></span>-->
+    <!--<div class="col-sm-0 margin-left-five">-->
+    <!--<img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">-->
+    <!--<p class="notes-number__components&#45;&#45;country-office-profile">1</p>-->
+    <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
+    <!--</div>-->
 
 
-    </div> <!--Estimated time of arrival-->
-    <div class="row Line-row"></div>
+    <!--</div> &lt;!&ndash;Estimated time of arrival&ndash;&gt;-->
+    <!--<div class="row Line-row"></div>-->
 
     <!--Surge Capacity Dropdown tooltip-->
-    <div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityTwo"
-         data-parent="#surgeCapacityTwo" aria-controls="surgeCapacityTwo">
-      <div class="log_left p-3 row col-sm-12">
-        <h3 class="">Surge Capacity details</h3>
-        <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>
-      </div>
-      <div class="Spaced">
-        <div class="row">
-          <div class="col-sm-2"><strong>Organisation</strong></div>
-          <div class="col-sm-2">SDA Church</div>
-        </div>
+    <!--<div class="Tooltip__bubble container-fluid Blue info log collapse" id="surgeCapacityTwo"-->
+    <!--data-parent="#surgeCapacityTwo" aria-controls="surgeCapacityTwo">-->
+    <!--<div class="log_left p-3 row col-sm-12">-->
+    <!--<h3 class="">Surge Capacity details</h3>-->
+    <!--<a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">Close</a>-->
+    <!--</div>-->
+    <!--<div class="Spaced">-->
+    <!--<div class="row">-->
+    <!--<div class="col-sm-2"><strong>Organisation</strong></div>-->
+    <!--<div class="col-sm-2">SDA Church</div>-->
+    <!--</div>-->
 
-        <div class="row">
-          <div class="col-sm-2"><strong>Type of relationship</strong></div>
-          <div class="col-sm-2">Partner</div>
-        </div>
+    <!--<div class="row">-->
+    <!--<div class="col-sm-2"><strong>Type of relationship</strong></div>-->
+    <!--<div class="col-sm-2">Partner</div>-->
+    <!--</div>-->
 
-        <div class="row">
-          <div class="col-sm-2"><strong>Name</strong></div>
-          <div class="col-sm-2">Vikrant Mahajan</div>
-        </div>
+    <!--<div class="row">-->
+    <!--<div class="col-sm-2"><strong>Name</strong></div>-->
+    <!--<div class="col-sm-2">Vikrant Mahajan</div>-->
+    <!--</div>-->
 
-        <div class="row">
-          <div class="col-sm-2"><strong>Email</strong></div>
-          <div class="col-sm-2">vik@sphereindia.org.in</div>
-        </div>
+    <!--<div class="row">-->
+    <!--<div class="col-sm-2"><strong>Email</strong></div>-->
+    <!--<div class="col-sm-2">vik@sphereindia.org.in</div>-->
+    <!--</div>-->
 
-        <div class="row">
-          <div class="col-sm-2"><strong>Length of deployment</strong></div>
-          <div class="col-sm-2">3 weeks</div>
-        </div>
-      </div>
+    <!--<div class="row">-->
+    <!--<div class="col-sm-2"><strong>Length of deployment</strong></div>-->
+    <!--<div class="col-sm-2">3 weeks</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
-    </div>
+    <!--</div>-->
     <!--Surge Capacity Dropdown tooltip-->
 
     <button class="btn btn-outline-primary text-uppercase"
