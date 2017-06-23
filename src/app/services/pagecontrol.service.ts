@@ -53,6 +53,98 @@ export class AgencyPermissionObject {
   }
 }
 
+export class CountryPermissionsMatrix {
+  public chsActions: {
+    Assign: boolean
+  };
+  public mandatedMPA: {
+    Assign: boolean;
+  };
+  public customMPA: {
+    Assign: boolean,
+    Edit: boolean,
+    New: boolean,
+    Delete: boolean
+  };
+  public mandatedAPA: {
+    Assign: boolean
+  };
+  public customAPA: {
+    Assign: boolean,
+    Edit: boolean,
+    New: boolean,
+    Delete: boolean
+  };
+  public notes: {
+    New: boolean,
+    Edit: boolean,
+    Delete: boolean
+  };
+  public countryContacts: {
+    New: boolean,
+    Edit: boolean,
+    Delete: boolean
+  };
+  public crossCountrySameAgency: {
+    AddNote: boolean,
+    CopyAction: boolean,
+    Download: boolean,
+    Edit: boolean,
+    View: boolean,
+    ViewContacts: boolean
+  };
+  public interAgencyCrossCountry: {
+    AddNote: boolean,
+    CopyAction: boolean,
+    Download: boolean,
+    Edit: boolean,
+    View: boolean,
+    ViewContacts: boolean
+  };
+  public other: {
+    DownloadDocuments: boolean,
+    UploadDocuments: boolean
+  };
+
+  constructor() {
+    this.all(false);
+  }
+
+  all(type: boolean) {
+    this.chsActions.Assign = type;
+    this.mandatedMPA.Assign = type;
+    this.customMPA.Assign = type;
+    this.customMPA.Edit = type;
+    this.customMPA.New = type;
+    this.customMPA.Delete = type;
+    this.mandatedAPA.Assign = type;
+    this.customAPA.Assign = type;
+    this.customAPA.Edit = type;
+    this.customAPA.New = type;
+    this.customAPA.Delete = type;
+    this.notes.Delete = type;
+    this.notes.Edit = type;
+    this.notes.New = type;
+    this.countryContacts.New = type;
+    this.countryContacts.Edit = type;
+    this.countryContacts.Delete = type;
+    this.crossCountrySameAgency.Edit = type;
+    this.crossCountrySameAgency.AddNote = type;
+    this.crossCountrySameAgency.Download = type;
+    this.crossCountrySameAgency.View = type;
+    this.crossCountrySameAgency.ViewContacts = type;
+    this.crossCountrySameAgency.CopyAction = type;
+    this.interAgencyCrossCountry.Edit = type;
+    this.interAgencyCrossCountry.AddNote = type;
+    this.interAgencyCrossCountry.Download = type;
+    this.interAgencyCrossCountry.View = type;
+    this.interAgencyCrossCountry.ViewContacts = type;
+    this.interAgencyCrossCountry.CopyAction = type;
+    this.other.DownloadDocuments = type;
+    this.other.UploadDocuments = type;
+  }
+}
+
 
 /**
  * Page Control Service
@@ -386,5 +478,12 @@ export class PageControlService {
       }
     }
     return false;
+  }
+
+  /**
+   * countryPermissionsMatrix
+   */
+  static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
+    // TOOD: Implement this
   }
 }
