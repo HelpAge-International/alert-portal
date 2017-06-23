@@ -42,6 +42,8 @@ export class Constants {
     UserType.ErtLeader, UserType.Ert];
     static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
+    static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
+ 
 
     // Global director / Regional director
     static G_OR_R_DIRECTOR_DASHBOARD = "/director";

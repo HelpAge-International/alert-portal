@@ -29,45 +29,73 @@ export class NotificationService {
  }
 
  getCountryAdminNotifications(countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   let messagesList: MessageModel[] = [];
+  let messagesList = [];
 
-  //  let nodes = ["/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
-  //               "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
-  //               "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
-  //               "/messageRef/systemadmin/allusersgroup/" + countryId];
+   let nodes = ["/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
+                "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
+                "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
+                "/messageRef/systemadmin/allusersgroup/" + countryId];
+
+  
+  //  return this.getNotifications(nodes[0], unreadOnly).map(messagesNode0 => {
+     
+  //    messagesList = messagesList.concat(messagesNode0);
+  //       this.getCountryAdminNotifications(nodes[1], unreadOnly).map(messagesNode1 => {
+  //       messagesList = messagesList.concat(messagesNode1);
+  //       this.getCountryAdminNotifications(nodes[2], unreadOnly).map(messagesNode2 => {
+  //         messagesList = messagesList.concat(messagesNode2);
+  //         this.getCountryAdminNotifications(nodes[3], unreadOnly).map(messagesNode3 => {
+  //           return messagesList = messagesList.concat(messagesNode3);
+  //         });
+  //       });
+  //    });
+  //    return messagesList;
+  //  });
+
 
   // nodes.forEach(node => {
-  //   this.getNotifications(node, unreadOnly).subscribe(messages => {
-  //     messagesList.concat(messages);
+  //  return this.getNotifications(node, unreadOnly).subscribe(messages => {
+  //     //console.log(messages);
+  //     messagesList = messages;
+  //     console.log(messagesList);
+  //     return messagesList;
   //   });
-  // })
-  // let nodesObservable = Observable.from(nodes);
+  // });
 
-  // let messages = [];
+  // return Observable.from(messagesList);
+  
+  // let nodesObservable = Observable.from(nodes);  
+  let observables = [];
   
   // return nodesObservable.flatMap( node => { return this.getNotifications(node, unreadOnly)})
-  //                       .flatMap(messageArray => {
-  //                         messageArray.forEach(message => { messages.push(message); })
-  //                         //messages = messages.concat(messageArray);
-  //                         console.log(messages);
-  //                         return messages;
-  //                       });
+  //                       // .flatMap(messageArray => {
+  //                       //   console.log(messageArray);
+  //                       //   messageArray.forEach(message => { messagesList.push(message); })
+  //                       //   //messagesList = messagesList.concat(messageArray);
+  //                       //   return messagesList;
+  //                       // })
+  //                       .map(messages => { 
+  //                         messages.forEach(message => { messagesList.push(message); })
+  //                         console.log(messagesList); 
+                          
+  //                         return messagesList; });
                         
   
   // nodes.forEach(node => observables.push(this.getNotifications(node, unreadOnly)));
 
-  // return Observable.combineLatest(observables).map(messagesArray => {
-  //   let messages: MessageModel[] = [];
+  // return Observable.merge(observables).flatMap(messagesArray => {
     
-  //   messagesArray.forEach(messageArray => {
-  //     messageArray.forEach(message => {
-  //       messages.push(message);
-  //     });
-  //   });
+    
+    // messagesArray.forEach(messageArray => {
+    //   messageArray.forEach(message => {
+    //     messages.push(message);
+    //   });
+    // });
 
-  //   console.log(messages);
-  //   return messages;
-  // });
+  //   console.log(messagesArray);
+  //   return messagesArray;
+  // })
+  // .map(messages => { return messages; });
   return this.getNotifications("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId, unreadOnly);
  }
 
