@@ -174,6 +174,7 @@ import {TooltipComponent} from "./utils/tooltips/tooltip.component";
 import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 import {ProjectActivityReportComponent} from "./export-start-fund/project-activity-report/project-activity-report.component";
+import {ReportingDatasheetComponent} from "./export-start-fund/reporting-data-sheet/reporting-datasheet.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -344,7 +345,8 @@ const firebaseAuthConfig = {
     GuidanceReportComponent,
     TimeAgoPipe,
     CountryNotificationsComponent,
-    ProjectActivityReportComponent
+    ProjectActivityReportComponent,
+    ReportingDatasheetComponent
   ],
   imports: [
     BrowserModule,
