@@ -46,7 +46,7 @@
                 <div class="col-sm-4 col-4">{{department}}</div>
                 <div class="col-sm-3 col-4">
                     <input type="text" class="form-control" (input)="setTotal('APA')" (keypress)="_keyPress($event)"
-                           [(ngModel)]="advBudget[department] == undefined || advBudget[department].value == undefined ? '' : advBudget[department].value">
+                           [(ngModel)]="advBudget[department].value">
                 </div>
                 <div class="col-sm-5 col-4">
                     <input type="text" class="form-control"
