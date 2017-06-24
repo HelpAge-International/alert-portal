@@ -5,7 +5,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-        
+
         <app-country-office-profile-menu></app-country-office-profile-menu>
 
         <div class="Header-title__wrap Spaced row">
@@ -14,7 +14,7 @@
                 <button type="button" class="btn btn-outline-primary text-uppercase"
                     *ngIf="canEdit && !isEdit"
                     (click)="editEquipment()">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT' | translate }}</button>
-                
+
                 <button type="button" class="btn btn-outline-primary text-uppercase"
                     *ngIf="canEdit && isEdit"
                     (click)="showEquipment()">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.VIEW' | translate }}</button>
@@ -22,7 +22,7 @@
         </div>
 
         <h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</h3>
-        
+
         <div class="row">
             <p class="text-gray-v-light col-sm-9" *ngIf="!equipments">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EMPTY_LIST' | translate }}</p>
         </div>
@@ -52,7 +52,7 @@
                     </a>
                 </div> <!--Notes-->
                 <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                    <button class="btn btn-outline-primary text-uppercase" 
+                    <button class="btn btn-outline-primary text-uppercase"
                         (click)="addEditEquipment(equipment.id)">
                             {{ 'GLOBAL.EDIT' | translate }}</button>
                 </div>
@@ -81,10 +81,10 @@
                                 <br>
                                 <div class="row">
                                     <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
-                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
+                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none"
                                         (click) ="editNote('equipment', equipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
                                     <p href="#" class="padding-left-one">|</p>
-                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
+                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
                                         (click) ="deleteNote('equipment', equipment.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                                 </div>
                             </div>
@@ -101,15 +101,15 @@
             </div>
             <!--Notes Drop Down End-->
         </div>
-        <button class="btn btn-outline-primary text-uppercase" 
+        <button class="btn btn-outline-primary text-uppercase"
             *ngIf="canEdit"
             (click)="addEditEquipment()">{{ 'GLOBAL.ADD' | translate }}</button>
-        
-        
+
+
         <!--Surge Equipment-->
         <!--Equipment subheaders-->
         <h3 class="Spaced-above">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.SURGE_TITLE" | translate}}</h3><br>
-        
+
         <div class="row">
             <p class="text-gray-v-light col-sm-9" *ngIf="!surgeEquipments">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EMPTY_LIST' | translate }}</p>
         </div>
@@ -122,7 +122,7 @@
         </div>
         <div class="row Line-row Spaced-above"></div>
 
-        <div *ngFor="let surgeEquipment of surgeEquipments; let i = index;"> 
+        <div *ngFor="let surgeEquipment of surgeEquipments; let i = index;">
             <!--4x4 Van-->
             <div class="row Spaced-above">
                 <div class="col-sm-1">{{ surgeEquipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
@@ -147,7 +147,7 @@
                     </a>
                 </div> <!--Notes-->
                 <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                    <button class="btn btn-outline-primary text-uppercase" 
+                    <button class="btn btn-outline-primary text-uppercase"
                         (click)="addEditSurgeEquipment(surgeEquipment.id)">
                             {{ 'GLOBAL.EDIT' | translate }}</button>
                 </div>
@@ -197,10 +197,10 @@
                                 <br>
                                 <div class="row">
                                     <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
-                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
+                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none"
                                         (click) ="editNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
                                     <p href="#" class="padding-left-one">|</p>
-                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
+                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
                                         (click) ="deleteNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                                 </div>
                             </div>
@@ -218,8 +218,8 @@
             <!--Notes Drop Down End-->
 
         </div>
-        
-        <button class="btn btn-outline-primary text-uppercase" 
+
+        <button class="btn btn-outline-primary text-uppercase"
             *ngIf="canEdit"
             (click)="addEditSurgeEquipment()">{{ 'GLOBAL.ADD' | translate }}</button>
 

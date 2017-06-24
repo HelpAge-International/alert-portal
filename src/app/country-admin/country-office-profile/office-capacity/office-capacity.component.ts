@@ -33,6 +33,10 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private ArrivalTimeType = ["hours", "days", "weeks", "months", "years"];
   private ResponseSectors = ResponsePlanSectors;
   private sectorImgPathMap = new Map<number, string>();
+  private isEditingCapacity: boolean;
+
+  //TODO check user permission to edit
+  private canEdit: boolean = true;
 
   private UserType: number;
   private alertMessageType = AlertMessageType;
@@ -132,11 +136,26 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         this.surgeCapacities.forEach(surge => {
           surge.updatedAt = this.convertToLocal(surge.updatedAt);
           this.handleSectorImgPath(surge, surge.sectors[0]);
+          surge["notes"] = this.handleNotes(surge);
           // Create the new note model
           this.newNote[surge.$key] = new NoteModel();
           this.newNote[surge.$key].uploadedBy = this.uid;
         });
       });
+  }
+
+  private handleNotes(surge: any) {
+    let notes = [];
+    if (surge.notes) {
+      notes = Object.keys(surge.notes).map(key => {
+        let note = new NoteModel();
+        let tempNote = surge.notes[key];
+        note.id = key;
+        note.mapFromObject(tempNote);
+        return note;
+      })
+    }
+    return notes;
   }
 
   private handleSectorImgPath(surge, sector) {
@@ -228,7 +247,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
           //get staff notes
           if (staff.notes) {
-            console.log(staff.notes);
             let notes = Object.keys(staff.notes).map(key => {
               let note = new NoteModel();
               note.id = key;
@@ -286,7 +304,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((CountryOfficeStaff: any) => {
           for (let staff in CountryOfficeStaff) {
-            console.log(staff);
             if (staff.indexOf("$") < 0) {
               CountryOfficeStaff[staff].skills = [];
               CountryOfficeStaff[staff].skills.support = [];
@@ -441,7 +458,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     if (type == 'staff') {
       node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
     } else {
-      // equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
     }
 
     this._noteService.deleteNote(node, note)
@@ -467,7 +484,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
       if (type == 'staff') {
         node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
       } else {
-        // equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
       }
 
       this._noteService.saveNote(node, note).then(() => {
@@ -499,6 +516,16 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
   getSurgeNotesNumber(surge): number {
     return surge.notes ? Object.keys(surge.notes).length : 0;
+  }
+
+  editViewCapacity() {
+    this.isEditingCapacity = !this.isEditingCapacity;
+  }
+
+  editTotalStaff() {
+    console.log(this.totalStaff);
+    jQuery("#edit-total-staff").modal("hide");
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID + "/totalStaff").set(this.totalStaff);
   }
 
 }

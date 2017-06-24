@@ -13,7 +13,12 @@
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">Office & surge capacity</h2>
-      <button type="button" class="btn btn-outline-primary">EDIT OFFICE & SURGE CAPACITY</button>
+      <button *ngIf="!isEditingCapacity" type="button" class="btn btn-outline-primary" (click)="editViewCapacity()">EDIT
+        OFFICE & SURGE CAPACITY
+      </button>
+      <button *ngIf="isEditingCapacity" type="button" class="btn btn-outline-primary" (click)="editViewCapacity()">VIEW
+        OFFICE & SURGE CAPACITY
+      </button>
     </div>
 
     <h3 class="Spaced-above">Country office capacity</h3>
@@ -42,6 +47,8 @@
     <!--Staff count-->
     <div class="row Spaced">
       <div class="col-sm-0 padding-left-two"><strong>Total staff: {{totalStaff}}</strong></div>
+      <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-two"><a
+        href="#edit-total-staff" data-toggle="modal">Edit</a></div>
       <div class="col-sm-7"><strong>Total response staff: {{totalResponseStaff}}</strong></div>
     </div>
 
@@ -232,11 +239,15 @@
             capacity
             details</a>
           <span class="col-sm-1"></span>
-          <div class="margin-left-five col-sm-0">
+          <div *ngIf="!isEditingCapacity" class="margin-left-five col-sm-0">
             <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
             <p class="notes-number__components--country-office-profile">{{getSurgeNotesNumber(surge)}}</p>
             <a href="#notes_surge_{{surge.$key}}" data-toggle="collapse" class="row margin-left-one-half">Notes</a>
           </div>
+          <button type="button" class="btn btn-outline-primary text-uppercase"
+                  *ngIf="canEdit && isEditingCapacity"
+                  (click)="editEquipment()">EDIT
+          </button>
         </div> <!--Estimated time of arrival-->
         <div class="row Line-row"></div>
 
@@ -285,34 +296,35 @@
               <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                      [(ngModel)]="newNote[surge.$key] && newNote[surge.$key].content">
 
-              <!--&lt;!&ndash;Note post&ndash;&gt;-->
-              <!--<div class="row Spaced log-post__wrap&#45;&#45;risk"-->
-              <!--*ngFor="let note of staffNoteMap.get(staff.id)">-->
-              <!--<div class="log-date__wrap&#45;&#45;risk col-lg-1">-->
-              <!--<p>{{ note.time | date: 'dd MMM y' }}</p>-->
-              <!--</div>-->
-              <!--<div class="col-lg-6">-->
-              <!--<p>{{ note.content }}</p>-->
-              <!--<br>-->
-              <!--<div class="row">-->
-              <!--<p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>-->
-              <!--</p>-->
-              <!--<a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"-->
-              <!--(click)="editNote('staff', staff.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>-->
-              <!--<p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>-->
-              <!--<a *ngIf="uid==note.uploadedBy" href="javascript:void(0)"-->
-              <!--class="padding-left-one col-sm-0 text-danger"-->
-              <!--(click)="deleteNote('staff', staff.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>-->
-              <!--</div>-->
-              <!--</div>-->
-              <!--</div>-->
-              <!--<hr>-->
+              <!--Note post-->
+              <div class="row Spaced log-post__wrap--risk"
+                   *ngFor="let note of surge.notes">
+                <div class="log-date__wrap--risk col-lg-1">
+                  <p>{{ note.time | date: 'dd MMM y' }}</p>
+                </div>
+                <div class="col-lg-6">
+                  <p>{{ note.content }}</p>
+                  <br>
+                  <div class="row">
+                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                    </p>
+                    <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                       (click)="editNote('surge', surge.$key, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    <p *ngIf="uid==note.uploadedBy" href="#" class="padding-left-one">|</p>
+                    <a *ngIf="uid==note.uploadedBy" href="javascript:void(0)"
+                       class="padding-left-one col-sm-0 text-danger"
+                       (click)="deleteNote('surge', surge.$key, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                  </div>
+                </div>
+              </div>
+              <hr>
 
               <!--add Note button-->
               <div class="add_log mt-auto p-2 text-right float-right">
                 <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>
                 <br>
-                <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+                <br><a href="#notes_surge_{{surge.$key}}" class="margin-left-two" data-toggle="collapse">{{
+                'GLOBAL.CANCEL' |
                 translate
                 }}</a>
               </div>
@@ -438,6 +450,33 @@
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
                 (click)="editAction(activeType, activeId, activeNote)">{{"GLOBAL.SAVE" | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Edit Note Modal-->
+<div class="modal fade" id="edit-total-staff" tabindex="-1" role="dialog" aria-labelledby="editTotalStaff"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">Total Staff</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center form-group input-lg">
+        <input type="number" min="0" class="form-text form-control"
+                  [(ngModel)]="totalStaff"/>
+      </div>
+      <div class="row Right-aligned Spaced col-sm-12">
+        <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL"
+          |
+          translate}}</a>
+        <button href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                (click)="editTotalStaff()">{{"GLOBAL.SAVE" | translate}}
         </button>
       </div>
     </div>
