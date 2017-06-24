@@ -484,6 +484,6 @@ export class PageControlService {
    * countryPermissionsMatrix
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
-    // TOOD: Implement this
+    // TODO: Implement this
   }
 }
