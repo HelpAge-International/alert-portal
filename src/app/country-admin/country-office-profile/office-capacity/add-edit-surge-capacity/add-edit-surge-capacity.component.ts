@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Subject} from "rxjs/Subject";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {UserService} from "../../../../services/user.service";
 import {Constants} from "../../../../utils/Constants";
@@ -33,6 +33,7 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
   private countryId: string;
   private sectorsMap = new Map<ResponsePlanSectors, boolean>();
   private isEditing: boolean;
+  private surgeId: string;
 
 
   constructor(private surgeService: SurgeCapacityService, private router: Router, private route: ActivatedRoute,
@@ -46,8 +47,27 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryId => {
           this.countryId = countryId;
+          this.route.params
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((params: Params) => {
+              if (params["id"]) {
+                this.isEditing = true;
+                this.surgeId = params["id"];
+                this.loadSurgeInfo(this.surgeId, this.countryId);
+              }
+            });
         });
     });
+  }
+
+  private loadSurgeInfo(surgeId: string, countryId: string) {
+    this.surgeService.getSurgeInfo(surgeId, countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(surge => {
+        this.modelSurgeCapacity.mapFromObject(surge);
+        this.sectorsMap.set(this.modelSurgeCapacity.sectors[0], true);
+        console.log(this.modelSurgeCapacity);
+      });
   }
 
   ngOnDestroy(): void {
@@ -61,16 +81,30 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
     this.validateForm();
     if (this.alertMessage == null || this.alertMessage.type == AlertMessageType.Success) {
       this.modelSurgeCapacity.updatedAt = moment.utc().valueOf();
-      this.surgeService.saveSurgeCapacity(this.modelSurgeCapacity, this.countryId).then(() => {
-        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
-        setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-      }, error => {
-        if (error instanceof DisplayError) {
-          this.alertMessage = new AlertMessageModel(error.message);
-        } else {
-          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-        }
-      });
+      if (this.isEditing) {
+        this.surgeService.updateSurgeCapacity(this.modelSurgeCapacity, this.countryId, this.surgeId)
+          .then(() => {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+          }, error => {
+            if (error instanceof DisplayError) {
+              this.alertMessage = new AlertMessageModel(error.message);
+            } else {
+              this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+            }
+          });
+      } else {
+        this.surgeService.saveSurgeCapacity(this.modelSurgeCapacity, this.countryId).then(() => {
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        }, error => {
+          if (error instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(error.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
+      }
     }
   }
 

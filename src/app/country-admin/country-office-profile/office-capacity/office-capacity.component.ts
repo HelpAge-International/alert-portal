@@ -21,8 +21,12 @@ declare var jQuery: any;
 })
 
 export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
+  private tSkillsFilter: any = 0;
+  private sSkillsFilter: any = 0;
+  private officeFilter: any = 0;
 
   private responseStaffs: any[];
+  private responseStaffsOrigin: any[];
   private agencyId: string;
   private isViewing: boolean;
   private userMap = new Map<string, string>();
@@ -203,7 +207,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   getStaff() {
     this._userService.getStaffList(this.countryID)
       .map(staffs => {
-        console.log(staffs)
         let responseStaffs = [];
         staffs.forEach(staff => {
           if (staff.isResponseMember) {
@@ -216,8 +219,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         return responseStaffs;
       })
       .subscribe(responseStaffs => {
+        this.totalResponseStaff = responseStaffs.length;
         this.responseStaffs = responseStaffs;
-        this.totalResponseStaff = this.responseStaffs.length;
+        this.responseStaffsOrigin = responseStaffs;
 
         this.responseStaffs.forEach(staff => {
 
@@ -239,7 +243,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
               .subscribe(skill => {
                 if (skill.type == SkillType.Tech) {
                   this.skillTechMap.get(staff.id).push(skill.name);
-                } else {
+                } else if (skill.type == SkillType.Support) {
                   this.skillSupoMap.get(staff.id).push(skill.name);
                 }
               });
@@ -258,6 +262,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             this.staffNoteMap.set(staff.id, notes);
           }
         });
+
+        //handle filter
       });
   }
 
@@ -342,36 +348,66 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   filterData(event: any, filterType: any) {
     var filterVal = event.target.value;
 
-    var officeFilter = filterType == 'office' ? filterVal : 0;
-    var sSkillsFilter = filterType == 'sSkills' ? filterVal : 0;
-    var tSkillsFilter = filterType == 'tSkills' ? filterVal : 0;
+    // this.officeFilter = filterType == 'office' ? filterVal : 0;
+    // this.sSkillsFilter = filterType == 'sSkills' ? filterVal : 0;
+    // this.tSkillsFilter = filterType == 'tSkills' ? filterVal : 0;
+    switch (filterType) {
+      case "office":
+        this.officeFilter = filterVal;
+        break;
+      case "sSkills":
+        this.sSkillsFilter = filterVal;
+        break;
+      case "tSkills":
+        this.tSkillsFilter = filterVal;
+        break;
+    }
+
+    console.log(filterType)
+    console.log(filterVal);
 
     var result = [];
 
-    this.origCountryOfficeCapacity.forEach((capacity, key) => {
+    this.responseStaffsOrigin.forEach(staff => {
 
       var isSkillsFilter = false;
       var iStSkillsFilter = false;
 
-      capacity.skill.forEach((val, key) => {
-        if (sSkillsFilter == val) {
+      staff.skill.forEach((val, key) => {
+        if (this.sSkillsFilter == val) {
           isSkillsFilter = true;
         }
-        if (iStSkillsFilter == val) {
+        if (this.tSkillsFilter == val) {
           iStSkillsFilter = true;
         }
       });
-
-      if (
-        (officeFilter == capacity.officeType || officeFilter == 0) &&
-        (isSkillsFilter || sSkillsFilter == 0) &&
-        (iStSkillsFilter || tSkillsFilter == 0)
-      ) {
-        result.push(capacity);
+      // if (
+      //   (this.officeFilter == staff.officeType || this.officeFilter == 0) &&
+      //   (isSkillsFilter || this.sSkillsFilter == 0) &&
+      //   (iStSkillsFilter || this.tSkillsFilter == 0)
+      // ) {
+      //   result.push(staff);
+      // }
+      if (this.officeFilter == 0 && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
+        result = this.responseStaffsOrigin;
+      } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
+        result.push(staff);
+      } else if (this.officeFilter == 0 && isSkillsFilter && this.tSkillsFilter == 0) {
+        result.push(staff);
+      } else if (this.officeFilter == 0 && this.sSkillsFilter == 0 && iStSkillsFilter) {
+        result.push(staff);
+      } else if (this.officeFilter == staff.officeType && isSkillsFilter && this.tSkillsFilter == 0) {
+        result.push(staff);
+      } else if (this.officeFilter == 0 && isSkillsFilter && iStSkillsFilter) {
+        result.push(staff);
+      } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && iStSkillsFilter) {
+        result.push(staff);
+      } else if (this.officeFilter == staff.officeType && isSkillsFilter && iStSkillsFilter) {
+        result.push(staff);
       }
     });
 
-    this.countryOfficeCapacity = result;
+    this.responseStaffs = result;
 
   }
 
@@ -387,13 +423,17 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + '/skill/').takeUntil(this.ngUnsubscribe)
       .subscribe((skills: any) => {
         for (let skill in skills) {
-          var objSkill = {key: skill, name: skills[skill].name};
-          if (!skills[skill].type) {
-            this.suportedSkills.push(objSkill);
-          } else {
-            this.techSkills.push(objSkill);
+          if (skill.indexOf("$") < 0) {
+            var objSkill = {key: skill, name: skills[skill].name};
+            if (!skills[skill].type) {
+              this.suportedSkills.push(objSkill);
+            } else {
+              this.techSkills.push(objSkill);
+            }
           }
         }
+        console.log(this.suportedSkills);
+        console.log(this.techSkills);
       });
   }
 
@@ -526,6 +566,10 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     console.log(this.totalStaff);
     jQuery("#edit-total-staff").modal("hide");
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID + "/totalStaff").set(this.totalStaff);
+  }
+
+  editSurgeCapacity(id) {
+    this.router.navigate(["/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity", {"id": id}]);
   }
 
 }
