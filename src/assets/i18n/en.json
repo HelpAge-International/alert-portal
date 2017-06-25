@@ -90,7 +90,8 @@
             "EXPIRED": "Expired",
             "IN_PROGRESS": "In Progress",
             "COMPLETED": "Completed",
-            "INACTIVE": "Inactive"
+            "INACTIVE": "Inactive",
+            "ARCHIVED": "Archived"
         },
         "ACTION_TYPE": {
             "CHS": "CHS",

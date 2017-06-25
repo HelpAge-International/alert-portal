@@ -173,6 +173,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TooltipComponent} from "./utils/tooltips/tooltip.component";
 import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
+import {OrderByPipe} from "./utils/pipes/orderby.pipe";
+import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -288,6 +290,9 @@ const firebaseAuthConfig = {
     CreateEditResponsePlanComponent,
     AddPartnerOrganisationComponent,
     OrdinalPipe,
+    OrderByPipe,
+    PreparednessFilter,
+    KeysPipe,
     StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,

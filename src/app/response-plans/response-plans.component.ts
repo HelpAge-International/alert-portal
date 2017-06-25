@@ -195,7 +195,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   archivePlan(plan) {
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isArchived").set(false);
   }
 
   confirmDialog() {
@@ -340,7 +340,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   activatePlan(plan) {
     if (this.userType == UserType.CountryAdmin) {
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isArchived").set(true);
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
       this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
         .map(list => {
