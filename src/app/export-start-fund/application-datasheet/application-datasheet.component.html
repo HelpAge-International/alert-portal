@@ -1,4 +1,4 @@
-<table class="tg" align="center" id="tableApplicationDataSheet">
+<table class="tg" align="center" id="tableApplicationDatasheet">
   <!--header-->
   <tr>
     <td colspan="4" style="border-bottom: none; border-right: none;"></td>
@@ -75,10 +75,10 @@
     <td colspan="1"><p style="width:5em; text-align: center;">Health</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">Shelter</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">Nutrition</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">Camp Management</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">Education</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">Protection</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">Food security & Livelihoods</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">Protection</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">Education</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">Camp Management</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">Other (specify)</td>
     <!--2.Presence in country...-->
     <td colspan="2"><p style="width:5em; text-align: center;">Current programmes</p></td>
@@ -105,7 +105,10 @@
     <td colspan="3"><p style="text-align: center;">In country/locally</p></td>
     <td colspan="6"><p style="text-align: center; width: 20em;">Please explain your answer in two bullet points:</p></td>
     <!--empty title-->
-    <td colspan="10"><p style="text-align: center; width: 100%;">1. How did you calculate the beneficiary numbers for this project? For example, food and hygiene kits provided to 2500 families, and 1 family = x beneficiaries.</p></td>
+    <td colspan="10"><p style="text-align: center; width: 100%;"><span>1. How many beneficiaries are you targeting?</span>
+      <span style="font-style: italic;">(Beneficiaries = People Per Household * Number Of Households)</span>
+    </p>
+    </td>
     <td colspan="6"><p style="text-align: center; width: 100%;">2. Which vulnerable groups are you specifically targeting? Please explain.</p></td>
     <td colspan="20"><p style="text-align: center; width: 100%;">3. Explain how the target population has been / is involved in your proposed intervention (maximum 5 bullet points)</p></td>
     <!--2.4: Expected Results-->
@@ -351,275 +354,286 @@
 
   <tr>
     <!--1.1 Basic Information-->
-    <td colspan="4"><p style="width:7.5em; text-align: center;">0</p></td>
-    <td colspan="4"><p style="width:7.5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:10em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:10em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:10em; text-align: center;">0</p></td>
+    <td colspan="4"><p style="width:7.5em; text-align: center;"></p></td>
+    <td colspan="4"><p style="width:7.5em; text-align: center;"></p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;"></p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;"></p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadName}}</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;"></p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadEmail}}</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadPhone}}</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{responsePlan.location}}</p></td>
+    <td colspan="2"><p style="width:10em; text-align: center;">{{responsePlan.location}}</p></td>
+    <td colspan="2"><p style="width:10em; text-align: center;"></p></td>
+    <td colspan="2"><p style="width:10em; text-align: center;"></p></td>
     <!--1.What sectors will...-->
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</td>
-    <td colspan="1"><p style="width:5em; text-align: center;">0</td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.wash)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.health)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.shelter)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.nutrition)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.foodSecurityAndLivelihoods)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.protection)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.education)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.campManagement)">X</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.other)">X</p></td>
     <!--2.Presence in country...-->
-    <td colspan="2"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:5em; text-align: center;">0</p></td>
+    <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">X</p></td>
+    <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">X</p></td>
+    <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">X</p></td>
     <!--3.Method of implementation...-->
-    <td colspan="2"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:5em; text-align: center;">0</p></td>
-    <td colspan="2"><p style="width:5em; text-align: center;">0</p></td>
+    <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">X</p></td>
+    <td colspan="2"><p style="width:5em; text-align: center;"></p></td>
+    <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">X</p></td>
     <!--empty title-->
-    <td colspan="4"><p style="width:10em; text-align: center;">0</p></td>
+    <td colspan="4"><p style="width:10em; text-align: center;"></p></td>
     <!--empty title-->
-    <td colspan="14"><p style="width:15em; text-align: center;">0</p></td>
+    <td colspan="14">
+      <ol *ngIf="responsePlan.scenarioCrisisList" style="width:10em; text-align: left;">
+        <li *ngFor="let crisis of responsePlan.scenarioCrisisList">{{crisis}}</li>
+      </ol>
+    </td>
     <!--empty title-->
-    <td colspan="14"><p style="width:15em; text-align: center;">0</p></td>
+    <td colspan="14"><p style="width:15em; text-align: center;"></p></td>
     <!--empty title-->
-    <td colspan="6"><p style="width:25em;">0</p></td>
+    <td colspan="6"><p style="width:25em;"></p></td>
     <!--4. Explain how you sourced your goods...-->
-    <td colspan="6"><p style="text-align: center;">0</p></td>
-    <td colspan="6"><p style="text-align: center;">0</p></td>
-    <td colspan="6"><p style="text-align: center;">0</p></td>
-    <td colspan="3"><p style="text-align: center; width: 20em;">0</p></td>
+    <td colspan="6"><p style="text-align: center;"></p></td>
+    <td colspan="6"><p style="text-align: center;"></p></td>
+    <td colspan="6"><p style="text-align: center;"></p></td>
+    <td colspan="3"><p style="text-align: center; width: 20em;" *ngIf="sourcePlanId == SourcePlan.Internationally">X</p></td>
     <!--empty title-->
-    <td colspan="3"><p style="text-align: center; width: 15em;">0</p></td>
-    <td colspan="3"><p style="text-align: center; width: 15em;">0</p></td>
+    <td colspan="3"><p style="text-align: center; width: 15em;" *ngIf="sourcePlanId == SourcePlan.Regionally">X</p></td>
+    <td colspan="3"><p style="text-align: center; width: 15em;" *ngIf="sourcePlanId == SourcePlan.Locally">X</p></td>
     <!--3. Are you able to share...-->
-    <td colspan="2"><p style="text-align: center; width: 10em;">0</p></td>
-    <td colspan="4"><p style="text-align: center; width: 10em;">0</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="sourcePlanInfo1">{{sourcePlanInfo1}}</p></td>
+    <td colspan="4"><p style="text-align: center; width: 10em;" *ngIf="sourcePlanInfo2">{{sourcePlanInfo2}}</p></td>
     <!--4. Does your agency plan to conduct...-->
-    <td colspan="4"><p style="text-align: center; width: 10em;">0</p></td>
-    <td colspan="6"><p style="text-align: center; width: 10em;">0</p></td>
+    <td colspan="10"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.peoplePerHousehold && responsePlan.numOfHouseholds &&
+              isNumber(responsePlan.peoplePerHousehold) && isNumber(responsePlan.numOfHouseholds)">{{responsePlan.peoplePerHousehold * responsePlan.numOfHouseholds}}</p></td>
     <!--empty title-->
-    <td colspan="6"><p style="text-align: center; width: 20em;">0</p></td>
-    <td colspan="20"><p style="text-align: center; width: 20em;">0</p></td>
-    <td colspan="3"><p style="text-align: center; width: 20em;">0</p></td>
-    <td colspan="12"><p style="text-align: center; width: 20em;">0</p></td>
+    <td colspan="6">
+      <ol *ngIf="vulnerableGroupsToShow">
+        <li *ngFor="let group of vulnerableGroupsToShow">{{group.name}}</li>
+      </ol>
+    </td>
+    <td colspan="20"><p style="text-align: center; width: 20em;"></p></td>
+    <td colspan="3"><p style="text-align: center; width: 20em;"></p></td>
+    <td colspan="12"><p style="text-align: center; width: 20em;"></p></td>
     <!--empty title-->
-    <td colspan="1"><p style="text-align: center; width: 25em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 25em;">{{responsePlan.monAccLearning && responsePlan.monAccLearning['mALSystemsDescription'] ?
+      (responsePlan.monAccLearning['mALSystemsDescription']) : ''}}</p></td>
     <!--1. Do you have any photographic material...-->
-    <td colspan="2"><p style="text-align: center; width: 10em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 10em;">0</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;">{{responsePlan.monAccLearning && responsePlan.monAccLearning['isMedia'] ?
+      ((responsePlan.monAccLearning['isMedia']) ? 'X' : '') : ''}}</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;">{{responsePlan.monAccLearning && responsePlan.monAccLearning['isMedia'] ?
+      ((responsePlan.monAccLearning['isMedia']) ? '' : 'X') : ''}}</p></td>
     <!--2. Do you have any video material...-->
-    <td colspan="1"><p style="text-align: center; width: 10em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 10em;">0</p></td>
-    <td colspan="1"><p style="text-align: center;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
+    <td colspan="1"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
+    <td colspan="1"><p style="text-align: center;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
     <!--Section 3 Activity Report-->
     <!--Blank sub header-->
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center;"></p></td>
 
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
 
 
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="1"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
     <!--A: Inputs-->
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2" style="font-weight: bold;"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
 
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="2"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="3"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="4"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="4"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="4"><p style="text-align: center; width: 5em;">0</p></td>
-    <td colspan="4"><p style="text-align: center; width: 5em;">0</p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="2"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="3"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="4"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="4"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="4"><p style="text-align: center; width: 5em;"></p></td>
+    <td colspan="4"><p style="text-align: center; width: 5em;"></p></td>
 
   </tr>
 

@@ -174,7 +174,7 @@ import {TooltipComponent} from "./utils/tooltips/tooltip.component";
 import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 import {ProjectActivityReportComponent} from "./export-start-fund/project-activity-report/project-activity-report.component";
-import {ReportingDatasheetComponent} from "./export-start-fund/reporting-data-sheet/reporting-datasheet.component";
+import {ReportingDatasheetComponent} from "./export-start-fund/reporting-datasheet/reporting-datasheet.component";
 import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 

@@ -39,7 +39,12 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
   private sourcePlanId: number;
   private SourcePlan = SourcePlan;
   private MediaFormat = MediaFormat;
-
+  private groups: any[] = [];
+  private vulnerableGroupsToShow = [];
+  private userPath: string;
+  private systemAdminUid: string;
+  private sourcePlanInfo1: string;
+  private sourcePlanInfo2: string;
   private sectorsRelatedToMap = new Map<number, boolean>();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
@@ -52,6 +57,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.userPath = Constants.USER_PATHS[userType];
       this.downloadData();
     });
   }
@@ -103,6 +109,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
+        this.configGroups(responsePlan);
 
         if (responsePlan.sectorsRelatedTo) {
           responsePlan.sectorsRelatedTo.forEach(sector => {
@@ -115,7 +122,6 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
         }
       });
   }
-
 
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
@@ -151,13 +157,55 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
     if (responsePlan.sectors) {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
         this.sourcePlanId = responsePlan.sectors[sectorKey]["sourcePlan"];
+        this.sourcePlanInfo1 = responsePlan.sectors[sectorKey]["bullet1"];
+        this.sourcePlanInfo2 = responsePlan.sectors[sectorKey]["bullet2"];
       });
     }
+  }
+
+  private configGroups(responsePlan: ResponsePlan) {
+    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((systemAdminIds) => {
+        this.systemAdminUid = systemAdminIds[0].$key;
+        this.downloadGroups(responsePlan);
+      });
   }
 
   /**
    * Utility Functions
    */
+
+  private downloadGroups(responsePlan: ResponsePlan) {
+    if (this.systemAdminUid) {
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
+        .map(groupList => {
+          let groups = [];
+          groupList.forEach(group => {
+            groups.push(group);
+          });
+          return groups;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(groups => {
+          this.groups = groups;
+          console.log(this.groups);
+
+          var vulnerableGroups = [];
+          if (this.groups && responsePlan.vulnerableGroups) {
+            this.groups.forEach(originalGroup => {
+              responsePlan.vulnerableGroups.forEach(resGroupKey => {
+                if (originalGroup.$key == resGroupKey) {
+                  vulnerableGroups.push(originalGroup);
+                }
+              });
+            });
+          }
+          this.vulnerableGroupsToShow = vulnerableGroups;
+        });
+
+    }
+  }
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
