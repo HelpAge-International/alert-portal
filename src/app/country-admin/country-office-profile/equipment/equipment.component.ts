@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType} from "../../../utils/Enums";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
@@ -24,6 +24,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private countryId: string;
+  private agencyId: string;
+  private isViewing: boolean;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -55,48 +57,65 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-        this._equipmentService.getEquipments(this.countryId)
-          .subscribe(equipments => {
-            this.equipments = equipments;
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
 
-            this.equipments.forEach(equipment => {
-              const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
+          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+            this.countryId = countryAdminUser.countryId;
 
-              this._noteService.getNotes(equipmentNode).subscribe(notes => {
-                equipment.notes = notes;
+            this._equipmentService.getEquipments(this.countryId)
+              .subscribe(equipments => {
+                this.equipments = equipments;
+
+                this.equipments.forEach(equipment => {
+                  const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
+
+                  this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    equipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[equipment.id] = new NoteModel();
+                  this.newNote[equipment.id].uploadedBy = this.uid;
+                });
               });
 
-              // Create the new note model
-              this.newNote[equipment.id] = new NoteModel();
-              this.newNote[equipment.id].uploadedBy = this.uid;
-            });
-          });
+            this._equipmentService.getSurgeEquipments(this.countryId)
+              .subscribe(surgeEquipments => {
+                this.surgeEquipments = surgeEquipments;
 
-        this._equipmentService.getSurgeEquipments(this.countryId)
-          .subscribe(surgeEquipments => {
-            this.surgeEquipments = surgeEquipments;
+                this.surgeEquipments.forEach(surgeEquipment => {
+                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
 
-            this.surgeEquipments.forEach(surgeEquipment => {
-              const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
+                  this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    surgeEquipment.notes = notes;
+                  });
 
-              this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
-                surgeEquipment.notes = notes;
+                  // Create the new note model
+                  this.newNote[surgeEquipment.id] = new NoteModel();
+                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                });
+
               });
-
-              // Create the new note model
-              this.newNote[surgeEquipment.id] = new NoteModel();
-              this.newNote[surgeEquipment.id].uploadedBy = this.uid;
-            });
-
           });
+        });
       });
-    });
+
+
   }
 
   goBack() {

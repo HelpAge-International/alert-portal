@@ -115,16 +115,29 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
           this.UserType = userType;
-          this._getAgencyID().then(() => {
+          if (this.agencyId) {
             this._getTotalStaff();
-          });
-          this._getCountryID().then(() => {
+          } else {
+            this._getAgencyID().then(() => {
+              this._getTotalStaff();
+            });
+          }
+          if (this.countryID) {
             this.getStaff();
             this.getSurgeCapacity();
             this._getCountryOfficeCapacity().then(() => {
 
             });
-          });
+          } else {
+            this._getCountryID().then(() => {
+              this.getStaff();
+              this.getSurgeCapacity();
+              this._getCountryOfficeCapacity().then(() => {
+
+              });
+            });
+          }
+
           this._getSkills();
         });
 

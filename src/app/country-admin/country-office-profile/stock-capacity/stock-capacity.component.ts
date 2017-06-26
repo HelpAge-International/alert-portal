@@ -1,16 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../utils/Constants';
-import { AlertMessageType, StockType } from '../../../utils/Enums';
-import { RxHelper } from '../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-
-import { AlertMessageModel } from '../../../model/alert-message.model';
-import { DisplayError } from "../../../errors/display.error";
-import { UserService } from "../../../services/user.service";
-import { StockCapacityModel } from "../../../model/stock-capacity.model";
-import { StockService } from "../../../services/stock.service";
-import { NoteModel } from "../../../model/note.model";
-import { NoteService } from "../../../services/note.service";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, StockType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {UserService} from "../../../services/user.service";
+import {StockCapacityModel} from "../../../model/stock-capacity.model";
+import {StockService} from "../../../services/stock.service";
+import {NoteModel} from "../../../model/note.model";
+import {NoteService} from "../../../services/note.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -26,6 +23,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private countryId: string;
+  private agencyId: string;
+  private isViewing: boolean;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -43,12 +42,13 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private _noteService: NoteService,
               private router: Router,
               private route: ActivatedRoute) {
-                this.newNote = [];
+    this.newNote = [];
   }
 
   ngOnDestroy() {
@@ -57,32 +57,48 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
 
-        this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
-            this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
-            this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+            this.countryId = countryAdminUser.countryId;
 
-            // Get notes
-            stockCapacities.forEach(stockCapacity => {
-              const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{countryId}', this.countryId)
-                                                    .replace('{id}', stockCapacity.id);
-              this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
-                      stockCapacity.notes = notes;
+            this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
+              this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
+              this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
 
-                      // Create the new note model for partner organisation
-                      this.newNote[stockCapacity.id] = new NoteModel();
-                      this.newNote[stockCapacity.id].uploadedBy = this.uid;
-                    });
+              // Get notes
+              stockCapacities.forEach(stockCapacity => {
+                const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                  .replace('{countryId}', this.countryId)
+                  .replace('{id}', stockCapacity.id);
+                this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                  stockCapacity.notes = notes;
+
+                  // Create the new note model for partner organisation
+                  this.newNote[stockCapacity.id] = new NoteModel();
+                  this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                });
+              })
             })
-        })
+          });
+        });
+
       });
-    });
+
   }
 
   goBack() {
@@ -112,14 +128,14 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
     return staffName;
   }
+
   addEditStockCapacity(stockType: StockType, stockCapacityId?: string) {
-    if(stockCapacityId)
-    {
+    if (stockCapacityId) {
       this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
-                                  {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});
-    }else{
+        {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});
+    } else {
       this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
-                                  {stockType: stockType}], {skipLocationChange: true});
+        {stockType: stockType}], {skipLocationChange: true});
     }
   }
 
@@ -129,17 +145,15 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
     return !this.alertMessage;
   }
 
-  addNote(stockCapacity: StockCapacityModel, note: NoteModel)
-  {
-    if(this.validateNote(note))
-    {
+  addNote(stockCapacity: StockCapacityModel, note: NoteModel) {
+    if (this.validateNote(note)) {
       const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{countryId}', this.countryId)
-                                                    .replace('{id}', stockCapacity.id);
+        .replace('{countryId}', this.countryId)
+        .replace('{id}', stockCapacity.id);
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
   }
 
@@ -149,20 +163,19 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
     this.activeNote = note;
   }
 
-editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
+  editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     this.closeEditModal();
 
-    if(this.validateNote(note))
-    {
+    if (this.validateNote(note)) {
       const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{countryId}', this.countryId)
-                                                    .replace('{id}', stockCapacity.id);
+        .replace('{countryId}', this.countryId)
+        .replace('{id}', stockCapacity.id);
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
- }
+  }
 
   closeEditModal() {
     jQuery('#edit-action').modal('hide');
@@ -178,21 +191,21 @@ editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     this.closeDeleteModal();
 
     const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                                                    .replace('{countryId}', this.countryId)
-                                                    .replace('{id}', stockCapacity.id);
+      .replace('{countryId}', this.countryId)
+      .replace('{id}', stockCapacity.id);
 
     this._noteService.deleteNote(stockCapacityNode, note)
       .then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeDeleteModal() {
     jQuery('#delete-action').modal('hide');
   }
 
-getUserName(userId) {
+  getUserName(userId) {
     let userName = "";
 
     this._userService.getUser(userId).subscribe(user => {
