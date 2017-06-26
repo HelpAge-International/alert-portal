@@ -10,6 +10,7 @@ import {SurgeCapacityService} from "../../../../services/surge-capacity.service"
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {DisplayError} from "../../../../errors/display.error";
 import * as moment from "moment";
+declare const jQuery: any;
 
 @Component({
   selector: 'app-add-edit-surge-capacity',
@@ -127,6 +128,23 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
     // let status = this.sectorsMap.get(sector);
     // this.sectorsMap.set(sector, !status);
     // console.log(this.sectorsMap);
+  }
+
+  closeModal() {
+    jQuery('#delete-action').modal('hide');
+  }
+
+  deleteSurge() {
+    jQuery('#delete-action').modal('show');
+  }
+
+  deleteAction() {
+    this.closeModal();
+    this.surgeService.deleteSurgeCapacity(this.countryId, this.surgeId).then(() => {
+      this.goBack();
+      this.alertMessage = new AlertMessageModel('Surge capacity deleted successfully.', AlertMessageType.Success);
+    })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
   }
 
   private goBack() {

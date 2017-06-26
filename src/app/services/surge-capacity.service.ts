@@ -26,6 +26,10 @@ export class SurgeCapacityService {
     return this.af.database.object(Constants.APP_STATUS).update(surgeCapacityData);
   }
 
+  deleteSurgeCapacity(countryId: string, surgeId: string) {
+    return this.af.database.object(Constants.APP_STATUS+"/countryOfficeProfile/capacity/surgeCapacity/"+countryId+"/"+surgeId).remove();
+  }
+
   getSuregeCapacity(countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/surgeCapacity/" + countryId);
   }

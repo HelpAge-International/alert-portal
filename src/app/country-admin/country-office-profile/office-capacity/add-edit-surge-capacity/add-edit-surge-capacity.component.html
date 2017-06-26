@@ -16,9 +16,12 @@
         | translate}}</a></div>
     </div>
 
-    <div class="Header-title__wrap row">
-      <h1 *ngIf="!isEditing">Add surge capacity</h1>
-      <h1 *ngIf="isEditing">Edit surge capacity</h1>
+    <div class="Header-title__wrap">
+      <h1 *ngIf="!isEditing" class="col-sm-11">Add surge capacity</h1>
+      <h1 *ngIf="isEditing" class="col-sm-11">Edit surge capacity</h1>
+      <div class="col-sm-1 Right-aligned" *ngIf="isEditing">
+        <button class="btn btn-danger text-uppercase" (click)="deleteSurge()">{{ 'GLOBAL.DELETE' | translate }}</button>
+      </div>
     </div>
 
     <div class="row Spaced-above">
@@ -156,5 +159,24 @@
     <br>
 
   </div> <!--full page wrap inner end-->
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>Delete Surge Capacity</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>Are you sure you want to delete this surge capacity?</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
 </div>
 
