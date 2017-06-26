@@ -97,11 +97,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
           this.uid = user.uid;
 
-          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-
-            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-            this.countryId = countryAdminUser.countryId;
-
+          if (this.agencyId && this.countryId) {
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
@@ -125,7 +121,39 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 this.countryLevelsValues = content;
                 err => console.log(err);
               });
-          });
+          } else {
+            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+
+              this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+              this.countryId = countryAdminUser.countryId;
+
+              this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+                .subscribe(partnerOrganisations => {
+                  this.partnerOrganisations = partnerOrganisations;
+
+                  // Get the partner organisation notes
+                  this.partnerOrganisations.forEach(partnerOrganisation => {
+                    const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                    this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                      partnerOrganisation.notes = notes;
+                    });
+
+                    // Create the new note model for partner organisation
+                    this.newNote[partnerOrganisation.id] = new NoteModel();
+                    this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                  });
+                });
+
+              // get the country levels values
+              this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                .subscribe(content => {
+                  this.countryLevelsValues = content;
+                  err => console.log(err);
+                });
+            });
+          }
+
+
         });
 
       });
