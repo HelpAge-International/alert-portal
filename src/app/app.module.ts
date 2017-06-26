@@ -352,6 +352,7 @@ const firebaseAuthConfig = {
     TooltipComponent,
     GuidanceReportComponent,
     TimeAgoPipe,
+    KeysPipe,
     CountryNotificationsComponent,
     ProjectActivityReportComponent,
     ReportingDatasheetComponent,
