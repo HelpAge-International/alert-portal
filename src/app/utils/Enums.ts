@@ -54,7 +54,7 @@ export enum HazardScenario {
     HazardScenario26 = 26,
 }
 
-export enum ActionLevel {
+  export enum ActionLevel {
     ALL = 0,
     MPA = 1,
     APA = 2
@@ -848,7 +848,8 @@ export enum ActionStatus {
     Expired = 0,
     InProgress = 1,
     Completed = 2,
-    Inactive = 3
+    Inactive = 3,
+    Archived = 4
 }
 
 export enum SizeType {

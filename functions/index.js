@@ -111,9 +111,9 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
     }
   });
 
-exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlan}/isActive')
+exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlan}/isArchived')
   .onWrite(event => {
-    // if (event.data.current.val()['isActive'] && event.data.changed()) {
+    // if (event.data.current.val()['isArchived'] && event.data.changed()) {
     let isActive = event.data.val();
     if (isActive && event.data.changed()) {
       console.log("response plan node triggered");
@@ -149,7 +149,7 @@ exports.handleResponsePlans = functions.database.ref('/sand/responsePlan/{countr
                 admin.database().ref('/sand/responsePlan/' + countryId + '/' + responsePlanId)
                   .on('value', snapshot => {
                     if (snapshot.val() && snapshot.val()['isActive']) {
-                      // admin.database().ref('/sand/responsePlan/' + countryId + '/' + responsePlanId + '/isActive').set(false).then(() => {
+                      // admin.database().ref('/sand/responsePlan/' + countryId + '/' + responsePlanId + '/isArchived').set(false).then(() => {
                       //   console.log("expire success");
                       // }, error => {
                       //   console.log(error.message);
@@ -194,7 +194,7 @@ function updateResponsePlans(serverTimeNow, timeDifference, countryId) {
       console.log(plansNeedToInactive);
       plansNeedToInactive.forEach(plan => {
         console.log(plan);
-        admin.database().ref('sand/responsePlan/' + countryId + '/' + plan['id'] + '/isActive').set(false).then(() => {
+        admin.database().ref('sand/responsePlan/' + countryId + '/' + plan['id'] + '/isArchived').set(false).then(() => {
           console.log('success de-active');
         }, error => {
           console.log(error.message);

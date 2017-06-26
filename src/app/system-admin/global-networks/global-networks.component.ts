@@ -59,7 +59,7 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
 
   toggleActive() {
     let newState = !this.networkToUpdate.isActive;
-    this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkToUpdate.$key + "/isActive").set(newState)
+    this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkToUpdate.$key + "/isArchived").set(newState)
       .then(_ => {
         console.log("Network state updated");
         jQuery("#update-network").modal("hide");

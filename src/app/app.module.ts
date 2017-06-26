@@ -178,6 +178,8 @@ import {ReportingDatasheetComponent} from "./export-start-fund/reporting-datashe
 import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
+import {OrderByPipe} from "./utils/pipes/orderby.pipe";
+import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -293,6 +295,9 @@ const firebaseAuthConfig = {
     CreateEditResponsePlanComponent,
     AddPartnerOrganisationComponent,
     OrdinalPipe,
+    OrderByPipe,
+    PreparednessFilter,
+    KeysPipe,
     StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,

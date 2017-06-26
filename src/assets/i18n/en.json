@@ -18,6 +18,7 @@
         "CLOSE": "Close",
         "REMOVE": "Remove",
         "REJECT": "Reject",
+        "COUNTRY": "Country",
         "MALE": "Male",
         "FEMALE": "Female",
         "TITLE": "Title",
@@ -89,7 +90,8 @@
             "EXPIRED": "Expired",
             "IN_PROGRESS": "In Progress",
             "COMPLETED": "Completed",
-            "INACTIVE": "Inactive"
+            "INACTIVE": "Inactive",
+            "ARCHIVED": "Archived"
         },
         "ACTION_TYPE": {
             "CHS": "CHS",
@@ -359,7 +361,7 @@
             "PG": "Papua New Guinea",
             "PY": "Paraguay",
             "PE": "Peru",
-            "PH": "Philippines",
+            "PH": "Millippines",
             "PN": "Pitcairn",
             "PL": "Poland",
             "PT": "Portugal",
@@ -433,7 +435,7 @@
             "EH": "Western Sahara",
             "YE": "Yemen",
             "ZM": "Zambia",
-            "ZW": "Zimbabwe"
+            "ZW": "Umbazi"
         },
         "DEPARTMENT_LIST": {
             "CHS": "CHS",
@@ -1120,7 +1122,6 @@
             "TITLE_TEXT": "Stock Capacity",
             "EDIT": "Edit stock capacity",
             "VIEW": "View stock capacity",
-            "UPDATED": "Updated",
             "STOCK_IN": "In-country stock",
             "UPDATED": "Updated",
             "DESCRIPTION": "Description",
@@ -1254,7 +1255,6 @@
             "NO_COUNTRIES_BY": "Countries doesn't exist by",
             "ALERT_LEVEL": "Alert level",
             "ALL_ALERT_LEVEL": "All alert levels",
-            "ALERT_LEVEL": "Alert Level",
             "NO_AGENCIES": "No Agencies",
             "AGENCIES_IN": "Agencies in",
             "OVERVIEW": "Overview"
