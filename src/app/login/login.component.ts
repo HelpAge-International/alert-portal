@@ -5,6 +5,9 @@ import {Constants} from "../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
+import {NetworkComponent} from "../agency-admin/settings/network/network.component";
+import {until} from "selenium-webdriver";
+import elementIsNotSelected = until.elementIsNotSelected;
 
 @Component({
   selector: 'app-login',
@@ -73,24 +76,15 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
         .then((success) => {
 
-          // Fire off list of calls to check if the user id exists under any one of the nodes
-          // - If all of these fail, the results are aggregated in loginAllCallsFinished();
-          this.loginCheckingDeactivated(success.uid, "administratorCountry", Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
-            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
-          this.loginChecking(success.uid, "system", Constants.SYSTEM_ADMIN_HOME);
-          this.loginCheckingDeactivated(success.uid, "countryDirector", Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
-            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
-          this.loginChecking(success.uid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-          this.loginChecking(success.uid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-          this.loginChecking(success.uid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-          this.loginChecking(success.uid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-          this.loginCheckingDeactivated(success.uid, "ertLeader", Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
-            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
-          this.loginCheckingDeactivated(success.uid, "ert", Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
-            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
-          this.loginCheckingDeactivated(success.uid, "donor", Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
-            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
-          this.loginCheckingAgency(success.uid, "administratorAgency", Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
+            // Check if we are a network admin!
+          this.checkNetworkLogin(success.uid,
+            (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
+              console.log("Network Admin Login detected!");
+            },
+            () => {                                                           // REGULAR LOGIN
+              this.regularLogin(success.uid);
+            })
+
         })
 
         .catch((error) => {
@@ -117,18 +111,95 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Network login checking methods
+   */
+  private NETWORK_NODE_ADMIN = "networkAdmin";
+  private NETWORK_NODE_COUNTRY_ADMIN = "networkCountryAdmin";
+  private networkCount = 0;
+  private networkAdmin: boolean = false;
+  private networkCountryAdmin: boolean = false;
+  private checkNetworkLogin(successUid: string, isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
+    this.networkCount = 0;
+    this.checkNetworkLoginNode(successUid, this.NETWORK_NODE_ADMIN, isNetwork, isNotNetwork);
+    this.checkNetworkLoginNode(successUid, this.NETWORK_NODE_COUNTRY_ADMIN, isNetwork, isNotNetwork);
+  }
+  private checkNetworkLoginNode(successUid: string, userNode: string, isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
+    this.networkCount++;
+    this.af.database.object(Constants.APP_STATUS + "/" + userNode + "/" + successUid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (userNode == this.NETWORK_NODE_ADMIN) {
+          this.networkAdmin = (snap.val() != null);
+        }
+        else if (userNode == this.NETWORK_NODE_COUNTRY_ADMIN) {
+          this.networkCountryAdmin = (snap.val() != null);
+        }
+        this.checkNetworkAll(isNetwork, isNotNetwork);
+      })
+  }
+  private checkNetworkAll(isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
+    this.networkCount--;
+    if (this.networkCount == 0) {
+      // Final method!
+      if (!this.networkAdmin && !this.networkCountryAdmin) {
+        isNotNetwork();
+      }
+      else {
+        isNetwork(this.networkAdmin, this.networkCountryAdmin);
+      }
+    }
+  }
+
+  /**
    * Generic login checking methods.
    */
+  private regularLogin(successUid: string) {
+    // Fire off list of calls to check if the user id exists under any one of the nodes
+    // - If all of these fail, the results are aggregated in loginAllCallsFinished();
+    this.loginCheckingDeactivated(successUid, "administratorCountry",
+      Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
+    this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
+    this.loginCheckingDeactivated(successUid, "countryDirector",
+      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
+    this.loginChecking(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+    this.loginChecking(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+    this.loginChecking(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+    this.loginChecking(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+    this.loginCheckingDeactivated(successUid, "ertLeader",
+      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
+    this.loginCheckingDeactivated(successUid, "ert",
+      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
+    this.loginCheckingDeactivated(successUid, "donor",
+      Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
+    this.loginCheckingAgency(successUid, "administratorAgency",
+      Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
+  }
+  // Override method for checking the login. Just passes it to below with no firstLogin dir
   private loginChecking(successUid: string, userNodeName: string, directToIfSuccess: string) {
     this.loginCheckingFirstLoginValue(successUid, userNodeName, directToIfSuccess, null);
   }
+  // Login checking if a firstLogin: true field exists.
   private loginCheckingFirstLoginValue(successUid: string, userNodeName: string, directToIfSuccess: string, directToIfFirst: string) {
     this.userChecks++;
     this.af.database.object(Constants.APP_STATUS + "/" + userNodeName + "/" + successUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
         if (snapshot.val() != null) {
-          // TODO: Logic for if it's deactivated or not
           if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
             // If there's no first directory or firstLogin is not defined or false, go to success (as if it's a regular login)
             this.router.navigateByUrl(directToIfSuccess);
@@ -183,6 +254,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(directToIfFirst);
       });
   }
+  // Login with some custom behaviour on success / first login hit.
   private loginCheckingCustom(successUid: string, userNodeName: string, success: (snap) => void, firstLogin: (snap) => void) {
     this.userChecks++;
     this.af.database.object(Constants.APP_STATUS + "/" + userNodeName + "/" + successUid, {preserveSnapshot: true})
@@ -230,6 +302,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Method ran when the login calls are finished for the system
+   */
   private loginAllCallsFinished() {
     this.userChecks--;
     if (this.userChecks <= 0) {
