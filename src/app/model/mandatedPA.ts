@@ -10,4 +10,5 @@ export class MandatedPreparednessAction {
   public department: string;
   public level: ActionLevel;
   public createdAt: number;
+  public isActive: boolean;
 }

@@ -100,6 +100,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       newMandatePA.task = genericAction.task;
       newMandatePA.type = ActionType.mandated;
       newMandatePA.level = genericAction.level;
+      newMandatePA.isActive = true;
       newMandatePA.createdAt = genericAction.createdAt;
       this.actionsSelected[genericAction.$key] = newMandatePA;
     } else {

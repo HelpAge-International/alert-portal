@@ -68,7 +68,7 @@
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6">
         <!-- STATUS -->
-        <select class="form-control" id="ActionStatusFilter" [(ngModel)]="filterStatus" (change)="filter()">
+        <select class="form-control" id="ActionStatusFilter" [(ngModel)]="filterStatus">
           <option value="-1" selected>Action Status</option>
           <option *ngFor="let x of ACTION_STATUS; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_STATUS[i]
             | translate}}
@@ -77,14 +77,14 @@
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
         <!-- DEPARTMENTS -->
-        <select class="form-control" id="DepartmentsFilter" [(ngModel)]="filterDepartment" (change)="filter()">
+        <select class="form-control" id="DepartmentsFilter" [(ngModel)]="filterDepartment">
           <option value="-1" selected>All departments</option>
           <option *ngFor="let x of DEPARTMENTS" value="{{x}}">{{x}}</option>
         </select>
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
         <!-- TYPE -->
-        <select class="form-control" id="TypesFilter" [(ngModel)]="filterType" (change)="filter()">
+        <select class="form-control" id="TypesFilter" [(ngModel)]="filterType">
           <option value="-1" selected>All types</option>
           <option *ngFor="let x of ACTION_TYPE; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_TYPE[i] |
             translate}}
@@ -93,7 +93,7 @@
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
         <!-- ASSIGNED TOO -->
-        <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned" (change)="updateUserTitles()">
+        <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned">
           <option value="-1">Unassigned</option>
           <option value="0">Assigned to Anyone</option>
           <!-- If it's me, show "Assigned to me" instead -->
@@ -103,7 +103,7 @@
         </select>
       </div>
       <div class="col-lg-3 col-md-3 col-sm-6 ">
-        <select class="form-control" id="AgencyNetworkFilter" [(ngModel)]="filerNetworkAgency" (change)="filter()">
+        <select class="form-control" id="AgencyNetworkFilter" [(ngModel)]="filerNetworkAgency">
           <option value="-1" disabled selected hidden>Agency & Network</option>
           <option value="Agency-Only">Agency Only</option>
           <option value="All-Networks">All Networks</option>
@@ -251,6 +251,7 @@
                                                            (click)="exportAllDocuments(action)">Download all</a>
                         </div>
                         <div class="col-sm-6 col-4 text-right">
+                          <a (click)="closeDocumentsModal('documents_popover_' + action.id)" href="javascript:void(0)" class="btn btn-block">Close</a>
                         </div>
                       </div>
                       <div class="row documents-popover__item">
@@ -496,6 +497,7 @@
                                                                                            (click)="exportAllDocuments(action)">Download all</a>
                           </div>
                           <div class="col-sm-6 col-4 text-right">
+                            <a (click)="closeDocumentsModal('documents_popover_' + action.id)" href="javascript:void(0)" class="btn btn-block">Close</a>
                           </div>
                         </div>
                         <div class="row documents-popover__item">

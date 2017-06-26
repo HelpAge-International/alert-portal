@@ -476,9 +476,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * File uploading
    */
   public fileChange(event, action: Actions, actionId: string) {
-    console.log(event);
-    console.log(action);
-    console.log(actionId);
     if (event.target.files.length > 0) {
       let file = event.target.files[0];
 
@@ -575,7 +572,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       module: DocumentType.APA,
       size: file.size * 0.001,
       sizeType: SizeType.KB,
-      title: file.name, //TODO, what's with the title?
+      title: file.name,
       time: firebase.database.ServerValue.TIMESTAMP,
       uploadedBy: this.uid
     };
@@ -690,6 +687,9 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     a.href = URL.createObjectURL(file);
     a.download = name;
     a.click();
+  }
+  protected closeDocumentsModal(elementId: string) {
+    jQuery("#" + elementId).collapse('hide');
   }
 
 
