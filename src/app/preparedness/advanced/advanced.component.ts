@@ -61,6 +61,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private firebase: any;
   private documents: any[] = [];
   private docsSize: number;
+  private documentActionId: string = "";
   private fileSize: number; // Always in Bytes
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
 
@@ -639,11 +640,33 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
   // Exporting all the documents
   protected exportAllDocuments(action: Actions) {
-    let index = 0;
-    for (let doc of action.documents) {
-      this.exportDocument(action, "" + index);
-      index++;
+    this.documents = action.documents;
+    this.docsSize = 0;
+    this.documentActionId = action.id;
+    for (let x of action.documents) {
+      console.log(x);
+      this.docsSize += x.size;
     }
+    this.docsSize = this.docsSize / 1000;
+    jQuery("#export_documents").modal('show');
+
+  }
+  // Exporting all documents
+  protected exportAllDocsFromModal(actionId: string) {
+    let index = 0;
+    let action = this.getAction(actionId);
+    if (action != null) {
+      for (let doc of action.documents) {
+        this.exportDocument(action, "" + index);
+        index++;
+      }
+    }
+    else {
+      this.alertMessage = new AlertMessageModel("Error exporting your documents");
+    }
+  }
+  protected closeExportModal() {
+    jQuery("#export_documents").modal("hide");
   }
   // Export a single document
   protected exportDocument(action: Actions, docId: string) {

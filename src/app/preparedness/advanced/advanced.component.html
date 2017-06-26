@@ -22,7 +22,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
+        <button type="button" class="btn btn-primary" (click)="exportAllDocsFromModal(documentActionId)">Confirm</button>
       </div>
     </div>
   </div>
@@ -94,6 +94,7 @@
       <div class="col-lg-2 col-md-2 col-sm-6 ">
         <!-- ASSIGNED TOO -->
         <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned" (change)="updateUserTitles()">
+          <option value="-1">Unassigned</option>
           <option value="0">Assigned to Anyone</option>
           <!-- If it's me, show "Assigned to me" instead -->
           <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ?
@@ -121,10 +122,10 @@
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Inactive)">
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
-          <div *ngIf="!action.isArchived && (action.asignee != '') && !action.isRedAlertActive(hazardRedAlert)">
+          <div *ngIf="!action.isArchived && !action.isRedAlertActive(hazardRedAlert)">
 
             <div class="Accordion Preparedness-list">
               <div class="row Preparedness-list__item">
@@ -179,7 +180,7 @@
                     <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
                     <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                     <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                      CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'n/a'}}</strong></div>
+                      CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
 
                   </div>
                 </div>
@@ -212,7 +213,7 @@
                           <div class="row align-items-center">
                             <div class="col-6 text-bold Small-spaced">
                               by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                              CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'n/a'}}
+                              CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                             </div>
                             <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                               <a href="javascript:void(0);" class="text-primary"
@@ -250,8 +251,6 @@
                                                            (click)="exportAllDocuments(action)">Download all</a>
                         </div>
                         <div class="col-sm-6 col-4 text-right">
-                          <a href="javascript:void(0);"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
                         </div>
                       </div>
                       <div class="row documents-popover__item">
@@ -337,7 +336,7 @@
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
@@ -426,7 +425,7 @@
                       <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
                       <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                       <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                        CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'n/a'}}</strong></div>
+                        CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
 
                     </div>
                   </div>
@@ -459,7 +458,7 @@
                             <div class="row align-items-center">
                               <div class="col-6 text-bold Small-spaced">
                                 by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'n/a'}}
+                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                               </div>
                               <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                                 <a href="javascript:void(0);" class="text-primary"
@@ -497,8 +496,6 @@
                                                                                            (click)="exportAllDocuments(action)">Download all</a>
                           </div>
                           <div class="col-sm-6 col-4 text-right">
-                            <a href="javascript:void(0);"
-                               onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
                           </div>
                         </div>
                         <div class="row documents-popover__item">
@@ -599,7 +596,7 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
-            <div *ngIf="!action.isArchived && (action.asignee == '')">
+            <div *ngIf="!action.isArchived && (action.asignee == '') && action.isRedAlertActive(hazardRedAlert)">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
@@ -659,7 +656,7 @@
                       <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
                       <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                       <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                        CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'n/a'}}</strong></div>
+                        CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
 
                     </div>
                     </div>
@@ -694,7 +691,7 @@
                             <div class="row align-items-center">
                               <div class="col-6 text-bold Small-spaced">
                                 by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'n/a'}}
+                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                               </div>
                               <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                                 <a href="javascript:void(0);" class="text-primary"
@@ -733,8 +730,6 @@
                                                                                            (click)="exportAllDocuments(action)">Download all</a>
                           </div>
                           <div class="col-sm-6 col-4 text-right">
-                            <a href="javascript:void(0);"
-                               onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
                           </div>
                         </div>
                         <div class="row documents-popover__item">
@@ -781,7 +776,7 @@
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned) &&
+                    (filterAssigned == '0' || (action.asignee == '' && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="action.isArchived">
@@ -849,7 +844,7 @@
                         </div>
                         <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'n/a'}}</strong></div>
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
 
                       </div>
                     </div>
@@ -882,7 +877,7 @@
                               <div class="row align-items-center">
                                 <div class="col-6 text-bold Small-spaced">
                                   by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                      CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'n/a'}}
+                      CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                                   <a href="javascript:void(0);" class="text-primary"
@@ -920,8 +915,6 @@
                                                                                              (click)="exportAllDocuments(action)">Download all</a>
                             </div>
                             <div class="col-sm-6 col-4 text-right">
-                              <a href="javascript:void(0);"
-                                 onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
                             </div>
                           </div>
                           <div class="row documents-popover__item">
