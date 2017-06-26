@@ -112,6 +112,7 @@ import {NewDonorPasswordComponent} from "./donor-module/new-donor-password/new-d
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-profile/documents/documents.component";
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
+import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -311,7 +312,8 @@ const routes: Routes = [
     /**
      * Response plan exporting
      * */
-    {path: 'export-start-fund', component: ExportStartFundComponent}
+    {path: 'export-start-fund', component: ExportStartFundComponent},
+    {path: 'export-proposal', component: ExportProposalComponent}
 
 ];
 

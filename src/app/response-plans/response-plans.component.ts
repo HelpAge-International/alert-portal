@@ -178,6 +178,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
   }
 
+  exportProposal(responsePlan) {
+    this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
+  }
+
   submitForApproval(plan) {
     this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;

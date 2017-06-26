@@ -176,6 +176,7 @@ import { CountryNotificationsComponent } from "./country-admin/country-notificat
 import {ProjectActivityReportComponent} from "./export-start-fund/project-activity-report/project-activity-report.component";
 import {ReportingDatasheetComponent} from "./export-start-fund/reporting-data-sheet/reporting-datasheet.component";
 import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
+import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -348,7 +349,8 @@ const firebaseAuthConfig = {
     CountryNotificationsComponent,
     ProjectActivityReportComponent,
     ReportingDatasheetComponent,
-    ApplicationDatasheet
+    ApplicationDatasheet,
+    ExportProposalComponent
   ],
   imports: [
     BrowserModule,

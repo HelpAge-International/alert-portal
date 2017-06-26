@@ -139,6 +139,7 @@ export class PageControlService {
     "response-plans*",
     "risk-monitoring*",
     "export-start-fund*",
+    "export-proposal*"
   ]);
   public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", []);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
