@@ -3,8 +3,8 @@ import {AngularFire, FirebaseApp} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {
-  ActionLevel, ActionStatus, ActionType, AlertLevels, HazardScenario, ThresholdName,
-  UserType
+  ActionLevel, ActionStatus, ActionType, AlertLevels, HazardScenario, SizeType, ThresholdName,
+  UserType, DocumentType, FileExtensionsEnding, AlertMessageType
 } from "../../utils/Enums";
 import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
@@ -13,6 +13,9 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {MinimumPreparednessComponent} from '../minimum/minimum.component';
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as firebase from 'firebase';
+import {AlertMessageModel} from "../../model/alert-message.model";
+import {Response} from "@angular/http/http";
 
 @Component({
   selector: 'app-advanced',
@@ -49,15 +52,17 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private allUnassigned: boolean = false;
   private allArchived: boolean = false;
   private ActionStatus = ActionStatus;
+  private ActionType = ActionType;
 
   // Page admin
   protected countrySelected = false;
   protected agencySelected = false;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-
-  // Document exporting
-  public documents: any[] = [];
-  public docsSize: number = 0;
+  private firebase: any;
+  private documents: any[] = [];
+  private docsSize: number;
+  private fileSize: number; // Always in Bytes
+  private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -68,8 +73,12 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private assignActionCategoryUid: string = "0";
   private assignActionAsignee: string = "0";
 
-  constructor(protected pageControl: PageControlService, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
+  // Loader Inactive
+  private alertMessageType = AlertMessageType;
+  private alertMessage: AlertMessageModel = null;
 
+  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
+    this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
     this.route.params.subscribe((params: Params) => {
       if (params['countryId']) {
@@ -107,16 +116,15 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           this.init(this.agencyId, false);
           this.initDepartments();
         });
-      // Get the system admin ID and load actions for system admin
-      // EDIT: We don't actually need the System Admin Preparedness actions - System Admin can only create CHS Minimum prep, not
-      //       applicable to advanced
-      // this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe((system) => {
-      //     this.systemAdminId = system;
-      //     // System Admin always has Minimum Prep actions
-      //     // this.init(this.systemAdminId, false);
-      //   });
+      // Get the system admin ID and load actions for system admin. We need it for document type
+      this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((system) => {
+          this.systemAdminId = system;
+          this.initDocumentTypes();
+          // System Admin always has Minimum Prep actions
+          // this.init(this.systemAdminId, false);
+        });
     });
   }
 
@@ -159,7 +167,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               }
             }
 
-            act.isArchived = (obj.isActive ? obj.isActive : false);
+            act.isArchived = !obj.isActive;
             act.budget = (obj.budget ? obj.budget : 0);
             act.department = (obj.department ? obj.department : "");
             act.isComplete = (obj.isComplete ? obj.isComplete : false);
@@ -170,6 +178,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             act.frequencyValue = (obj.frequencyValue ? +obj.frequencyValue : 0);
             this.updateAction(act);
             this.initNotes(act.id);
+
+
+            if (snapshot.val().documents != null) {
+              for (let doc in snapshot.val().documents) {
+                this.initDoc(id, doc, act.id);
+              }
+            }
           }
         });
         if (isCountry) {
@@ -189,9 +204,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
             let res: boolean = true;
             for (const userTypes in snapshot.val().approval) {
-              console.log(userTypes);
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                console.log(snapshot.val().approval[userTypes]);
                 if (snapshot.val().approval[userTypes][thisUid] == 0) {
                   res = false;
                 }
@@ -217,6 +230,40 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         for (const x in snap.val().departments) {
           this.DEPARTMENTS.push(x);
+        }
+      });
+  }
+
+  /**
+   * Initialisation method for the document types that can be uploaded
+   */
+  private initDocumentTypes() {
+    this.af.database.object(Constants.APP_STATUS + "/system/" + this.systemAdminId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        let index = 0;
+        for (let x of snap.val().fileSettings) {
+          this.fileExtensions[index].allowed = snap.val().fileSettings[index];
+          index++;
+        }
+        this.fileSize = snap.val().fileType == 1 ? 1000 * snap.val().fileSize : snap.val().fileSize;
+        this.fileSize = this.fileSize * 1000 * 1000;
+      });
+  }
+
+  /**
+   * Get the documents associated with an Action
+   */
+  private initDoc(heirachyId: string, docId: string, actionId: string) {
+    this.af.database.object(Constants.APP_STATUS + "/document/" + heirachyId + "/" + docId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (this.getAction(actionId) != null) {
+          let doc = snap.val();
+          if (doc != null && doc != undefined) {
+            doc.documentId = snap.key;
+            this.getAction(actionId).addDoc(doc);
+          }
         }
       });
   }
@@ -303,13 +350,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       }
     }
     return null;
-  }
-
-  /**
-   * Mark as Complete button for completing an action
-   */
-  public completeAction(action: Actions) {
-
   }
 
   /**
@@ -430,6 +470,219 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     action.note = '';
   }
 
+
+  /**
+   * File uploading
+   */
+  public fileChange(event, action: Actions, actionId: string) {
+    console.log(event);
+    console.log(action);
+    console.log(actionId);
+    if (event.target.files.length > 0) {
+      let file = event.target.files[0];
+
+      jQuery('#docUpload' + actionId).val("");
+
+      file.actionId = action.id;
+      let exists = false;
+
+      if (action.attachments == undefined)
+        action.attachments = [];
+
+      action.attachments.map(attachment => {
+        if (attachment.name == file.name && attachment.actionId == file.actionId) {
+          exists = true;
+          console.log("exists");
+        }
+      });
+
+      console.log(file);
+      let fileTypeAllowed = false;
+      for (let x of this.fileExtensions) {
+        for (let ext of x.extensions) {
+          if (file.name.toLowerCase().trim().endsWith(ext) && x.allowed) {
+            fileTypeAllowed = true;
+          }
+        }
+      }
+
+      let fileSizeAllowed = false;
+      if (file.size < this.fileSize) {
+        fileSizeAllowed = true;
+      }
+
+      if (!fileSizeAllowed) {
+        this.alertMessage = new AlertMessageModel("File size too big! Must be less than " + ((this.fileSize / 1000) / 1000) + "MB");
+        return;
+      }
+      if (!fileTypeAllowed) {
+        this.alertMessage = new AlertMessageModel("AGENCY_ADMIN.SETTINGS.DOCUMENTS.INVALID_DOCUMENT_TYPE");
+        return;
+      }
+
+      if (!exists) {
+        action.attachments.push(file);
+        this.updateAction(action);
+      }
+    }
+  }
+
+
+  /**
+   * Completing an action
+   */
+  protected completeAction(action: Actions) {
+    console.log("Completing action!");
+    if (action.note == null || action.note.trim() == "") {
+      this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
+    } else {
+      if (action.requireDoc) {
+        if (action.attachments != undefined && action.attachments.length > 0) {
+          action.attachments.map(file => {
+            this.uploadFile(action, file);
+          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id).update({isComplete: true});
+          this.addNote(action);
+        }
+        else {
+          this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
+        }
+      }
+      else {
+        // Doesn't require doc
+        if (action.attachments != null) {
+          action.attachments.map(file => {
+            this.uploadFile(action, file);
+          });
+        }
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id).update({isComplete: true});
+        this.addNote(action);
+        this.closePopover(action);
+      }
+      this.updateAction(action);
+    }
+  }
+  // Close documents popover
+  protected closePopover(action: Actions) {
+    jQuery("#popover_content_" + action.id).toggle("collapse");
+  }
+  // Uploading a file to Firebase
+  protected uploadFile(action: Actions, file) {
+    let document = {
+      fileName: file.name,
+      filePath: "", //this needs to be updated once the file is uploaded
+      module: DocumentType.APA,
+      size: file.size * 0.001,
+      sizeType: SizeType.KB,
+      title: file.name, //TODO, what's with the title?
+      time: firebase.database.ServerValue.TIMESTAMP,
+      uploadedBy: this.uid
+    };
+
+    this.af.database.list(Constants.APP_STATUS + '/document/' + action.actionUid).push(document)
+      .then(_ => {
+        let docKey = _.key;
+        let doc = {};
+        doc[docKey] = true;
+
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents').update(doc)
+          .then(_ => {
+            new Promise((res, rej) => {
+              var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
+              var uploadTask = storageRef.put(file);
+              uploadTask.on('state_changed', function (snapshot) {
+              }, function (error) {
+                rej(error);
+              }, function () {
+                var downloadURL = uploadTask.snapshot.downloadURL;
+                res(downloadURL);
+              });
+            })
+              .then(result => {
+                document.filePath = "" + result;
+
+                this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + docKey).set(document);
+              })
+              .catch(err => {
+                console.log(err, 'You do not have access!');
+                this.purgeDocumentReference(action, docKey);
+              });
+          })
+          .catch(err => {
+            console.log(err, 'You do not have access!');
+            this.purgeDocumentReference(action, docKey);
+          });
+      })
+      .catch(err => {
+        console.log(err, 'You do not have access!');
+      });
+  }
+  // Remove document
+  protected purgeDocumentReference(action: Actions, docKey) {
+    this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents/' + docKey).set(null);
+    this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + docKey).set(null);
+  }
+  protected removeAttachment(action, file) {
+    action.attachments = action.attachments.filter(attachment => {
+      if (attachment.name == file.name && attachment.actionId == file.actionId)
+        return false;
+
+      return true;
+    });
+  }
+  // Delete document from firebase
+  protected deleteDocument(action: Actions, docId: string) {
+    let documentId = action.documents[docId].documentId;
+    this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents/' + documentId).set(null);
+    this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + documentId).set(null);
+    this.firebase.storage().ref().child('documents/' + action.actionUid + "/" + documentId).delete();
+  }
+  // Exporting all the documents
+  protected exportAllDocuments(action: Actions) {
+    let index = 0;
+    for (let doc of action.documents) {
+      this.exportDocument(action, "" + index);
+      index++;
+    }
+  }
+  // Export a single document
+  protected exportDocument(action: Actions, docId: string) {
+    console.log(docId);
+    let doc = action.documents[docId];
+
+    let self = this;
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'blob';
+    xhr.onload = function (event) {
+      self.download(xhr.response, doc.fileName, xhr.getResponseHeader("Content-Type"));
+    };
+    xhr.open('GET', doc.filePath);
+    xhr.send();
+  }
+  // Create a download <a> element to emulate actual file downloads
+  protected download(data, name, type) {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    var file = new Blob([data], {type: type});
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.click();
+  }
+
+
+
+  /**
+   * Reactivating an Action from Archived -> Non-Archived
+   */
+  public reactivate(action: Actions) {
+    console.log("Re-activate");
+    let update = {
+      isActive: true
+    };
+    console.log(Constants.APP_STATUS + "/action/" + action.actionUid + "/" + action.id);
+    this.af.database.object(Constants.APP_STATUS + "/action/" + action.actionUid + "/" + action.id).update(update);
+  }
+
   /**
    * UI methods
    */
@@ -449,6 +702,7 @@ export class Actions {
   public actionUid: string;
   public actionStatus: number;
   public asignee: string;
+  public attachments: any[];
   public assignedHazards: HazardScenario[];
   public budget: number;
   public department: string;
@@ -464,11 +718,12 @@ export class Actions {
   public note: string;
   public noteId: string;
   public notes: PreparednessNotes[];
-  public documents: PreparednessDocument[];
+  public documents: any[];
 
   constructor() {
     this.assignedHazards = [];
     this.notes = [];
+    this.attachments = [];
     this.documents = [];
   }
 
@@ -479,6 +734,19 @@ export class Actions {
       }
     }
     return false;
+  }
+
+  public addDoc(doc) {
+    let skip = false;
+    for (let x of this.documents) {
+      if (x.documentId == doc.documentId) {
+        skip = true;
+      }
+    }
+    if (!skip) {
+      this.documents.push(doc);
+    }
+    console.log(this.documents);
   }
 }
 
@@ -497,14 +765,6 @@ export class PreparednessNotes {
   public uploadedBy: string;
   public content: string;
   public time: number;
-}
-
-/**
- * Holder for the document info
- */
-export class PreparednessDocument {
-  public id: string;
-  public name: string;
 }
 
 /**
