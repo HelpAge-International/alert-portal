@@ -1146,6 +1146,26 @@
             "SUCCESS_SAVED": "The stock capacity was successfully saved",
             "SUCCESS_DELETED": "The stock capacity was successfully deleted"
           },
+          "SURGE_CAPACITY":{
+            "GO_BACK_TITLE_ADD": "Add Office & surge capacity",
+            "GO_BACK_TITLE_EDIT": "Edit Office & surge capacity",
+            "EMPTY_LIST": "Use the Add button to add surge",
+            "NO_ORGANIZATION": "Please enter the organization name",
+            "NO_RELATIONSHIP": "Please enter the relationship",
+            "NO_NAME": "Please enter the name",
+            "NO_POSITION": "Please enter the position",
+            "NO_EMAIL": "Please enter the email",
+            "NO_LOCATION": "Please enter the location",
+            "NO_TIME_VALUE": "Please enter the arrival time",
+            "TIME_VALUE_INVALID": "Time value must be great than 0!",
+            "NO_TIME_TYPE": "Please select arrival time base type",
+            "NO_DEPLOYMENT": "Please enter duration of deployment",
+            "NO_SECTORS": "Please select at least one sector",
+            "DELETE_DIALOG_TITLE": "Delete surge capacity",
+            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this surge capacity?",
+            "SUCCESS_SAVED": "The surge capacity was successfully saved",
+            "SUCCESS_DELETED": "The surge capacity was successfully deleted"
+          },
         "CONTACTS":{
             "EDIT_COUNTRY_OFFICE_DETAILS": "Edit country office details",
             "GO_BACK_TITLE": "Edit contacts",

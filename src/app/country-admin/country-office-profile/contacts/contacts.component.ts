@@ -1,13 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, ResponsePlanSectors} from '../../../utils/Enums';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-
-import {AlertMessageModel} from '../../../model/alert-message.model';
-import {ModelUserPublic} from '../../../model/user-public.model';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {ModelUserPublic} from "../../../model/user-public.model";
 import {UserService} from "../../../services/user.service";
-import {DisplayError} from "../../../errors/display.error";
 import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
 import {CountryOfficeAddressModel} from "../../../model/countryoffice.address.model";
@@ -29,6 +26,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private isViewing: boolean;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -46,6 +44,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
               private _contactService: ContactService,
@@ -61,6 +60,21 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+      });
+
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
       this.uid = user.uid;

@@ -113,6 +113,7 @@ import {CountryOfficeCapacityComponent} from "./country-admin/country-office-pro
 import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-profile/documents/documents.component";
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
+import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -233,6 +234,7 @@ const routes: Routes = [
     {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
     {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
     {path: 'country-admin/country-office-profile/office-capacity', component: CountryOfficeCapacityComponent},
+    {path: 'country-admin/country-office-profile/office-capacity/add-edit-surge-capacity', component: AddEditSurgeCapacityComponent},
     {path: 'country-admin/country-office-profile/documents', component: CountryOfficeDocumentsComponent},
     {path: 'country-admin/country-notifications', component: CountryNotificationsComponent},
 

@@ -1,17 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../utils/Constants';
-import { AlertMessageType } from '../../../utils/Enums';
-import { RxHelper } from '../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-
-import { AlertMessageModel } from '../../../model/alert-message.model';
-import { DisplayError } from "../../../errors/display.error";
-import { NoteModel } from "../../../model/note.model";
-import { NoteService } from "../../../services/note.service";
-import { UserService } from "../../../services/user.service";
-import { EquipmentService } from "../../../services/equipment.service";
-import { EquipmentModel } from "../../../model/equipment.model";
-import { SurgeEquipmentModel } from "../../../model/equipment-surge.model";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {NoteModel} from "../../../model/note.model";
+import {NoteService} from "../../../services/note.service";
+import {UserService} from "../../../services/user.service";
+import {EquipmentService} from "../../../services/equipment.service";
+import {EquipmentModel} from "../../../model/equipment.model";
+import {SurgeEquipmentModel} from "../../../model/equipment-surge.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -27,6 +24,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private countryId: string;
+  private agencyId: string;
+  private isViewing: boolean;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -48,7 +47,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
               private _equipmentService: EquipmentService,
               private _noteService: NoteService,
               private router: Router,
-              private route: ActivatedRoute){
+              private route: ActivatedRoute) {
     this.newNote = [];
   }
 
@@ -58,13 +57,27 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-        this._equipmentService.getEquipments(this.countryId)
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+
+          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+            this.countryId = countryAdminUser.countryId;
+
+            this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
 
@@ -81,7 +94,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                 });
               });
 
-        this._equipmentService.getSurgeEquipments(this.countryId)
+            this._equipmentService.getSurgeEquipments(this.countryId)
               .subscribe(surgeEquipments => {
                 this.surgeEquipments = surgeEquipments;
 
@@ -98,8 +111,11 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                 });
 
               });
+          });
+        });
       });
-    });
+
+
   }
 
   goBack() {
@@ -115,28 +131,26 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   addEditEquipment(equipmentId?: string) {
-    if(equipmentId)
-    {
+    if (equipmentId) {
       this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
     }
   }
 
   addEditSurgeEquipment(surgeEquipmentId?: string) {
-    if(surgeEquipmentId)
-    {
+    if (surgeEquipmentId) {
       this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
     }
 
   }
 
-getUserName(userId) {
+  getUserName(userId) {
     let userName = "";
 
-    if(!userId) return userName;
+    if (!userId) return userName;
 
     this._userService.getUser(userId).subscribe(user => {
       userName = user.firstName + ' ' + user.lastName;
@@ -152,23 +166,20 @@ getUserName(userId) {
   }
 
 
-  addNote(equipmentType: string, equipmentId: string, note: NoteModel)
-  {
-    if(this.validateNote(note))
-    {
+  addNote(equipmentType: string, equipmentId: string, note: NoteModel) {
+    if (this.validateNote(note)) {
       let equipmentNode = "";
 
-      if(equipmentType == 'equipment')
-      {
+      if (equipmentType == 'equipment') {
         equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      }else{
+      } else {
         equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
       }
 
       this._noteService.saveNote(equipmentNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
   }
 
@@ -179,26 +190,24 @@ getUserName(userId) {
     this.activeEquipmentType = equipmentType;
   }
 
-editAction(equipmentType: string, equipmentId: string, note: NoteModel) {
+  editAction(equipmentType: string, equipmentId: string, note: NoteModel) {
     this.closeEditModal();
 
-    if(this.validateNote(note))
-    {
+    if (this.validateNote(note)) {
       let equipmentNode = "";
 
-      if(equipmentType == 'equipment')
-      {
+      if (equipmentType == 'equipment') {
         equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      }else{
+      } else {
         equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
       }
 
       this._noteService.saveNote(equipmentNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
- }
+  }
 
   closeEditModal() {
     jQuery('#edit-action').modal('hide');
@@ -216,10 +225,9 @@ editAction(equipmentType: string, equipmentId: string, note: NoteModel) {
 
     let equipmentNode = '';
 
-    if(equipmentType == 'equipment')
-    {
+    if (equipmentType == 'equipment') {
       equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-    }else{
+    } else {
       equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
     }
 
@@ -228,7 +236,7 @@ editAction(equipmentType: string, equipmentId: string, note: NoteModel) {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeDeleteModal() {
     jQuery('#delete-action').modal('hide');

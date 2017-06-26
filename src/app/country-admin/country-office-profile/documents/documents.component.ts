@@ -1,11 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Countries, DocumentType, SizeType} from "../../../utils/Enums";
-import {Subject} from 'rxjs';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import { UserService } from "../../../services/user.service";
+import {Subject} from "rxjs";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 
@@ -23,6 +23,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private isViewing: boolean;
   private locationId: string;
 
   private alertMessage: string = "Message";
@@ -49,11 +50,12 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+
   constructor(private pageControl: PageControlService,
-                 private _userService: UserService,
-                 private route: ActivatedRoute,
-                 private af: AngularFire,
-                 private router: Router) {
+              private _userService: UserService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router) {
 
     this.docFilterSubject = new BehaviorSubject(undefined);
     this.docFilter = {
@@ -74,64 +76,80 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.docFilterSubject.next();
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-          this.countryId = countryAdminUser.countryId;
-          this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
-          this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-            this.countries = _;
-            Object.keys(this.countries).map(country => {
-              let key = this.countries[country].$key;
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-              if(key == this.countryId) {
-                this.locationId =  this.countries[country].location;
-                //this.countriesFilterSubject.next(Countries[this.locationId]);
-              }
+        this.docFilterSubject.next();
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+            this.countryId = countryAdminUser.countryId;
+            this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+            this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                this.countries = _;
+                Object.keys(this.countries).map(country => {
+                  let key = this.countries[country].$key;
 
-              this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(_ => {
-                let docs = _;
-                docs = docs.filter(doc => {
-                  if (this.userSelected == "-1")
-                    return true;
+                  if (key == this.countryId) {
+                    this.locationId = this.countries[country].location;
+                    //this.countriesFilterSubject.next(Countries[this.locationId]);
+                  }
 
-                  return doc.uploadedBy == this.userSelected;
-                });
-                Object.keys(docs).map(doc => {
-                  let uploadedBy = docs[doc].uploadedBy;
-                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                  this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(_ => {
-                    docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
-                  });
-                });
-                this.countries[country]['docs'] = docs;
-                this.countries[country]['docsfiltered'] = docs;
-                this.countries[country]['hasDocs'] = (docs.length > 0);
-              });
-            });
-          });
+                      let docs = _;
+                      docs = docs.filter(doc => {
+                        if (this.userSelected == "-1")
+                          return true;
 
-          this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-            let users = _;
-            Object.keys(users).map(user => {
-              let userKey = users[user].$key;
-              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(_ => {
-                this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                        return doc.uploadedBy == this.userSelected;
+                      });
+                      Object.keys(docs).map(doc => {
+                        let uploadedBy = docs[doc].uploadedBy;
+                        this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(_ => {
+                            docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                          });
+                      });
+                      this.countries[country]['docs'] = docs;
+                      this.countries[country]['docsfiltered'] = docs;
+                      this.countries[country]['hasDocs'] = (docs.length > 0);
+                    });
+                });
               });
-            });
+
+            this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                let users = _;
+                Object.keys(users).map(user => {
+                  let userKey = users[user].$key;
+                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(_ => {
+                      this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                    });
+                });
+              });
           });
         });
-    });
+
+      });
+
   }
 
   ngOnDestroy() {
@@ -160,7 +178,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
     this.alertMessage = "";
   }
 
-  selectDocument(){
+  selectDocument() {
     this.exportDocs = [];
     this.countries.map(country => {
       country.docsfiltered.map(doc => {
@@ -178,6 +196,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
     this.docsCount = this.exportDocs.length;
   }
+
   private exportSelectedDocuments() {
     jQuery("#export_documents").modal("show");
   }

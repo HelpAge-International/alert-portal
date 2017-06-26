@@ -177,6 +177,7 @@ import {ProjectActivityReportComponent} from "./export-start-fund/project-activi
 import {ReportingDatasheetComponent} from "./export-start-fund/reporting-datasheet/reporting-datasheet.component";
 import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
+import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -350,7 +351,8 @@ const firebaseAuthConfig = {
     ProjectActivityReportComponent,
     ReportingDatasheetComponent,
     ApplicationDatasheet,
-    ExportProposalComponent
+    ExportProposalComponent,
+    AddEditSurgeCapacityComponent
   ],
   imports: [
     BrowserModule,

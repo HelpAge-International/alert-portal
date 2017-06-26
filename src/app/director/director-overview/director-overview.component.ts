@@ -14,6 +14,7 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
   private menuTab = "officeProfile";
   private tabMap = new Map<string, boolean>();
+  private officeMap = new Map<string, boolean>();
 
   private countryId: string;
   private isViewing: boolean;
@@ -21,11 +22,29 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   private from: string;
   private agencyName: string;
 
+  private officeTarget: string;
+
   constructor(private route: ActivatedRoute, private userService: UserService) {
+    this.initMainMenu();
+    this.initOfficeSubMenu();
+  }
+
+  private initMainMenu() {
     this.tabMap.set("officeProfile", true);
     this.tabMap.set("risk", false);
     this.tabMap.set("preparedness", false);
     this.tabMap.set("plan", false);
+  }
+
+  private initOfficeSubMenu() {
+    this.officeMap.set("programme", true);
+    this.officeMap.set("officeCapacity", false);
+    this.officeMap.set("partners", false);
+    this.officeMap.set("equipment", false);
+    this.officeMap.set("coordination", false);
+    this.officeMap.set("stockCapacity", false);
+    this.officeMap.set("documents", false);
+    this.officeMap.set("contacts", false);
   }
 
   ngOnInit() {
@@ -46,7 +65,17 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
           this.from = params["from"];
           this.menuSelection(this.from);
         }
+        if (params["officeTarget"]) {
+          this.officeTarget = params["officeTarget"];
+          this.handleOfficeSubMenu();
+        }
       });
+  }
+
+  private handleOfficeSubMenu() {
+    this.officeMap.forEach((v, k) => {
+      this.officeMap.set(k, k == this.officeTarget);
+    });
   }
 
   private getAgencyInfo(agencyId: string) {

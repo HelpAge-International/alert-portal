@@ -820,7 +820,7 @@ export class Constants {
   static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
   static STOCK_CAPACITY_NODE = '/countryOfficeProfile/capacity/stockCapacity/{countryId}/{id}/notes';
   static STAFF_NODE = '/staff/{countryId}/{staffId}/notes';
-  static SURGE_CAPACITY_NODE = '/countryOfficeProfile/surgeCapacity/{countryId}/{id}/notes';
+  static SURGE_CAPACITY_NODE = '/countryOfficeProfile/capacity/surgeCapacity/{countryId}/{id}/notes';
 
   static MONTH = [
     null,
