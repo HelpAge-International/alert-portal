@@ -1,6 +1,8 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
 
 <!-- EXPORT DOCUMENTS MODAL -->
 <div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -164,7 +166,7 @@
 
                     </div>
                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">Inactive until Red Alert Level
-                      <a [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
+                      <a *ngIf="action.type == ActionType.custom" [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                         action</a>
                     </div>
                     <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
@@ -244,8 +246,8 @@
                     <div class="col-md-10">
                       <div class="row Spaced align-items-center">
                         <div class="col-sm-6 col-8">
-                          <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                           (click)="exportSelectedDocuments(action)">Download all</a>
+                          <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
+                                                           (click)="exportAllDocuments(action)">Download all</a>
                         </div>
                         <div class="col-sm-6 col-4 text-right">
                           <a href="javascript:void(0);"
@@ -254,11 +256,11 @@
                       </div>
                       <div class="row documents-popover__item">
                         <div class="col-12">
-                          <p *ngFor="let doc of action.documents | keyValues">
-                            <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                            href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
+                          <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                            <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                            href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                             href="javascript:void(0);" class="text-danger"
-                            (click)="deleteDocument(action, doc.key)">Delete</a></span>
+                            (click)="deleteDocument(action, i)">Delete</a></span>
                           </p>
                         </div>
                       </div>
@@ -287,7 +289,7 @@
                   </div>
                   <div class="row">
                     <div class="col-12">
-                      <p>Attach documents as proof of completion (required)</p>
+                      <p>Attach documents as proof of completion {{action.requireDoc ? '(required)' : ''}}</p>
                     </div>
                   </div>
                   <div class="row">
@@ -411,7 +413,7 @@
                              class="btn btn-outline-primary btn-block ">Mark as complete</a>
                         </div>
 
-                        <a [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
+                        <a *ngIf="action.type == ActionType.custom" [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                           action</a>
                       </div>
                       <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
@@ -491,8 +493,8 @@
                       <div class="col-md-10">
                         <div class="row Spaced align-items-center">
                           <div class="col-sm-6 col-8">
-                            <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                             (click)="exportSelectedDocuments(action)">Download all</a>
+                            <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
+                                                                                           (click)="exportAllDocuments(action)">Download all</a>
                           </div>
                           <div class="col-sm-6 col-4 text-right">
                             <a href="javascript:void(0);"
@@ -501,11 +503,11 @@
                         </div>
                         <div class="row documents-popover__item">
                           <div class="col-12">
-                            <p *ngFor="let doc of action.documents | keyValues">
-                              <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                              href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
+                            <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                              <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                              href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                               href="javascript:void(0);" class="text-danger"
-                              (click)="deleteDocument(action, doc.key)">Delete</a></span>
+                              (click)="deleteDocument(action, i)">Delete</a></span>
                             </p>
                           </div>
                         </div>
@@ -534,20 +536,20 @@
                     </div>
                     <div class="row">
                       <div class="col-12">
-                        <p>Attach documents as proof of completion (required)</p>
+                        <p>Attach documents as proof of completion {{action.requireDoc ? '(required)' : ''}}</p>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-12"><label for="docUpload" class="btn btn-outline-primary">Upload
+                      <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">Upload
                         documents</label>
                       </div>
-                      <input type='file' id="docUpload" name="file" (change)="fileChange($event, action)"
+                      <input type='file' id="docUpload{{action.id}}" name="file" (change)="fileChange($event, action, action.id)"
                              class="Input-form--hidden"/>
                     </div>
                     <div class="row Spaced">
                       <div class="col-12">
-                        <p *ngIf="action.documents && action.documents.length > 0">Attachments</p>
-                        <p *ngFor="let attachment of action.documents">
+                        <p *ngIf="action.attachments && action.attachments.length > 0">Attachments ({{action.attachments.length}})</p>
+                        <p *ngFor="let attachment of action.attachments">
                           <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
                                                                              class="text-danger"
                                                                              (click)="removeAttachment(action, attachment)">Remove</a>
@@ -642,10 +644,8 @@
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                              aria-expanded="false" aria-controls="popover_content"
-                             class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
-                            this
-                            action</a>
-                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                             class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign this action</a>
+                          <a *ngIf="action.type == ActionType.custom" [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -722,15 +722,15 @@
 
                   <div id="documents_popover_{{action.id}}"
                        class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+
                     <!-- Documents -->
                     <div class="row Spaced">
                       <div class="col-md-2"></div>
                       <div class="col-md-10">
                         <div class="row Spaced align-items-center">
                           <div class="col-sm-6 col-8">
-                            <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                             (click)="exportSelectedDocuments(action)">Download
-                            all</a>
+                            <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
+                                                                                           (click)="exportAllDocuments(action)">Download all</a>
                           </div>
                           <div class="col-sm-6 col-4 text-right">
                             <a href="javascript:void(0);"
@@ -739,11 +739,11 @@
                         </div>
                         <div class="row documents-popover__item">
                           <div class="col-12">
-                            <p *ngFor="let doc of action.documents | keyValues">
-                              <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                              href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
+                            <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                              <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                              href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                               href="javascript:void(0);" class="text-danger"
-                              (click)="deleteDocument(action, doc.key)">Delete</a></span>
+                              (click)="deleteDocument(action, i)">Delete</a></span>
                             </p>
                           </div>
                         </div>
@@ -830,11 +830,11 @@
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
-                             aria-expanded="false" aria-controls="popover_content"
+                             aria-expanded="false" aria-controls="popover_content" (click)="reactivate(action)"
                              class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
 
 
-                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
+                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" *ngIf="action.type == ActionType.custom"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -916,9 +916,8 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                               (click)="exportSelectedDocuments(action)">Download
-                              all</a>
+                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
+                                                                                             (click)="exportAllDocuments(action)">Download all</a>
                             </div>
                             <div class="col-sm-6 col-4 text-right">
                               <a href="javascript:void(0);"
@@ -927,11 +926,11 @@
                           </div>
                           <div class="row documents-popover__item">
                             <div class="col-12">
-                              <p *ngFor="let doc of action.documents | keyValues">
-                                <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                                href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
+                              <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                                <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                                href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, doc.key)">Delete</a></span>
+                                (click)="deleteDocument(action, i)">Delete</a></span>
                               </p>
                             </div>
                           </div>

@@ -802,7 +802,7 @@
                 "COUNTRY_OFFICE_PROFILE": "Country office profile",
                 "RESPONSE_PLANNING": "Response planning",
                 "GLOBAL_MAPS": "Global maps",
-                "PREP_BUDGET":"Prepare Budget",
+                "PREP_BUDGET":"Preparedness Budget",
                 "SAVE_SUCCESS": "Module Settings successfully saved"
             },
             "DURATION_TYPE": {
@@ -840,7 +840,8 @@
                   "YOU_ARE_ABOUT_TO_EXPORT": "You are about to export",
                   "DOCUMENT(S)": "document(s)",
                   "WITH_SIZE": "with a total size of",
-                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?"
+                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?",
+                  "INVALID_DOCUMENT_TYPE": "Invalid Document Type"
             },
             "DOCUMENT_TYPE": {
                 "MPA": "MPA",

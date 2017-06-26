@@ -498,7 +498,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       title: file.name, //TODO, what's with the title?
       time: firebase.database.ServerValue.TIMESTAMP,
       uploadedBy: this.uid
-
     };
 
     this.af.database.list(Constants.APP_STATUS + '/document/' + action.agencyId).push(document)

@@ -73,6 +73,38 @@ export enum FileType {
     GB = 1
 }
 
+export class FileExtensionsEnding {
+  public extensions: string[] = [];
+  public id: number;
+  public allowed: boolean;
+
+  public static list(): FileExtensionsEnding[] {
+    let x: FileExtensionsEnding[] = [];
+    x.push(FileExtensionsEnding.create(0, [".pdf"]));
+    x.push(FileExtensionsEnding.create(1, [".doc"]));
+    x.push(FileExtensionsEnding.create(2, [".docx"]));
+    x.push(FileExtensionsEnding.create(3, [".rtf"]));
+    x.push(FileExtensionsEnding.create(4, [".jpg", ".jpeg"]));
+    x.push(FileExtensionsEnding.create(5, [".png"]));
+    x.push(FileExtensionsEnding.create(6, [".csv"]));
+    x.push(FileExtensionsEnding.create(7, [".xls"]));
+    x.push(FileExtensionsEnding.create(8, [".xlsx"]));
+    x.push(FileExtensionsEnding.create(9, [".ppt"]));
+    x.push(FileExtensionsEnding.create(10, [".pptx"]));
+    x.push(FileExtensionsEnding.create(11, [".txt"]));
+    x.push(FileExtensionsEnding.create(12, [".odt"]));
+    x.push(FileExtensionsEnding.create(13, [".tsv"]));
+    return x;
+  }
+
+  private static create(id: number, extensions: string[]) {
+    let fExtension = new FileExtensionsEnding();
+    fExtension.id = id;
+    fExtension.extensions = extensions;
+    fExtension.allowed = false;
+    return fExtension;
+  }
+}
 export enum Currency {
     GBP = 0,
     EUR = 1,
