@@ -10,6 +10,7 @@ import {AlertMessageModel} from '../../model/alert-message.model';
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import {Observable, Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
+import {Location} from "@angular/common";
 declare var jQuery: any;
 
 @Component({
@@ -71,7 +72,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+  constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
     this.actionData = new Action();
     this.setDefaultActionDataValue();
     /* if selected generic action */
@@ -414,9 +415,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.closeModal();
     this.actionData.isActive = false;
     this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
-      .set(this.actionData)
+      .update({isActive: false})
       .then(() => {
-        console.log('success update archive');
+        this._location.back();
       }).catch((error: any) => {
       console.log(error, 'You do not have access!')
     });
@@ -444,7 +445,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   deleteAction() {
     this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID).remove();
     this.closeModal();
-    this.router.navigate(['/preparedness/minimum']);
+    this._location.back();
+    // this.router.navigate(['/preparedness/minimum']);
   }
 
   closeModal() {
@@ -453,8 +455,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   backButtonAction() {
     /* TODO get last route and implemented this functionality */
-    this.router.navigate(['/preparedness/minimum']);
-    console.log('back button');
+    this._location.back();
   }
 
   _parseSelectParams() {
@@ -553,9 +554,5 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   test() {
     console.log(this.actionData.requireDoc);
-  }
-
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 }
