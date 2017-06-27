@@ -3,6 +3,7 @@ import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from "../../model/message";
+import {MessageModel} from "../../model/message.model";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
@@ -21,8 +22,10 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private USER_TYPE;
 
-  private messages = [];
+  private messagesTemp = [];
+  private messages: MessageModel[] = []
   private messageToDeleteID;
   private messageToDeleteType;
 
@@ -42,20 +45,47 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
+          
+        this._userService.getUserType(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userType => {
+          
+          this.USER_TYPE = Constants.USER_PATHS[userType];
+          
+          this._userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
+            this.agencyId = agencyId;
+            this._userService.getCountryId(this.USER_TYPE, this.uid).subscribe(countryId => {
+              this.countryId = countryId;
 
-        // Country admin notifications
-        this._userService.getCountryAdminUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdminUser => {
-          if (countryAdminUser) {
-            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-            this.countryId = countryAdminUser.countryId;
-
-            this._notificationService.getCountryAdminNotifications(this.countryId, this.agencyId)
-                                        .takeUntil(this.ngUnsubscribe)
-                                        .subscribe(messages => { this.messages = messages; });
-          }
-        });
+              switch(this.USER_TYPE){
+                case 'administratorCountry':
+                  this._notificationService.getCountryAdminNotifications(this.countryId, this.agencyId)
+                        .subscribe(messages => {
+                          this.messages = messages;
+                        });
+                  break;
+                case 'countryDirector':
+                  this._notificationService.getCountryDirectorNotifications(this.uid, this.countryId, this.agencyId)
+                        .subscribe(messages => {
+                          this.messages = messages;
+                        });
+                  break;
+                case 'ertLeader':
+                  this._notificationService.getERTLeadsNotifications(this.uid, this.countryId, this.agencyId)
+                        .subscribe(messages => {
+                          this.messages = messages;
+                        });
+                  break;
+                case 'ert':
+                  this._notificationService.getERTNotifications(this.uid, this.countryId, this.agencyId)
+                        .subscribe(messages => {
+                          this.messages = messages;
+                        });
+                  break;
+              }
+            });
+          });
+      });
     });
   }
 
