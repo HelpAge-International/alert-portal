@@ -88,22 +88,22 @@ export class CountryPermissionsMatrix {
     Edit: boolean,
     Delete: boolean
   };
-  public crossCountrySameAgency: {
-    AddNote: boolean,
-    CopyAction: boolean,
-    Download: boolean,
-    Edit: boolean,
-    View: boolean,
-    ViewContacts: boolean
-  };
-  public interAgencyCrossCountry: {
-    AddNote: boolean,
-    CopyAction: boolean,
-    Download: boolean,
-    Edit: boolean,
-    View: boolean,
-    ViewContacts: boolean
-  };
+  // public crossCountrySameAgency: {
+  //   AddNote: boolean,
+  //   CopyAction: boolean,
+  //   Download: boolean,
+  //   Edit: boolean,
+  //   View: boolean,
+  //   ViewContacts: boolean
+  // };
+  // public interAgencyCrossCountry: {
+  //   AddNote: boolean,
+  //   CopyAction: boolean,
+  //   Download: boolean,
+  //   Edit: boolean,
+  //   View: boolean,
+  //   ViewContacts: boolean
+  // };
   public other: {
     DownloadDocuments: boolean,
     UploadDocuments: boolean
@@ -131,18 +131,18 @@ export class CountryPermissionsMatrix {
     this.countryContacts.New = type;
     this.countryContacts.Edit = type;
     this.countryContacts.Delete = type;
-    this.crossCountrySameAgency.Edit = type;
-    this.crossCountrySameAgency.AddNote = type;
-    this.crossCountrySameAgency.Download = type;
-    this.crossCountrySameAgency.View = type;
-    this.crossCountrySameAgency.ViewContacts = type;
-    this.crossCountrySameAgency.CopyAction = type;
-    this.interAgencyCrossCountry.Edit = type;
-    this.interAgencyCrossCountry.AddNote = type;
-    this.interAgencyCrossCountry.Download = type;
-    this.interAgencyCrossCountry.View = type;
-    this.interAgencyCrossCountry.ViewContacts = type;
-    this.interAgencyCrossCountry.CopyAction = type;
+    // this.crossCountrySameAgency.Edit = type;
+    // this.crossCountrySameAgency.AddNote = type;
+    // this.crossCountrySameAgency.Download = type;
+    // this.crossCountrySameAgency.View = type;
+    // this.crossCountrySameAgency.ViewContacts = type;
+    // this.crossCountrySameAgency.CopyAction = type;
+    // this.interAgencyCrossCountry.Edit = type;
+    // this.interAgencyCrossCountry.AddNote = type;
+    // this.interAgencyCrossCountry.Download = type;
+    // this.interAgencyCrossCountry.View = type;
+    // this.interAgencyCrossCountry.ViewContacts = type;
+    // this.interAgencyCrossCountry.CopyAction = type;
     this.other.DownloadDocuments = type;
     this.other.UploadDocuments = type;
   }

@@ -11,7 +11,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'angular-2-local-storage';
 import * as firebase from 'firebase';
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 declare var jQuery: any;
 
@@ -78,6 +78,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
 
+  // Module permissions settings
+  private modulesAreEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
+
   constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
@@ -106,7 +109,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryId => {
           this.countryId = countryId;
-          this.init(this.countryId);
+          this.init(this.countryId, false);
           this.initStaff();
         });
       // Get the agency ID and load actions for agency
@@ -114,7 +117,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyId) => {
           this.agencyId = agencyId;
-          this.init(this.agencyId);
+          this.init(this.agencyId, false);
           this.initDepartments();
         });
       // Get the system admin ID and load actions for system admin. We need it for document type
@@ -122,11 +125,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((system) => {
           this.systemAdminId = system;
-          this.init(this.systemAdminId);
+          this.init(this.systemAdminId, true);
           this.initDocumentTypes();
           // System Admin always has Minimum Prep actions
           // this.init(this.systemAdminId, false);
         });
+
+      // Initialise the page control information
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+        this.modulesAreEnabled = isEnabled;
+      });
     });
   }
 
@@ -139,7 +147,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the action node. Takes the ID and pushes it to the list
    * @param id
    */
-  private init(id: string) {
+  private init(id: string, systemExceptionLogic: boolean) {
     this.af.database.list(Constants.APP_STATUS + "/action/" + id, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
@@ -160,13 +168,17 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             act.type = (obj.type ? obj.type : 0);
             act.frequencyBase = (obj.frequencyBase ? +obj.frequencyBase : 0);
             act.frequencyValue = (obj.frequencyValue ? +obj.frequencyValue : 0);
-            this.updateAction(act);
-            this.initNotes(act.id);
+            if (systemExceptionLogic && obj.type == 1) {
+              // Don't do anything. This is exception logic for the retarded way that System Generic Actions are done
+            }
+            else {
+              this.updateAction(act);
+              this.initNotes(act.id);
 
-
-            if (snapshot.val().documents != null) {
-              for (let doc in snapshot.val().documents) {
-                this.initDoc(id, doc, act.id);
+              if (snapshot.val().documents != null) {
+                for (let doc in snapshot.val().documents) {
+                  this.initDoc(id, doc, act.id);
+                }
               }
             }
           }
