@@ -80,6 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.checkNetworkLogin(success.uid,
             (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
               console.log("Network Admin Login detected!");
+              this.regularLogin(success.uid);
             },
             () => {                                                           // REGULAR LOGIN
               this.regularLogin(success.uid);
