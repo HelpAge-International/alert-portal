@@ -87,7 +87,7 @@ export class NotificationBadgeComponent implements OnInit {
         this._notificationService.setGlobalUserNotificationsAsRead(this._userId, this._countryId, this._agencyId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
+                this.router.navigateByUrl("director/director-notifications");
               });
         break;
       case 'ertLeader':

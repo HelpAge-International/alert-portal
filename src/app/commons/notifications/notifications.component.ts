@@ -26,6 +26,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private _agencyId: string;
   private _userId: string;
 
+  private messages: MessageModel[] = []
+  private messageToDeleteID;
+
   @Input() set USER_TYPE(USER_TYPE: string){
     this._USER_TYPE = USER_TYPE;
     this.getNotifications();
@@ -46,11 +49,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.getNotifications();
   }
 
-  private messagesTemp = [];
-  private messages: MessageModel[] = []
-  private messageToDeleteID;
-  private messageToDeleteType;
-
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService,
@@ -68,24 +66,76 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-  deleteMessage(messageID: string, groupType: string) {
-    if (!messageID || !groupType) {
-      console.log('message ID and groupType requried params!');
+  deleteMessage(messageID: string) {
+    if (!messageID) {
+      console.log('messageId is required!');
       return;
     }
     this.messageToDeleteID = messageID;
-    this.messageToDeleteType = groupType;
     jQuery("#delete-message").modal("show");
   }
 
   deleteAction() {
     this.closeModal();
-    let messageNode = Constants.APP_STATUS + '/messageRef/agency/' + this.agencyId + '/countryadmins/' + this.countryId + '/' + this.messageToDeleteID;
-    this._notificationService.deleteNotification(messageNode)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-            })
-            .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+
+    switch(this._USER_TYPE){
+        case 'administratorCountry':
+          this._notificationService.deleteCountryAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'countryDirector':
+          this._notificationService.deleteCountryDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'regionDirector':
+          this._notificationService.deleteRegionalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'globalDirector':
+          this._notificationService.deleteGlobalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'globalUser':
+          this._notificationService.deleteGlobalUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'ertLeader':
+          this._notificationService.deleteERTLeadsNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'ert':
+          this._notificationService.deleteERTNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+        case 'donor':
+          this._notificationService.deleteDonorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
+    }
   }
 
   closeModal() {
@@ -124,7 +174,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 });
           break;
         case 'globalUser':
-          this._notificationService.getGlobalUserNotifications(this._userId, this._countryId, this._agencyId, true)
+          this._notificationService.getGlobalUserNotifications(this._userId, this._countryId, this._agencyId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(messages => {
                   this.messages = messages;

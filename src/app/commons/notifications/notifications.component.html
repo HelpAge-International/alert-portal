@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="col-sm-3 Right-aligned">
-                <div class="btn btn-danger" (click)="deleteMessage(message.id, message.userType)">{{"GLOBAL.DELETE" | translate}}</div>
+                <div class="btn btn-danger" (click)="deleteMessage(message.id)">{{"GLOBAL.DELETE" | translate}}</div>
             </div>
         </div>
         <div class="Empty--ribbon" *ngIf="!messages || messages.length < 1">

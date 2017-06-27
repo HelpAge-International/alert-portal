@@ -196,12 +196,53 @@ setCountryAdminNotificationsAsRead(countryId, agencyId){
  setPartnerNotificationsAsRead(countryId, agencyId){
    return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/partner/" + countryId);
  }
+ 
+ deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId + "/" + messageId);
+ }
+
+ deleteCountryAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countryadmins/" + userId + "/" + messageId);
+ }
+
+ deleteCountryDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   console.log("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/" + messageId);
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/" + messageId);
+ }
+
+deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/regionaldirector/" + userId + "/" + messageId);
+}
+
+ deleteGlobalDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/globaldirector/" + userId + "/" + messageId);
+ }
+
+ deleteGlobalUserNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/globaluser/" + userId + "/" + messageId);
+ }
+
+ deleteDonorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/country/" + countryId + "/donor/" + userId + "/" + messageId);
+ }
+ 
+ deleteERTLeadsNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/country/" + countryId + "/ertleads/" + userId + "/" + messageId);
+ }
+
+ deleteERTNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/country/" + countryId + "/erts/" + userId + "/" + messageId);
+ }
+
+ deletePartnerNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/country/" + countryId + "/partner/" + userId + "/" + messageId);
+ }
+
   deleteNotification(node): firebase.Promise<any>{
     if (!node) {
       Promise.reject('Missing node!');
     }
-
-    return this.af.database.object(node).remove();
+    return this.af.database.object(Constants.APP_STATUS + node).remove();
   }
 
   private getNotifications(node: string, unreadOnly): Observable<MessageModel[]>  {
