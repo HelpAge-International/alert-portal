@@ -877,11 +877,17 @@ export enum BudgetCategory {
 }
 
 export enum ActionStatus {
-    Expired = 0,
-    InProgress = 1,
-    Completed = 2,
-    Inactive = 3,
-    Archived = 4
+  Expired = 0,
+  InProgress = 1,
+  Completed = 2,
+  Inactive = 3,
+  Archived = 4
+}
+export enum ActionStatusMin {
+  Expired = 0,
+  InProgress = 1,
+  Completed = 2,
+  Archived = 3
 }
 
 export enum SizeType {

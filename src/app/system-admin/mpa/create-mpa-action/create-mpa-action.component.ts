@@ -108,6 +108,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
     newAction.level = level;
     newAction.category = GenericActionCategory[this.categorySelected];
     newAction.createdAt = currentDateTime;
+    newAction.isActive = true;
 
     this.af.database.list(this.path).push(newAction)
       .then(_ => {

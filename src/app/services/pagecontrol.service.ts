@@ -324,6 +324,12 @@ export class PageControlService {
   constructor(private af: AngularFire) {
   }
 
+  /**
+   *  PAGE ACCESS FUNCTIONALITY FOR REGULAR USERS.
+   *
+   *  This does not include UserTypes of NetworkAdmin or NetworkCountryAdmin
+   * =============================================================================================
+   */
   public auth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
     PageControlService.auth(this.af, ngUnsubscribe, route, router, func, null);
   }
@@ -384,7 +390,23 @@ export class PageControlService {
       }
     });
   }
+  // =============================================================================================
 
+
+  /**
+   *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
+   *
+   *  This includes all user types.
+   * =============================================================================================
+   */
+  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
+    // TODO: Implement this functionality
+  }
+
+
+
+
+  // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
     for (let x of type.urls) {
@@ -397,6 +419,8 @@ export class PageControlService {
     return false;
   }
 
+
+  // Build the complete URL path from the ActivatedRoute param
   private static buildEndUrl(route: ActivatedRoute) {
     let parts: string = "";
     route.url.forEach((segments: UrlSegment[]) => {
@@ -414,6 +438,9 @@ export class PageControlService {
     return parts;
   }
 
+  /**
+   *  Agency Modules configurator and matrix for quick-enabling the settings
+   */
   static agencyDisableMap(): Map<PermissionsAgency, PermissionsAgency[]> {
     let map: Map<PermissionsAgency, PermissionsAgency[]> = new Map<PermissionsAgency, PermissionsAgency[]>();
     map.set(PermissionsAgency.MinimumPreparedness, [PermissionsAgency.CHSPreparedness]);
@@ -443,7 +470,6 @@ export class PageControlService {
         fun(list);
       });
   }
-
   static agencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
     PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, uid, folder, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
@@ -486,7 +512,7 @@ export class PageControlService {
   }
 
   /**
-   * countryPermissionsMatrix
+   * Country Permissions Matrix for the Country Admin Permissions settings
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
     // TODO: Implement this

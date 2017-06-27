@@ -53,6 +53,8 @@ export class PreparednessComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  private backUrl: string = "preparedness/minimum";
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private subscriptions: RxHelper, private router: Router) {
     this.actionData = new Action();
     this.actionData.type = 2;
@@ -331,7 +333,6 @@ export class PreparednessComponent implements OnInit, OnDestroy {
     } else {
       this.allowedDurationList = this.durationTypeList;
     }
-
   }
 
   _convertDateToTimestamp(date: any) {
@@ -358,9 +359,5 @@ export class PreparednessComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
-  }
-
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 }
