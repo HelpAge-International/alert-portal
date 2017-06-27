@@ -114,6 +114,7 @@ import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
+import {NetworkLoginComponent} from "./network/network-login/network-login.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -315,7 +316,13 @@ const routes: Routes = [
      * Response plan exporting
      * */
     {path: 'export-start-fund', component: ExportStartFundComponent},
-    {path: 'export-proposal', component: ExportProposalComponent}
+    {path: 'export-proposal', component: ExportProposalComponent},
+
+
+    /**
+     * Network Login
+     */
+  {path: 'network-login', component: NetworkLoginComponent}
 
 ];
 
