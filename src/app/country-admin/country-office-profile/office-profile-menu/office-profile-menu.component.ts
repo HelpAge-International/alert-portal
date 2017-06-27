@@ -13,9 +13,23 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
   private countryID: string;
   private isViewing: boolean;
   private agencyId: string;
+  private activeMap = new Map<string, boolean>();
+  private officeTarget: string;
 
 
   constructor(private route: ActivatedRoute, private router: Router) {
+    this.initMenuActive();
+  }
+
+  private initMenuActive() {
+    this.activeMap.set("programme", true);
+    this.activeMap.set("officeCapacity", false);
+    this.activeMap.set("partners", false);
+    this.activeMap.set("equipment", false);
+    this.activeMap.set("coordination", false);
+    this.activeMap.set("stockCapacity", false);
+    this.activeMap.set("documents", false);
+    this.activeMap.set("contacts", false);
   }
 
   ngOnInit() {
@@ -30,6 +44,10 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
         }
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
+        }
+        if (params["officeTarget"]) {
+          this.officeTarget = params["officeTarget"];
+          this.handleMenuActive(this.officeTarget);
         }
       });
   }
@@ -126,6 +144,12 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
       "from": "officeProfile",
       "officeTarget": "contacts"
     }]);
+  }
+
+  private handleMenuActive(type: string) {
+    this.activeMap.forEach((v, k) => {
+      this.activeMap.set(k, k == type);
+    });
   }
 
 }

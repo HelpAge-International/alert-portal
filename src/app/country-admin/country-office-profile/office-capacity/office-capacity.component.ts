@@ -27,7 +27,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
   private responseStaffs: any[];
   private responseStaffsOrigin: any[];
-  private agencyId: string;
   private isViewing: boolean;
   private userMap = new Map<string, string>();
   private skillTechMap = new Map<string, string[]>();
@@ -109,31 +108,29 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.isViewing = params["isViewing"];
         }
         if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
+          this.agencyID = params["agencyId"];
         }
 
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
           this.UserType = userType;
-          if (this.agencyId) {
+
+          if (this.agencyID && this.countryID) {
             this._getTotalStaff();
-          } else {
-            this._getAgencyID().then(() => {
-              this._getTotalStaff();
-            });
-          }
-          if (this.countryID) {
             this.getStaff();
             this.getSurgeCapacity();
             this._getCountryOfficeCapacity().then(() => {
 
             });
           } else {
-            this._getCountryID().then(() => {
-              this.getStaff();
-              this.getSurgeCapacity();
-              this._getCountryOfficeCapacity().then(() => {
+            this._getAgencyID().then(() => {
+              this._getCountryID().then(() => {
+                this._getTotalStaff();
+                this.getStaff();
+                this.getSurgeCapacity();
+                this._getCountryOfficeCapacity().then(() => {
 
+                });
               });
             });
           }

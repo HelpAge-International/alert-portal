@@ -81,39 +81,73 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
       this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-        this.countryId = countryAdminUser.countryId;
+        if (this.countryId && this.agencyId) {
+          this._agencyService.getAgency(this.agencyId)
+            .map(agency => {
+              return agency as ModelAgency;
+            })
+            .subscribe(agency => {
+              this.agency = agency;
 
-        this._agencyService.getAgency(this.agencyId)
-          .map(agency => {
-            return agency as ModelAgency;
-          })
-          .subscribe(agency => {
-            this.agency = agency;
+              this._agencyService.getCountryOffice(this.countryId, this.agencyId)
+                .map(countryOffice => {
+                  let countryOfficeAddress = new CountryOfficeAddressModel();
+                  countryOfficeAddress.mapFromObject(countryOffice);
 
-            this._agencyService.getCountryOffice(this.countryId, this.agencyId)
-              .map(countryOffice => {
-                let countryOfficeAddress = new CountryOfficeAddressModel();
-                countryOfficeAddress.mapFromObject(countryOffice);
-
-                return countryOfficeAddress;
-              })
-              .subscribe(countryOfficeAddress => {
-                this.countryOfficeAddress = countryOfficeAddress;
-              })
-            this._contactService.getPointsOfContact(this.countryId)
-              .subscribe(pointsOfContact => {
-                this.pointsOfContact = pointsOfContact;
-                this.pointsOfContact.forEach(pointOfContact => {
-                  this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
-                    this.userPublicDetails[pointOfContact.staffMember] = user;
-                  });
-                  this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
-                    this.staffList[pointOfContact.staffMember] = staff;
+                  return countryOfficeAddress;
+                })
+                .subscribe(countryOfficeAddress => {
+                  this.countryOfficeAddress = countryOfficeAddress;
+                });
+              this._contactService.getPointsOfContact(this.countryId)
+                .subscribe(pointsOfContact => {
+                  this.pointsOfContact = pointsOfContact;
+                  this.pointsOfContact.forEach(pointOfContact => {
+                    this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
+                      this.userPublicDetails[pointOfContact.staffMember] = user;
+                    });
+                    this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
+                      this.staffList[pointOfContact.staffMember] = staff;
+                    });
                   });
                 });
-              });
-          });
+            });
+        } else {
+
+          this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+          this.countryId = countryAdminUser.countryId;
+
+          this._agencyService.getAgency(this.agencyId)
+            .map(agency => {
+              return agency as ModelAgency;
+            })
+            .subscribe(agency => {
+              this.agency = agency;
+
+              this._agencyService.getCountryOffice(this.countryId, this.agencyId)
+                .map(countryOffice => {
+                  let countryOfficeAddress = new CountryOfficeAddressModel();
+                  countryOfficeAddress.mapFromObject(countryOffice);
+
+                  return countryOfficeAddress;
+                })
+                .subscribe(countryOfficeAddress => {
+                  this.countryOfficeAddress = countryOfficeAddress;
+                });
+              this._contactService.getPointsOfContact(this.countryId)
+                .subscribe(pointsOfContact => {
+                  this.pointsOfContact = pointsOfContact;
+                  this.pointsOfContact.forEach(pointOfContact => {
+                    this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
+                      this.userPublicDetails[pointOfContact.staffMember] = user;
+                    });
+                    this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
+                      this.staffList[pointOfContact.staffMember] = staff;
+                    });
+                  });
+                });
+            });
+        }
       });
     })
   }

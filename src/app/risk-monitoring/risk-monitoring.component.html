@@ -1,5 +1,7 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</div>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -8,10 +10,11 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap--risk">
       <h1>{{"RISK_MONITORING.TITLE" | translate}}</h1>
-      <div class="btn btn-tertiary" routerLink="/risk-monitoring/create-alert">
+      <div *ngIf="!isViewing" class="btn btn-tertiary" routerLink="/risk-monitoring/create-alert">
         {{"RISK_MONITORING.MAIN_PAGE.CREATE_AN_ALERT" | translate}}
       </div>
-      <a routerLink="/risk-monitoring/add-hazard" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD" |
+      <a *ngIf="!isViewing" routerLink="/risk-monitoring/add-hazard" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
+        |
         translate}}</a>
     </div>
 
@@ -56,7 +59,7 @@
                 <a href="#" data-toggle="modal" data-target="#archiveHazard">
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
-                   <!--(click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>-->
+                <!--(click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>-->
                 <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
                   | translate}}</a>
               </div>
@@ -141,7 +144,8 @@
                       </div>
                       <!--TODO-->
                       <p>Last update: <strong>{{indicatorC.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
-                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM yyyy'}}</strong></p></div>
+                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM
+                        yyyy'}}</strong></p></div>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
@@ -353,7 +357,8 @@
                     </div>
                     <!-- TODO -->
                     <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
-                    <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong></p>
+                    <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
+                    </p>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">

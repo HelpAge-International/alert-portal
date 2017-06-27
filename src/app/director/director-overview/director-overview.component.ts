@@ -32,7 +32,9 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   private initMainMenu() {
     this.tabMap.set("officeProfile", true);
     this.tabMap.set("risk", false);
-    this.tabMap.set("preparedness", false);
+    this.tabMap.set("preparedness-min", false);
+    this.tabMap.set("preparedness-adv", false);
+    this.tabMap.set("preparedness-budget", false);
     this.tabMap.set("plan", false);
   }
 
@@ -46,6 +48,7 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
     this.officeMap.set("documents", false);
     this.officeMap.set("contacts", false);
   }
+
 
   ngOnInit() {
     this.route.params
@@ -92,8 +95,10 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   }
 
   menuSelection(menuName: string) {
+    console.log(menuName);
     this.tabMap.forEach((v, k) => {
       this.tabMap.set(k, k == menuName);
     });
   }
+
 }
