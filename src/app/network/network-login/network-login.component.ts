@@ -35,5 +35,4 @@ export class NetworkLoginComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

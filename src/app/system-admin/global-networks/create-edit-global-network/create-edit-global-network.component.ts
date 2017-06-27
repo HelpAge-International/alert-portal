@@ -7,7 +7,7 @@ import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
-import {ModelNetwork} from "../../../model/network.model";
+import {ModelNetwork, ModelNetworkOld} from "../../../model/network.model";
 import {UUID} from "../../../utils/UUID";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
@@ -39,17 +39,16 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   PERSON_TITLE = Constants.PERSON_TITLE;
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
 
-  private uid: string;
   private alerts = {};
   private secondApp: firebase.app.App;
   private networkId: string;
   private modelAdmin: ModelUserPublic;
   private preNetworkName: string;
   private preEmail: string;
-  private adminId: string;
+  private networkAdminId: string;
   private isUserExist: boolean;
-  private isAdminExist: boolean;
   private uidUserExist: string;
+  private systemAdminUid: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -58,7 +57,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
+      this.systemAdminUid = user.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
         console.log("load: " + params["id"]);
@@ -76,12 +75,11 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       .flatMap(network => {
         this.preNetworkName = network.name;
         this.networkName = network.name;
-        this.adminId = network.adminId;
-        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + network.adminId)
+        this.networkAdminId = network.networkAdminId;
+        return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + network.networkAdminId)
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
-        //create model for later use
         this.modelAdmin = new ModelUserPublic(user.firstName, user.lastName, user.title, user.email);
         this.modelAdmin.addressLine1 = user.addressLine1;
         this.modelAdmin.addressLine2 = user.addressLine2;
@@ -89,7 +87,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         this.modelAdmin.country = user.country;
         this.modelAdmin.city = user.city;
         this.modelAdmin.postCode = user.postCode;
-        //show data in ui
+
         this.adminTitle = user.title;
         this.adminFirstName = user.firstName;
         this.adminLastName = user.lastName;
@@ -150,34 +148,15 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
           return;
         }
         if (this.isEdit) {
-          this.editNetwork();
+          this.updateNetworkName();
+          this.saveNetworkAdminToFirebaseDB(this.networkAdminId, this.networkId);
         } else {
-          this.createNewAdmin();
+          this.saveNetworkToFirebase();
         }
       });
   }
 
-  private createNewAdmin() {
-    let tempPassword = Constants.TEMP_PASSWORD;
-    this.secondApp.auth().createUserWithEmailAndPassword(this.adminEmail, tempPassword).then(success => {
-      console.log("admin " + success.uid + " created successfully");
-      let uid: string = success.uid;
-      this.updateFirebase(uid);
-      this.secondApp.auth().signOut();
-    }, error => {
-      console.log(error.message);
-      if (error.message.includes("The email address is already in use by another account")) {
-        console.log("need to find email id");
-        this.findUidForExistingEmail(this.adminEmail);
-        return;
-      }
-
-      this.waringMessage = "GLOBAL.GENERAL_ERROR";
-      this.showAlert();
-    });
-  }
-
-  private findUidForExistingEmail(adminEmail: string) {
+  private findUidForExistingEmail(adminEmail: string, networkId: string) {
     this.af.database.list(Constants.APP_STATUS + "/userPublic/", {
       query: {
         orderByChild: "email",
@@ -191,35 +170,16 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
           this.uidUserExist = users[0].$key;
         }
       })
-      .flatMap(users => {
-        return this.af.database.list(Constants.APP_STATUS + "/adminNetwork/", {
-          query: {
-            orderByKey: true,
-            equalTo: users[0].$key
-          }
-        });
-      })
-      .do(admins => {
-        if (admins.length > 0) {
-          this.isAdminExist = true;
-        }
-      })
       .first()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(() => {
-        if (this.isUserExist && !this.isAdminExist) {
-          console.log("user exist but not network admin, proceed to update database");
-          this.updateFirebase(this.uidUserExist);
+        if (this.isUserExist) {
+          console.log("Existing user");
+          this.referenceNetwork(this.uidUserExist, networkId);
           return;
         }
         this.waringMessage = "GLOBAL.GENERAL_ERROR";
         this.showAlert();
-
-        // if (users.length > 0) {
-        //   this.isUserExist = true;
-        //   console.log("found key: "+users[0].$key);
-        //   this.updateFirebase(users[0].$key);
-        // }
       });
   }
 
@@ -258,109 +218,152 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateFirebase(uid: string) {
-    let networkData = {};
+  private saveNetworkToFirebase(){
+    /**
+     * Upload network data to /network/ node
+    **/
 
-    if (!this.isUserExist) {
-      //userPublic node
-      let newNetworkAdmin = new ModelUserPublic(this.adminFirstName, this.adminLastName,
-        this.adminTitle, this.adminEmail);
-      newNetworkAdmin.addressLine1 = this.adminAddressLine1 ? this.adminAddressLine1 : "";
-      newNetworkAdmin.addressLine2 = this.adminAddressLine2 ? this.adminAddressLine2 : "";
-      newNetworkAdmin.addressLine3 = this.adminAddressLine3 ? this.adminAddressLine3 : "";
-      newNetworkAdmin.city = this.adminCity ? this.adminCity : "";
-      newNetworkAdmin.country = this.adminCountry ? this.adminCountry : -1;
-      newNetworkAdmin.postCode = this.adminPostcode ? this.adminPostcode : "";
-      newNetworkAdmin.phone = "";
-      networkData["/userPublic/" + uid] = newNetworkAdmin;
+    let newNetwork = new ModelNetwork();
+    newNetwork.name = this.networkName;
+    newNetwork.isActive = true;
+    newNetwork.logoPath = "https://lh3.googleusercontent.com/-9ETHQFY_l6A/AAAAAAAAAAI/AAAAAAAAAAA/lN3q2-pbJHU/W40-H40/photo.jpg?sz=64";
 
-    }
+    let networkPath = Constants.APP_STATUS + '/network/';
+    this.af.database.list(networkPath).push(newNetwork)
+      .then((value) => {
+        console.log("New network created successfully");
+        this.addUserToFirebaseAuth(value.key);
+      });
+  }
 
-    //admin node
-    if (this.isEdit) {
-      networkData["/adminNetwork/" + uid + "/networkId/"] = this.networkId;
-    } else {
-      networkData["/adminNetwork/" + uid + "/networkId/"] = uid;
-    }
-    networkData["/adminNetwork/" + uid + "/systemAdmin/" + this.uid + "/"] = true;
+  private updateNetworkName(){
+    let networkPath = Constants.APP_STATUS + '/network/'+this.networkId;
+    this.af.database.object(networkPath+"/name").set(this.networkName).then(() => {
+      console.log("Updated network name");
+    });
+    this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
+  }
 
-    //group
-    networkData["/group/systemadmin/allusersgroup/" + uid + "/"] = true;
-    networkData["/group/systemadmin/allnetworkadminsgroup/" + uid + "/"] = true;
+  private addUserToFirebaseAuth(networkId: string) {
+    /**
+     * Saving new user into Firebase auth
+     */
 
-    //network node
-    if (this.isEdit) {
-      networkData["/network/" + this.networkId + "/adminId"] = uid;
-      networkData["/network/" + this.networkId + "/name"] = this.networkName;
-      //clean up previous admin
-      networkData["/userPublic/" + this.adminId] = null;
-      networkData["/adminNetwork/" + this.adminId] = null;
-      networkData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
-      networkData["/group/systemadmin/allnetworkadminsgroup/" + this.adminId] = null;
-    } else {
-      let network = new ModelNetwork();
-      network.adminId = uid;
-      network.name = this.networkName;
-      network.isActive = true;
-      network.logoPath = "https://lh3.googleusercontent.com/-9ETHQFY_l6A/AAAAAAAAAAI/AAAAAAAAAAA/lN3q2-pbJHU/W40-H40/photo.jpg?sz=64";
-      networkData["/network/" + uid + "/"] = network;
-    }
-
-    //actual update
-    this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
-      this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
+    let tempPassword = Constants.TEMP_PASSWORD;
+    this.secondApp.auth().createUserWithEmailAndPassword(this.adminEmail, tempPassword).then(x => {
+      console.log("User " + x.uid + " created successfully");
+      this.secondApp.auth().signOut();
+      this.saveNetworkAdminToFirebaseDB(x.uid, networkId);
     }, error => {
       console.log(error.message);
+      if (error.message.includes("The email address is already in use by another account")) {
+        console.log("Exisiting user. Reading email address.");
+        this.findUidForExistingEmail(this.adminEmail, networkId);
+        return;
+      }
       this.waringMessage = "GLOBAL.GENERAL_ERROR";
       this.showAlert();
-    })
+    });
+  }
+
+  private saveNetworkAdminToFirebaseDB(networkAdminId: string, networkId: string) {
+
+    /**
+     * Upload the network admin details to /userPublic
+     **/
+
+    let newNetworkAdmin = new ModelUserPublic(this.adminFirstName, this.adminLastName,
+      this.adminTitle, this.adminEmail);
+    newNetworkAdmin.addressLine1 = this.adminAddressLine1 ? this.adminAddressLine1 : "";
+    newNetworkAdmin.addressLine2 = this.adminAddressLine2 ? this.adminAddressLine2 : "";
+    newNetworkAdmin.addressLine3 = this.adminAddressLine3 ? this.adminAddressLine3 : "";
+    newNetworkAdmin.city = this.adminCity ? this.adminCity : "";
+    newNetworkAdmin.country = this.adminCountry ? this.adminCountry : -1;
+    newNetworkAdmin.postCode = this.adminPostcode ? this.adminPostcode : "";
+    newNetworkAdmin.phone = "";
+
+    let userPublicPath = Constants.APP_STATUS + '/userPublic/';
+    this.af.database.object(userPublicPath + "/" + networkAdminId).set(newNetworkAdmin)
+      .then(_ => {
+        console.log("New network admin added");
+        this.referenceNetwork(networkAdminId, networkId);
+      });
+  }
+
+  private referenceNetwork(networkAdminId: string, networkId: string){
+    console.log("Referencing new network");
+    this.networkId = networkId;
+
+    /**
+     * Updating network admin id in the network node
+     **/
+
+    let networkPath = Constants.APP_STATUS + '/network/'+networkId;
+    this.af.database.object(networkPath+"/networkAdminId").set(networkAdminId).then(() => {
+      console.log("Updated network node with network admin id");
+    });
+
+    /**
+     * Other referencing
+     **/
+
+    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/'+networkAdminId;
+    this.af.database.object(networkAdminPath, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((networkAdmin: any) => {
+          console.log(networkAdmin.val());
+          if(networkAdmin.val() != null){
+            console.log("Update existing node");
+            this.af.database.object(networkAdminPath + "/networkIds/" + this.networkId).set(true).then(() => {
+              console.log("Network ID added to existing user");
+            })
+          } else{
+            let newNetworkIds = {};
+            newNetworkIds[this.networkId] = true;
+            let systemAdminData = {};
+            systemAdminData[this.systemAdminUid] = true;
+            let newAdminData = {};
+
+            newAdminData["networkIds"] = newNetworkIds;
+            newAdminData["systemAdmin"] = systemAdminData;
+
+            this.af.database.object(networkAdminPath).set(newAdminData).then(() => {
+              console.log("New network ids pushed");
+
+            }).catch(error => {
+              console.log("New network ids push failed --> " + error.message);
+              console.log(error.message);
+              this.waringMessage = "GLOBAL.GENERAL_ERROR";
+              this.showAlert();
+            });
+          }
+
+          this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
+      });
   }
 
   private editNetwork() {
     console.log("edit network");
     if (this.adminEmail == this.preEmail) {
-      this.editNoEmailChange();
+      this.saveNetworkAdminToFirebaseDB(this.networkAdminId, this.networkId);
     } else {
       this.editWithNewEmail();
     }
   }
 
   private editWithNewEmail() {
-    console.log("editWithNewEmail");
-    this.createNewAdmin();
-  }
-
-  private editNoEmailChange() {
-    console.log("editNoEmailChange");
-    let networkData = {};
-
-    //network detail
-    networkData["/network/" + this.networkId + "/name"] = this.networkName;
-
-    //admin detail
-    networkData["/userPublic/" + this.adminId + "/title"] = this.adminTitle;
-    networkData["/userPublic/" + this.adminId + "/firstName"] = this.adminFirstName;
-    networkData["/userPublic/" + this.adminId + "/lastName"] = this.adminLastName;
-    networkData["/userPublic/" + this.adminId + "/email"] = this.adminEmail;
-    networkData["/userPublic/" + this.adminId + "/addressLine1"] = this.adminAddressLine1;
-    networkData["/userPublic/" + this.adminId + "/addressLine2"] = this.adminAddressLine2;
-    networkData["/userPublic/" + this.adminId + "/addressLine3"] = this.adminAddressLine3;
-    networkData["/userPublic/" + this.adminId + "/country"] = this.adminCountry;
-    networkData["/userPublic/" + this.adminId + "/city"] = this.adminCity;
-    networkData["/userPublic/" + this.adminId + "/postCode"] = this.adminPostcode;
-
-    this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
-      this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
-    }, error => {
-      console.log(error.message);
-      this.waringMessage = "GLOBAL.GENERAL_ERROR";
-      this.showAlert();
+    console.log("edit with new email");
+    let oldNetworkAdminId = this.networkAdminId;
+    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/'+oldNetworkAdminId;
+    this.af.database.object(networkAdminPath + "/networkIds/" + this.networkId).set(null).then(() => {
+      console.log("Network id deleted from old user");
     });
+
+    this.addUserToFirebaseAuth(this.networkId);
   }
 
   private refreshData() {
     this.isUserExist = false;
-    this.isAdminExist = false;
     this.uidUserExist = "";
   }
 }
