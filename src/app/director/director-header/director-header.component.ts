@@ -6,6 +6,8 @@ import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";
 import {UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { NotificationService } from "../../services/notification.service";
+import { MessageModel } from "../../model/message.model";
 
 @Component({
   selector: 'app-director-header',
@@ -15,31 +17,50 @@ import {PageControlService} from "../../services/pagecontrol.service";
 
 export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
-  private NODE_TO_CHECK: string;
+  private USER_TYPE: string;
 
   private uid: string;
   private agencyId: string;
+  private countryId: string;
   private agencyName: string = "";
 
   private firstName: string = "";
   private lastName: string = "";
 
   private userPaths = Constants.USER_PATHS;
+  
+  private unreadMessages: MessageModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private userService: UserService,
+              private _notificationService: NotificationService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.NODE_TO_CHECK = this.userPaths[userType];
-      if (this.NODE_TO_CHECK) {
+      this.USER_TYPE = this.userPaths[userType];
+      if (this.USER_TYPE) {
         this.getAgencyName();
       }
 
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+      this.userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
+            this.agencyId = agencyId;
+            this.userService.getCountryId(this.USER_TYPE, this.uid).subscribe(countryId => {
+              this.countryId = countryId;
+              this._notificationService.getCountryDirectorNotifications(this.uid, this.countryId, this.agencyId, true)
+                    .subscribe(unreadMessages => {
+                      this.unreadMessages = unreadMessages;
+                    });
+            }); 
+      });
+
+      this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           this.firstName = user.firstName;
@@ -64,7 +85,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
   private getAgencyName() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
           this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";

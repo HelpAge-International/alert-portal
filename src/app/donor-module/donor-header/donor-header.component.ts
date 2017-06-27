@@ -6,6 +6,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { MessageModel } from "../../model/message.model";
 
 @Component({
   selector: 'app-donor-header',
@@ -15,16 +16,19 @@ import {PageControlService} from "../../services/pagecontrol.service";
 
 export class DonorHeaderComponent implements OnInit {
 
-  private NODE_TO_CHECK: string;
+  private USER_TYPE: string;
 
   private uid: string;
   private agencyId: string;
+  private countryId: string;
   private agencyName: string = "";
 
   private firstName: string = "";
   private lastName: string = "";
 
   private userPaths = Constants.USER_PATHS;
+
+  private unreadMessages: MessageModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -34,11 +38,24 @@ export class DonorHeaderComponent implements OnInit {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.NODE_TO_CHECK = this.userPaths[userType];
-      if (this.NODE_TO_CHECK) {
+      this.USER_TYPE = this.userPaths[userType];
+      if (this.USER_TYPE) {
         this.getAgencyName();
       }
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+
+      this.userService.getAgencyId(this.USER_TYPE, this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyId => {
+            this.agencyId = agencyId;
+      });
+
+      this.userService.getCountryId(this.USER_TYPE, this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryId => {
+        this.countryId = countryId;
+      }); 
+
+      this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           this.firstName = user.firstName;
@@ -53,7 +70,7 @@ export class DonorHeaderComponent implements OnInit {
   }
 
   logout() {
-    console.log("logout");
+    console.log('countryId:' + this.countryId + ' userId:' + this.uid);
     this.af.auth.logout();
   }
 
@@ -63,7 +80,7 @@ export class DonorHeaderComponent implements OnInit {
 
   private getAgencyName() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
+      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
           this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";

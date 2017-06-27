@@ -180,6 +180,10 @@ import {ExportProposalComponent} from "./export-proposal/export-proposal.compone
 import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 import {OrderByPipe} from "./utils/pipes/orderby.pipe";
 import {PreparednessFilter} from "./utils/pipes/filter.pipe";
+import {NotificationBadgeComponent} from './commons/notification-badge/notification-badge.component';
+import {NotificationsComponent} from './commons/notifications/notifications.component';
+import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
+
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -356,7 +360,10 @@ const firebaseAuthConfig = {
     ReportingDatasheetComponent,
     ApplicationDatasheet,
     ExportProposalComponent,
-    AddEditSurgeCapacityComponent
+    AddEditSurgeCapacityComponent,
+    NotificationBadgeComponent,
+    NotificationsComponent,
+    DonorNotificationsComponent
   ],
   imports: [
     BrowserModule,

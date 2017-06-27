@@ -129,8 +129,8 @@ export class NotificationService {
    return this.getNotifications("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId, unreadOnly);
  }
 
- getDonorNotifications(countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/country/" + countryId + "/donor/" + countryId, unreadOnly);
+ getDonorNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
+   return this.getNotifications("/messageRef/country/" + countryId + "/donor/" + userId, unreadOnly);
  }
 
  getERTLeadsNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
@@ -157,8 +157,8 @@ setCountryAdminNotificationsAsRead(countryId, agencyId, unreadOnly = false){
    return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId);
  }
  
- setDonorNotificationsAsRead(countryId, agencyId, unreadOnly = false){
-   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/donor/" + countryId);
+ setDonorNotificationsAsRead(userId, countryId, agencyId, unreadOnly = false){
+   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/donor/" + userId);
  }
  
  setERTLeadsNotificationsAsRead(userId, countryId, agencyId, unreadOnly = false){
