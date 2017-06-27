@@ -13,7 +13,7 @@
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.TITLE_TEXT' | translate }}</h2>
-      <div class="col-sm-6 Right-aligned">
+      <div *ngIf="!isViewing" class="col-sm-6 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit && !isEdit"
                 (click)="editCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EDIT' | translate }}
