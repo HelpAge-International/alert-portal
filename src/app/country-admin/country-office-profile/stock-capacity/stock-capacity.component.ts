@@ -73,9 +73,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
 
-          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-            this.countryId = countryAdminUser.countryId;
-
+          if (this.countryId && this.agencyId) {
             this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
               this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
@@ -93,8 +91,31 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
                   this.newNote[stockCapacity.id].uploadedBy = this.uid;
                 });
               })
-            })
-          });
+            });
+          } else {
+            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+              this.countryId = countryAdminUser.countryId;
+
+              this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
+                this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
+                this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+
+                // Get notes
+                stockCapacities.forEach(stockCapacity => {
+                  const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                    .replace('{countryId}', this.countryId)
+                    .replace('{id}', stockCapacity.id);
+                  this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                    stockCapacity.notes = notes;
+
+                    // Create the new note model for partner organisation
+                    this.newNote[stockCapacity.id] = new NoteModel();
+                    this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                  });
+                })
+              });
+            });
+          }
         });
 
       });

@@ -12,7 +12,7 @@
 
         <div class="Header-title__wrap Spaced row">
             <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.TITLE_TEXT' | translate }}</h2>
-            <div class="col-sm-8 Right-aligned">
+            <div *ngIf="!isViewing" class="col-sm-8 Right-aligned">
                 <button type="button" class="btn btn-outline-primary text-uppercase"
                         *ngIf="canEdit && !isEdit"
                         (click)="editPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EDIT' | translate }}</button>
@@ -205,7 +205,7 @@
             <!--Partnership Details tooltip End-->
         </div>
         <button class="btn btn-outline-primary text-uppercase"
-                *ngIf="canEdit"
+                *ngIf="canEdit && !isViewing"
                 (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}</button>
     </div>
 </div>

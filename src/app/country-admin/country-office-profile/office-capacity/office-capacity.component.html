@@ -25,18 +25,18 @@
     <div *ngIf="!isEditingCapacity" class="row Spaced padding-left-two">
       <label class="col-sm-0 Spaced-above">Filter:</label>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" id="select1" (change)="filterData($event, 'office')">
+        <select class="form-control" (change)="filterData($event, 'office')">
           <option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" id="select1" (change)="filterData($event, 'sSkills')">
+        <select class="form-control" (change)="filterData($event, 'sSkills')">
           <option value="0">All Support Skills</option>
           <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" id="select1" (change)="filterData($event, 'tSkills')">
+        <select class="form-control" (change)="filterData($event, 'tSkills')">
           <option value="0">All Technical Skills</option>
           <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
         </select>

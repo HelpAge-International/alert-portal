@@ -1,21 +1,26 @@
-import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {
-  ActionLevel, ActionStatus, ActionType, AlertLevels, HazardScenario, SizeType, ThresholdName,
-  UserType, DocumentType, FileExtensionsEnding, AlertMessageType
+  ActionLevel,
+  ActionStatus,
+  ActionType,
+  AlertLevels,
+  AlertMessageType,
+  DocumentType,
+  FileExtensionsEnding,
+  HazardScenario,
+  SizeType,
+  UserType
 } from "../../utils/Enums";
-import {Subject} from 'rxjs';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-declare var jQuery: any;
-import {LocalStorageService} from 'angular-2-local-storage';
-import {MinimumPreparednessComponent} from '../minimum/minimum.component';
+import {Subject} from "rxjs";
+import {LocalStorageService} from "angular-2-local-storage";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
-import * as firebase from 'firebase';
+import * as firebase from "firebase";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {Response} from "@angular/http/http";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-advanced',
@@ -24,6 +29,7 @@ import {Response} from "@angular/http/http";
 })
 export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
+
   // IDs
   private uid: string;
   private userType: UserType;
@@ -31,6 +37,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
+  private isViewing: boolean;
 
   // Filters
   private filterStatus: number = -1;
@@ -95,6 +102,67 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["systemId"]) {
+          this.systemAdminId = params["systemId"];
+        }
+
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.userType = userType;
+          this.filterAssigned = this.uid;
+          this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+          this.getStaffDetails(this.uid);
+
+          if (this.agencyId && this.countryId && this.systemAdminId) {
+            this.init(this.countryId, true);
+            this.init(this.agencyId, false);
+            this.initStaff();
+            this.initDepartments();
+            this.initDocumentTypes();
+          } else {
+            // Get the country ID and load actions for country
+            this.userService.getCountryId(Constants.USER_PATHS[this.userType], user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryId => {
+                this.countryId = countryId;
+                this.init(this.countryId, true);
+                this.initStaff();
+              });
+            // Get the agency ID and load actions for agency
+            this.userService.getAgencyId(Constants.USER_PATHS[this.userType], user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((agencyId) => {
+                this.agencyId = agencyId;
+                this.init(this.agencyId, false);
+                this.initDepartments();
+              });
+            // Get the system admin ID and load actions for system admin. We need it for document type
+            this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((system) => {
+                this.systemAdminId = system;
+                this.initDocumentTypes();
+                // System Admin always has Minimum Prep actions
+                // this.init(this.systemAdminId, false);
+              });
+          }
+        });
+
+      });
+
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.userType = userType;
@@ -307,12 +375,14 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     this.assignActionId = action.id;
     this.assignActionCategoryUid = action.actionUid;
   }
+
   public selectedAssignToo(uid: string) {
     if (uid == "0" || uid == null) {
       return;
     }
     this.assignActionAsignee = uid;
   }
+
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined ||
@@ -416,6 +486,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         });
     }
   }
+
   // Adding a note to action
   protected addNoteToAction(note: PreparednessNotes, n: Actions) {
     let ran = false;
@@ -431,6 +502,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       n.notes.push(note);
     }
   }
+
   // Adding a note to firebase
   public addNote(action: Actions) {
     if (action.note == undefined) {
@@ -456,15 +528,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + '/note/' + action.id).push(note);
     }
   }
+
   // Edit mode
   protected editNote(note: PreparednessNotes, action: Actions) {
     action.noteId = note.id;
     action.note = note.content;
   }
+
   // Delete note
   protected deleteNote(note: PreparednessUser, action: Actions) {
     this.af.database.list(Constants.APP_STATUS + '/note/' + action.id + '/' + note.id).remove();
   }
+
   // Disable editing a note
   protected disableEditNote(action: Actions) {
     action.noteId = '';
@@ -560,10 +635,12 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.updateAction(action);
     }
   }
+
   // Close documents popover
   protected closePopover(action: Actions) {
     jQuery("#popover_content_" + action.id).toggle("collapse");
   }
+
   // Uploading a file to Firebase
   protected uploadFile(action: Actions, file) {
     let document = {
@@ -615,11 +692,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         console.log(err, 'You do not have access!');
       });
   }
+
   // Remove document
   protected purgeDocumentReference(action: Actions, docKey) {
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents/' + docKey).set(null);
     this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + docKey).set(null);
   }
+
   protected removeAttachment(action, file) {
     action.attachments = action.attachments.filter(attachment => {
       if (attachment.name == file.name && attachment.actionId == file.actionId)
@@ -628,6 +707,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       return true;
     });
   }
+
   // Delete document from firebase
   protected deleteDocument(action: Actions, docId: string) {
     let documentId = action.documents[docId].documentId;
@@ -635,6 +715,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + documentId).set(null);
     this.firebase.storage().ref().child('documents/' + action.actionUid + "/" + documentId).delete();
   }
+
   // Exporting all the documents
   protected exportAllDocuments(action: Actions) {
     this.documents = action.documents;
@@ -648,6 +729,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     jQuery("#export_documents").modal('show');
 
   }
+
   // Exporting all documents
   protected exportAllDocsFromModal(actionId: string) {
     let index = 0;
@@ -662,9 +744,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");
     }
   }
+
   protected closeExportModal() {
     jQuery("#export_documents").modal("hide");
   }
+
   // Export a single document
   protected exportDocument(action: Actions, docId: string) {
     console.log(docId);
@@ -679,6 +763,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     xhr.open('GET', doc.filePath);
     xhr.send();
   }
+
   // Create a download <a> element to emulate actual file downloads
   protected download(data, name, type) {
     var a = document.createElement("a");
@@ -688,10 +773,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     a.download = name;
     a.click();
   }
+
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
   }
-
 
 
   /**
