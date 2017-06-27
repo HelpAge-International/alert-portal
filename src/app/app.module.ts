@@ -183,6 +183,7 @@ import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 import {NotificationBadgeComponent} from './commons/notification-badge/notification-badge.component';
 import {NotificationsComponent} from './commons/notifications/notifications.component';
 import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
+import {DirectorNotificationsComponent} from './director/director-notifications/director-notifications.component';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -363,7 +364,8 @@ const firebaseAuthConfig = {
     AddEditSurgeCapacityComponent,
     NotificationBadgeComponent,
     NotificationsComponent,
-    DonorNotificationsComponent
+    DonorNotificationsComponent,
+    DirectorNotificationsComponent
   ],
   imports: [
     BrowserModule,

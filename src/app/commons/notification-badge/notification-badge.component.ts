@@ -69,6 +69,27 @@ export class NotificationBadgeComponent implements OnInit {
                 this.router.navigateByUrl("country-admin/country-notifications");
               });
         break;
+      case 'regionDirector':
+        this._notificationService.setRegionalDirectorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(() => {
+                this.router.navigateByUrl("director/director-notifications");
+              });
+        break;
+      case 'globalDirector':
+        this._notificationService.setGlobalDirectorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(() => {
+                this.router.navigateByUrl("director/director-notifications");
+              });
+        break;
+      case 'globalUser':
+        this._notificationService.setGlobalUserNotificationsAsRead(this._userId, this._countryId, this._agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(() => {
+                this.router.navigateByUrl("country-admin/country-notifications");
+              });
+        break;
       case 'ertLeader':
         this._notificationService.setERTLeadsNotificationsAsRead(this._userId, this._countryId, this._agencyId)
               .takeUntil(this.ngUnsubscribe)
@@ -94,7 +115,7 @@ export class NotificationBadgeComponent implements OnInit {
   }
 
   private getUnreadMessages(){
-    if( this._USER_TYPE && this._countryId && this._agencyId && this._userId) {
+    if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
       switch(this._USER_TYPE){
         case 'administratorCountry':
           this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId, true)
@@ -105,6 +126,27 @@ export class NotificationBadgeComponent implements OnInit {
           break;
         case 'countryDirector':
           this._notificationService.getCountryDirectorNotifications(this._userId, this._countryId, this._agencyId, true)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(unreadMessages => {
+                  this.unreadMessages = unreadMessages;
+                });
+          break;
+        case 'regionDirector':
+          this._notificationService.getRegionalDirectorNotifications(this._userId, this._countryId, this._agencyId, true)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(unreadMessages => {
+                  this.unreadMessages = unreadMessages;
+                });
+          break;
+        case 'globalDirector':
+          this._notificationService.getGlobalDirectorNotifications(this._userId, this._countryId, this._agencyId, true)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(unreadMessages => {
+                  this.unreadMessages = unreadMessages;
+                });
+          break;
+        case 'globalUser':
+          this._notificationService.getGlobalUserNotifications(this._userId, this._countryId, this._agencyId, true)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(unreadMessages => {
                   this.unreadMessages = unreadMessages;
@@ -123,7 +165,7 @@ export class NotificationBadgeComponent implements OnInit {
                   this.unreadMessages = unreadMessages;
                 });
           break;
-        case 'donor':      
+        case 'donor':
           this._notificationService.getDonorNotifications(this._userId, this._countryId, this._agencyId, true)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(unreadMessages => {

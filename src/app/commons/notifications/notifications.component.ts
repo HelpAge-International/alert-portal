@@ -93,7 +93,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   private getNotifications(){
-      if( this._USER_TYPE && this._countryId && this._agencyId && this._userId) {
+      if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
       switch(this._USER_TYPE){
         case 'administratorCountry':
           this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId)
@@ -104,6 +104,27 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           break;
         case 'countryDirector':
           this._notificationService.getCountryDirectorNotifications(this._userId, this._countryId, this._agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(messages => {
+                  this.messages = messages;
+                });
+          break;
+        case 'regionDirector':
+          this._notificationService.getRegionalDirectorNotifications(this._userId, this._countryId, this._agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(messages => {
+                  this.messages = messages;
+                });
+          break;
+        case 'globalDirector':
+          this._notificationService.getGlobalDirectorNotifications(this._userId, this._countryId, this._agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(messages => {
+                  this.messages = messages;
+                });
+          break;
+        case 'globalUser':
+          this._notificationService.getGlobalUserNotifications(this._userId, this._countryId, this._agencyId, true)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(messages => {
                   this.messages = messages;

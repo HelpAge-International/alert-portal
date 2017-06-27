@@ -21,7 +21,6 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private agencyId: string;
-  private countryId: string;
   private agencyName: string = "";
 
   private firstName: string = "";
@@ -51,13 +50,6 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
       this.userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
             this.agencyId = agencyId;
-            this.userService.getCountryId(this.USER_TYPE, this.uid).subscribe(countryId => {
-              this.countryId = countryId;
-              this._notificationService.getCountryDirectorNotifications(this.uid, this.countryId, this.agencyId, true)
-                    .subscribe(unreadMessages => {
-                      this.unreadMessages = unreadMessages;
-                    });
-            }); 
       });
 
       this.userService.getUser(this.uid)

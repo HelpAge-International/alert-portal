@@ -115,6 +115,7 @@ import { CountryNotificationsComponent } from "./country-admin/country-notificat
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
 import { DonorNotificationsComponent } from "./donor-module/donor-notifications/donor-notifications.component";
+import { DirectorNotificationsComponent } from "./director/director-notifications/director-notifications.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -301,6 +302,7 @@ const routes: Routes = [
     {path: 'director', component: DirectorComponent},
     {path: 'director/director-overview', component: DirectorOverviewComponent},
     {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
+    {path: 'director/director-notifications', component: DirectorNotificationsComponent},
 
     /**
      * Donor
