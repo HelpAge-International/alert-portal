@@ -70,10 +70,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
 
-          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-            this.countryId = countryAdminUser.countryId;
-            this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
-
+          if (this.countryId && this.agencyId) {
             this._agencyService.getAgency(this.agencyId)
               .map(agency => {
                 return agency as ModelAgency;
@@ -86,7 +83,25 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
                     this.coordinationArrangements = coordinationArrangements;
                   });
               });
-          });
+          } else {
+            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+              this.countryId = countryAdminUser.countryId;
+              this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+
+              this._agencyService.getAgency(this.agencyId)
+                .map(agency => {
+                  return agency as ModelAgency;
+                })
+                .subscribe(agency => {
+                  this.agency = agency;
+
+                  this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
+                    .subscribe(coordinationArrangements => {
+                      this.coordinationArrangements = coordinationArrangements;
+                    });
+                });
+            });
+          }
         });
 
       });
