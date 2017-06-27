@@ -40,7 +40,6 @@ export class CreateActionComponent implements OnInit, OnDestroy {
           // EDIT MODE
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.EDIT_CHS_ACTION';
           this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
-          console.log("Editing: " + params["id"]);
           this.chsUid = params["id"];
           this.editInitialDisable = true;
         }
@@ -70,7 +69,6 @@ export class CreateActionComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.chsUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        console.log(snap.val());
         if (snap.val() != null) {
           this.textArea = snap.val().task;
         }
@@ -86,7 +84,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
           type: ActionType.chs,
           level: ActionLevel.MPA
         };
-        this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.chsUid).set(updateObj).then(_ => {
+        this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.chsUid).update(updateObj).then(_ => {
           this.router.navigateByUrl("/system-admin/min-prep");
         });
       }

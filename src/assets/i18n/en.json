@@ -606,7 +606,8 @@
                 "EDIT_MPA_OR_APA": "MPA_OR_APA",
                 "NO_CATEGORY_ERROR": "Please select a category",
                 "ALL_CATEGORIES": "All categories",
-                "CATEGORY": "Category",
+              "CATEGORY": "Category",
+              "ACTION": "Action",
                 "CATEGORIES": {
                     "ALL": "All categories",
                     "CATEGORY0": "Category1",
