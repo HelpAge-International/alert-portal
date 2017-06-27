@@ -108,6 +108,7 @@ export class PreparednessComponent implements OnInit, OnDestroy {
     }
 
     if (!this.actionID) {
+      dataToSave.isActive = true;
       this.af.database.list(Constants.APP_STATUS + '/action/' + this.uid)
         .push(dataToSave)
         .then(() => {

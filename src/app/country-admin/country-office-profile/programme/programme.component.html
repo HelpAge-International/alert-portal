@@ -56,7 +56,7 @@
                 <div class="log_left p-3">
                     <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.NOTE" | translate}}</h3>
                     <hr class="d-inline-flex">
-                    <form *ngIf="!isViewing">
+                    <form>
                         <input type="text" placeholder="Add a log entry" name="log_{{logContent[m.key]}}" [(ngModel)]="logContent[m.key]">
                     </form>
 
@@ -71,9 +71,9 @@
                             <br>
                             <div class="row">
                                 <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
-                                <a href="#editNote" data-toggle="modal" data-target="#editNote" class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"GLOBAL.EDIT" | translate}}</a>
-                                <p href="#" class="padding-left-one">|</p>
-                                <a href="#deleteNote" data-toggle="modal" data-target="#deleteNote" class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"GLOBAL.DELETE" | translate}}</a>
+                                <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote" class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"GLOBAL.EDIT" | translate}}</a>
+                                <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
+                                <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote" class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"GLOBAL.DELETE" | translate}}</a>
                             </div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
 
                 <!--add Note button-->
                 <div class="add_log mt-auto p-2 text-right float-right">
-                    <div *ngIf="!isViewing" class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.ADD_NOTE" | translate}}</div><br>
+                    <div class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.ADD_NOTE" | translate}}</div><br>
                     <br><a href="#notesFor{{m.key}}" class="margin-left-two" data-toggle="collapse">{{"GLOBAL.CANCEL" | translate}}</a>
                 </div>
             </div>

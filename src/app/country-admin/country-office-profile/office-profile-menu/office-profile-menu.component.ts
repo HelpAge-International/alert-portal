@@ -45,17 +45,86 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
       "countryId": this.countryID,
       "isViewing": this.isViewing,
       "agencyId": this.agencyId,
-      "from": "officeProfile"
+      "from": "officeProfile",
+      "officeTarget": "programme"
     }]);
     // /director/director-overview;countryId=tPB9g8EwCLMceutAeAyWlYQUh8V2;isViewing=true;agencyId=qbyONHp4xqZy2eUw0kQHU7BAcov1;from=plan
   }
 
   viewingToOfficeCapacity() {
+    console.log("view office capacity");
     this.router.navigate(["/director/director-overview", {
       "countryId": this.countryID,
       "isViewing": this.isViewing,
       "agencyId": this.agencyId,
-      "from": "officeProfile"
+      "from": "officeProfile",
+      "officeTarget": "officeCapacity"
+    }]);
+  }
+
+  viewingToPartners() {
+    console.log("view partners");
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile",
+      "officeTarget": "partners"
+    }]);
+  }
+
+  viewingToEquipment() {
+    console.log("view partners");
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile",
+      "officeTarget": "equipment"
+    }]);
+  }
+
+  viewingToCoordination() {
+    console.log("view coordination");
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile",
+      "officeTarget": "coordination"
+    }]);
+  }
+
+  viewingToStockCapacity() {
+    console.log("view stock capacity");
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile",
+      "officeTarget": "stockCapacity"
+    }]);
+  }
+
+  viewingToDocuments() {
+    console.log("view documents");
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile",
+      "officeTarget": "documents"
+    }]);
+  }
+
+  viewingToContacts() {
+    console.log("view contacts");
+    this.router.navigate(["/director/director-overview", {
+      "countryId": this.countryID,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "officeProfile",
+      "officeTarget": "contacts"
     }]);
   }
 

@@ -20,4 +20,12 @@ input.ng-touched.ng-valid {border:solid green 2px;}
     display: inline-block;
     border-radius: 50%;
     margin-right: 0.5em;
-    border: solid 2px transparent;}
+    border: solid 2px transparent;
+}
+
+.Black-Background-Hazard-Icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #000;
+}

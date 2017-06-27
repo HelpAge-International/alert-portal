@@ -1,6 +1,8 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
+<div class="Alert-error" [hidden]="hideWarning">{{warningMessage | translate}}</div>
+
 <div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -173,10 +175,10 @@
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
                   </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
+                  <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                       <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                  <!--</div>-->
                 </div>
                 <div class="row">
                   <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -345,10 +347,7 @@
                   <div class="col-md-2 col-sm-2"
                        [ngClass]="
                                          {
-                                         'text-danger': action.actionStatus == actionStatus.Expired,
-                                         'text-warning': action.actionStatus == actionStatus.InProgress,
-                                         'text-success': action.actionStatus == actionStatus.Completed,
-                                         'text-muted': action.actionStatus == actionStatus.Inactive
+                                         'text-danger': true
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -356,13 +355,11 @@
                                             <i class="fa fa-stack-1x fa-inverse"
                                                [ngClass]="
                                                {
-                                               'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
-                                               'fa-check': action.actionStatus == actionStatus.Completed,
-                                               'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
+                                               'fa-times': true
                                                }
                                                "></i>
                                         </span>
-                    {{ACTION_STATUS[action.actionStatus] | translate}}
+                    {{ACTION_STATUS[0] | translate}}
                   </div>
                   <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 
@@ -391,17 +388,18 @@
 
                   </div>
                   <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
-                    <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
+                    <a data-toggle="modal" data-target="#leadAgencySelection"
                        aria-expanded="false" aria-controls="popover_content"
-                       class="btn btn-outline-primary btn-block ">Assign this action</a>
+                       class="btn btn-outline-primary btn-block" (click)="assignActionDialog(action)">Assign this
+                      action</a>
 
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
                   </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
+                  <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                       <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                  <!--</div>-->
                 </div>
                 <div class="row">
                   <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -572,10 +570,10 @@
                     <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
                       action</a>
                   </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
+                  <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                       <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                  <!--</div>-->
                 </div>
                 <div class="row">
                   <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -676,3 +674,37 @@
   </div>
 
 </div><!-- end #wrap -->
+
+<!--TODO assign staff modal-->
+<!--Lead Agency Selection Modal (first time agency is invited)-->
+<div class="modal fade" id="leadAgencySelection" tabindex="-1" role="dialog" aria-labelledby="leadAgencySelection"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">Assign this action</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <div class="col-sm-12">
+          <select name="" id="" class="form-control" #assignee (change)="selectAssignee(assignee.value)">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let staff of assignedToUsers" [value]="staff.$key">{{staff.fullName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row Right-aligned Spaced col-sm-12">
+          <a class="col-sm-9 margin-top-one"
+             (click)="closeModal()">Cancel</a>
+          <button
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignee()">Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

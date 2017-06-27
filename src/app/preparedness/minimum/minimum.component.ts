@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType} from "../../utils/Enums";
+import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType, UserType} from "../../utils/Enums";
 import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -18,7 +18,10 @@ declare var jQuery: any;
   styleUrls: ['./minimum.component.css']
 })
 export class MinimumPreparednessComponent implements OnInit, OnDestroy {
+  private assigneeId: string;
   private UserType: number;
+  private hideWarning = true;
+  private warningMessage: string;
 
   ACTION_STATUS = Constants.ACTION_STATUS;
   ACTION_LEVEL = Constants.ACTION_LEVEL;
@@ -65,6 +68,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   firebase: any;
 
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
+  private actionToAssign: any;
 
 
   constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
@@ -99,145 +103,154 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.UserType = userType;
 
-      this.obsCountryId
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(
-          value => {
-            this.assignedToUsers = [];
-            this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+        .subscribe(countryId => {
+          this.countryId = countryId;
+          this.initData();
+        });
+    });
+  }
+
+  private initData() {
+    this.obsCountryId
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(
+        value => {
+          this.assignedToUsers = [];
+          this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(staff => {
+              this.assignedToUsers = staff.map(member => {
+                let userId = member.$key;
+                this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(_ => {
+                    if (_.$exists()) {
+                      member.fullName = _.firstName + " " + _.lastName;
+                    }
+                    else {
+                      member.fullName = "";
+                    }
+                  });
+
+                return member;
+              });
+
+            });
+        },
+        error => console.log(error),
+        () => console.log("finished")
+      );
+
+    if (!this.countrySelected)
+      this.af.database.object(Constants.APP_STATUS + '/' + Constants.USER_PATHS[this.UserType] + '/' + this.uid + '/countryId')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(country => {
+          if (country.$exists()) {
+            this.countryId = country.$value;
+
+            this.obsCountryId.next(this.countryId);
+          }
+        });
+
+
+    this.assignedToUserKey = this.uid;
+    this.af.database.list(Constants.APP_STATUS + '/action/')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(_ => {
+        this.actions = [];
+        _.map(actions => {
+          let agencyId = actions.$key
+          Object.keys(actions).map(action => {
+            if (typeof actions[action] !== 'object')
+              return;
+
+            actions[action].agencyId = agencyId;
+            actions[action].key = action;
+            actions[action].docsCount = 0;
+            //TODO "assignee??"
+            // let userKey = actions[action].assignee;
+            let userKey = actions[action].asignee;
+            // console.log("user key: "+userKey);
+            // console.log(actions[action]);
+            try {
+              actions[action].docsCount = Object.keys(actions[action].documents).length;
+
+              Object.keys(actions[action].documents).map(docId => {
+                this.af.database.object(Constants.APP_STATUS + '/document/' + agencyId + '/' + docId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(_ => {
+                    actions[action].documents[docId] = _;
+                  });
+              });
+            } catch (e) {
+              console.log('No docs');
+            }
+
+
+            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(staff => {
-                this.assignedToUsers = staff.map(member => {
-                  let userId = member.$key;
-                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
+              .subscribe(_ => {
+                if (_.$exists()) {
+                  this.users[userKey] = _.firstName + " " + _.lastName;
+                  actions[action].assigned = true;
+                  // console.log("user: "+this.users[userKey]);
+                }
+                else {
+                  this.users[userKey] = "Unassigned";//TODO translate somehow
+                  actions[action].assigned = false;
+                }
+
+              });
+
+            this.af.database.list(Constants.APP_STATUS + '/note/' + action, {
+              query: {
+                orderByChild: "time"
+              }
+            })
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                actions[action].notesCount = _.length;
+                actions[action].notes = _;
+                actions[action].notes.map(note => {
+                  let uploadByUser = note.uploadBy;
+                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadByUser)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(_ => {
                       if (_.$exists()) {
-                        member.fullName = _.firstName + " " + _.lastName;
+                        note.uploadByUser = _.firstName + " " + _.lastName;
                       }
                       else {
-                        member.fullName = "";
+                        note.uploadByUser = "N/A";
                       }
                     });
 
-                  return member;
+                  return note;
                 });
 
               });
-          },
-          error => console.log(error),
-          () => console.log("finished")
-        );
 
-      if (!this.countrySelected)
-        this.af.database.object(Constants.APP_STATUS + '/' + Constants.USER_PATHS[this.UserType] + '/' + this.uid + '/countryId')
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(country => {
-            if (country.$exists()) {
-              this.countryId = country.$value;
 
-              this.obsCountryId.next(this.countryId);
+            if (actions[action].level == this.actionLevel && actions[action].agencyId == this.countryId) {
+              this.actions.push(actions[action]);
             }
           });
-
-
-      this.assignedToUserKey = this.uid;
-      this.af.database.list(Constants.APP_STATUS + '/action/')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(_ => {
-          this.actions = [];
-          _.map(actions => {
-            let agencyId = actions.$key
-            Object.keys(actions).map(action => {
-              if (typeof actions[action] !== 'object')
-                return;
-
-              actions[action].agencyId = agencyId;
-              actions[action].key = action;
-              actions[action].docsCount = 0;
-              //TODO "assignee??"
-              // let userKey = actions[action].assignee;
-              let userKey = actions[action].asignee;
-              // console.log("user key: "+userKey);
-              // console.log(actions[action]);
-              try {
-                actions[action].docsCount = Object.keys(actions[action].documents).length;
-
-                Object.keys(actions[action].documents).map(docId => {
-                  this.af.database.object(Constants.APP_STATUS + '/document/' + agencyId + '/' + docId)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(_ => {
-                      actions[action].documents[docId] = _;
-                    });
-                });
-              } catch (e) {
-                console.log('No docs');
-              }
-
-
-              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(_ => {
-                  if (_.$exists()) {
-                    this.users[userKey] = _.firstName + " " + _.lastName;
-                    actions[action].assigned = true;
-                    // console.log("user: "+this.users[userKey]);
-                  }
-                  else {
-                    this.users[userKey] = "Unassigned";//TODO translate somehow
-                    actions[action].assigned = false;
-                  }
-
-                });
-
-              this.af.database.list(Constants.APP_STATUS + '/note/' + action, {
-                query: {
-                  orderByChild: "time"
-                }
-              })
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(_ => {
-                  actions[action].notesCount = _.length;
-                  actions[action].notes = _;
-                  actions[action].notes.map(note => {
-                    let uploadByUser = note.uploadBy;
-                    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadByUser)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(_ => {
-                        if (_.$exists()) {
-                          note.uploadByUser = _.firstName + " " + _.lastName;
-                        }
-                        else {
-                          note.uploadByUser = "N/A";
-                        }
-                      });
-
-                    return note;
-                  });
-
-                });
-
-
-              if (actions[action].level == this.actionLevel) {
-                this.actions.push(actions[action]);
-              }
-            });
-          });
         });
+      });
 
-      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(_ => {
-          if (_.$exists()) {
-            //console.log(_);
-            this.departments = Object.keys(_);
-          }
-          else {
-            this.departments = [];
-          }
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(_ => {
+        if (_.$exists()) {
+          //console.log(_);
+          this.departments = Object.keys(_);
+        }
+        else {
+          this.departments = [];
+        }
 
-        });
-    });
+      });
   }
 
 
@@ -380,6 +393,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected fileChange(event, action) {
 
+    console.log("File changed!");
+    console.log(event);
+    console.log(action);
     if (event.target.files.length > 0) {
       let file = event.target.files[0];
 
@@ -413,24 +429,63 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   protected completeAction(action) {
-    if (action.attachments != undefined) {
-      if (action.attachments.length > 0) {
-        action.attachments.map(file => {
-          this.uploadFile(action, file);
-        });
-
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
-          .update({
-            actionStatus: ActionStatus.Completed,
-            isCompleted: true
+    console.log("Completing the action");
+    this.af.database.object(Constants.APP_STATUS + "/action/" + action.agencyId + "/" + action.key)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        console.log(snap);
+        if (snap.requireDoc && action.attachments != undefined && action.attachments.length > 0) {
+          // Required Document and there's one attaches
+          action.attachments.map(file => {
+            this.uploadFile(action, file);
           });
 
-        this.addNote(action);
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
+            .update({
+              actionStatus: ActionStatus.Completed,
+              isCompleted: true
+            });
 
-      } else {
-        //TODO please attach documents popup
-      }
-    }
+          this.addNote(action);
+        }
+        else if (!snap.requireDoc) {
+          // Doesn't require doc, actions may or may not contain shit
+          if (action.attachments != null) {
+            action.attachments.map(file => {
+              this.uploadFile(action, file);
+            });
+          }
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
+            .update({
+              actionStatus: ActionStatus.Completed,
+              isCompleted: true
+            });
+
+          this.addNote(action);
+        }
+        else {
+          // TODO: Documents attach popup
+        }
+      });
+    // if (action.attachments != undefined) {
+    //   if (action.attachments.length > 0) {
+    //     action.attachments.map(file => {
+    //       this.uploadFile(action, file);
+    //     });
+    //
+    //     this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyId + '/' + action.key)
+    //       .update({
+    //         actionStatus: ActionStatus.Completed,
+    //         isCompleted: true
+    //       });
+    //
+    //     this.addNote(action);
+    //
+    //   } else {
+    //     //TODO please attach documents popup
+    //   }
+    // }
   }
 
   protected uploadFile(action, file) {
@@ -443,7 +498,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       title: file.name, //TODO, what's with the title?
       time: firebase.database.ServerValue.TIMESTAMP,
       uploadedBy: this.uid
-
     };
 
     this.af.database.list(Constants.APP_STATUS + '/document/' + action.agencyId).push(document)
@@ -494,6 +548,35 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected copyAction(action) {
     this.storage.set('selectedAction', action);
     this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
+
+  assignActionDialog(action) {
+    console.log("assign action");
+    console.log(action);
+    this.actionToAssign = action;
+  }
+
+  closeModal() {
+    console.log("hide modal");
+    jQuery("#leadAgencySelection").modal('hide');
+  }
+
+  selectAssignee(assigneeId) {
+    console.log(assigneeId);
+    this.assigneeId = assigneeId;
+  }
+
+  saveAssignee() {
+    if (this.actionToAssign && this.assigneeId) {
+      //TODO need double check
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.actionToAssign.agencyId + "/" + this.actionToAssign.key + "/asignee").set(this.assigneeId).then(() => {
+        jQuery("#leadAgencySelection").modal('hide');
+      }, error => {
+        console.log(error.message);
+      });
+    } else {
+      console.log("need to select a staff!!");
+    }
   }
 
 }

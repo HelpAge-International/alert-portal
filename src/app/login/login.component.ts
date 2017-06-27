@@ -29,6 +29,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private mErrorCodes: Map<string, string> = new Map<string, string>();
 
+  // Temporary values for the login user type.
+  //  - Won't be used for anything else
+  private mCheckLoginDisallowCountryId: string;
+  private mCheckLoginDisallowFirstLogin: boolean;
+
   constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
     this.mErrorCodes.set("password", "LOGIN.INCORRECT_PASSWORD");
     this.mErrorCodes.set("no user record", "LOGIN.INCORRECT_EMAIL");
@@ -70,16 +75,21 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           // Fire off list of calls to check if the user id exists under any one of the nodes
           // - If all of these fail, the results are aggregated in loginAllCallsFinished();
-          this.loginCheckingFirstLoginValue(success.uid, "administratorCountry", Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password');
+          this.loginCheckingDeactivated(success.uid, "administratorCountry", Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
+            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
           this.loginChecking(success.uid, "system", Constants.SYSTEM_ADMIN_HOME);
-          this.loginChecking(success.uid, "countryDirector", Constants.COUNTRY_ADMIN_HOME);
+          this.loginCheckingDeactivated(success.uid, "countryDirector", Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
           this.loginChecking(success.uid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
           this.loginChecking(success.uid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
           this.loginChecking(success.uid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
           this.loginChecking(success.uid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-          this.loginChecking(success.uid, "ertLeader", Constants.COUNTRY_ADMIN_HOME);
-          this.loginChecking(success.uid, "ert", Constants.COUNTRY_ADMIN_HOME);
-          this.loginCheckingFirstLoginValue(success.uid, "donor", Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password');
+          this.loginCheckingDeactivated(success.uid, "ertLeader", Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
+          this.loginCheckingDeactivated(success.uid, "ert", Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
+          this.loginCheckingDeactivated(success.uid, "donor", Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
+            () => { this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED"); });
           this.loginCheckingAgency(success.uid, "administratorAgency", Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
         })
 
@@ -132,6 +142,45 @@ export class LoginComponent implements OnInit, OnDestroy {
           // It's not this user type. Notify the finish method
           this.loginAllCallsFinished();
         }
+      });
+  }
+  private loginCheckingDeactivated(successUid: string, userNodeName: string, directToIfSuccess: string, directToIfFirst, disallowed: () => void) {
+    this.loginCheckingCustom(successUid, userNodeName,
+      (snapshot) => {
+          this.mCheckLoginDisallowCountryId = snapshot.countryId;
+          let x = "";
+          for (let s in snapshot.agencyAdmin) {
+            x = s;
+          }
+          return this.af.database.object(Constants.APP_STATUS + "/agency/" + x, {preserveSnapshot: true})
+            .map((snap) => {
+              if (snap.val() != null) {
+                return snap.val().adminId;
+              }
+              else {
+                this.showAlert(true, "LOGIN.AGENCY_DOESNT_EXIST");
+              }
+            })
+            .flatMap((s) => {
+              return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + s + "/" + this.mCheckLoginDisallowCountryId, {preserveSnapshot: true});
+            })
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((snaps) => {
+              if (snaps.val() != null) {
+                if (snaps.val().isActive) {
+                  this.router.navigateByUrl(directToIfSuccess);
+                }
+                else {
+                  disallowed();
+                }
+              }
+              else {
+                this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
+              }
+            });
+      },
+      (firstLoginSnapshot) => {
+        this.router.navigateByUrl(directToIfFirst);
       });
   }
   private loginCheckingCustom(successUid: string, userNodeName: string, success: (snap) => void, firstLogin: (snap) => void) {

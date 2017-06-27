@@ -6,7 +6,14 @@
   </div>
 </div>
 <app-view-country-menu (onMenuSelected)="menuSelection($event)"></app-view-country-menu>
-<app-country-office-programme *ngIf="tabMap.get('officeProfile')"></app-country-office-programme>
+<app-country-office-programme *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-country-office-programme>
+<app-country-office-capacity *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-country-office-capacity>
+<app-country-office-partners *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-country-office-partners>
+<app-country-office-equipment *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-country-office-equipment>
+<app-country-office-coordination *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-country-office-coordination>
+<app-country-office-stock-capacity *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-country-office-stock-capacity>
+<app-country-office-documents *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-country-office-documents>
+<app-country-office-contacts *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-country-office-contacts>
 <app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
 <app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
                     [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId"></app-response-plans>

@@ -20,6 +20,7 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
   private successMessage: string = "SYSTEM_ADMIN.SETTING.SETTING_SAVED";
   private isSaved: boolean = false;
 
+  // TODO: Change this to use FileExtensions in Enums
   private isPdf: boolean;
   private isDoc: boolean;
   private isDocx: boolean;

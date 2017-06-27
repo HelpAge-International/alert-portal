@@ -364,8 +364,8 @@
 
   <tr>
     <td colspan="9">
-      <ol *ngIf="responsePlan.vulnerableGroups">
-        <li *ngFor="let group of responsePlan.vulnerableGroups">{{group}}</li>
+      <ol *ngIf="vulnerableGroupsToShow">
+        <li *ngFor="let group of vulnerableGroupsToShow">{{group.name}}</li>
       </ol>
     </td>
   </tr>

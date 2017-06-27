@@ -1,16 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../utils/Constants';
-import { AlertMessageType, ResponsePlanSectors } from '../../../utils/Enums';
-import { RxHelper } from '../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-
-import { AlertMessageModel } from '../../../model/alert-message.model';
-import { DisplayError } from "../../../errors/display.error";
-import { UserService } from "../../../services/user.service";
-import { AgencyService } from "../../../services/agency-service.service";
-import { ModelAgency } from "../../../model/agency.model";
-import { CoordinationArrangementService } from "../../../services/coordination-arrangement.service";
-import { CoordinationArrangementModel } from "../../../model/coordination-arrangement.model";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, ResponsePlanSectors} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {UserService} from "../../../services/user.service";
+import {AgencyService} from "../../../services/agency-service.service";
+import {ModelAgency} from "../../../model/agency.model";
+import {CoordinationArrangementService} from "../../../services/coordination-arrangement.service";
+import {CoordinationArrangementModel} from "../../../model/coordination-arrangement.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -28,6 +25,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   private uid: string;
   private countryId: string;
   private agencyId: string;
+  private isViewing: boolean;
   private agency: ModelAgency;
 
   // Constants and enums
@@ -46,7 +44,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
               private _agencyService: AgencyService,
               private _coordinationArrangementService: CoordinationArrangementService,
               private router: Router,
-              private route: ActivatedRoute){
+              private route: ActivatedRoute) {
   }
 
   ngOnDestroy() {
@@ -55,14 +53,28 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
-        this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-        this._agencyService.getAgency(this.agencyId)
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+
+          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+            this.countryId = countryAdminUser.countryId;
+            this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+
+            this._agencyService.getAgency(this.agencyId)
               .map(agency => {
                 return agency as ModelAgency;
               })
@@ -70,10 +82,16 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
                 this.agency = agency;
 
                 this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                        .subscribe(coordinationArrangements => { this.coordinationArrangements = coordinationArrangements; });
+                  .subscribe(coordinationArrangements => {
+                    this.coordinationArrangements = coordinationArrangements;
+                  });
               });
+          });
         });
-    });
+
+      });
+
+
   }
 
   goBack() {
@@ -103,12 +121,12 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
     return staffName;
   }
+
   addEditCoordinationArrangement(coordinationArrangementId?: string) {
-    if(coordinationArrangementId)
-    {
+    if (coordinationArrangementId) {
       this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
-                                  {id: coordinationArrangementId}], {skipLocationChange: true});
-    }else{
+        {id: coordinationArrangementId}], {skipLocationChange: true});
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/coordination/add-edit-coordination');
     }
   }

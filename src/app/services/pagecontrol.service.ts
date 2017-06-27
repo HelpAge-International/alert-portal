@@ -33,12 +33,15 @@ export class AgencyModulesEnabled {
   public countryOffice: boolean;
 
   constructor() {
-    this.minimumPreparedness = false;
-    this.advancedPreparedness = false;
-    this.chsPreparedness = false;
-    this.riskMonitoring = false;
-    this.responsePlan = false;
-    this.countryOffice = false;
+    this.all(false);
+  }
+  all(type: boolean) {
+    this.minimumPreparedness = type;
+    this.advancedPreparedness = type;
+    this.chsPreparedness = type;
+    this.riskMonitoring = type;
+    this.responsePlan = type;
+    this.countryOffice = type;
   }
 }
 
@@ -50,6 +53,98 @@ export class AgencyPermissionObject {
   constructor(perm: PermissionsAgency, urls: string[]) {
     this.permission = perm;
     this.urls = urls;
+  }
+}
+
+export class CountryPermissionsMatrix {
+  public chsActions: {
+    Assign: boolean
+  };
+  public mandatedMPA: {
+    Assign: boolean;
+  };
+  public customMPA: {
+    Assign: boolean,
+    Edit: boolean,
+    New: boolean,
+    Delete: boolean
+  };
+  public mandatedAPA: {
+    Assign: boolean
+  };
+  public customAPA: {
+    Assign: boolean,
+    Edit: boolean,
+    New: boolean,
+    Delete: boolean
+  };
+  public notes: {
+    New: boolean,
+    Edit: boolean,
+    Delete: boolean
+  };
+  public countryContacts: {
+    New: boolean,
+    Edit: boolean,
+    Delete: boolean
+  };
+  public crossCountrySameAgency: {
+    AddNote: boolean,
+    CopyAction: boolean,
+    Download: boolean,
+    Edit: boolean,
+    View: boolean,
+    ViewContacts: boolean
+  };
+  public interAgencyCrossCountry: {
+    AddNote: boolean,
+    CopyAction: boolean,
+    Download: boolean,
+    Edit: boolean,
+    View: boolean,
+    ViewContacts: boolean
+  };
+  public other: {
+    DownloadDocuments: boolean,
+    UploadDocuments: boolean
+  };
+
+  constructor() {
+    this.all(false);
+  }
+
+  all(type: boolean) {
+    this.chsActions.Assign = type;
+    this.mandatedMPA.Assign = type;
+    this.customMPA.Assign = type;
+    this.customMPA.Edit = type;
+    this.customMPA.New = type;
+    this.customMPA.Delete = type;
+    this.mandatedAPA.Assign = type;
+    this.customAPA.Assign = type;
+    this.customAPA.Edit = type;
+    this.customAPA.New = type;
+    this.customAPA.Delete = type;
+    this.notes.Delete = type;
+    this.notes.Edit = type;
+    this.notes.New = type;
+    this.countryContacts.New = type;
+    this.countryContacts.Edit = type;
+    this.countryContacts.Delete = type;
+    this.crossCountrySameAgency.Edit = type;
+    this.crossCountrySameAgency.AddNote = type;
+    this.crossCountrySameAgency.Download = type;
+    this.crossCountrySameAgency.View = type;
+    this.crossCountrySameAgency.ViewContacts = type;
+    this.crossCountrySameAgency.CopyAction = type;
+    this.interAgencyCrossCountry.Edit = type;
+    this.interAgencyCrossCountry.AddNote = type;
+    this.interAgencyCrossCountry.Download = type;
+    this.interAgencyCrossCountry.View = type;
+    this.interAgencyCrossCountry.ViewContacts = type;
+    this.interAgencyCrossCountry.CopyAction = type;
+    this.other.DownloadDocuments = type;
+    this.other.UploadDocuments = type;
   }
 }
 
@@ -88,7 +183,7 @@ export class PageControlService {
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -98,7 +193,7 @@ export class PageControlService {
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -108,7 +203,7 @@ export class PageControlService {
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -131,11 +226,12 @@ export class PageControlService {
     "dashboard*",
     "preparedness*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "country-admin*",
     "response-plans*",
     "risk-monitoring*",
     "export-start-fund*",
+    "export-proposal*"
   ]);
   public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", []);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
@@ -176,7 +272,8 @@ export class PageControlService {
   public static ModuleCountryOffice = new AgencyPermissionObject(PermissionsAgency.CountryOffice, [
     "country-admin/country-office-profile/equipment/add-edit-equipment",
     "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
-    "country-admin/country-office-profile/equipment"
+    "country-admin/country-office-profile/equipment",
+    "response-plans/add-partner-organisation;fromResponsePlans=true"
   ]);
   public static ModuleRiskMonitoring = new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
     "risk-monitoring",
@@ -386,5 +483,12 @@ export class PageControlService {
       }
     }
     return false;
+  }
+
+  /**
+   * countryPermissionsMatrix
+   */
+  static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
+    // TODO: Implement this
   }
 }

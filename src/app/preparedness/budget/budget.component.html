@@ -16,12 +16,10 @@
                 <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
                 <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
             </div>
-            <div class="row Line-row text-bold align-items-center" *ngFor="let department of departments" name="department">
-                <div class="col-sm-4 col-4">{{department}}</div>
+            <div class="row Line-row  align-items-center" *ngFor="let department of departments" name="department">
+                <div class="col-sm-4 col-4 text-bold">{{department}}</div>
                 <div class="col-sm-3 col-4">
-                    <input type="text" class="form-control"
-                           (input)="setTotal('MPA')" (keypress)="_keyPress($event)"
-                           [(ngModel)]="minBudget[department] == undefined || minBudget[department].value == undefined ? '' : minBudget[department].value">
+                    <p>{{minBudget[department].value}}</p>
                 </div>
                 <div class=" col-sm-5 col-4">
                     <input type="text" class="form-control"
@@ -42,11 +40,10 @@
                 <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
                 <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
             </div>
-            <div class="row Line-row text-bold align-items-center" *ngFor="let department of departments">
-                <div class="col-sm-4 col-4">{{department}}</div>
+            <div class="row Line-row align-items-center" *ngFor="let department of departments">
+                <div class="col-sm-4 col-4 text-bold">{{department}}</div>
                 <div class="col-sm-3 col-4">
-                    <input type="text" class="form-control" (input)="setTotal('APA')" (keypress)="_keyPress($event)"
-                           [(ngModel)]="advBudget[department] == undefined || advBudget[department].value == undefined ? '' : advBudget[department].value">
+                  <p>{{advBudget[department].value}}</p>
                 </div>
                 <div class="col-sm-5 col-4">
                     <input type="text" class="form-control"

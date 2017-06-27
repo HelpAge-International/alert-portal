@@ -18,7 +18,7 @@ import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 
 @Component({
@@ -156,7 +156,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private groups: any[] = [];
   private Other: string = "Other";
   private otherGroup: string = '';
-  private selectedVulnerableGroups = {};
+  private selectedVulnerableGroups = [];
 
   private vulnerableGroupsDropDownsCounter: number = 1;
   private vulnerableGroupsDropDowns: number[] = [this.vulnerableGroupsDropDownsCounter];
@@ -251,6 +251,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private sectionTenNum: number = 0;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
@@ -260,6 +261,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       let userpath = Constants.USER_PATHS[userType];
       this.getSystemAgencyCountryIds(userpath);
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        if (!this.moduleAccess.countryOffice) {
+          this.methodOfImplementationSelectedDirect();
+        }
+      });
     });
   }
 
@@ -353,7 +360,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
     }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
-    newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
+    newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
     newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
@@ -708,8 +715,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   methodOfImplementationSelectedWithPartners() {
-    this.isWorkingWithPartners = true;
-    this.isDirectlyThroughFieldStaff = false;
+    if (this.moduleAccess.countryOffice) {
+      this.isWorkingWithPartners = true;
+      this.isDirectlyThroughFieldStaff = false;
+    }
+    else {
+      this.methodOfImplementationSelectedDirect();
+    }
   }
 
   addPartnersDropDown() {
@@ -789,8 +801,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  setGroup(groupSelected, vulnerableGroupsDropDown) {
-    this.selectedVulnerableGroups[vulnerableGroupsDropDown] = groupSelected;
+  setGroup(groupName, vulnerableGroupsDropDown) {
+    let selectedGroup;
+    this.groups.forEach(group => {
+      if(group.name == groupName){
+        selectedGroup = group;
+      }
+    });
+
+    if(selectedGroup){
+      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = selectedGroup.$key;
+    }
   }
 
   // updateOtherGroupToGroups() {
@@ -1359,7 +1380,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.vulnerableGroupsDropDownsCounter++;
           this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
         }
-        this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
+        this.setGroup(vulnerableGroups[i].name, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1]);
       }
     }
 
@@ -1439,11 +1460,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection10(responsePlan: ResponsePlan) {
-
     if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Inputs]) {
-      console.log("have inputs budget")
       let inputs: {} = responsePlan.budget["item"][BudgetCategory.Inputs];
-      console.log(inputs);
       Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
         this.totalInputs += item.budget;
       });
@@ -1451,9 +1469,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.sectorBudget.set(Number(key), inputs[key]["budget"]);
         this.sectorNarrative.set(Number(key), inputs[key]["narrative"]);
       });
-      console.log("$$$$$$$$")
-      console.log(this.sectorBudget);
-      console.log(this.sectorNarrative);
     }
 
     this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
@@ -1547,14 +1562,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
         .map(groupList => {
           let groups = [];
-          groupList.forEach(x => {
-            groups.push(x.$key);
+          groupList.forEach(group => {
+            groups.push(group);
           });
           return groups;
         })
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(x => {
-          this.groups = x;
+        .subscribe(groups => {
+          this.groups = groups;
         });
     }
   }

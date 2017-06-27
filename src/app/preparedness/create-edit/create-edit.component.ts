@@ -1,26 +1,27 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-// import {RxHelper} from "../../utils/RxHelper";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Department, ActionType, ActionLevel, HazardCategory, DurationType, AlertMessageType} from "../../utils/Enums";
+import {ActionLevel, AlertMessageType, DurationType, HazardCategory} from "../../utils/Enums";
 import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AlertMessageModel} from '../../model/alert-message.model';
-import {PageControlService} from "../../services/pagecontrol.service";
-declare var jQuery: any;
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import {Observable, Subject} from "rxjs";
-import {UserService} from "../../services/user.service";
-
+import {HazardImages} from "../../utils/HazardImages";
 declare var jQuery: any;
+
 @Component({
   selector: 'app-preparedness',
   templateUrl: './create-edit.component.html',
   styleUrls: ['./create-edit.component.css']
 })
 export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
+  private disableAll: boolean;
   private UserType: number;
+  private hazardSelectionMap = new Map<number, boolean>();
+  private requireDoc:boolean;
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
@@ -57,28 +58,31 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private actionLevel = Constants.ACTION_LEVEL;
   private actionLevelList: number[] = [ActionLevel.MPA, ActionLevel.APA];
 
-  private hazardCategory = Constants.HAZARD_CATEGORY;
-  private hazardCategoryList: number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
+  // private hazardCategory = Constants.HAZARD_CATEGORY;
+  private hazardCategory = Constants.HAZARD_SCENARIOS;
+  // private hazardCategoryList: number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
+  private hazardCategoryList = [];
   private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
   private durationType = Constants.DURATION_TYPE;
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
   private allowedDurationList: number[] = [];
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-    constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
-        this.actionData = new Action();
-        this.setDefaultActionDataValue();
-        /* if selected generic action */
-        this.actionSelected = this.storage.get('selectedAction');
-        if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
-            this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
-            this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
-            this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
-            this.storage.remove('selectedAction');
-            this.actionSelected = {};
-        }
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+    this.actionData = new Action();
+    this.setDefaultActionDataValue();
+    /* if selected generic action */
+    this.actionSelected = this.storage.get('selectedAction');
+    if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
+      this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
+      this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      this.storage.remove('selectedAction');
+      this.actionSelected = {};
+    }
 
     /* if copy action */
     this.copyActionData = this.storage.get('copyActionData');
@@ -103,14 +107,20 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     console.log(this.actionData);
   }
 
-    ngOnInit() {
-      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.UserType = userType;
-        this._defaultHazardCategoryValue();
-        this.processPage();
+  ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.UserType = userType;
+
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, user.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        this.actionData.level = 0;
       });
-    }
+
+      this._defaultHazardCategoryValue();
+      this.processPage();
+    });
+  }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
@@ -160,8 +170,37 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
       this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
     }
+
+    //store all selected hazards
+    let selectedHazard = [];
+    if (this.hazardSelectionMap.get(-1)) {
+      for (let i = 0; i < Constants.HAZARD_SCENARIOS.length; i++) {
+        selectedHazard.push(i);
+      }
+    } else {
+      this.hazardSelectionMap.forEach((v, k) => {
+        if (v) {
+          selectedHazard.push(k);
+        }
+      });
+    }
+    this.actionData.assignHazard = selectedHazard;
+    //check at least one selected
+    let oneChecked = false;
+    this.hazardSelectionMap.forEach((v, k) => {
+      if (v) {
+        oneChecked = true;
+      }
+    });
+    if (!oneChecked && this.actionData.level == ActionLevel.APA) {
+      console.log("at least one need to be selected");
+      this.alertMessage = new AlertMessageModel("At least one hazard need to be selected");
+      return;
+    }
+
     let dataToSave = Object.assign({}, this.actionData);
-    dataToSave.requireDoc = (dataToSave.requireDoc) ? true : false;
+    dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
+
 
     if (!this.actionID) {
       this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
@@ -195,21 +234,38 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           }
           this._parseSelectParams();
           this._frequencyIsActive();
+
+          //get all monitored hazards
+          this.getAssociatedHazards();
         });
       });
     });
   }
 
+  private getAssociatedHazards() {
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(hazards => {
+        console.log(hazards);
+        this.hazardCategoryList = hazards;
+      });
+  }
+
   selectHazardCategory(hazardKey: number, event: any) {
-    var val = event.target.checked ? event.target.checked : false;
-    this.actionData.assignHazard[hazardKey] = val;
+    this.hazardSelectionMap.set(hazardKey, event.target.checked);
+    this.anySelected();
+    // var val = event.target.checked ? event.target.checked : false;
+    // this.actionData.assignHazard[hazardKey] = val;
   }
 
   selectAllHazard(event: any) {
-    var value = event.target.checked ? event.target.checked : false;
-    this.actionData.assignHazard.forEach((val, key) => {
-      this.actionData.assignHazard[key] = value;
-    });
+    this.hazardSelectionMap.set(-1, event.target.checked);
+    this.anySelected();
+    console.log(this.hazardSelectionMap);
+    // var value = event.target.checked ? event.target.checked : false;
+    // this.actionData.assignHazard.forEach((val, key) => {
+    //   this.actionData.assignHazard[key] = value;
+    // });
   }
 
   selectDepartment(event: any) {
@@ -222,7 +278,15 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   selectActionLevel(levelKey: number) {
-    this.actionData.level = levelKey;
+    if (!this.moduleAccess.minimumPreparedness && levelKey == 1) {
+      // Ignore
+    }
+    else if (!this.moduleAccess.advancedPreparedness && levelKey == 2) {
+      // Ignore
+    }
+    else {
+      this.actionData.level = levelKey;
+    }
     return true;
   }
 
@@ -273,13 +337,39 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         console.log(data);
         for (let userID in data) {
           if (userID.indexOf("$") < 0) {
-            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID)
-              .subscribe((user: ModelUserPublic) => {
-                let userToPush = {userID: userID, firstName: user.firstName};
-                this.usersForAssign.push(userToPush);
-              });
+            this.addUsersToAssign(userID);
           }
+        }
+      });
+    this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((data) => {
+        let cId = data.val().countryId;
+        let aId = "";
+        for (let x in data.val().agencyAdmin) {
+          aId = x;
+        }
+        this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + aId + "/" + cId, {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((snap) => {
+            this.addUsersToAssign(snap.val().adminId);
+          })
+      });
+  }
 
+  addUsersToAssign(userID: string) {
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID)
+      .subscribe((data: ModelUserPublic) => {
+      let skip = false;
+        for (let x of this.usersForAssign) {
+          if (x.userID == userID) {
+            x.firstName = data.firstName;
+            skip = true;
+          }
+        }
+        if (!skip) {
+          let userToPush = {userID: userID, firstName: data.firstName};
+          this.usersForAssign.push(userToPush);
         }
       });
   }
@@ -442,6 +532,27 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.frequencyActive = true;
       }
     }
+  }
+
+  _getHazardImage(key) {
+    return HazardImages.init().getCSS(key);
+  }
+
+  anySelected() {
+    let temp = false;
+    this.hazardSelectionMap.forEach((v, k) => {
+      if (k != -1 && v == true) {
+        this.disableAll = true;
+        temp = true;
+      }
+    });
+    if (!temp) {
+      this.disableAll = false;
+    }
+  }
+
+  test() {
+    console.log(this.actionData.requireDoc);
   }
 
   private navigateToLogin() {

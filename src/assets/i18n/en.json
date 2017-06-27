@@ -18,6 +18,7 @@
         "CLOSE": "Close",
         "REMOVE": "Remove",
         "REJECT": "Reject",
+        "COUNTRY": "Country",
         "MALE": "Male",
         "FEMALE": "Female",
         "TITLE": "Title",
@@ -89,12 +90,18 @@
             "EXPIRED": "Expired",
             "IN_PROGRESS": "In Progress",
             "COMPLETED": "Completed",
-            "INACTIVE": "Inactive"
+            "INACTIVE": "Inactive",
+            "ARCHIVED": "Archived"
         },
         "ACTION_TYPE": {
             "CHS": "CHS",
             "MANDATED": "Mandated",
             "CUSTOM": "Custom"
+        },
+        "TOOLTIP": {
+            "NEED_MORE_INFORMATION": "If you need more detailed information please ",
+            "CLICK_HERE": "click here",
+            "MORE_INFO": "More info"
         },
         "ACCOUNT_SETTING": "Account Settings",
         "LOGOUT": "Logout",
@@ -354,7 +361,7 @@
             "PG": "Papua New Guinea",
             "PY": "Paraguay",
             "PE": "Peru",
-            "PH": "Philippines",
+            "PH": "Millippines",
             "PN": "Pitcairn",
             "PL": "Poland",
             "PT": "Portugal",
@@ -428,7 +435,7 @@
             "EH": "Western Sahara",
             "YE": "Yemen",
             "ZM": "Zambia",
-            "ZW": "Zimbabwe"
+            "ZW": "Umbazi"
         },
         "DEPARTMENT_LIST": {
             "CHS": "CHS",
@@ -503,7 +510,8 @@
       "LOGIN_BLOCKED": "Login attempts have been temporarily blocked. Please try again later",
         "USERTYPE_UNASSIGNED": "This email address is not associated with a user account",
         "AGENCY_DEACTIVATED": "Your account is deactivated - Please check with your System Administrator",
-        "AGENCY_DOESNT_EXIST": "The agency you were assigned to no longer exists"
+      "AGENCY_DOESNT_EXIST": "The agency you were assigned too no longer exists",
+      "COUNTRY_OFFICE_DOESNT_EXIST": "The country office you were assigned too no longer exists"
     },
     "FORGOT_PASSWORD": {
         "TITLE_TEXT": "Forgot Password?",
@@ -794,7 +802,7 @@
                 "COUNTRY_OFFICE_PROFILE": "Country office profile",
                 "RESPONSE_PLANNING": "Response planning",
                 "GLOBAL_MAPS": "Global maps",
-                "PREP_BUDGET":"Prepare Budget",
+                "PREP_BUDGET":"Preparedness Budget",
                 "SAVE_SUCCESS": "Module Settings successfully saved"
             },
             "DURATION_TYPE": {
@@ -832,7 +840,8 @@
                   "YOU_ARE_ABOUT_TO_EXPORT": "You are about to export",
                   "DOCUMENT(S)": "document(s)",
                   "WITH_SIZE": "with a total size of",
-                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?"
+                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?",
+                  "INVALID_DOCUMENT_TYPE": "Invalid Document Type"
             },
             "DOCUMENT_TYPE": {
                 "MPA": "MPA",
@@ -1114,7 +1123,6 @@
             "TITLE_TEXT": "Stock Capacity",
             "EDIT": "Edit stock capacity",
             "VIEW": "View stock capacity",
-            "UPDATED": "Updated",
             "STOCK_IN": "In-country stock",
             "UPDATED": "Updated",
             "DESCRIPTION": "Description",
@@ -1139,6 +1147,26 @@
             "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this stock capacity?",
             "SUCCESS_SAVED": "The stock capacity was successfully saved",
             "SUCCESS_DELETED": "The stock capacity was successfully deleted"
+          },
+          "SURGE_CAPACITY":{
+            "GO_BACK_TITLE_ADD": "Add Office & surge capacity",
+            "GO_BACK_TITLE_EDIT": "Edit Office & surge capacity",
+            "EMPTY_LIST": "Use the Add button to add surge",
+            "NO_ORGANIZATION": "Please enter the organization name",
+            "NO_RELATIONSHIP": "Please enter the relationship",
+            "NO_NAME": "Please enter the name",
+            "NO_POSITION": "Please enter the position",
+            "NO_EMAIL": "Please enter the email",
+            "NO_LOCATION": "Please enter the location",
+            "NO_TIME_VALUE": "Please enter the arrival time",
+            "TIME_VALUE_INVALID": "Time value must be great than 0!",
+            "NO_TIME_TYPE": "Please select arrival time base type",
+            "NO_DEPLOYMENT": "Please enter duration of deployment",
+            "NO_SECTORS": "Please select at least one sector",
+            "DELETE_DIALOG_TITLE": "Delete surge capacity",
+            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this surge capacity?",
+            "SUCCESS_SAVED": "The surge capacity was successfully saved",
+            "SUCCESS_DELETED": "The surge capacity was successfully deleted"
           },
         "CONTACTS":{
             "EDIT_COUNTRY_OFFICE_DETAILS": "Edit country office details",
@@ -1228,7 +1256,6 @@
             "NO_COUNTRIES_BY": "Countries doesn't exist by",
             "ALERT_LEVEL": "Alert level",
             "ALL_ALERT_LEVEL": "All alert levels",
-            "ALERT_LEVEL": "Alert Level",
             "NO_AGENCIES": "No Agencies",
             "AGENCIES_IN": "Agencies in",
             "OVERVIEW": "Overview"
@@ -1243,6 +1270,12 @@
     "DELETE_ACTION_DIALOG": {
         "TITLE": "Alert",
         "CONTENT": "Are you sure you want to delete this action?"
+    },
+    "DELETE_INDICATOR_DIALOG": {
+      "UNABLE_TO_DELETE": "Unable to delete your indicator. Please try again",
+      "DIALOG": "Delete indicator",
+      "TITLE": "Delete Indicator?",
+      "CONTENT": "Are you sure you want to delete this indicator?"
     },
     "DELETE_MESSAGE_DIALOG": {
         "TITLE": "Alert",

@@ -15,6 +15,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-add-indicator',
@@ -215,6 +216,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     });
   }
 
+  showDeleteDialog(modalId) {
+    console.log("SHOWING!");
+    jQuery('#' + modalId).modal("show");
+  }
+
   getCountryID() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').subscribe((countryID: any) => {
@@ -234,6 +240,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         this.indicatorData.triggerSelected = 0;
         this.indicatorData.category = parseInt(this.indicatorData.category);
         this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType, this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue);
+        this.indicatorData.updatedAt = new Date().getTime();
         var dataToSave = this.indicatorData;
 
         var urlToPush;
@@ -310,6 +317,18 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     });
   }
 
+  _deleteIndicator() {
+    jQuery("#delete-indicator").modal("hide");
+    this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.hazardID + "/" + this.indicatorID).set(null)
+      .then(() => {
+        this.router.navigateByUrl("/risk-monitoring");
+      })
+      .catch((error) => {
+        this.alertMessage = new AlertMessageModel('DELETE_INDICATOR_DIALOG.UNABLE_TO_DELETE', AlertMessageType.Error);
+      });
+  }
+
+
   _getIndicator(hazardID: string, indicatorID: string) {
 
     //this.indicatorData = new Indicator();
@@ -328,6 +347,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       indicator.id = indicatorID;
       this.indicatorData.setData(indicator);
     });
+  }
+
+  _closeModal(modalId) {
+    jQuery(modalId).modal("hide");
   }
 
   _validateData() {

@@ -5,7 +5,7 @@ import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction'
 import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
 import {Observable, Subject} from "rxjs";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-action',

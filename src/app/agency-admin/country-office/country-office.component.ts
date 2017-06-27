@@ -147,7 +147,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     let state: boolean = !this.countryToUpdate.isActive;
 
     this.otherCountries = [];
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryToUpdate.$key + '/isActive').set(state)
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryToUpdate.$key + '/isArchived').set(state)
       .then(_ => {
         console.log("Country state updated");
         jQuery("#update-country").modal("hide");

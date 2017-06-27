@@ -1,21 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../utils/Constants';
-import { AlertMessageType, ResponsePlanSectors } from '../../../utils/Enums';
-import { RxHelper } from '../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Constants} from '../../../utils/Constants';
+import {AlertMessageType, ResponsePlanSectors} from '../../../utils/Enums';
+import {RxHelper} from '../../../utils/RxHelper';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
-import { AlertMessageModel } from '../../../model/alert-message.model';
-import { PartnerOrganisationService } from '../../../services/partner-organisation.service';
-import { PartnerOrganisationModel } from '../../../model/partner-organisation.model';
-import { PartnerModel } from '../../../model/partner.model';
-import { ModelUserPublic } from '../../../model/user-public.model';
-import { UserService } from "../../../services/user.service";
-import { CountryAdminModel } from "../../../model/country-admin.model";
-import { DisplayError } from "../../../errors/display.error";
-import { SessionService } from "../../../services/session.service";
-import { CommonService } from "../../../services/common.service";
-import { NoteModel } from "../../../model/note.model";
-import { NoteService } from "../../../services/note.service";
+import {AlertMessageModel} from '../../../model/alert-message.model';
+import {PartnerOrganisationService} from '../../../services/partner-organisation.service';
+import {PartnerOrganisationModel} from '../../../model/partner-organisation.model';
+import {PartnerModel} from '../../../model/partner.model';
+import {ModelUserPublic} from '../../../model/user-public.model';
+import {UserService} from "../../../services/user.service";
+import {CountryAdminModel} from "../../../model/country-admin.model";
+import {DisplayError} from "../../../errors/display.error";
+import {SessionService} from "../../../services/session.service";
+import {CommonService} from "../../../services/common.service";
+import {NoteModel} from "../../../model/note.model";
+import {NoteService} from "../../../services/note.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -33,6 +33,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private isViewing: boolean;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -64,7 +65,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
               private _commonService: CommonService,
               private _noteService: NoteService,
               private _sessionService: SessionService,
-              private router: Router){
+              private router: Router) {
     this.areasOfOperation = [];
     this.partnerOrganisations = [];
     this.newNote = [];
@@ -78,40 +79,58 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
-      this.uid = user.uid;
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
-        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-        this.countryId = countryAdminUser.countryId;
+          this.uid = user.uid;
 
-        this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
-                .subscribe(partnerOrganisations => {
-                  this.partnerOrganisations = partnerOrganisations;
+          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-                  // Get the partner organisation notes
-                  this.partnerOrganisations.forEach(partnerOrganisation => {
-                    const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                    this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                      partnerOrganisation.notes = notes;
-                    });
+            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+            this.countryId = countryAdminUser.countryId;
 
-                    // Create the new note model for partner organisation
-                    this.newNote[partnerOrganisation.id] = new NoteModel();
-                    this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+            this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+              .subscribe(partnerOrganisations => {
+                this.partnerOrganisations = partnerOrganisations;
+
+                // Get the partner organisation notes
+                this.partnerOrganisations.forEach(partnerOrganisation => {
+                  const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                  this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                    partnerOrganisation.notes = notes;
                   });
-                });
 
-        // get the country levels values
-        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-          .subscribe(content => {
-            this.countryLevelsValues = content;
-            err => console.log(err);
+                  // Create the new note model for partner organisation
+                  this.newNote[partnerOrganisation.id] = new NoteModel();
+                  this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                });
+              });
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .subscribe(content => {
+                this.countryLevelsValues = content;
+                err => console.log(err);
+              });
           });
+        });
+
       });
-    })
+
+
   }
 
   goBack() {
@@ -120,14 +139,13 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   getAreasOfOperation(partnerOrganisation: PartnerOrganisationModel) {
     let areasOfOperation: string[] = [];
-    if(partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
+    if (partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
       partnerOrganisation.projects.forEach(project => {
         project.operationAreas.forEach(location => {
           const locationName =
-              this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+            this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
           areasOfOperation.push(locationName);
-          if(!this.areasOfOperation.find(x => x == locationName))
-          {
+          if (!this.areasOfOperation.find(x => x == locationName)) {
             this.areasOfOperation.push(locationName);
             this.areasOfOperation.sort();
           }
@@ -153,23 +171,25 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
   }
 
-  hideFilteredPartners(partnerOrganisation: PartnerOrganisationModel): boolean{
+  hideFilteredPartners(partnerOrganisation: PartnerOrganisationModel): boolean {
     let hide = false;
 
-    if(!partnerOrganisation) { return hide; }
+    if (!partnerOrganisation) {
+      return hide;
+    }
 
-    if(this.filterOrganisation && this.filterOrganisation != "null" && partnerOrganisation.id !== this.filterOrganisation){
+    if (this.filterOrganisation && this.filterOrganisation != "null" && partnerOrganisation.id !== this.filterOrganisation) {
       hide = true;
-   }
+    }
 
-   if(this.filterSector && this.filterSector != "null"
-            && !this.hasOrganisationProjectSector(partnerOrganisation, this.filterSector)){
+    if (this.filterSector && this.filterSector != "null"
+      && !this.hasOrganisationProjectSector(partnerOrganisation, this.filterSector)) {
       hide = true;
-   }
+    }
 
-   if(this.filterLocation && this.filterLocation != "null" && !this.hasAreaOfOperation(partnerOrganisation, this.filterLocation)) {
-     hide = true;
-   }
+    if (this.filterLocation && this.filterLocation != "null" && !this.hasAreaOfOperation(partnerOrganisation, this.filterLocation)) {
+      hide = true;
+    }
 
     return hide;
   }
@@ -180,15 +200,13 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     return !this.alertMessage;
   }
 
-  addNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel)
-  {
-    if(this.validateNote(note))
-    {
+  addNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+    if (this.validateNote(note)) {
       const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
       this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
   }
 
@@ -198,18 +216,17 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     this.activeNote = note;
   }
 
-editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+  editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
     this.closeEditModal();
 
-    if(this.validateNote(note))
-    {
+    if (this.validateNote(note)) {
       const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
       this._noteService.saveNote(partnerOrganisationNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
- }
+  }
 
   closeEditModal() {
     jQuery('#edit-action').modal('hide');
@@ -231,7 +248,7 @@ editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeDeleteModal() {
     jQuery('#delete-action').modal('hide');
@@ -246,13 +263,13 @@ editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
 
     return userName;
   }
+
   private hasOrganisationProjectSector(partnerOrganisation: PartnerOrganisationModel, sector: string): boolean {
     let exists = false;
     partnerOrganisation.projects.forEach(project => {
       Object.keys(project.sector).forEach(key => {
-        if(key == sector && project.sector[key])
-        {
-           exists = true;
+        if (key == sector && project.sector[key]) {
+          exists = true;
         }
       });
     })
@@ -264,8 +281,7 @@ editAction(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
 
     let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
 
-    if(areasOfOperation.search(locationName) !== -1)
-    {
+    if (areasOfOperation.search(locationName) !== -1) {
       exists = true;
     }
 

@@ -170,8 +170,16 @@ import {ProjectActivitiesComponent} from "./export-start-fund/project-activities
 import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance/technical-guidance.component";
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {TooltipComponent} from "./utils/tooltips/tooltip.component";
 import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
+import {ProjectActivityReportComponent} from "./export-start-fund/project-activity-report/project-activity-report.component";
+import {ReportingDatasheetComponent} from "./export-start-fund/reporting-datasheet/reporting-datasheet.component";
+import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
+import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
+import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
+import {OrderByPipe} from "./utils/pipes/orderby.pipe";
+import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -287,6 +295,8 @@ const firebaseAuthConfig = {
     CreateEditResponsePlanComponent,
     AddPartnerOrganisationComponent,
     OrdinalPipe,
+    OrderByPipe,
+    PreparednessFilter,
     StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,
@@ -338,8 +348,15 @@ const firebaseAuthConfig = {
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
     GuidanceReportComponent,
+    TooltipComponent,
+    GuidanceReportComponent,
     TimeAgoPipe,
-    CountryNotificationsComponent
+    CountryNotificationsComponent,
+    ProjectActivityReportComponent,
+    ReportingDatasheetComponent,
+    ApplicationDatasheet,
+    ExportProposalComponent,
+    AddEditSurgeCapacityComponent
   ],
   imports: [
     BrowserModule,

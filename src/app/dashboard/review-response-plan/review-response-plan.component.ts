@@ -144,9 +144,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   approvePlan() {
-    console.log("approve plan");
-    //TODO testing data, need to be updated!!!!
-    // this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, "1b5mFmWq2fcdVncMwVDbNh3yY9u2", this.countryId, this.responsePlanId, true, "", this.isDirector);
     this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector);
   }
 
@@ -165,10 +162,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   confirmReject() {
-    console.log("do reject update");
     jQuery("#rejectPlan").modal("hide");
-    //TODO testing data, need to be updated!!!!
-    // this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, "1b5mFmWq2fcdVncMwVDbNh3yY9u2", this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector);
     this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector);
   }
 

@@ -1,5 +1,7 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</div>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
 
@@ -37,7 +39,7 @@
                 <select class="form-control" name="areasOfOperation"
                         [(ngModel)]="filterLocation">
                     <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
-                    <option *ngFor="let location of areasOfOperation" 
+                    <option *ngFor="let location of areasOfOperation"
                         [value]="location">{{ location }}</option>
                 </select>
             </div>
@@ -51,7 +53,7 @@
             </div>
             <div class="col-sm-4"></div>
         </div>
-        
+
         <div class="row" *ngIf="!partnerOrganisations">
             <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EMPTY_LIST' | translate }}</p>
         </div>
@@ -86,7 +88,7 @@
                 </a>
             </div> <!--Notes-->
             <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                 <button class="btn btn-outline-primary text-uppercase" 
+                 <button class="btn btn-outline-primary text-uppercase"
                     (click)="editPartnerOrganisation(partnerOrganisation.id)">
                     {{ 'GLOBAL.EDIT' | translate }}</button>
             </div>
@@ -113,10 +115,10 @@
                                 <br>
                                 <div class="row">
                                     <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
-                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none" 
+                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none"
                                        (click) ="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
                                     <p href="#" class="padding-left-one">|</p>
-                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger" 
+                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
                                        (click) ="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                                 </div>
                             </div>
@@ -147,13 +149,13 @@
                     </div>
 
                     <!--Border box-->
-                    <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above" 
+                    <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above"
                          *ngFor="let project of partnerOrganisation?.projects">
                          <div class="row">
                             <p class="col-sm-3 Spaced-above font-weight-bold">{{ 'ADD_PARTNER.SECTOR' | translate }}</p>
                             <div class="col-sm-0">
-                                <div class="Icon__selectable" 
-                                     *ngFor = "let sector of project.sector | keyValues" 
+                                <div class="Icon__selectable"
+                                     *ngFor = "let sector of project.sector | keyValues"
                                      [hidden]="!sector.value">
                                      <div [class] = "RESPONSE_PLAN_SECTORS[sector.key]"></div>
                                     <label>{{RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</label>
@@ -178,7 +180,7 @@
                     <div class="row">
                         <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></div>
                         <p class="col-sm-0">
-                            {{partnerOrganisation?.firstName}} 
+                            {{partnerOrganisation?.firstName}}
                             {{partnerOrganisation?.lastName}}
                         </p>
                     </div>
@@ -202,7 +204,7 @@
             </div>
             <!--Partnership Details tooltip End-->
         </div>
-        <button class="btn btn-outline-primary text-uppercase" 
+        <button class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit"
                 (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}</button>
     </div>
