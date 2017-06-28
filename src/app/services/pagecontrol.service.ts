@@ -402,7 +402,7 @@ export class PageControlService {
   public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
     // TODO: Implement this functionality
     this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-      func(auth.auth, null, ["2o4DEomWZFS23rhH0xSRsBnYQ0L2"], ["2o4DEomWZFS23rhH0xSRsBnYQ0L2"]);
+      func(auth.auth, null, ["-Kni-70-lLBxfdKLtIfr"], []);
     });
   }
 

@@ -645,6 +645,23 @@
             "ERROR_NO_EDIT_GROUP_NAME": "Please enter the group name"
         }
     },
+    "NETWORK_ADMIN":{
+      "PLEASE_FILL": "Please fill in your network details below.",
+      "UPDATE_DETAILS": {
+        "NETWORK_LOGO": "Network Logo",
+        "NETWORK_LOGO_INVALID_FILETYPE": "The agency logo image type is invalid",
+        "NETWORK_LOGO_SIZE_EXCEEDED": "The agency logo image size is too large",
+        "SUPPORTED_FORMATS": "Supported formats",
+        "REPLACE_IMAGE": "Replace image",
+        "REMOVE_IMAGE": "Remove image",
+        "DELETE_LOGO_MODEL_TEXT": "Are you sure you want to remove the logo of your agency?",
+        "NO_ADDRESS_1": "Please enter address line 1",
+        "NO_COUNTRY": "Please select a country",
+        "NO_CITY": "Please enter the name of the city",
+        "NO_PHONE": "Please enter the phone number",
+        "NO_CURRENCY": "Please select a currency type"
+      }
+    },
     "AGENCY_ADMIN": {
         "PLEASE_FILL": "Please fill in your agency details below",
         "COUNTRY_OFFICES": {

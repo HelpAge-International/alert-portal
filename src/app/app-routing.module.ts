@@ -114,7 +114,8 @@ import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
-import {NetworkLoginComponent} from "./network/network-login/network-login.component";
+import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
+import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -320,9 +321,10 @@ const routes: Routes = [
 
 
     /**
-     * Network Login
+     * Network Users
      */
-  {path: 'network-login', component: NetworkLoginComponent}
+  {path: 'network/network-create-password', component: NetworkCreatePasswordComponent},
+  {path: 'network/new-network-details', component: NewNetworkDetailsComponent}
 
 ];
 

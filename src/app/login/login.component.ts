@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.checkNetworkLogin(success.uid,
             (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
               //TODO:
-              this.router.navigateByUrl("/network-login")
+              this.router.navigateByUrl("/network/network-create-password")
             },
             () => {                                                           // REGULAR LOGIN
               this.regularLogin(success.uid);

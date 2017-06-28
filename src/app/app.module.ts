@@ -180,7 +180,8 @@ import {ExportProposalComponent} from "./export-proposal/export-proposal.compone
 import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 import {OrderByPipe} from "./utils/pipes/orderby.pipe";
 import {PreparednessFilter} from "./utils/pipes/filter.pipe";
-import {NetworkLoginComponent} from "./network/network-login/network-login.component";
+import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
+import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -358,7 +359,8 @@ const firebaseAuthConfig = {
     ApplicationDatasheet,
     ExportProposalComponent,
     AddEditSurgeCapacityComponent,
-    NetworkLoginComponent
+    NetworkCreatePasswordComponent,
+    NewNetworkDetailsComponent
   ],
   imports: [
     BrowserModule,
