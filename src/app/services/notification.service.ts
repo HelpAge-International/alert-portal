@@ -279,11 +279,11 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
 
     return this.af.database.list(Constants.APP_STATUS + node)
       .map(list => {
-        let messagesData = {};
-        list.forEach((x) => {
-          if(x.$value === true) {
-            let date = new Date().getTime();
-            return this.af.database.object(Constants.APP_STATUS + node + '/' + x.$key).update({ date });
+        list.forEach((message) => {
+          if(message.$value === true) {
+            let obj = {};
+            obj[message.$key] = new Date().getTime();
+            return this.af.database.object(Constants.APP_STATUS + node).update(obj);
           }
         });
       });
