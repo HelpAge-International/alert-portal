@@ -7150,8 +7150,8 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 
 .row_expanded__wrap--risk .btn-primary {
   text-transform: none;
-  font-weight: normal;
-  font-size: 0.8em;
+  font-weight: 100;
+  font-size: 1em;
   background: #46AA31;
   padding: 1.25em;
   border: 1px solid #46AA31;
@@ -7159,17 +7159,17 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   height: 55px;
 }
 
-.row_expanded__wrap--risk .btn-primary:hover {
-  background: transparent;
-  color: #46AA31;
-  font-weight: bold;
-}
+/*.row_expanded__wrap--risk .btn-primary:hover {*/
+  /*background: transparent;*/
+  /*color: #46AA31;*/
+  /*font-weight: bold;*/
+/*}*/
 
 .row_expanded__wrap--risk .btn-ghost {
   color: #B1B2B3;
   text-transform: none;
-  font-weight: normal;
-  font-size: 0.8em;
+  font-weight: 100;
+  font-size: 1em;
   background: #EEEEEE;
   padding: 1.25em;
   margin-left: 1.5em;
@@ -7178,6 +7178,10 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   padding-right: 1em;
   width: 130px;
   height: 55px;
+}
+
+.row_expanded__wrap--risk .btn-ghost:hover {
+  background: #EEEEEE;
 }
 
 .row_expanded__wrap--risk .btn-tertiary {
@@ -7203,17 +7207,17 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   height: 55px;
 }
 
-.row_expanded__wrap--risk .btn-amber:hover {
-  background: transparent;
-  color: #F3A500;
-  font-weight: normal;
-}
+/*.row_expanded__wrap--risk .btn-amber:hover {*/
+  /*background: transparent;*/
+  /*color: #F3A500;*/
+  /*font-weight: normal;*/
+/*}*/
 
 .row_expanded__wrap--risk .btn-red {
   color: #ffffff;
   text-transform: none;
-  font-weight: normal;
-  font-size: 0.8em;
+  font-weight: 100;
+  font-size: 1em;
   background: #E10514;
   padding: 1.25em;
   margin-left: 1.5em;
@@ -7224,11 +7228,11 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   height: 55px;
 }
 
-.row_expanded__wrap--risk .btn-red:hover {
-  background: transparent;
-  color: #E10514;
-  font-weight: normal;
-}
+/*.row_expanded__wrap--risk .btn-red:hover {*/
+  /*background: transparent;*/
+  /*color: #E10514;*/
+  /*font-weight: normal;*/
+/*}*/
 
 .row_expanded__wrap--risk .btn:focus, .row_expanded__wrap--risk .Header-title__wrap .btn-group:focus, .Header-title__wrap .row_expanded__wrap--risk .btn-group:focus {
   border: 1px solid #c0c0c0;
