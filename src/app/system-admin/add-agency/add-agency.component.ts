@@ -325,18 +325,18 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       let clockSetting = {};
       let prepareness = {};
       prepareness["durationType"] = DurationType.Year;
-      prepareness["value"] = 1;
+      prepareness["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
       clockSetting["preparedness"] = prepareness;
       let response = {};
       response["durationType"] = DurationType.Year;
-      response["value"] = 1;
+      response["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
       clockSetting["responsePlans"] = prepareness;
       let validFor = {};
       validFor["durationType"] = DurationType.Year;
-      validFor["value"] = 1;
+      validFor["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
       let logs = {};
       logs["durationType"] = DurationType.Year;
-      logs["value"] = 1;
+      logs["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
       let risk = {};
       risk["hazardsValidFor"] = validFor;
       risk["showLogsFrom"] = logs;
@@ -344,10 +344,10 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agency.clockSettings = clockSetting;
 
       //init response plan settings
-      let hierachy: boolean[] = [false, false];
+      let hierarchy: boolean[] = [false, false];
       let sections: boolean[] = [true, true, true, true, true, true, true, true, true, true];
       let responseSetting = {};
-      responseSetting["approvalHierachy"] = hierachy;
+      responseSetting["approvalHierachy"] = hierarchy;
       responseSetting["sections"] = sections;
       agency.responsePlanSettings = responseSetting;
 
@@ -356,7 +356,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
       //init module settings in different node
       let moduleList: ModuleSettingsModel[] = [];
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 6; i++) {
         let setting = new ModuleSettingsModel();
         setting.privacy = Privacy.Public;
         setting.status = true;

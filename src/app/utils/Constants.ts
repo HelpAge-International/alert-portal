@@ -33,6 +33,7 @@ export class Constants {
   static AGENCY_ADMIN_STARFF = "/agency-admin/staff";
   static AGENCY_ADMIN_LOGO_MAX_SIZE = 2000000; //in bytes
   static AGENCY_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
+  static DEFAULT_CLOCK_SETTINGS_DURATION_VAL = 1;
 
   // country administrator
   static COUNTRY_ADMIN_HOME = "/dashboard";

@@ -123,14 +123,17 @@ export class ModulesComponent implements OnInit, OnDestroy {
   	.catch(err => console.log(err, 'You do not have access!'));
   }
 
-
-
   onAlertHidden(hidden: boolean) {
     this.alertShow = !hidden;
     this.alertSuccess = true;
     this.alertMessage = "";
   }
 
+  showAlert() {
+    this.alertSuccess = false;
+    this.alertShow = true;
+    this.alertMessage = "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MODULE_NAME";
+  }
   /**
    * Permissions propagation
    */
