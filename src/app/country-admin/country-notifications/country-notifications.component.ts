@@ -24,14 +24,6 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
   private countryId: string;
   private USER_TYPE;
 
-  private messagesTemp = [];
-  private messages: MessageModel[] = []
-  private messageToDeleteID;
-  private messageToDeleteType;
-
-  private alertMessageType = AlertMessageType;
-  private alertMessage: AlertMessageModel = null;
-
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService,
@@ -52,38 +44,16 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
           
           this.USER_TYPE = Constants.USER_PATHS[userType];
           
-          this._userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
-            this.agencyId = agencyId;
-            this._userService.getCountryId(this.USER_TYPE, this.uid).subscribe(countryId => {
+          this._userService.getAgencyId(this.USER_TYPE, this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyId => {
+              this.agencyId = agencyId;
+          });
+          
+          this._userService.getCountryId(this.USER_TYPE, this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryId => {
               this.countryId = countryId;
-
-              switch(this.USER_TYPE){
-                case 'administratorCountry':
-                  this._notificationService.getCountryAdminNotifications(this.countryId, this.agencyId)
-                        .subscribe(messages => {
-                          this.messages = messages;
-                        });
-                  break;
-                case 'countryDirector':
-                  this._notificationService.getCountryDirectorNotifications(this.uid, this.countryId, this.agencyId)
-                        .subscribe(messages => {
-                          this.messages = messages;
-                        });
-                  break;
-                case 'ertLeader':
-                  this._notificationService.getERTLeadsNotifications(this.uid, this.countryId, this.agencyId)
-                        .subscribe(messages => {
-                          this.messages = messages;
-                        });
-                  break;
-                case 'ert':
-                  this._notificationService.getERTNotifications(this.uid, this.countryId, this.agencyId)
-                        .subscribe(messages => {
-                          this.messages = messages;
-                        });
-                  break;
-              }
-            });
           });
       });
     });
@@ -92,28 +62,5 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
-  deleteMessage(messageID: string, groupType: string) {
-    if (!messageID || !groupType) {
-      console.log('message ID and groupType requried params!');
-      return;
-    }
-    this.messageToDeleteID = messageID;
-    this.messageToDeleteType = groupType;
-    jQuery("#delete-message").modal("show");
-  }
-
-  deleteAction() {
-    this.closeModal();
-    let messageNode = Constants.APP_STATUS + '/messageRef/agency/' + this.agencyId + '/countryadmins/' + this.countryId + '/' + this.messageToDeleteID;
-    this._notificationService.deleteNotification(messageNode)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-            })
-            .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-  }
-
-  closeModal() {
-    jQuery("#delete-message").modal("hide");
   }
 }

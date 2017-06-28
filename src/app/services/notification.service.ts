@@ -210,11 +210,10 @@ setCountryAdminNotificationsAsRead(countryId, agencyId){
  }
 
  deleteCountryAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countryadmins/" + userId + "/" + messageId);
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId + "/" + messageId);
  }
 
  deleteCountryDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   console.log("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/" + messageId);
    return this.deleteNotification("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/" + messageId);
  }
 

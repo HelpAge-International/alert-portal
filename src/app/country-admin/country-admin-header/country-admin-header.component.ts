@@ -77,33 +77,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
                   this.getAgencyID().then(() => {
                     this.getCountryData();
                     this.checkAlerts();
-                    
-                    switch(this.USER_TYPE){
-                      case 'administratorCountry':
-                        this._notificationService.getCountryAdminNotifications(this.countryId, this.agencyAdminId, true)
-                              .subscribe(unreadMessages => {
-                                this.unreadMessages = unreadMessages;
-                              });
-                        break;
-                      case 'countryDirector':
-                        this._notificationService.getCountryDirectorNotifications(this.uid, this.countryId, this.agencyAdminId, true)
-                              .subscribe(unreadMessages => {
-                                this.unreadMessages = unreadMessages;
-                              });
-                        break;
-                      case 'ertLeader':
-                        this._notificationService.getERTLeadsNotifications(this.uid, this.countryId, this.agencyAdminId, true)
-                              .subscribe(unreadMessages => {
-                                this.unreadMessages = unreadMessages;
-                              });
-                        break;
-                      case 'ert':
-                        this._notificationService.getERTNotifications(this.uid, this.countryId, this.agencyAdminId, true)
-                              .subscribe(unreadMessages => {
-                                this.unreadMessages = unreadMessages;
-                              });
-                        break;
-                    }
                   });
                 });
               }
