@@ -8547,12 +8547,14 @@ h3, h4 {
   width: 100%;
   max-width: 960px;
   position: relative;
+  justify-content: flex-start;
 }
 
 .Sub-header_bar ul li {
   display: inline;
   color: #636361;
   padding: 1.5em 1em;
+  margin-right: 2.5%;
 }
 
 .Sub-header_bar ul li a {

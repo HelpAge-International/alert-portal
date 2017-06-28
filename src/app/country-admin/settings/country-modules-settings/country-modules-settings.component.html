@@ -18,7 +18,7 @@
         <div class="Spaced">
         <div class="row Spaced">
             <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.MODULE" | translate}}</p></b></div>
-            <div class="col-sm-5"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.PRIVACY_SETTINGS" | translate}}</p></b></div>
+            <div class="col-sm-6"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.PRIVACY_SETTINGS" | translate}}</p></b></div>
             <div class="col-sm-2"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.MODULES.STATUS" | translate}}</p></b></div>
         </div>
         <!-- Row -->
@@ -26,7 +26,7 @@
             <div class="col-sm-4">
                 <p>{{ moduleName[module.key] | translate }}</p>
             </div>
-            <div class="col-sm-5">
+            <div class="col-sm-6">
                 <div class="Radio__button--js Alt-hover">
                     <button class="btn" type="button" name="privacy_module_{{module.key}}"
                         *ngFor="let privacy of privacyOptions | enumKeys"
