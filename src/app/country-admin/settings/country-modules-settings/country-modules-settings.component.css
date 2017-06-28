@@ -1,0 +1,11 @@
+.btn:first-child {
+  margin-left: 0;
+}
+
+.btn {
+  margin-left: 3.5%;
+}
+
+.btn-outline-secondary {
+  margin-left: 1%;
+}
