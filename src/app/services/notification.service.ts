@@ -157,6 +157,11 @@ export class NotificationService {
    return this.getNotifications("/messageRef/country/" + countryId + "/partner/" + countryId, unreadOnly);
  }
 
+ 
+ getCountryUserNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
+   return this.getNotifications("/messageRef/country/" + countryId + "/countryallusersgroup/" + userId, unreadOnly);
+ }
+
 setAgencyNotificationsAsRead(agencyId): Observable<any>{
   return this.setNotificationsAsRead("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId);
 }
@@ -195,6 +200,10 @@ setCountryAdminNotificationsAsRead(countryId, agencyId){
 
  setPartnerNotificationsAsRead(countryId, agencyId){
    return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/partner/" + countryId);
+ }
+ 
+ setCountryUserNotificationsAsRead(userId, countryId, agencyId){
+   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/countryallusersgroup/" + userId);
  }
  
  deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
@@ -238,6 +247,9 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
    return this.deleteNotification("/messageRef/country/" + countryId + "/partner/" + userId + "/" + messageId);
  }
 
+deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+   return this.deleteNotification("/messageRef/country/" + countryId + "/countryallusersgroup/" + userId + "/" + messageId);
+ }
   deleteNotification(node): firebase.Promise<any>{
     if (!node) {
       Promise.reject('Missing node!');

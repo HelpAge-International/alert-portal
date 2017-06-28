@@ -62,6 +62,13 @@ export class NotificationBadgeComponent implements OnInit {
                 this.router.navigateByUrl("country-admin/country-notifications");
               });
         break;
+      case 'countryUser':
+        this._notificationService.setCountryUserNotificationsAsRead(this._userId, this._countryId, this._agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(() => {
+                this.router.navigateByUrl("director/director-notifications");
+              });
+        break;
       case 'countryDirector':
         this._notificationService.setCountryDirectorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
               .takeUntil(this.ngUnsubscribe)
@@ -116,9 +123,18 @@ export class NotificationBadgeComponent implements OnInit {
 
   private getUnreadMessages(){
     if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
+      console.log(this._countryId);
       switch(this._USER_TYPE){
         case 'administratorCountry':
           this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId, true)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(unreadMessages => {
+                  this.unreadMessages = unreadMessages;
+                });
+          break;
+          
+        case 'countryUser':
+          this._notificationService.getCountryUserNotifications(this._userId, this._countryId, this._agencyId, true)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(unreadMessages => {
                   this.unreadMessages = unreadMessages;
