@@ -356,7 +356,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
       //init module settings in different node
       let moduleList: ModuleSettingsModel[] = [];
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 6; i++) {
         let setting = new ModuleSettingsModel();
         setting.privacy = Privacy.Public;
         setting.status = true;

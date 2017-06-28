@@ -72,7 +72,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyId => {
               this.agencyId = agencyId;
-              this.handleSettings(this.agencyId);
+              this.handleClockSettings(this.agencyId);
+              this.handleModuleSettings(this.agencyId);
 
               this.route.params
                 .takeUntil(this.ngUnsubscribe)
@@ -88,11 +89,19 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     });
   }
 
-  private handleSettings(uid: string) {
+  private handleClockSettings(uid: string) {
     this.agencyService.getAgency(uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agency => {
         this.agencyClockSetting = agency.clockSettings;
+      });
+  }
+
+  private handleModuleSettings(uid: string) {
+    this.agencyService.getAgencyModuleSetting(uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snapshot => {
+        this.agencyModuleSetting = snapshot.val();
       });
   }
 
@@ -345,6 +354,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private writeNewData(countryId: string) {
+
     this.countryData = {};
 
     let countryAdmin = new ModelUserPublic(this.countryAdminFirstName, this.countryAdminLastName,
