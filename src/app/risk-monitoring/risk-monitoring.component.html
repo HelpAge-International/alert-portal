@@ -55,7 +55,7 @@
         <div class="Accordion__Content collapse" id="collapseOne" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
-              <div class="sub-sub-contents__wrap--risk col-sm-11">
+              <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="#" data-toggle="modal" data-target="#archiveHazard">
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
@@ -71,7 +71,8 @@
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"GLOBAL.EDIT"
+                    <a *ngIf="!isViewing"
+                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"GLOBAL.EDIT"
                       | translate}}
                     </a>
                   </div>
@@ -138,9 +139,12 @@
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                      </div>
+                      <div *ngIf="isViewing" class="col-sm-12 btn btn-tertiary">
+                        Copy
                       </div>
                       <!--TODO-->
                       <p>Last update: <strong>{{indicatorC.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
