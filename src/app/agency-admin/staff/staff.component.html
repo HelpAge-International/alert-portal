@@ -42,6 +42,8 @@
       </div>
     </div>
 
+    <div *ngIf="staffs.length == 0 && globalUsers.length == 0" class="Empty--ribbon">{{"AGENCY_ADMIN.STAFF.NO_STAFF_MEMBERS" | translate}}</div>
+
     <div *ngFor="let office of staffs">
       <div class="Sub-header-title__wrap">
         <h2>{{countries[office?.country]|translate}}</h2>
