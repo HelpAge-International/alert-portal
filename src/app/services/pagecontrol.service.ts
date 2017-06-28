@@ -343,7 +343,7 @@ export class PageControlService {
                       authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
     af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
       if (auth) {
-        UserService.getUserType(af, auth.auth.uid).subscribe(userType => {
+        UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
           if (userType == null) {
             if (authUser != null) {
               authUser(auth.auth, null);
@@ -392,17 +392,35 @@ export class PageControlService {
   }
   // =============================================================================================
 
-
   /**
-   *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
-   *
-   *  This includes all user types.
-   * =============================================================================================
+   * Method to return all the information you may need from firebase regarding admin
    */
-  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
-    // TODO: Implement this functionality
+  // TODO: New way of doing this, make the call return everything you need it for
+  private authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: string, agencyId: string, systemAdminId: string) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
   }
-
+  private authAgencyAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryAdmins: string[], agencyId: string, systemAdminId: string) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authSystemAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, systemAdminId: string) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authNetworkAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authNetworkCountry(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
 
 
 
@@ -438,8 +456,23 @@ export class PageControlService {
     return parts;
   }
 
+
+  /**
+   *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
+   *
+   *  This includes all user types.
+   * =============================================================================================
+   */
+  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
+    // TODO: Implement this functionality
+  }
+  // ========================================================================================================
+
+
+
   /**
    *  Agency Modules configurator and matrix for quick-enabling the settings
+   *  ========================================================================================================
    */
   static agencyDisableMap(): Map<PermissionsAgency, PermissionsAgency[]> {
     let map: Map<PermissionsAgency, PermissionsAgency[]> = new Map<PermissionsAgency, PermissionsAgency[]>();
@@ -510,6 +543,7 @@ export class PageControlService {
     }
     return false;
   }
+  // ========================================================================================================
 
   /**
    * Country Permissions Matrix for the Country Admin Permissions settings
@@ -517,4 +551,5 @@ export class PageControlService {
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
     // TODO: Implement this
   }
+  // ========================================================================================================
 }
