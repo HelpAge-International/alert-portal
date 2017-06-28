@@ -86,6 +86,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
           break;
+        case 'countryUser':
+          this._notificationService.deleteCountryUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
         case 'countryDirector':
           this._notificationService.deleteCountryDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
@@ -147,6 +154,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       switch(this._USER_TYPE){
         case 'administratorCountry':
           this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(messages => {
+                  this.messages = messages;
+                });
+          break;
+        case 'countryUser':
+          this._notificationService.getCountryUserNotifications(this._userId, this._countryId, this._agencyId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(messages => {
                   this.messages = messages;

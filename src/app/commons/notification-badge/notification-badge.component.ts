@@ -123,7 +123,6 @@ export class NotificationBadgeComponent implements OnInit {
 
   private getUnreadMessages(){
     if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
-      console.log(this._countryId);
       switch(this._USER_TYPE){
         case 'administratorCountry':
           this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId, true)
@@ -132,7 +131,6 @@ export class NotificationBadgeComponent implements OnInit {
                   this.unreadMessages = unreadMessages;
                 });
           break;
-          
         case 'countryUser':
           this._notificationService.getCountryUserNotifications(this._userId, this._countryId, this._agencyId, true)
                 .takeUntil(this.ngUnsubscribe)
