@@ -9492,6 +9492,8 @@ h3, h4 {
 
 .Icon--alert {
   background-image: url(/assets/images/hazards/alert.svg);
+  background-size: 80%;
+  background-position: center;
 }
 
 .Icon--cold-wave {
