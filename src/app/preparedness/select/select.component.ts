@@ -10,7 +10,6 @@ import {Observable, Subject} from "rxjs";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {PageControlService} from "../../services/pagecontrol.service";
 import {UserService} from "../../services/user.service";
-import {GenericToMandatedListModel} from "../../agency-admin/agency-mpa/add-generic-action/add-generic-action.component";
 
 declare var jQuery: any;
 
@@ -79,7 +78,7 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
     this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
-  protected selectAction(action: any) {
+  protected selectAction(action: GenericToCustomListModel) {
     this.actionSelected = action;
   }
 
@@ -88,7 +87,7 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          let x: GenericToMandatedListModel = new GenericToMandatedListModel();
+          let x: GenericToCustomListModel = new GenericToCustomListModel();
           x.id = snapshot.key;
           x.level = snapshot.val().level;
           x.category = snapshot.val().category;

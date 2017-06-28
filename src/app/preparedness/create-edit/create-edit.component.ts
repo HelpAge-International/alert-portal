@@ -79,7 +79,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.actionSelected = this.storage.get('selectedAction');
     if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
       this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
-      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
+      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level): 0;
       this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
       this.storage.remove('selectedAction');
       this.actionSelected = {};
