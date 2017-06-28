@@ -11,7 +11,7 @@
     <div class="Sub-header-title__wrap">
       <h2>{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.TITLE_TEXT" | translate}}</h2>
       <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting"
-      (click)="deleteSelectedDepartments($event)">{{"GLOBAL.DELETE" | translate | uppercase}}
+              (click)="deleteSelectedDepartments($event)">{{"GLOBAL.DELETE" | translate | uppercase}}
       </button>
       <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting"
               (click)="cancelDeleteDepartments($event)">{{"GLOBAL.CANCEL" | translate}}
@@ -37,6 +37,11 @@
     <p *ngIf="deleting">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DELETE_DEPARTMENTS_INFO" | translate}}</p>
 
     <div class="Departments">
+
+      <div *ngIf="!depts || depts.length == 0">
+        {{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.NO_DEPARTMENTS" | translate}}
+      </div>
+
       <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts | keyValues">
         <label for="{{department.key}}" *ngIf="deleting && !department.value">
           <input class="form-check-input" type="checkbox" id="{{department.key}}" [value]="department.key"
@@ -48,6 +53,7 @@
         <input type="text" class="form-control col-md-4" *ngIf="editing" [ngModel]="department.key"
                (ngModelChange)="setDepartmentValue(department.key, $event)">
       </div>
+
       <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
         <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[departmentName]}">
           <input type="text" class="form-control" placeholder="Add a new department" [(ngModel)]="departmentName"
