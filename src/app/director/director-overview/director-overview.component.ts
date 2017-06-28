@@ -2,13 +2,23 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
+import {ActionsService} from "../../services/actions.service";
+import {Observable} from "rxjs/Observable";
+import {AlertLevels, AlertStatus} from "../../utils/Enums";
+import {HazardImages} from "../../utils/HazardImages";
+import {Constants} from "../../utils/Constants";
+import {CommonService} from "../../services/common.service";
 
 @Component({
   selector: 'app-director-overview',
   templateUrl: './director-overview.component.html',
-  styleUrls: ['./director-overview.component.css']
+  styleUrls: ['./director-overview.component.css'],
+  providers: [ActionsService]
 })
 export class DirectorOverviewComponent implements OnInit, OnDestroy {
+
+  private AlertLevels = AlertLevels;
+  private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -23,8 +33,10 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   private agencyName: string;
 
   private officeTarget: string;
+  private alerts: Observable<any>;
+  private areaContent: any;
 
-  constructor(private route: ActivatedRoute, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private commonService: CommonService) {
     this.initMainMenu();
     this.initOfficeSubMenu();
   }
@@ -72,6 +84,32 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
           this.officeTarget = params["officeTarget"];
           this.handleOfficeSubMenu();
         }
+
+        this.getAlerts();
+        this.getAreaValues();
+
+      });
+  }
+
+  private getAreaValues() {
+    // get the country levels values
+    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(content => {
+        this.areaContent = content;
+      });
+  }
+
+  private getAlerts() {
+    this.alerts = this.alertService.getAlerts(this.countryId)
+      .map(alerts => {
+        let alertList = [];
+        alerts.forEach(alert => {
+          if (alert.approvalStatus == AlertStatus.Approved) {
+            alertList.push(alert);
+          }
+        });
+        return alertList;
       });
   }
 
@@ -99,6 +137,18 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
     this.tabMap.forEach((v, k) => {
       this.tabMap.set(k, k == menuName);
     });
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  getAreaNames(areas): string[] {
+    return this.commonService.getAreaNameList(this.areaContent, areas);
   }
 
 }

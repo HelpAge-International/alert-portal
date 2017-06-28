@@ -1,15 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Indicator} from "../model/indicator";
-import {HazardScenario, AlertMessageType, DurationType, UserType} from "../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AlertMessageType, DurationType, HazardScenario} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
-import {RxHelper} from "../utils/RxHelper";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {CommonService} from "../services/common.service";
-import {AlertMessageModel} from '../model/alert-message.model';
-import {ModelHazard} from '../model/hazard.model';
-import {LogModel} from '../model/log.model';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {AlertMessageModel} from "../model/alert-message.model";
+import {LogModel} from "../model/log.model";
+import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
@@ -449,6 +445,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  copyIndicator(indicator: {}, isContext: boolean) {
+    console.log(indicator);
+    console.log(this.countryID)
+    console.log("isContext: " + isContext);
   }
 
 }

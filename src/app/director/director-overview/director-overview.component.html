@@ -7,7 +7,51 @@
     </div>
   </div>
 </div>
+
+<!--menu-->
 <app-view-country-menu (onMenuSelected)="menuSelection($event)"></app-view-country-menu>
+
+<!--alerts-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div *ngIf="alerts | async as alertList">
+      <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
+        <div class="row">
+          <div class="col-md-3 Alert-Widget__item"
+               [class.bg-info]="alert.approvalStatus==0"
+               [class.bg-warning]="alert.alertLevel==1"
+               [class.bg-danger]="alert.alertLevel==2 && alert.approvalStatus==1">
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+          </div>
+          <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
+            <i div
+               class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+            <div>
+              <span>{{"ALERT.RISK" | translate}}:</span>
+              {{HazardScenariosList[alert.hazardScenario] | translate}}
+            </div>
+          </div>
+          <div class="col-md-3 Alert-Widget__item">
+            <div>
+              <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}} {{"ALERT.PEOPLE"
+              | translate}}
+            </div>
+          </div>
+          <div class="col-md-3 Alert-Widget__item">
+            <div>
+              <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+              <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span>
+              <span *ngFor="let name of getAreaNames(alert.affectedAreasDisplay)">{{name | translate}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--sub pages-->
 <app-country-office-programme
   *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-country-office-programme>
 <app-country-office-capacity
@@ -30,4 +74,6 @@
 <app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
 <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
 <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
+
+
 
