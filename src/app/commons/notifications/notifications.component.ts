@@ -79,6 +79,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.closeModal();
 
     switch(this._USER_TYPE){
+        case 'administratorAgency':
+          this._notificationService.deleteAgencyAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+                .then(() => {
+                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+                })
+                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+          break;
         case 'administratorCountry':
           this._notificationService.deleteCountryAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
@@ -152,6 +159,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private getNotifications(){
       if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
       switch(this._USER_TYPE){
+        case 'administratorAgency':
+          this._notificationService.getAgencyNotifications(this._agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(messages => {
+                  this.messages = messages;
+                });
+          break;
         case 'administratorCountry':
           this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId)
                 .takeUntil(this.ngUnsubscribe)

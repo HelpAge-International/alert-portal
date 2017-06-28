@@ -19,30 +19,7 @@
                     </a>
                 </div>
             </li>
-            <li class="Header_bar__alert">
-                <!--<i class="fa fa-bell" aria-hidden="true"></i>-->
-                <a data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa fa-bell" aria-hidden="true"></i>
-                    <span class="Header_bar__alert--notification" *ngIf="unreadMessages && unreadMessages.length > 0"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right Notification__dropdown">
-                    <div *ngIf="unreadMessages && unreadMessages.length > 0">
-                        <div class="Notification__dropdown__item" *ngFor="let message of unreadMessages">
-                             <p class="Notification__dropdown__item--title">
-                                <a (click)="goToNotifications()">{{message.title}}</a>
-                            </p>
-                            <p>{{message.content}}</p>
-                            <span>{{message.time | timeAgo}}</span>
-                        </div>
-                    </div>
-                    <div *ngIf="!unreadMessages || !unreadMessages.length">
-                        <p class="text-center">{{"SYSTEM_ADMIN.AGENCIES.NO_UNREAD_MESSAGES" | translate}}</p>
-                    </div>
-                    <div class="Notification__dropdown__view-all">
-                        <a (click)="goToNotifications()">{{"SYSTEM_ADMIN.AGENCIES.VIEW_ALL_NOTIFICATIONS" | translate}}</a>
-                    </div>
-                </div>
-            </li>
+            <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="uid"></app-notification-badge>
         </ul>
     </div>
 </div>

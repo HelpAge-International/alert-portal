@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
+import {UserType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {Message} from "../../model/message";
@@ -21,7 +22,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private lastName: string = "";
   private agencyName: string = "";
   private counter: number = 0;
-  private unreadMessages = [];
+
+  private USER_TYPE: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -36,9 +38,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this._notificationService.getAgencyNotifications(this.uid, true).subscribe(unreadMessages => {
-          this.unreadMessages = unreadMessages;
-        });
+        this.USER_TYPE = Constants.USER_PATHS[UserType.AgencyAdmin];
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe).subscribe(user => {
           this.firstName = user.firstName;
@@ -68,11 +68,5 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     } else {
       this.translate.use("fr");
     }
-  }
-
-  goToNotifications() {
-    this._notificationService.setAgencyNotificationsAsRead(this.uid).subscribe(() => {
-      this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
-    })
   }
 }

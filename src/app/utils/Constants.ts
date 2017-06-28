@@ -813,7 +813,9 @@ export class Constants {
     'globalUser',
     'administratorCountry',
     ,
-    'countryUser'
+    'countryUser',
+    'administratorAgency',
+    ,
   ];
 
   // Nodes List, used for saving Notes
