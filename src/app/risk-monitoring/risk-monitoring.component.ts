@@ -12,6 +12,7 @@ import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import _date = moment.unitOfTime._date;
+import {takeUntil} from "rxjs/operator/takeUntil";
 
 
 declare var jQuery: any;
@@ -452,8 +453,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
-  copyIndicator(indicator: any, isContext: boolean) {
-    console.log(indicator);
+  copyIndicator(indicator: any, isContext: boolean, hazardScenario: number) {
+    console.log(indicator.$key);
     console.log(this.countryID)
     console.log("isContext: " + isContext);
     if (isContext) {
@@ -462,6 +463,29 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         "indicatorId": indicator.$key,
         "isContext": isContext
       }]);
+    } else {
+      console.log(hazardScenario);
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
+        .take(1)
+        .subscribe(ownCountryId => {
+          console.log(ownCountryId);
+          this.af.database.list(Constants.APP_STATUS + "/hazard/" + ownCountryId, {
+            query: {
+              orderByChild: "hazardScenario",
+              equalTo: hazardScenario,
+              limitToFirst: 1
+            }
+          })
+            .take(1)
+            .subscribe(hazards => {
+              console.log(hazards);
+              if (hazards.length == 0) {
+                console.log("no hazard exist!!")
+              } else {
+                console.log("do the hazard copy action")
+              }
+            });
+        });
     }
   }
 

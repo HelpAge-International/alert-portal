@@ -276,7 +276,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     }
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
-        this.indicatorData.triggerSelected = 0;
+        if (!this.isEdit) {
+          this.indicatorData.triggerSelected = 0;
+        }
         this.indicatorData.category = parseInt(this.indicatorData.category);
         this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType, this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue);
         this.indicatorData.updatedAt = new Date().getTime();
@@ -302,11 +304,12 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.list(urlToPush)
             .push(dataToSave)
             .then(() => {
-              this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
-              this.indicatorData = new Indicator();
-              this.addAnotherSource();
-              this.addAnotherLocation();
-              this.addIndicatorTrigger();
+              this.backToRiskHome();
+              // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
+              // this.indicatorData = new Indicator();
+              // this.addAnotherSource();
+              // this.addAnotherLocation();
+              // this.addIndicatorTrigger();
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
           });
@@ -315,8 +318,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.object(urlToEdit)
             .set(dataToSave)
             .then(() => {
-              this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
-              return true;
+              this.backToRiskHome();
+              // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
+              // return true;
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
           });
@@ -533,6 +537,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   onAlertHidden(hidden: boolean) {
     if (this.alertMessage.type == AlertMessageType.Success)
       this._location.back();
+  }
+
+  backToRiskHome() {
+    this.router.navigateByUrl("/risk-monitoring");
   }
 
 }

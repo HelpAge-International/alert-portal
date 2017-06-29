@@ -11,6 +11,7 @@ import {OperationAreaModel} from "./operation-area.model";
 export class Indicator extends BaseModel {
     public id: string;
     public category: HazardScenario = 0;
+    public triggerSelected:number;
     public name: string = '';
     public source: any[] = [];
     public assignee: string;
@@ -36,7 +37,7 @@ export class Indicator extends BaseModel {
     }
 
     setData(indicator) {
-        
+
         this.id = indicator.id;
         this.category = indicator.category;
         this.name = indicator.name;
@@ -45,6 +46,7 @@ export class Indicator extends BaseModel {
         this.source = [];
         this.affectedLocation = [];
         this.trigger = [];
+        this.triggerSelected = indicator.triggerSelected;
 
         indicator.source.forEach((source, key) => {
             this.source.push(new IndicatorSourceModel());
