@@ -16,4 +16,14 @@ export class ModelNetwork {
   public name: string;
   public isActive: boolean;
   public logoPath: string;
+  public isInitialisedNetwork: boolean;
+  public addressLine1: string;
+  public addressLine2: string;
+  public addressLine3: string;
+  public countryId: number;
+  public city: string;
+  public postcode: string;
+  public telephone: string;
+  public websiteAddress: string;
+
 }

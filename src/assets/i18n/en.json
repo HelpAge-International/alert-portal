@@ -129,9 +129,11 @@
             "EMAIL_ADDRESS": "Email Address",
             "POSTCODE": "Postcode/Zip Code",
             "PHONE": "Phone Number",
-            "WEB_ADDRESS": "Website address",
+            "WEB_ADDRESS": "Website Address",
             "POSITION": "Position",
-            "TITLE": "Title"
+            "TITLE": "Title",
+            "TELEPHONE_NUMBER":"Telephone Number"
+
         },
         "USER_TYPE": {
             "ALL_USERS": "All Users",
@@ -651,6 +653,7 @@
         "NETWORK_LOGO": "Network Logo",
         "NETWORK_LOGO_INVALID_FILETYPE": "The agency logo image type is invalid",
         "NETWORK_LOGO_SIZE_EXCEEDED": "The agency logo image size is too large",
+        "NETWORK_NAME": "Network Name",
         "SUPPORTED_FORMATS": "Supported formats",
         "REPLACE_IMAGE": "Replace image",
         "REMOVE_IMAGE": "Remove image",
@@ -658,7 +661,7 @@
         "NO_ADDRESS_1": "Please enter address line 1",
         "NO_COUNTRY": "Please select a country",
         "NO_CITY": "Please enter the name of the city",
-        "NO_PHONE": "Please enter the phone number",
+        "NO_TELEPHONE": "Please enter the telephone number",
         "NO_CURRENCY": "Please select a currency type"
       }
     },

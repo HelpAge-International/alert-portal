@@ -22,7 +22,7 @@
       <h3>{{"NETWORK_ADMIN.PLEASE_FILL" | translate}}</h3>
 
       <div class="Agency-details__logo">
-        <div class="form-group"><label>{{"NETWROK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO" | translate}}</label></div>
+        <div class="form-group"><label>{{"NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO" | translate}}</label></div>
         <label for="imgInp" class="Agency-details__logo__preview" [class.Selected]="agencyLogo" [style.background-image]="'url('+ networkLogo + ')'"></label>
         <input type='file' id="imgInp" (change) = "fileChange($event)" class="Input-form--hidden"/>
         <div><a href="javascript:void(0);" *ngIf="!showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE" | translate}}</a></div>
@@ -34,29 +34,40 @@
         <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
       </div>
 
+      <br>
+
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-1">{{"NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_NAME" | translate}}*</label>
+            <input type="text" class="form-control" id="A-line-0" placeholder="Please enter" value= {{networkName}} required>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAddressLine1]}">
             <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}*</label>
-            <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyAddressLine1">
+            <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="networkAddressLine1">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="A-line-2">{{"GLOBAL.USER_INFO.ADDRESS_LINE_2" | translate}}</label>
-            <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyAddressLine2">
+            <input type="text" class="form-control" id="A-line-2" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="networkAddressLine2">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="A-line-3">{{"GLOBAL.USER_INFO.ADDRESS_LINE_3" | translate}}</label>
-            <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyAddressLine3">
+            <input type="text" class="form-control" id="A-line-3" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="networkAddressLine3">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCountry]}">
             <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
-            <select name="Country" id="Country" class="form-control" [(ngModel)]="agencyCountry">
+            <select name="Country" id="Country" class="form-control" [(ngModel)]="networkCountry">
               <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
               <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
             </select>
@@ -65,14 +76,14 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCity]}">
             <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}*</label>
-            <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyCity">
+            <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="networkCity">
           </div>
         </div>
 
         <div class="col-lg-4 col-md-6">
           <div class="form-group" >
             <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
-            <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyPostCode">
+            <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="networkPostCode">
           </div>
         </div>
       </div>
@@ -80,27 +91,16 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyPhone]}">
-            <label for="T-number">{{"GLOBAL.USER_INFO.PHONE" | translate}}*</label>
-            <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyPhone">
+            <label for="T-number">{{"GLOBAL.USER_INFO.TELEPHONE_NUMBER" | translate}}*</label>
+            <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="networkTelephone">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="W-address">{{"GLOBAL.USER_INFO.WEB_ADDRESS" | translate}}</label>
-            <input type="text" class="form-control" id="W-address" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyWebAddress">
+            <input type="text" class="form-control" id="W-address" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="networkWebAddress">
           </div>
         </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCurrency]}">
-            <label for="Country">{{"GLOBAL.CURRENCY" | translate}}*</label>
-            <select name="Country" id="Currency" class="form-control" [(ngModel)]="agencyCurrency">
-              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-              <option *ngFor="let currency of currenciesList" [ngValue]="currency">{{Currency[currency] | translate}}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
 
       <div class="Form-submit__wrapper">
         <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.CONTINUE" | translate | uppercase}}</div>
