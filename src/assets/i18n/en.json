@@ -751,7 +751,8 @@
             "NO_PHONE": "Please enter the phone number of the staff",
             "NO_TRAINING_NEEDS": "Please enter training needs",
             "NO_REPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
-            "NO_STAFF_MEMBERS": "No country offices or staff members have been added to your agency"
+            "NO_STAFF_MEMBERS": "No country offices or staff members have been added to your agency",
+            "NO_STAFF_MEMBERS_IN_COUNTRY": "No staff members have been added to this country office"
         },
         "MESSAGES": {
             "TITLE_TEXT": "Agency Messages",
