@@ -108,7 +108,13 @@ export class FileExtensionsEnding {
 export enum Currency {
     GBP = 0,
     EUR = 1,
-    USD = 2
+    USD = 2,
+    KSH = 3,
+    MZN = 4,
+    CDF = 5,
+    PHP = 6,
+    BDT = 7,
+    PKR = 8
 }
 
 export enum StaffPosition {

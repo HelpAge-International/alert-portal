@@ -36,7 +36,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private Country = Constants.COUNTRIES;
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
   private Currency = Constants.CURRENCY;
-  private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
+  private currenciesList: number[] = Constants.CURRENCY_SELECTION;
   private logoFile: File;
   private showReplaceRemoveLinks: boolean = false;
 

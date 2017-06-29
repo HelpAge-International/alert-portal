@@ -78,8 +78,28 @@ export class Constants {
   static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.INACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED"];
   static ACTION_TYPE: string[] = ["GLOBAL.ACTION_TYPE.CHS", "GLOBAL.ACTION_TYPE.MANDATED", "GLOBAL.ACTION_TYPE.CUSTOM"];
 
-  static CURRENCY: string[] = ["GBP", "EUR", "USD"];
-  static CURRENCY_SELECTION = [Currency.GBP, Currency.EUR, Currency.USD];
+  static CURRENCY: string[] = [
+    "GBP",
+    "EUR",
+    "USD",
+    "KSH",
+    "MZN",
+    "CDF",
+    "PHP",
+    "BDT",
+    "PKR"
+  ];
+  static CURRENCY_SELECTION = [
+    Currency.GBP,
+    Currency.EUR,
+    Currency.USD,
+    Currency.KSH,
+    Currency.MZN,
+    Currency.CDF,
+    Currency.PHP,
+    Currency.BDT,
+    Currency.PKR
+  ];
 
   //agency add staff
   static USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
