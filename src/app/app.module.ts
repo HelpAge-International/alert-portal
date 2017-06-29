@@ -180,6 +180,7 @@ import {ExportProposalComponent} from "./export-proposal/export-proposal.compone
 import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 import {OrderByPipe} from "./utils/pipes/orderby.pipe";
 import {PreparednessFilter} from "./utils/pipes/filter.pipe";
+import {PrepActionService} from "./services/prepactions.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -390,6 +391,7 @@ const firebaseAuthConfig = {
               SettingsService,
               MessageService,
               NotificationService,
+              PrepActionService,
               NoteService,
               EquipmentService,
               CoordinationArrangementService,

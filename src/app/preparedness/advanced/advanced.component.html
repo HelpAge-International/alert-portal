@@ -86,7 +86,7 @@
         <!-- DEPARTMENTS -->
         <select class="form-control" id="DepartmentsFilter" [(ngModel)]="filterDepartment">
           <option value="-1" selected>All departments</option>
-          <option *ngFor="let x of DEPARTMENTS" value="{{x}}">{{x}}</option>
+          <option *ngFor="let x of DEPARTMENTS" value="{{x.id}}">{{x.name}}</option>
         </select>
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
@@ -125,7 +125,7 @@
     <div class="Ribbon__section__wrap Spaced">
       <h2>Inactive Actions</h2>
 
-      <div *ngFor="let action of actions">
+      <div *ngFor="let action of prepActionService.actions">
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
@@ -174,7 +174,7 @@
 
                     </div>
                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">Inactive until Red Alert Level
-                      <a *ngIf="action.type == ActionType.custom"
+                      <a
                          [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                         action</a>
                     </div>
@@ -349,7 +349,7 @@
         )
         }}</h2>
 
-      <div *ngFor="let action of actions">
+      <div *ngFor="let action of prepActionService.actions">
 
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
@@ -431,7 +431,7 @@
                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
                           </div>
 
-                          <a *ngIf="action.type == ActionType.custom"
+                          <a
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -620,7 +620,7 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseTwo">
-        <div *ngFor="let action of actions">
+        <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
@@ -674,8 +674,7 @@
                              aria-expanded="false" aria-controls="popover_content"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
-                          <a *ngIf="action.type == ActionType.custom"
-                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -812,7 +811,7 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseThree">
-        <div *ngFor="let action of actions">
+        <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
@@ -870,7 +869,6 @@
 
 
                           <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
-                             *ngIf="action.type == ActionType.custom"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
