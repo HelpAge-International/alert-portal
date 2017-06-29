@@ -25,7 +25,7 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
 // Sends a welcome email to the given user.
 function sendWelcomeEmail(email) {
   const mailOptions = {
-    from: '"Alert" <noreply@firebase.com>',
+    from: '"ALERT" <noreply@firebase.com>',
     to: email
   };
 
