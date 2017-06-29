@@ -143,7 +143,7 @@
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                       </div>
-                      <div *ngIf="isViewing" class="col-sm-12 btn btn-tertiary" (click)="copyIndicator(indicatorC, true)">
+                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary" (click)="copyIndicator(indicatorC, true)">
                         Copy
                       </div>
                       <!--TODO-->
@@ -360,7 +360,7 @@
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                     </div>
-                    <div *ngIf="isViewing" class="col-sm-12 btn btn-tertiary" (click)="copyIndicator(indicator, false)">
+                    <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary" (click)="copyIndicator(indicator, false)">
                       <!--TODO TRANSLATE-->
                       Copy
                     </div>

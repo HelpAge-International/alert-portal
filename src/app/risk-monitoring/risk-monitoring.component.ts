@@ -23,6 +23,7 @@ declare var jQuery: any;
 
 export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
+
   private UserType: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -34,6 +35,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
   private agencyId: string;
   public hazards: any[] = [];
+  private canCopy: boolean;
 
   public activeHazards: any[] = [];
   public archivedHazards: any[] = [];
@@ -115,6 +117,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
+        }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
         }
 
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
@@ -447,10 +452,17 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
-  copyIndicator(indicator: {}, isContext: boolean) {
+  copyIndicator(indicator: any, isContext: boolean) {
     console.log(indicator);
     console.log(this.countryID)
     console.log("isContext: " + isContext);
+    if (isContext) {
+      this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
+        "countryId": this.countryID,
+        "indicatorId": indicator.$key,
+        "isContext": isContext
+      }]);
+    }
   }
 
 }

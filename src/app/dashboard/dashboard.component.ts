@@ -1,12 +1,9 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Observable} from "rxjs";
-import {
-  ActionLevel, ActionStatus, ActionType, AlertLevels, AlertStatus, Countries, DashboardType,
-  UserType
-} from "../utils/Enums";
+import {ActionLevel, ActionType, AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";

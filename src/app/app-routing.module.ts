@@ -114,6 +114,7 @@ import { CountryOfficeDocumentsComponent } from "./country-admin/country-office-
 import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
+import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -248,6 +249,7 @@ const routes: Routes = [
     {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
     {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
     {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+    {path: 'dashboard/dashboard-overview', component: DashboardOverviewComponent},
 
 
     /**

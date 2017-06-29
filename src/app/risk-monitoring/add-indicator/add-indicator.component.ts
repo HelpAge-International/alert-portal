@@ -96,6 +96,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  private copyCountryId: string;
+  private copyIndicatorId: string;
+  private isContext: boolean;
+
   constructor(private pageControl: PageControlService, private af: AngularFire,
               private router: Router,
               private _commonService: CommonService,
@@ -107,6 +111,29 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+
+        if (params["countryId"]) {
+          this.copyCountryId = params["countryId"];
+        }
+
+        if (params["indicatorId"]) {
+          this.copyIndicatorId = params["indicatorId"];
+        }
+
+        if (params["isContext"]) {
+          this.isContext = params["isContext"];
+        }
+
+        if (this.copyCountryId && this.copyIndicatorId && this.isContext) {
+          this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId);
+        }
+
+      });
+
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.UserType = userType;
@@ -124,6 +151,18 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           err => console.log(err);
         });
     });
+  }
+
+  private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string) {
+    this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyCountryId + "/" + copyIndicatorId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(copyContextIndicator => {
+        let contextIndicator = new Indicator();
+        contextIndicator.mapFromObject(copyContextIndicator);
+        this.indicatorData = contextIndicator;
+        console.log(this.indicatorData);
+        this.indicatorData.assignee = undefined;
+      })
   }
 
   ngOnDestroy() {
@@ -241,6 +280,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         this.indicatorData.category = parseInt(this.indicatorData.category);
         this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType, this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue);
         this.indicatorData.updatedAt = new Date().getTime();
+        if (!this.indicatorData.assignee) {
+          this.indicatorData.assignee = null;
+        }
         var dataToSave = this.indicatorData;
 
         var urlToPush;
@@ -255,7 +297,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           urlToPush = Constants.APP_STATUS + '/indicator/' + this.hazardID;
           urlToEdit = Constants.APP_STATUS + '/indicator/' + this.hazardID + '/' + this.indicatorID;
         }
-
+        console.log(dataToSave);
         if (!this.isEdit) {
           this.af.database.list(urlToPush)
             .push(dataToSave)
@@ -309,9 +351,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.hazardsObject["countryContext"] = hazards["countryContext"];
 
       for (let hazard in hazards) {
-        hazards[hazard].key = hazard;
-        this.hazards.push(hazards[hazard]);
-        this.hazardsObject[hazard] = hazards[hazard];
+        if (hazards[hazard] && hazards[hazard].key) {
+          hazards[hazard].key = hazard;
+          this.hazards.push(hazards[hazard]);
+          this.hazardsObject[hazard] = hazards[hazard];
+        }
       }
 
     });
@@ -362,13 +406,17 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       }
       if (!this.alertMessage) {
         this.indicatorData.source.forEach((val, key) => {
-          this._validateIndicatorSource(val);
+          let modelSource = new IndicatorSourceModel();
+          modelSource.mapFromObject(val);
+          this._validateIndicatorSource(modelSource);
           if (this.alertMessage) {
             res(false);
           }
         });
         this.indicatorData.trigger.forEach((val, key) => {
-          this._validateIndicatorTrigger(val);
+          let modelTrigger = new IndicatorTriggerModel();
+          modelTrigger.mapFromObject(val);
+          this._validateIndicatorTrigger(modelTrigger);
           if (this.alertMessage) {
             res(false);
           }
@@ -377,7 +425,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         if (!this.alertMessage) {
           if (this.indicatorData.geoLocation == 1) {
             this.indicatorData.affectedLocation.forEach((val, key) => {
-              this._validateOperationArea(val);
+              let modelArea = new OperationAreaModel();
+              modelArea.mapFromObject(val);
+              this._validateOperationArea(modelArea);
               if (this.alertMessage) {
                 res(false);
               }

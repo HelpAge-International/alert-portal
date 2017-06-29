@@ -1,21 +1,21 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
+import {AlertLevels, AlertStatus} from "../../utils/Enums";
+import {Observable} from "rxjs/Observable";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
-import {Observable} from "rxjs/Observable";
-import {AlertLevels, AlertStatus} from "../../utils/Enums";
-import {HazardImages} from "../../utils/HazardImages";
-import {Constants} from "../../utils/Constants";
 import {CommonService} from "../../services/common.service";
+import {HazardImages} from "../../utils/HazardImages";
 
 @Component({
-  selector: 'app-director-overview',
-  templateUrl: './director-overview.component.html',
-  styleUrls: ['./director-overview.component.css'],
+  selector: 'app-dashboard-overview',
+  templateUrl: './dashboard-overview.component.html',
+  styleUrls: ['./dashboard-overview.component.css'],
   providers: [ActionsService]
 })
-export class DirectorOverviewComponent implements OnInit, OnDestroy {
+export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
@@ -85,9 +85,9 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
           this.handleOfficeSubMenu();
         }
 
-        if (!this.countryId && !this.agencyId && !this.isViewing) {
-          this.router.navigateByUrl("/director");
-        }
+        // if (!this.countryId && !this.agencyId && !this.isViewing) {
+        //   this.router.navigateByUrl("/dashboard");
+        // }
 
         this.getAlerts();
         this.getAreaValues();
