@@ -9,7 +9,7 @@ const gmailPassword = encodeURIComponent(functions.config().gmail.password);
 const mailTransport = nodemailer.createTransport(
   `smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
 
-const APP_NAME = 'Alert';
+const APP_NAME = 'ALERT';
 const WEEK = 0;
 const MONTH = 1;
 const YEAR = 2;
@@ -33,10 +33,10 @@ function sendWelcomeEmail(email) {
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-                      \n You temporary password is "testtest", please login with your email address to update you credentials.
+                      \n Your temporary password is "testtest", please login with your email address to update your credentials.
                       \n https://uat.portal.alertpreparedness.org
                       \n Thanks
-                      \n Your Alert team `;
+                      \n Your ALERT team `;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
   });
