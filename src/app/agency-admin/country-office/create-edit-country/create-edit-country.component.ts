@@ -344,7 +344,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
     this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/adminId/"] = countryId;
     this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/location/"] = this.countryOfficeLocation;
-    this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/isArchived/"] = true;
+    this.countryData["/countryOffice/" + this.agencyId + "/" + countryId + "/isActive/"] = true;
 
     this.af.database.object(Constants.APP_STATUS).update(this.countryData).then(() => {
       this.backHome();

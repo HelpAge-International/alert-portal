@@ -54,7 +54,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   toggleActive() {
     let state: boolean = !this.agencyToUpdate.isActive;
     console.log(this.agencyToUpdate.isActive);
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyToUpdate.$key + "/isArchived").set(state).then(_ => {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyToUpdate.$key + "/isActive").set(state).then(_ => {
       console.log("Agency state updated");
       jQuery("#update-agency").modal("hide");
     });
