@@ -46,13 +46,13 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     this.af.auth.logout();
   }
 
-  test() {
-    this.counter++;
-    if (this.counter % 2 == 0) {
-      this.translate.use("en");
-    } else {
-      this.translate.use("fr");
-    }
-  }
+  // test() {
+  //   this.counter++;
+  //   if (this.counter % 2 == 0) {
+  //     this.translate.use("en");
+  //   } else {
+  //     this.translate.use("fr");
+  //   }
+  // }
 
 }
