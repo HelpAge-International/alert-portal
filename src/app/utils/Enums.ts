@@ -190,7 +190,7 @@ export enum ResponsePlanSectionSettings {
     PlanDetails = 0,
     PlanContext = 1,
     BasicInformation = 2,
-    ActivitySummary = 3,
+    ResponseObjectives = 3,
     TargetPopulation = 4,
     ExpectedResults = 5,
     Activities = 6,

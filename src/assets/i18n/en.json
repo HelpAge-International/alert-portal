@@ -828,7 +828,7 @@
                 "PLAN_DETAILS": "Plan Details",
                 "PLAN_CONTEXT": "Plan Context",
                 "BASIC_INFORMATION": "Basic Information",
-                "ACTIVITY_SUMMARY": "Activity Summary",
+                "ACTIVITY_SUMMARY": "Response Objectives",
                 "TARGET_POPULATION": "Target Population",
                 "EXPECTED_RESULTS": "Expected Results",
                 "ACTIVITIES": "Activities",
@@ -1413,7 +1413,7 @@
                 "REMOVE_FROM_THIS_PLAN": "Remove from this plan"
             },
             "ACTIVITY_SUMMARY": {
-                "TITLE_TEXT": "Activity Summary",
+                "TITLE_TEXT": "Response Objectives",
                 "EXPLAIN_PROPOSED_PLAN_TEXT": "Explain your proposed response and why you have selected this particular response to the crisis",
                 "EXPLAIN_ACTIVITIES_PLAN_TEXT": "Explain how you will start your activities in 7 days and finish within 45 days",
                 "EXPLAIN_COORDINATION_TEXT?": "How are you co-ordinating and with whom?"
