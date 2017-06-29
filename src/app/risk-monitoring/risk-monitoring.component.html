@@ -220,7 +220,10 @@
                      attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + indicatorC.$key}}"
+                       aria-expanded="true"
+                       attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}"
+                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
                   <div class="row col-sm-10">
@@ -434,7 +437,10 @@
                      attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                       aria-expanded="true"
+                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
                   <div class="row col-sm-10">
@@ -730,7 +736,10 @@
                        attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
                     <div class="log_left p-3 row col-sm-12">
                       <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                      <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                      <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                         aria-expanded="true"
+                         attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                         class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                         translate}}</a>
                     </div>
                     <div class="row col-sm-10">
