@@ -18,6 +18,7 @@
         "CLOSE": "Close",
         "REMOVE": "Remove",
         "REJECT": "Reject",
+        "ACTION_LEVEL": "Action Level",
         "COUNTRY": "Country",
         "MALE": "Male",
         "FEMALE": "Female",
