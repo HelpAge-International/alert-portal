@@ -61,6 +61,10 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/agency-admin/country-office");
+  }
+
   // test() {
   //   this.counter++;
   //   if (this.counter % 2 == 0) {

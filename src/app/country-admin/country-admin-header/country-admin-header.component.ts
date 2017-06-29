@@ -127,6 +127,10 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/dashboard");
+  }
+
   goToNotifications() {
     this._notificationService.setCountryAdminNotificationsAsRead(this.countryId, this.agencyAdminId).subscribe(() => {
       this.router.navigateByUrl("country-admin/country-notifications");
