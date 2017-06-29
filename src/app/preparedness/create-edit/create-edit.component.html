@@ -91,7 +91,6 @@
                       [selected]="dList == actionData.department ? true : false" [value]="dList">
                 {{dList}}
               </option>
-              <option class="add-department">{{"PREPAREDNESS.ADD_A_DEPARTMENT" | translate}}</option>
             </select>
           </div>
           <div
@@ -101,40 +100,7 @@
           </div>
         </div>
       </div>
-      <!--modal Add new Department-->
-      <div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-           aria-hidden="true">
-        <div class="Alert-error" [hidden]="newDepartmentErrorInactive">
-          <!--{{newDepartmentErrorMessage | translate}}-->
-        </div>
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.MANDATED_PA.ADD_DEPARTMENT_TITLE"
-                | translate}}</strong></h5>
-              <button type="button" class="close" (click)="closeModal()">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="form-group">
-                <label>{{"AGENCY_ADMIN.MANDATED_PA.DEPARTMENT_NAME" | translate}}</label>
-                <input type="text" class="form-control" id="Department-Name"
-                       placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" #newDepartment>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" (click)="createNewDepartment(newDepartment)">
-                {{"GLOBAL.SAVE"| translate | uppercase}}
-              </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">
-                {{"GLOBAL.CANCEL"| translate}}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- end modal Add new Department-->
+
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
@@ -143,7 +109,7 @@
               <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
               <option *ngFor="let userAssign of usersForAssign"
                       [selected]="actionData.asignee == userAssign.userID ? true : false"
-                      [value]="userAssign.userID">{{userAssign.firstName}}
+                      [value]="userAssign.userID">{{userAssign.firstName + " " + userAssign.lastName}}
               </option>
             </select>
           </div>
