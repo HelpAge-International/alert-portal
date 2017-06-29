@@ -43,7 +43,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   Country = Constants.COUNTRIES;
   countryList: number[] = Constants.COUNTRY_SELECTION;
   PersonTitle = Constants.PERSON_TITLE;
-  personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
+  personTitleList: number[] = Constants.PERSON_TITLE_SELECTION;
   private emailInDatabase: string;
   private agencyId: string;
   private userPublic: ModelUserPublic;

@@ -54,12 +54,23 @@ export class Constants {
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
   static THRESHOLD_NAME = ["GLOBAL.THRESHOLD_NAME.GREEN", "GLOBAL.THRESHOLD_NAME.AMBER", "GLOBAL.THRESHOLD_NAME.RED"];
 
-  static PERSON_TITLE: string[] = ["GLOBAL.PERSON_TITLE.MR", "GLOBAL.PERSON_TITLE.MRS", "GLOBAL.PERSON_TITLE.MISS",
-    "GLOBAL.PERSON_TITLE.DR", "GLOBAL.PERSON_TITLE.PROF"];
-  static PERSON_TITLE_SELECTION: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
+  static PERSON_TITLE: string[] = [
+    "GLOBAL.PERSON_TITLE.MR",
+    "GLOBAL.PERSON_TITLE.MRS",
+    "GLOBAL.PERSON_TITLE.MISS",
+    "GLOBAL.PERSON_TITLE.MS",
+    "GLOBAL.PERSON_TITLE.DR",
+    "GLOBAL.PERSON_TITLE.PROF"
+  ];
 
-  // static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
-
+  static PERSON_TITLE_SELECTION: number[] = [
+    PersonTitle.Mr,
+    PersonTitle.Mrs,
+    PersonTitle.Miss,
+    PersonTitle.Ms,
+    PersonTitle.Dr,
+    PersonTitle.Prof
+  ];
 
   static CATEGORY: string[] = [
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ALL",

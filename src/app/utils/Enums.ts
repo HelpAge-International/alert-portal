@@ -64,8 +64,9 @@ export enum PersonTitle {
     Mr = 0,
     Mrs = 1,
     Miss = 2,
-    Dr = 3,
-    Prof = 4
+    Ms = 3,
+    Dr = 4,
+    Prof = 5
 }
 
 export enum FileType {
