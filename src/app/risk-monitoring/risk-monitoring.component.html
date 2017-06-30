@@ -840,9 +840,10 @@
           <h5>
             <span *ngIf="tmpHazardData['activeStatus']">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE" | translate}}</span>
             <span *ngIf="!tmpHazardData['activeStatus']">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</span>
-            <strong>
-              {{hazardScenario[tmpHazardData['hazardScenario']]}}?
+            <strong *ngIf="hazardScenario[tmpHazardData['scenario']]">
+              {{hazardScenario[tmpHazardData['scenario']] | translate}}?
             </strong>
+            <strong *ngIf="!hazardScenario[tmpHazardData['scenario']]">?</strong>
           </h5>
         </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -866,11 +867,11 @@
             </div>
           </div>
           <div class="row justify-content-center Spaced col-sm-12">
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-               (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="updateHazardActiveStatus('archiveHazard')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
+            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
+            (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>
@@ -893,11 +894,11 @@
         <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="tmpLogData['content']"></textarea>
       </div>
       <div class="row Right-aligned Spaced col-sm-12">
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+        (click)="editLog('editNote')">{{"GLOBAL.SAVE" | translate}}
+        </button>
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="removeTmpLog()">{{"GLOBAL.CANCEL" |
           translate}}</a>
-        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editLog('editNote')">{{"GLOBAL.SAVE" | translate}}
-        </button>
       </div>
     </div>
   </div>
@@ -926,11 +927,11 @@
             </div>
           </div>
           <div class="row justify-content-center Spaced col-sm-12">
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-               (click)="removeTmpLog()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="deleteLog('deleteIndicatorLog')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
+            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
+            (click)="removeTmpLog()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>
@@ -961,11 +962,11 @@
             </div>
           </div>
           <div class="row justify-content-center Spaced col-sm-12">
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-               (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="deleteHazard('deleteHazardModal')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
+            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
+            (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>
