@@ -99,6 +99,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private copyCountryId: string;
   private copyIndicatorId: string;
   private isContext: boolean;
+  private copyHazardId: string;
 
   constructor(private pageControl: PageControlService, private af: AngularFire,
               private router: Router,
@@ -128,8 +129,12 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.isContext = params["isContext"];
         }
 
-        if (this.copyCountryId && this.copyIndicatorId && this.isContext) {
-          this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId);
+        if (params["hazardId"]) {
+          this.copyHazardId = params["hazardId"];
+        }
+
+        if (this.copyCountryId && this.copyIndicatorId) {
+          this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 
       });
@@ -153,16 +158,26 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string) {
-    this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyCountryId + "/" + copyIndicatorId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(copyContextIndicator => {
-        let contextIndicator = new Indicator();
-        contextIndicator.mapFromObject(copyContextIndicator);
-        this.indicatorData = contextIndicator;
-        console.log(this.indicatorData);
-        this.indicatorData.assignee = undefined;
-      })
+  private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string, copyHazardId: string) {
+    if (this.isContext && !copyHazardId) {
+      this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyCountryId + "/" + copyIndicatorId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(copyContextIndicator => {
+          let contextIndicator = new Indicator();
+          contextIndicator.mapFromObject(copyContextIndicator);
+          this.indicatorData = contextIndicator;
+          this.indicatorData.assignee = undefined;
+        });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyHazardId + "/" + copyIndicatorId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(indicator => {
+          let hazardIndicator = new Indicator();
+          hazardIndicator.mapFromObject(indicator);
+          this.indicatorData = hazardIndicator;
+          this.indicatorData.assignee = undefined;
+        });
+    }
   }
 
   ngOnDestroy() {
@@ -346,22 +361,20 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
-    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).subscribe((hazards: any) => {
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
       this.hazards = [];
       this.hazardsObject = {};
 
       hazards["countryContext"] = {key: "countryContext"};
       this.hazards.push(hazards["countryContext"]);
       this.hazardsObject["countryContext"] = hazards["countryContext"];
-
       for (let hazard in hazards) {
-        if (hazards[hazard] && hazards[hazard].key) {
+        if (!hazard.includes("$") && hazard!="countryContext") {
           hazards[hazard].key = hazard;
           this.hazards.push(hazards[hazard]);
           this.hazardsObject[hazard] = hazards[hazard];
         }
       }
-
     });
   }
 

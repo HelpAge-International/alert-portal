@@ -12,7 +12,6 @@ import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import _date = moment.unitOfTime._date;
-import {takeUntil} from "rxjs/operator/takeUntil";
 
 
 declare var jQuery: any;
@@ -453,10 +452,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
-  copyIndicator(indicator: any, isContext: boolean, hazardScenario: number) {
+  copyIndicator(indicator: any, isContext: boolean, hazard: any) {
     console.log(indicator.$key);
     console.log(this.countryID)
     console.log("isContext: " + isContext);
+    console.log(hazard);
     if (isContext) {
       this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
         "countryId": this.countryID,
@@ -464,7 +464,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         "isContext": isContext
       }]);
     } else {
-      console.log(hazardScenario);
+      let hazardScenario = hazard.hazardScenario;
       this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
         .take(1)
         .subscribe(ownCountryId => {
@@ -481,9 +481,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               let activeHazards = hazards.filter(hazard => hazard.isActive == true);
               if (activeHazards.length == 0) {
                 console.log("no hazard exist!!");
-                this.alertMessage = new AlertMessageModel("No same hazard exist in your country !");
+                this.alertMessage = new AlertMessageModel("No same active hazard exist in your country !");
               } else {
-                console.log("do the hazard copy action")
+                console.log("do the hazard copy action");
+                this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
+                  "countryId": this.countryID,
+                  "indicatorId": indicator.$key,
+                  "hazardId": hazard.$key,
+                  "isContext": isContext
+                }]);
               }
             });
         });

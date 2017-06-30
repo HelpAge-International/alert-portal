@@ -56,7 +56,8 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a href="#" data-toggle="modal" data-target="#archiveHazard">
+                <a *ngIf="indicatorsCC.length > 0" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#archiveHazard">
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
                 <!--(click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>-->
@@ -143,7 +144,8 @@
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                       </div>
-                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary" (click)="copyIndicator(indicatorC, true)">
+                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                           (click)="copyIndicator(indicatorC, true)">
                         Copy
                       </div>
                       <!--TODO-->
@@ -228,7 +230,9 @@
                      attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + indicatorC.$key}}" aria-expanded="true"
+                       attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}"
+                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
                   <div class="row col-sm-10">
@@ -276,10 +280,12 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a href="javascript:void(0)" data-toggle="modal" data-target="#archiveHazard"
+                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#archiveHazard"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE"
                   | translate}}</a>
-                <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"
+                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#deleteHazardModal"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                 <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
                   | translate}}</a>
@@ -360,7 +366,8 @@
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                     </div>
-                    <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary" (click)="copyIndicator(indicator, false, hazard.hazardScenario)">
+                    <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                         (click)="copyIndicator(indicator, false, hazard)">
                       <!--TODO TRANSLATE-->
                       Copy
                     </div>
@@ -448,7 +455,10 @@
                      attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                       aria-expanded="true"
+                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
                   <div class="row col-sm-10">
@@ -573,10 +583,12 @@
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                  <a href="#" data-toggle="modal" data-target="#archiveHazard"
+                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                     data-target="#archiveHazard"
                      (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE"
                     | translate}}</a>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"
+                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                     data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                   <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
                     | translate}}</a>
@@ -745,7 +757,10 @@
                        attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
                     <div class="log_left p-3 row col-sm-12">
                       <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                      <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                      <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                         aria-expanded="true"
+                         attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                         class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                         translate}}</a>
                     </div>
                     <div class="row col-sm-10">
