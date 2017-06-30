@@ -8,7 +8,6 @@ import {LoginComponent} from "./login/login.component";
 import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {ResponsePlansComponent} from "./response-plans/response-plans.component";
-import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {MapComponent} from "./map/map.component";
@@ -213,7 +212,6 @@ const firebaseAuthConfig = {
     SystemAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,
-    PreparednessComponent,
     RiskMonitoringComponent,
     CountryOfficeProfileComponent,
     MapComponent,

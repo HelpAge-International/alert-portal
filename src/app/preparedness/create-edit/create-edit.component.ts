@@ -22,7 +22,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private disableAll: boolean;
   private UserType: number;
   private hazardSelectionMap = new Map<number, boolean>();
-  private requireDoc:boolean;
+  private requireDoc: boolean;
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
@@ -33,8 +33,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private modalID: string;
   private departmentsPath: string;
   private departments: Observable<any>;
-  private newDepartmentErrorInactive: boolean = true;
-
 
   private actionSelected: any = {};
   private copyActionData: any = {};
@@ -52,7 +50,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private usersForAssign: any = [];
   private frequency = new Array(100);
 
-  private department = Constants.DEPARTMENT;
   private departmentList: any = [];
   private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
@@ -98,7 +95,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params['id']) {
-        /* TODO remove hardcode actionID */
         this.actionID = params['id'];
       }
     });
@@ -361,15 +357,16 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   addUsersToAssign(userID: string) {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID)
       .subscribe((data: ModelUserPublic) => {
-      let skip = false;
+        let skip = false;
         for (let x of this.usersForAssign) {
           if (x.userID == userID) {
             x.firstName = data.firstName;
+            x.lastName = data.lastName;
             skip = true;
           }
         }
         if (!skip) {
-          let userToPush = {userID: userID, firstName: data.firstName};
+          let userToPush = {userID: userID, firstName: data.firstName, lastName: data.lastName};
           this.usersForAssign.push(userToPush);
         }
       });
@@ -476,16 +473,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
-  createNewDepartment(newDepartment) {
-    if (newDepartment.value != '') {
-      let key = newDepartment.value;
-      let saveDepartment = {[key]: false};
-      this.af.database.object(this.departmentsPath).update(saveDepartment);
-      this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS', AlertMessageType.Success);
-    }
-    this.closeModal();
-  }
-
   _getPreparednessFrequency() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + '/' + this.countryID + '/clockSettings/preparedness').takeUntil(this.ngUnsubscribe).subscribe((frequencySetting: any) => {
@@ -495,8 +482,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         }
         res(true);
       });
-
-
     });
     return promise;
   }

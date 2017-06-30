@@ -123,6 +123,10 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/dashboard");
+  }
+
   goToNotifications() {
     switch(this.USER_TYPE){
       case 'administratorCountry':

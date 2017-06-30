@@ -61,12 +61,22 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
-  test() {
-    this.counter++;
-    if (this.counter % 2 == 0) {
-      this.translate.use("en");
-    } else {
-      this.translate.use("fr");
-    }
+  goToHome() {
+    this.router.navigateByUrl("/agency-admin/country-office");
+  }
+
+  // test() {
+  //   this.counter++;
+  //   if (this.counter % 2 == 0) {
+  //     this.translate.use("en");
+  //   } else {
+  //     this.translate.use("fr");
+  //   }
+  // }
+
+  goToNotifications() {
+    this._notificationService.setAgencyNotificationsAsRead(this.uid).subscribe(() => {
+      this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
+    })
   }
 }

@@ -62,7 +62,6 @@ import {AddPartnerOrganisationComponent} from "./response-plans/add-partner-orga
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
 import {MapComponent} from "./map/map.component";
-import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {MinimumPreparednessComponent} from "./preparedness/minimum/minimum.component";
 import {AdvancedPreparednessComponent} from "./preparedness/advanced/advanced.component";
 import {BudgetPreparednessComponent} from "./preparedness/budget/budget.component";
@@ -274,7 +273,6 @@ const routes: Routes = [
     {path: 'preparedness/select', component: SelectPreparednessComponent},
     {path: 'preparedness/create-edit-preparedness', component: CreateEditPreparednessComponent},
     {path: 'preparedness/create-edit-preparedness/:id', component: CreateEditPreparednessComponent},
-    {path: 'preparedness', component: PreparednessComponent},
 
     /**
      * Response Plans

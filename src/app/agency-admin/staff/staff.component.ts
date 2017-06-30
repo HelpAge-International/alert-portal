@@ -414,7 +414,8 @@ export class StaffComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log(this.globalUsers)
+        console.log(this.globalUsers);
+        this.hideLoader = true;
       });
   }
 

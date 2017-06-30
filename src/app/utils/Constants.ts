@@ -33,6 +33,7 @@ export class Constants {
   static AGENCY_ADMIN_STARFF = "/agency-admin/staff";
   static AGENCY_ADMIN_LOGO_MAX_SIZE = 2000000; //in bytes
   static AGENCY_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
+  static DEFAULT_CLOCK_SETTINGS_DURATION_VAL = 1;
 
   // country administrator
   static COUNTRY_ADMIN_HOME = "/dashboard";
@@ -55,12 +56,23 @@ export class Constants {
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
   static THRESHOLD_NAME = ["GLOBAL.THRESHOLD_NAME.GREEN", "GLOBAL.THRESHOLD_NAME.AMBER", "GLOBAL.THRESHOLD_NAME.RED"];
 
-  static PERSON_TITLE: string[] = ["GLOBAL.PERSON_TITLE.MR", "GLOBAL.PERSON_TITLE.MRS", "GLOBAL.PERSON_TITLE.MISS",
-    "GLOBAL.PERSON_TITLE.DR", "GLOBAL.PERSON_TITLE.PROF"];
-  static PERSON_TITLE_SELECTION: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
+  static PERSON_TITLE: string[] = [
+    "GLOBAL.PERSON_TITLE.MR",
+    "GLOBAL.PERSON_TITLE.MRS",
+    "GLOBAL.PERSON_TITLE.MISS",
+    "GLOBAL.PERSON_TITLE.MS",
+    "GLOBAL.PERSON_TITLE.DR",
+    "GLOBAL.PERSON_TITLE.PROF"
+  ];
 
-  // static COUNTRY: string[] = ["GLOBAL.COUNTRY.UK", "GLOBAL.COUNTRY.FRANCE", "GLOBAL.COUNTRY.GERMANY"];
-
+  static PERSON_TITLE_SELECTION: number[] = [
+    PersonTitle.Mr,
+    PersonTitle.Mrs,
+    PersonTitle.Miss,
+    PersonTitle.Ms,
+    PersonTitle.Dr,
+    PersonTitle.Prof
+  ];
 
   static CATEGORY: string[] = [
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ALL",
@@ -79,8 +91,28 @@ export class Constants {
   static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.INACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED"];
   static ACTION_TYPE: string[] = ["GLOBAL.ACTION_TYPE.CHS", "GLOBAL.ACTION_TYPE.MANDATED", "GLOBAL.ACTION_TYPE.CUSTOM"];
 
-  static CURRENCY: string[] = ["GBP", "EUR", "USD"];
-  static CURRENCY_SELECTION = [Currency.GBP, Currency.EUR, Currency.USD];
+  static CURRENCY: string[] = [
+    "GBP",
+    "EUR",
+    "USD",
+    "KSH",
+    "MZN",
+    "CDF",
+    "PHP",
+    "BDT",
+    "PKR"
+  ];
+  static CURRENCY_SELECTION = [
+    Currency.GBP,
+    Currency.EUR,
+    Currency.USD,
+    Currency.KSH,
+    Currency.MZN,
+    Currency.CDF,
+    Currency.PHP,
+    Currency.BDT,
+    Currency.PKR
+  ];
 
   //agency add staff
   static USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
@@ -689,14 +721,6 @@ export class Constants {
     "GLOBAL.COUNTRIES.YE",
     "GLOBAL.COUNTRIES.ZM",
     "GLOBAL.COUNTRIES.ZW"
-  ];
-
-  static DEPARTMENT = [
-    "GLOBAL.DEPARTMENT_LIST.CHS",
-    "GLOBAL.DEPARTMENT_LIST.FINANCE",
-    "GLOBAL.DEPARTMENT_LIST.HR",
-    "GLOBAL.DEPARTMENT_LIST.LOGISTICS",
-    "GLOBAL.DEPARTMENT_LIST.PROGRAMME"
   ];
 
   //TODO delete

@@ -74,6 +74,10 @@ export class DonorHeaderComponent implements OnInit {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/donor-module");
+  }
+
   /**
    * Private functions
    */
