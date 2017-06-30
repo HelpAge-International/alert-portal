@@ -1,16 +1,18 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AlertLevels, Countries} from "../../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AlertLevels} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyService} from "../../services/agency-service.service";
 
 @Component({
   selector: 'app-country-account-settings',
   templateUrl: './country-agencies.component.html',
-  styleUrls: ['./country-agencies.component.css']
+  styleUrls: ['./country-agencies.component.css'],
+  providers: [AgencyService]
 })
 
 export class CountryAgenciesComponent implements OnInit, OnDestroy {
@@ -42,11 +44,20 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   private mpaStatusColors: any = []
   private advStatusIcons: any = [];
   private advStatusColors: any = [];
+  private agencyLogoPaths: string[] = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private UserType: number;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  private overallAlertLevels: any = [];
+  private agencyNames: string[] = [];
+  private countryToShow: any;
+  private countryId: string;
+  private alertLevelSelected = AlertLevels.All;
+
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute,
+              private af: AngularFire, private router: Router, private userService: UserService,
+              private agencyService: AgencyService) {
 
   }
 
@@ -65,29 +76,41 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
 
   filterAlertLevel(event: any) {
     this.filter = event.target.value;
-    this._getCountryOfficeByLocation().then(() => {
-      console.log(this.countryOffices);
-    });
+    // this._getCountryOfficeByLocation().then(() => {
+    //   console.log(this.countryOffices);
+    // });
   }
 
   _loadData() {
-    this._getUserInfo().then(() => {
-      this._getAgencyID().then(() => {
-        this._getCountryOfficeByLocation().then(() => {
-          this._getResponsePlans();
-          this._getSystemAdminID().then(() => {
-            this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
-              this.minTreshold = minTreshold;
+    this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countryId => {
+        this.countryId = countryId;
+        this._getAgencyID().then(() => {
+          // this._getCountryOfficeByLocation().then(() => {
+          this.getCountry().then(() => {
+            this._getUserInfo().then(() => {
+              this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(() => {
+                this._getResponsePlans();
+                this._getSystemAdminID().then(() => {
+                  this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
+                    this.minTreshold = minTreshold;
+                  });
+                  this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+                    this.advTreshold = advTreshold;
+                  });
+                }).then(() => {
+                  this._getAllActions();
+                });
+              });
             });
-            this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-              this.advTreshold = advTreshold;
-            });
-          }).then(() => {
-            this._getAllActions();
           });
         });
+
+
       });
-    });
+
+
   }
 
   _getUserInfo() {
@@ -120,34 +143,34 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
 
-  _getCountryOfficeByLocation() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryOffices: any) => {
-          this.countryOffices = [];
-          this.countryIDs = [];
-          countryOffices.forEach((countryOffice: any) => {
-
-            if (this.filter == 'all') {
-              if (countryOffice.location == this.countryKey) {
-                this.countryIDs.push(countryOffice.$key);
-                this.countryOffices.push(countryOffice);
-              }
-            } else {
-              if (countryOffice.location == this.countryKey && parseInt(countryOffice.alertLevel) == this.filter) {
-                this.countryOffices.push(countryOffice);
-                this.countryIDs.push(countryOffice.$key);
-              }
-            }
-
-          });
-
-          res(true);
-        });
-    });
-    return promise;
-  }
+  // _getCountryOfficeByLocation() {
+  //   let promise = new Promise((res, rej) => {
+  //     this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
+  //       .takeUntil(this.ngUnsubscribe)
+  //       .subscribe((countryOffices: any) => {
+  //         this.countryOffices = [];
+  //         this.countryIDs = [];
+  //         countryOffices.forEach((countryOffice: any) => {
+  //
+  //           if (this.filter == 'all') {
+  //             if (countryOffice.location == this.countryKey) {
+  //               this.countryIDs.push(countryOffice.$key);
+  //               this.countryOffices.push(countryOffice);
+  //             }
+  //           } else {
+  //             if (countryOffice.location == this.countryKey && parseInt(countryOffice.alertLevel) == this.filter) {
+  //               this.countryOffices.push(countryOffice);
+  //               this.countryIDs.push(countryOffice.$key);
+  //             }
+  //           }
+  //
+  //         });
+  //
+  //         res(true);
+  //       });
+  //   });
+  //   return promise;
+  // }
 
   _getResponsePlans() {
     let promise = new Promise((res, rej) => {
@@ -313,6 +336,104 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  private getCountry() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((country) => {
+          if (country) {
+            this.countryToShow = country;
+            res(true);
+          }
+        });
+    });
+    return promise;
+  }
+
+  // Getting all country offices with the same location in other agencies
+  private getCountryOfficesWithSameLocationsInOtherAgencies(getAllAlertLevels: boolean, fromOnInit: boolean) {
+    this.countryOffices = [];
+    this.countryIDs = [];
+    this.overallAlertLevels = [];
+    this.agencyNames = [];
+    this.agencyLogoPaths = [];
+
+    let promise = new Promise((res, rej) => {
+
+      this.agencyService.getAllCountryOffices()
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencies => {
+          agencies = agencies.filter(agency => agency.$key != this.agencyID);
+          agencies.forEach(agency => {
+            let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
+              let temp = agency[key];
+              temp["countryId"] = key;
+              temp["agencyId"] = agency.$key;
+              return temp;
+            });
+            countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
+            console.log(countries);
+
+            if (countries.length > 0) {
+
+              if (getAllAlertLevels) {
+
+                // An agency should only have one country office per country
+                this.countryOffices.push(countries[0]);
+                this.countryIDs.push(countries[0].countryId);
+                this.overallAlertLevels[countries[0].countryId] = countries[0].alertLevel;
+
+
+                this.agencyService.getAgency(agency.$key)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agency => {
+                    this.agencyNames[countries[0].countryId] = agency.name;
+                    if (agency.logoPath) {
+                      this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
+                    }
+                  });
+
+              } else {
+
+                if (countries[0].alertLevel == this.alertLevelSelected) {
+
+                  // An agency should only have one country office per country
+                  this.countryOffices.push(countries[0]);
+                  this.countryIDs.push(countries[0].countryId);
+                  this.overallAlertLevels[countries[0].countryId] = countries[0].alertLevel;
+
+                  this.agencyService.getAgency(agency.$key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencyNames[countries[0].countryId] = agency.name;
+                      if (agency.logoPath) {
+                        this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
+                      }
+                    });
+                }
+              }
+            }
+            res(true);
+          });
+        });
+    });
+    return promise;
+  }
+
+  overviewCountry(countryOffice) {
+    console.log("Overview Country");
+    console.log(countryOffice);
+    // http://localhost:4200/dashboard/dashboard-overview;countryId=0QuQID0BsTSllm1FMuod60VEWqI3;isViewing=true;agencyId=qbyONHp4xqZy2eUw0kQHU7BAcov1;systemId=JVkYvWmiWSayrBC7lcsTeSdcwhR2;canCopy=true
+    this.router.navigate(["/dashboard/dashboard-overview", {
+      "countryId": countryOffice.countryId,
+      "agencyId": countryOffice.agencyId,
+      "systemId": this.systemAdminID,
+      "isViewing": true,
+      "canCopy": true,
+      "agencyOverview": true
+    }]);
   }
 
 
