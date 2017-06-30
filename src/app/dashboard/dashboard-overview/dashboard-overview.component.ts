@@ -1,13 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
-import {AlertLevels, AlertStatus} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, AlertStatus} from "../../utils/Enums";
 import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
 import {CommonService} from "../../services/common.service";
 import {HazardImages} from "../../utils/HazardImages";
+import {AlertMessageModel} from "../../model/alert-message.model";
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -19,6 +20,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
+  private alertMessageType = AlertMessageType;
+  private alertMessage:AlertMessageModel = null;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -29,6 +32,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private countryId: string;
   private isViewing: boolean;
   private agencyId: string;
+  private systemId: string;
   private from: string;
   private agencyName: string;
 
@@ -73,6 +77,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
           this.getAgencyInfo(this.agencyId);
         }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
         }
@@ -85,9 +92,13 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           this.handleOfficeSubMenu();
         }
 
-        // if (!this.countryId && !this.agencyId && !this.isViewing) {
-        //   this.router.navigateByUrl("/dashboard");
-        // }
+        if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
+          this.router.navigateByUrl("/dashboard").then(() => {
+            console.log("Invalid url parameters!!");
+          }, error => {
+            console.log(error.message);
+          });
+        }
 
         this.getAlerts();
         this.getAreaValues();

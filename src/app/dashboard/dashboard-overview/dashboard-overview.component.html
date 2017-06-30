@@ -1,5 +1,8 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show]="alertMessage"></app-status-alert>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} : {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |

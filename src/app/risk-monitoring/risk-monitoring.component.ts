@@ -23,7 +23,6 @@ declare var jQuery: any;
 
 export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
-
   private UserType: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -34,6 +33,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   public countryID: string;
   private isViewing: boolean;
   private agencyId: string;
+  private systemId: string;
   public hazards: any[] = [];
   private canCopy: boolean;
 
@@ -117,6 +117,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
         }
         if (params["canCopy"]) {
           this.canCopy = params["canCopy"];
@@ -460,6 +463,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     if (isContext) {
       this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
         "countryId": this.countryID,
+        "agencyId": this.agencyId,
+        "systemId": this.systemId,
         "indicatorId": indicator.$key,
         "isContext": isContext
       }]);
@@ -486,6 +491,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 console.log("do the hazard copy action");
                 this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
                   "countryId": this.countryID,
+                  "agencyId": this.agencyId,
+                  "systemId": this.systemId,
                   "indicatorId": indicator.$key,
                   "hazardId": hazard.$key,
                   "isContext": isContext

@@ -100,6 +100,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private copyIndicatorId: string;
   private isContext: boolean;
   private copyHazardId: string;
+  private copyAgencyId: string;
+  private copySystemId: string;
 
   constructor(private pageControl: PageControlService, private af: AngularFire,
               private router: Router,
@@ -119,6 +121,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
         if (params["countryId"]) {
           this.copyCountryId = params["countryId"];
+        }
+
+        if (params["agencyId"]) {
+          this.copyAgencyId = params["agencyId"];
+        }
+
+        if (params["systemId"]) {
+          this.copySystemId = params["systemId"];
         }
 
         if (params["indicatorId"]) {
@@ -319,7 +329,18 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.list(urlToPush)
             .push(dataToSave)
             .then(() => {
-              this.backToRiskHome();
+              if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
+                this.router.navigate(["/dashboard/dashboard-overview", {
+                  "countryId": this.copyCountryId,
+                  "isViewing": true,
+                  "agencyId": this.copyAgencyId,
+                  "systemId": this.copySystemId,
+                  "from": "risk",
+                  "canCopy": true
+                }]);
+              } else {
+                this._location.back();
+              }
               // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
               // this.indicatorData = new Indicator();
               // this.addAnotherSource();
@@ -347,7 +368,19 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this._location.back();
+    if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
+      this.router.navigate(["/dashboard/dashboard-overview", {
+        "countryId": this.copyCountryId,
+        "isViewing": true,
+        "agencyId": this.copyAgencyId,
+        "systemId": this.copySystemId,
+        "from": "risk",
+        "canCopy": true
+      }]);
+    } else {
+      this._location.back();
+    }
+
   }
 
   setNewHazardID(event: any) {
@@ -369,7 +402,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.hazards.push(hazards["countryContext"]);
       this.hazardsObject["countryContext"] = hazards["countryContext"];
       for (let hazard in hazards) {
-        if (!hazard.includes("$") && hazard!="countryContext") {
+        if (!hazard.includes("$") && hazard != "countryContext") {
           hazards[hazard].key = hazard;
           this.hazards.push(hazards[hazard]);
           this.hazardsObject[hazard] = hazards[hazard];
@@ -554,6 +587,21 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   backToRiskHome() {
     this.router.navigateByUrl("/risk-monitoring");
+  }
+
+  back() {
+    if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
+      this.router.navigate(["/dashboard/dashboard-overview", {
+        "countryId": this.copyCountryId,
+        "isViewing": true,
+        "agencyId": this.copyAgencyId,
+        "systemId": this.copySystemId,
+        "from": "risk",
+        "canCopy": true
+      }]);
+    } else {
+      this.backToRiskHome();
+    }
   }
 
 }
