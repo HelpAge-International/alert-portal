@@ -45,12 +45,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 *ngIf="agencyToUpdate" class="modal-title" id="exampleModalLabel">
-          <strong *ngIf="doActivate">{{"GLOBAL.ACTIVATE" | translate}} {{agencyToUpdate.name}}</strong>
-          <strong *ngIf="!doActivate">{{"GLOBAL.DEACTIVATE" | translate}} {{agencyToUpdate.name}}</strong>
+          <strong *ngIf="doActivate">{{"GLOBAL.ACTIVATE" | translate}} {{agencyToUpdate.name}}?</strong>
+          <strong *ngIf="!doActivate">{{"GLOBAL.DEACTIVATE" | translate}} {{agencyToUpdate.name}}?</strong>
         </h5>
         <h5 *ngIf="!agencyToUpdate" class="modal-title" id="exampleModalLabelDefault">
-          <strong *ngIf="doActivate">{{"GLOBAL.ACTIVATE" | translate}}</strong>
-          <strong *ngIf="!doActivate">{{"GLOBAL.DEACTIVATE" | translate}}</strong>
+          <strong *ngIf="doActivate">{{"GLOBAL.ACTIVATE" | translate}}?</strong>
+          <strong *ngIf="!doActivate">{{"GLOBAL.DEACTIVATE" | translate}}?</strong>
         </h5>
       </div>
       <div class="modal-body">
