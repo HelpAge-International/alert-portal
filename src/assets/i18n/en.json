@@ -648,7 +648,11 @@
         }
     },
     "NETWORK_ADMIN":{
+      "NETWORK_ADMINISTRATOR": "Network Administrator",
       "PLEASE_FILL": "Please fill in your network details below.",
+      "ACCOUNT_SELECTION": "Account Selection",
+      "PLEASE_SELECT_ACCOUNT_TO_CONTINUE": "Please select an account",
+      "PLEASE_SELECT_ACCOUNT": "Please select the account you would like to log in as",
       "UPDATE_DETAILS": {
         "NETWORK_LOGO": "Network Logo",
         "NETWORK_LOGO_INVALID_FILETYPE": "The agency logo image type is invalid",

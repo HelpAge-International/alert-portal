@@ -37,8 +37,6 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, prevUserType, networkIds, networkCountryIds) => {
         console.log("Authenticated: " + user.uid);
-        console.log(networkIds);
-        console.log(networkCountryIds);
         this.authState = user;
         this.uid = user.uid;
         console.log('New network admin uid: ' + this.uid);
@@ -67,7 +65,7 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
         Observable.timer(Constants.ALERT_REDIRECT_DURATION)
           .takeUntil(this.ngUnsubscribe).subscribe(() => {
           this.successInactive = true;
-          this.router.navigateByUrl('/network/new-network-details');
+          this.router.navigateByUrl('network/network-account-selection');
         });
       }, error => {
         console.log(error.message);

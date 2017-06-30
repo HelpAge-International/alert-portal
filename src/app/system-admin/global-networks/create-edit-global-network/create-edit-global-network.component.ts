@@ -226,7 +226,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     let newNetwork = new ModelNetwork();
     newNetwork.name = this.networkName;
     newNetwork.isActive = true;
-    newNetwork.logoPath = "https://lh3.googleusercontent.com/-9ETHQFY_l6A/AAAAAAAAAAI/AAAAAAAAAAA/lN3q2-pbJHU/W40-H40/photo.jpg?sz=64";
+    newNetwork.logoPath = "";
     newNetwork.isInitialisedNetwork = false;
 
     let networkPath = Constants.APP_STATUS + '/network/';

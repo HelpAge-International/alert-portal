@@ -116,6 +116,7 @@ import {ExportProposalComponent} from "./export-proposal/export-proposal.compone
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
 import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
+import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -324,7 +325,8 @@ const routes: Routes = [
      * Network Users
      */
   {path: 'network/network-create-password', component: NetworkCreatePasswordComponent},
-  {path: 'network/new-network-details', component: NewNetworkDetailsComponent}
+  {path: 'network/new-network-details', component: NewNetworkDetailsComponent},
+  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
 
 ];
 

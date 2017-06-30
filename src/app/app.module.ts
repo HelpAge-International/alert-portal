@@ -182,6 +182,7 @@ import {OrderByPipe} from "./utils/pipes/orderby.pipe";
 import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
+import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -360,7 +361,8 @@ const firebaseAuthConfig = {
     ExportProposalComponent,
     AddEditSurgeCapacityComponent,
     NetworkCreatePasswordComponent,
-    NewNetworkDetailsComponent
+    NewNetworkDetailsComponent,
+    NetworkAccountSelectionComponent
   ],
   imports: [
     BrowserModule,

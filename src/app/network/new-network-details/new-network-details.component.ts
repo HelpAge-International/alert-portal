@@ -1,6 +1,6 @@
-import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -26,7 +26,6 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   private showReplaceRemoveLinks: boolean = false;
   firebase: any;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-
   private uid: string;
   private networkAdminName: string;
   private networkName: string;
@@ -39,9 +38,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   private networkWebAddress: string = '';
   private networkCountry: number;
   private networkLogo: string;
-
-  //TODO: Get the networkId from the previous selection screen
-  private networkId: string = "-Kno1h9EFwy264_FuVKh";
+  private networkId: string;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
     this.firebase = firebaseApp;
@@ -49,18 +46,26 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, prevUserType, networkIds, networkCountryIds) => {
-        this.uid = user.uid;
-        console.log("New network admin uid: " + this.uid);
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
+      this.uid = user.uid;
+      console.log("Network admin uid: " + this.uid);
+
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
           this.networkAdminName = user.firstName;
         });
 
-        this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(network => {
-          this.networkName = network.name;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          this.networkId = params["networkId"];
+          console.log(this.networkId);
+
+          this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkName = network.name;
+            });
         });
     });
   }
@@ -92,16 +97,16 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
             this.networkLogo = result as string;
             newNetwork.logoPath = this.networkLogo;
 
-            this.af.database.object(Constants.APP_STATUS+"/network/"+this.networkId).update(newNetwork).then(() => {
+            this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId).update(newNetwork).then(() => {
               this.successInactive = false;
               Observable.timer(Constants.ALERT_REDIRECT_DURATION)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(() => {
-                this.successInactive = true;
+                  this.successInactive = true;
 
                   //TODO: navigation to next page
                   //this.router.navigateByUrl('/agency-admin/country-office');
-              });
+                });
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
               this.showAlert();
@@ -116,16 +121,16 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
       } else {
 
         console.log("Without logo");
-        this.af.database.object(Constants.APP_STATUS+"/network/"+this.networkId).update(newNetwork).then(() => {
+        this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId).update(newNetwork).then(() => {
           this.successInactive = false;
           Observable.timer(Constants.ALERT_REDIRECT_DURATION)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(() => {
-            this.successInactive = true;
-            
+              this.successInactive = true;
+
               //TODO: navigation to next page
               //this.router.navigateByUrl('/agency-admin/country-office');
-          });
+            });
         }, error => {
           this.errorMessage = 'GLOBAL.GENERAL_ERROR';
           this.showAlert();
@@ -195,6 +200,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
    * Returns false and specific error messages-
    * @returns {boolean}
    */
+
   private validate() {
     this.alerts = {};
     if (!(this.networkAddressLine1)) {
@@ -213,7 +219,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.networkTelephone] = true;
       this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NO_TELEPHONE";
       return false;
-    }else if (this.logoFile) {
+    } else if (this.logoFile) {
       // Check for file size
       if (this.logoFile.size > Constants.NETWORK_ADMIN_LOGO_MAX_SIZE) {
         this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO_SIZE_EXCEEDED";
