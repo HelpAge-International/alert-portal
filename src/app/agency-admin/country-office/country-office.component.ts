@@ -124,7 +124,6 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
-        console.log(result);
         let exist = this.otherCountries.filter(country => country.$key == result.$key).length >0;
         if (!exist) {
           this.otherCountries.push(result);

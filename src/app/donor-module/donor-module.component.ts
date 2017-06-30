@@ -30,7 +30,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   private agencyMap: Map<string, string> = new Map<string, string>();
   private departments: SDepHolder[];
 
-  public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
 
@@ -58,7 +57,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
         (departments) => {
           this.mDepartmentMap = departments;
           this.departments = [];
-          this.minThreshRed = this.mapHelper.minThreshRed;
           this.minThreshYellow = this.mapHelper.minThreshYellow;
           this.minThreshGreen = this.mapHelper.minThreshGreen;
           this.mDepartmentMap.forEach((value, key) => {

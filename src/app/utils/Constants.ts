@@ -54,7 +54,6 @@ export class Constants {
 
   /*LIST VALUES FOR TRANSLATION*/
   static THRESHOLD_VALUE: number[] = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
-  static THRESHOLD_NAME = ["GLOBAL.THRESHOLD_NAME.GREEN", "GLOBAL.THRESHOLD_NAME.AMBER", "GLOBAL.THRESHOLD_NAME.RED"];
 
   static PERSON_TITLE: string[] = [
     "GLOBAL.PERSON_TITLE.MR",
@@ -220,10 +219,7 @@ export class Constants {
   ];
 
   static COUNTRY_SELECTION = [
-    Countries.GB,
-    Countries.DE,
     Countries.AF,
-    Countries.FR,
     Countries.AX,
     Countries.AL,
     Countries.DZ,
@@ -298,12 +294,14 @@ export class Constants {
     Countries.FO,
     Countries.FJ,
     Countries.FI,
+    Countries.FR,
     Countries.GF,
     Countries.PF,
     Countries.TF,
     Countries.GA,
     Countries.GM,
     Countries.GE,
+    Countries.DE,
     Countries.GH,
     Countries.GI,
     Countries.GR,
@@ -455,6 +453,7 @@ export class Constants {
     Countries.UG,
     Countries.UA,
     Countries.AE,
+    Countries.GB,
     Countries.US,
     Countries.UM,
     Countries.UY,
@@ -472,9 +471,6 @@ export class Constants {
   ];
 
   static COUNTRIES = [
-    "GLOBAL.COUNTRIES.GB",
-    "GLOBAL.COUNTRIES.FR",
-    "GLOBAL.COUNTRIES.DE",
     "GLOBAL.COUNTRIES.AF",
     "GLOBAL.COUNTRIES.AX",
     "GLOBAL.COUNTRIES.AL",
@@ -550,12 +546,14 @@ export class Constants {
     "GLOBAL.COUNTRIES.FO",
     "GLOBAL.COUNTRIES.FJ",
     "GLOBAL.COUNTRIES.FI",
+    "GLOBAL.COUNTRIES.FR",
     "GLOBAL.COUNTRIES.GF",
     "GLOBAL.COUNTRIES.PF",
     "GLOBAL.COUNTRIES.TF",
     "GLOBAL.COUNTRIES.GA",
     "GLOBAL.COUNTRIES.GM",
     "GLOBAL.COUNTRIES.GE",
+    "GLOBAL.COUNTRIES.DE",
     "GLOBAL.COUNTRIES.GH",
     "GLOBAL.COUNTRIES.GI",
     "GLOBAL.COUNTRIES.GR",
@@ -707,6 +705,7 @@ export class Constants {
     "GLOBAL.COUNTRIES.UG",
     "GLOBAL.COUNTRIES.UA",
     "GLOBAL.COUNTRIES.AE",
+    "GLOBAL.COUNTRIES.GB",
     "GLOBAL.COUNTRIES.US",
     "GLOBAL.COUNTRIES.UM",
     "GLOBAL.COUNTRIES.UY",
