@@ -405,9 +405,9 @@ export class SuperMapComponents {
 
 
   public initBlankMap(elementId: string) {
-    let uluru = {lat: 54.339089, lng: -2.140014};
+    let uluru = {lat: 20, lng: 0};
     this.map = new google.maps.Map(document.getElementById(elementId), {
-      zoom: 4,
+      zoom: 2,
       center: uluru,
       mapTypeControlOptions: {
         mapTypeIds: []

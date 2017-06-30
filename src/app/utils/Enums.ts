@@ -64,8 +64,9 @@ export enum PersonTitle {
     Mr = 0,
     Mrs = 1,
     Miss = 2,
-    Dr = 3,
-    Prof = 4
+    Ms = 3,
+    Dr = 4,
+    Prof = 5
 }
 
 export enum FileType {
@@ -108,7 +109,13 @@ export class FileExtensionsEnding {
 export enum Currency {
     GBP = 0,
     EUR = 1,
-    USD = 2
+    USD = 2,
+    KSH = 3,
+    MZN = 4,
+    CDF = 5,
+    PHP = 6,
+    BDT = 7,
+    PKR = 8
 }
 
 export enum StaffPosition {
@@ -184,7 +191,7 @@ export enum ResponsePlanSectionSettings {
     PlanDetails = 0,
     PlanContext = 1,
     BasicInformation = 2,
-    ActivitySummary = 3,
+    ResponseObjectives = 3,
     TargetPopulation = 4,
     ExpectedResults = 5,
     Activities = 6,

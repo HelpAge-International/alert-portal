@@ -159,15 +159,17 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.STAFF.DELETE_DIALOG_TITLE" |
-          translate}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel">
+          <strong *ngIf="firstName && lastName">{{"GLOBAL.DELETE" | translate}} {{firstName + " " + lastName}}?</strong>
+          <strong *ngIf="!(firstName && lastName)">{{"GLOBAL.DELETE" | translate}}?</strong>
+        </h5>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{"COUNTRY_ADMIN.STAFF.DELETE_DIALOG_CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
         <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
     </div>
   </div>

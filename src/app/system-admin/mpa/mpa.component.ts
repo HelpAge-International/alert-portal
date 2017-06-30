@@ -20,6 +20,7 @@ export class MpaComponent implements OnInit, OnDestroy {
   actions: Observable<any>;
   ActionType = ActionType;
   GenericActionCategory = GenericActionCategory;
+  private ActionLevel = Constants.ACTION_LEVEL;
   private levelSelected = 0;
   private categorySelected = 0;
   private Category = Constants.CATEGORY;

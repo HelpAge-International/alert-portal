@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Indicator} from "../model/indicator";
-import {HazardScenario, AlertMessageType, DurationType, UserType} from "../utils/Enums";
+import {HazardScenario, AlertMessageType, DurationType, UserType, Countries} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {RxHelper} from "../utils/RxHelper";
 import {AngularFire} from "angularfire2";
@@ -35,6 +35,10 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   public uid: string;
   public countryID: string;
   public hazards: any[] = [];
+
+  private agencyAdminId: string;
+  private countryLocation: any;
+  private Countries = Countries;
 
   public activeHazards: any[] = [];
   public archivedHazards: any[] = [];
@@ -109,6 +113,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       this.UserType = userType;
 
       this._getCountryID().then(() => {
+        this.getAgencyID().then(() => {
+          this.getCountryLocation();
+        })
         this._getHazards().then(() => {
 
         });
@@ -128,6 +135,30 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         this.countryID = countryID.$value ? countryID.$value : "";
         res(true);
       });
+    });
+    return promise;
+  }
+
+  private getAgencyID() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyIds: any) => {
+          this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
+          res(true);
+        });
+    });
+    return promise;
+  }
+
+  private getCountryLocation() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryID + "/location")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((location: any) => {
+          this.countryLocation = location.$value ? location.$value : 0;
+          res(true);
+        });
     });
     return promise;
   }

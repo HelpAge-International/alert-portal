@@ -33,10 +33,15 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private agencyWebAddress: string = '';
   private agencyCountry: number;
   private agencyCurrency: number;
+
+  private clockSettings: any;
+  private notificationSettings: any;
+  private responsePlanSettings: any;
+
   private Country = Constants.COUNTRIES;
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
   private Currency = Constants.CURRENCY;
-  private currenciesList: number[] = [Currency.GBP, Currency.USD, Currency.EUR];
+  private currenciesList: number[] = Constants.CURRENCY_SELECTION;
   private logoFile: File;
   private showReplaceRemoveLinks: boolean = false;
 
@@ -94,6 +99,11 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         editedAgency.phone = this.agencyPhone;
         editedAgency.website = this.agencyWebAddress;
         editedAgency.currency = this.agencyCurrency;
+
+        // Re-adding default settings values
+        editedAgency.clockSettings = this.clockSettings;
+        editedAgency.notificationSetting = this.notificationSettings;
+        editedAgency.responsePlanSettings = this.responsePlanSettings;
 
         let noChanges: boolean = editedAgency.addressLine1 == this.modalAgency.addressLine1
           && editedAgency.addressLine2 == this.modalAgency.addressLine2
@@ -205,6 +215,11 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
       this.agencyWebAddress = agency.website;
       this.agencyCountry = agency.country;
       this.agencyCurrency = agency.currency;
+
+      // Loading default settings values
+      this.clockSettings = agency.clockSettings;
+      this.notificationSettings = agency.notificationSetting;
+      this.responsePlanSettings = agency.responsePlanSettings;
 
       this.showReplaceRemoveLinks = !!this.agencyLogo;
     });

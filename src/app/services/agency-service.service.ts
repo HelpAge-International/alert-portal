@@ -35,7 +35,7 @@ export class AgencyService {
   }
 
   getAgencyModuleSetting(agencyId) {
-    return this.af.database.object(Constants.APP_STATUS + "/module/" + agencyId);
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + agencyId, {preserveSnapshot: true});
   }
 
   getCountryOffice(countryId, agencyId) {

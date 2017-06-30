@@ -30,7 +30,8 @@ export class ActionsService {
       .map(actions => {
         let filteredActions = [];
         actions.forEach(action => {
-            if (action.assignee === uid) {
+          // TODO - Change to 'assignee' in db
+            if (action.asignee === uid) {
               filteredActions.push(action);
             }
         });

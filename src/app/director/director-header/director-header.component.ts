@@ -58,6 +58,10 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/director");
+  }
+
   /**
    * Private functions
    */
