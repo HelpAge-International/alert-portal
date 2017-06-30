@@ -261,6 +261,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
         this.hazardData.timeCreated = this._getCurrentTimestamp();
+        this.hazardData.isActive = true;
         this.hazardData.hazardScenario = parseInt(this.hazardData.hazardScenario);
         /* TODO RISK PARAM */
         this.hazardData.risk = 10;
