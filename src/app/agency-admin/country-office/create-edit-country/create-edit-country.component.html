@@ -24,6 +24,7 @@
             <!--<option *ngFor="let country of countrySelections" [ngValue]="country">-->
               <!--{{countryNames[country] | translate}}-->
             <!--</option>-->
+            <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
             <option *ngFor="let country of countrySelections" [ngValue]="country">
               {{countryNames[country] | translate}}
             </option>
