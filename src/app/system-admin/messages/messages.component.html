@@ -7,7 +7,9 @@
 
     <div class="Header-title__wrap">
       <h1>{{"MESSAGES.TITLE_TEXT" | translate}}</h1>
-      <button routerLink="/system-admin/messages/create" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</button>
+      <button routerLink="/system-admin/messages/create" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" |
+        translate | uppercase}}
+      </button>
     </div>
 
     <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>
@@ -15,7 +17,8 @@
     <div class="Data--ribbon" *ngFor="let sentMessage of sentMessages">
       <div class="row col-lg-9 col-sm-10">
         <div class="Info--ribbon--wrap">
-          <div class="col-sm-4">{{"GLOBAL.SENT_AT" | translate}}<b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
+          <div class="col-sm-4">{{"GLOBAL.SENT_AT" | translate}}<b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b>
+          </div>
         </div>
         <div class="col-sm-12">
           <h5>{{sentMessage.title}}</h5>
@@ -35,14 +38,20 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_MESSAGE_DIALOG.TITLE" | translate}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_MESSAGE_DIALOG.TITLE" | translate}}</strong>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{"DELETE_MESSAGE_DIALOG.CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="deleteFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
       </div>
     </div>
   </div>
