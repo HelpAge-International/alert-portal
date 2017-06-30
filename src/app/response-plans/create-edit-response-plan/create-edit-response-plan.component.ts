@@ -1682,7 +1682,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       counter = counter + 1;
       this.sectionThreeNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]){
       counter = counter + 1;
       this.sectionFourNum = counter;
     }

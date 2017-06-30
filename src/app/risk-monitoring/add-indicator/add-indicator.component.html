@@ -96,7 +96,7 @@
         <div class="form-group col-sm-12 row">
             <select class="form-control col-sm-4" id="select1" placeholder="Please select" [(ngModel)]="indicatorData.assignee">
                 <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                <option *ngFor="let uAssign of usersForAssign" [value]="uAssign.userID">{{uAssign.firstName}}</option>
+                <option *ngFor="let uAssign of usersForAssign" [value]="uAssign.userID">{{uAssign.firstName + " " + uAssign.lastName}}</option>
             </select>
         </div>
         <br>

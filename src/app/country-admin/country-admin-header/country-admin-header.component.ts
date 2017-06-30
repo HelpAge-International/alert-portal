@@ -77,10 +77,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
                   this.getAgencyID().then(() => {
                     this.getCountryData();
                     this.checkAlerts();
-                    this._notificationService.getCountryAdminNotifications(this.countryId, this.agencyAdminId, true)
-                            .subscribe(unreadMessages => {
-                              this.unreadMessages = unreadMessages;
-                            });
                   });
                 });
               }
@@ -127,10 +123,37 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/dashboard");
+  }
+
   goToNotifications() {
-    this._notificationService.setCountryAdminNotificationsAsRead(this.countryId, this.agencyAdminId).subscribe(() => {
-      this.router.navigateByUrl("country-admin/country-notifications");
-    });
+    switch(this.USER_TYPE){
+      case 'administratorCountry':
+        this._notificationService.setCountryAdminNotificationsAsRead(this.countryId, this.agencyAdminId)
+              .subscribe(() => {
+                this.router.navigateByUrl("country-admin/country-notifications");
+              });
+        break;
+      case 'countryDirector':
+        this._notificationService.setCountryDirectorNotificationsAsRead(this.uid, this.countryId, this.agencyAdminId)
+              .subscribe(() => {
+                this.router.navigateByUrl("country-admin/country-notifications");
+              });
+        break;
+      case 'ertLeader':
+        this._notificationService.setERTLeadsNotificationsAsRead(this.uid, this.countryId, this.agencyAdminId)
+              .subscribe(() => {
+                this.router.navigateByUrl("country-admin/country-notifications");
+              });
+        break;
+      case 'ert':
+        this._notificationService.setERTNotificationsAsRead(this.uid, this.countryId, this.agencyAdminId)
+              .subscribe(() => {
+                this.router.navigateByUrl("country-admin/country-notifications");
+              });
+        break;
+    }
   }
 
   /**

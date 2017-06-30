@@ -23,7 +23,7 @@ export class CountryMessagesComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
 
-  private deleteMessageId;
+  private deleteMessageModel: MessageModel;
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -66,15 +66,15 @@ export class CountryMessagesComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  deleteMessage(deleteMessageId) {
+  deleteMessage(deleteMessageModel) {
     jQuery('#delete-action').modal('show');
-    this.deleteMessageId = deleteMessageId;
+    this.deleteMessageModel = deleteMessageModel;
   }
 
   deleteAction() {
     this.closeModal();
     console.log('delete called');
-    this._messageService.deleteCountryMessage(this.countryId, this.agencyId, this.deleteMessageId)
+    this._messageService.deleteCountryMessage(this.countryId, this.agencyId, this.deleteMessageModel)
       .then(() => {
         this.alertMessage = new AlertMessageModel('MESSAGES.DELETE_SUCCESS', AlertMessageType.Success);
       })

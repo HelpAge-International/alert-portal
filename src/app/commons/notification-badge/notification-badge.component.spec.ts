@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PreparednessComponent } from './preparedness.component';
+import { StatusAlertComponent } from './status-alert.component';
 
-describe('PreparednessComponent', () => {
-  let component: PreparednessComponent;
-  let fixture: ComponentFixture<PreparednessComponent>;
+describe('StatusAlertComponent', () => {
+  let component: StatusAlertComponent;
+  let fixture: ComponentFixture<StatusAlertComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PreparednessComponent ]
+      declarations: [ StatusAlertComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PreparednessComponent);
+    fixture = TestBed.createComponent(StatusAlertComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

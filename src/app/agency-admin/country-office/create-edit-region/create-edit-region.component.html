@@ -10,7 +10,8 @@
 
     <div class="Header-title__wrap ">
       <h1>{{pageTitle | translate}}</h1>
-      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteRegion()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
+      <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="openDeleteRegionModal()">
+        {{"AGENCY_ADMIN.COUNTRY_OFFICES.DELETE_REGION" |
         translate}}
       </button>
     </div>
@@ -32,7 +33,7 @@
           <div *ngFor="let selectCountry of countries; let i = index" class="row no-gutters align-items-center">
             <div class="col-10 form-group">
               <select class="form-control"
-                       #country (change)="countryChange(selectCountry, country.value)">
+                      #country (change)="countryChange(selectCountry, country.value)">
                 <option *ngFor="let country of countrySelectionsNumbers | async" [value]="country"
                         [selected]="country == selectedCountries[i]">
                   {{COUNTRY_NAMES[country]
@@ -46,7 +47,8 @@
             </div>
           </div>
           <div class="row no-gutters">
-            <a id="add-country" href="javascript:void(0)" class="Add__row__cta" (click)="addCountrySelection()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY" |
+            <a id="add-country" href="javascript:void(0)" class="Add__row__cta" (click)="addCountrySelection()">{{"AGENCY_ADMIN.COUNTRY_OFFICES.ADD_ANOTHER_COUNTRY"
+              |
               translate}}</a>
           </div>
         </div>
@@ -57,7 +59,9 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="RegionalDirector">{{"AGENCY_ADMIN.COUNTRY_OFFICES.REGIONAL_DIRECTOR" | translate}}</label>
-          <select name="regional-director" class="form-control" [(ngModel)]="regionalDirectorId ? regionalDirectorId : regionalDirectors[0]" #id (change)="selectRegionDirector(id.value)">
+          <select name="regional-director" class="form-control"
+                  [(ngModel)]="regionalDirectorId ? regionalDirectorId : regionalDirectors[0]" #id
+                  (change)="selectRegionDirector(id.value)">
             <option *ngFor="let director of regionalDirectors" [value]="director?.$key"
                     [selected]="director?.$key == regionalDirectorId">
               {{showName(director)}}
@@ -70,6 +74,30 @@
     <div class="Form-submit__wrapper">
       <button type="submit" class="btn btn-primary" (click)="submit()">{{submitText | translate | uppercase}}</button>
       <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete-region" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          <strong *ngIf="regionName">{{"GLOBAL.DELETE" | translate}} {{regionName}}?</strong>
+          <strong *ngIf="!regionName">{{"GLOBAL.DELETE" | translate}}</strong>
+        </h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <p>{{"DELETE_REGION_DIALOG.CONTENT" | translate}}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="deleteRegion()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
     </div>
   </div>
 </div>

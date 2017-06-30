@@ -1,6 +1,6 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
-    <div class="logo"></div>
+    <div class="logo" (click)="goToHome()"></div>
     <ul>
       <li class="Header_bar__username">
         {{firstName+" "+lastName}}
@@ -15,22 +15,7 @@
         </div>
       </li>
 
-      <!--TODO - Notifications needs implementing for donors-->
-      <li class="Header_bar__alert">
-        <a data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa fa-bell" aria-hidden="true"></i>
-          <span class="Header_bar__alert--notification"></span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right Notification__dropdown">
-          <div class="Notification__dropdown__item">
-            <p class="Notification__dropdown__item--title"><a href="notifications.html">System Maintenance</a></p>
-            <p>There is a scheduled maintenance starting at 10:00am BST on 23/03/2017. We apologise for any
-              inconvenience caused during this time</p>
-            <span>6 hours ago</span>
-          </div>
-          <div class="Notification__dropdown__view-all"><a href="notifications.html">View all notifications</a></div>
-        </div>
-      </li>
+      <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="agencyId"></app-notification-badge>
     </ul>
 
   </div>

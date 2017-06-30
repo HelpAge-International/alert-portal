@@ -40,10 +40,10 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
 
-        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
+        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments', {preserveSnapshot: true})
           .takeUntil(this.ngUnsubscribe)
-          .subscribe(_ => {
-          this.depts = _;
+          .subscribe(snapshot => {
+          this.depts = snapshot.val();
         });
     });
   }
@@ -102,10 +102,10 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     this.editing = !this.editing;
     this.editDepts = {};
     this.deleteCandidates = {};
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments')
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(_ => {
-      this.depts = _;
+      .subscribe(snapshot => {
+      this.depts = snapshot.val();
     });
   }
 

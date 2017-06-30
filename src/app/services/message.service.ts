@@ -117,137 +117,142 @@ export class MessageService {
 
         messageRefData['/administratorCountry/' + countryId + '/sentmessages/' + msgId.key] = true;
 
-        if (message.userType[UserType.All]) {
-          this.saveCountryUserTypeMessage(countryId, message, msgId.key, 'countryallusersgroup', messageRefData)
-            .subscribe(messageRef => {
-              messageRefData = messageRef;
-              console.log('assign routes');
+        if(message.userType[UserType.All])
+        {
+          return this.af.database.list(Constants.APP_STATUS + '/group/country/' + countryId + '/countryallusersgroup')
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(countryAllUsersIds => {
+            countryAllUsersIds.forEach(countryAllUsersId => {
+              messageRefData['/messageRef/country/' + countryId + '/countryallusersgroup/' + countryAllUsersId.$key + '/' + msgId.key] = true;
             });
-          if (message.userType[UserType.CountryAdmin]) {
-            this.saveAgencyUserTypeMessage(countryId, message, msgId.key, 'countryadmins', messageRefData);
+
+            if(message.userType[UserType.CountryAdmin]) {
+                const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryAdmin);
+                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(refData => {
+                    this.af.database.object(Constants.APP_STATUS).update(refData);
+                  });
+              }
+
+            if(message.userType[UserType.CountryDirector]) {
+                const countryDirectorUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryDirector);
+                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(refData => {
+                    this.af.database.object(Constants.APP_STATUS).update(refData);
+                  });
+            }
+            
+            return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+          });
+        }else{
+          let i = 1;
+          for(let value in message.userType)
+          {
+            if(value) {
+              const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
+              if(Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector)
+              {
+                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(refData => {
+                        this.af.database.object(Constants.APP_STATUS).update(refData);
+                      });
+              } else {
+                this.saveCountryUserTypeMessage(countryId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(refData => {
+                        this.af.database.object(Constants.APP_STATUS).update(refData);
+                      });
+              }
+        
+              if (i == Object.keys(message.userType).length) {
+                return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+              }
+              
+              i++;
+            }
           }
-          if (message.userType[UserType.CountryDirector]) {
-            this.saveAgencyUserTypeMessage(countryId, message, msgId.key, 'countrydirectors', messageRefData);
-          }
-          return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
-        } else {
-          return this.buildMessageRef(countryId, message, msgId.key, messageRefData)
-            .then(messageRef => {
-              return this.af.database.object(Constants.APP_STATUS).update(messageRef);
-            });
         }
       });
 
   }
 
-  deleteCountryMessage(countryId: string, agencyId: string, messageId: string): firebase.Promise<any> {
-    console.log(messageId);
-
+  deleteCountryMessage(countryId: string, agencyId: string, message: MessageModel): firebase.Promise<any> {
+  
     let messageRefData = {};
 
-    messageRefData['/message/' + messageId] = null;
-    messageRefData['/administratorCountry/' + countryId + '/sentmessages/' + messageId] = null;
+    messageRefData['/message/' + message.id] = null;
+    messageRefData['/administratorCountry/' + countryId + '/sentmessages/' + message.id] = null;
 
-    this.af.database.list(Constants.APP_STATUS + '/message/' + messageId)
-      .subscribe(userMessage => {
-        let message = new MessageModel();
-        message.mapFromObject(userMessage);
+    let i = 1;
+    for(let value in message.userType)
+    {
+      if(value) {
+        const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
 
-        message.userType.forEach((item, index) => {
-          switch (index) {
-            case UserType.CountryAdmin:
-              this.deleteAgencyUserTypeMessage(countryId, messageId, 'countryadmins', messageRefData);
-              break;
-            case UserType.CountryDirector:
-              this.deleteAgencyUserTypeMessage(countryId, messageId, 'countrydirectors', messageRefData);
-              break;
-            case UserType.ErtLeader:
-              this.deleteCountryUserTypeMessage(countryId, messageId, 'ertleads', messageRefData);
-              break;
-            case UserType.Ert:
-              this.deleteCountryUserTypeMessage(countryId, messageId, 'erts', messageRefData);
-              break;
-            case UserType.Donor:
-              this.deleteCountryUserTypeMessage(countryId, messageId, 'donor', messageRefData);
-              break;
-            case UserType.NonAlert:
-              this.deleteCountryUserTypeMessage(countryId, messageId, 'partner', messageRefData);
-              break;
-          }
-        });
-      });
-    return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+        if(Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector)
+        {
+          this.deleteAgencyUserTypeMessage(agencyId, message.id, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(refData => {
+                  this.af.database.object(Constants.APP_STATUS).update(refData);
+                });
+        } else {
+          this.deleteCountryUserTypeMessage(countryId, message.id, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(refData => {
+                  this.af.database.object(Constants.APP_STATUS).update(refData);
+                });
+        }
+  
+        if (i == Object.keys(message.userType).length) {
+          return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+        }
+        
+        i++;
+      }
+    }
   }
   
-  private saveCountryUserTypeMessage(countryId: string, message: MessageModel, messageKey: string, userType: string, messageRefData: Object) {
+  private saveCountryUserTypeMessage(countryId: string, message: MessageModel, messageKey: string, userType: string, messageRefData: {}) {
     return this.af.database.list(Constants.APP_STATUS + '/group/country/' + countryId + '/' + userType)
       .map(items => {
         items.forEach(item => {
-          messageRefData['/messageRef/country/' + countryId + '/' + userType + '/' + item.$key + '/' + messageKey] = message.time;
+          messageRefData['/messageRef/country/' + countryId + '/' + userType + '/' + item.$key + '/' + messageKey] = true;
         });
         return messageRefData;
       });
   }
 
-  private saveAgencyUserTypeMessage(agencyId: string, message: MessageModel, messageKey: string, userType: string, messageRefData: Object) {
-    this.af.database.list(Constants.APP_STATUS + '/group/agency/' + agencyId + '/' + userType)
+  private saveAgencyUserTypeMessage(agencyId: string, message: MessageModel, messageKey: string, userType: string, messageRefData: {}): Observable<Object> {
+    return this.af.database.list(Constants.APP_STATUS + '/group/agency/' + agencyId + '/' + userType)
       .map(items => {
         items.forEach(item => {
-          messageRefData['/messageRef/agency/' + agencyId + '/' + userType + '/' + item.$key + '/' + messageKey] = message.time;
+          messageRefData['/messageRef/agency/' + agencyId + '/' + userType + '/' + item.$key + '/' + messageKey] = true;
         });
         return messageRefData;
       });
   }
 
   private deleteCountryUserTypeMessage(countryId: string, messageKey: string, userType: string, messageRefData: Object) {
-    this.af.database.list(Constants.APP_STATUS + '/group/country/' + countryId + '/' + userType)
-      .subscribe(items => {
+    return this.af.database.list(Constants.APP_STATUS + '/group/country/' + countryId + '/' + userType)
+      .map(items => {
         items.forEach(item => {
           messageRefData['/messageRef/country/' + countryId + '/' + userType + '/' + item.$key + '/' + messageKey] = null;
         });
+        return messageRefData;
       });
   }
 
   private deleteAgencyUserTypeMessage(agencyId: string, messageKey: string, userType: string, messageRefData: Object) {
-    this.af.database.list(Constants.APP_STATUS + '/group/agency/' + agencyId + '/' + userType)
-      .subscribe(items => {
+    return this.af.database.list(Constants.APP_STATUS + '/group/agency/' + agencyId + '/' + userType)
+      .map(items => {
         items.forEach(item => {
           messageRefData['/messageRef/agency/' + agencyId + '/' + userType + '/' + item.$key + '/' + messageKey] = null;
         });
+        return messageRefData;
       });
-  }
-
-  private buildMessageRef(countryId, message: MessageModel, messageId, messageRefData): Promise<any> {
-    return new Promise<Object>((resolve, reject) => {
-      let i = 0;
-      message.userType.forEach((item, index) => {
-        switch (index) {
-          case UserType.CountryAdmin:
-            this.saveAgencyUserTypeMessage(countryId, message, messageId, 'countryadmins', messageRefData)
-            break;
-          case UserType.CountryDirector:
-            this.saveAgencyUserTypeMessage(countryId, message, messageId, 'countrydirectors', messageRefData);
-            break;
-          case UserType.ErtLeader:
-            this.saveCountryUserTypeMessage(countryId, message, messageId, 'ertleads', messageRefData);
-            break;
-          case UserType.Ert:
-            this.saveCountryUserTypeMessage(countryId, message, messageId, 'erts', messageRefData);
-            break;
-          case UserType.Donor:
-            this.saveCountryUserTypeMessage(countryId, message, messageId, 'donor', messageRefData);
-            break;
-          case UserType.NonAlert:
-            this.saveCountryUserTypeMessage(countryId, message, messageId, 'partner', messageRefData);
-            break;
-        }
-
-        i++;
-
-        if (i == Object.keys(message.userType).length) {
-          resolve(messageRefData);
-        }
-      });
-    });
   }
 }
