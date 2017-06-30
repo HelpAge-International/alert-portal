@@ -20,7 +20,10 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as firebase from "firebase";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {PrepActionService, PreparednessAction, PreparednessNotes} from "../../services/prepactions.service";
+import {
+  PrepActionService, PreparednessAction, PreparednessNotes,
+  PreparednessUser
+} from "../../services/prepactions.service";
 import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 
@@ -660,27 +663,5 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   public closeModal() {
     jQuery("#leadAgencySelection").modal('hide');
-  }
-}
-
-/**
- * Holder class for the Users
- */
-export class PreparednessUser {
-  public id: string;
-  public isMe: boolean;
-  public firstName: string;
-  public lastName: string;
-
-  constructor(uid: string, isMe: boolean) {
-    this.id = uid;
-    this.isMe = isMe;
-  }
-
-  static placeholder(uid: string): PreparednessUser {
-    let p = new PreparednessUser(uid, false);
-    p.firstName = "Loading";
-    p.lastName = "...";
-    return p;
   }
 }

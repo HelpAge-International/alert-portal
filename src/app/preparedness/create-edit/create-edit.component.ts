@@ -14,9 +14,10 @@ import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontr
 import {Observable, Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import {Location} from "@angular/common";
-import {PrepActionService} from "../../services/prepactions.service";
+import {PrepActionService, PreparednessUser} from "../../services/prepactions.service";
 import {ModelDepartment} from "../../model/department.model";
 import {UserService} from "../../services/user.service";
+import {ModelHazard} from "../../model/hazard.model";
 declare var jQuery: any;
 
 @Component({
@@ -32,7 +33,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private uid: string;
   private userType: UserType;
   private agencyId: string;
-
+  private countryId: string;
   private actionId: string = null;
 
   private action: CreateEditPrepActionHolder = new CreateEditPrepActionHolder();
@@ -43,15 +44,20 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private actionSelected: any = {};
   private copyActionData: any = {};
 
+  private ASSIGNED_TOO: PreparednessUser[] = [];
+  private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
+  private currentlyAssignedToo: PreparednessUser;
+
   private departments: ModelDepartment[] = [];
   private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
   private actionType = ActionType;
   private actionLevel = Constants.ACTION_LEVEL;
+  private actionLevelEnum = ActionLevel;
   private actionLevelList: number[] = [ActionLevel.MPA, ActionLevel.APA];
 
   private hazardCategory = Constants.HAZARD_SCENARIOS;
-  private hazardCategoryList = [];
+  private hazards: ModelHazard[] = [];
   private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
   private durationType = Constants.DURATION_TYPE;
@@ -105,6 +111,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         if (this.actionId != null) {
           this.initFromExistingActionId();
         }
+        this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((countryId) => {
+            this.countryId = countryId;
+            this.getHazards();
+            this.initStaff();
+          });
         this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((agencyId) => {
@@ -139,7 +152,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.action.task = action.task;
         this.action.requireDoc = action.requireDoc;
         this.action.dueDate = action.dueDate;
-        this.action.hazards = action.assignedHazards;
+        for (let x of action.assignedHazards) {
+          this.action.hazards.set(x, true);
+        }
         this.action.asignee = action.asignee;
         this.action.department = action.department;
         this.action.budget = action.budget;
@@ -183,9 +198,89 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Initialising hazards
+   */
+  private getHazards() {
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.hazards = [];
+        snap.forEach((snapshot) => {
+          let x: ModelHazard = new ModelHazard();
+          x.id = snapshot.key;
+          x.category = snapshot.val().category;
+          x.hazardScenario = snapshot.val().hazardScenario;
+          x.isSeasonal = snapshot.val().isSeasonal;
+          this.hazards.push(x);
+        });
+      });
+  }
 
+  /**
+   * Initialising Staff
+   */
+  private initStaff() {
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          this.getStaffDetails(snapshot.key);
+        });
+      });
+  }
 
+  /**
+   * Get staff member public user data (names, etc.)
+   */
+  public getStaffDetails(uid: string) {
+    if (!this.CURRENT_USERS.get(uid)) {
+      this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          let prepUser: PreparednessUser = new PreparednessUser(uid, this.uid == uid);
+          prepUser.firstName = snap.firstName;
+          prepUser.lastName = snap.lastName;
+          this.CURRENT_USERS.set(uid, prepUser);
+          this.updateUser(prepUser);
+        });
+    }
+  }
+  /**
+   * Update method for the user. This will check if it already exists, so as to not cause duplicates in the list
+   */
+  public updateUser(user: PreparednessUser) {
+    let ran: boolean = false;
+    for (let x of this.ASSIGNED_TOO) {
+      if (x.id == user.id) {
+        x = user;
+        ran = true;
+      }
+      x.isMe = (x.id == this.uid);
+    }
+    if (!ran) {
+      user.isMe = (user.id == this.uid);
+      this.ASSIGNED_TOO.push(user);
+    }
+  }
 
+  protected selectHazardCategory(hazardKey: number, event: any) {
+    if (hazardKey == -1) {
+      this.action.hazards = new Map<HazardScenario, boolean>();
+    }
+    else {
+      this.action.isAllHazards = false;
+      this.action.hazards[hazardKey] = event.target.checked ? event.target.checked : false;
+      for (let x in this.action.hazards) {
+        if (this.action.hazards[x]) {
+          this.action.allHazardsEnabled = true;
+          return;
+        }
+      }
+      this.action.allHazardsEnabled = false;
+    }
+  }
 
   public getHazardImage(key) {
     return HazardImages.init().getCSS(key);
@@ -207,14 +302,17 @@ export class CreateEditPrepActionHolder {
   public level: number;
   public budget: number;
   public isAllHazards: boolean;
-  public hazards: HazardScenario[];
+  public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
   public dueDate: number;
-  public asignee: string;
+  public asignee: string = "";
   public department: string;
   public requireDoc: boolean;
   public type: number;
 
+  public isFrequencyActive: boolean;
+  public allHazardsEnabled: boolean;
+
   constructor() {
-    this.type = ActionType.mandated;
+    this.type = ActionType.custom;
   }
 }

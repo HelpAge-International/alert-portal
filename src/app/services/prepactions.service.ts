@@ -334,3 +334,26 @@ export class PreparednessNotes {
   public content: string;
   public time: number;
 }
+
+
+/**
+ * Holder class for the Users
+ */
+export class PreparednessUser {
+  public id: string;
+  public isMe: boolean;
+  public firstName: string;
+  public lastName: string;
+
+  constructor(uid: string, isMe: boolean) {
+    this.id = uid;
+    this.isMe = isMe;
+  }
+
+  static placeholder(uid: string): PreparednessUser {
+    let p = new PreparednessUser(uid, false);
+    p.firstName = "Loading";
+    p.lastName = "...";
+    return p;
+  }
+}

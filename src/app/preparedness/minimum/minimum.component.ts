@@ -13,6 +13,7 @@ import * as firebase from 'firebase';
 import {UserService} from "../../services/user.service";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {PreparednessUser} from "../../services/prepactions.service";
 declare var jQuery: any;
 
 
@@ -790,26 +791,4 @@ export class PreparednessNotes {
   public uploadedBy: string;
   public content: string;
   public time: number;
-}
-
-/**
- * Holder class for the Users
- */
-export class PreparednessUser {
-  public id: string;
-  public isMe: boolean;
-  public firstName: string;
-  public lastName: string;
-
-  constructor(uid: string, isMe: boolean) {
-    this.id = uid;
-    this.isMe = isMe;
-  }
-
-  static placeholder(uid: string): PreparednessUser {
-    let p = new PreparednessUser(uid, false);
-    p.firstName = "Loading";
-    p.lastName = "...";
-    return p;
-  }
 }
