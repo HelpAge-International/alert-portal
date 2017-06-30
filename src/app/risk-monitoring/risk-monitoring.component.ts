@@ -478,9 +478,10 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           })
             .take(1)
             .subscribe(hazards => {
-              console.log(hazards);
-              if (hazards.length == 0) {
-                console.log("no hazard exist!!")
+              let activeHazards = hazards.filter(hazard => hazard.isActive == true);
+              if (activeHazards.length == 0) {
+                console.log("no hazard exist!!");
+                this.alertMessage = new AlertMessageModel("No same hazard exist in your country !");
               } else {
                 console.log("do the hazard copy action")
               }

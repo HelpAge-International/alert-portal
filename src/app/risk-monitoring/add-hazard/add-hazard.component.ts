@@ -264,6 +264,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
         this.hazardData.hazardScenario = parseInt(this.hazardData.hazardScenario);
         /* TODO RISK PARAM */
         this.hazardData.risk = 10;
+        this.hazardData.isActive = true;
         this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
           .push(this.hazardData)
           .then(() => {
