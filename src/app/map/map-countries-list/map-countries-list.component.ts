@@ -31,7 +31,6 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
 
   public minThreshGreen: number = -1;
   public minThreshYellow: number = -1;
-  public minThreshRed: number = -1;
 
   private countryIdsForOther: Set<string> = new Set<string>();
   private allCountries: Set<string> = new Set<string>();
@@ -61,10 +60,9 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
         });
 
       /** Setup the minimum threshold **/
-      this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[userType], (red, yellow, green) => {
+      this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[userType], (yellow, green) => {
         this.minThreshGreen = green;
         this.minThreshYellow = yellow;
-        this.minThreshRed = red;
       });
 
       /** Setup the region count **/
