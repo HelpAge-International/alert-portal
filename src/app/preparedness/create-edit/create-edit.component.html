@@ -7,9 +7,9 @@
   <div class="Full-page__wrap--inner">
     <div class="Back--button" (click)="backButtonAction()">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
     <div class="Header-title__wrap">
-      <h1 *ngIf="!actionID">{{"PREPAREDNESS.TITLE_TEXT_CREATE_PAGE" | translate}}</h1>
-      <h1 *ngIf="actionID">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
-      <div class="Action-buttons-wrapper__absolute" *ngIf="actionID">
+      <h1 *ngIf="!action.id">{{"PREPAREDNESS.TITLE_TEXT_CREATE_PAGE" | translate}}</h1>
+      <h1 *ngIf="action.id">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
+      <div class="Action-buttons-wrapper__absolute" *ngIf="action.id">
         <button href="#" class="btn btn-block btn-danger" (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
@@ -73,7 +73,7 @@
           <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
           <div class="row no-gutters">
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
-              <input type="checkbox" [disabled]="action.allHazardsEnabled" [checked]="action.isAllHazards ? action.isAllHazards : false"
+              <input type="checkbox"  [disabled]="editDisableLoading || action.type != actionType.custom" [checked]="action.isAllHazards ? action.isAllHazards : false"
                      (change)="selectHazardCategory(-1, $event)">
               <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm Icon--alert"></span>&nbsp;
               {{"PREPAREDNESS.ALL_HAZARDS" | translate}}
@@ -82,6 +82,7 @@
           <div class="row no-gutters" *ngFor="let hList of hazards">
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
               <input type="checkbox"
+                     [disabled]="editDisableLoading || action.type != actionType.custom"
                      [checked]="action.hazards[hList.hazardScenario] ? action.hazards[hList.hazardScenario] : false"
                      (change)="selectHazardCategory(hList.hazardScenario, $event)" name="hazardCategory">
               <span
@@ -282,7 +283,7 @@
         <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" |
           translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"|
+        <button type="button" class="btn btn-outline-secondary" (click)="closeActionCancel('delete-action')">{{"GLOBAL.CANCEL"|
           translate}}
         </button>
       </div>
@@ -307,7 +308,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="copyAction()">{{"GLOBAL.CONFIRM" | translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"|
+        <button type="button" class="btn btn-outline-secondary" (click)="closeActionCancel('copy-action')">{{"GLOBAL.CANCEL"|
           translate}}
         </button>
       </div>
@@ -333,7 +334,7 @@
         <button type="button" class="btn btn-primary" (click)="archiveAction()">{{"GLOBAL.CONFIRM" |
           translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"|
+        <button type="button" class="btn btn-outline-secondary" (click)="closeActionCancel('archive-action')">{{"GLOBAL.CANCEL"|
           translate}}
         </button>
       </div>

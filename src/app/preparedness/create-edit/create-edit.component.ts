@@ -117,6 +117,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         });
 
         if (this.action.id != null) {
+          console.log("Initial Existing Action");
           this.initFromExistingActionId();
         }
         this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
@@ -146,6 +147,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   public initFromExistingActionId() {
     this.prepActionService.initOneAction(this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      console.log("Loaded action!");
+      console.log(action);
       this.action.id = action.id;
       this.action.type = action.type;
       this.action.level = action.level;
@@ -194,7 +197,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Initialising departments
    */
   private getDepartments() {
-    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.departments = [];
@@ -286,13 +289,38 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
     if (this.action.validate()) {
-      // We're alright up update / create the action
-      if (this.action.id != null) {
-        // Updating
+      console.log(this.action);
+      let updateObj: any = {};
+      updateObj.dueDate = this.action.dueDate;
+      updateObj.requireDoc = this.action.requireDoc;
+      if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee == undefined) {
+        updateObj.asignee = this.action.asignee;
       }
       else {
-        // Creating
+        updateObj.asignee = null;
       }
+      if (this.action.level == ActionLevel.APA) {
+        if (this.action.hazards.size == 0) {
+          updateObj.assignHazard = [];
+          for (let x in this.action.hazards) {
+            if (this.action.hazards[x]) {
+              updateObj.assignHazard.push(x);
+            }
+          }
+        }
+      }
+      if (this.action.isFrequencyActive) {
+        updateObj.frequencyBase = this.action.frequencyType;
+        updateObj.frequencyValue = this.action.frequencyQuantity
+      }
+      if (this.action.type == ActionType.chs) {
+        updateObj.department = this.action.department;
+      }
+      if (this.action.type == ActionType.custom) {
+        updateObj.task = this.action.task;
+        updateObj.level = this.action.level;
+      }
+      console.log(updateObj);
     }
   }
 
@@ -345,6 +373,35 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.allHazardsEnabled = false;
     }
   }
+
+  protected showActionConfirm(modal: string) {
+    jQuery("#" + modal).modal('show');
+  }
+  protected closeActionCancel(modal: string) {
+    jQuery("#" + modal).modal('hide');
+  }
+
+  /**
+   * Copy an action
+   */
+  public copyAction() {
+
+  }
+
+  /**
+   * Archive an action
+   */
+  public archiveAction() {
+
+  }
+
+  /**
+   * Delete an action
+   */
+  public deleteAction() {
+
+  }
+
 
   /**
    * Get the hazard image for the list of hazards

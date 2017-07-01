@@ -70,15 +70,16 @@ export class PrepActionService {
     this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        let countryId = snap.val().countryId;
-        let agencyId = "";
+        this.countryId = snap.val().countryId;
+        this.agencyId = "";
         for (let x in snap.val().agencyAdmin) {
-          agencyId = x;
+          this.agencyId = x;
         }
-        let systemAdminId = "";
+        this.systemAdminId = "";
         for (let x in snap.val().systemAdmin) {
-          systemAdminId = x;
+          this.systemAdminId = x;
         }
+        console.log("INITIALISING ACTION!");
         this.initSpecific("actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
         this.initSpecific("actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
         this.initSpecific("action", this.countryId, PrepSourceTypes.COUNTRY, actionId, updated);
@@ -103,10 +104,13 @@ export class PrepActionService {
       });
   }
   private initSpecific(path: string, userId: string, source: PrepSourceTypes, actionId: string, updated: (action: PreparednessAction) => void) {
-    this.af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId, {preserveSnapshot: true})
+    console.log(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId);
+    this.af.database.object(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
-        this.updateAction(snapshot.key, snapshot.val(), userId, source, updated);
+        if (snapshot.val() != null) {
+          this.updateAction(snapshot.key, snapshot.val(), userId, source, updated);
+        }
       });
   }
 
