@@ -29,12 +29,12 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
   private uid: string;
   private userType: UserType;
   private agencyId: string;
   private countryId: string;
-  private actionId: string = null;
 
   private action: CreateEditPrepActionHolder = new CreateEditPrepActionHolder();
   private editDisableLoading: boolean = false;
@@ -49,7 +49,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private currentlyAssignedToo: PreparednessUser;
 
   private departments: ModelDepartment[] = [];
-  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
   private actionType = ActionType;
   private actionLevel = Constants.ACTION_LEVEL;
@@ -60,10 +59,19 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private hazards: ModelHazard[] = [];
   private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
+  private frequencyQuantities = [1,2,3,4,5,6,7,8,9,10];
   private durationType = Constants.DURATION_TYPE;
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
+  private filterLockTask: boolean = true;
+  private filterLockLevel: boolean = true;
+  private filterLockDepartment: boolean = true;
+  private filterLockDueDate: boolean = true;
+  private filterLockBudget: boolean = true;
+  private filterLockDocument: boolean = true;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
@@ -97,7 +105,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params['id']) {
-        this.actionId = params['id'];
+        this.action.id = params['id'];
         this.editDisableLoading = true;
       }
       this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
@@ -108,7 +116,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           this.moduleAccess = isEnabled;
         });
 
-        if (this.actionId != null) {
+        if (this.action.id != null) {
           this.initFromExistingActionId();
         }
         this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
@@ -137,7 +145,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation
    */
   public initFromExistingActionId() {
-    this.prepActionService.initOneAction(this.ngUnsubscribe, this.uid, this.userType, this.actionId, (action) => {
+    this.prepActionService.initOneAction(this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
       this.action.id = action.id;
       this.action.type = action.type;
       this.action.level = action.level;
@@ -169,7 +177,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Selecting the date on the material date picker
    */
   public selectDate(date: any) {
-    var dueDateTimestamp = this.convertDateToTimestamp(date);
+    this.action.dueDate = this.convertDateToTimestamp(date);
+    this.removeFilterLockDueDate();
     return true;
   }
 
@@ -265,6 +274,61 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  /**
+   * Creating / updating the action
+   */
+  public createOrUpdateAction() {
+    this.removeFilterLockTask();
+    this.removeFilterLockDueDate();
+    this.removeFilterLockDepartment();
+    this.removeFilterLockLevel();
+    this.removeFilterLockBudget();
+    this.removeFilterLockDoc();
+    if (this.action.validate()) {
+      // We're alright up update / create the action
+      if (this.action.id != null) {
+        // Updating
+      }
+      else {
+        // Creating
+      }
+    }
+  }
+
+  /**
+   * Error handling disabled methods for all the inputs
+   */
+  protected removeFilterLockTask() {
+    this.filterLockTask = false;
+  }
+  protected removeFilterLockLevel() {
+    this.filterLockLevel = false;
+  }
+  protected removeFilterLockDepartment() {
+    this.filterLockDepartment = false;
+  }
+  protected removeFilterLockDueDate() {
+    this.filterLockDueDate = false;
+  }
+  protected removeFilterLockBudget() {
+    this.filterLockBudget = false;
+  }
+  protected removeFilterLockDoc() {
+    this.filterLockDocument = false;
+  }
+
+  /**
+   * Update if the "check more often" frequency filter is active
+   */
+  protected updateFrequencyActive() {
+    this.action.isFrequencyActive = !this.action.isFrequencyActive;
+  }
+
+
+  /**
+   * Selecting a hazard in the list of hazards
+   */
   protected selectHazardCategory(hazardKey: number, event: any) {
     if (hazardKey == -1) {
       this.action.hazards = new Map<HazardScenario, boolean>();
@@ -282,25 +346,28 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Get the hazard image for the list of hazards
+   */
   public getHazardImage(key) {
     return HazardImages.init().getCSS(key);
   }
 
-  public validate() {
-    // Do all the validation here!
-    if (!this.action.task) {
-      this.alerts[this.action.task] = true;
-      this.errorMessage = "LOGIN.NO_DATA_ERROR";
-      return false;
-    }
+
+  protected backButtonAction() {
+    this._location.back();
   }
 }
 
+
+/**
+ * Create Edit Prep Action holder for the create-edit page
+ */
 export class CreateEditPrepActionHolder {
-  public id: string;
+  public id: string = null;
   public task: string;
   public level: number;
-  public budget: number;
+  public budget: number = null;
   public isAllHazards: boolean;
   public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
   public dueDate: number;
@@ -309,10 +376,41 @@ export class CreateEditPrepActionHolder {
   public requireDoc: boolean;
   public type: number;
 
-  public isFrequencyActive: boolean;
+  public frequencyQuantity: number;
+  public frequencyType: number;
+
+  public isFrequencyActive: boolean = false;
   public allHazardsEnabled: boolean;
 
   constructor() {
     this.type = ActionType.custom;
+  }
+
+  public validate() {
+    console.log(this.task.trim());
+    if (this.task != undefined)
+      this.task = this.task.trim();
+    if (this.task == '' || this.task == undefined || this.task.length == 0) {
+      console.log("Failed task check");
+      return false;
+    }
+    if (this.level != ActionLevel.MPA && this.level != ActionLevel.APA) {
+      console.log("Failed level check");
+      return false;
+    }
+    if (this.dueDate == undefined || this.dueDate == 0) {
+      console.log("Failed dueDate check");
+      return false;
+    }
+    if (this.budget == undefined || this.budget == null) {
+      console.log("Failed budget check");
+      return false;
+    }
+    if (this.requireDoc == undefined) {
+      console.log("Failed requireDoc check");
+      return false;
+    }
+
+    return true;
   }
 }

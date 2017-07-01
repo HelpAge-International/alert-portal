@@ -21,6 +21,8 @@
         </button>
       </div>
     </div>
+
+
       <!--
             TASK
       -->
@@ -29,15 +31,17 @@
           <div class="form-group">
             <label for="n-Done">{{"PREPAREDNESS.TASK" | translate}}</label>
             <textarea [disabled]="editDisableLoading || action.type != actionType.custom" id="n-Done" cols="30"
+                      (keypress)="removeFilterLockTask()"
                       rows="10" class="form-control" required [(ngModel)]="action.task"></textarea>
           </div>
           <div
-            [hidden]="action.task == null || action.task.length > 0"
+            [hidden]="filterLockTask || (action.task != '' && action.task != undefined)"
             class="alert alert-danger">
             {{"PREPAREDNESS.NO_TASK" | translate}}
           </div>
         </div>
       </div>
+
 
       <!--
             PREPAREDNESS LEVEL
@@ -48,22 +52,23 @@
           <div class="row no-gutters" *ngFor="let aLevel of actionLevelList">
             <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
               <input [disabled]="editDisableLoading || action.type != actionType.custom" type="radio"
-                     #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel"
+                     #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel" (change)="removeFilterLockLevel()"
                      [(ngModel)]="action.level">
               {{actionLevel[aLevel] | translate}}
             </label>
           </div>
-          <div [hidden]="action.level == 0"
+          <div [hidden]="filterLockLevel || action.level != undefined"
                class="alert alert-danger">
             {{"PREPAREDNESS.NO_LEVEL" | translate}}
           </div>
         </div>
       </div>
 
+
       <!--
             HAZARDS
       -->
-      <div class="row System-admin--form-wrap" *ngIf="action.level == 2">
+      <div class="row System-admin--form-wrap" *ngIf="action.level == actionLevelEnum.APA">
         <div class="col-lg-8 col-md-10">
           <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
           <div class="row no-gutters">
@@ -96,12 +101,12 @@
           <div class="form-group">
             <label for="n-Done">{{"PREPAREDNESS.DEPARTMENT_SELECT_TEXT" | translate}}</label>
             <select class="form-control form-control-sm col-sm-5" [(ngModel)]="action.department"
-                    [disabled]="editDisableLoading || action.type == actionType.mandated">
+                    [disabled]="editDisableLoading || action.type == actionType.mandated" (change)="removeFilterLockDepartment()">
               <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
               <option *ngFor="let dList of departments" value="{{dList.id}}">{{dList.name}}</option>
             </select>
           </div>
-          <div [hidden]="action.department != undefined" class="alert alert-danger">
+          <div [hidden]="action.department != undefined || filterLockDepartment" class="alert alert-danger">
             {{"PREPAREDNESS.NO_DEPARTMENT" | translate}}
           </div>
         </div>
@@ -169,11 +174,12 @@
                                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)"
                                  [(date)]="dueDate"></material-datepicker>
           </div>
-          <div [hidden]="dueDate != undefined" class="alert alert-danger">
+          <div [hidden]="dueDate != undefined || filterLockDueDate" class="alert alert-danger">
             {{"PREPAREDNESS.NO_DUE_DATE" | translate}}
           </div>
         </div>
       </div>
+
 
       <!--
             FREQUENCY
@@ -186,28 +192,24 @@
 
           <div class="row no-gutters">
             <label for="frequency-check" class="Checkbox--ribbon Left">
-              <input [disabled]="(editDisableLoading && !actionData.department) ? true : false" type="checkbox"
-                     name="frequency-check" id="frequency-check" [checked]="action.isFrequencyActive"
-                     (change)="frequencyIsActive($event)">{{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}
+              <input type="checkbox" name="frequency-check" id="frequency-check"
+                     [checked]="action.isFrequencyActive" (change)="updateFrequencyActive()">
+                {{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}
             </label>
           </div>
-          <div class="row align-items-center" *ngIf="true">
+          <div class="row align-items-center" *ngIf="action.isFrequencyActive">
             <div class="col-sm-1 col-2">{{"PREPAREDNESS.EVERY" | translate}}</div>
             <div class="col-sm-2 col-4">
-              <select class="form-control" (change)="selectFrequency($event)"
-                      [disabled]="(actionID && !actionData.department) ? true : false">
-                <option *ngFor="let f of frequency; let index = index" [value]="index + 1"
-                        [selected]="actionData.frequencyValue == (index + 1) ? true : false">{{index
-                  +1}}
-                </option>
+              <select class="form-control">
+                <option *ngFor="let f of frequencyQuantities" [value]="f"
+                        [selected]="action.frequencyQuantity == f">{{f}}</option>
               </select>
             </div>
             <div class="col-sm-3 col-6">
-              <select class="form-control" (change)="selectFrequencyBase($event)"
-                      [disabled]="(actionID && !action.department) ? true : false">
-                <option *ngFor="let dTypeList of allowedDurationList" [value]="dTypeList"
-                        [selected]="action.frequencyBase == dTypeList ? true : false">
-                  {{durationType[dTypeList] | translate}}
+              <select class="form-control">
+                <option *ngFor="let list of durationTypeList; let i = index" [value]="i"
+                        [selected]="action.frequencyType == list">
+                  {{durationType[i] | translate}}
                 </option>
               </select>
             </div>
@@ -224,31 +226,37 @@
           <div class="form-group">
             <label for="n-Budget">{{"PREPAREDNESS.BUDGET" | translate}}</label>
             <input type="number" required name="budget" #budget="ngModel" [(ngModel)]="action.budget"
+                   (keypress)="removeFilterLockBudget()"
                    class="form-control col-sm-5" id="n-Budget" min="0" placeholder="&pound;">
           </div>
-          <div [hidden]="action.budget != undefined" class="alert alert-danger">{{"PREPAREDNESS.NO_BUDGET" | translate}}</div>
+          <div [hidden]="action.budget != undefined || filterLockBudget" class="alert alert-danger">{{"PREPAREDNESS.NO_BUDGET" | translate}}</div>
         </div>
       </div>
+
+
+      <!--
+                DOCUMENT
+      -->
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <strong>{{"PREPAREDNESS.DOCUMENT_REQUIRED_COMPLETION" | translate}}</strong>
           <div class="row no-gutters">
             <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-              <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true"
+              <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" (change)="removeFilterLockDoc()"
                      [(ngModel)]="action.requireDoc">{{"GLOBAL.YES" | translate}}</label>
           </div>
           <div class="row no-gutters">
             <label for="no-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-              <input type="radio" #requireDoc="ngModel" name="requireDoc" id="no-completion" [value]="false"
+              <input type="radio" #requireDoc="ngModel" name="requireDoc" id="no-completion" [value]="false" (change)="removeFilterLockDoc()"
                      [(ngModel)]="action.requireDoc">{{"GLOBAL.NO" | translate}}</label>
           </div>
-          <div class="alert alert-danger">
+          <div class="alert alert-danger" [hidden]="action.requireDoc != undefined || filterLockDocument">
             {{"PREPAREDNESS.NO_REQUIRE_DOC" | translate}}
           </div>
         </div>
       </div>
       <div class="Form-submit__wrapper">
-        <button class="btn btn-primary" type="submit">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}</button>
+        <button class="btn btn-primary" (click)="createOrUpdateAction()">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}</button>
         <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" |
           translate}}
         </div>
