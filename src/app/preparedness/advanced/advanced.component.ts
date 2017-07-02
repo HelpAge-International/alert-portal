@@ -158,12 +158,20 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                 this.initAlerts();
               });
           }
+
+          if (this.userType == UserType.CountryAdmin) {
+            // Country admin not included as a staff member of the country, hence explicit import for me
+            this.getStaffDetails(this.uid);
+          }
+
         });
 
       });
   }
 
   ngOnDestroy() {
+    console.log("Unsubscribing from Advanced");
+    this.prepActionService.ngOnDestroy();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
@@ -334,43 +342,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Methods for the notes alongside an action
    */
-  // Listen for changes on the notes
-  public initNotes(actionId: string) {
-    if (this.getAction(actionId) != null) {
-      this.af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          let action: PreparednessAction = this.getAction(actionId);
-          if (action != null) {
-            this.getAction(actionId).notes = [];
-            snap.forEach((noteSnap) => {
-              let prepNote: PreparednessNotes = new PreparednessNotes(noteSnap.key, actionId);
-              prepNote.content = noteSnap.val().content;
-              prepNote.time = noteSnap.val().time;
-              prepNote.uploadedBy = noteSnap.val().uploadBy;
-              this.addNoteToAction(prepNote, action);
-            });
-          }
-        });
-    }
-  }
-
-  // Adding a note to action
-  protected addNoteToAction(note: PreparednessNotes, n: PreparednessAction) {
-    let ran = false;
-    let index = 0;
-    for (let x of n.notes) {
-      if (x.id == note.id) {
-        n.notes[index] = note;
-        ran = true;
-        index++;
-      }
-    }
-    if (!ran) {
-      n.notes.push(note);
-    }
-  }
-
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
     if (action.note == undefined) {
@@ -651,7 +622,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   public reactivate(action: PreparednessAction) {
     console.log("Re-activate");
     let update = {
-      isActive: true
+      isArchived: false
     };
     console.log(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id);
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id).update(update);

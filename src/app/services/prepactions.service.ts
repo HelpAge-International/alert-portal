@@ -32,6 +32,7 @@ export class PrepActionService {
    */
   public initActions(ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
           ids: (countryId: string, agencyId: string, systemId: string) => void) {
+    this.isMPA = isMPA;
     this.ngUnsubscribe = ngUnsubscribe;
     this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -79,7 +80,6 @@ export class PrepActionService {
         for (let x in snap.val().systemAdmin) {
           this.systemAdminId = x;
         }
-        console.log("INITIALISING ACTION!");
         this.initSpecific("actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
         this.initSpecific("actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
         this.initSpecific("action", this.countryId, PrepSourceTypes.COUNTRY, actionId, updated);
@@ -209,6 +209,7 @@ export class PrepActionService {
       this.af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
+          console.log("Finding notes for " + actionId);
           let action: PreparednessAction = this.findAction(actionId);
           if (action != null) {
             this.findAction(actionId).notes = [];
@@ -254,6 +255,10 @@ export class PrepActionService {
           }
         }
       });
+  }
+
+  public ngOnDestroy() {
+    this.actions = [];
   }
 }
 

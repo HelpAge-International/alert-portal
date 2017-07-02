@@ -171,7 +171,7 @@
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
             <label for="n-DueDate">{{"PREPAREDNESS.DUE_DATE" | translate}}:</label>
-            <material-datepicker id="n-DueDate" placeholder="DD/MM/YYYY" class="form-control col-sm-5"
+            <material-datepicker id="n-DueDate" placeholder="{{action.dueDate ? (action.dueDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control col-sm-5"
                                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)"
                                  [(date)]="dueDate"></material-datepicker>
           </div>
@@ -201,15 +201,15 @@
           <div class="row align-items-center" *ngIf="action.isFrequencyActive">
             <div class="col-sm-1 col-2">{{"PREPAREDNESS.EVERY" | translate}}</div>
             <div class="col-sm-2 col-4">
-              <select class="form-control">
+              <select class="form-control" [(ngModel)]="action.frequencyQuantity">
                 <option *ngFor="let f of frequencyQuantities" [value]="f"
                         [selected]="action.frequencyQuantity == f">{{f}}</option>
               </select>
             </div>
             <div class="col-sm-3 col-6">
-              <select class="form-control">
+              <select class="form-control" [(ngModel)]="action.frequencyType">
                 <option *ngFor="let list of durationTypeList; let i = index" [value]="i"
-                        [selected]="action.frequencyType == list">
+                        [selected]="action.frequencyType == i">
                   {{durationType[i] | translate}}
                 </option>
               </select>

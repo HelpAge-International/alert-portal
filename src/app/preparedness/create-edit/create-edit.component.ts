@@ -152,25 +152,16 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.id = action.id;
       this.action.type = action.type;
       this.action.level = action.level;
-      if (action.type == ActionType.chs) {
-        this.action.task = action.task;
+      this.action.task = action.task;
+      this.action.requireDoc = action.requireDoc;
+      this.action.dueDate = action.dueDate;
+      for (let x of action.assignedHazards) {
+        this.action.hazards.set(x, true);
       }
-      else if (action.type == ActionType.mandated) {
-        this.action.task = action.task;
-        this.action.department = action.department;
-      }
-      else {
-        this.action.task = action.task;
-        this.action.requireDoc = action.requireDoc;
-        this.action.dueDate = action.dueDate;
-        for (let x of action.assignedHazards) {
-          this.action.hazards.set(x, true);
-        }
-        this.action.asignee = action.asignee;
-        this.action.department = action.department;
-        this.action.budget = action.budget;
-        this.action.isAllHazards = action.assignedHazards.length == 0;
-      }
+      this.action.asignee = action.asignee;
+      this.action.department = action.department;
+      this.action.budget = action.budget;
+      this.action.isAllHazards = action.assignedHazards.length == 0;
       this.editDisableLoading = false;
     });
   }
@@ -282,17 +273,22 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Creating / updating the action
    */
   public createOrUpdateAction() {
+    // Remove all the filter locks.
     this.removeFilterLockTask();
     this.removeFilterLockDueDate();
     this.removeFilterLockDepartment();
     this.removeFilterLockLevel();
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
+
+    // Save/update the action
     if (this.action.validate()) {
       console.log(this.action);
       let updateObj: any = {};
       updateObj.dueDate = this.action.dueDate;
       updateObj.requireDoc = this.action.requireDoc;
+      updateObj.type = this.action.type;
+      updateObj.budget = this.action.budget;
       if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee == undefined) {
         updateObj.asignee = this.action.asignee;
       }
@@ -313,14 +309,39 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         updateObj.frequencyBase = this.action.frequencyType;
         updateObj.frequencyValue = this.action.frequencyQuantity
       }
-      if (this.action.type == ActionType.chs) {
+      else {
+        updateObj.frequencyBase = null;
+        updateObj.frequencyValue = null;
+      }
+      if (this.action.type != ActionType.mandated) {
         updateObj.department = this.action.department;
       }
       if (this.action.type == ActionType.custom) {
         updateObj.task = this.action.task;
         updateObj.level = this.action.level;
       }
-      console.log(updateObj);
+      if (this.action.id != null) {
+        // Updating
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+          if (this.action.level == ActionLevel.MPA) {
+            this.router.navigateByUrl("/preparedness/minimum");
+          }
+          else {
+            this.router.navigateByUrl("/preparedness/advanced");
+          }
+        })
+      }
+      else {
+        // Saving
+        this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
+          if (this.action.level == ActionLevel.MPA) {
+            this.router.navigateByUrl("/preparedness/minimum");
+          }
+          else {
+            this.router.navigateByUrl("/preparedness/advanced");
+          }
+        });
+      }
     }
   }
 
@@ -360,6 +381,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected selectHazardCategory(hazardKey: number, event: any) {
     if (hazardKey == -1) {
       this.action.hazards = new Map<HazardScenario, boolean>();
+      this.action.isAllHazards = true;
     }
     else {
       this.action.isAllHazards = false;
@@ -367,10 +389,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       for (let x in this.action.hazards) {
         if (this.action.hazards[x]) {
           this.action.allHazardsEnabled = true;
-          return;
         }
       }
-      this.action.allHazardsEnabled = false;
     }
   }
 
@@ -392,14 +412,34 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Archive an action
    */
   public archiveAction() {
-
+    // Updating
+    let updateObj = {
+      isArchived: true
+    };
+    this.closeActionCancel('archive-action');
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    });
   }
 
   /**
    * Delete an action
    */
   public deleteAction() {
-
+    this.closeActionCancel('delete-action');
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).set(null).then(_ => {
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    });
   }
 
 
@@ -433,8 +473,8 @@ export class CreateEditPrepActionHolder {
   public requireDoc: boolean;
   public type: number;
 
-  public frequencyQuantity: number;
-  public frequencyType: number;
+  public frequencyQuantity: number = 1;
+  public frequencyType: number = 0;
 
   public isFrequencyActive: boolean = false;
   public allHazardsEnabled: boolean;

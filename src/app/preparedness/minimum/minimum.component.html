@@ -130,7 +130,7 @@
         )
         }}</h2>
 
-      <div *ngFor="let action of actions">
+      <div *ngFor="let action of prepActionService.actions">
 
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
@@ -401,7 +401,7 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseTwo">
-        <div *ngFor="let action of actions">
+        <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
@@ -593,7 +593,7 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseThree">
-        <div *ngFor="let action of actions">
+        <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
@@ -651,7 +651,7 @@
 
 
                           <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
-                             *ngIf="action.type == ActionType.custom"
+                             *ngIf="action.type == ActionType.custom || action.asignee == uid || userType == userTypes.CountryAdmin"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
