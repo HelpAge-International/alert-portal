@@ -41,14 +41,16 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
 
   private TmpSectorExpertise: any[] = [];
-
-
-
-
-
-
-
-
+  private ResponsePlanSectorsList: number[] = [
+    ResponsePlanSectors.wash,
+    ResponsePlanSectors.health,
+    ResponsePlanSectors.shelter,
+    ResponsePlanSectors.nutrition,
+    ResponsePlanSectors.foodSecurityAndLivelihoods,
+    ResponsePlanSectors.protection,
+    ResponsePlanSectors.education,
+    ResponsePlanSectors.campManagement
+  ];
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
