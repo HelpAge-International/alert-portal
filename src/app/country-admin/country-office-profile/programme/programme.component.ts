@@ -156,8 +156,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           var obj = {key: parseInt(s), val: sectorExpertise[s]};
           this.sectorExpertise.push(obj);
         }
-        console.log('ectorExpertise');
-        console.log(this.sectorExpertise);
       });
   }
 
@@ -271,6 +269,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     }
 
     var dataToUpdate = this.TmpSectorExpertise;
+
     this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
       .set(dataToUpdate)
       .then(_ => {
