@@ -140,6 +140,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
+            console.log("permission matrix");
+            console.log(this.countryPermissionsMatrix);
           }));
         });
 
