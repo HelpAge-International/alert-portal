@@ -65,6 +65,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(network => {
               this.networkName = network.name;
+              this.networkLogo = network.logoPath;
             });
         });
     });

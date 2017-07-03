@@ -23,7 +23,7 @@
 
       <div class="Agency-details__logo">
         <div class="form-group"><label>{{"NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO" | translate}}</label></div>
-        <label for="imgInp" class="Agency-details__logo__preview" [class.Selected]="agencyLogo"
+        <label for="imgInp" class="Agency-details__logo__preview" [class.Selected]="networkLogo"
                [style.background-image]="'url('+ networkLogo + ')'"></label>
         <input type='file' id="imgInp" (change)="fileChange($event)" class="Input-form--hidden"/>
         <div><a href="javascript:void(0);" *ngIf="!showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE"
