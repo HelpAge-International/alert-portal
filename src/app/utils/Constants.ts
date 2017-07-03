@@ -44,7 +44,7 @@ export class Constants {
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
     static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
- 
+
 
   // Global director / Regional director
   static G_OR_R_DIRECTOR_DASHBOARD = "/director";
@@ -208,6 +208,18 @@ export class Constants {
     "SECTORS.PROTECTION",
     "SECTORS.EDUCATION",
     "SECTORS.CAMP_MANAGEMENT",
+    "SECTORS.OTHER"
+  ];
+
+  static RESPONSE_PLANS_SECTORS_ICONS = [
+    "SECTORS.WASH",
+    "SECTORS.HEALTH",
+    "SECTORS.SHELTER",
+    "SECTORS.NUTRITION",
+    "Foodsec",
+    "SECTORS.PROTECTION",
+    "SECTORS.EDUCATION",
+    "Camp",
     "SECTORS.OTHER"
   ];
 

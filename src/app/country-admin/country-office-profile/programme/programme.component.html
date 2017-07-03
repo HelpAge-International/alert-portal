@@ -64,8 +64,8 @@
         <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"MM/yyyy") : '-'}}</p>
         </div> <!--Updated-->
         <div class="col-sm-2"><p><img
-          src="assets/images/icons/{{ResponsePlanSectors[m.sector] | translate | lowercase}}.svg"
-          alt="{{ResponsePlanSectors[m.sector] | translate}}">{{ResponsePlanSectors[m.sector] | translate}}</p></div>
+          src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | translate | lowercase}}.svg"
+          alt="{{ResponsePlanSectorsIcons[m.sector] | translate}}">{{ResponsePlanSectors[m.sector] | translate}}</p></div>
         <!--Sector-->
         <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
         <div class="col-sm-2"><p>{{m.where ? m.where : ''}}</p></div> <!--Where-->
@@ -195,5 +195,42 @@
       <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/']" data-toggle="modal" class="btn btn-outline-primary text-uppercase">{{"GLOBAL.ADD" | translate}}</button>
     </div>
 
+  </div>
+</div>
+
+<div class="modal fade" id="sectorSelection" tabindex="-1" role="dialog" aria-labelledby="sectorSelection" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_PROGRAMME.MODAL_EDIT_SECTOR_TITLE" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="row Centered Spaced-above">
+        <div *ngFor="let sector of ResponsePlanSectorsList; let key = index;">
+          <div class="Item__selectable Icon__selectable col-sm-0" *ngIf="key < 4">
+            <div onClick="$(this).toggleClass('Selected');"  (click)="selectedSectors($event, sector)" [ngClass]="setSelectorClass(sector)" class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
+            <label>{{ResponsePlanSectors[sector] | translate}}</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row Centered">
+        <div *ngFor="let sector of ResponsePlanSectorsList; let key = index;">
+          <div class="Item__selectable Icon__selectable col-sm-0" *ngIf="key > 3 && key < 8">
+            <div onClick="$(this).toggleClass('Selected');"  (click)="selectedSectors($event, sector)" [ngClass]="setSelectorClass(sector)" class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
+            <label>{{ResponsePlanSectors[sector] | translate}}</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row Right-aligned Spaced col-sm-12">
+        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="saveSectors()">{{"GLOBAL.SAVE" | translate}}
+        </button>
+      </div>
+    </div>
   </div>
 </div>
