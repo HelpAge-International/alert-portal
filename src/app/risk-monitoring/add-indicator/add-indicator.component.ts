@@ -102,6 +102,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private copyHazardId: string;
   private copyAgencyId: string;
   private copySystemId: string;
+  private agencyOverview: boolean;
 
   constructor(private pageControl: PageControlService, private af: AngularFire,
               private router: Router,
@@ -141,6 +142,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
         if (params["hazardId"]) {
           this.copyHazardId = params["hazardId"];
+        }
+
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
         }
 
         if (this.copyCountryId && this.copyIndicatorId) {
@@ -369,14 +374,26 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   cancel() {
     if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.copyCountryId,
-        "isViewing": true,
-        "agencyId": this.copyAgencyId,
-        "systemId": this.copySystemId,
-        "from": "risk",
-        "canCopy": true
-      }]);
+      if (this.agencyOverview) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.copyCountryId,
+          "isViewing": true,
+          "agencyId": this.copyAgencyId,
+          "systemId": this.copySystemId,
+          "from": "risk",
+          "canCopy": true,
+          "agencyOverview":this.agencyOverview
+        }]);
+      } else {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.copyCountryId,
+          "isViewing": true,
+          "agencyId": this.copyAgencyId,
+          "systemId": this.copySystemId,
+          "from": "risk",
+          "canCopy": true
+        }]);
+      }
     } else {
       this._location.back();
     }
@@ -591,14 +608,26 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   back() {
     if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.copyCountryId,
-        "isViewing": true,
-        "agencyId": this.copyAgencyId,
-        "systemId": this.copySystemId,
-        "from": "risk",
-        "canCopy": true
-      }]);
+      if (this.agencyOverview) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.copyCountryId,
+          "isViewing": true,
+          "agencyId": this.copyAgencyId,
+          "systemId": this.copySystemId,
+          "from": "risk",
+          "canCopy": true,
+          "agencyOverview":this.agencyOverview
+        }]);
+      } else {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.copyCountryId,
+          "isViewing": true,
+          "agencyId": this.copyAgencyId,
+          "systemId": this.copySystemId,
+          "from": "risk",
+          "canCopy": true
+        }]);
+      }
     } else {
       this.backToRiskHome();
     }

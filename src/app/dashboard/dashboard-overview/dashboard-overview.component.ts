@@ -9,6 +9,7 @@ import {ActionsService} from "../../services/actions.service";
 import {CommonService} from "../../services/common.service";
 import {HazardImages} from "../../utils/HazardImages";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -21,7 +22,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private AlertLevels = AlertLevels;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private alertMessageType = AlertMessageType;
-  private alertMessage:AlertMessageModel = null;
+  private alertMessage: AlertMessageModel = null;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -35,10 +36,11 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private systemId: string;
   private from: string;
   private agencyName: string;
-
+  private agencyOverview: boolean;
   private officeTarget: string;
   private alerts: Observable<any>;
   private areaContent: any;
+  private canCopy: boolean;
 
   constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private commonService: CommonService, private router: Router) {
     this.initMainMenu();
@@ -90,6 +92,12 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         if (params["officeTarget"]) {
           this.officeTarget = params["officeTarget"];
           this.handleOfficeSubMenu();
+        }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
+        }
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
         }
 
         if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
