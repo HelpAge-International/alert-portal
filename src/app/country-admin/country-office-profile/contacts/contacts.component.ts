@@ -161,6 +161,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
       }
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
         this.countryPermissionsMatrix = isEnabled;
+        console.log(this.countryPermissionsMatrix);
       }));
     });
   }
