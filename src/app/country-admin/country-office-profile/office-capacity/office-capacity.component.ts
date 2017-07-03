@@ -6,7 +6,7 @@ import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType} from "../.
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
@@ -81,6 +81,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private activeNote: NoteModel;
   private surgeCapacities = [];
 
+  public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -136,7 +137,14 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           }
 
           this._getSkills();
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+            console.log("permission matrix");
+            console.log(this.countryPermissionsMatrix);
+          }));
         });
+
 
       });
 

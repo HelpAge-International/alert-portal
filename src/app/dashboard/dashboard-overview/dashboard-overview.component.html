@@ -1,11 +1,17 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show]="alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} : {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+    <div *ngIf="!agencyOverview" class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
+      {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+      translate}}
+    </div>
+    <div *ngIf="agencyOverview" class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+      {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
       translate}}
     </div>
   </div>
@@ -73,7 +79,8 @@
   *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-country-office-contacts>
 <app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
 <app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
-                    [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId"></app-response-plans>
+                    [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"
+                    [agencyOverview]="agencyOverview"></app-response-plans>
 <app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
 <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
 <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>

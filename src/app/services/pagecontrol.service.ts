@@ -6,6 +6,7 @@ import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/platform-browser";
+import {Pair} from "../utils/bundles";
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -88,22 +89,22 @@ export class CountryPermissionsMatrix {
     Edit: boolean,
     Delete: boolean
   };
-  public crossCountrySameAgency: {
-    AddNote: boolean,
-    CopyAction: boolean,
-    Download: boolean,
-    Edit: boolean,
-    View: boolean,
-    ViewContacts: boolean
-  };
-  public interAgencyCrossCountry: {
-    AddNote: boolean,
-    CopyAction: boolean,
-    Download: boolean,
-    Edit: boolean,
-    View: boolean,
-    ViewContacts: boolean
-  };
+  // public crossCountrySameAgency: {
+  //   AddNote: boolean,
+  //   CopyAction: boolean,
+  //   Download: boolean,
+  //   Edit: boolean,
+  //   View: boolean,
+  //   ViewContacts: boolean
+  // };
+  // public interAgencyCrossCountry: {
+  //   AddNote: boolean,
+  //   CopyAction: boolean,
+  //   Download: boolean,
+  //   Edit: boolean,
+  //   View: boolean,
+  //   ViewContacts: boolean
+  // };
   public other: {
     DownloadDocuments: boolean,
     UploadDocuments: boolean
@@ -114,37 +115,14 @@ export class CountryPermissionsMatrix {
   }
 
   all(type: boolean) {
-    this.chsActions.Assign = type;
-    this.mandatedMPA.Assign = type;
-    this.customMPA.Assign = type;
-    this.customMPA.Edit = type;
-    this.customMPA.New = type;
-    this.customMPA.Delete = type;
-    this.mandatedAPA.Assign = type;
-    this.customAPA.Assign = type;
-    this.customAPA.Edit = type;
-    this.customAPA.New = type;
-    this.customAPA.Delete = type;
-    this.notes.Delete = type;
-    this.notes.Edit = type;
-    this.notes.New = type;
-    this.countryContacts.New = type;
-    this.countryContacts.Edit = type;
-    this.countryContacts.Delete = type;
-    this.crossCountrySameAgency.Edit = type;
-    this.crossCountrySameAgency.AddNote = type;
-    this.crossCountrySameAgency.Download = type;
-    this.crossCountrySameAgency.View = type;
-    this.crossCountrySameAgency.ViewContacts = type;
-    this.crossCountrySameAgency.CopyAction = type;
-    this.interAgencyCrossCountry.Edit = type;
-    this.interAgencyCrossCountry.AddNote = type;
-    this.interAgencyCrossCountry.Download = type;
-    this.interAgencyCrossCountry.View = type;
-    this.interAgencyCrossCountry.ViewContacts = type;
-    this.interAgencyCrossCountry.CopyAction = type;
-    this.other.DownloadDocuments = type;
-    this.other.UploadDocuments = type;
+    this.chsActions = {Assign: type};
+    this.mandatedMPA = {Assign: type};
+    this.customMPA = {Assign: type, Edit: type, New: type, Delete: type};
+    this.mandatedAPA = {Assign: type};
+    this.customAPA = {Assign: type, Edit: type, New: type, Delete: type};
+    this.notes = {Delete: type, Edit: type, New: type};
+    this.countryContacts = {New: type, Edit: type, Delete: type};
+    this.other = {DownloadDocuments: type, UploadDocuments: type};
   }
 }
 
@@ -516,5 +494,46 @@ export class PageControlService {
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
     // TODO: Implement this
+    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+      .takeUntil(ngUnsubscribe)
+      .map((snap) => {
+        let agencyAdmin: string;
+        for (let x in snap.val().agencyAdmin) {
+          agencyAdmin = x;
+        }
+        return Pair.create(snap.val().countryId, agencyAdmin);
+      })
+      .flatMap((pair: Pair) => {
+        return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+      })
+      .takeUntil(ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val().hasOwnProperty('permissionSettings')) {
+          let s = snap.val().permissionSettings;
+          // Build the matrix
+          let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+          // CHSActions
+          x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
+          x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
+          x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
+          x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
+          x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
+          x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
+          x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
+          x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
+          x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
+          x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
+          x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
+          x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
+          x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
+          x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
+          x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
+          x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
+          x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
+          x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
+          x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+          fun(x);
+        }
+      });
   }
 }

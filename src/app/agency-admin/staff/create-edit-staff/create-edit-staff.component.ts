@@ -499,7 +499,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   selectedUserType(userType) {
-    //userType-1 to ignore first all option
+    //userType-1 to ignore f all option
     this.notificationSettings = [];
     this.notificationList
       .takeUntil(this.ngUnsubscribe)

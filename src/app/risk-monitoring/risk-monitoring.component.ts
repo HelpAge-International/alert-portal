@@ -36,6 +36,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private systemId: string;
   public hazards: any[] = [];
   private canCopy: boolean;
+  private agencyOverview: boolean;
 
   private agencyAdminId: string;
   private countryLocation: any;
@@ -128,6 +129,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         if (params["canCopy"]) {
           this.canCopy = params["canCopy"];
         }
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
+        }
 
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
@@ -149,9 +153,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               this._getCountryContextIndicators();
             });
           }
-          });
-          })
-
+        });
+      })
 
 
   }
@@ -493,13 +496,25 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     console.log("isContext: " + isContext);
     console.log(hazard);
     if (isContext) {
-      this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
-        "countryId": this.countryID,
-        "agencyId": this.agencyId,
-        "systemId": this.systemId,
-        "indicatorId": indicator.$key,
-        "isContext": isContext
-      }]);
+      if (this.agencyOverview) {
+        this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
+          "countryId": this.countryID,
+          "agencyId": this.agencyId,
+          "systemId": this.systemId,
+          "indicatorId": indicator.$key,
+          "isContext": isContext,
+          "agencyOverview": true
+        }]);
+      } else {
+        this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
+          "countryId": this.countryID,
+          "agencyId": this.agencyId,
+          "systemId": this.systemId,
+          "indicatorId": indicator.$key,
+          "isContext": isContext
+        }]);
+      }
+
     } else {
       let hazardScenario = hazard.hazardScenario;
       this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
@@ -521,14 +536,26 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 this.alertMessage = new AlertMessageModel("No same active hazard exist in your country !");
               } else {
                 console.log("do the hazard copy action");
-                this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
-                  "countryId": this.countryID,
-                  "agencyId": this.agencyId,
-                  "systemId": this.systemId,
-                  "indicatorId": indicator.$key,
-                  "hazardId": hazard.$key,
-                  "isContext": isContext
-                }]);
+                if (this.agencyOverview) {
+                  this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
+                    "countryId": this.countryID,
+                    "agencyId": this.agencyId,
+                    "systemId": this.systemId,
+                    "indicatorId": indicator.$key,
+                    "hazardId": hazard.$key,
+                    "isContext": isContext,
+                    "agencyOverview": true
+                  }]);
+                } else {
+                  this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
+                    "countryId": this.countryID,
+                    "agencyId": this.agencyId,
+                    "systemId": this.systemId,
+                    "indicatorId": indicator.$key,
+                    "hazardId": hazard.$key,
+                    "isContext": isContext
+                  }]);
+                }
               }
             });
         });
