@@ -3,147 +3,197 @@
   <app-country-admin-menu></app-country-admin-menu>
 </div>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
-        <app-country-office-profile-menu></app-country-office-profile-menu>
-        <div class="Header-title__wrap Spaced row">
-            <h2 class="col-sm-2">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.TITLE" | translate}}</h2>
-            <div *ngIf="!isViewing" class="col-sm-10 col-md-10 Right-aligned"><button type="button" class="btn btn-outline-primary" (click)="goToEditProgramme()">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_PROGRAMME_BUTTON" | translate}}</button></div>
+  <div class="Full-page__wrap--inner">
+    <app-country-office-profile-menu></app-country-office-profile-menu>
+
+    <div class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.TITLE" | translate}}</h2>
+      <div *ngIf="!isViewing" class="col-sm-6 Right-aligned">
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && !isEdit"
+                (click)="editProgramme()">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_PROGRAMME_BUTTON" | translate}}
+        </button>
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && isEdit"
+                (click)="showProgramme()">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.VIEW_PROGRAMME_BUTTON" | translate}}
+        </button>
+      </div>
+    </div>
+
+    <div class="row Spaced">
+      <div class="col-sm-0 padding-left-two">
+        <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.SECTOR_EXPERTISE" | translate}}</h3>
+      </div>
+      <div *ngIf="canEdit && isEdit" class="col-sm-0 padding-left-two">
+        <a href="javascript:void(0)" data-toggle="modal" data-target="#sectorSelection" (click)="TmpSectorExpertise = []">{{"GLOBAL.EDIT" | translate}}</a>
+      </div>
+    </div>
+
+    <br>
+    <div class="row-sm-12">
+      <div class="row">
+        <div class="Item__selectable Icon__selectable col-sm-0" *ngFor="let s of sectorExpertise">
+          <div onClick="$(this).toggleClass('Selected');"
+               class="{{ResponsePlanSectors[s.key] | translate | lowercase}}"></div>
+          <label>{{ResponsePlanSectors[s.key] | translate}}</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-sm-12" *ngIf="!sectorExpertise && !sectorExpertise.length"><p class="text-gray-v-light">
+      {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.NO_SECTOR_SELECTED" | translate}}</p></div>
+    <div class="Line-row margin-left"></div>
+
+    <h3 class="row-sm-12 Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.4WMAPPING" | translate}}</h3>
+    <br>
+    <div class="row">
+      <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong>
+      </div>
+      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHAT" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHERE" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_TO_WHO" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHEN" | translate}}</strong></div>
+    </div>
+    <div class="Line-row margin-left"></div>
+    <div *ngFor="let m of mapping">
+      <div class="row">
+        <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"MM/yyyy") : '-'}}</p>
+        </div> <!--Updated-->
+        <div class="col-sm-2"><p><img
+          src="assets/images/icons/{{ResponsePlanSectors[m.sector] | translate | lowercase}}.svg"
+          alt="{{ResponsePlanSectors[m.sector] | translate}}">{{ResponsePlanSectors[m.sector] | translate}}</p></div>
+        <!--Sector-->
+        <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
+        <div class="col-sm-2"><p>{{m.where ? m.where : ''}}</p></div> <!--Where-->
+        <div class="col-sm-2"><p>{{m.toWho ? m.toWho : ''}}</p></div> <!--To Who-->
+        <div class="col-sm-2"><p>{{m.when | date:"dd/MM/yyyy"}}</p></div> <!--When-->
+
+        <div *ngIf="canEdit && isEdit" class="col-sm-1">
+          <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]" class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}</button>
         </div>
 
-        <h3 class="row-sm-12 Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.SECTOR_EXPERTISE" | translate}}</h3>
+        <!--Notes-->
+        <div *ngIf="canEdit && !isEdit" class="col-sm-1">
+          <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+          <p class="notes-number__components--country-office-profile">{{m.notes.length && m.notes.length > 0 ?
+            m.notes.length : 0}}</p>
+          <a href="#notesFor{{m.key}}" data-toggle="collapse" class="row margin-left-one-half">{{"GLOBAL.NOTES" |
+            translate}}</a>
+        </div>
+      </div>
 
-        <br>
-        <div class="row-sm-12">
-            <div class="row">
-                <div class="Item__selectable Icon__selectable col-sm-0" *ngFor="let s of sectorExpertise">
-                     <div onClick="$(this).toggleClass('Selected');"  class="{{ResponsePlanSectors[s.key] | translate | lowercase}}"></div>
-                    <label>{{ResponsePlanSectors[s.key] | translate}}</label>
-                </div>
+      <!-----Notes Drop Down One----->
+      <div id="notesFor{{m.key}}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div class="log_left p-3">
+          <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.NOTE" | translate}}</h3>
+          <hr class="d-inline-flex">
+          <form>
+            <input type="text" placeholder="Add a log entry" name="log_{{logContent[m.key]}}"
+                   [(ngModel)]="logContent[m.key]">
+          </form>
+
+          <!--Log post #1-->
+          <div class="row Spaced log-post__wrap--risk" *ngFor="let note of m.notes">
+            <div class="log-date__wrap--risk col-lg-1">
+              <p>{{m.when | date:"dd/MM/yyyy"}}</p>
+              <!--                            <p>Status: <img src="assets/images/oval_green.svg"></p>-->
             </div>
-        </div>
-
-        <div class="row-sm-12" *ngIf="!sectorExpertise && !sectorExpertise.length"><p class="text-gray-v-light">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.NO_SECTOR_SELECTED" | translate}}</p></div>
-        <div class="Line-row margin-left"></div>
-
-        <h3 class="row-sm-12 Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.4WMAPPING" | translate}}</h3>
-        <br>
-        <div class="row">
-            <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
-            <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHAT" | translate}}</strong></div>
-            <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHERE" | translate}}</strong></div>
-            <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_TO_WHO" | translate}}</strong></div>
-            <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHEN" | translate}}</strong></div>
-        </div>
-        <div class="Line-row margin-left"></div>
-        <div *ngFor="let m of mapping">
-            <div  class="row">
-                <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"MM/yyyy") : '-'}}</p></div> <!--Updated-->
-                <div class="col-sm-2"><p><img src="assets/images/icons/{{ResponsePlanSectors[m.sector] | translate | lowercase}}.svg" alt="{{ResponsePlanSectors[m.sector] | translate}}">{{ResponsePlanSectors[m.sector] | translate}}</p></div> <!--Sector-->
-                <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
-                <div class="col-sm-2"><p>{{m.where ? m.where : ''}}</p></div> <!--Where-->
-                <div class="col-sm-2"><p>{{m.toWho ? m.toWho : ''}}</p></div> <!--To Who-->
-                <div class="col-sm-2"><p>{{m.when | date:"dd/MM/yyyy"}}</p></div> <!--When-->
-                <div class="col-sm-1"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                    <p class="notes-number__components--country-office-profile">{{m.notes.length && m.notes.length > 0 ? m.notes.length : 0}}</p>
-                    <a href="#notesFor{{m.key}}" data-toggle="collapse" class="row margin-left-one-half">{{"GLOBAL.NOTES" | translate}}</a></div> <!--Notes-->
+            <div class="col-lg-6">
+              <p>{{note.content}}</p>
+              <br>
+              <div class="row">
+                <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
+                <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote"
+                   class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"GLOBAL.EDIT" |
+                  translate}}</a>
+                <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
+                <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote"
+                   class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"GLOBAL.DELETE" |
+                  translate}}</a>
+              </div>
             </div>
-
-            <!-----Notes Drop Down One----->
-            <div id="notesFor{{m.key}}" class="Tooltip__bubble container-fluid notes log collapse">
-                <div class="log_left p-3">
-                    <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.NOTE" | translate}}</h3>
-                    <hr class="d-inline-flex">
-                    <form>
-                        <input type="text" placeholder="Add a log entry" name="log_{{logContent[m.key]}}" [(ngModel)]="logContent[m.key]">
-                    </form>
-
-                    <!--Log post #1-->
-                    <div class="row Spaced log-post__wrap--risk" *ngFor="let note of m.notes">
-                         <div class="log-date__wrap--risk col-lg-1">
-                            <p>{{m.when | date:"dd/MM/yyyy"}}</p>
-                            <!--                            <p>Status: <img src="assets/images/oval_green.svg"></p>-->
-                        </div>
-                        <div class="col-lg-6">
-                            <p>{{note.content}}</p>
-                            <br>
-                            <div class="row">
-                                <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
-                                <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote" class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"GLOBAL.EDIT" | translate}}</a>
-                                <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
-                                <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote" class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"GLOBAL.DELETE" | translate}}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                </div>
-
-                <!--add Note button-->
-                <div class="add_log mt-auto p-2 text-right float-right">
-                    <div class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.ADD_NOTE" | translate}}</div><br>
-                    <br><a href="#notesFor{{m.key}}" class="margin-left-two" data-toggle="collapse">{{"GLOBAL.CANCEL" | translate}}</a>
-                </div>
-            </div>
-
+          </div>
+          <hr>
         </div>
 
-
-        <!--Edit Note Modal-->
-        <div class="modal fade" id="editNote" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h6 class="modal-title" class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.EDIT_NOTE_MODAL_TITLE" | translate}}</h6>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body text-center form-group input-lg">
-                        <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="noteTmp['content']"></textarea>
-                    </div>
-                    <div class="row Right-aligned Spaced col-sm-12">
-                        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
-                        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " (click)="saveLog()">
-                            {{"GLOBAL.SAVE" | translate}}
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <!--add Note button-->
+        <div class="add_log mt-auto p-2 text-right float-right">
+          <div class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">
+            {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.ADD_NOTE" | translate}}
+          </div>
+          <br>
+          <br><a href="#notesFor{{m.key}}" class="margin-left-two" data-toggle="collapse">{{"GLOBAL.CANCEL" |
+          translate}}</a>
         </div>
-
-        <!--Delete Note Modal-->
-        <div class="modal fade" id="deleteNote" tabindex="-1" role="dialog" aria-labelledby="deleteNote" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h6 class="modal-title" class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_MODAL_TITLE" | translate}}</h6>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body text-center col-sm-12">
-                        <p class="text-center">
-                            {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}
-                            <br>
-                            {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_TWO" | translate}}
-                        </p>
-                    </div>
-                    <div class="row Right-aligned Spaced col-sm-12">
-                        <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
-                        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " (click)="deleteLog()">
-                            {{"GLOBAL.CONFIRM" | translate}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row-sm-12"><p class="text-gray-v-light" *ngIf="!mapping && !mapping.length">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.NO_4WMAPPING" | translate}}</p></div>
-        <div class="Line-row margin-left"></div>
+      </div>
 
     </div>
+
+
+    <!--Edit Note Modal-->
+    <div class="modal fade" id="editNote" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" class="Spaced-above">
+              {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.EDIT_NOTE_MODAL_TITLE" | translate}}</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center form-group input-lg">
+            <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="noteTmp['content']"></textarea>
+          </div>
+          <div class="row Right-aligned Spaced col-sm-12">
+            <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " (click)="saveLog()">
+              {{"GLOBAL.SAVE" | translate}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Delete Note Modal-->
+    <div class="modal fade" id="deleteNote" tabindex="-1" role="dialog" aria-labelledby="deleteNote" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" class="Spaced-above">
+              {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_MODAL_TITLE" | translate}}</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center col-sm-12">
+            <p class="text-center">
+              {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}
+              <br>
+              {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_TWO" | translate}}
+            </p>
+          </div>
+          <div class="row Right-aligned Spaced col-sm-12">
+            <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase "
+                    (click)="deleteLog()">
+              {{"GLOBAL.CONFIRM" | translate}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-sm-12"><p class="text-gray-v-light" *ngIf="!mapping && !mapping.length">
+      {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.NO_4WMAPPING" | translate}}</p></div>
+    <div class="Line-row margin-left"></div>
+
+    <div class="row">
+      <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/']" data-toggle="modal" class="btn btn-outline-primary text-uppercase">{{"GLOBAL.ADD" | translate}}</button>
+    </div>
+
+  </div>
 </div>
-
-

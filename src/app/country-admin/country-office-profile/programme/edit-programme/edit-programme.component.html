@@ -52,7 +52,7 @@
                 <div class="col-sm-2"><p>{{m.when | date:"dd/MM/yyyy"}}</p></div> <!--When-->
                 <div class="col-sm-1">
                     <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]" class="btn btn-outline-primary text-uppercase">edit</button>
-                </div> 
+                </div>
             </div>
         </div>
 
@@ -90,7 +90,7 @@
                     </div>
 
                     <div class="row Right-aligned Spaced col-sm-12">
-                        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">Cancel</a>
+                        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
                         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="saveSectors()">{{"GLOBAL.SAVE" | translate}}
                         </button>
                     </div>

@@ -16,6 +16,10 @@ declare var jQuery: any;
 })
 
 export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
+
+  private isEdit = false;
+  private canEdit = true; // TODO check the user type and see if he has editing permission
+
   private isViewing: boolean;
   private UserType: number;
 
@@ -105,10 +109,17 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToEditProgramme() {
-    this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
+  // goToEditProgramme() {
+  //   this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
+  // }
+
+  editProgramme() {
+    this.isEdit = true;
   }
 
+  showProgramme() {
+    this.isEdit = false;
+  }
 
   _getProgramme() {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID)
