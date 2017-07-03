@@ -497,8 +497,6 @@ export class PageControlService {
     af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(ngUnsubscribe)
       .map((snap) => {
-        console.log(snap.key);
-        console.log(snap.val());
         let agencyAdmin: string;
         for (let x in snap.val().agencyAdmin) {
           agencyAdmin = x;
@@ -506,12 +504,10 @@ export class PageControlService {
         return Pair.create(snap.val().countryId, agencyAdmin);
       })
       .flatMap((pair: Pair) => {
-        console.log(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f);
         return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
       })
       .takeUntil(ngUnsubscribe)
       .subscribe((snap) => {
-        console.log(snap.val());
         if (snap.val().hasOwnProperty('permissionSettings')) {
           let s = snap.val().permissionSettings;
           // Build the matrix

@@ -139,8 +139,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this._getSkills();
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-            console.log("Intercepting the permissions!");
-            console.log(isEnabled);
             this.countryPermissionsMatrix = isEnabled;
           }));
         });
