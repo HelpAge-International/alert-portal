@@ -40,7 +40,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   // Data for the actions
   // --- Declared because we're missing out "inactive" in this page
-  private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED",  "GLOBAL.ACTION_STATUS.ARCHIVED"];
+  private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED"];
   private actions: Actions[] = [];
   private DEPARTMENTS: string[] = [];
   private ACTION_TYPE = Constants.ACTION_TYPE;
@@ -55,6 +55,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private ActionType = ActionType;
 
   // Page admin
+  private isViewing: boolean;
   protected countrySelected = false;
   protected agencySelected = false;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -95,39 +96,71 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.userType = userType;
-      this.filterAssigned = this.uid;
-      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-      this.getStaffDetails(this.uid);
-      // Get the country ID and load actions for country
-      this.userService.getCountryId(Constants.USER_PATHS[this.userType], user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
-          this.init(this.countryId);
-          this.initStaff();
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["systemId"]) {
+          this.systemAdminId = params["systemId"];
+        }
+
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.userType = userType;
+          this.filterAssigned = this.uid;
+          this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+          this.getStaffDetails(this.uid);
+
+          //overview
+          if (this.agencyId && this.countryId && this.systemAdminId) {
+            this.init(this.countryId);
+            this.init(this.agencyId);
+            this.init(this.systemAdminId);
+            this.initStaff();
+            this.initDepartments();
+            this.initDocumentTypes();
+          } else {
+            // Get the country ID and load actions for country
+            this.userService.getCountryId(Constants.USER_PATHS[this.userType], user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryId => {
+                this.countryId = countryId;
+                this.init(this.countryId);
+                this.initStaff();
+              });
+            // Get the agency ID and load actions for agency
+            this.userService.getAgencyId(Constants.USER_PATHS[this.userType], user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((agencyId) => {
+                this.agencyId = agencyId;
+                this.init(this.agencyId);
+                this.initDepartments();
+              });
+            // Get the system admin ID and load actions for system admin. We need it for document type
+            this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((system) => {
+                this.systemAdminId = system;
+                this.init(this.systemAdminId);
+                this.initDocumentTypes();
+                // System Admin always has Minimum Prep actions
+                // this.init(this.systemAdminId, false);
+              });
+          }
         });
-      // Get the agency ID and load actions for agency
-      this.userService.getAgencyId(Constants.USER_PATHS[this.userType], user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyId) => {
-          this.agencyId = agencyId;
-          this.init(this.agencyId);
-          this.initDepartments();
-        });
-      // Get the system admin ID and load actions for system admin. We need it for document type
-      this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((system) => {
-          this.systemAdminId = system;
-          this.init(this.systemAdminId);
-          this.initDocumentTypes();
-          // System Admin always has Minimum Prep actions
-          // this.init(this.systemAdminId, false);
-        });
-    });
+
+      });
+
+
   }
 
   ngOnDestroy() {
@@ -173,6 +206,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         });
       });
   }
+
   /**
    * Initialisation method for the departments of the agency
    */
@@ -258,12 +292,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.assignActionId = action.id;
     this.assignActionCategoryUid = action.actionUid;
   }
+
   public selectedAssignToo(uid: string) {
     if (uid == "0" || uid == null) {
       return;
     }
     this.assignActionAsignee = uid;
   }
+
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined ||
@@ -367,6 +403,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         });
     }
   }
+
   // Adding a note to action
   protected addNoteToAction(note: PreparednessNotes, n: Actions) {
     let ran = false;
@@ -382,6 +419,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       n.notes.push(note);
     }
   }
+
   // Adding a note to firebase
   public addNote(action: Actions) {
     if (action.note == undefined) {
@@ -407,15 +445,18 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + '/note/' + action.id).push(note);
     }
   }
+
   // Edit mode
   protected editNote(note: PreparednessNotes, action: Actions) {
     action.noteId = note.id;
     action.note = note.content;
   }
+
   // Delete note
   protected deleteNote(note: PreparednessUser, action: Actions) {
     this.af.database.list(Constants.APP_STATUS + '/note/' + action.id + '/' + note.id).remove();
   }
+
   // Disable editing a note
   protected disableEditNote(action: Actions) {
     action.noteId = '';
@@ -511,10 +552,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.updateAction(action);
     }
   }
+
   // Close documents popover
   protected closePopover(action: Actions) {
     jQuery("#popover_content_" + action.id).toggle("collapse");
   }
+
   // Uploading a file to Firebase
   protected uploadFile(action: Actions, file) {
     let document = {
@@ -566,11 +609,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         console.log(err, 'You do not have access!');
       });
   }
+
   // Remove document
   protected purgeDocumentReference(action: Actions, docKey) {
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents/' + docKey).set(null);
     this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + docKey).set(null);
   }
+
   protected removeAttachment(action, file) {
     action.attachments = action.attachments.filter(attachment => {
       if (attachment.name == file.name && attachment.actionId == file.actionId)
@@ -579,6 +624,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       return true;
     });
   }
+
   // Delete document from firebase
   protected deleteDocument(action: Actions, docId: string) {
     let documentId = action.documents[docId].documentId;
@@ -586,6 +632,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + documentId).set(null);
     this.firebase.storage().ref().child('documents/' + action.actionUid + "/" + documentId).delete();
   }
+
   // Exporting all the documents
   protected exportAllDocuments(action: Actions) {
     this.documents = action.documents;
@@ -599,6 +646,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     jQuery("#export_documents").modal('show');
 
   }
+
   // Exporting all documents
   protected exportAllDocsFromModal(actionId: string) {
     let index = 0;
@@ -613,9 +661,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");
     }
   }
+
   protected closeExportModal() {
     jQuery("#export_documents").modal("hide");
   }
+
   // Export a single document
   protected exportDocument(action: Actions, docId: string) {
     console.log(docId);
@@ -630,6 +680,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     xhr.open('GET', doc.filePath);
     xhr.send();
   }
+
   // Create a download <a> element to emulate actual file downloads
   protected download(data, name, type) {
     var a = document.createElement("a");
@@ -639,10 +690,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     a.download = name;
     a.click();
   }
+
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
   }
-
 
 
   /**

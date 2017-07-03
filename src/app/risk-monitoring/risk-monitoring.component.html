@@ -1,5 +1,7 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</div>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -8,10 +10,11 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap--risk">
       <h1>{{"RISK_MONITORING.TITLE" | translate}}</h1>
-      <div class="btn btn-tertiary" routerLink="/risk-monitoring/create-alert">
+      <div *ngIf="!isViewing" class="btn btn-tertiary" routerLink="/risk-monitoring/create-alert">
         {{"RISK_MONITORING.MAIN_PAGE.CREATE_AN_ALERT" | translate}}
       </div>
-      <a routerLink="/risk-monitoring/add-hazard" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD" |
+      <a *ngIf="!isViewing" routerLink="/risk-monitoring/add-hazard" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
+        |
         translate}}</a>
     </div>
 
@@ -57,8 +60,9 @@
         <div class="Accordion__Content collapse" id="collapseOne" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
-              <div class="sub-sub-contents__wrap--risk col-sm-11">
-                <a href="#" data-toggle="modal" data-target="#archiveHazard">
+              <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
+                <a *ngIf="indicatorsCC.length > 0" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#archiveHazard">
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
                 <!--(click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>-->
@@ -73,7 +77,8 @@
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"GLOBAL.EDIT"
+                    <a *ngIf="!isViewing"
+                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"GLOBAL.EDIT"
                       | translate}}
                     </a>
                   </div>
@@ -140,9 +145,13 @@
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                      </div>
+                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                           (click)="copyIndicator(indicatorC, true)">
+                        Copy
                       </div>
                       <!--TODO-->
                       <p>Last update: <strong>{{indicatorC.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
@@ -189,7 +198,7 @@
                             <br>
                             <p><strong>{{"RISK_MONITORING.MAIN_PAGE.BY_USER" | translate}}
                               {{log.addedByFullName}}</strong></p>
-                            <div class="edit_delete_log_tooltip__wrap--risk">
+                            <div *ngIf="uid == log.addedBy" class="edit_delete_log_tooltip__wrap--risk">
                               <a href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"GLOBAL.EDIT" |
                                 translate}} </a>
@@ -226,7 +235,9 @@
                      attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + indicatorC.$key}}" aria-expanded="true"
+                       attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}"
+                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
                   <div class="row col-sm-10">
@@ -273,11 +284,13 @@
         <div class="Accordion__Content collapse" id="collapse{{hazard.hazardScenario}}" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
-              <div class="sub-sub-contents__wrap--risk col-sm-11">
-                <a href="javascript:void(0)" data-toggle="modal" data-target="#archiveHazard"
+              <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
+                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#archiveHazard"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE"
                   | translate}}</a>
-                <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"
+                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#deleteHazardModal"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                 <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
                   | translate}}</a>
@@ -289,7 +302,8 @@
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"GLOBAL.EDIT"
+                    <a *ngIf="!isViewing"
+                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"GLOBAL.EDIT"
                       | translate}}
                     </a>
                   </div>
@@ -353,9 +367,14 @@
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                    </div>
+                    <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                         (click)="copyIndicator(indicator, false, hazard)">
+                      <!--TODO TRANSLATE-->
+                      Copy
                     </div>
                     <!-- TODO -->
                     <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
@@ -401,7 +420,7 @@
                               <br>
                               <p><strong>{{"RISK_MONITORING.MAIN_PAGE.BY_USER" | translate}}
                                 {{log.addedByFullName}}</strong></p>
-                              <div class="edit_delete_log_tooltip__wrap--risk">
+                              <div *ngIf="uid == log.addedBy" class="edit_delete_log_tooltip__wrap--risk">
                                 <a href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
                                   translate}} </a>
@@ -441,7 +460,10 @@
                      attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                       aria-expanded="true"
+                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
                   <div class="row col-sm-10">
@@ -565,11 +587,13 @@
           <div class="Accordion__Content collapse" id="collapse{{hazard.hazardScenario}}" role="tab">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
-                <div class="sub-sub-contents__wrap--risk col-sm-11">
-                  <a href="#" data-toggle="modal" data-target="#archiveHazard"
+                <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
+                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                     data-target="#archiveHazard"
                      (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE"
                     | translate}}</a>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"
+                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                     data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                   <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
                     | translate}}</a>
@@ -583,7 +607,8 @@
                     <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                       *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                      <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"GLOBAL.EDIT"
+                      <a *ngIf="!isViewing"
+                         [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"GLOBAL.EDIT"
                         | translate}}
                       </a>
                     </div>
@@ -647,7 +672,7 @@
                     </div>
                     <div class="end-col__wrap--risk col-md-3 col-sm-6"
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                      <div class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                       </div>
@@ -694,7 +719,7 @@
                                 <p>{{log.content}}</p>
                                 <br>
                                 <p><strong>by {{log.addedByFullName}}</strong></p>
-                                <div class="edit_delete_log_tooltip__wrap--risk">
+                                <div *ngIf="uid == log.addedBy" class="edit_delete_log_tooltip__wrap--risk">
                                   <a href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
                                      (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
                                     translate}} </a>
@@ -737,7 +762,10 @@
                        attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
                     <div class="log_left p-3 row col-sm-12">
                       <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                      <a href="#" class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                      <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                         aria-expanded="true"
+                         attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                         class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                         translate}}</a>
                     </div>
                     <div class="row col-sm-10">

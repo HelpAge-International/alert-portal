@@ -1,15 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Indicator} from "../model/indicator";
-import {HazardScenario, AlertMessageType, DurationType, UserType, Countries} from "../utils/Enums";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AlertMessageType, Countries, DurationType, HazardScenario} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
-import {RxHelper} from "../utils/RxHelper";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
-import {CommonService} from "../services/common.service";
-import {AlertMessageModel} from '../model/alert-message.model';
-import {ModelHazard} from '../model/hazard.model';
-import {LogModel} from '../model/log.model';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../model/alert-message.model";
+import {LogModel} from "../model/log.model";
+import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
@@ -26,6 +22,7 @@ declare var jQuery: any;
 })
 
 export class RiskMonitoringComponent implements OnInit, OnDestroy {
+
   private UserType: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -34,7 +31,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   public uid: string;
   public countryID: string;
+  private isViewing: boolean;
+  private agencyId: string;
+  private systemId: string;
   public hazards: any[] = [];
+  private canCopy: boolean;
 
   private agencyAdminId: string;
   private countryLocation: any;
@@ -108,20 +109,51 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.UserType = userType;
 
-      this._getCountryID().then(() => {
-        this.getAgencyID().then(() => {
-          this.getCountryLocation();
-        })
-        this._getHazards().then(() => {
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
+        }
 
-        });
-        this._getCountryContextIndicators();
-      });
-    });
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+
+          if (this.agencyId && this.countryID) {
+            this._getHazards().then(() => {
+
+            });
+            this._getCountryContextIndicators();
+          } else {
+            this._getCountryID().then(() => {
+              this.getAgencyID().then(() => {
+                this.getCountryLocation();
+              });
+              this._getHazards().then(() => {
+
+              });
+              this._getCountryContextIndicators();
+            });
+          }
+          });
+          })
+
+
+
   }
 
   ngOnDestroy(): void {
@@ -453,6 +485,54 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  copyIndicator(indicator: any, isContext: boolean, hazard: any) {
+    console.log(indicator.$key);
+    console.log(this.countryID)
+    console.log("isContext: " + isContext);
+    console.log(hazard);
+    if (isContext) {
+      this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
+        "countryId": this.countryID,
+        "agencyId": this.agencyId,
+        "systemId": this.systemId,
+        "indicatorId": indicator.$key,
+        "isContext": isContext
+      }]);
+    } else {
+      let hazardScenario = hazard.hazardScenario;
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
+        .take(1)
+        .subscribe(ownCountryId => {
+          console.log(ownCountryId);
+          this.af.database.list(Constants.APP_STATUS + "/hazard/" + ownCountryId, {
+            query: {
+              orderByChild: "hazardScenario",
+              equalTo: hazardScenario,
+              limitToFirst: 1
+            }
+          })
+            .take(1)
+            .subscribe(hazards => {
+              let activeHazards = hazards.filter(hazard => hazard.isActive == true);
+              if (activeHazards.length == 0) {
+                console.log("no hazard exist!!");
+                this.alertMessage = new AlertMessageModel("No same active hazard exist in your country !");
+              } else {
+                console.log("do the hazard copy action");
+                this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
+                  "countryId": this.countryID,
+                  "agencyId": this.agencyId,
+                  "systemId": this.systemId,
+                  "indicatorId": indicator.$key,
+                  "hazardId": hazard.$key,
+                  "isContext": isContext
+                }]);
+              }
+            });
+        });
+    }
   }
 
 }

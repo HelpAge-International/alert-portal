@@ -92,9 +92,9 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
         this.docFilterSubject.next();
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
-          this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-            this.countryId = countryAdminUser.countryId;
-            this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+
+          if (this.agencyId && this.countryId) {
+
             this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(_ => {
@@ -145,7 +145,64 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                     });
                 });
               });
-          });
+
+          } else {
+            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+              this.countryId = countryAdminUser.countryId;
+              this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+
+              this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(_ => {
+                  this.countries = _;
+                  Object.keys(this.countries).map(country => {
+                    let key = this.countries[country].$key;
+
+                    if (key == this.countryId) {
+                      this.locationId = this.countries[country].location;
+                      //this.countriesFilterSubject.next(Countries[this.locationId]);
+                    }
+
+                    this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(_ => {
+                        let docs = _;
+                        docs = docs.filter(doc => {
+                          if (this.userSelected == "-1")
+                            return true;
+
+                          return doc.uploadedBy == this.userSelected;
+                        });
+                        Object.keys(docs).map(doc => {
+                          let uploadedBy = docs[doc].uploadedBy;
+                          this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe(_ => {
+                              docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                            });
+                        });
+                        this.countries[country]['docs'] = docs;
+                        this.countries[country]['docsfiltered'] = docs;
+                        this.countries[country]['hasDocs'] = (docs.length > 0);
+                      });
+                  });
+                });
+
+              this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(_ => {
+                  let users = _;
+                  Object.keys(users).map(user => {
+                    let userKey = users[user].$key;
+                    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(_ => {
+                        this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                      });
+                  });
+                });
+            });
+          }
         });
 
       });

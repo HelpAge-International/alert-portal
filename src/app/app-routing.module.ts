@@ -115,6 +115,7 @@ import {ExportProposalComponent} from "./export-proposal/export-proposal.compone
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
 import { DonorNotificationsComponent } from "./donor-module/donor-notifications/donor-notifications.component";
 import { DirectorNotificationsComponent } from "./director/director-notifications/director-notifications.component";
+import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -249,6 +250,7 @@ const routes: Routes = [
     {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
     {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
     {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+    {path: 'dashboard/dashboard-overview', component: DashboardOverviewComponent},
 
 
     /**

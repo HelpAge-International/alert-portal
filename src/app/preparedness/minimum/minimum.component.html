@@ -1,7 +1,10 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</div>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 
 
 <!-- EXPORT DOCUMENTS MODAL -->
@@ -22,7 +25,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="exportAllDocsFromModal(documentActionId)">Confirm</button>
+        <button type="button" class="btn btn-primary" (click)="exportAllDocsFromModal(documentActionId)">Confirm
+        </button>
       </div>
     </div>
   </div>
@@ -32,18 +36,21 @@
 <!-- PAGE -->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <ng-template [ngIf]="countrySelected && !agencySelected">
-      <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
-      <app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
-    <ng-template [ngIf]="agencySelected">
-      <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
-      <app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
+
+    <div *ngIf="!isViewing">
+      <ng-template [ngIf]="countrySelected && !agencySelected">
+        <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
+        <app-alert-widget [countryId]="countryId"></app-alert-widget>
+      </ng-template>
+      <ng-template [ngIf]="agencySelected">
+        <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
+        <app-alert-widget [countryId]="countryId"></app-alert-widget>
+      </ng-template>
+    </div>
 
     <div class="Header-title__wrap">
       <h1>Minimum Preparedness Actions</h1>
-      <div class="btn-group">
+      <div *ngIf="!isViewing" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Create action
         </button>
@@ -118,7 +125,8 @@
     <div class="Ribbon__section__wrap Spaced">
       <h2>Actions assigned to {{
         filterAssigned == uid ? 'me' : (filterAssigned == '0' ? 'anyone' :
-        (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' + CURRENT_USERS.get(filterAssigned).lastName : 'Someone')
+        (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' +
+        CURRENT_USERS.get(filterAssigned).lastName : 'Someone')
         )
         }}</h2>
 
@@ -185,7 +193,8 @@
 
                           <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
                              [attr.data-target]="'#documents_popover_' + action.id" aria-expanded="false"
-                             [attr.aria-controls]="'documents_popover_' + action.id" *ngIf="action.documents.length > 0">
+                             [attr.aria-controls]="'documents_popover_' + action.id"
+                             *ngIf="action.documents.length > 0">
                             <div class="fa-stack">
                               <i class="fa fa-file fa-stack-2x"></i>
                               <i class="fa fa-stack-1x fa-inverse">{{action.documents.length}}</i>
@@ -203,7 +212,8 @@
                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
                           </div>
 
-                          <a *ngIf="action.type == ActionType.custom" [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
+                          <a *ngIf="action.type == ActionType.custom"
+                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
                         <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
@@ -216,7 +226,8 @@
                         <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
                         <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
+                          : 'Unassigned'}}</strong></div>
 
                       </div>
                     </div>
@@ -249,9 +260,11 @@
                               <div class="row align-items-center">
                                 <div class="col-6 text-bold Small-spaced">
                                   by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                                  CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
+                                  CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
-                                <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
+                                <div class="col-6 text-bold text-right"
+                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                                   <a href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">Edit</a>
                                   | <a href="javascript:void(0);" class="text-danger"
@@ -266,10 +279,12 @@
                         </div>
                         <div class="col-md-3 btn-block">
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' : 'ADD NOTE'}}</a>
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
+                            'ADD NOTE'}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
                              onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
-                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)" *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
+                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
+                             *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
                         </div>
                       </div>
 
@@ -283,11 +298,14 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                                                             (click)="exportAllDocuments(action)">Download all</a>
+                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);"
+                                                                                             class="text-nowrap"
+                                                                                             (click)="exportAllDocuments(action)">Download
+                              all</a>
                             </div>
                             <div class="col-sm-6 col-4 text-right">
-                              <a (click)="closeDocumentsModal('documents_popover_' + action.id)" href="javascript:void(0)" class="btn btn-block">Close</a>
+                              <a (click)="closeDocumentsModal('documents_popover_' + action.id)"
+                                 href="javascript:void(0)" class="btn btn-block">Close</a>
                             </div>
                           </div>
                           <div class="row documents-popover__item">
@@ -332,12 +350,14 @@
                         <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">Upload
                           documents</label>
                         </div>
-                        <input type='file' id="docUpload{{action.id}}" name="file" (change)="fileChange($event, action, action.id)"
+                        <input type='file' id="docUpload{{action.id}}" name="file"
+                               (change)="fileChange($event, action, action.id)"
                                class="Input-form--hidden"/>
                       </div>
                       <div class="row Spaced">
                         <div class="col-12">
-                          <p *ngIf="action.attachments && action.attachments.length > 0">Attachments ({{action.attachments.length}})</p>
+                          <p *ngIf="action.attachments && action.attachments.length > 0">Attachments
+                            ({{action.attachments.length}})</p>
                           <p *ngFor="let attachment of action.attachments">
                             <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
                                                                                class="text-danger"
@@ -433,8 +453,10 @@
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                              aria-expanded="false" aria-controls="popover_content"
-                             class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign this action</a>
-                          <a *ngIf="action.type == ActionType.custom" [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                             class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
+                            this action</a>
+                          <a *ngIf="action.type == ActionType.custom"
+                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -448,7 +470,8 @@
                         <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
                         <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
+                          : 'Unassigned'}}</strong></div>
 
                       </div>
                     </div>
@@ -483,9 +506,11 @@
                             <div class="row align-items-center">
                               <div class="col-6 text-bold Small-spaced">
                                 by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
+                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
+                                CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                               </div>
-                              <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
+                              <div class="col-6 text-bold text-right"
+                                   *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                                 <a href="javascript:void(0);" class="text-primary"
                                    (click)="editNote(note, action)">Edit</a>
                                 | <a href="javascript:void(0);" class="text-danger"
@@ -500,10 +525,12 @@
                       </div>
                       <div class="col-md-3 btn-block">
                         <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                           (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' : 'ADD NOTE'}}</a>
+                           (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' : 'ADD
+                          NOTE'}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
                            onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
-                        <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)" *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
+                        <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
+                           *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
                       </div>
                     </div>
 
@@ -518,8 +545,10 @@
                       <div class="col-md-10">
                         <div class="row Spaced align-items-center">
                           <div class="col-sm-6 col-8">
-                            <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                                                           (click)="exportAllDocuments(action)">Download all</a>
+                            <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);"
+                                                                                           class="text-nowrap"
+                                                                                           (click)="exportAllDocuments(action)">Download
+                            all</a>
                           </div>
                           <div class="col-sm-6 col-4 text-right">
                           </div>
@@ -621,7 +650,8 @@
                              class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
 
 
-                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" *ngIf="action.type == ActionType.custom"
+                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
+                             *ngIf="action.type == ActionType.custom"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -636,7 +666,8 @@
                         </div>
                         <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
-                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName : 'Unassigned'}}</strong></div>
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
+                          : 'Unassigned'}}</strong></div>
 
                       </div>
                     </div>
@@ -669,9 +700,11 @@
                               <div class="row align-items-center">
                                 <div class="col-6 text-bold Small-spaced">
                                   by {{CURRENT_USERS.get(note.uploadedBy) != null ?
-                                  CURRENT_USERS.get(note.uploadedBy).firstName + ' ' + CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
+                                  CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
-                                <div class="col-6 text-bold text-right" *ngIf="note.uploadedBy == uid && note.id != action.noteId">
+                                <div class="col-6 text-bold text-right"
+                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
                                   <a href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">Edit</a>
                                   | <a href="javascript:void(0);" class="text-danger"
@@ -686,10 +719,12 @@
                         </div>
                         <div class="col-md-3 btn-block">
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' : 'ADD NOTE'}}</a>
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
+                            'ADD NOTE'}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
                              onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
-                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)" *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
+                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
+                             *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
                         </div>
                       </div>
 
@@ -703,8 +738,10 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                                                             (click)="exportAllDocuments(action)">Download all</a>
+                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);"
+                                                                                             class="text-nowrap"
+                                                                                             (click)="exportAllDocuments(action)">Download
+                              all</a>
                             </div>
                             <div class="col-sm-6 col-4 text-right">
                             </div>

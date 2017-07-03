@@ -184,6 +184,7 @@ import {NotificationsComponent} from './commons/notifications/notifications.comp
 import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
 import {DirectorNotificationsComponent} from './director/director-notifications/director-notifications.component';
 
+import { DashboardOverviewComponent } from './dashboard/dashboard-overview/dashboard-overview.component';
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -363,7 +364,8 @@ const firebaseAuthConfig = {
     NotificationBadgeComponent,
     NotificationsComponent,
     DonorNotificationsComponent,
-    DirectorNotificationsComponent
+    DirectorNotificationsComponent,
+    DashboardOverviewComponent
   ],
   imports: [
     BrowserModule,

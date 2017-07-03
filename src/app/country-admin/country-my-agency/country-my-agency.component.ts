@@ -1,6 +1,6 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, Countries} from "../../utils/Enums";
-import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
+import {DomSanitizer} from "@angular/platform-browser";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -20,6 +20,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyID: string;
   private systemAdminID: string;
+  private countryId: string;
 
   private agencyName: string = '';
   private alertLevels = Constants.ALERT_LEVELS;
@@ -48,15 +49,22 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private UserType: number;
 
+
   constructor(private pageControl: PageControlService, private agencyService: AgencyService, private route: ActivatedRoute, private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-        this.UserType = userType;
-        this._loadData();
-      });
+      this.UserType = userType;
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryId => {
+          this.countryId = countryId;
+          this._loadData();
+        });
+
+    });
   }
 
   ngOnDestroy() {
@@ -66,6 +74,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
 
   filterAlertLevel(event: any) {
     this.filter = event.target.value;
+    console.log(this.filter);
     this._getCountryList();
   }
 
@@ -106,8 +115,8 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
       this.agencyService.getAgency(this.agencyID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agency => {
-        this.agencyName = agency.name;
-      })
+          this.agencyName = agency.name;
+        })
     }
   }
 
@@ -116,16 +125,20 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countries: any) => {
+          console.log(countries)
           this.countryOfficeData = [];
           this.countryIDs = [];
           if (this.filter == 'all') {
-            this.countryOfficeData = countries;
+            this.countryOfficeData = countries.filter(country => country.$key != this.countryId);
             countries.forEach((val, key) => {
-              this.countryIDs.push(val.$key);
+              if (this.countryId != val.$key) {
+                this.countryIDs.push(val.$key);
+              }
             });
           } else {
+            // TODO filter is not working properly
             countries.forEach((val, key) => {
-              if (val.alertLevel == this.filter) {
+              if (val.alertLevel == this.filter && this.countryId != val.$key) {
                 this.countryOfficeData.push(val);
                 this.countryIDs.push(val.$key);
               }
@@ -302,6 +315,17 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   protected getBackground(location) {
     if (location)
       return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[location] + '.svg)');
+  }
+
+  overviewCountry(countryId) {
+    console.log(countryId);
+    this.router.navigate(["/dashboard/dashboard-overview", {
+      "countryId": countryId,
+      "isViewing": true,
+      "agencyId": this.agencyID,
+      "systemId": this.systemAdminID,
+      "canCopy": true
+    }]);
   }
 
 
