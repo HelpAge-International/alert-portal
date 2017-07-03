@@ -36,7 +36,7 @@
     <br>
     <div class="row-sm-12">
       <div class="row">
-        <div class="Item__selectable Icon__selectable col-sm-0" *ngFor="let s of sectorExpertise">
+        <div class="Icon__selectable col-sm-0" *ngFor="let s of sectorExpertise">
           <div onClick="$(this).toggleClass('Selected');"
                class="{{ResponsePlanSectors[s.key] | translate | lowercase}}"></div>
           <label>{{ResponsePlanSectors[s.key] | translate}}</label>

@@ -27,18 +27,9 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   private uid: string;
   private countryID: string;
+
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
-  private ResponsePlanSectorsList: number[] = [
-    ResponsePlanSectors.wash,
-    ResponsePlanSectors.health,
-    ResponsePlanSectors.shelter,
-    ResponsePlanSectors.nutrition,
-    ResponsePlanSectors.foodSecurityAndLivelihoods,
-    ResponsePlanSectors.protection,
-    ResponsePlanSectors.education,
-    ResponsePlanSectors.campManagement,
-    ResponsePlanSectors.other
-  ];
+  private ResponsePlanSectorsIcons = Constants.RESPONSE_PLANS_SECTORS_ICONS;
 
   private mapping: any[] = [];
   private sectorExpertise: any[] = [];
@@ -47,6 +38,17 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
+
+
+  private TmpSectorExpertise: any[] = [];
+
+
+
+
+
+
+
+
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -109,10 +111,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     });
   }
 
-  // goToEditProgramme() {
-  //   this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
-  // }
-
   editProgramme() {
     this.isEdit = true;
   }
@@ -156,9 +154,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           var obj = {key: parseInt(s), val: sectorExpertise[s]};
           this.sectorExpertise.push(obj);
         }
-
-        console.log(this.mapping);
-
+        console.log('ectorExpertise');
+        console.log(this.sectorExpertise);
       });
   }
 
@@ -225,6 +222,72 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
     return result;
   }
+
+
+
+
+
+
+
+
+  selectedSectors(event: any, sectorID: any) {
+
+    if (this.sectorExpertise && this.sectorExpertise.length > 0) {
+      this.sectorExpertise.forEach((val, key) => {
+        this.TmpSectorExpertise[val.key] = true;
+      });
+    }
+
+    var stateElement: boolean = true;
+
+    var className = event.srcElement.className;
+    const pattern = /.Selected/;
+
+    if (!pattern.test(className)) {
+      stateElement = false;
+    }
+
+    if (stateElement) {
+      this.TmpSectorExpertise[sectorID] = true;
+    } else {
+      if (this.TmpSectorExpertise && this.TmpSectorExpertise.length > 0) {
+        this.TmpSectorExpertise.forEach((val, key) => {
+          if (key == sectorID) {
+            delete this.TmpSectorExpertise[sectorID];
+          }
+        });
+      }
+    }
+
+  }
+
+  saveSectors() {
+
+    if (!this.TmpSectorExpertise || !this.TmpSectorExpertise.length) {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
+      return false;
+    }
+
+    var dataToUpdate = this.TmpSectorExpertise;
+    this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
+      .set(dataToUpdate)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);
+      }).catch(error => {
+      console.log("Message creation unsuccessful" + error);
+    });
+  }
+
+  setSelectorClass(sectorID: any) {
+    var selected = '';
+    this.sectorExpertise.forEach((val, key) => {
+      if (val.key == sectorID) {
+        selected = 'Selected';
+      }
+    });
+    return selected;
+  }
+
 
 }
 

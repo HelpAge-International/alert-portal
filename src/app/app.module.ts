@@ -157,7 +157,6 @@ import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/p
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
-import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
@@ -343,7 +342,6 @@ const firebaseAuthConfig = {
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
     ProjectReportComponent,
-    CountryOfficeEditProgrammeComponent,
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
