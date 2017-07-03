@@ -155,8 +155,7 @@
                       </div>
                       <!--TODO-->
                       <p>Last update: <strong>{{indicatorC.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
-                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM
-                        yyyy'}}</strong></p></div>
+                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM yyyy'}}</strong></p></div>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
@@ -895,6 +894,8 @@
             </div>
           </div>
           <div class="row justify-content-center Spaced col-sm-12">
+            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
+               (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="updateHazardActiveStatus('archiveHazard')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
@@ -922,9 +923,9 @@
         <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="tmpLogData['content']"></textarea>
       </div>
       <div class="row Right-aligned Spaced col-sm-12">
-        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="removeTmpLog()">{{"GLOBAL.CANCEL" |
+        <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="removeTmpLog()">{{"GLOBAL.CANCEL" |
           translate}}</a>
-        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+        <button href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
         (click)="editLog('editNote')">{{"GLOBAL.SAVE" | translate}}
         </button>
       </div>
@@ -958,11 +959,11 @@
             </div>
           </div>
           <div class="row justify-content-center Spaced col-sm-12">
+            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
+               (click)="removeTmpLog()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="deleteLog('deleteIndicatorLog')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-            (click)="removeTmpLog()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>
@@ -996,11 +997,11 @@
             </div>
           </div>
           <div class="row justify-content-center Spaced col-sm-12">
+            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
+               (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="deleteHazard('deleteHazardModal')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-            (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>
