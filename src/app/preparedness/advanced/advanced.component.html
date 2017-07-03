@@ -276,7 +276,7 @@
                             <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                             href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                             href="javascript:void(0);" class="text-danger"
-                            (click)="deleteDocument(action, i)">Delete</a></span>
+                            (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                           </p>
                         </div>
                       </div>
@@ -533,7 +533,7 @@
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, i)">Delete</a></span>
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                               </p>
                             </div>
                           </div>
@@ -777,7 +777,7 @@
                               <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                               href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                               href="javascript:void(0);" class="text-danger"
-                              (click)="deleteDocument(action, i)">Delete</a></span>
+                              (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                             </p>
                           </div>
                         </div>
@@ -969,7 +969,7 @@
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, i)">Delete</a></span>
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                               </p>
                             </div>
                           </div>

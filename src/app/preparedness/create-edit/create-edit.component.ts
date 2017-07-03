@@ -117,7 +117,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         });
 
         if (this.action.id != null) {
-          console.log("Initial Existing Action");
           this.initFromExistingActionId();
         }
         this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
@@ -133,6 +132,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             this.agencyId = agencyId;
             this.getDepartments();
           });
+        if (this.userType == UserType.CountryAdmin) {
+          this.getStaffDetails(this.uid);
+        }
       });
     });
   }
@@ -147,21 +149,21 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   public initFromExistingActionId() {
     this.prepActionService.initOneAction(this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
-      console.log("Loaded action!");
-      console.log(action);
       this.action.id = action.id;
       this.action.type = action.type;
       this.action.level = action.level;
       this.action.task = action.task;
       this.action.requireDoc = action.requireDoc;
       this.action.dueDate = action.dueDate;
-      for (let x of action.assignedHazards) {
-        this.action.hazards.set(x, true);
+      if (action.assignedHazards != null) {
+        for (let x of action.assignedHazards) {
+          this.action.hazards.set(x, true);
+        }
       }
       this.action.asignee = action.asignee;
       this.action.department = action.department;
       this.action.budget = action.budget;
-      this.action.isAllHazards = action.assignedHazards.length == 0;
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
       this.editDisableLoading = false;
     });
   }
@@ -289,7 +291,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;
-      if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee == undefined) {
+      if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
         updateObj.asignee = this.action.asignee;
       }
       else {
@@ -320,6 +322,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         updateObj.task = this.action.task;
         updateObj.level = this.action.level;
       }
+      updateObj.updatedAt = new Date().getTime();
       if (this.action.id != null) {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
@@ -333,6 +336,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       }
       else {
         // Saving
+        updateObj.createdAt = new Date().getTime();
         this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
           if (this.action.level == ActionLevel.MPA) {
             this.router.navigateByUrl("/preparedness/minimum");

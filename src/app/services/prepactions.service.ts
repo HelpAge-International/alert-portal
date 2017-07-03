@@ -22,9 +22,12 @@ export class PrepActionService {
   private ngUnsubscribe: Subject<void>;
 
   // Actions: Used for list
-  public actions: PreparednessAction[] = [];
+  public actions: PreparednessAction[];
+  private ranClockInitialiser: boolean = false;
+  public clockSettings: Map<string, number> = new Map<string, number>();
 
   constructor(private af: AngularFire) {
+    this.actions = [];
   }
 
   /**
@@ -55,15 +58,18 @@ export class PrepActionService {
   public initActionsWithInfo(ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
     countryId: string, agencyId: string, systemId: string) {
     this.uid = uid;
+    this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
     this.countryId = countryId;
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
-    if (isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-      this.init("actionCHS", this.systemAdminId, true, PrepSourceTypes.SYSTEM);
-    }
-    this.init("actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
-    this.init("action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
+    this.getDefaultClockSettings(this.agencyId, this.countryId, () => {
+      if (isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+        this.init("actionCHS", this.systemAdminId, true, PrepSourceTypes.SYSTEM);
+      }
+      this.init("actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
+      this.init("action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
+    });
   }
 
   public initOneAction(ngUnsubscribe: Subject<void>, uid: string, userType: UserType, actionId: string, updated: (action: PreparednessAction) => void) {
@@ -80,10 +86,34 @@ export class PrepActionService {
         for (let x in snap.val().systemAdmin) {
           this.systemAdminId = x;
         }
-        this.initSpecific("actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
-        this.initSpecific("actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
-        this.initSpecific("action", this.countryId, PrepSourceTypes.COUNTRY, actionId, updated);
+        this.getDefaultClockSettings(this.agencyId, this.countryId, () => {
+          this.initSpecific("actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
+          this.initSpecific("actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
+          this.initSpecific("action", this.countryId, PrepSourceTypes.COUNTRY, actionId, updated);
+        });
       });
+  }
+
+  /**
+   * Load in the default clock settings from the countryOffice node.
+   * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
+   */
+  private getDefaultClockSettings(agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        let value = (+(snap.val().preparedness.value));
+        let type = (+(snap.val().preparedness.durationType));
+        this.clockCalculation(type, value, "DEFAULT");
+        if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+          defaultClockSettingsAquired();
+          this.ranClockInitialiser = true;
+        }
+      });
+  }
+  private clockCalculation(type: number, value: number, id: string) {
+    // TODO: Do the type and the value calculation for the clock settings
+    this.clockSettings.set(id, 1000 * 60 * 60 * 24 * 7);
   }
 
   /**
@@ -93,12 +123,19 @@ export class PrepActionService {
     this.af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
+        console.log("Path : " + path + " updating");
         snap.forEach((snapshot) => {
           if (isMPA && snapshot.val().level == ActionLevel.MPA) {
             this.updateAction(snapshot.key, snapshot.val(), userId, source, null);
+            return;
           }
           else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
             this.updateAction(snapshot.key, snapshot.val(), userId, source, null);
+            return;
+          }
+          if (this.findAction(snapshot.key) != null) {
+            this.updateAction(snapshot.key, snapshot.val(), userId, source, null);
+            return;
           }
         });
       });
@@ -123,13 +160,15 @@ export class PrepActionService {
   private updateAction(id: string, action, whichUser: string, source: PrepSourceTypes, updated: (action: PreparednessAction) => void) {
     let run: boolean = this.findAction(id) == null;
     let i = this.findOrCreateIndex(id, whichUser, source);
-    if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee;
-    if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate;
+    if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee; else this.actions[i].asignee = null;
+    if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate; else this.actions[i].dueDate = null;
     if (action.hasOwnProperty('assignHazard')) {
       this.actions[i].assignedHazards = [];
       for (const x of action.assignHazard) {
         this.actions[i].assignedHazards.push(x);
       }
+    } else {
+      this.actions[i].assignedHazards = null;
     }
     if (action.hasOwnProperty('type')) {
       this.actions[i].type = action.type;
@@ -143,23 +182,50 @@ export class PrepActionService {
         }
       }
     }
-    if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived;
-    if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget;
-    if (action.hasOwnProperty('department')) this.actions[i].department = action.department;
-    if (action.hasOwnProperty('level')) this.actions[i].level = action.level;
-    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete;
-    if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc;
-    if (action.hasOwnProperty('task')) this.actions[i].task = action.task;
-    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase;
-    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue;
+    else {
+      this.actions[i].type = null;
+    }
+    if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived; else action.isArchived = null;
+    if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget; else action.budget = null;
+    if (action.hasOwnProperty('department')) this.actions[i].department = action.department; else action.department = null;
+    if (action.hasOwnProperty('level')) this.actions[i].level = action.level; else action.level = null;
+    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete; else action.isComplete = null;
+    if (action.hasOwnProperty('isCompletedAt')) this.actions[i].isCompletedAt = action.isCompletedAt; else action.isCompletedAt = null;
+    if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc; else action.requireDoc = null;
+    if (action.hasOwnProperty('task')) this.actions[i].task = action.task; else action.task = null;
+    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase; else action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue; else action.frequencyValue = null;
     this.initNotes(id, run);
 
+    // Document deletion check
     if (action.hasOwnProperty('documents')) {
-      for (let doc in action.documents) {
-        this.initDoc(whichUser, doc, this.actions[i].id);
+      let docsToRemove: string[] = [];
+      for (let x of this.actions[i].documents) {
+        let docIsGoneFromOnline:boolean = true;
+        for (let doc in action.documents) {
+          if (doc == x.documentId) {
+            docIsGoneFromOnline = false;
+          }
+        }
+        if (docIsGoneFromOnline) {
+          this.actions[i].removeDoc(x.documentId);
+          docsToRemove.push(x.documentId);
+        }
       }
+      for (let doc in action.documents) {
+        if (docsToRemove.indexOf(doc) <= -1)
+          this.initDoc(whichUser, doc, this.actions[i].id);
+      }
+    } else {
+      this.actions[i].documents = [];
     }
 
+    // Clock settings
+    if (this.actions[i].frequencyBase && this.actions[i].frequencyValue) {
+      this.clockCalculation(this.actions[i].frequencyBase, this.actions[i].frequencyValue, id);
+    }
+
+    // Optional notifier method
     if (updated != null) {
       updated(this.actions[i]);
     }
@@ -209,7 +275,6 @@ export class PrepActionService {
       this.af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
-          console.log("Finding notes for " + actionId);
           let action: PreparednessAction = this.findAction(actionId);
           if (action != null) {
             this.findAction(actionId).notes = [];
@@ -249,16 +314,13 @@ export class PrepActionService {
       .subscribe((snap) => {
         if (this.findAction(actionId) != null) {
           let doc = snap.val();
+
           if (doc != null && doc != undefined) {
             doc.documentId = snap.key;
             this.findAction(actionId).addDoc(doc);
           }
         }
       });
-  }
-
-  public ngOnDestroy() {
-    this.actions = [];
   }
 }
 
@@ -287,6 +349,7 @@ export class PreparednessAction {
   public frequencyBase: number;
   public frequencyValue: number;
   public isComplete: boolean;
+  public isCompletedAt: number;
   public level: number;
   public requireDoc: boolean;
   public task: string;
@@ -296,6 +359,18 @@ export class PreparednessAction {
   public notes: PreparednessNotes[];
   public documents: any[];
 
+  private computedClockSettingValue: number;
+  private computedClockSettingType: number;
+  public computedClockSetting: number;
+
+  public setComputedClockSetting(value: number, type: number) {
+    if (this.computedClockSettingType && this.computedClockSettingValue) {
+      // TODO: Do the calculation here
+    }
+    // TODO: Remove the dummy data return
+    this.computedClockSetting = 1000 * 60 * 60 * 24 * 7;
+  }
+
   constructor() {
     this.assignedHazards = [];
     this.notes = [];
@@ -304,9 +379,11 @@ export class PreparednessAction {
   }
 
   public isRedAlertActive(map: Map<HazardScenario, boolean>): boolean {
-    for (let x of this.assignedHazards) {
-      if (map.get(x)) {
-        return true;
+    if (this.assignedHazards != null) {
+      for (let x of this.assignedHazards) {
+        if (map.get(x)) {
+          return true;
+        }
       }
     }
     return false;
@@ -322,6 +399,21 @@ export class PreparednessAction {
     if (!skip) {
       this.documents.push(doc);
     }
+  }
+
+  public removeDoc(doc) {
+    let backupDocs = this.documents;
+    this.documents = [];
+    for (let i = 0; i < backupDocs.length; i++) {
+      if (backupDocs[i].documentId != doc) {
+        this.documents.push(backupDocs[i]);
+      }
+    }
+    backupDocs = [];
+    // This code below isn't working properly!! Hence rebuilding the documents list
+    // console.log(this.documents);
+    // this.documents = this.documents.splice(i, 1);
+    // console.log(this.documents);
   }
 }
 

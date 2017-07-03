@@ -139,7 +139,7 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
-          <div *ngIf="!action.isArchived && (action.asignee != '')">
+          <div *ngIf="!action.isArchived && (action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
             <!-- FILTERING BASED ON THE "COMPLETE/INPROGRESS/EXPIRED" filter -->
             <div *ngIf="filterStatus == -1 ||
@@ -212,7 +212,7 @@
                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
                           </div>
 
-                          <a *ngIf="action.type == ActionType.custom"
+                          <a *ngIf="userType == userTypes.CountryAdmin || uid == action.asignee"
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -314,7 +314,7 @@
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, i)">Delete</a></span>
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                               </p>
                             </div>
                           </div>
@@ -408,7 +408,7 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
-            <div *ngIf="!action.isArchived && (action.asignee == '')">
+            <div *ngIf="!action.isArchived && !(action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
@@ -455,7 +455,7 @@
                              aria-expanded="false" aria-controls="popover_content"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
-                          <a *ngIf="action.type == ActionType.custom"
+                          <a *ngIf="action.asignee == uid || userType == userTypes.CountryAdmin"
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
@@ -559,7 +559,7 @@
                               <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                               href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                               href="javascript:void(0);" class="text-danger"
-                              (click)="deleteDocument(action, i)">Delete</a></span>
+                              (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                             </p>
                           </div>
                         </div>
@@ -651,7 +651,7 @@
 
 
                           <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
-                             *ngIf="action.type == ActionType.custom || action.asignee == uid || userType == userTypes.CountryAdmin"
+                             *ngIf="action.asignee == uid || userType == userTypes.CountryAdmin"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -752,7 +752,7 @@
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, i)">Delete</a></span>
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                               </p>
                             </div>
                           </div>

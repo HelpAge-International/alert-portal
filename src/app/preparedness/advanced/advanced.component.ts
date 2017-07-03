@@ -170,8 +170,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("Unsubscribing from Advanced");
-    this.prepActionService.ngOnDestroy();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
@@ -443,7 +441,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
-    console.log("Completing action!");
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -452,7 +449,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true});
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
           this.addNote(action);
         }
         else {
@@ -466,7 +463,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true});
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
         this.addNote(action);
         this.closePopover(action);
       }
@@ -547,10 +544,14 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // Delete document from firebase
   protected deleteDocument(action: PreparednessAction, docId: string) {
-    let documentId = action.documents[docId].documentId;
-    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents/' + documentId).set(null);
-    this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + documentId).set(null);
-    this.firebase.storage().ref().child('documents/' + this.countryId + "/" + documentId).delete();
+    for (let x of action.documents) {
+      if (x.documentId == docId) {
+        // Deleting this one!
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents/' + x.documentId).set(null);
+        this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + x.documentId).set(null);
+        this.firebase.storage().ref().child('documents/' + this.countryId + "/" + x.documentId + "/" + x.fileName).delete();
+      }
+    }
   }
 
   // Exporting all the documents

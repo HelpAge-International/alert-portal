@@ -167,7 +167,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.prepActionService.ngOnDestroy();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
@@ -249,11 +248,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   public saveAssignedUser() {
+    console.log("Saving the assigned user (1)!");
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined ||
       this.assignActionCategoryUid == null || this.assignActionCategoryUid === "0" || this.assignActionCategoryUid === undefined) {
       return;
     }
+    console.log("Saving the assigned user!");
+    console.log(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee");
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee);
     this.closeModal();
   }
@@ -420,7 +422,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true});
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
           this.addNote(action);
         }
         else {
@@ -434,7 +436,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true});
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
         this.addNote(action);
         this.closePopover(action);
       }
@@ -515,10 +517,17 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   // Delete document from firebase
   protected deleteDocument(action: PreparednessAction, docId: string) {
-    let documentId = action.documents[docId].documentId;
-    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents/' + documentId).set(null);
-    this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + documentId).set(null);
-    this.firebase.storage().ref().child('documents/' + this.countryId + "/" + documentId).delete();
+    console.log(docId);
+    console.log(action);
+    for (let x of action.documents) {
+      if (x.documentId == docId) {
+        // Deleting this one!
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents/' + x.documentId).set(null);
+        this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + x.documentId).set(null);
+        this.firebase.storage().ref().child('documents/' + this.countryId + "/" + x.documentId + "/" + x.fileName).delete();
+      }
+    }
+    // if we make it here we can't find the document requesting to be deleted
   }
 
   // Exporting all the documents
