@@ -136,8 +136,8 @@
 
             <div class="Accordion Preparedness-list">
               <div class="row Preparedness-list__item">
-                <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                  | date:"d MMM ''yy"}}</strong></div>
+                <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                  | date:"d MMM ''yy") : '-'}}</strong></div>
                 <div class="col-md-10 col-sm-10">
                   <div class="row">
                     <div class="col-md-5 col-sm-4">{{action.task}}</div>
@@ -174,6 +174,8 @@
 
                     </div>
                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">Inactive until Red Alert Level
+
+                      <!-- TODO: PERMISSIONS -->
                       <a
                          [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                         action</a>
@@ -345,7 +347,7 @@
       <h2>Actions assigned to {{
         filterAssigned == uid ? 'me' : (filterAssigned == '0' ? 'anyone' :
         (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' +
-        CURRENT_USERS.get(filterAssigned).lastName : 'Someone')
+        CURRENT_USERS.get(filterAssigned).lastName : 'no-one')
         )
         }}</h2>
 
@@ -358,7 +360,7 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
-          <div *ngIf="!action.isArchived && (action.asignee != '') && action.isRedAlertActive(hazardRedAlert)">
+          <div *ngIf="!action.isArchived && (!(action.asignee == '' || action.asignee == undefined || action.asignee == null)) && action.isRedAlertActive(hazardRedAlert)">
 
             <!-- FILTERING BASED ON THE "COMPLETE/INPROGRESS/EXPIRED" filter -->
             <div *ngIf="filterStatus == -1 ||
@@ -369,8 +371,16 @@
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                      | date:"d MMM ''yy"}}</strong></div>
+
+
+
+                    <!-- Logic for the clock settings -->
+                    <div *ngIf="getNow() > action.updatedAt + action.computedClockSetting" class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Expired On <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
+
+
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4">{{action.task}}</div>
@@ -431,6 +441,7 @@
                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
                           </div>
 
+                          <!-- TODO: PERMISSIONS -->
                           <a
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
@@ -627,13 +638,13 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
-            <div *ngIf="!action.isArchived && (action.asignee == '') && action.isRedAlertActive(hazardRedAlert)">
+            <div *ngIf="!action.isArchived && (action.asignee == '' || action.asignee == undefined || action.asignee == null) && action.isRedAlertActive(hazardRedAlert)">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                      | date:"d MMM ''yy"}}</strong></div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4">{{action.task}}</div>
@@ -674,6 +685,8 @@
                              aria-expanded="false" aria-controls="popover_content"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
+
+                          <!-- TODO: PERMISSIONS -->
                           <a [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
@@ -815,7 +828,7 @@
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || (action.asignee == '' && filterAssigned == '-1')) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="action.isArchived">
@@ -823,8 +836,8 @@
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                      | date:"d MMM ''yy"}}</strong></div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4">{{action.task}}</div>
@@ -868,7 +881,8 @@
                              class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
 
 
-                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
+                          <!-- TODO: PERMISSIONS -->
+                          <a [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -1011,8 +1025,7 @@
         <div class="col-sm-12">
           <select name="" id="" class="form-control" #assignee (change)="selectedAssignToo(assignee.value)">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ?
-              'Assigned to me' : x.firstName + ' ' + x.lastName}}
+            <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.firstName + ' ' + x.lastName}}
             </option>
           </select>
         </div>

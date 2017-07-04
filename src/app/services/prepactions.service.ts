@@ -8,7 +8,6 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 
-@Injectable()
 export class PrepActionService {
 
   private uid: string;
@@ -26,18 +25,18 @@ export class PrepActionService {
   private ranClockInitialiser: boolean = false;
   public clockSettings: Map<string, number> = new Map<string, number>();
 
-  constructor(private af: AngularFire) {
+  constructor() {
     this.actions = [];
   }
 
   /**
    * Initialisation method for the actions
    */
-  public initActions(ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
+  public initActions(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
           ids: (countryId: string, agencyId: string, systemId: string) => void) {
     this.isMPA = isMPA;
     this.ngUnsubscribe = ngUnsubscribe;
-    this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         let countryId = snap.val().countryId;
@@ -51,11 +50,11 @@ export class PrepActionService {
         }
         // TODO: Check if the data under this node is guaranteed!
         ids(countryId, agencyId, systemAdminId);
-        this.initActionsWithInfo(ngUnsubscribe, uid, userType, isMPA, countryId, agencyId, systemAdminId);
+        this.initActionsWithInfo(af, ngUnsubscribe, uid, userType, isMPA, countryId, agencyId, systemAdminId);
       });
   }
 
-  public initActionsWithInfo(ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
+  public initActionsWithInfo(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
     countryId: string, agencyId: string, systemId: string) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
@@ -63,18 +62,18 @@ export class PrepActionService {
     this.countryId = countryId;
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
-    this.getDefaultClockSettings(this.agencyId, this.countryId, () => {
+    this.getDefaultClockSettings(af, this.agencyId, this.countryId, () => {
       if (isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-        this.init("actionCHS", this.systemAdminId, true, PrepSourceTypes.SYSTEM);
+        this.init(af, "actionCHS", this.systemAdminId, true, PrepSourceTypes.SYSTEM);
       }
-      this.init("actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
-      this.init("action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
+      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
+      this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
     });
   }
 
-  public initOneAction(ngUnsubscribe: Subject<void>, uid: string, userType: UserType, actionId: string, updated: (action: PreparednessAction) => void) {
+  public initOneAction(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, actionId: string, updated: (action: PreparednessAction) => void) {
     this.ngUnsubscribe = ngUnsubscribe;
-    this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.countryId = snap.val().countryId;
@@ -86,10 +85,10 @@ export class PrepActionService {
         for (let x in snap.val().systemAdmin) {
           this.systemAdminId = x;
         }
-        this.getDefaultClockSettings(this.agencyId, this.countryId, () => {
-          this.initSpecific("actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
-          this.initSpecific("actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
-          this.initSpecific("action", this.countryId, PrepSourceTypes.COUNTRY, actionId, updated);
+        this.getDefaultClockSettings(af, this.agencyId, this.countryId, () => {
+          this.initSpecific(af, "actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
+          this.initSpecific(af, "actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
+          this.initSpecific(af, "action", this.countryId, PrepSourceTypes.COUNTRY, actionId, updated);
         });
       });
   }
@@ -98,8 +97,8 @@ export class PrepActionService {
    * Load in the default clock settings from the countryOffice node.
    * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
    */
-  private getDefaultClockSettings(agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
+  private getDefaultClockSettings(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
+    af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         let value = (+(snap.val().preparedness.value));
@@ -119,34 +118,32 @@ export class PrepActionService {
   /**
    * General init method. Goes to a node and lists all relevant actions
    */
-  private init(path: string, userId: string, isMPA: boolean, source: PrepSourceTypes) {
-    this.af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
+  private init(af: AngularFire, path: string, userId: string, isMPA: boolean, source: PrepSourceTypes) {
+    af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        console.log("Path : " + path + " updating");
         snap.forEach((snapshot) => {
           if (isMPA && snapshot.val().level == ActionLevel.MPA) {
-            this.updateAction(snapshot.key, snapshot.val(), userId, source, null);
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, null);
             return;
           }
           else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
-            this.updateAction(snapshot.key, snapshot.val(), userId, source, null);
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, null);
             return;
           }
           if (this.findAction(snapshot.key) != null) {
-            this.updateAction(snapshot.key, snapshot.val(), userId, source, null);
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, null);
             return;
           }
         });
       });
   }
-  private initSpecific(path: string, userId: string, source: PrepSourceTypes, actionId: string, updated: (action: PreparednessAction) => void) {
-    console.log(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId);
-    this.af.database.object(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId, {preserveSnapshot: true})
+  private initSpecific(af: AngularFire, path: string, userId: string, source: PrepSourceTypes, actionId: string, updated: (action: PreparednessAction) => void) {
+    af.database.object(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
         if (snapshot.val() != null) {
-          this.updateAction(snapshot.key, snapshot.val(), userId, source, updated);
+          this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
         }
       });
   }
@@ -157,19 +154,20 @@ export class PrepActionService {
    * - All the above nodes will contain part of the total data set. This method checks for the existance of everything
    *    and will assemble the data live. Note that this is used for holding data as well (attachments, notes, etc.)
    */
-  private updateAction(id: string, action, whichUser: string, source: PrepSourceTypes, updated: (action: PreparednessAction) => void) {
+  private updateAction(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, updated: (action: PreparednessAction) => void) {
     let run: boolean = this.findAction(id) == null;
     let i = this.findOrCreateIndex(id, whichUser, source);
-    if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee; else this.actions[i].asignee = null;
-    if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate; else this.actions[i].dueDate = null;
+    if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee; // else this.actions[i].asignee = null;
+    if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate; // else this.actions[i].dueDate = null;
     if (action.hasOwnProperty('assignHazard')) {
       this.actions[i].assignedHazards = [];
       for (const x of action.assignHazard) {
         this.actions[i].assignedHazards.push(x);
       }
-    } else {
-      this.actions[i].assignedHazards = null;
     }
+    // else {
+    //   this.actions[i].assignedHazards = null;
+    // }
     if (action.hasOwnProperty('type')) {
       this.actions[i].type = action.type;
       /** WORKAROUND LOGIC FOR APA'S ON MANDATED PREP ACTIONS
@@ -182,20 +180,21 @@ export class PrepActionService {
         }
       }
     }
-    else {
-      this.actions[i].type = null;
-    }
-    if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived; else action.isArchived = null;
-    if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget; else action.budget = null;
-    if (action.hasOwnProperty('department')) this.actions[i].department = action.department; else action.department = null;
-    if (action.hasOwnProperty('level')) this.actions[i].level = action.level; else action.level = null;
-    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete; else action.isComplete = null;
-    if (action.hasOwnProperty('isCompletedAt')) this.actions[i].isCompletedAt = action.isCompletedAt; else action.isCompletedAt = null;
-    if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc; else action.requireDoc = null;
-    if (action.hasOwnProperty('task')) this.actions[i].task = action.task; else action.task = null;
-    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase; else action.frequencyBase = null;
-    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue; else action.frequencyValue = null;
-    this.initNotes(id, run);
+    // else {
+    //   this.actions[i].type = null;
+    // }
+    if (action.hasOwnProperty('updatedAt')) this.actions[i].updatedAt = action.updatedAt; // else action.isArchived = null;
+    if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived; // else action.startDate = null;
+    if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget; // else action.budget = null;
+    if (action.hasOwnProperty('department')) this.actions[i].department = action.department; // else action.department = null;
+    if (action.hasOwnProperty('level')) this.actions[i].level = action.level; // else action.level = null;
+    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete; // else action.isComplete = null;
+    if (action.hasOwnProperty('isCompletedAt')) this.actions[i].isCompletedAt = action.isCompletedAt; // else action.isCompletedAt = null;
+    if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc; // else action.requireDoc = null;
+    if (action.hasOwnProperty('task')) this.actions[i].task = action.task; // else action.task = null;
+    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase; // else action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue; // else action.frequencyValue = null;
+    this.initNotes(af, id, run);
 
     // Document deletion check
     if (action.hasOwnProperty('documents')) {
@@ -214,11 +213,12 @@ export class PrepActionService {
       }
       for (let doc in action.documents) {
         if (docsToRemove.indexOf(doc) <= -1)
-          this.initDoc(whichUser, doc, this.actions[i].id);
+          this.initDoc(af, whichUser, doc, this.actions[i].id);
       }
-    } else {
-      this.actions[i].documents = [];
     }
+    // else {
+    //   this.actions[i].documents = [];
+    // }
 
     // Clock settings
     if (this.actions[i].frequencyBase && this.actions[i].frequencyValue) {
@@ -270,9 +270,9 @@ export class PrepActionService {
    * Initialisation method for the notes
    */
   // Listen for changes on the notes
-  public initNotes(actionId: string, run: boolean) {
+  public initNotes(af: AngularFire, actionId: string, run: boolean) {
     if (run) {
-      this.af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
+      af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           let action: PreparednessAction = this.findAction(actionId);
@@ -308,8 +308,8 @@ export class PrepActionService {
   /**
    * Initialisation of the documents associated with an action
    */
-  private initDoc(alertUserTypeId: string, docId: string, actionId: string) {
-    this.af.database.object(Constants.APP_STATUS + "/document/" + alertUserTypeId + "/" + docId, {preserveSnapshot: true})
+  private initDoc(af: AngularFire, alertUserTypeId: string, docId: string, actionId: string) {
+    af.database.object(Constants.APP_STATUS + "/document/" + alertUserTypeId + "/" + docId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (this.findAction(actionId) != null) {
@@ -353,6 +353,7 @@ export class PreparednessAction {
   public level: number;
   public requireDoc: boolean;
   public task: string;
+  public updatedAt: number;
   public type: number;
   public note: string;
   public noteId: string;
@@ -379,14 +380,23 @@ export class PreparednessAction {
   }
 
   public isRedAlertActive(map: Map<HazardScenario, boolean>): boolean {
-    if (this.assignedHazards != null) {
+    if (this.assignedHazards != null && this.assignedHazards.length != 0) {
       for (let x of this.assignedHazards) {
-        if (map.get(x)) {
+        if (map.get(+x)) {
           return true;
         }
       }
+      return false;
     }
-    return false;
+    else if (this.type == ActionType.mandated) {
+      let returnValue: boolean = false;
+      map.forEach((value, key) => {
+        if (value) {
+          returnValue = true;
+        }
+      });
+      return returnValue;
+    }
   }
 
   public addDoc(doc) {

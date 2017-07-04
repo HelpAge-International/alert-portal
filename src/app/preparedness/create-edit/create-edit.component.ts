@@ -33,6 +33,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private userType: UserType;
+  private userTypes = UserType;
   private agencyId: string;
   private countryId: string;
 
@@ -71,12 +72,12 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private filterLockDocument: boolean = true;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private prepActionService: PrepActionService = new PrepActionService();
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
-              private af: AngularFire, private router: Router, private storage: LocalStorageService,
-              protected prepActionService: PrepActionService, private userService: UserService) {
+              private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     /* if selected generic action */
     this.actionSelected = this.storage.get('selectedAction');
     if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
@@ -148,7 +149,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation
    */
   public initFromExistingActionId() {
-    this.prepActionService.initOneAction(this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+    this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
       this.action.id = action.id;
       this.action.type = action.type;
       this.action.level = action.level;
@@ -285,7 +286,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
     // Save/update the action
     if (this.action.validate()) {
-      console.log(this.action);
       let updateObj: any = {};
       updateObj.dueDate = this.action.dueDate;
       updateObj.requireDoc = this.action.requireDoc;
@@ -488,7 +488,6 @@ export class CreateEditPrepActionHolder {
   }
 
   public validate() {
-    console.log(this.task.trim());
     if (this.task != undefined)
       this.task = this.task.trim();
     if (this.task == '' || this.task == undefined || this.task.length == 0) {

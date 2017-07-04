@@ -10,13 +10,10 @@
       <h1 *ngIf="!action.id">{{"PREPAREDNESS.TITLE_TEXT_CREATE_PAGE" | translate}}</h1>
       <h1 *ngIf="action.id">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
       <div class="Action-buttons-wrapper__absolute" *ngIf="action.id">
-        <button href="#" class="btn btn-block btn-danger" (click)="showActionConfirm('delete-action')">
+        <button href="#" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom" (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
-        <button class="btn btn-block btn-outline-primary" (click)="showActionConfirm('copy-action')">
-          {{"PREPAREDNESS.COPY_ACTION_BUTTON" | translate}}
-        </button>
-        <button class="btn btn-block btn-outline-primary" (click)="showActionConfirm('archive-action')">
+        <button class="btn btn-block btn-outline-primary" *ngIf="action.type != actionType.chs && userType == userTypes.CountryDirector" (click)="showActionConfirm('archive-action')">
           {{"PREPAREDNESS.ARCHIVE_ACTION_BUTTON" | translate}}
         </button>
       </div>
@@ -258,7 +255,7 @@
       </div>
       <div class="Form-submit__wrapper">
         <button class="btn btn-primary" (click)="createOrUpdateAction()">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}</button>
-        <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" |
+        <div class="btn btn-outline-secondary" (click)="backButtonAction()">{{"GLOBAL.CANCEL" |
           translate}}
         </div>
       </div>
@@ -284,31 +281,6 @@
           translate}}
         </button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeActionCancel('delete-action')">{{"GLOBAL.CANCEL"|
-          translate}}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!--          COPY MODAL            -->
-
-<div class="modal fade" id="copy-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COPY_ACTION_DIALOG.TITLE" |
-          translate}}</strong></h5>
-      </div>
-      <div class="modal-body">
-        <div class="text-center"><p>{{"COPY_ACTION_DIALOG.CONTENT" | translate}}</p></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="copyAction()">{{"GLOBAL.CONFIRM" | translate}}
-        </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeActionCancel('copy-action')">{{"GLOBAL.CANCEL"|
           translate}}
         </button>
       </div>
