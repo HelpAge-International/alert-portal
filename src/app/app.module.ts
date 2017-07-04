@@ -157,7 +157,6 @@ import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/p
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
-import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
@@ -184,6 +183,7 @@ import {NotificationsComponent} from './commons/notifications/notifications.comp
 import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
 import {DirectorNotificationsComponent} from './director/director-notifications/director-notifications.component';
 
+import { DashboardOverviewComponent } from './dashboard/dashboard-overview/dashboard-overview.component';
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -342,7 +342,6 @@ const firebaseAuthConfig = {
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
     ProjectReportComponent,
-    CountryOfficeEditProgrammeComponent,
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
@@ -363,7 +362,8 @@ const firebaseAuthConfig = {
     NotificationBadgeComponent,
     NotificationsComponent,
     DonorNotificationsComponent,
-    DirectorNotificationsComponent
+    DirectorNotificationsComponent,
+    DashboardOverviewComponent
   ],
   imports: [
     BrowserModule,

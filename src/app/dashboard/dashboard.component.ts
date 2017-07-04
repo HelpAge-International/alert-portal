@@ -1,12 +1,9 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Observable} from "rxjs";
-import {
-  ActionLevel, ActionStatus, ActionType, AlertLevels, AlertStatus, Countries, DashboardType,
-  UserType
-} from "../utils/Enums";
+import {ActionLevel, ActionType, AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -17,7 +14,7 @@ import {
   ChronolineEvent,
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
-import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
+import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 
 @Component({
@@ -76,6 +73,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Module settings
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
+  private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
@@ -94,6 +93,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.DashboardTypeUsed = DashboardType.default;
       }
       this.loadData();
+
+      // Load in the country permissions
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
+        this.countryPermissionMatrix = isEnabled;
+        console.log(this.countryPermissionMatrix);
+      }));
     });
   }
 

@@ -266,8 +266,11 @@
               {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
-              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
+              <a *ngIf="!isViewing" class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
                 | translate}}</a>
+              <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
+                      (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
+              </button>
             </div>
           </div>
         </div>

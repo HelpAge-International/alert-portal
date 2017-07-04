@@ -269,15 +269,13 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
           let userType = x;
 
           const userTypePath = Constants.USER_PATHS[userType];
-
+          console.log(userTypePath);
           return this._userService.getAgencyId(userTypePath, userId)
             .subscribe(agency => {
               let agencyId = agency;
-              
               return this._userService.getCountryId(userTypePath, userId)
                 .subscribe(country => {
                   let countryId = country;
-                  console.log(countryId);
                   return this.saveUserNotification(userId, message, userType, agencyId, countryId);
                 });
             });

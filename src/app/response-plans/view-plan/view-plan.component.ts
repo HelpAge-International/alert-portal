@@ -17,6 +17,8 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   private countryId: string;
   private isViewing: boolean;
   private agencyId: string;
+  private canCopy: boolean;
+  private agencyOverview: boolean;
 
   constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
   }
@@ -34,6 +36,12 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
         }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
+        }
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
+        }
         this.initData(this.countryId, this.agencyId);
       });
   }
@@ -42,9 +50,7 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
     this.userService.getCountryDetail(countryId, agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(country => {
-        console.log(country);
         this.countryName = Constants.COUNTRIES[country.location];
-        console.log(this.countryName);
       });
   }
 
@@ -54,12 +60,33 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   }
 
   backToViewingPlan() {
-    this.router.navigate(["/director/director-overview", {
-      "countryId": this.countryId,
-      "isViewing": this.isViewing,
-      "agencyId": this.agencyId,
-      "from": "plan"
-    }]);
+    if (this.canCopy) {
+      if (this.agencyOverview) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryId,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "plan",
+          "canCopy": this.canCopy,
+          "agencyOverview": this.agencyOverview
+        }]);
+      } else {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryId,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "plan",
+          "canCopy": this.canCopy
+        }]);
+      }
+    } else {
+      this.router.navigate(["/director/director-overview", {
+        "countryId": this.countryId,
+        "isViewing": this.isViewing,
+        "agencyId": this.agencyId,
+        "from": "plan"
+      }]);
+    }
   }
 
 }

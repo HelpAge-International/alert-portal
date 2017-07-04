@@ -28,7 +28,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public agencyLogo: string;
 
-  public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
 
@@ -67,7 +66,6 @@ export class MapComponent implements OnInit, OnDestroy {
         (departments) => {
           this.mDepartmentMap = departments;
           this.departments = [];
-          this.minThreshRed = this.mapHelper.minThreshRed;
           this.minThreshYellow = this.mapHelper.minThreshYellow;
           this.minThreshGreen = this.mapHelper.minThreshGreen;
           this.mDepartmentMap.forEach((value, key) => {

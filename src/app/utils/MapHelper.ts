@@ -21,7 +21,6 @@ export class SuperMapComponents {
   private ngUnsubscribe: Subject<void>;
   public map: google.maps.Map;
 
-  public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
   public agencyAdminId: string;
@@ -113,7 +112,7 @@ export class SuperMapComponents {
   /**
    * Get the system information
    */
-  public getSystemInfo(uid: string, folder:string, funct: (red: number, yellow: number, green: number) => void) {
+  public getSystemInfo(uid: string, folder:string, funct: (yellow: number, green: number) => void) {
     this.fbgetSystemAdminId(uid, folder)
       .flatMap((systemAdmin) => {
         return this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdmin);
@@ -122,8 +121,7 @@ export class SuperMapComponents {
       .subscribe((model: ModelSystem) => {
         let green: number = model.minThreshold[0];
         let yellow: number = model.minThreshold[1];
-        let red: number = model.minThreshold[2];
-        funct(red, yellow, green);
+        funct(yellow, green);
       });
   }
 
@@ -373,9 +371,8 @@ export class SuperMapComponents {
     if (this.map == null) {
       this.initBlankMap(elementId);
     }
-    this.getSystemInfo(uid, folder, (redThresh, yellowThresh, greenThresh) => {
+    this.getSystemInfo(uid, folder, (yellowThresh, greenThresh) => {
       this.minThreshGreen = greenThresh;
-      this.minThreshRed = redThresh;
       this.minThreshYellow = yellowThresh;
       this.getDepsForAllCountries(uid, folder, (holder: SDepHolder[]) => {
         let red: string[] = [];

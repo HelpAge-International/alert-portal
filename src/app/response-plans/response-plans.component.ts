@@ -23,6 +23,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   @Input() isViewing: boolean;
   @Input() countryIdForViewing: string;
   @Input() agencyIdForViewing: string;
+  @Input() canCopy: boolean;
+  @Input() agencyOverview: boolean;
 
   private isGlobalDirectorMap = new Map<string, boolean>();
 
@@ -51,8 +53,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      console.log("isViewing: " + this.isViewing);
-      console.log("received country id: " + this.countryIdForViewing);
       if (this.isViewing) {
         this.countryId = this.countryIdForViewing;
         this.agencyId = this.agencyIdForViewing;
@@ -93,7 +93,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         for (let x of this.activePlans) {
           this.getNotes(x);
         }
-        console.log(this.activePlans);
         this.checkHaveApprovedPartners(this.activePlans);
       });
 
@@ -103,8 +102,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
-
-    console.log("get response plan...");
   }
 
   private checkHaveApprovedPartners(activePlans: any[]) {
@@ -126,7 +123,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       //deal directors
       if (plan.approval) {
         let approvalKeys = Object.keys(plan.approval).filter(key => key != "partner");
-        console.log(approvalKeys);
         if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
           this.isGlobalDirectorMap.set(plan.$key, true);
         }
@@ -156,16 +152,32 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   viewResponsePlan(plan, isViewing) {
-    isViewing ? this.router.navigate(["/response-plans/view-plan", {
-      "id": plan.$key,
-      "isViewing": isViewing,
-      "countryId": this.countryIdForViewing,
-      "agencyId": this.agencyId
-    }]) : this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
+    if (isViewing) {
+      if (this.agencyOverview) {
+        this.router.navigate(["/response-plans/view-plan", {
+          "id": plan.$key,
+          "isViewing": isViewing,
+          "countryId": this.countryIdForViewing,
+          "agencyId": this.agencyId,
+          "canCopy": this.canCopy,
+          "agencyOverview": this.agencyOverview
+        }]);
+      } else {
+        this.router.navigate(["/response-plans/view-plan", {
+          "id": plan.$key,
+          "isViewing": isViewing,
+          "countryId": this.countryIdForViewing,
+          "agencyId": this.agencyId,
+          "canCopy": this.canCopy
+        }]);
+      }
+    } else {
+      this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
+    }
   }
 
   editResponsePlan(responsePlan) {
-    if(responsePlan.isEditing){
+    if (responsePlan.isEditing) {
       jQuery("#dialog-acknowledge").modal("show");
       this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
       this.dialogContent = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_CONTENT";
@@ -218,8 +230,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         })
         .do(director => {
           if (director && director.$value) {
-            console.log("country director");
-            console.log(director);
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
           } else {
@@ -241,9 +251,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         .first()
         .takeUntil(this.ngUnsubscribe)
         .subscribe(approvalSettings => {
-          // console.log("***");
-          // console.log(approvalSettings);
-          // console.log(approvalData);
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
@@ -282,7 +289,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(id => {
-        console.log(id);
         if (id && id.$value && id.$value != "null") {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
         }
@@ -299,9 +305,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     })
       .first()
       .subscribe(globalDirector => {
-        console.log(globalDirector)
         if (globalDirector.length > 0 && globalDirector[0].$key) {
-          console.log(globalDirector[0].$key);
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
         }
         this.updateWithRegionalApproval(countryId, approvalData);
@@ -309,9 +313,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   closeModal(isAckModel: boolean) {
-    if (isAckModel){
+    if (isAckModel) {
       jQuery("#dialog-acknowledge").modal("hide");
-    }else{
+    } else {
       jQuery("#dialog-action").modal("hide");
     }
   }
@@ -359,7 +363,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         .first()
         .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
         for (let approval of approvalList) {
-          console.log(approval);
           if (approval["countryDirector"]) {
             this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
               .set(ApprovalStatus.NeedsReviewing);

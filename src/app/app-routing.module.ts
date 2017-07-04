@@ -103,7 +103,6 @@ import {CountryOfficeContactsComponent} from "./country-admin/country-office-pro
 import {CountryOfficeEditOfficeDetailsComponent} from "./country-admin/country-office-profile/contacts/edit-office-details/edit-office-details.component";
 import {CountryOfficeAddEditPointOfContactComponent} from "./country-admin/country-office-profile/contacts/add-edit-point-of-contact/add-edit-point-of-contact.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
-import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import {DonorAccountSettingsComponent} from "./donor-module/donor-account-settings/donor-account-settings.component";
 import {DonorChangePasswordComponent} from "./donor-module/donor-account-settings/donor-change-password/donor-change-password.component";
@@ -115,6 +114,7 @@ import {ExportProposalComponent} from "./export-proposal/export-proposal.compone
 import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component";
 import { DonorNotificationsComponent } from "./donor-module/donor-notifications/donor-notifications.component";
 import { DirectorNotificationsComponent } from "./director/director-notifications/director-notifications.component";
+import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -231,7 +231,6 @@ const routes: Routes = [
     {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
     {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
     {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
-    {path: 'country-admin/country-office-profile/programme-edit', component: CountryOfficeEditProgrammeComponent},
     {path: 'country-admin/country-office-profile/mapping-programme-add-edit', component: AddEditMappingProgrammeComponent},
     {path: 'country-admin/country-office-profile/mapping-programme-add-edit/:programmeId', component: AddEditMappingProgrammeComponent},
     {path: 'country-admin/country-office-profile/office-capacity', component: CountryOfficeCapacityComponent},
@@ -249,6 +248,7 @@ const routes: Routes = [
     {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
     {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
     {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+    {path: 'dashboard/dashboard-overview', component: DashboardOverviewComponent},
 
 
     /**

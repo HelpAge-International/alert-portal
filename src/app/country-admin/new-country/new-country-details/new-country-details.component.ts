@@ -117,10 +117,10 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.CountryOfficeAddressModel.addressLine1] = true;
       this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
-    } else if (!(this.CountryOfficeAddressModel.location)) {
-      this.alerts[this.CountryOfficeAddressModel.location] = true;
-      this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_COUNTRY";
-      return false;
+    // } else if (!(this.CountryOfficeAddressModel.location)) {
+    //   this.alerts[this.CountryOfficeAddressModel.location] = true;
+    //   this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_COUNTRY";
+    //   return false;
     } else if (!(this.CountryOfficeAddressModel.city)) {
       this.alerts[this.CountryOfficeAddressModel.city] = true;
       this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_CITY";

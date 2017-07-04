@@ -1,24 +1,28 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
+import {AlertLevels, AlertMessageType, AlertStatus} from "../../utils/Enums";
+import {Observable} from "rxjs/Observable";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
-import {Observable} from "rxjs/Observable";
-import {AlertLevels, AlertStatus} from "../../utils/Enums";
-import {HazardImages} from "../../utils/HazardImages";
-import {Constants} from "../../utils/Constants";
 import {CommonService} from "../../services/common.service";
+import {HazardImages} from "../../utils/HazardImages";
+import {AlertMessageModel} from "../../model/alert-message.model";
+import {Location} from "@angular/common";
 
 @Component({
-  selector: 'app-director-overview',
-  templateUrl: './director-overview.component.html',
-  styleUrls: ['./director-overview.component.css'],
+  selector: 'app-dashboard-overview',
+  templateUrl: './dashboard-overview.component.html',
+  styleUrls: ['./dashboard-overview.component.css'],
   providers: [ActionsService]
 })
-export class DirectorOverviewComponent implements OnInit, OnDestroy {
+export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
+  private alertMessageType = AlertMessageType;
+  private alertMessage: AlertMessageModel = null;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -29,12 +33,14 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   private countryId: string;
   private isViewing: boolean;
   private agencyId: string;
+  private systemId: string;
   private from: string;
   private agencyName: string;
-
+  private agencyOverview: boolean;
   private officeTarget: string;
   private alerts: Observable<any>;
   private areaContent: any;
+  private canCopy: boolean;
 
   constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private commonService: CommonService, private router: Router) {
     this.initMainMenu();
@@ -73,6 +79,9 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
           this.getAgencyInfo(this.agencyId);
         }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
         }
@@ -84,9 +93,19 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
           this.officeTarget = params["officeTarget"];
           this.handleOfficeSubMenu();
         }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
+        }
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
+        }
 
-        if (!this.countryId && !this.agencyId && !this.isViewing) {
-          this.router.navigateByUrl("/director");
+        if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
+          this.router.navigateByUrl("/dashboard").then(() => {
+            console.log("Invalid url parameters!!");
+          }, error => {
+            console.log(error.message);
+          });
         }
 
         this.getAlerts();

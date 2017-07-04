@@ -7,7 +7,7 @@ export class ModelSystem {
   public assignHazard: number;
   public advThreshold: number[];
   public fileSettings: boolean[];
-  public genericAction: any;
+  // public genericAction: any;
   public minThreshold: number[];
   public groups: string[];
 }

@@ -16,15 +16,14 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
 
   private uid: string;
 
-  private successMessage: string = "SYSTEM_ADMIN.SETTING.SETTING_SAVED";
-  private isSaved: boolean = false;
+  private alertMessage: string = "";
+  private alertSuccess: boolean = true;
+  private alertShow: boolean = false;
 
   private minGreen: number;
   private minAmber: number;
-  private minRed: number;
   private advGreen: number;
   private advAmber: number;
-  private advRed: number;
 
   private thresholdValue: number[] = Constants.THRESHOLD_VALUE;
   private modelSystem: ModelSystem;
@@ -36,8 +35,8 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.initData(this.uid);
+      this.uid = user.uid;
+      this.initData(this.uid);
     });
   }
 
@@ -55,9 +54,15 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
+  }
+
   private initData(uid) {
 
-    this.af.database.object(Constants.APP_STATUS+"/system/" + uid)
+    this.af.database.object(Constants.APP_STATUS + "/system/" + uid)
       .takeUntil(this.ngUnsubscribe).subscribe(x => {
       this.modelSystem = new ModelSystem();
       this.modelSystem.advThreshold = x.advThreshold;
@@ -65,36 +70,53 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
       //load minimum threshold from database
       this.minGreen = x.minThreshold[0];
       this.minAmber = x.minThreshold[1];
-      this.minRed = x.minThreshold[2];
       //load advanced threshold from database
       this.advGreen = x.advThreshold[0];
       this.advAmber = x.advThreshold[1];
-      this.advRed = x.advThreshold[2];
     });
   }
 
   private writeToFirebase() {
 
-    this.modelSystem.minThreshold[0] = this.minGreen;
-    this.modelSystem.minThreshold[1] = this.minAmber;
-    this.modelSystem.minThreshold[2] = this.minRed;
-    this.modelSystem.advThreshold[0] = this.advGreen;
-    this.modelSystem.advThreshold[1] = this.advAmber;
-    this.modelSystem.advThreshold[2] = this.advRed;
+    if (this.validate()) {
+      this.modelSystem.minThreshold[0] = this.minGreen;
+      this.modelSystem.minThreshold[1] = this.minAmber;
+      this.modelSystem.advThreshold[0] = this.advGreen;
+      this.modelSystem.advThreshold[1] = this.advAmber;
 
-    this.af.database.object(Constants.APP_STATUS+"/system/" + this.uid).update(this.modelSystem).then(_ => {
-      this.showAlert();
-    }, error => {
-      console.log(error.message);
-    });
+      this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).update(this.modelSystem).then(_ => {
+        this.alertShow = true;
+        this.alertSuccess = true;
+        this.alertMessage = "SYSTEM_ADMIN.SETTING.SETTING_SAVED";
+      }, error => {
+        console.log(error.message);
+      });
+    } else {
+      this.alertShow = true;
+      this.alertSuccess = false;
+    }
   }
 
-  private showAlert() {
+  /**
+   * Returns false on fail and specific error messages-
+   * @returns {boolean}
+   */
+  private validate() {
 
-    this.isSaved = true;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
-      this.isSaved = false;
-    });
+    if (
+      (this.modelSystem.minThreshold[0] == this.minGreen) &&
+      (this.modelSystem.minThreshold[1] == this.minAmber) &&
+      (this.modelSystem.advThreshold[0] == this.advGreen) &&
+      (this.modelSystem.advThreshold[1] == this.advAmber)) {
+      this.alertMessage = "GLOBAL.NO_CHANGES_MADE";
+      return false;
+    } else if (this.minGreen <= this.minAmber) {
+      this.alertMessage = "SYSTEM_ADMIN.SETTING.ERROR_MIN_THRESHOLD";
+      return false;
+    } else if (this.advGreen <= this.advAmber) {
+      this.alertMessage = "SYSTEM_ADMIN.SETTING.ERROR_ADV_THRESHOLD";
+      return false;
+    }
+    return true;
   }
 }

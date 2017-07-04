@@ -6,7 +6,7 @@ import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType} from "../.
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
@@ -27,7 +27,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
   private responseStaffs: any[];
   private responseStaffsOrigin: any[];
-  private agencyId: string;
   private isViewing: boolean;
   private userMap = new Map<string, string>();
   private skillTechMap = new Map<string, string[]>();
@@ -82,6 +81,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private activeNote: NoteModel;
   private surgeCapacities = [];
 
+  public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -109,37 +109,42 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.isViewing = params["isViewing"];
         }
         if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
+          this.agencyID = params["agencyId"];
         }
 
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
           this.UserType = userType;
-          if (this.agencyId) {
+
+          if (this.agencyID && this.countryID) {
             this._getTotalStaff();
-          } else {
-            this._getAgencyID().then(() => {
-              this._getTotalStaff();
-            });
-          }
-          if (this.countryID) {
             this.getStaff();
             this.getSurgeCapacity();
             this._getCountryOfficeCapacity().then(() => {
 
             });
           } else {
-            this._getCountryID().then(() => {
-              this.getStaff();
-              this.getSurgeCapacity();
-              this._getCountryOfficeCapacity().then(() => {
+            this._getAgencyID().then(() => {
+              this._getCountryID().then(() => {
+                this._getTotalStaff();
+                this.getStaff();
+                this.getSurgeCapacity();
+                this._getCountryOfficeCapacity().then(() => {
 
+                });
               });
             });
           }
 
           this._getSkills();
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+            console.log("permission matrix");
+            console.log(this.countryPermissionsMatrix);
+          }));
         });
+
 
       });
 

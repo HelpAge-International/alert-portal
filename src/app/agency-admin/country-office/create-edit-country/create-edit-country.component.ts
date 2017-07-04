@@ -24,7 +24,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   countrySelections = Constants.COUNTRY_SELECTION;
   titleNames = Constants.PERSON_TITLE;
   titleSelections = Constants.PERSON_TITLE_SELECTION;
-  countryOfficeLocation: number = Countries.GB;
+  countryOfficeLocation: number;
   countryAdminTitle: number = PersonTitle.Mr;
   countryAdminFirstName: string;
   countryAdminLastName: string;
