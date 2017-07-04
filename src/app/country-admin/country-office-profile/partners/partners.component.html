@@ -3,251 +3,287 @@
   <app-country-admin-menu></app-country-admin-menu>
 </div>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
+  <div class="Full-page__wrap--inner">
 
-        <app-country-office-profile-menu></app-country-office-profile-menu>
+    <app-country-office-profile-menu></app-country-office-profile-menu>
 
-        <div class="Header-title__wrap Spaced row">
-            <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.TITLE_TEXT' | translate }}</h2>
-            <div *ngIf="!isViewing" class="col-sm-8 Right-aligned">
-                <button type="button" class="btn btn-outline-primary text-uppercase"
-                        *ngIf="canEdit && !isEdit"
-                        (click)="editPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EDIT' | translate }}</button>
+    <div class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.TITLE_TEXT' | translate }}</h2>
+      <div *ngIf="!isViewing" class="col-sm-8 Right-aligned">
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && !isEdit"
+                (click)="editPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EDIT' | translate }}
+        </button>
 
-                <button type="button" class="btn btn-outline-primary text-uppercase"
-                        *ngIf="canEdit && isEdit"
-                        (click)="showPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW' | translate }}</button>
-            </div>
-        </div>
-
-        <!--Filter-->
-        <h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.IMPLEMENTING_PARTNERS' | translate }}</h3>
-        <div class="row Spaced padding-left-two">
-            <label class="col-sm-0 Spaced-above">{{ 'GLOBAL.FILTER' | translate }}</label>
-            <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" name="filterSector"
-                        [(ngModel)]="filterSector">
-                    <option value="null">{{ 'ADD_PARTNER.SECTOR' | translate }}</option>
-                    <option *ngFor="let sector of RESPONSE_PLAN_SECTORS | enumKeyValues"
-                        [value]="sector.key">{{ RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</option>
-                </select>
-            </div>
-            <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" name="areasOfOperation"
-                        [(ngModel)]="filterLocation">
-                    <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
-                    <option *ngFor="let location of areasOfOperation"
-                        [value]="location">{{ location }}</option>
-                </select>
-            </div>
-            <div class="form-group-country-office-profile col-sm-3">
-                <select class="form-control" name="filterOrganisation"
-                        [(ngModel)]="filterOrganisation">
-                    <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations"
-                        [value]="partnerOrganisation.id">{{ partnerOrganisation?.organisationName }}</option>
-                </select>
-            </div>
-            <div class="col-sm-4"></div>
-        </div>
-
-        <div class="row" *ngIf="!partnerOrganisations">
-            <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EMPTY_LIST' | translate }}</p>
-        </div>
-
-        <div class="row Spaced-above font-weight-bold" *ngIf="partnerOrganisations">
-            <p class="col-sm-1">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.UPDATED' | translate }}</p>
-            <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</p>
-            <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.RELATIONSHIP' | translate }}</p>
-            <p class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</p>
-            <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.STATUS' | translate }}</p>
-        </div>
-        <div class="row Line-row"></div>
-
-        <div class="row Spaced-above" *ngFor="let partnerOrganisation of partnerOrganisations; let i = index;" [hidden]="hideFilteredPartners(partnerOrganisation)">
-             <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
-            <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
-            <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
-            <p class="col-sm-2">{{ getAreasOfOperation(partnerOrganisation) }}</p> <!--Areas of operation-->
-
-            <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg" alt="{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHI_DETAILS' | translate }}">
-                <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-one">
-                    {{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHIP_DETAILS' | translate }}
-                </a>
-            </div>
-
-            <p class="col-sm-2">{{ PARTNER_STATUS[partnerOrganisation.isApproved ? 1 : 0] | translate }}</p> <!--Status-->
-            <div class="col-sm-1" *ngIf="!isEdit">
-                <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-                <p class="notes-number__components--country-office-profile">{{ partnerOrganisation.notes.length }}</p>
-                <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-                    {{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}
-                </a>
-            </div> <!--Notes-->
-            <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                 <button class="btn btn-outline-primary text-uppercase"
-                    (click)="editPartnerOrganisation(partnerOrganisation.id)">
-                    {{ 'GLOBAL.EDIT' | translate }}</button>
-            </div>
-
-            <div class="row Line-row Spaced-above"></div>
-
-            <!-- Notes Drop Down -->
-            <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
-                <div class="log_left p-3">
-                    <h3>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}</h3>
-                    <hr class="d-inline-flex">
-                    <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
-                        <input [disabled]="!countryPermissionsMatrix.notes.New" type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
-                           [(ngModel)] = "newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
-
-                           <!--Note post -->
-                           <div class="row Spaced log-post__wrap--risk"
-                           *ngFor="let note of partnerOrganisation.notes">
-                           <div class="log-date__wrap--risk col-lg-1">
-                                <p>{{ note.time | date: 'dd MMM y' }}</p>
-                            </div>
-                            <div class="col-lg-6">
-                                <p>{{ note.content }}</p>
-                                <br>
-                                <div class="row">
-                                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong></p>
-                                    <a href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                                       (click) ="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
-                                    <p href="#" class="padding-left-one">|</p>
-                                    <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
-                                       (click) ="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-
-                        <!--add Note button-->
-                        <div class="add_log mt-auto p-2 text-right float-right">
-                            <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button><br>
-                            <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate }}</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!--Notes Drop Down End-->
-
-            <!--Partnership Details tooltip-->
-            <div class="Tooltip__bubble container-fluid Blue info log collapse" id="partnership_{{ i }}" data-parent="#partnerDetailsOne">
-                <div class="log_left row Spaced-above">
-                    <h3 class="col-sm-4 text-right">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHIP_DETAILS' | translate }}</h3>
-                    <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-five text-right col-sm-6">{{ 'GLOBAL.CLOSE' | translate }}</a>
-                </div>
-                <div class="Spaced">
-                    <div class="row">
-                        <div class="col-sm-3 text-center margin-left-two">
-                            <strong>{{ 'ADD_PARTNER.PROJECTS' | translate }}</strong>
-                        </div>
-                    </div>
-
-                    <!--Border box-->
-                    <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above"
-                         *ngFor="let project of partnerOrganisation?.projects">
-                         <div class="row">
-                            <p class="col-sm-3 Spaced-above font-weight-bold">{{ 'ADD_PARTNER.SECTOR' | translate }}</p>
-                            <div class="col-sm-0">
-                                <div class="Icon__selectable"
-                                     *ngFor = "let sector of project.sector | keyValues"
-                                     [hidden]="!sector.value">
-                                     <div [class] = "RESPONSE_PLAN_SECTORS[sector.key]"></div>
-                                    <label>{{RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <p class="col-sm-3 font-weight-bold">{{ 'ADD_PARTNER.PROJECT_TITLE' | translate }}</p>
-                            <div class="col-sm-0"><p>{{ project.title }}</p></div>
-                        </div>
-
-                        <div class="row">
-                            <p class="col-sm-3 font-weight-bold">{{ 'ADD_PARTNER.PROJECT_END_DATE' | translate }}</p>
-                            <div class="col-sm-0"><p>{{ project.endDate | date: 'MM/yy'}}</p></div>
-                        </div>
-                    </div> <!--border box end-->
-
-                    <br>
-                    <h3 class="col-sm-4 margin-left-six Spaced-above">{{ 'ADD_PARTNER.PARTNER_CONTACT_DETAILS' | translate }}</h3>
-
-                    <div class="row">
-                        <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></div>
-                        <p class="col-sm-0">
-                            {{partnerOrganisation?.firstName}}
-                            {{partnerOrganisation?.lastName}}
-                        </p>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_POSITION' | translate }}</strong></div>
-                        <p class="col-sm-0">{{partnerOrganisation?.position}}</p>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_EMAIL' | translate }}</strong></div>
-                        <p class="col-sm-0">{{partnerOrganisation?.email}}</p>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_PHONE' | translate }}</strong></div>
-                        <p class="col-sm-0">{{partnerOrganisation?.phone}}</p>
-                    </div>
-
-                </div>
-            </div>
-            <!--Partnership Details tooltip End-->
-        </div>
-        <button class="btn btn-outline-primary text-uppercase"
-                *ngIf="canEdit && !isViewing"
-                (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}</button>
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && isEdit"
+                (click)="showPartners()">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW' | translate }}
+        </button>
+      </div>
     </div>
+
+    <!--Filter-->
+    <h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.IMPLEMENTING_PARTNERS' | translate }}</h3>
+    <div class="row Spaced padding-left-two">
+      <label class="col-sm-0 Spaced-above">{{ 'GLOBAL.FILTER' | translate }}</label>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" name="filterSector"
+                [(ngModel)]="filterSector">
+          <option value="null">{{ 'ADD_PARTNER.SECTOR' | translate }}</option>
+          <option *ngFor="let sector of RESPONSE_PLAN_SECTORS | enumKeyValues"
+                  [value]="sector.key">{{ RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}
+          </option>
+        </select>
+      </div>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" name="areasOfOperation"
+                [(ngModel)]="filterLocation">
+          <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
+          <option *ngFor="let location of areasOfOperation"
+                  [value]="location">{{ location }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" name="filterOrganisation"
+                [(ngModel)]="filterOrganisation">
+          <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
+          <option *ngFor="let partnerOrganisation of partnerOrganisations"
+                  [value]="partnerOrganisation.id">{{ partnerOrganisation?.organisationName }}
+          </option>
+        </select>
+      </div>
+      <div class="col-sm-4"></div>
+    </div>
+
+    <div class="row" *ngIf="!partnerOrganisations">
+      <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EMPTY_LIST' | translate }}</p>
+    </div>
+
+    <div class="row Spaced-above font-weight-bold" *ngIf="partnerOrganisations">
+      <p class="col-sm-1">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.UPDATED' | translate }}</p>
+      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</p>
+      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.RELATIONSHIP' | translate }}</p>
+      <p class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</p>
+      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.STATUS' | translate }}</p>
+    </div>
+    <div class="row Line-row"></div>
+
+    <div class="row Spaced-above" *ngFor="let partnerOrganisation of partnerOrganisations; let i = index;"
+         [hidden]="hideFilteredPartners(partnerOrganisation)">
+      <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
+      <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
+      <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
+      <p class="col-sm-2">{{ getAreasOfOperation(partnerOrganisation) }}</p> <!--Areas of operation-->
+
+      <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg"
+                                 alt="{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHI_DETAILS' | translate }}">
+        <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-one">
+          {{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHIP_DETAILS' | translate }}
+        </a>
+      </div>
+
+      <p class="col-sm-2">{{ PARTNER_STATUS[partnerOrganisation.isApproved ? 1 : 0] | translate }}</p> <!--Status-->
+      <div class="col-sm-1" *ngIf="!isEdit">
+        <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+        <p class="notes-number__components--country-office-profile">{{ partnerOrganisation.notes.length }}</p>
+        <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+          {{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}
+        </a>
+      </div> <!--Notes-->
+      <div class="col-sm-1" *ngIf="canEdit && isEdit">
+        <button class="btn btn-outline-primary text-uppercase"
+                (click)="editPartnerOrganisation(partnerOrganisation.id)">
+          {{ 'GLOBAL.EDIT' | translate }}
+        </button>
+      </div>
+
+      <div class="row Line-row Spaced-above"></div>
+
+      <!-- Notes Drop Down -->
+      <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div class="log_left p-3">
+          <h3>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}</h3>
+          <hr class="d-inline-flex">
+          <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
+            <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
+                   name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
+
+            <!--Note post -->
+            <div class="row Spaced log-post__wrap--risk"
+                 *ngFor="let note of partnerOrganisation.notes">
+              <div class="log-date__wrap--risk col-lg-1">
+                <p>{{ note.time | date: 'dd MMM y' }}</p>
+              </div>
+              <div class="col-lg-6">
+                <p>{{ note.content }}</p>
+                <br>
+                <div class="row">
+                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a
+                    *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                </div>
+              </div>
+            </div>
+            <hr>
+
+            <!--add Note button-->
+            <div class="add_log mt-auto p-2 text-right float-right">
+              <button *ngIf="countryPermissionsMatrix.notes.New || userType == USER_TYPE.CountryAdmin" type="submit"
+                      class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
+              </button>
+              <br>
+              <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!--Notes Drop Down End-->
+
+      <!--Partnership Details tooltip-->
+      <div class="Tooltip__bubble container-fluid Blue info log collapse" id="partnership_{{ i }}"
+           data-parent="#partnerDetailsOne">
+        <div class="log_left row Spaced-above">
+          <h3 class="col-sm-4 text-right">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHIP_DETAILS' | translate }}</h3>
+          <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-five text-right col-sm-6">{{
+            'GLOBAL.CLOSE' | translate }}</a>
+        </div>
+        <div class="Spaced">
+          <div class="row">
+            <div class="col-sm-3 text-center margin-left-two">
+              <strong>{{ 'ADD_PARTNER.PROJECTS' | translate }}</strong>
+            </div>
+          </div>
+
+          <!--Border box-->
+          <div class="Bordered-box info col-sm-9 Centered margin-left-ten Spaced-above"
+               *ngFor="let project of partnerOrganisation?.projects">
+            <div class="row">
+              <p class="col-sm-3 Spaced-above font-weight-bold">{{ 'ADD_PARTNER.SECTOR' | translate }}</p>
+              <div class="col-sm-0">
+                <div class="Icon__selectable"
+                     *ngFor="let sector of project.sector | keyValues"
+                     [hidden]="!sector.value">
+                  <div [class]="RESPONSE_PLAN_SECTORS[sector.key]"></div>
+                  <label>{{RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <p class="col-sm-3 font-weight-bold">{{ 'ADD_PARTNER.PROJECT_TITLE' | translate }}</p>
+              <div class="col-sm-0"><p>{{ project.title }}</p></div>
+            </div>
+
+            <div class="row">
+              <p class="col-sm-3 font-weight-bold">{{ 'ADD_PARTNER.PROJECT_END_DATE' | translate }}</p>
+              <div class="col-sm-0"><p>{{ project.endDate | date: 'MM/yy'}}</p></div>
+            </div>
+          </div> <!--border box end-->
+
+          <br>
+          <h3 class="col-sm-4 margin-left-six Spaced-above">{{ 'ADD_PARTNER.PARTNER_CONTACT_DETAILS' | translate }}</h3>
+
+          <div class="row">
+            <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate
+              }}</strong></div>
+            <p class="col-sm-0">
+              {{partnerOrganisation?.firstName}}
+              {{partnerOrganisation?.lastName}}
+            </p>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_POSITION' |
+              translate }}</strong></div>
+            <p class="col-sm-0">{{partnerOrganisation?.position}}</p>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_EMAIL' | translate
+              }}</strong></div>
+            <p class="col-sm-0">{{partnerOrganisation?.email}}</p>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3 margin-left-ten"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_PHONE' | translate
+              }}</strong></div>
+            <p class="col-sm-0">{{partnerOrganisation?.phone}}</p>
+          </div>
+
+        </div>
+      </div>
+      <!--Partnership Details tooltip End-->
+    </div>
+    <button class="btn btn-outline-primary text-uppercase"
+            *ngIf="canEdit && !isViewing"
+            (click)="addPartnerOrganisation()">{{ 'GLOBAL.ADD' | translate }}
+    </button>
+  </div>
 </div>
 
 <!-- Delete note modal -->
 <div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
           translate}}</strong></h5>
-            </div>
-            <div class="modal-body">
-                <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-                <button type="button" class="btn btn-primary" (click)="deleteAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.CONFIRM" | translate}}</button>
-            </div>
-        </div>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
+          translate}}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction(activePartnerOrganisation, activeNote)">
+          {{"GLOBAL.CONFIRM" | translate}}
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!--Edit Note Modal-->
 <div class="modal fade" id="edit-action" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center form-group input-lg">
-                <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="activeNote && activeNote.content"></textarea>
-            </div>
-            <div class="row Right-aligned Spaced col-sm-12">
-                <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" | translate}}</a>
-                <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="editAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.SAVE" | translate}}</button>
-            </div>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center form-group input-lg">
+        <textarea type="text" rows="6" class="form-text form-control"
+                  [(ngModel)]="activeNote && activeNote.content"></textarea>
+      </div>
+      <div class="row Right-aligned Spaced col-sm-12">
+        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" |
+          translate}}</a>
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                (click)="editAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.SAVE" | translate}}
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 

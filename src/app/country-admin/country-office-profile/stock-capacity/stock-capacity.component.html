@@ -77,7 +77,9 @@
           <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
-            <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+            <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
+                   name="new_note"
+                   placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                    [(ngModel)]="newNote[stockCapacity.id] && newNote[stockCapacity.id].content">
 
             <!--Note post -->
@@ -92,11 +94,19 @@
                 <div class="row">
                   <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
-                  <a href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                     (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
-                  <p href="#" class="padding-left-one">|</p>
-                  <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
-                     (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                  <a
+                    *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)"
+                    class="col-sm-0 margin-right-none"
+                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit && note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)"
+                    class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -104,7 +114,10 @@
 
             <!--add Note button-->
             <div class="add_log mt-auto p-2 text-right float-right">
-              <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>
+              <button *ngIf="countryPermissionsMatrix.notes.New || userType == USER_TYPE.CountryAdmin" type="submit"
+                      class="btn btn-primary text-uppercase">{{
+                'NOTES.ADD' | translate }}
+              </button>
               <br>
               <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
               }}</a>
@@ -171,7 +184,9 @@
           <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
-            <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+            <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
+                   name="new_note"
+                   placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                    [(ngModel)]="newNote[stockCapacity.id] && newNote[stockCapacity.id].content">
 
             <!--Note post -->
@@ -186,11 +201,19 @@
                 <div class="row">
                   <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
-                  <a href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                     (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
-                  <p href="#" class="padding-left-one">|</p>
-                  <a href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
-                     (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                  <a
+                    *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)"
+                    class="col-sm-0 margin-right-none"
+                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
+                    href="javascript:void(0)"
+                    class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -198,9 +221,13 @@
 
             <!--add Note button-->
             <div class="add_log mt-auto p-2 text-right float-right">
-              <button type="submit" class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}</button>
+              <button *ngIf="countryPermissionsMatrix.notes.New || userType == USER_TYPE.CountryAdmin" type="submit"
+                      class="btn btn-primary text-uppercase">{{
+                'NOTES.ADD' | translate }}
+              </button>
               <br>
-              <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+              <br><a href="#notes_ext_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+              translate
               }}</a>
             </div>
           </form>

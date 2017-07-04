@@ -25,6 +25,7 @@ declare var jQuery: any;
 })
 
 export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
+  private USER_TYPE = UserType;
   private userType: UserType;
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
@@ -133,30 +134,30 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(countryId => {
                     this.countryId = countryId;
-                  });
 
-                this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
-                  .subscribe(partnerOrganisations => {
-                    this.partnerOrganisations = partnerOrganisations;
+                    this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+                      .subscribe(partnerOrganisations => {
+                        this.partnerOrganisations = partnerOrganisations;
 
-                    // Get the partner organisation notes
-                    this.partnerOrganisations.forEach(partnerOrganisation => {
-                      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                      this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                        partnerOrganisation.notes = notes;
+                        // Get the partner organisation notes
+                        this.partnerOrganisations.forEach(partnerOrganisation => {
+                          const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                          this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                            partnerOrganisation.notes = notes;
+                          });
+
+                          // Create the new note model for partner organisation
+                          this.newNote[partnerOrganisation.id] = new NoteModel();
+                          this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                        });
                       });
 
-                      // Create the new note model for partner organisation
-                      this.newNote[partnerOrganisation.id] = new NoteModel();
-                      this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
-                    });
-                  });
-
-                // get the country levels values
-                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                  .subscribe(content => {
-                    this.countryLevelsValues = content;
-                    err => console.log(err);
+                    // get the country levels values
+                    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                      .subscribe(content => {
+                        this.countryLevelsValues = content;
+                        err => console.log(err);
+                      });
                   });
               });
           }

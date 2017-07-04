@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors} from "../../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
@@ -19,6 +19,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
+  private USER_TYPE = UserType;
 
   private isViewing: boolean;
   private UserType: number;
@@ -52,7 +53,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.campManagement
   ];
 
-  public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,

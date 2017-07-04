@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, StockType} from "../../../utils/Enums";
+import {AlertMessageType, StockType, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {UserService} from "../../../services/user.service";
@@ -8,8 +8,9 @@ import {StockCapacityModel} from "../../../model/stock-capacity.model";
 import {StockService} from "../../../services/stock.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {AngularFire} from "angularfire2";
 declare var jQuery: any;
 
 @Component({
@@ -19,6 +20,8 @@ declare var jQuery: any;
 })
 
 export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
+  private USER_TYPE = UserType;
+  private userType: UserType;
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
@@ -41,12 +44,14 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private activeStockCapacity: StockCapacityModel;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private _noteService: NoteService,
               private router: Router,
+              private af:AngularFire,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -72,6 +77,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
+          this.userType = userType;
 
           if (this.countryId && this.agencyId) {
             this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
@@ -93,29 +99,41 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               })
             });
           } else {
-            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-              this.countryId = countryAdminUser.countryId;
+            this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyId => {
+                this.agencyId = agencyId;
 
-              this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
-                this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
-                this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+                this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(countryId => {
+                    this.countryId = countryId;
 
-                // Get notes
-                stockCapacities.forEach(stockCapacity => {
-                  const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                    .replace('{countryId}', this.countryId)
-                    .replace('{id}', stockCapacity.id);
-                  this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
-                    stockCapacity.notes = notes;
+                    this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
+                      this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
+                      this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
 
-                    // Create the new note model for partner organisation
-                    this.newNote[stockCapacity.id] = new NoteModel();
-                    this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                      // Get notes
+                      stockCapacities.forEach(stockCapacity => {
+                        const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                          .replace('{countryId}', this.countryId)
+                          .replace('{id}', stockCapacity.id);
+                        this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                          stockCapacity.notes = notes;
+
+                          // Create the new note model for partner organisation
+                          this.newNote[stockCapacity.id] = new NoteModel();
+                          this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                        });
+                      })
+                    });
                   });
-                })
               });
-            });
           }
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
         });
 
       });

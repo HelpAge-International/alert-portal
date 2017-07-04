@@ -45,7 +45,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   private staffList: ModelStaff[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
@@ -160,7 +160,6 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
       }
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
         this.countryPermissionsMatrix = isEnabled;
-        console.log(this.countryPermissionsMatrix);
       }));
     });
   }
