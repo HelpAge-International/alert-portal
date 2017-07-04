@@ -297,15 +297,17 @@
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
+
                     <option value="null" hidden disabled selected>
                       {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
+
                     <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
                       {{partnerOrganisation.organisationName}}
                     </option>
-                    <option value="addNewPartnerOrganisation" class="text-primary">+
-                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
-                    </option>
+                    <!--<option value="addNewPartnerOrganisation" class="text-primary">+-->
+                      <!--{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}-->
+                    <!--</option>-->
                   </select>
                 </div>
                 <div class="col-sm-6">
