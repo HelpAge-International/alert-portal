@@ -63,7 +63,7 @@ export class NotificationBadgeComponent implements OnInit {
               });
         break;
       case 'administratorCountry':
-        this._notificationService.setCountryAdminNotificationsAsRead(this._countryId, this._agencyId)
+        this._notificationService.setCountryAdminNotificationsAsRead(this._userId, this._countryId, this._agencyId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(() => {
                 this.router.navigateByUrl("country-admin/country-notifications");
@@ -139,7 +139,7 @@ export class NotificationBadgeComponent implements OnInit {
                 });
           break;
         case 'administratorCountry':
-          this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId, true)
+          this._notificationService.getCountryAdminNotifications(this._userId, this._countryId, this._agencyId, true)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(unreadMessages => {
                   this.unreadMessages = unreadMessages;

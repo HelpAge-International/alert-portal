@@ -16,6 +16,9 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import * as firebase from 'firebase';
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {Response} from "@angular/http/http";
+import { MessageModel } from "../../model/message.model";
+import { TranslateService } from "@ngx-translate/core";
+import {NotificationService} from "../../services/notification.service";
 
 @Component({
   selector: 'app-advanced',
@@ -73,12 +76,21 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private assignActionId: string = "0";
   private assignActionCategoryUid: string = "0";
   private assignActionAsignee: string = "0";
+  private assignActionTask: string = "";
 
   // Loader Inactive
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
 
-  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
+  constructor(protected pageControl: PageControlService,
+                 @Inject(FirebaseApp) firebaseApp: any,
+                 protected af: AngularFire,
+                 protected router: Router,
+                 protected route: ActivatedRoute,
+                 protected storage: LocalStorageService,
+                 protected userService: UserService,
+                 protected notificationService: NotificationService,
+                 protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
     this.route.params.subscribe((params: Params) => {
@@ -306,6 +318,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   public assignActionDialogAdv(action: Actions) {
     this.assignActionId = action.id;
     this.assignActionCategoryUid = action.actionUid;
+    this.assignActionTask = action.task;
   }
   public selectedAssignToo(uid: string) {
     if (uid == "0" || uid == null) {
@@ -319,7 +332,16 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.assignActionCategoryUid == null || this.assignActionCategoryUid === "0" || this.assignActionCategoryUid === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee);
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+      .then(() => {
+        // Send notification to the assignee
+        let notification = new MessageModel();
+        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: this.assignActionTask});
+        notification.time = new Date().getTime();
+
+        return this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification);
+      });
     this.closeModal();
   }
 

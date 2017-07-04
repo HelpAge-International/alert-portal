@@ -1841,5 +1841,15 @@
          "TITLE_TEXT": "Start Fund",
          "START_FUND_APP_FORM": "Start Fund Project Application Form"
        }
+     },
+     "NOTIFICATIONS": {
+        "TEMPLATES":{
+            "ASSIGNED_INDICATOR_TITLE": "An indicator has been assigned to you",
+            "ASSIGNED_INDICATOR_CONTENT": "The following indicator: {{indicatorName}} has been assigned to you",
+            "ASSIGNED_MPA_ACTION_TITLE": "A minimum preparedness action has been assigned to you",
+            "ASSIGNED_MPA_ACTION_CONTENT": "The following minimum preparedness action: {{actionName}} has been assigned to you",
+            "ASSIGNED_APA_ACTION_TITLE": "An advanced preparedness action has been assigned to you",
+            "ASSIGNED_APA_ACTION_CONTENT": "The following advanced preparedness action: {{actionName}} has been assigned to you"
+        }
      }
 }

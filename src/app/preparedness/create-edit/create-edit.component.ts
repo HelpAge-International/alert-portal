@@ -11,6 +11,9 @@ import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontr
 import {Observable, Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import {Location} from "@angular/common";
+import {NotificationService} from "../../services/notification.service";
+import { TranslateService } from "@ngx-translate/core";
+import { MessageModel } from "../../model/message.model";
 declare var jQuery: any;
 
 @Component({
@@ -69,7 +72,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+  constructor(private pageControl: PageControlService,
+                 private _notificationService: NotificationService,
+                 private _translate: TranslateService,
+                 private _location: Location,
+                 private route: ActivatedRoute,
+                 private af: AngularFire,
+                 private router: Router,
+                 private storage: LocalStorageService) {
     this.actionData = new Action();
     this.setDefaultActionDataValue();
     /* if selected generic action */
@@ -203,8 +213,29 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
         .push(dataToSave)
         .then(() => {
-          this.backButtonAction();
           console.log('success save data');
+
+          if(dataToSave.asignee)
+          {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            
+            if(dataToSave.level == ActionLevel.MPA)
+            {
+              notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+              notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: dataToSave.task});
+            }else{
+              notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+              notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: dataToSave.task});
+            }
+
+            notification.time = new Date().getTime();
+
+            this._notificationService.saveUserNotificationWithoutDetails(dataToSave.asignee, notification)
+              .subscribe(() => { this.backButtonAction(); });
+          }else{
+            this.backButtonAction();
+          }
         }).catch((error: any) => {
         console.log(error, 'You do not have access!')
       });
@@ -212,7 +243,26 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
         .set(dataToSave)
         .then(() => {
-          this.backButtonAction();
+          // if(dataToSave.asignee)
+          // {
+          //   // Send notification to the assignee
+          //   let notification = new MessageModel();
+            // if(dataToSave.level == ActionLevel.MPA)
+            // {
+            //   notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+            //   notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: dataToSave.task});
+            // }else{
+            //   notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+            //   notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: dataToSave.task});
+            // }
+          //   notification.time = new Date().getTime();
+
+          //   this._notificationService.saveUserNotificationWithoutDetails(dataToSave.asignee, notification)
+          //     .subscribe(() => { this.backButtonAction(); });
+          // }else{
+            this.backButtonAction();
+          //}
+
           console.log('success update');
         }).catch((error: any) => {
         console.log(error, 'You do not have access!')

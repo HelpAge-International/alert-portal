@@ -27,6 +27,9 @@ export class Constants {
   static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
   static SYSTEM_ADMIN_ADD_NETWORK = "/system-admin/network/create";
 
+  // Default system notification sender
+  static DEFAULT_NOTIFICATION_SENDER = "ALERT System";
+
   //agency admin
   static AGENCY_ADMIN_HOME = "/agency-admin/country-office";
   static AGENCY_ADMIN_ADD_STARFF = "/agency-admin/staff/create-edit-staff";

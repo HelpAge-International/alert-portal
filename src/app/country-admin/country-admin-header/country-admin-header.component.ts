@@ -126,36 +126,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   goToHome() {
     this.router.navigateByUrl("/dashboard");
   }
-
-  goToNotifications() {
-    switch(this.USER_TYPE){
-      case 'administratorCountry':
-        this._notificationService.setCountryAdminNotificationsAsRead(this.countryId, this.agencyAdminId)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
-        break;
-      case 'countryDirector':
-        this._notificationService.setCountryDirectorNotificationsAsRead(this.uid, this.countryId, this.agencyAdminId)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
-        break;
-      case 'ertLeader':
-        this._notificationService.setERTLeadsNotificationsAsRead(this.uid, this.countryId, this.agencyAdminId)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
-        break;
-      case 'ert':
-        this._notificationService.setERTNotificationsAsRead(this.uid, this.countryId, this.agencyAdminId)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
-        break;
-    }
-  }
-
+  
   /**
    * Private functions
    */

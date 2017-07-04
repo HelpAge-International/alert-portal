@@ -167,7 +167,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                 });
           break;
         case 'administratorCountry':
-          this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId)
+          this._notificationService.getCountryAdminNotifications(this._userId, this._countryId, this._agencyId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(messages => {
                   this.messages = messages;

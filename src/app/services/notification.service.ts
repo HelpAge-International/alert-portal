@@ -3,11 +3,14 @@ import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';
 import {Observable} from 'rxjs';
 import {MessageModel} from "../model/message.model";
+import { UserType } from "../utils/Enums";
+import { UserService } from "./user.service";
 
 @Injectable()
 export class NotificationService {
 
-  constructor(private af: AngularFire) {
+  constructor(private _userService: UserService,
+              private af: AngularFire) {
   }
 
   getNotificationSettings(agencyId: string): Observable<any> {
@@ -28,13 +31,13 @@ export class NotificationService {
     return this.getNotifications("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId, unreadOnly);
  }
 
- getCountryAdminNotifications(countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
+ getCountryAdminNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
   let messagesList = [];
 
-   let nodes = ["/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
-                "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
-                "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
-                "/messageRef/systemadmin/allusersgroup/" + countryId];
+   let nodes = ["/messageRef/agency/" + agencyId + "/countryadmins/" + userId,
+                "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+                "/messageRef/systemadmin/allcountryadminsgroup/" + userId,
+                "/messageRef/systemadmin/allusersgroup/" + userId];
 
   
   //  return this.getNotifications(nodes[0], unreadOnly).map(messagesNode0 => {
@@ -122,7 +125,7 @@ export class NotificationService {
 //   .map(messages => {  return messages; });
 //   //.flatMap(messages => { console.log(messages); return messages; });
 // return this.getNotifications(nodes[0], unreadOnly) && this.getNotifications(nodes[1], unreadOnly) && this.getNotifications(nodes[2], unreadOnly) && this.getNotifications(nodes[3], unreadOnly);
-  return this.getNotifications("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId, unreadOnly);
+  return this.getNotifications("/messageRef/agency/" + agencyId + "/countryadmins/" + userId, unreadOnly);
  }
 
  getCountryDirectorNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
@@ -165,8 +168,8 @@ setAgencyNotificationsAsRead(agencyId): Observable<any>{
   return this.setNotificationsAsRead("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId);
 }
 
-setCountryAdminNotificationsAsRead(countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId);
+setCountryAdminNotificationsAsRead(userId, countryId, agencyId){
+   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/countryadmins/" + userId);
  }
 
  setCountryDirectorNotificationsAsRead(userId, countryId, agencyId){
@@ -210,7 +213,7 @@ setCountryAdminNotificationsAsRead(countryId, agencyId){
  }
 
  deleteCountryAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId + "/" + messageId);
+   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countryadmins/" + userId + "/" + messageId);
  }
 
  deleteCountryDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
@@ -255,10 +258,101 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     return this.af.database.object(Constants.APP_STATUS + node).remove();
   }
 
+  saveUserNotificationWithoutDetails(userId: string, message: MessageModel): Observable<any>{
+    if(!userId || !message)
+    {
+      throw new Error('userId or message missing.');
+    }
+
+    return this._userService.getUserType(userId)
+        .map(x => {
+          let userType = x;
+
+          const userTypePath = Constants.USER_PATHS[userType];
+
+          return this._userService.getAgencyId(userTypePath, userId)
+            .subscribe(agency => {
+              let agencyId = agency;
+              
+              return this._userService.getCountryId(userTypePath, userId)
+                .subscribe(country => {
+                  let countryId = country;
+                  console.log(countryId);
+                  return this.saveUserNotification(userId, message, userType, agencyId, countryId);
+                });
+            });
+          });
+  }
+  saveUserNotification(userId: string, message: MessageModel, userType: number, agencyId: string, countryId: string): firebase.Promise<any>{
+    let node = '';
+
+    if(!userId || !message || !userType || !agencyId || !countryId)
+    {
+      throw new Error('Missing required fields.')
+    }
+
+    switch(userType){
+      case UserType.AgencyAdmin:
+        node = "/messageRef/systemadmin/allagencyadminsgroup/" + agencyId +  "/{messageId}";
+        break;
+      case UserType.CountryAdmin:
+        node = "/messageRef/agency/" + agencyId + "/countryadmins/" + userId + "/{messageId}";
+        break;
+      case UserType.CountryDirector:
+        node = "/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/{messageId}";
+        break;
+      case UserType.RegionalDirector:
+        node = "/messageRef/agency/" + agencyId + "/regionaldirector/" + userId + "/{messageId}";
+        break;
+      case UserType.GlobalDirector:
+        node = "/messageRef/agency/" + agencyId + "/globaldirector/" + userId + "/{messageId}";
+        break;
+      case UserType.GlobalUser:
+        node = "/messageRef/agency/" + agencyId + "/globaluser/" + userId + "/{messageId}";
+        break;
+      case UserType.Donor:
+        node = "/messageRef/country/" + countryId + "/donor/" + userId + "/{messageId}";
+        break;
+      case UserType.ErtLeader:
+        node = "/messageRef/country/" + countryId + "/ertleads/" + userId + "/{messageId}";
+        break;
+      case UserType.Ert:
+        node = "/messageRef/country/" + countryId + "/erts/" + userId + "/{messageId}";
+        break;
+      case UserType.NonAlert:
+        node = "/messageRef/country/" + countryId + "/partner/" + userId + "/{messageId}";
+        break;
+      case UserType.CountryUser:
+        node = "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/{messageId}";
+        break;
+      
+    }
+
+    return this.saveNotification(node, message);
+  }
+
+private saveNotification(node: string, message: MessageModel): firebase.Promise<any>{
+  if(!node || !message) {
+    console.log('no node or message')
+    return;
+  }
+
+  return this.af.database.list(Constants.APP_STATUS + '/message').push(message)
+    .then(
+      (msg) => {
+          let messageRefData = {};
+          node = node.replace("{messageId}", msg.key);
+          messageRefData[node] = true;
+          this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+      }
+    );
+}
+
   private getNotifications(node: string, unreadOnly): Observable<MessageModel[]>  {
     if(!node) {
       return;
     }
+    
     return this.af.database.list(Constants.APP_STATUS + node)
       .map(list => {
         let messages = [];
