@@ -100,7 +100,7 @@
           <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.NOTE" | translate}}</h3>
           <hr class="d-inline-flex">
           <form>
-            <input type="text" placeholder="Add a log entry" name="log_{{logContent[m.key]}}"
+            <input [disabled]="!countryPermissionsMatrix.notes.New" type="text" placeholder="Add a log entry" name="log_{{logContent[m.key]}}"
                    [(ngModel)]="logContent[m.key]">
           </form>
 
@@ -115,11 +115,11 @@
               <br>
               <div class="row">
                 <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
-                <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote"
+                <a *ngIf="note.uploadBy == uid && countryPermissionsMatrix.notes.Edit" href="#editNote" data-toggle="modal" data-target="#editNote"
                    class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"GLOBAL.EDIT" |
                   translate}}</a>
-                <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
-                <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote"
+                <p *ngIf="note.uploadBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete" href="#" class="padding-left-one">|</p>
+                <a *ngIf="note.uploadBy == uid && countryPermissionsMatrix.notes.Delete" href="#deleteNote" data-toggle="modal" data-target="#deleteNote"
                    class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"GLOBAL.DELETE" |
                   translate}}</a>
               </div>
@@ -130,7 +130,7 @@
 
         <!--add Note button-->
         <div class="add_log mt-auto p-2 text-right float-right">
-          <div class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">
+          <div *ngIf="countryPermissionsMatrix.notes.New" class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">
             {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.ADD_NOTE" | translate}}
           </div>
           <br>

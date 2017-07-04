@@ -54,7 +54,6 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
               private router: Router, private af:AngularFire) {
     this.userPublicDetails = [];
     this.staffList = [];
-
   }
 
   ngOnDestroy() {

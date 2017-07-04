@@ -1,23 +1,20 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, ResponsePlanSectors} from '../../../utils/Enums';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-
-import {AlertMessageModel} from '../../../model/alert-message.model';
-import {PartnerOrganisationService} from '../../../services/partner-organisation.service';
-import {PartnerOrganisationModel} from '../../../model/partner-organisation.model';
-import {PartnerModel} from '../../../model/partner.model';
-import {ModelUserPublic} from '../../../model/user-public.model';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {PartnerOrganisationService} from "../../../services/partner-organisation.service";
+import {PartnerOrganisationModel} from "../../../model/partner-organisation.model";
+import {PartnerModel} from "../../../model/partner.model";
 import {UserService} from "../../../services/user.service";
 import {CountryAdminModel} from "../../../model/country-admin.model";
-import {DisplayError} from "../../../errors/display.error";
 import {SessionService} from "../../../services/session.service";
 import {CommonService} from "../../../services/common.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {AngularFire} from "angularfire2";
 declare var jQuery: any;
 
 @Component({
@@ -28,6 +25,7 @@ declare var jQuery: any;
 })
 
 export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
+  private userType: UserType;
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
@@ -59,12 +57,14 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private activePartnerOrganisation: PartnerOrganisationModel;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _noteService: NoteService,
               private _sessionService: SessionService,
+              private af: AngularFire,
               private router: Router) {
     this.areasOfOperation = [];
     this.partnerOrganisations = [];
@@ -96,6 +96,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
           this.uid = user.uid;
+          this.userType = userType;
 
           if (this.agencyId && this.countryId) {
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
@@ -122,43 +123,50 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 err => console.log(err);
               });
           } else {
-            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-              this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-              this.countryId = countryAdminUser.countryId;
+            this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyId => {
+                this.agencyId = agencyId;
 
-              this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
-                .subscribe(partnerOrganisations => {
-                  this.partnerOrganisations = partnerOrganisations;
-
-                  // Get the partner organisation notes
-                  this.partnerOrganisations.forEach(partnerOrganisation => {
-                    const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                    this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                      partnerOrganisation.notes = notes;
-                    });
-
-                    // Create the new note model for partner organisation
-                    this.newNote[partnerOrganisation.id] = new NoteModel();
-                    this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(countryId => {
+                    this.countryId = countryId;
                   });
-                });
 
-              // get the country levels values
-              this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                .subscribe(content => {
-                  this.countryLevelsValues = content;
-                  err => console.log(err);
-                });
-            });
+                this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+                  .subscribe(partnerOrganisations => {
+                    this.partnerOrganisations = partnerOrganisations;
+
+                    // Get the partner organisation notes
+                    this.partnerOrganisations.forEach(partnerOrganisation => {
+                      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                      this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                        partnerOrganisation.notes = notes;
+                      });
+
+                      // Create the new note model for partner organisation
+                      this.newNote[partnerOrganisation.id] = new NoteModel();
+                      this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                    });
+                  });
+
+                // get the country levels values
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                  .subscribe(content => {
+                    this.countryLevelsValues = content;
+                    err => console.log(err);
+                  });
+              });
           }
 
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
 
         });
-
       });
-
-
   }
 
   goBack() {

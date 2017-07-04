@@ -5,7 +5,7 @@ import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
@@ -52,6 +52,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.campManagement
   ];
 
+  public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private router: Router,
@@ -78,18 +80,25 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
         }
-      });
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.UserType = userType;
-      if (this.isViewing) {
-        this._getProgramme();
-      } else {
-        this._getCountryID().then(() => {
-          this._getProgramme();
+
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          if (this.isViewing) {
+            this._getProgramme();
+          } else {
+            this._getCountryID().then(() => {
+              this._getProgramme();
+            });
+          }
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
+
         });
-      }
-    });
+      });
+
   }
 
   saveNote(programmeID: any) {
@@ -222,12 +231,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
     return result;
   }
-
-
-
-
-
-
 
 
   selectedSectors(event: any, sectorID: any) {

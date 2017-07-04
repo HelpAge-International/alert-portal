@@ -101,7 +101,7 @@
                     <h3>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.NOTES' | translate }}</h3>
                     <hr class="d-inline-flex">
                     <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
-                        <input type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                        <input [disabled]="!countryPermissionsMatrix.notes.New" type="text" name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                            [(ngModel)] = "newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
 
                            <!--Note post -->

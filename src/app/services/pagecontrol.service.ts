@@ -114,6 +114,12 @@ export class CountryPermissionsMatrix {
     this.all(false);
   }
 
+  public static allTrue(): CountryPermissionsMatrix {
+    let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+    x.all(true);
+    return x;
+  }
+
   all(type: boolean) {
     this.chsActions = {Assign: type};
     this.mandatedMPA = {Assign: type};
@@ -494,46 +500,51 @@ export class PageControlService {
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
     // TODO: Implement this
-    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
-      .takeUntil(ngUnsubscribe)
-      .map((snap) => {
-        let agencyAdmin: string;
-        for (let x in snap.val().agencyAdmin) {
-          agencyAdmin = x;
-        }
-        return Pair.create(snap.val().countryId, agencyAdmin);
-      })
-      .flatMap((pair: Pair) => {
-        return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
-      })
-      .takeUntil(ngUnsubscribe)
-      .subscribe((snap) => {
-        if (snap.val().hasOwnProperty('permissionSettings')) {
-          let s = snap.val().permissionSettings;
-          // Build the matrix
-          let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-          // CHSActions
-          x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
-          x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
-          x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
-          x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
-          x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
-          x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
-          x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
-          x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
-          x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
-          x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
-          x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
-          x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
-          x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
-          x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
-          x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
-          x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
-          x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
-          x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
-          x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
-          fun(x);
-        }
-      });
+    if (userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
+      fun(CountryPermissionsMatrix.allTrue());
+    }
+    else {
+      af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .map((snap) => {
+          let agencyAdmin: string;
+          for (let x in snap.val().agencyAdmin) {
+            agencyAdmin = x;
+          }
+          return Pair.create(snap.val().countryId, agencyAdmin);
+        })
+        .flatMap((pair: Pair) => {
+          return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+        })
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap && snap.val() && snap.val().hasOwnProperty('permissionSettings')) {
+            let s = snap.val().permissionSettings;
+            // Build the matrix
+            let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+            // CHSActions
+            x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
+            x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
+            x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
+            x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
+            x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
+            x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
+            x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
+            x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
+            x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
+            x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
+            x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
+            x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
+            x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
+            x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
+            x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
+            x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
+            x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
+            x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
+            x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+            fun(x);
+          }
+        });
+    }
   }
 }
