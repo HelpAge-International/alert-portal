@@ -20,6 +20,7 @@ import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -308,6 +309,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Finish Button press on section 10
    */
   onSubmit() {
+
+    // Closing confirmation pop up
+    if (jQuery("#navigate-back").modal) {
+      jQuery("#navigate-back").modal("hide");
+    }
+
     console.log("Finish button pressed");
     this.checkAllSections();
 
@@ -1194,6 +1201,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
+
+    let numberOfCompletedSections = this.getCompleteSectionNumber();
+
+    if (numberOfCompletedSections > 0) {
+      console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
+      jQuery("#navigate-back").modal("show");
+    } else {
+      this.router.navigateByUrl('response-plans');
+    }
+  }
+
+  closeModalAndNavigate() {
+    jQuery("#navigate-back").modal("hide");
     this.router.navigateByUrl('response-plans');
   }
 

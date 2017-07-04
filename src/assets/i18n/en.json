@@ -1355,6 +1355,7 @@
     },
     "RESPONSE_PLANS": {
         "TITLE_TEXT": "Response Plans",
+        "NO_SECTIONS_ENABLED": "No sections have been enabled by your agency administrator",
         "NO_INFO_TO_SHOW": "No information to show",
         "ADD_BULLET_POINT": "Add bullet point",
         "HOME": {
