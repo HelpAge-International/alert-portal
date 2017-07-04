@@ -453,6 +453,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           });
           this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
           this.addNote(action);
+          this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");

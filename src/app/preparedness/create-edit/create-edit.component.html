@@ -80,7 +80,7 @@
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
               <input type="checkbox"
                      [disabled]="editDisableLoading || action.type != actionType.custom"
-                     [checked]="action.hazards[hList.hazardScenario] ? action.hazards[hList.hazardScenario] : false"
+                     [checked]="action.hazards.get(hList.hazardScenario) != null ? action.hazards.get(hList.hazardScenario) : false"
                      (change)="selectHazardCategory(hList.hazardScenario, $event)" name="hazardCategory">
               <span
                 class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{getHazardImage(hList.hazardScenario)}}"></span>
@@ -109,40 +109,6 @@
           </div>
         </div>
       </div>
-      <!--modal Add new Department-->
-      <div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-           aria-hidden="true">
-        <div class="Alert-error">
-          <!--{{newDepartmentErrorMessage | translate}}-->
-        </div>
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AGENCY_ADMIN.MANDATED_PA.ADD_DEPARTMENT_TITLE"
-                | translate}}</strong></h5>
-              <button type="button" class="close" (click)="closeModal()">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="form-group">
-                <label>{{"AGENCY_ADMIN.MANDATED_PA.DEPARTMENT_NAME" | translate}}</label>
-                <input type="text" class="form-control" id="Department-Name"
-                       placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" #newDepartment>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" (click)="createNewDepartment(newDepartment)">
-                {{"GLOBAL.SAVE"| translate | uppercase}}
-              </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">
-                {{"GLOBAL.CANCEL"| translate}}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- end modal Add new Department-->
 
 
       <!--

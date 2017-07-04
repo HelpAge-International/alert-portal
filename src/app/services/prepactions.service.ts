@@ -2,7 +2,7 @@
  * Created by jordan on 29/06/2017.
  */
 
-import {ActionLevel, ActionType, HazardScenario, UserType} from "../utils/Enums";
+import {ActionLevel, ActionType, DurationType, HazardScenario, UserType} from "../utils/Enums";
 import {Inject, Injectable} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
@@ -23,7 +23,8 @@ export class PrepActionService {
   // Actions: Used for list
   public actions: PreparednessAction[];
   private ranClockInitialiser: boolean = false;
-  public clockSettings: Map<string, number> = new Map<string, number>();
+  private defaultClockType: number;
+  private defaultClockValue: number;
 
   constructor() {
     this.actions = [];
@@ -101,18 +102,27 @@ export class PrepActionService {
     af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        let value = (+(snap.val().preparedness.value));
-        let type = (+(snap.val().preparedness.durationType));
-        this.clockCalculation(type, value, "DEFAULT");
+        this.defaultClockValue = (+(snap.val().preparedness.value));
+        this.defaultClockType = (+(snap.val().preparedness.durationType));
         if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
           defaultClockSettingsAquired();
           this.ranClockInitialiser = true;
         }
       });
   }
-  private clockCalculation(type: number, value: number, id: string) {
-    // TODO: Do the type and the value calculation for the clock settings
-    this.clockSettings.set(id, 1000 * 60 * 60 * 24 * 7);
+  public static clockCalculation(type: number, value: number) {
+    let val: number = 1000 * 60 * 60 * 24; // Milliseconds in one day
+    if (type == DurationType.Week) {
+      val = val * 7;
+    }
+    if (type == DurationType.Month) {
+      val = val * 30;
+    }
+    if (type == DurationType.Year) {
+      val = val * 365;
+    }
+    val = val * value;
+    return val;
   }
 
   /**
@@ -157,8 +167,10 @@ export class PrepActionService {
   private updateAction(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, updated: (action: PreparednessAction) => void) {
     let run: boolean = this.findAction(id) == null;
     let i = this.findOrCreateIndex(id, whichUser, source);
-    if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee; // else this.actions[i].asignee = null;
-    if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate; // else this.actions[i].dueDate = null;
+    if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee;
+      else if (action.type == ActionType.custom) this.actions[i].asignee = null;
+    if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate;
+      else if (action.type == ActionType.custom) this.actions[i].dueDate = null;
     if (action.hasOwnProperty('assignHazard')) {
       this.actions[i].assignedHazards = [];
       for (const x of action.assignHazard) {
@@ -183,17 +195,25 @@ export class PrepActionService {
     // else {
     //   this.actions[i].type = null;
     // }
-    if (action.hasOwnProperty('updatedAt')) this.actions[i].updatedAt = action.updatedAt; // else action.isArchived = null;
-    if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived; // else action.startDate = null;
-    if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget; // else action.budget = null;
+    if (action.hasOwnProperty('updatedAt')) this.actions[i].updatedAt = action.updatedAt;
+      else if (action.type == ActionType.custom) action.isArchived = null;
+    if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived;
+      else if (action.type == ActionType.custom) action.isArchived = null;
+    if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget;
+      else if (action.type == ActionType.custom) action.budget = null;
     if (action.hasOwnProperty('department')) this.actions[i].department = action.department; // else action.department = null;
     if (action.hasOwnProperty('level')) this.actions[i].level = action.level; // else action.level = null;
-    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete; // else action.isComplete = null;
-    if (action.hasOwnProperty('isCompletedAt')) this.actions[i].isCompletedAt = action.isCompletedAt; // else action.isCompletedAt = null;
-    if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc; // else action.requireDoc = null;
+    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete;
+      else if (action.type == ActionType.custom) action.isComplete = null;
+    if (action.hasOwnProperty('isCompleteAt')) this.actions[i].isCompleteAt = action.isCompleteAt;
+      else if (action.type == ActionType.custom) action.isCompleteAt = null;
+    if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc;
+      else if (action.type == ActionType.custom) action.requireDoc = null;
     if (action.hasOwnProperty('task')) this.actions[i].task = action.task; // else action.task = null;
-    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase; // else action.frequencyBase = null;
-    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue; // else action.frequencyValue = null;
+    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase;
+      else if (action.type == ActionType.custom) action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue;
+      else if (action.type == ActionType.custom) action.frequencyValue = null;
     this.initNotes(af, id, run);
 
     // Document deletion check
@@ -222,8 +242,12 @@ export class PrepActionService {
 
     // Clock settings
     if (this.actions[i].frequencyBase && this.actions[i].frequencyValue) {
-      this.clockCalculation(this.actions[i].frequencyBase, this.actions[i].frequencyValue, id);
+      this.actions[i].setComputedClockSetting(this.actions[i].frequencyValue, this.actions[i].frequencyBase);
     }
+    else {
+      this.actions[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
+    }
+
 
     // Optional notifier method
     if (updated != null) {
@@ -349,7 +373,7 @@ export class PreparednessAction {
   public frequencyBase: number;
   public frequencyValue: number;
   public isComplete: boolean;
-  public isCompletedAt: number;
+  public isCompleteAt: number;
   public level: number;
   public requireDoc: boolean;
   public task: string;
@@ -360,16 +384,10 @@ export class PreparednessAction {
   public notes: PreparednessNotes[];
   public documents: any[];
 
-  private computedClockSettingValue: number;
-  private computedClockSettingType: number;
   public computedClockSetting: number;
 
   public setComputedClockSetting(value: number, type: number) {
-    if (this.computedClockSettingType && this.computedClockSettingValue) {
-      // TODO: Do the calculation here
-    }
-    // TODO: Remove the dummy data return
-    this.computedClockSetting = 1000 * 60 * 60 * 24 * 7;
+    this.computedClockSetting = PrepActionService.clockCalculation(type, value);
   }
 
   constructor() {

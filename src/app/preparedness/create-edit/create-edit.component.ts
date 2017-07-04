@@ -158,14 +158,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.dueDate = action.dueDate;
       if (action.assignedHazards != null) {
         for (let x of action.assignedHazards) {
-          this.action.hazards.set(x, true);
+          this.action.hazards.set((+x), true);
         }
       }
       this.action.asignee = action.asignee;
       this.action.department = action.department;
       this.action.budget = action.budget;
       this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
-      this.editDisableLoading = false;
+      this.editDisableLoading = false;;
     });
   }
 
@@ -297,15 +297,15 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       else {
         updateObj.asignee = null;
       }
-      if (this.action.level == ActionLevel.APA) {
-        if (this.action.hazards.size == 0) {
-          updateObj.assignHazard = [];
-          for (let x in this.action.hazards) {
-            if (this.action.hazards[x]) {
-              updateObj.assignHazard.push(x);
-            }
+      if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
+        updateObj.assignHazard = [];
+        console.log(this.action.hazards);
+        this.action.hazards.forEach((value, key) => {
+          console.log(key + " => " + value);
+          if (value) {
+            updateObj.assignHazard.push(key);
           }
-        }
+        });
       }
       if (this.action.isFrequencyActive) {
         updateObj.frequencyBase = this.action.frequencyType;
@@ -389,13 +389,15 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     }
     else {
       this.action.isAllHazards = false;
-      this.action.hazards[hazardKey] = event.target.checked ? event.target.checked : false;
-      for (let x in this.action.hazards) {
-        if (this.action.hazards[x]) {
+      this.action.hazards.set(hazardKey, event.target.checked ? event.target.checked : false);
+      this.action.hazards.forEach((value, key) => {
+        if (value) {
           this.action.allHazardsEnabled = true;
         }
-      }
+      });
     }
+
+    console.log(this.action.hazards);
   }
 
   protected showActionConfirm(modal: string) {
