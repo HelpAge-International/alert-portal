@@ -21,9 +21,9 @@
       <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
         <div class="row">
           <div class="col-md-3 Alert-Widget__item"
-               [class.bg-info]="alert.approvalStatus==0"
-               [class.bg-warning]="alert.alertLevel==1"
-               [class.bg-danger]="alert.alertLevel==2 && alert.approvalStatus==1">
+               [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
+               [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
+               [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
             <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
             <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
           </div>

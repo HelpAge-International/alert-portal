@@ -19,6 +19,7 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
+  private AlertStatus = AlertStatus;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private alertMessageType = AlertMessageType;
   private alertMessage:AlertMessageModel = null;

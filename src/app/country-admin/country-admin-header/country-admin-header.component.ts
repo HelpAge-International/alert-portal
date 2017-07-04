@@ -92,14 +92,18 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.alertService.getAlerts(this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
-        alerts.forEach(alert => {
+        this.isRed = false;
+        this.isAmber = false;
+      alerts.forEach(alert => {
           if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
             this.isRed = true;
           }
-          if (alert.alertLevel == AlertLevels.Amber && alert.approvalStatus == AlertStatus.Approved) {
+          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
+            || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
             this.isAmber = true;
           }
         });
+
         if (this.isRed) {
           this.alertLevel = AlertLevels.Red;
           this.alertTitle = "ALERT.RED_ALERT_LEVEL";
