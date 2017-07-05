@@ -1863,7 +1863,9 @@
             "RED_ALERT_REQUESTED_TITLE": "A red alert level has been requested for {{riskName}}",
             "RED_ALERT_REQUESTED_CONTENT": "A red alert has been requested for the following alert: {{riskName}}",
             "ALERT_LEVEL_UPDATED_TITLE": "The alert level for {{riskName}} has been updated",
-            "ALERT_LEVEL_UPDATED_CONTENT": "The following alert: {{riskName}} has had its level updated from {{levelBefore}} to {{levelAfter}}"
+            "ALERT_LEVEL_UPDATED_CONTENT": "The following alert: {{riskName}} has had its level updated from {{levelBefore}} to {{levelAfter}}",
+            "RESPONSE_PLAN_REJECTED_TITLE": "A response plan has been rejected",
+            "RESPONSE_PLAN_REJECTED_CONTENT": "The following response plan: {{responsePlan}} has been rejected"
         }
      }
 }

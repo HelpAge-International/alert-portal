@@ -30,6 +30,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private regionalDirectorApproval = [];
   private globalDirectorApproval = [];
   private countryId: string;
+  private agencyId: string;
   private userType: number;
   private rejectToggleMap = new Map();
   private rejectComment: string = "";
@@ -40,6 +41,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((params: Params) => {
@@ -144,7 +146,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   approvePlan() {
-    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector);
+    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId);
   }
 
   rejectPlan() {
@@ -163,7 +165,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   confirmReject() {
     jQuery("#rejectPlan").modal("hide");
-    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector);
+    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId);
   }
 
   ngOnDestroy() {
