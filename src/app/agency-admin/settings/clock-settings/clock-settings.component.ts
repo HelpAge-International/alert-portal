@@ -17,11 +17,6 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
 
   DURATION_TYPE = Constants.DURATION_TYPE;
   DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
-  private riskMonitorDurations = [];
-  private riskMonitorHazardsDurations = [];
-  private preparednessDurations = [];
-  private responsePlansDurations = [];
-
   private uid: string = "";
   private settings: any[] = [];
   private saved: boolean = false;
@@ -36,7 +31,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   private responsePlansFreq: Frequency = new Frequency({value: -1, type: -1});
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  private durationMap = new Map<number,any[]>();
+  private durationMap = new Map();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
     let durationsListW = [
@@ -58,47 +53,6 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
     this.durationMap.set(DurationType.Week, durationsListW);
     this.durationMap.set(DurationType.Month, durationsListM);
     this.durationMap.set(DurationType.Year, durationsListY);
-
-  }
-
-  setupDropDownValues(type: any, durationsList: any[]) {
-    console.log(this.riskMonitorShowLogForFreq.type);
-    console.log(this.durationMap.get(Number(this.riskMonitorShowLogForFreq.type)));
-
-    if (type == DurationType.Week) {
-
-      durationsList = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-        51];
-
-      this.durationMap.set(DurationType.Week, durationsList);
-
-    } else if (type == DurationType.Month) {
-
-      durationsList = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11];
-
-      this.durationMap.set(DurationType.Month, durationsList);
-    } else {
-
-      durationsList = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-      ];
-
-
-      this.durationMap.set(DurationType.Year, durationsList);
-
-    }
-    // console.log(this.riskMonitorShowLogForFreq.type);
-    // console.log(this.durationMap);
-
-
-    return durationsList;
   }
 
   ngOnInit() {
@@ -118,13 +72,6 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.riskMonitorHazardFreq = new Frequency(this.settings['riskMonitoring']['hazardsValidFor']);
           this.preparednessFreq = new Frequency(this.settings['preparedness']);
           this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
-
-          this.riskMonitorDurations = this.setupDropDownValues(this.riskMonitorShowLogForFreq.type, this.riskMonitorDurations);
-          this.riskMonitorHazardsDurations = this.setupDropDownValues(this.riskMonitorHazardFreq.type, this.riskMonitorHazardsDurations);
-          this.preparednessDurations = this.setupDropDownValues(this.preparednessFreq.type, this.preparednessDurations);
-          this.responsePlansDurations = this.setupDropDownValues(this.responsePlansFreq.type, this.responsePlansDurations);
-
-          console.log(this.riskMonitorDurations);
         });
     });
   }
@@ -239,6 +186,10 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           }
         });
       });
+  }
+
+  convertToNumber(value):number {
+    return Number(value);
   }
 
 
