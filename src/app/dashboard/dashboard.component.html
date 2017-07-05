@@ -11,13 +11,15 @@
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
+
             <div class="col-md-3 Alert-Widget__item"
-                 [class.bg-info]="alert.approvalStatus==0"
-                 [class.bg-warning]="alert.alertLevel==1"
-                 [class.bg-danger]="alert.alertLevel==2 && alert.approvalStatus==1">
+                 [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
+                 [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
+                 [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
               <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
               <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
             </div>
+
             <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
               <i div
                  class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
@@ -51,9 +53,13 @@
 
 
             <div class="col-md-2 Alert-Widget__item">
-              <span *ngIf="alert.approvalStatus == AlertStatus.WaitingResponse" class="text-danger text-bold">{{"ALERT.RED_ALERT_REQUESTED" | translate}}</span>
-              <button *ngIf="alert.approvalStatus != AlertStatus.WaitingResponse" class="btn btn-outline-primary"
-                      (click)="updateAlert(alert.id)">
+              <span *ngIf="(alert.alertLevel != AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)
+              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)"
+                    class="text-danger text-bold">{{"ALERT.RED_ALERT_REQUESTED" | translate}}</span>
+              <button
+                *ngIf="!(alert.alertLevel != AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse) && !(alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)"
+                class="btn btn-outline-primary"
+                (click)="updateAlert(alert.id)">
                 {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
               </button>
             </div>
@@ -72,7 +78,8 @@
                   </div>
                   <div class="col-sm-6 col-4 text-right">
                     <a href="javascript:void(0);"
-                       onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE" | translate}}</a>
+                       onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE"
+                      | translate}}</a>
                   </div>
                 </div>
                 <div class="row no-gutters">
@@ -93,18 +100,23 @@
         </div>
       </div>
     </div>
+
     <!--director alert screen-->
     <div *ngIf="DashboardTypeUsed == DashboardType.director">
+
       <div *ngIf="alerts | async as alertList">
         <div *ngFor="let alert of alertList">
           <div class="Widget Alert-Widget ">
             <div class="row">
+
               <div class="col-md-3 Alert-Widget__item"
-                   [class.bg-warning]="alert.alertLevel==1"
-                   [class.bg-danger]=" alert.alertLevel==2">
+                   [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
+                   [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
+                   [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
                 <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
                 <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
               </div>
+
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
                 <i div
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
@@ -141,10 +153,11 @@
 
 
               <div class="col-md-2 Alert-Widget__item">
-                <!--<span class="text-danger text-bold"></span>-->
-                <button *ngIf="alert.approvalStatus == 0" class="btn btn-outline-primary"
+                <span class="text-danger text-bold"></span>
+
+                <button *ngIf="alert.approvalStatus == AlertStatus.WaitingResponse" class="btn btn-outline-danger"
                         (click)="updateAlert(alert.id)">
-                  {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
+                  {{"ALERT.ACCEPT_REJECT_ALERT_LEVEL" | translate}}
                 </button>
               </div>
 
@@ -212,6 +225,67 @@
           </div>
         </div>
       </div>
+
+      <div *ngIf="redAlerts | async as alertList">
+        <div *ngFor="let alert of alertList">
+          <div class="Widget Alert-Widget ">
+            <div class="row">
+
+              <div class="col-md-3 Alert-Widget__item AlertLevel-red">
+                <h4>{{"ALERT.RED_ALERT" | translate}}</h4>
+              </div>
+
+              <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
+                <i div
+                   class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+                <div>
+                  <span>{{"ALERT.RISK" | translate}}:</span>
+                  {{HazardScenariosList[alert.hazardScenario] | translate}}
+                </div>
+              </div>
+              <div class="col-md-2 Alert-Widget__item">
+                <div>
+                  <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}}
+                  {{"ALERT.PEOPLE"
+                  |
+                  translate}}
+                </div>
+              </div>
+              <div class="col-md-2 Alert-Widget__item">
+                <div>
+                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                </div>
+              </div>
+
+              <div class="col-md-1 Alert-Widget__item Alert-Widget__item--notes">
+                <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                   [attr.data-target]="'#'+alert.id"
+                   aria-expanded="false" [attr.aria-controls]="alert.id">
+                  <div class="fa-stack">
+                    <i class="fa fa-comment fa-stack-2x"></i>
+                    <i class="fa fa-stack-1x fa-inverse"></i>
+                  </div>
+                  <div>{{"GLOBAL.NOTES" | translate}}</div>
+                </a>
+              </div>
+
+
+              <div class="col-md-2 Alert-Widget__item">
+                <span class="text-danger text-bold"></span>
+
+                <button class="btn btn-outline-primary" (click)="updateAlert(alert.id, true)">
+                  {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
       <div *ngIf="amberAlerts | async as alertList">
         <div *ngFor="let alert of alertList">
           <div class="Widget Alert-Widget ">
@@ -313,6 +387,7 @@
           </div>
         </div>
       </div>
+
     </div>
     <!--       v the best typo -->
     <!--empty rubber for default dashboard-->
@@ -376,7 +451,7 @@
             </div>
             <div class="col-md-8">
               <a href="">{{getActionTitle(action)}}
-              <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a>
+                <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a>
             </div>
             <div class="col-md-3">
               <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
@@ -408,7 +483,8 @@
               )</strong>.<span>{{action.task}}</span></a>
             </div>
             <div class="col-md-3">
-              <a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" | translate}}</a>
+              <a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
+                translate}}</a>
             </div>
           </div>
         </div>

@@ -1641,6 +1641,7 @@
         "ADD_ANOTHER_LOCATION": "Add another location",
         "CONFIRM_ALERT_LEVEL": "Confirm alert level",
         "UPDATE_ALERT_LEVEL": "Update alert level",
+        "ACCEPT_REJECT_ALERT_LEVEL":"Accept or reject",
         "LAST_UPDATED": "Last updated"
     },
     "DASHBOARD": {
