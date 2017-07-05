@@ -11,13 +11,21 @@ import {Subject} from "rxjs/Subject";
 import {CommonService} from "./common.service";
 import {ModelJsonLocation} from "../model/json-location.model";
 import {Router} from "@angular/router";
+import { NotificationService } from "./notification.service";
+import {TranslateService} from "@ngx-translate/core";
+import { MessageModel } from "../model/message.model";
 
 @Injectable()
 export class ActionsService {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire, private userService: UserService, private jsonService: CommonService, private router: Router) {
+  constructor(private af: AngularFire,
+              private userService: UserService,
+              private jsonService: CommonService,
+              private router: Router,
+              private notificationService: NotificationService,
+              private translate: TranslateService) {
   }
 
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
@@ -266,7 +274,7 @@ export class ActionsService {
       });
   }
 
-  updateAlert(alert: ModelAlert, countryId: string, alertId: string) {
+  updateAlert(alert: ModelAlert, alertLevelBefore: number, countryId: string, agencyId: string) {
     console.log("update alert");
     let updateData = {};
     let areaData = {};
@@ -296,7 +304,21 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId).set(updateData).then(() => {
+
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alert.id).set(updateData).then(() => {
+      // Send notification to users with Alert level changed notification
+      const alertChangedNotificationSetting = 0;
+      const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[alert.hazardScenario]);
+      const levelBefore = this.translate.instant(Constants.ALERTS[alertLevelBefore]);
+      const levelAfter = this.translate.instant(Constants.ALERTS[alert.alertLevel]);
+      
+      let notification = new MessageModel();
+      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_TITLE", { riskName: riskNameTranslated});
+      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_CONTENT", { riskName: riskNameTranslated, levelBefore: levelBefore, levelAfter: levelAfter});
+      notification.time = new Date().getTime();
+      
+      this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, alertChangedNotificationSetting, agencyId, countryId);
+      
       this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
     }, error => {
       console.log(error.message);

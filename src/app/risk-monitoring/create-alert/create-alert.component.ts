@@ -177,14 +177,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             if(dataToSave.alertLevel == 2)
             {
               // Send notification to users with Red alert notification
+              const redAlertNotificationSetting = 1;
               const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[dataToSave.hazardScenario]);
               
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", { riskName: riskNameTranslated});
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", { riskName: riskNameTranslated});
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", { riskName: riskNameTranslated});
               notification.time = new Date().getTime();
               
-              const redAlertNotificationSetting = 5;
               this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, redAlertNotificationSetting, this.agencyId, this.countryID);
             }
             
