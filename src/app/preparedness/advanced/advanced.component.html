@@ -452,7 +452,7 @@
 
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block"
-                             *ngIf="!countrySelected && (uid == action.asignee || userType == UserType.CountryAdmin)">
+                             *ngIf="!countrySelected">
                           <div *ngIf="!action.isComplete && action.dueDate > getNow() && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
                             <a href="javascript:void(0)" data-toggle="collapse"
                                [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"

@@ -5,6 +5,8 @@ import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import Promise = firebase.Promise;
+import {ModelDepartment} from "../../../model/department.model";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-department',
@@ -15,14 +17,14 @@ import Promise = firebase.Promise;
 export class DepartmentComponent implements OnInit, OnDestroy {
 
   private uid: string = "";
-  private departments: FirebaseListObservable<any>;
+  private agencyId: string;
   private deleting: boolean = false;
   private editing: boolean = false;
   private saved: boolean = false;
   private departmentName: string = "";
   private deleteCandidates: any = {};
-  private depts: any = {};
-  private editDepts: any = {};
+  private depts: ModelDepartment[] = [];
+  private editDepts: ModelDepartment[] = [];
   private alerts = {};
   private newDepartmentErrorInactive: boolean = true;
   private newDepartmentErrorMessage: string;
@@ -31,20 +33,38 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
 
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-
-        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments', {preserveSnapshot: true})
+        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
+          .map((val) => {
+            console.log(val.val());
+            return val.val().agencyId;
+          })
+          .flatMap((agencyId) => {
+            this.agencyId = agencyId;
+            console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
+            return this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true});
+          })
           .takeUntil(this.ngUnsubscribe)
-          .subscribe(snapshot => {
-          this.depts = snapshot.val();
-        });
+          .subscribe((snapshot) => {
+            this.depts = [];
+            this.editDepts = [];
+            console.log(snapshot.val());
+            snapshot.forEach((snap) => {
+              let x: ModelDepartment = new ModelDepartment();
+              x.id = snap.key;
+              x.name = snap.val().name;
+              this.depts.push(x);
+              this.editDepts.push(x);
+            });
+          });
     });
   }
 
@@ -66,7 +86,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   cancelDeleteDepartments(event) {
-    this.deleting = !this.deleting;
+    this.deleting = !this.deleting; 
     this.deleteCandidates = {};
   }
 
@@ -94,72 +114,50 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       this.deleteCandidates[department] = true;
   }
 
-  editDepartments(event) {
+  flipEditDepartments() {
     this.editing = !this.editing;
   }
 
-  cancelEditDepartments(event) {
-    this.editing = !this.editing;
-    this.editDepts = {};
-    this.deleteCandidates = {};
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments', {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(snapshot => {
-      this.depts = snapshot.val();
-    });
-  }
+  saveEditedDepartments() {
+    console.log("Edited Departments");
+    console.log("HERE!");
 
-  saveEditedDepartments(event) {
-    this.editing = !this.editing;
-
-    for (var dept in this.editDepts) {
-      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + dept).remove();
-
-      let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
-
-      var newDepartment = {};
-      newDepartment[this.editDepts[dept]["new_key"]] = this.editDepts[dept]["value"];
-      departments
-      .update(newDepartment)
-      .then(_ => {
-        if (!this.alertShow){
-          this.saved = true;
-          this.alertSuccess = true;
-          this.alertShow = true;
-          this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_SAVED_SUCCESS";
-        }
-      })
-      .catch(err => console.log(err, 'You do not have access!'));
+    console.log(this.depts);
+    console.log(this.editDepts);
+    for (let i = 0; i < this.depts.length; i++) {
+      console.log("A:" + this.depts[i].name);
+      console.log("E:" + this.editDepts[i].name);
+      if (this.editDepts[i].name != this.depts[i].name) {
+        // A change has happened! Update this item
+        let updateObj = {
+          name: this.depts[i].name
+        };
+        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + this.depts[i].id).update(updateObj).then(_ => {
+          if (!this.alertShow){
+            this.saved = true;
+            this.alertSuccess = true;
+            this.alertShow = true;
+            this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_SAVED_SUCCESS";
+          }
+        });
+      }
     }
   }
 
-  setDepartmentValue(prop, value) {
-    this.editDepts[prop] = {
-      "new_key": value,
-      "value": this.depts[prop]
-    };
-  }
-
-  addDepartment(event) {
-
+  addDepartment() {
     if (this.validateNewDepartment()) {
-
-      let departments = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments');
-      var newDepartment = {};
-      newDepartment[this.departmentName] = false;
-      departments
-      .update(newDepartment)
-      .then(_ => {
+      let updateObj = {
+        name: this.departmentName
+      };
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/departments').push(updateObj).then(_ => {
         if (!this.alertShow){
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
           this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_NEW_SUCCESS";
         }
-      })
-      .catch(err => console.log(err, 'You do not have access!'));
-      this.departmentName = "";
-
+        this.departmentName = "";
+      });
     } else {
       this.showAlert();
     }

@@ -21,16 +21,16 @@
               *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DELETE_DEPARTMENTS" | translate |
         uppercase}}
       </button>
-      <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="editDepartments($event)"
+      <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="flipEditDepartments()"
               *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.EDIT_DEPARTMENTS" | translate |
         uppercase}}
       </button>
       <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing"
-              (click)="saveEditedDepartments($event)">{{"GLOBAL.SAVE" | translate | uppercase}}
+              (click)="saveEditedDepartments()">{{"GLOBAL.SAVE" | translate | uppercase}}
       </button>
 
       <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing"
-              (click)="cancelEditDepartments($event)">{{"GLOBAL.CANCEL" | translate}}
+              (click)="flipEditDepartments()">{{"GLOBAL.CANCEL" | translate}}
       </button>
     </div>
 
@@ -42,16 +42,18 @@
         {{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.NO_DEPARTMENTS" | translate}}
       </div>
 
-      <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts | keyValues">
-        <label for="{{department.key}}" *ngIf="deleting && !department.value">
-          <input class="form-check-input" type="checkbox" id="{{department.key}}" [value]="department.key"
-                 (change)="onDepartmentSelected(department.key)"> {{department.key}}
+      <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts">
+        <!-- Check box for deletion -->
+        <label for="{{department.id}}" *ngIf="deleting">
+          <input class="form-check-input" type="checkbox" id="{{department.id}}" [value]="department.id"
+                 (change)="onDepartmentSelected(department.id)">
         </label>
-        <ng-container *ngIf="(!deleting || department.value) && !editing">
-          {{department.key}}
+        <!-- Regular label -->
+        <ng-container *ngIf="(!deleting || department.name) && !editing">
+          {{department.name}}
         </ng-container>
-        <input type="text" class="form-control col-md-4" *ngIf="editing" [ngModel]="department.key"
-               (ngModelChange)="setDepartmentValue(department.key, $event)">
+        <!-- Editing input -->
+        <input type="text" class="form-control col-md-4" *ngIf="editing" [(ngModel)]="department.name">
       </div>
 
       <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
@@ -60,7 +62,7 @@
                  required>
         </div>
         <div class="col-md-8 col-4">
-          <button type="button" class="btn btn-outline-primary" (click)="addDepartment($event)">{{"GLOBAL.SAVE" |
+          <button type="button" class="btn btn-outline-primary" (click)="addDepartment()">{{"GLOBAL.SAVE" |
             translate | uppercase}}
           </button>
         </div>
