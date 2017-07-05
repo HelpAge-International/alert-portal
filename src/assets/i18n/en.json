@@ -816,6 +816,7 @@
                 "MODULE_NAME": "This module can not be enabled as Minimum preparedness actions module is disabled"
             },
             "DURATION_TYPE": {
+                "HOURS": "Hours",
                 "DAYS": "Days",
                 "WEEKS": "Weeks",
                 "MONTHS": "Months",
@@ -1029,7 +1030,7 @@
             "TITLE_TEXT": "Country Office Profile",
             "MENU": {
                 "PROGRAMME": "Programmes",
-                "OFFICE_CAPACITY": "Office capacity",
+                "OFFICE_CAPACITY": "Office Capacity",
                 "PARTNERS": "Partners",
                 "EQUIPMENT": "Equipment",
                 "COORDINATION": "Coordination",
@@ -1037,6 +1038,27 @@
                 "DOCUMENTS": "Documents",
                 "CONTACTS": "Contacts"
             },
+            "OFFICE_CAPACITY": {
+               "TITLE_TEXT": "Office & surge capacity",
+               "VIEW_BUTTON_TEXT": "View office & surge capacity",
+               "EDIT_BUTTON_TEXT": "Edit office & surge capacity",
+               "SURGE_CAPACITY": "Surge capacity",
+               "COUNTRY_OFFICE_CAPACITY": "Country office capacity",
+               "ALL_SUPPORT_SKILLS": "All Support Skills",
+               "ALL_TECHNICAL_SKILLS": "All Technical Skills",
+               "TOTAL_STAFF": "Total staff",
+               "TOTAL_RESPONSE_STAFF": "Total response staff",
+               "TECHNICAL": "Technical",
+               "SUPPORT": "Support",
+               "SURGE_CAP_DETAILS": "Surge capacity details",
+               "SUPPORT": "Support",
+               "TYPE_OF_RELATIONSHIP": "Type of relationship",
+               "LENGTH_OF_DEPLOYMENT": "Length of deployment",
+               "SECTOR_OF_EXPERTISE": "Sector of expertise",
+               "ETA": "Estimated time of arrival",
+               "ADD_SURGE_CAPACITY": "Add surge capacity",
+               "EDIT_SURGE_CAPACITY": "Edit surge capacity"
+             },
             "PARTNERS": {
                 "TITLE_TEXT": "Partners",
                 "IMPLEMENTING_PARTNERS": "Current implementing partners",
