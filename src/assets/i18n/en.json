@@ -628,6 +628,7 @@
         "SETTING": {
             "SETTING_SAVED": "Settings successfully saved!",
             "TITLE": "System Settings",
+            "ADD_A_NEW_DEPARTMENT": "Add a new department",
             "MIN": "Minimum preparedness threshold",
             "ADV": "Advanced preparedness threshold",
             "GREEN": "Green",
@@ -872,7 +873,8 @@
             "NO_ADDRESS_1": "Please enter address line 1",
             "NO_COUNTRY": "Please select a country",
             "NO_CITY": "Please enter the name of the city",
-            "NO_PHONE": "Please enter the phone number"
+            "NO_PHONE": "Please enter the phone number",
+            "INVALID_PHONE": "Please enter a valid phone number"
         },
         "STAFF": {
             "TITLE_TEXT": "Country Office Staff",
@@ -1236,7 +1238,7 @@
               "4WMAPPING": "4W Mapping",
               "ADD_4W_MAPPING": "Add 4W Mapping",
               "EDIT_4W_MAPPING": "Edit 4W Mapping",
-              "NO_SECTOR_SELECTED": "No expertise sectors selected",
+              "NO_SECTOR_SELECTED": "No sector expertise selected",
               "NO_4WMAPPING" : "Use the edit programme button to enter your 4W mapping",
               "TABLE_SECTOR": "Sector",
               "TABLE_WHAT": "What",
@@ -1354,6 +1356,7 @@
     },
     "RESPONSE_PLANS": {
         "TITLE_TEXT": "Response Plans",
+        "NO_SECTIONS_ENABLED": "No sections have been enabled by your agency administrator",
         "NO_INFO_TO_SHOW": "No information to show",
         "ADD_BULLET_POINT": "Add bullet point",
         "HOME": {

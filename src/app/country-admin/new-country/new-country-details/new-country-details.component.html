@@ -69,7 +69,7 @@
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.phone]}">
               <label for="T-number">{{"GLOBAL.USER_INFO.PHONE" | translate}}*</label>
-              <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.phone">
+              <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.phone" (change)="validatePhoneNumber()">
             </div>
           </div>
         </div>

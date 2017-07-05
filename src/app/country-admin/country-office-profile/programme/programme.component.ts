@@ -198,7 +198,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryID: any) => {
           this.countryID = countryID.$value ? countryID.$value : "";
-          console.log(this.countryID);
           res(true);
         });
     });
@@ -223,13 +222,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     return result;
   }
 
-
-
-
-
-
-
-
   selectedSectors(event: any, sectorID: any) {
 
     if (this.sectorExpertise && this.sectorExpertise.length > 0) {
@@ -251,6 +243,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       this.TmpSectorExpertise[sectorID] = true;
     } else {
       if (this.TmpSectorExpertise && this.TmpSectorExpertise.length > 0) {
+
         this.TmpSectorExpertise.forEach((val, key) => {
           if (key == sectorID) {
             delete this.TmpSectorExpertise[sectorID];
@@ -258,7 +251,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         });
       }
     }
-
   }
 
   saveSectors() {
@@ -268,7 +260,14 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    var dataToUpdate = this.TmpSectorExpertise;
+    // var dataToUpdate = this.TmpSectorExpertise;
+    var dataToUpdate = {};
+
+    this.TmpSectorExpertise.forEach((val, key) => {
+      if(val) {
+        dataToUpdate[key] = val;
+      }
+    });
 
     this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
       .set(dataToUpdate)
@@ -288,7 +287,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     });
     return selected;
   }
-
 
 }
 

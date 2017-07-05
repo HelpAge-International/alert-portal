@@ -20,7 +20,6 @@ import {ModelStaff} from "../model/staff.model";
 @Injectable()
 export class UserService {
   private secondApp: firebase.app.App;
-  private authState: FirebaseAuthState;
   public anonymousUserPath: any;
 
   public user: ModelUserPublic;
@@ -84,7 +83,7 @@ export class UserService {
     return userSubscription;
   }
 
-  saveUserPublic(userPublic: ModelUserPublic): firebase.Promise<any> {
+  saveUserPublic(userPublic: ModelUserPublic, authState: FirebaseAuthState): firebase.Promise<any> {
     const userPublicData = {};
 
     let uid = userPublic.id;
@@ -102,8 +101,8 @@ export class UserService {
     this.getUser(uid).subscribe(oldUser => {
       if (oldUser.email && oldUser.email !== userPublic.email) {
         // this.getAuthUser();
-        return this.authState.auth.updateEmail(userPublic.email).then(bool => {
-            return this.saveUserPublic(userPublic);
+        return authState.auth.updateEmail(userPublic.email).then(bool => {
+            return this.saveUserPublic(userPublic, authState);
           },
           error => () => {
             throw new Error('Cannot update user email')
@@ -120,7 +119,7 @@ export class UserService {
     //}
   }
 
-  changePassword(email: string, password: ChangePasswordModel): firebase.Promise<any> {
+  changePassword(email: string, password: ChangePasswordModel, authState: FirebaseAuthState): firebase.Promise<any> {
     return this.af.auth.login({
         email: email,
         password: password.currentPassword
@@ -130,7 +129,7 @@ export class UserService {
         method: AuthMethods.Password,
       })
       .then(() => {
-        this.authState.auth.updatePassword(password.newPassword).then(() => {
+        authState.auth.updatePassword(password.newPassword).then(() => {
         }, error => {
           throw new Error('Cannot update password');
         });
