@@ -291,15 +291,27 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     /* TODO if user ERT OR Partner, assign only me */
-    // this.UserType == UserType.Ert || this.UserType == UserType.
-    this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
-      for (let userID in data) {
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-          var userToPush = {userID: userID, firstName: user.firstName};
-          this.usersForAssign.push(userToPush);
+    if (this.UserType == UserType.Ert) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, firstName: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
         });
-      }
-    });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+        for (let userID in data) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: userID, firstName: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
+    }
   }
 
   showDeleteDialog(modalId) {
