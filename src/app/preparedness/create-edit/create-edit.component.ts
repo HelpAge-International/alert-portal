@@ -76,6 +76,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
+  private now: Date = new Date();
+
   constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
               private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     /* if selected generic action */
@@ -165,7 +167,19 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.department = action.department;
       this.action.budget = action.budget;
       this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
-      this.editDisableLoading = false;;
+      this.action.isComplete = action.isComplete;
+      this.action.isCompleteAt = action.isCompleteAt;
+      if (action.frequencyValue != null && action.frequencyBase != null) {
+        console.log("Frequency Values are here!");
+        this.action.isFrequencyActive = true;
+        this.action.frequencyType = action.frequencyBase;
+        this.action.frequencyQuantity = action.frequencyValue;
+      }
+      this.action.computedClockSetting = action.computedClockSetting;
+      this.editDisableLoading = false;
+
+      console.log(action);
+      console.log(this.action);
     });
   }
 
@@ -299,9 +313,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
-        console.log(this.action.hazards);
         this.action.hazards.forEach((value, key) => {
-          console.log(key + " => " + value);
           if (value) {
             updateObj.assignHazard.push(key);
           }
@@ -323,6 +335,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         updateObj.level = this.action.level;
       }
       updateObj.updatedAt = new Date().getTime();
+
+      if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
+        console.log("Removing complete status!");
+        updateObj.isCompleteAt = null;
+        updateObj.isComplete = null;
+      }
+
       if (this.action.id != null) {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
@@ -347,6 +366,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         });
       }
     }
+  }
+
+  public getNow() {
+    return this.now.getTime();
+  }
+  public getNowDate() {
+    return this.now;
   }
 
   /**
@@ -478,6 +504,10 @@ export class CreateEditPrepActionHolder {
   public department: string;
   public requireDoc: boolean;
   public type: number;
+
+  public isComplete;
+  public isCompleteAt;
+  public computedClockSetting;
 
   public frequencyQuantity: number = 1;
   public frequencyType: number = 0;

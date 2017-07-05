@@ -253,6 +253,8 @@ export class PrepActionService {
     if (updated != null) {
       updated(this.actions[i]);
     }
+
+    console.log(this.actions[i]);
   }
 
   /**

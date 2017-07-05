@@ -179,7 +179,6 @@ import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/ap
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 import {OrderByPipe} from "./utils/pipes/orderby.pipe";
-import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 import {PrepActionService} from "./services/prepactions.service";
 
 export function HttpLoaderFactory(http: Http) {
