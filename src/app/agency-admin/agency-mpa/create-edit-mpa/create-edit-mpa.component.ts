@@ -3,9 +3,10 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {Constants} from "../../../utils/Constants";
-import {ActionLevel, ActionType} from "../../../utils/Enums";
+import {ActionLevel, ActionStatus, ActionType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {ModelDepartment} from "../../../model/department.model";
 declare var jQuery: any;
 
 @Component({
@@ -17,24 +18,30 @@ declare var jQuery: any;
 export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private agencyId: string;
+  private editActionId: string;
+  private inactive: boolean = true;
+  private fieldsDisabled: boolean = false;
+
   private successInactive: boolean = true;
   private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
+
   private newDepartmentErrorInactive: boolean = true;
   private newDepartmentErrorMessage: string;
-  private alerts = {};
   private newDepartment: string;
-  private departmentsPath: string;
-  private departments: Observable<any>;
-  private path: string;
-  private inactive: boolean = true;
+
+  private alerts: {} = {};
+
+  private departments: ModelDepartment[] = [];
+  private departmentSelected: string;
+
+  private isMpa: boolean = false;
+
   private errorMessage: string = '';
   private pageTitle: string = 'AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_MANDATED_PA';
   private buttonText: string = 'AGENCY_ADMIN.MANDATED_PA.SAVE_BUTTON_TEXT';
   private textArea: string;
-  private isMpa: boolean = true;
   private forEditing: boolean = false;
-  private idOfMpaToEdit: string;
-  private departmentSelected: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -42,24 +49,28 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.path = Constants.APP_STATUS + '/action/' + this.uid;
-        this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
-        console.log("uid: " + user.uid);
-        this.getDepartments();
-    });
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
-          this.forEditing = true;
           this.pageTitle = 'AGENCY_ADMIN.MANDATED_PA.EDIT_MANDATED_PA';
           this.buttonText = 'AGENCY_ADMIN.MANDATED_PA.EDIT_BUTTON_TEXT';
-          this.loadMandatedPAInfo(params["id"]);
-          this.idOfMpaToEdit = params["id"];
+          this.editActionId = params["id"];
+          this.fieldsDisabled = true;
         }
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId", {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((agencyId) => {
+              this.agencyId = agencyId.val();
+              if (this.editActionId != null) {
+                this.initialLoadMandated();
+              }
+              this.getDepartments();
+            });
+        });
       });
   }
 
@@ -70,13 +81,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.validate()) {
-
-      if (this.forEditing) {
-        this.editMandatedPA();
-      } else {
-        this.addNewMandatedPA();
-        this.inactive = true;
-      }
+      this.updateMandatedPrepAction();
     } else {
       this.inactive = false;
       Observable.timer(Constants.ALERT_DURATION)
@@ -86,101 +91,86 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
     }
   }
 
-  mpaSelected() {
+  protected initialLoadMandated() {
+    this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + this.agencyId + "/" + this.editActionId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.textArea = snap.val().task;
+        this.isMpa = snap.val().level == ActionLevel.MPA;
+        this.departmentSelected = snap.val().department;
+        this.fieldsDisabled = false;
+      });
+  }
+
+  protected mpaSelected() {
     this.isMpa = true;
   }
 
-  apaSelected() {
+  protected apaSelected() {
     this.isMpa = false;
   }
 
-  checkSelectedDepartment() {
-    console.log("Selected Department ---- " + this.departmentSelected);
-  }
-
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
-
-  private loadMandatedPAInfo(actionId: string) {
-
-    this.af.database.object(this.path + '/' + actionId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((action: MandatedPreparednessAction) => {
-        this.textArea = action.task;
-        this.isMpa = action.level == ActionLevel.MPA ? true : false;
-        this.departmentSelected = action.department;
-      });
-  }
-
-  private addNewMandatedPA() {
-
-    let currentDateTime = new Date().getTime();
-
-    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let newAction: MandatedPreparednessAction = new MandatedPreparednessAction();
-    newAction.task = this.textArea;
-    newAction.type = ActionType.mandated;
-    newAction.department = this.departmentSelected;
-    newAction.level = level;
-    newAction.createdAt = currentDateTime;
-
-    this.af.database.list(this.path).push(newAction)
-      .then(_ => {
-        this.af.database.object(this.departmentsPath + '/' + this.departmentSelected).set(true)
-          .then(_ => {
-            console.log('Department updated');
-            this.router.navigateByUrl("/agency-admin/agency-mpa");
-          });
-      });
-  }
-
-  private editMandatedPA() {
-
-    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let editedAction: MandatedPreparednessAction = new MandatedPreparednessAction();
-    editedAction.task = this.textArea;
-    editedAction.type = ActionType.mandated;
-    editedAction.department = this.departmentSelected;
-    editedAction.level = level;
-
-    this.af.database.object(this.path + "/" + this.idOfMpaToEdit).update(editedAction).then(_ => {
-        console.log('Mandated action updated');
+  private updateMandatedPrepAction() {
+    if (this.editActionId != null) {
+      // update
+      let updateObj = {
+        department: this.departmentSelected,
+        level: this.isMpa ? ActionLevel.MPA : ActionLevel.APA,
+        task: this.textArea,
+        type: ActionType.mandated
+      };
+      this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + this.agencyId + "/" + this.editActionId).update(updateObj).then(_ => {
         this.router.navigateByUrl("/agency-admin/agency-mpa");
-      }
-    );
-  }
-
-  addNewDepartment() {
-
-    if (this.validateNewDepartment()) {
-      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(false).then(_ => {
-        console.log('New department added');
-        jQuery("#add_department").modal("hide");
-        this.departmentSelected = this.newDepartment;
-        this.newDepartment = '';
-        this.showAlert(false);
-      })
-    } else {
-      this.showAlert(true);
+      });
+    }
+    else {
+      // Push
+      let pushObj = {
+        createdAt: new Date().getTime(),
+        department: this.departmentSelected,
+        level: this.isMpa ? ActionLevel.MPA : ActionLevel.APA,
+        task: this.textArea,
+        type: ActionType.mandated
+      };
+      this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId).push(pushObj).then(_ => {
+        this.router.navigateByUrl("/agency-admin/agency-mpa");
+      });
     }
   }
 
-  closeModal() {
+  protected closeModal() {
     this.departmentSelected = '';
     jQuery("#add_department").modal("hide");
   }
 
   private getDepartments() {
-
-    this.departments = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments/")
-      .map(list => {
-        let tempList = [];
-        for (let item of list) {
-          tempList.push(item.$key);
-        }
-        return tempList;
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+        });
       });
+  }
+
+
+  public addNewDepartment() {
+    if (this.validateNewDepartment()) {
+      let dep = {
+        name: this.newDepartment
+      };
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").push(dep).then(_ => {
+        jQuery("#add_department").modal("hide");
+        this.departmentSelected = this.newDepartment;
+        this.newDepartment = '';
+      });
+    } else {
+      this.showAlert(true);
+    }
   }
 
   private showAlert(error: boolean) {
@@ -204,7 +194,6 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
    * @returns {boolean}
    */
   private validate() {
-
     if (!(this.textArea)) {
       this.alerts[this.textArea] = true;
       this.errorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_CONTENT_ERROR";
@@ -222,9 +211,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
    * @returns {boolean}
    */
   private validateNewDepartment() {
-
     this.alerts = {};
-
     if (!(this.newDepartment)) {
       this.alerts[this.newDepartment] = true;
       this.newDepartmentErrorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_NAME";

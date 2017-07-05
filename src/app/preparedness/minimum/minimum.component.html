@@ -126,11 +126,11 @@
       <h2>Actions assigned to {{
         filterAssigned == uid ? 'me' : (filterAssigned == '0' ? 'anyone' :
         (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' +
-        CURRENT_USERS.get(filterAssigned).lastName : 'Someone')
+        CURRENT_USERS.get(filterAssigned).lastName : 'no-one')
         )
         }}</h2>
 
-      <div *ngFor="let action of actions">
+      <div *ngFor="let action of prepActionService.actions">
 
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
@@ -139,28 +139,55 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
-          <div *ngIf="!action.isArchived && (action.asignee != '')">
+          <div *ngIf="!action.isArchived && (action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
             <!-- FILTERING BASED ON THE "COMPLETE/INPROGRESS/EXPIRED" filter -->
             <div *ngIf="filterStatus == -1 ||
-            (!action.isComplete && action.dueDate > getNow() && filterStatus == ActionStatus.InProgress) ||
+            (!action.isComplete && action.dueDate > getNow() && !((!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                      || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow()))) && filterStatus == ActionStatus.InProgress) ||
             (action.isComplete && action.dueDate > getNow() && filterStatus == ActionStatus.Completed) ||
-            (action.dueDate <= getNow() && filterStatus == ActionStatus.Expired)">
+            ((action.dueDate <= getNow()
+                      || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                      || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow()))) && filterStatus == ActionStatus.Expired)">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                      | date:"d MMM ''yy"}}</strong></div>
+
+
+
+                    <!--
+                   Everywhere that the following line is used it's just way of handling the "Expired on" state with the clock settings.
+                   Based on those setting they're sometimes expired. This below checks that. It makes all the IF statements look
+                   a bit messy but it has to be done like this so it's not dependent on a method resolution (and hence live updating gets a bit weird)
+
+                   (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                    -->
+
+                    <!-- Logic for the clock settings -->
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
+                      Due on <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                    </div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
+                      Expired on <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
+                    </div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
+                      Expired on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
+                    </div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
+                      Expires on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
+                    </div>
+
+
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4">{{action.task}}</div>
                         <div class="col-md-2 col-sm-2"
                              [ngClass]="
                                          {
-                                         'text-warning': !action.isComplete && action.dueDate > getNow(),
-                                         'text-success': action.isComplete && action.dueDate > getNow(),
-                                         'text-danger': action.dueDate <= getNow()
+                                         'text-warning': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                         'text-success': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                         'text-danger': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -168,14 +195,14 @@
                                             <i class="fa fa-stack-1x fa-inverse"
                                                [ngClass]="
                                                {
-                                               'fa-ellipsis-h': !action.isComplete && action.dueDate > getNow(),
-                                               'fa-check': action.isComplete && action.dueDate > getNow(),
-                                               'fa-times': action.dueDate <= getNow()
+                                               'fa-ellipsis-h': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                               'fa-check': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                               'fa-times': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
                                                }
                                                "></i>
                                         </span>
-                          {{ACTION_STATUS[action.dueDate <= getNow() ? 0 : (action.isComplete ? 2 : 1)] | translate}}
-                        </div>
+                        {{ACTION_STATUS[action.dueDate <= getNow() || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) ? 0 : (action.isComplete ? 2 : 1)] | translate}}
+                      </div>
                         <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 
                           <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
@@ -205,14 +232,15 @@
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block"
                              *ngIf="!countrySelected && (uid == action.asignee || userType == UserType.CountryAdmin)">
-                          <div *ngIf="!action.isComplete && action.dueDate > getNow()">
+                          <div *ngIf="!action.isComplete && action.dueDate > getNow()  && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
                             <a href="javascript:void(0)" data-toggle="collapse"
                                [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
                                aria-controls="popover_content"
                                class="btn btn-outline-primary btn-block ">Mark as complete</a>
                           </div>
 
-                          <a *ngIf="action.type == ActionType.custom"
+                          <!-- TODO: PERMISSIONS -->
+                          <a
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -314,7 +342,7 @@
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, i)">Delete</a></span>
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                               </p>
                             </div>
                           </div>
@@ -401,20 +429,20 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseTwo">
-        <div *ngFor="let action of actions">
+        <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
-            <div *ngIf="!action.isArchived && (action.asignee == '')">
+            <div *ngIf="!action.isArchived && !(action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                      | date:"d MMM ''yy"}}</strong></div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4">{{action.task}}</div>
@@ -455,7 +483,9 @@
                              aria-expanded="false" aria-controls="popover_content"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
-                          <a *ngIf="action.type == ActionType.custom"
+
+                          <!-- TODO: PERMISSIONS -->
+                          <a
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
@@ -559,7 +589,7 @@
                               <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                               href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                               href="javascript:void(0);" class="text-danger"
-                              (click)="deleteDocument(action, i)">Delete</a></span>
+                              (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                             </p>
                           </div>
                         </div>
@@ -593,11 +623,11 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseThree">
-        <div *ngFor="let action of actions">
+        <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || (action.asignee == '' && filterAssigned == '-1')) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="action.isArchived">
@@ -605,8 +635,8 @@
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                      | date:"d MMM ''yy"}}</strong></div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4">{{action.task}}</div>
@@ -650,8 +680,9 @@
                              class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
 
 
+
+                          <!-- TODO: PERMISSIONS -->
                           <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]"
-                             *ngIf="action.type == ActionType.custom"
                              class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -752,7 +783,7 @@
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> | <a
                                 href="javascript:void(0);" class="text-danger"
-                                (click)="deleteDocument(action, i)">Delete</a></span>
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
                               </p>
                             </div>
                           </div>
@@ -794,8 +825,7 @@
         <div class="col-sm-12">
           <select name="" id="" class="form-control" #assignee (change)="selectedAssignToo(assignee.value)">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ?
-              'Assigned to me' : x.firstName + ' ' + x.lastName}}
+            <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.firstName + ' ' + x.lastName}}
             </option>
           </select>
         </div>
