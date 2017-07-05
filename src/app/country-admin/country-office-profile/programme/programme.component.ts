@@ -156,6 +156,11 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           var obj = {key: parseInt(s), val: sectorExpertise[s]};
           this.sectorExpertise.push(obj);
         }
+        if (this.sectorExpertise && this.sectorExpertise.length > 0) {
+          this.sectorExpertise.forEach((val, key) => {
+            this.TmpSectorExpertise[val.key] = true;
+          });
+        }
       });
   }
 
@@ -224,12 +229,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   selectedSectors(event: any, sectorID: any) {
 
-    if (this.sectorExpertise && this.sectorExpertise.length > 0) {
-      this.sectorExpertise.forEach((val, key) => {
-        this.TmpSectorExpertise[val.key] = true;
-      });
-    }
-
     var stateElement: boolean = true;
 
     var className = event.srcElement.className;
@@ -243,12 +242,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       this.TmpSectorExpertise[sectorID] = true;
     } else {
       if (this.TmpSectorExpertise && this.TmpSectorExpertise.length > 0) {
-
-        this.TmpSectorExpertise.forEach((val, key) => {
-          if (key == sectorID) {
-            delete this.TmpSectorExpertise[sectorID];
-          }
-        });
+        delete this.TmpSectorExpertise[sectorID];
       }
     }
   }
