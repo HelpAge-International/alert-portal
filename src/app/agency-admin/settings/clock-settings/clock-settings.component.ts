@@ -35,21 +35,9 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
-    let durationsListW = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-      11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-      21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-      31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-      41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-      51];
-
-    let durationsListM = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-      11];
-
-    let durationsListY = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-    ];
+    let durationsListW = Constants.DURATION_LIST_WEEK;
+    let durationsListM = Constants.DURATION_LIST_MONTH;
+    let durationsListY = Constants.DURATION_LIST_YEAR;
 
     this.durationMap.set(DurationType.Week, durationsListW);
     this.durationMap.set(DurationType.Month, durationsListM);
@@ -75,6 +63,48 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
         });
     });
+  }
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
+  }
+
+  convertToNumber(value): number {
+    return Number(value);
+  }
+
+  validateShowLogsFromValue() {
+    if (this.riskMonitorShowLogForFreq.type == DurationType.Month && this.riskMonitorShowLogForFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.riskMonitorShowLogForFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.riskMonitorShowLogForFreq.type == DurationType.Year && this.riskMonitorShowLogForFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.riskMonitorShowLogForFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validateHazardsValidForValue() {
+    if (this.riskMonitorHazardFreq.type == DurationType.Month && this.riskMonitorHazardFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.riskMonitorHazardFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.riskMonitorHazardFreq.type == DurationType.Year && this.riskMonitorHazardFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.riskMonitorHazardFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validatePreparednessValue() {
+    if (this.preparednessFreq.type == DurationType.Month && this.preparednessFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.preparednessFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.preparednessFreq.type == DurationType.Year && this.preparednessFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.preparednessFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validateResponsePlansValue() {
+    if (this.responsePlansFreq.type == DurationType.Month && this.responsePlansFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.responsePlansFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.responsePlansFreq.type == DurationType.Year && this.responsePlansFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.responsePlansFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
   }
 
   ngOnDestroy() {
@@ -119,35 +149,13 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.alertShow = true;
           this.alertMessage = "AGENCY_ADMIN.SETTINGS.SAVE_SUCCESS_CLOCK_SETTINGS";
         }
-        // try {
-        //   this.countryOfficesSubscriptions.releaseAll();
-        // } catch (e) {
-        //   console.log('Unable to releaseAll');
-        // }
       })
       .catch(err => {
         console.log(err, 'Error occurred!');
         this.alertSuccess = false;
         this.alertShow = true;
-        this.alertMessage = "Error occurred!"
-        // try {
-        //   this.countryOfficesSubscriptions.releaseAll();
-        // } catch (e) {
-        //   console.log('Unable to releaseAll');
-        // }
-
+        this.alertMessage = "Error occurred!";
       });
-
-  }
-
-  onAlertHidden(hidden: boolean) {
-    this.alertShow = !hidden;
-    this.alertSuccess = true;
-    this.alertMessage = "";
-  }
-
-  convertToNumber(value):number {
-    return Number(value);
   }
 
   private updateCountriesClockSettings() {

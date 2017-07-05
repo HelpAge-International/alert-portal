@@ -37,7 +37,8 @@
         <div class="col-lg-2 col-md-3">
           <select class="form-control" id="riskMonitorShowLogForFreq.type"
                   [(ngModel)]="riskMonitorShowLogForFreq.type"
-                  name="riskMonitorShowLogForFreq.type" required>
+                  name="riskMonitorShowLogForFreq.type"
+                  (change)="validateShowLogsFromValue()" required>
             <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
             </option>
           </select>
@@ -60,8 +61,10 @@
         </div>
 
         <div class="col-lg-2 col-md-3">
-          <select class="form-control" id="riskMonitorHazardFreq.type" [(ngModel)]="riskMonitorHazardFreq.type"
-                  name="riskMonitorHazardFreq.type" required>
+          <select class="form-control" id="riskMonitorHazardFreq.type"
+                  [(ngModel)]="riskMonitorHazardFreq.type"
+                  name="riskMonitorHazardFreq.type"
+                  (change)="validateHazardsValidForValue()" required>
             <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
             </option>
           </select>
@@ -85,8 +88,10 @@
         </div>
 
         <div class="col-lg-2 col-md-3">
-          <select class="form-control" id="preparednessFreq.type" [(ngModel)]="preparednessFreq.type"
-                  name="preparednessFreq.type" required>
+          <select class="form-control" id="preparednessFreq.type"
+                  [(ngModel)]="preparednessFreq.type"
+                  name="preparednessFreq.type"
+                  (change)="validatePreparednessValue()" required>
             <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
             </option>
           </select>
@@ -110,8 +115,10 @@
         </div>
 
         <div class="col-lg-2 col-md-3">
-          <select class="form-control" id="responsePlansFreq.type" [(ngModel)]="responsePlansFreq.type"
-                  name="responsePlansFreq.type" required>
+          <select class="form-control" id="responsePlansFreq.type"
+                  [(ngModel)]="responsePlansFreq.type"
+                  name="responsePlansFreq.type"
+                  (change)="validateResponsePlansValue()" required>
             <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
             </option>
           </select>

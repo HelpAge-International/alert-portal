@@ -33,25 +33,14 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private _userService: UserService,
+  constructor(private pageControl: PageControlService,
+              private _userService: UserService,
               private _settingsService: SettingsService,
               private router: Router,
               private route: ActivatedRoute) {
-    let durationsListW = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-      11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-      21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-      31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-      41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-      51];
-
-    let durationsListM = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-      11];
-
-    let durationsListY = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-    ];
+    let durationsListW = Constants.DURATION_LIST_WEEK;
+    let durationsListM = Constants.DURATION_LIST_MONTH;
+    let durationsListY = Constants.DURATION_LIST_YEAR;
 
     this.durationMap.set(DurationType.Week, durationsListW);
     this.durationMap.set(DurationType.Month, durationsListM);
@@ -66,17 +55,17 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
       this._userService.getCountryAdminUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryAdminUser => {
-        if (countryAdminUser) {
-          this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-          this.countryId = countryAdminUser.countryId;
+          if (countryAdminUser) {
+            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+            this.countryId = countryAdminUser.countryId;
 
-          this._settingsService.getCountryClockSettings(this.agencyId, this.countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(clockSettings => {
-            this.clockSettings = clockSettings;
-          })
-        }
-      });
+            this._settingsService.getCountryClockSettings(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(clockSettings => {
+                this.clockSettings = clockSettings;
+              })
+          }
+        });
     });
   }
 
@@ -87,8 +76,39 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
 
   validateForm(): boolean {
     this.alertMessage = this.clockSettings.validate();
-
     return !this.alertMessage;
+  }
+
+  validateShowLogsFromValue() {
+    if (this.clockSettings.riskMonitoring.showLogsFrom.durationType == DurationType.Month && this.clockSettings.riskMonitoring.showLogsFrom.value > Constants.MONTH_MAX_NUMBER) {
+      this.clockSettings.riskMonitoring.showLogsFrom.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.clockSettings.riskMonitoring.showLogsFrom.durationType == DurationType.Year && this.clockSettings.riskMonitoring.showLogsFrom.value > Constants.YEAR_MAX_NUMBER) {
+      this.clockSettings.riskMonitoring.showLogsFrom.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validateHazardsValidForValue() {
+    if (this.clockSettings.riskMonitoring.hazardsValidFor.durationType == DurationType.Month && this.clockSettings.riskMonitoring.hazardsValidFor.value > Constants.MONTH_MAX_NUMBER) {
+      this.clockSettings.riskMonitoring.hazardsValidFor.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.clockSettings.riskMonitoring.hazardsValidFor.durationType == DurationType.Year && this.clockSettings.riskMonitoring.hazardsValidFor.value > Constants.YEAR_MAX_NUMBER) {
+      this.clockSettings.riskMonitoring.hazardsValidFor.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validatePreparednessValue() {
+    if (this.clockSettings.preparedness.durationType == DurationType.Month && this.clockSettings.preparedness.value > Constants.MONTH_MAX_NUMBER) {
+      this.clockSettings.preparedness.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.clockSettings.preparedness.durationType == DurationType.Year && this.clockSettings.preparedness.value > Constants.YEAR_MAX_NUMBER) {
+      this.clockSettings.preparedness.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validateResponsePlansValue() {
+    if (this.clockSettings.responsePlans.durationType == DurationType.Month && this.clockSettings.responsePlans.value > Constants.MONTH_MAX_NUMBER) {
+      this.clockSettings.responsePlans.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.clockSettings.responsePlans.durationType == DurationType.Year && this.clockSettings.responsePlans.value > Constants.YEAR_MAX_NUMBER) {
+      this.clockSettings.responsePlans.value = Constants.YEAR_MAX_NUMBER;
+    }
   }
 
   submit() {
@@ -106,7 +126,7 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
       });
   }
 
-  convertToNumber(value):number {
+  convertToNumber(value): number {
     return Number(value);
   }
 

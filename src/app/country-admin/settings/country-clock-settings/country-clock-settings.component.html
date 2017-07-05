@@ -28,12 +28,16 @@
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="riskMonitoring_showlog_value"
                     [(ngModel)]="clockSettings && clockSettings.riskMonitoring.showLogsFrom.value" required>
-              <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.riskMonitoring.showLogsFrom.durationType))" [value]="duration">{{duration}}</option>
+              <option
+                *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.riskMonitoring.showLogsFrom.durationType))"
+                [value]="duration">{{duration}}
+              </option>
             </select>
           </div>
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="riskMonitoring_showlog_type"
-                    [(ngModel)]="clockSettings && clockSettings.riskMonitoring.showLogsFrom.durationType" required>
+                    [(ngModel)]="clockSettings && clockSettings.riskMonitoring.showLogsFrom.durationType"
+                    (change)="validateShowLogsFromValue()" required>
               <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
               </option>
             </select>
@@ -47,12 +51,16 @@
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="riskMonitoring_hazards_value"
                     [(ngModel)]="clockSettings && clockSettings.riskMonitoring.hazardsValidFor.value" required>
-              <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.riskMonitoring.hazardsValidFor.durationType))" [value]="duration">{{duration}}</option>
+              <option
+                *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.riskMonitoring.hazardsValidFor.durationType))"
+                [value]="duration">{{duration}}
+              </option>
             </select>
           </div>
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="riskMonitoring_hazards_type"
-                    [(ngModel)]="clockSettings && clockSettings.riskMonitoring.hazardsValidFor.durationType" required>
+                    [(ngModel)]="clockSettings && clockSettings.riskMonitoring.hazardsValidFor.durationType"
+                    (change)="validateHazardsValidForValue()" required>
               <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
               </option>
             </select>
@@ -67,12 +75,15 @@
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="preparedness_value"
                     [(ngModel)]="clockSettings && clockSettings.preparedness.value" required>
-              <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.preparedness.durationType))" [value]="duration">{{duration}}</option>
+              <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.preparedness.durationType))"
+                      [value]="duration">{{duration}}
+              </option>
             </select>
           </div>
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="preparedness_type"
-                    [(ngModel)]="clockSettings && clockSettings.preparedness.durationType" required>
+                    [(ngModel)]="clockSettings && clockSettings.preparedness.durationType"
+                    (change)="validatePreparednessValue()" required>
               <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
               </option>
             </select>
@@ -86,13 +97,17 @@
         <div class="row">
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="responsePlans_value"
-                    [(ngModel)]="clockSettings && clockSettings.responsePlans.durationType" required>
-              <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.responsePlans.durationType))" [value]="duration">{{duration}}</option>
+                    [(ngModel)]="clockSettings && clockSettings.responsePlans.value" required>
+              <option
+                *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.responsePlans.durationType))"
+                [value]="duration">{{duration}}
+              </option>
             </select>
           </div>
           <div class="col-lg-2 col-md-3">
             <select class="form-control" name="responsePlans_type"
-                    [(ngModel)]="clockSettings && clockSettings.responsePlans.durationType" required>
+                    [(ngModel)]="clockSettings && clockSettings.responsePlans.durationType"
+                    (change)="validateResponsePlansValue()" required>
               <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
               </option>
             </select>
