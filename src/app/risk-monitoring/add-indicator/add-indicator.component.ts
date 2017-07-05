@@ -1,7 +1,10 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
-import {AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {
+  AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType,
+  UserType
+} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -158,6 +161,19 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.UserType = userType;
 
+      //check if partner
+      // this.af.database.object(Constants.APP_STATUS+"/partner/"+this.uid, {preserveSnapshot:true})
+      //   .first()
+      //   .subscribe(snapshot =>{
+      //     let isPartner = false;
+      //     if (snapshot.val()) {
+      //       isPartner = true;
+      //     }
+      //
+      //
+      //
+      //   });
+
       this.getCountryID().then(() => {
         this._getHazards();
         this.getUsersForAssign();
@@ -275,6 +291,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     /* TODO if user ERT OR Partner, assign only me */
+    // this.UserType == UserType.Ert || this.UserType == UserType.
     this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
       for (let userID in data) {
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
@@ -382,7 +399,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           "systemId": this.copySystemId,
           "from": "risk",
           "canCopy": true,
-          "agencyOverview":this.agencyOverview
+          "agencyOverview": this.agencyOverview
         }]);
       } else {
         this.router.navigate(["/dashboard/dashboard-overview", {
@@ -616,7 +633,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           "systemId": this.copySystemId,
           "from": "risk",
           "canCopy": true,
-          "agencyOverview":this.agencyOverview
+          "agencyOverview": this.agencyOverview
         }]);
       } else {
         this.router.navigate(["/dashboard/dashboard-overview", {
