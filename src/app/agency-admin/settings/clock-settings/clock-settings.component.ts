@@ -15,8 +15,6 @@ import {DurationType} from "../../../utils/Enums";
 
 export class ClockSettingsComponent implements OnInit, OnDestroy {
 
-  DURATION_TYPE = Constants.DURATION_TYPE;
-  DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
   private uid: string = "";
   private settings: any[] = [];
   private saved: boolean = false;
@@ -30,8 +28,11 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   private preparednessFreq: Frequency = new Frequency({value: -1, type: -1});
   private responsePlansFreq: Frequency = new Frequency({value: -1, type: -1});
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  DURATION_TYPE = Constants.DURATION_TYPE;
+  DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
   private durationMap = new Map();
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
     let durationsListW = [
@@ -145,6 +146,10 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
     this.alertMessage = "";
   }
 
+  convertToNumber(value):number {
+    return Number(value);
+  }
+
   private updateCountriesClockSettings() {
     this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid)
       .takeUntil(this.ngUnsubscribe)
@@ -187,10 +192,5 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
         });
       });
   }
-
-  convertToNumber(value):number {
-    return Number(value);
-  }
-
 
 }

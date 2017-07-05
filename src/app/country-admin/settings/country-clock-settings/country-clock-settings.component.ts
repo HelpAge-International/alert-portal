@@ -6,7 +6,7 @@ import {SettingsService} from "../../../services/settings.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {DisplayError} from "../../../errors/display.error";
 import {ClockSettingsModel} from "../../../model/clock-settings.model";
-import {AlertMessageType} from "../../../utils/Enums";
+import {AlertMessageType, DurationType} from "../../../utils/Enums";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
@@ -23,7 +23,8 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
 
   DURATION_TYPE = Constants.DURATION_TYPE;
   DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
-  private durations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  private durationMap = new Map();
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -36,6 +37,25 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
               private _settingsService: SettingsService,
               private router: Router,
               private route: ActivatedRoute) {
+    let durationsListW = [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+      11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+      21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+      31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+      41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+      51];
+
+    let durationsListM = [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+      11];
+
+    let durationsListY = [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    ];
+
+    this.durationMap.set(DurationType.Week, durationsListW);
+    this.durationMap.set(DurationType.Month, durationsListM);
+    this.durationMap.set(DurationType.Year, durationsListY);
   }
 
   ngOnInit() {
@@ -84,6 +104,10 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
           this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
         }
       });
+  }
+
+  convertToNumber(value):number {
+    return Number(value);
   }
 
   goBack() {
