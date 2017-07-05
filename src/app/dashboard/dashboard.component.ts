@@ -63,6 +63,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private responsePlansForApproval: Observable<any[]>;
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
+  private redAlerts: Observable<any[]>;
 
   private userPaths = Constants.USER_PATHS;
 
@@ -259,11 +260,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.DashboardTypeUsed == DashboardType.default) {
       console.log(this.countryId);
       this.alerts = this.actionService.getAlerts(this.countryId);
+
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
       this.amberAlerts = this.actionService.getAlerts(this.countryId)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
+        });
+      this.redAlerts = this.actionService.getRedAlerts(this.countryId)
+        .map(alerts => {
+         return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
     }
   }
