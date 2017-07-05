@@ -445,7 +445,7 @@
         *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0">
 
         <div *ngFor="let action of actionsToday">
-          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row alert-danger">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row">
             <div class="col-md-1">
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
@@ -454,22 +454,22 @@
                 <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a>
             </div>
             <div class="col-md-3">
-              <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
                 translate}}
-              </button>
+              </a>
             </div>
           </div>
         </div>
 
         <div *ngFor="let indicator of indicatorsToday">
-          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row alert-danger">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
             <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
             </div>
             <div class="col-md-3">
-              <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
                 translate}}
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -483,7 +483,7 @@
               )</strong>.<span>{{action.task}}</span></a>
             </div>
             <div class="col-md-3">
-              <a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
                 translate}}</a>
             </div>
           </div>

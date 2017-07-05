@@ -1544,13 +1544,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
+        tempList.push(this.uid);
         list.forEach(x => {
-          tempList.push(x)
+          tempList.push(x.$key)
         });
         return Observable.from(tempList)
       })
       .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
       })
       .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()
