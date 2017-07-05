@@ -129,7 +129,7 @@
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Inactive)">
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
           <div *ngIf="!action.isArchived && !action.isRedAlertActive(hazardRedAlert)">
@@ -356,7 +356,7 @@
         <!-- FILTERING IF STATEMENT -->
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
@@ -847,7 +847,7 @@
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned || (action.asignee == '' && filterAssigned == '-1')) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="action.isArchived">

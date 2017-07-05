@@ -51,7 +51,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
-  private filterAssigned: string = this.uid;
+  private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
 
   // Data for the actions
@@ -139,7 +139,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
           this.userType = userType;
-          this.filterAssigned = this.uid;
+          this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
           this.getStaffDetails(this.uid);
 

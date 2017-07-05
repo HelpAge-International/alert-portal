@@ -1587,7 +1587,7 @@
     "PREPAREDNESS": {
         "ASSIGN_TO": "Assign to",
         "ADD_A_DEPARTMENT": "+ Add a department",
-        "TITLE_TEXT_CREATE_PAGE": "Create new mandated preparedness action",
+        "TITLE_TEXT_CREATE_PAGE": "Create new custom action",
         "TITLE_TEXT_EDIT_PAGE": "Edit preparedness action",
         "BACK_BUTTON": "Preparedness actions",
         "TASK": "What needs to be done?",
