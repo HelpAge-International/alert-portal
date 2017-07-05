@@ -9,6 +9,9 @@ import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
+import { MessageModel } from "../model/message.model";
+import { TranslateService } from "@ngx-translate/core";
+import { NotificationService } from "../services/notification.service";
 declare const jQuery: any;
 
 @Component({
@@ -47,7 +50,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private service: ResponsePlanService,
+              private userService: UserService,
+              private notificationService: NotificationService,
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -232,7 +242,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           if (director && director.$value) {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
-          } else {
+
+            // Send notification to country director
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => { }); 
+          
+        } else {
             this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
@@ -258,7 +276,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
           } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
             console.log("regional enabled");
-            this.updateWithRegionalApproval(countryId, approvalData);
+            this.updateWithRegionalApproval(agencyId, countryId, approvalData);
           } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
             console.log("global enabled")
           } else {
@@ -284,13 +302,20 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateWithRegionalApproval(countryId: string, approvalData: {}) {
+  private updateWithRegionalApproval(agencyId: string, countryId: string, approvalData: {}) {
 
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(id => {
         if (id && id.$value && id.$value != "null") {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
+
+          // Send notification to regional director
+          let notification = new MessageModel();
+          notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+          notification.time = new Date().getTime();
+          this.notificationService.saveUserNotification(id.$value, notification, UserType.RegionalDirector, agencyId, countryId).then(() => { }); 
         }
         this.updatePartnerValidation(countryId, approvalData);
       });
@@ -307,8 +332,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
+          // Send notification to global director
+          let notification = new MessageModel();
+          notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+          notification.time = new Date().getTime();
+          this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => { }); 
         }
-        this.updateWithRegionalApproval(countryId, approvalData);
+        this.updateWithRegionalApproval(agencyId, countryId, approvalData);
       });
   }
 

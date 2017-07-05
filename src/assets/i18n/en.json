@@ -1854,7 +1854,9 @@
             "ASSIGNED_MPA_ACTION_TITLE": "A minimum preparedness action has been assigned to you",
             "ASSIGNED_MPA_ACTION_CONTENT": "The following minimum preparedness action: {{actionName}} has been assigned to you",
             "ASSIGNED_APA_ACTION_TITLE": "An advanced preparedness action has been assigned to you",
-            "ASSIGNED_APA_ACTION_CONTENT": "The following advanced preparedness action: {{actionName}} has been assigned to you"
+            "ASSIGNED_APA_ACTION_CONTENT": "The following advanced preparedness action: {{actionName}} has been assigned to you",
+            "RESPONSE_PLAN_APPROVAL_TITLE": "A response plan has been submitted for approval",
+            "RESPONSE_PLAN_APPROVAL_CONTENT": "The following response plan: {{responsePlan}} has been submitted for approval"
         }
      }
 }

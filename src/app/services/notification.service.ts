@@ -25,7 +25,6 @@ export class NotificationService {
 
     return notificationSettingsSubscription;
   }
-
   
   getAgencyNotifications(agencyId, unreadOnly = false): Observable<MessageModel[]>{
     return this.getNotifications("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId, unreadOnly);
