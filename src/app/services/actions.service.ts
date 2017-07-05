@@ -16,8 +16,10 @@ import {Router} from "@angular/router";
 export class ActionsService {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private areaContent: any;
 
-  constructor(private af: AngularFire, private userService: UserService, private jsonService: CommonService, private router: Router) {
+  constructor(private af: AngularFire, private userService: UserService, private jsonService: CommonService, private router: Router, private commonService: CommonService) {
+    this.getAreaValues();
   }
 
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
@@ -31,9 +33,9 @@ export class ActionsService {
         let filteredActions = [];
         actions.forEach(action => {
           // TODO - Change to 'assignee' in db
-            if (action.asignee === uid) {
-              filteredActions.push(action);
-            }
+          if (action.asignee === uid) {
+            filteredActions.push(action);
+          }
         });
         return filteredActions;
       })
@@ -280,6 +282,15 @@ export class ActionsService {
           });
           alert.affectedAreasDisplay = displayArea;
         });
+      });
+  }
+
+  private getAreaValues() {
+    // get the country levels values
+    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(content => {
+        this.areaContent = content;
       });
   }
 

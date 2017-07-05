@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType} from "../../../utils/Enums";
+import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
@@ -24,6 +24,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private tSkillsFilter: any = 0;
   private sSkillsFilter: any = 0;
   private officeFilter: any = 0;
+  private USER_TYPE = UserType;
 
   private responseStaffs: any[];
   private responseStaffsOrigin: any[];
@@ -140,8 +141,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
-            console.log("permission matrix");
-            console.log(this.countryPermissionsMatrix);
           }));
         });
 

@@ -2,10 +2,10 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors} from "../../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
@@ -19,6 +19,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
+  private USER_TYPE = UserType;
 
   private isViewing: boolean;
   private UserType: number;
@@ -52,6 +53,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.campManagement
   ];
 
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private router: Router,
@@ -78,18 +81,25 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
         }
-      });
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.UserType = userType;
-      if (this.isViewing) {
-        this._getProgramme();
-      } else {
-        this._getCountryID().then(() => {
-          this._getProgramme();
+
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          if (this.isViewing) {
+            this._getProgramme();
+          } else {
+            this._getCountryID().then(() => {
+              this._getProgramme();
+            });
+          }
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
+
         });
-      }
-    });
+      });
+
   }
 
   saveNote(programmeID: any) {
@@ -243,7 +253,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       this.TmpSectorExpertise[sectorID] = true;
     } else {
       if (this.TmpSectorExpertise && this.TmpSectorExpertise.length > 0) {
-
         this.TmpSectorExpertise.forEach((val, key) => {
           if (key == sectorID) {
             delete this.TmpSectorExpertise[sectorID];

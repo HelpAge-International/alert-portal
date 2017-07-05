@@ -20,6 +20,9 @@ import { MessageModel } from "../../model/message.model";
 
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
+  private UserType = UserType;
+  private userType: UserType;
+
   private alertLevel: AlertLevels;
   private alertTitle: string;
 
@@ -70,6 +73,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           this.userService.getUserType(this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(userType => {
+              this.userType = userType;
               this.USER_TYPE = Constants.USER_PATHS[userType];
               //after user type check, start to do the job
               if (this.USER_TYPE) {
