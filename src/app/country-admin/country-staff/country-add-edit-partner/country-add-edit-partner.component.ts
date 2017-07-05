@@ -128,7 +128,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-      this._userService.savePartnerUser(this.partner, this.userPublic)
+      this._userService.savePartnerUser(this.agencyId, this.countryId, this.partner, this.userPublic)
             .then(user => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
               setTimeout(() => this.router.navigateByUrl('/country-admin/country-staff'), Constants.ALERT_REDIRECT_DURATION);

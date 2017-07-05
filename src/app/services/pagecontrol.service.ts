@@ -194,6 +194,9 @@ export class PageControlService {
     "response-plans*",
     "country-admin*"
   ]);
+  public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
+    "dashboard*"
+  ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*"
   ]);
@@ -286,6 +289,7 @@ export class PageControlService {
       this.pageControlMap.set(UserType.CountryUser, PageControlService.CountryUser);
       this.pageControlMap.set(UserType.AgencyAdmin, PageControlService.AgencyAdmin);
       this.pageControlMap.set(UserType.SystemAdmin, PageControlService.SystemAdmin);
+      this.pageControlMap.set(UserType.PartnerUser, PageControlService.PartnerUser);
     }
     return this.pageControlMap;
   }

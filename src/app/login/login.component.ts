@@ -1,11 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
-import {NetworkComponent} from "../agency-admin/settings/network/network.component";
 import {until} from "selenium-webdriver";
 import elementIsNotSelected = until.elementIsNotSelected;
 
@@ -172,6 +171,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginChecking(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginChecking(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginChecking(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+    this.loginChecking(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME);
     this.loginCheckingDeactivated(successUid, "ertLeader",
       Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
       () => {

@@ -215,14 +215,14 @@ export class UserService {
     return partnerUsersSubscription;
   }
 
-  savePartnerUser(partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
+  savePartnerUser(agencyId: string, countryId: string, partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
     let uid = partner.id || userPublic.id;
 
     if (!uid) {
       return this.createNewFirebaseUser(userPublic.email, Constants.TEMP_PASSWORD)
         .then(newUser => {
           partner.id = newUser.uid;
-          return this.savePartnerUser(partner, userPublic);
+          return this.savePartnerUser(agencyId, countryId, partner, userPublic);
         })
         .catch(err => {
           return Promise.reject('FIREBASE.' + (err as firebase.FirebaseError).code);
@@ -238,7 +238,7 @@ export class UserService {
             partner.id = null; // force new user creation
             userPublic.id = null;
 
-            return this.savePartnerUser(partner, userPublic).then(delUser => {
+            return this.savePartnerUser(agencyId, countryId, partner, userPublic).then(delUser => {
               return this.deletePartnerUser(oldPartner);
             })
               .catch(err => {
@@ -253,11 +253,19 @@ export class UserService {
         if (oldPartner.partnerOrganisationId !== partner.partnerOrganisationId
           && !partnerData.hasOwnProperty('/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id)) {
           partnerData['/partnerOrganisation/' + oldPartner.partnerOrganisationId + '/partners/' + partner.id] = null;
-          return this.savePartnerUser(partner, userPublic, partnerData);
+          return this.savePartnerUser(agencyId, countryId, partner, userPublic, partnerData);
         }
       });
 
       partner.modifiedAt = Date.now();
+
+      //add partnerUser group node
+      let partnerUser = {};
+      let agencyAdmin = {};
+      agencyAdmin[agencyId] = true;
+      partnerUser['agencyAdmin'] = agencyAdmin;
+      partnerUser['countryId'] = countryId;
+      partnerData['/partnerUser/' + uid + '/'] = partnerUser;
 
       partnerData['/userPublic/' + uid + '/'] = userPublic; // Add the public user profile
       partnerData['/partner/' + uid + '/'] = partner; // Add the partner profile
@@ -281,6 +289,7 @@ export class UserService {
 
     return this.af.database.object(Constants.APP_STATUS).update(partnerData);
   }
+
   // STAFF MEMBER
 
   getStaffList(countryId: string): Observable<ModelStaff[]> {
@@ -322,6 +331,7 @@ export class UserService {
     return staffSubscription;
 
   }
+
   /**
    * Static method for getting the user type
    */
@@ -357,6 +367,7 @@ export class UserService {
         }
       });
   }
+
   private static recursiveUserMap(af: AngularFire, paths, index: number) {
     if (index == paths.length) {
       return Observable.of(null);
