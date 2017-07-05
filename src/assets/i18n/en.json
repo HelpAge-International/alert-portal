@@ -1859,7 +1859,9 @@
             "ASSIGNED_APA_ACTION_TITLE": "An advanced preparedness action has been assigned to you",
             "ASSIGNED_APA_ACTION_CONTENT": "The following advanced preparedness action: {{actionName}} has been assigned to you",
             "RESPONSE_PLAN_APPROVAL_TITLE": "A response plan has been submitted for approval",
-            "RESPONSE_PLAN_APPROVAL_CONTENT": "The following response plan: {{responsePlan}} has been submitted for approval"
+            "RESPONSE_PLAN_APPROVAL_CONTENT": "The following response plan: {{responsePlan}} has been submitted for approval",
+            "RED_ALERT_REQUESTED_TITLE": "A red alert level has been requested for {{riskName}}",
+            "RED_ALERT_REQUESTED_CONTENT": "A red alert has been requested for he following alert: {{riskName}}"
         }
      }
 }

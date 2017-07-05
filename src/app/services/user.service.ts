@@ -304,6 +304,27 @@ export class UserService {
     return staffListSubscription;
   }
 
+  getGlobalStaffList(agencyId: string): Observable<ModelStaff[]> {
+    if (!agencyId) {
+      return;
+    }
+
+    const globalStaffListSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/globalUser/' + agencyId)
+      .map(items => {
+        let staffList: ModelStaff[] = [];
+        items.forEach(item => {
+
+          let staff = new ModelStaff();
+          staff.mapFromObject(item);
+          staff.id = item.$key;
+          staffList.push(staff);
+        });
+        return staffList;
+      });
+
+    return globalStaffListSubscription;
+  }
+
   getStaff(countryId: string, staffId: string): Observable<ModelStaff> {
     if (!countryId || !staffId) {
       return;

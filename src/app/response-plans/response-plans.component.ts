@@ -334,11 +334,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
+          
           // Send notification to global director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
           notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
           notification.time = new Date().getTime();
+          
           this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => { });
         }
         this.updatePartnerValidation(countryId, approvalData);

@@ -11,6 +11,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { NotificationService } from "../../services/notification.service";
+import { MessageModel } from "../../model/message.model";
 
 @Component({
   selector: 'app-create-alert',
@@ -27,6 +29,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   public uid: string;
   private countryID: string;
+  private agencyId: string;
   private directorCountryID: string;
   private alertData: any;
 
@@ -100,7 +103,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private hazards: any[] = [];
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private _commonService: CommonService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private _commonService: CommonService,
+              private translate: TranslateService,
+              private userService: UserService,
+              private notificationService: NotificationService) {
     this.initAlertData();
   }
 
@@ -123,6 +133,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this.UserType = userType;
 
       this._getCountryID().then(() => {
+        this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
         this._getHazards();
         this._getDirectorCountryID();
       });
@@ -162,6 +173,21 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
           .then(() => {
+
+            if(dataToSave.alertLevel == 2)
+            {
+              // Send notification to users with Red alert notification
+              const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[dataToSave.hazardScenario]);
+              
+              let notification = new MessageModel();
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", { riskName: riskNameTranslated});
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", { riskName: riskNameTranslated});
+              notification.time = new Date().getTime();
+              
+              const redAlertNotificationSetting = 5;
+              this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, redAlertNotificationSetting, this.agencyId, this.countryID);
+            }
+            
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
             this.initAlertData();
           }).catch((error: any) => {
