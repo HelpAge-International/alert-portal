@@ -11,7 +11,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'angular-2-local-storage';
 import * as firebase from 'firebase';
 import {UserService} from "../../services/user.service";
-import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -88,6 +88,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   // Module permissions settings
   private modulesAreEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   protected prepActionService: PrepActionService = new PrepActionService();
 
   constructor(protected pageControl: PageControlService,
@@ -137,6 +138,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
           this.getStaffDetails(this.uid);
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+            this.permissionsAreEnabled = isEnabled;
+          });
 
           //overview
           if (this.agencyId && this.countryId && this.systemAdminId) {
