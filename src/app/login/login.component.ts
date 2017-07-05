@@ -227,7 +227,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           return this.af.database.object(Constants.APP_STATUS + "/agency/" + x, {preserveSnapshot: true})
             .map((snap) => {
               if (snap.val() != null) {
-                return snap.val().adminId;
+                return snap.key;
               }
               else {
                 this.showAlert(true, "LOGIN.AGENCY_DOESNT_EXIST");
