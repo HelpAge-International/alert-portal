@@ -260,10 +260,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             console.log("regional enabled");
             this.updateWithRegionalApproval(countryId, approvalData);
           } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-            console.log("global enabled")
+            console.log("global enabled");
+            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
           } else {
             console.log("both directors enabled");
-            this.updateWithBothApproval(this.agencyId, countryId, approvalData);
+            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+            this.updateWithRegionalApproval(countryId, approvalData);
           }
         });
     }
@@ -296,7 +298,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
   }
 
-  private updateWithBothApproval(agencyId: string, countryId: string, approvalData: {}) {
+  private updateWithGlobalApproval(agencyId: string, countryId: string, approvalData: {}) {
     this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
       query: {
         orderByChild: "agencyAdmin/" + agencyId,
@@ -305,10 +307,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     })
       .first()
       .subscribe(globalDirector => {
+        console.log('globalDirector')
+        console.log(globalDirector)
         if (globalDirector.length > 0 && globalDirector[0].$key) {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
         }
-        this.updateWithRegionalApproval(countryId, approvalData);
+        this.updatePartnerValidation(countryId, approvalData);
       });
   }
 

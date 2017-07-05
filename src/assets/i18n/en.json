@@ -628,6 +628,7 @@
         "SETTING": {
             "SETTING_SAVED": "Settings successfully saved!",
             "TITLE": "System Settings",
+            "ADD_A_NEW_DEPARTMENT": "Add a new department",
             "MIN": "Minimum preparedness threshold",
             "ADV": "Advanced preparedness threshold",
             "GREEN": "Green",

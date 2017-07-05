@@ -56,7 +56,7 @@
 
       <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
         <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[departmentName]}">
-          <input type="text" class="form-control" placeholder="Add a new department" [(ngModel)]="departmentName"
+          <input type="text" class="form-control" placeholder="{{'SYSTEM_ADMIN.SETTING.ADD_A_NEW_DEPARTMENT' | translate}}" [(ngModel)]="departmentName"
                  required>
         </div>
         <div class="col-md-8 col-4">

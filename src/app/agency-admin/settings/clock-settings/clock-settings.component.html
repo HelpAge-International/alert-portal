@@ -19,11 +19,14 @@
 	        <div class="row">
               <div class="col-lg-2 col-md-3">
 				<select class="form-control" id="riskMonitorShowLogForFreq.value" [(ngModel)]="riskMonitorShowLogForFreq.value" name="riskMonitorShowLogForFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+					<option *ngFor="let duration of durationMap.get(0)" [value]="duration">{{duration}}</option>
 				</select>
 	          </div>
               <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorShowLogForFreq.type" [(ngModel)]="riskMonitorShowLogForFreq.type" name="riskMonitorShowLogForFreq.type" required>
+				<select class="form-control" id="riskMonitorShowLogForFreq.type"
+                [(ngModel)]="riskMonitorShowLogForFreq.type"
+                name="riskMonitorShowLogForFreq.type"
+                (change)="setupDropDownValues(riskMonitorShowLogForFreq.type, riskMonitorDurations)" required>
 					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
 				</select>
 	          </div>
@@ -34,7 +37,7 @@
 	      <div class="row">
 	          <div class="col-lg-2 col-md-3">
 				<select class="form-control" id="riskMonitorHazardFreq.value" [(ngModel)]="riskMonitorHazardFreq.value" name="riskMonitorHazardFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+					<option *ngFor="let duration of riskMonitorHazardsDurations" [value]="duration">{{duration}}</option>
 				</select>
 	          </div>
               <div class="col-lg-2 col-md-3">
@@ -50,7 +53,7 @@
 	      <div class="row">
 	          <div class="col-lg-2 col-md-3">
 				<select class="form-control" id="preparednessFreq.value" [(ngModel)]="preparednessFreq.value" name="preparednessFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+					<option *ngFor="let duration of preparednessDurations" [value]="duration">{{duration}}</option>
 				</select>
 	          </div>
 	          <div class="col-lg-2 col-md-3">
@@ -66,7 +69,7 @@
 	      <div class="row">
 	          <div class="col-lg-2 col-md-3">
 				<select class="form-control" id="responsePlansFreq.value" [(ngModel)]="responsePlansFreq.value" name="responsePlansFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
+					<option *ngFor="let duration of responsePlansDurations" [value]="duration">{{duration}}</option>
 				</select>
 	          </div>
               <div class="col-lg-2 col-md-3">
