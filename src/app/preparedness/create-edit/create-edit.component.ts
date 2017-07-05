@@ -2,7 +2,10 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {ActionLevel, AlertMessageType, DurationType, HazardCategory} from "../../utils/Enums";
+import {
+  ActionLevel, ActionType, AlertMessageType, DurationType, HazardCategory,
+  HazardScenario, UserType
+} from "../../utils/Enums";
 import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -11,6 +14,10 @@ import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontr
 import {Observable, Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import {Location} from "@angular/common";
+import {PrepActionService, PreparednessUser} from "../../services/prepactions.service";
+import {ModelDepartment} from "../../model/department.model";
+import {UserService} from "../../services/user.service";
+import {ModelHazard} from "../../model/hazard.model";
 import {NotificationService} from "../../services/notification.service";
 import { TranslateService } from "@ngx-translate/core";
 import { MessageModel } from "../../model/message.model";
@@ -22,72 +29,68 @@ declare var jQuery: any;
   styleUrls: ['./create-edit.component.css']
 })
 export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
-  private disableAll: boolean;
-  private UserType: number;
-  private hazardSelectionMap = new Map<number, boolean>();
-  private requireDoc: boolean;
 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
   private uid: string;
+  private userType: UserType;
+  private userTypes = UserType;
+  private agencyId: string;
+  private countryId: string;
 
-  private actionID: string;
-  private modalID: string;
-  private departmentsPath: string;
-  private departments: Observable<any>;
+  private action: CreateEditPrepActionHolder = new CreateEditPrepActionHolder();
+  private editDisableLoading: boolean = false;
+  private alerts = {};
+  private errorMessage: string = "";
 
   private actionSelected: any = {};
   private copyActionData: any = {};
 
-  private countryID: string;
-  private agencyID: string;
-  private actionData: Action;
-  private dueDate: any;
+  private ASSIGNED_TOO: PreparednessUser[] = [];
+  private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
+  private currentlyAssignedToo: PreparednessUser;
 
-  private frequencyDefaultSettings: any = {};
-  private allowedFrequencyValue: any = [];
+  private departments: ModelDepartment[] = [];
 
-  private level: number;
-  private frequencyActive: boolean = false;
-  private usersForAssign: any = [];
-  private frequency = new Array(100);
-
-  private departmentList: any = [];
-  private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
-
+  private actionType = ActionType;
   private actionLevel = Constants.ACTION_LEVEL;
+  private actionLevelEnum = ActionLevel;
   private actionLevelList: number[] = [ActionLevel.MPA, ActionLevel.APA];
 
-  // private hazardCategory = Constants.HAZARD_CATEGORY;
   private hazardCategory = Constants.HAZARD_SCENARIOS;
-  // private hazardCategoryList: number[] = [HazardCategory.Earthquake, HazardCategory.Tsunami, HazardCategory.Drought];
-  private hazardCategoryList = [];
+  private hazards: ModelHazard[] = [];
   private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
+  private frequencyQuantities = [1,2,3,4,5,6,7,8,9,10];
   private durationType = Constants.DURATION_TYPE;
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
-  private allowedDurationList: number[] = [];
+
+  private filterLockTask: boolean = true;
+  private filterLockLevel: boolean = true;
+  private filterLockDepartment: boolean = true;
+  private filterLockDueDate: boolean = true;
+  private filterLockBudget: boolean = true;
+  private filterLockDocument: boolean = true;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private prepActionService: PrepActionService = new PrepActionService();
+
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService,
-                 private _notificationService: NotificationService,
-                 private _translate: TranslateService,
-                 private _location: Location,
-                 private route: ActivatedRoute,
-                 private af: AngularFire,
-                 private router: Router,
-                 private storage: LocalStorageService) {
-    this.actionData = new Action();
-    this.setDefaultActionDataValue();
+  private now: Date = new Date();
+
+  constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
+              private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     /* if selected generic action */
     this.actionSelected = this.storage.get('selectedAction');
     if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
-      this.actionData.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
-      this.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) - 1 : 0;
-      this.actionData.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      this.action.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+      this.action.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) : 0;
+      this.action.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      // TODO: Check if this is being used anywhere else and potentially remove it?
+      // TODO: This causes a bug with going back and forth on the page
       this.storage.remove('selectedAction');
       this.actionSelected = {};
     }
@@ -95,37 +98,50 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     /* if copy action */
     this.copyActionData = this.storage.get('copyActionData');
     if (this.copyActionData && typeof (this.copyActionData) != 'undefined') {
-      this.actionData = this.copyActionData;
-      this.level = this.copyActionData.level + 1;
-      this.dueDate = this._convertTimestampToDate(this.copyActionData.dueDate);
+      this.action = this.copyActionData;
+      this.action.level = this.copyActionData.level;
+      this.action.dueDate = this.copyActionData.dueDate;
+      // TODO: Check if this is being used anywhere else and potentially remove it?
+      // TODO: This causes a bug with going back and forth on the page
       this.storage.remove('copyActionData');
       this.copyActionData = {};
-      this.setDefaultActionDataValue();
     }
-
-    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
-      if (params['id']) {
-        this.actionID = params['id'];
-      }
-    });
-  }
-
-  processSave() {
-    console.log(this.actionData);
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.UserType = userType;
+    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+      if (params['id']) {
+        this.action.id = params['id'];
+        this.editDisableLoading = true;
+      }
+      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.uid = user.uid;
+        this.userType = userType;
 
-      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, user.uid, Constants.USER_PATHS[userType], (isEnabled) => {
-        this.moduleAccess = isEnabled;
-        this.actionData.level = 0;
+        PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, user.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+          this.moduleAccess = isEnabled;
+        });
+
+        if (this.action.id != null) {
+          this.initFromExistingActionId();
+        }
+        this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((countryId) => {
+            this.countryId = countryId;
+            this.getHazards();
+            this.initStaff();
+          });
+        this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((agencyId) => {
+            this.agencyId = agencyId;
+            this.getDepartments();
+          });
+        if (this.userType == UserType.CountryAdmin) {
+          this.getStaffDetails(this.uid);
+        }
       });
-
-      this._defaultHazardCategoryValue();
-      this.processPage();
     });
   }
 
@@ -134,460 +150,402 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  _departmentList() {
-    this.af.database.object(this.departmentsPath).takeUntil(this.ngUnsubscribe).subscribe((departments: any) => {
-      this.departmentList = [];
-      for (let department in departments) {
-        if (department != '$key' && department != '$exists') {
-          this.departmentList.push(department)
+  /**
+   * Initialisation
+   */
+  public initFromExistingActionId() {
+    this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      this.action.id = action.id;
+      this.action.type = action.type;
+      this.action.level = action.level;
+      this.action.task = action.task;
+      this.action.requireDoc = action.requireDoc;
+      this.action.dueDate = action.dueDate;
+      if (action.assignedHazards != null) {
+        for (let x of action.assignedHazards) {
+          this.action.hazards.set((+x), true);
         }
       }
-    });
-  }
-
-  setDefaultActionDataValue() {
-    this.actionData.type = 2;
-    this.actionData.isComplete = false;
-    this.actionData.isActive = true;
-    this.actionData.actionStatus = 1;
-    if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
-      this.actionData.frequencyBase = 0;
-      this.actionData.frequencyValue = 1;
-    }
-  }
-
-  saveAction(isValid: boolean) {
-    if (!isValid || !this._isValidForm()) {
-      return false;
-    }
-    if (!this.actionID) {
-      if (typeof (this.actionData.frequencyBase) == 'undefined' && typeof (this.actionData.frequencyValue) == 'undefined') {
-        this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
-        this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
+      this.action.asignee = action.asignee;
+      this.action.department = action.department;
+      this.action.budget = action.budget;
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isComplete = action.isComplete;
+      this.action.isCompleteAt = action.isCompleteAt;
+      if (action.frequencyValue != null && action.frequencyBase != null) {
+        console.log("Frequency Values are here!");
+        this.action.isFrequencyActive = true;
+        this.action.frequencyType = action.frequencyBase;
+        this.action.frequencyQuantity = action.frequencyValue;
       }
-    }
+      this.action.computedClockSetting = action.computedClockSetting;
+      this.editDisableLoading = false;
 
-    if (typeof (this.actionData.level) == 'undefined') {
-      this.actionData.level = this.level;
-    }
-    if (!this.actionData.level) {
-      this._defaultHazardCategoryValue();
-    }
-    if (!this.frequencyActive) {
-      this.actionData.frequencyBase = this.frequencyDefaultSettings.type;
-      this.actionData.frequencyValue = this.frequencyDefaultSettings.value;
-    }
-
-    //store all selected hazards
-    let selectedHazard = [];
-    if (this.hazardSelectionMap.get(-1)) {
-      for (let i = 0; i < Constants.HAZARD_SCENARIOS.length; i++) {
-        selectedHazard.push(i);
-      }
-    } else {
-      this.hazardSelectionMap.forEach((v, k) => {
-        if (v) {
-          selectedHazard.push(k);
-        }
-      });
-    }
-    this.actionData.assignHazard = selectedHazard;
-    //check at least one selected
-    let oneChecked = false;
-    this.hazardSelectionMap.forEach((v, k) => {
-      if (v) {
-        oneChecked = true;
-      }
-    });
-    if (!oneChecked && this.actionData.level == ActionLevel.APA) {
-      console.log("at least one need to be selected");
-      this.alertMessage = new AlertMessageModel("At least one hazard need to be selected");
-      return;
-    }
-
-    let dataToSave = Object.assign({}, this.actionData);
-    dataToSave.requireDoc = (dataToSave.requireDoc == 1) ? true : false;
-
-
-    if (!this.actionID) {
-      this.af.database.list(Constants.APP_STATUS + '/action/' + this.countryID)
-        .push(dataToSave)
-        .then(() => {
-          console.log('success save data');
-
-          if(dataToSave.asignee)
-          {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            
-            if(dataToSave.level == ActionLevel.MPA)
-            {
-              notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-              notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: dataToSave.task});
-            }else{
-              notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-              notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: dataToSave.task});
-            }
-
-            notification.time = new Date().getTime();
-
-            this._notificationService.saveUserNotificationWithoutDetails(dataToSave.asignee, notification)
-              .subscribe(() => { this.backButtonAction(); });
-          }else{
-            this.backButtonAction();
-          }
-        }).catch((error: any) => {
-        console.log(error, 'You do not have access!')
-      });
-    } else {
-      this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
-        .set(dataToSave)
-        .then(() => {
-          // if(dataToSave.asignee)
-          // {
-          //   // Send notification to the assignee
-          //   let notification = new MessageModel();
-            // if(dataToSave.level == ActionLevel.MPA)
-            // {
-            //   notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-            //   notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: dataToSave.task});
-            // }else{
-            //   notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-            //   notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: dataToSave.task});
-            // }
-          //   notification.time = new Date().getTime();
-
-          //   this._notificationService.saveUserNotificationWithoutDetails(dataToSave.asignee, notification)
-          //     .subscribe(() => { this.backButtonAction(); });
-          // }else{
-            this.backButtonAction();
-          //}
-
-          console.log('success update');
-        }).catch((error: any) => {
-        console.log(error, 'You do not have access!')
-      });
-    }
-  }
-
-  processPage() {
-    this.getCountryID().then(() => {
-      this.getUsersForAssign();
-      this.getAgencyID().then(() => {
-        this._getPreparednessFrequency().then(() => {
-          if (this.actionID) {
-            this.getActionData().then(() => {
-            });
-          }
-          this._parseSelectParams();
-          this._frequencyIsActive();
-
-          //get all monitored hazards
-          this.getAssociatedHazards();
-        });
-      });
+      console.log(action);
+      console.log(this.action);
     });
   }
 
-  private getAssociatedHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(hazards => {
-        console.log(hazards);
-        this.hazardCategoryList = hazards;
-      });
-  }
 
-  selectHazardCategory(hazardKey: number, event: any) {
-    this.hazardSelectionMap.set(hazardKey, event.target.checked);
-    this.anySelected();
-    // var val = event.target.checked ? event.target.checked : false;
-    // this.actionData.assignHazard[hazardKey] = val;
-  }
-
-  selectAllHazard(event: any) {
-    this.hazardSelectionMap.set(-1, event.target.checked);
-    this.anySelected();
-    console.log(this.hazardSelectionMap);
-    // var value = event.target.checked ? event.target.checked : false;
-    // this.actionData.assignHazard.forEach((val, key) => {
-    //   this.actionData.assignHazard[key] = value;
-    // });
-  }
-
-  selectDepartment(event: any) {
-    this.actionData.department = event.target.value;
-    if (event.target.value == '+ Add a department') {
-      this.modalID = 'add_department';
-      jQuery("#" + this.modalID).modal("show");
-    }
+  /**
+   * Selecting the date on the material date picker
+   */
+  public selectDate(date: any) {
+    this.action.dueDate = this.convertDateToTimestamp(date);
+    this.removeFilterLockDueDate();
     return true;
   }
 
-  selectActionLevel(levelKey: number) {
-    if (!this.moduleAccess.minimumPreparedness && levelKey == 1) {
-      // Ignore
-    }
-    else if (!this.moduleAccess.advancedPreparedness && levelKey == 2) {
-      // Ignore
-    }
-    else {
-      this.actionData.level = levelKey;
-    }
-    return true;
-  }
-
-  selectDate(date: any) {
-    var dueDateTimestamp = this._convertDateToTimestamp(date);
-    this.actionData.dueDate = dueDateTimestamp;
-    return true;
-  }
-
-  selectFrequencyBase(event: any) {
-    var frequencyBase = event.target.value;
-    this.actionData.frequencyBase = parseInt(frequencyBase);
-    if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
-      this.frequency = new Array(this.allowedFrequencyValue[frequencyBase]);
-    }
-    return true;
-  }
-
-  selectFrequency(event: any) {
-    this.actionData.frequencyValue = parseInt(event.target.value);
-    return;
-  }
-
-  selectAssignUser(event: any) {
-    var selectedUser = event.target.value ? event.target.value : "";
-    if (!selectedUser) {
-      delete this.actionData.asignee;
-      return true;
-    }
-    this.actionData.asignee = event.target.value;
-    return true;
-  }
-
-  checkTypeOf(departmentKey: any) {
-    if (typeof (departmentKey) == 'undefined') {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  getUsersForAssign() {
-    /* TODO if user ERT OR Partner, assign only me */
-    this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((data: any) => {
-        console.log("***")
-        console.log(data);
-        for (let userID in data) {
-          if (userID.indexOf("$") < 0) {
-            this.addUsersToAssign(userID);
-          }
-        }
-      });
-    this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((data) => {
-        let cId = data.val().countryId;
-        let aId = "";
-        for (let x in data.val().agencyAdmin) {
-          aId = x;
-        }
-        this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + aId + "/" + cId, {preserveSnapshot: true})
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((snap) => {
-            this.addUsersToAssign(snap.val().adminId);
-          })
-      });
-  }
-
-  addUsersToAssign(userID: string) {
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID)
-      .subscribe((data: ModelUserPublic) => {
-        let skip = false;
-        for (let x of this.usersForAssign) {
-          if (x.userID == userID) {
-            x.firstName = data.firstName;
-            x.lastName = data.lastName;
-            skip = true;
-          }
-        }
-        if (!skip) {
-          let userToPush = {userID: userID, firstName: data.firstName, lastName: data.lastName};
-          this.usersForAssign.push(userToPush);
-        }
-      });
-  }
-
-  frequencyIsActive(event: any) {
-    this.frequencyActive = event.target.checked;
-    return true;
-  }
-
-  getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
-        console.log("country id: " + this.countryID);
-        res(true);
-      });
-    });
-    return promise;
-  }
-
-  getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin').takeUntil(this.ngUnsubscribe).subscribe((agencyIDs: any) => {
-        this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-        this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments/';
-        this._departmentList();
-        res(true);
-      });
-    });
-    return promise;
-  }
-
-  copyAction() {
-    /* added route for create action page */
-    this.storage.set('copyActionData', this.actionData);
-    this.router.navigate(["/preparedness/create-edit-preparedness"]);
-    this.closeModal();
-  }
-
-  archiveAction() {
-
-    this.closeModal();
-    this.actionData.isActive = false;
-    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID)
-      .update({isActive: false})
-      .then(() => {
-        this._location.back();
-      }).catch((error: any) => {
-      console.log(error, 'You do not have access!')
-    });
-  }
-
-  getActionData() {
-    let promise = new Promise((res, rej) => {
-
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryID + '/' + this.actionID).takeUntil(this.ngUnsubscribe).subscribe((action: Action) => {
-        this.actionData = action;
-        this.actionData.requireDoc = action.requireDoc ? 1 : 2;
-        this.level = action.level;
-        this.dueDate = this._convertTimestampToDate(action.dueDate);
-        res(true);
-      });
-    });
-    return promise;
-  }
-
-  showActionConfirm(modalID: string) {
-    this.modalID = modalID;
-    jQuery("#" + this.modalID).modal("show");
-  }
-
-  deleteAction() {
-    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + this.actionID).remove();
-    this.closeModal();
-    this._location.back();
-    // this.router.navigate(['/preparedness/minimum']);
-  }
-
-  closeModal() {
-    jQuery("#" + this.modalID).modal("hide");
-  }
-
-  backButtonAction() {
-    /* TODO get last route and implemented this functionality */
-    this._location.back();
-  }
-
-  _parseSelectParams() {
-    this.allowedFrequencyValue = [];
-    if (!jQuery.isEmptyObject(this.frequencyDefaultSettings)) {
-      let multipliers: any = [[1, 1 / 4.4, 1 / 52.1], [4.4, 1, 1 / 12], [52.1, 12, 1]];
-      multipliers[this.frequencyDefaultSettings.type].forEach((val, key) => {
-        var result = Math.trunc(val * this.frequencyDefaultSettings.value);
-        if (result) {
-          this.allowedDurationList.push(this.durationTypeList[key]);
-          this.allowedFrequencyValue.push(Math.min(100, result));
-        }
-      });
-      var frequencyBaseKey = this.actionID ? this.actionData.frequencyBase : 0;
-      this.frequency = new Array(this.allowedFrequencyValue[frequencyBaseKey]);
-    } else {
-      this.allowedDurationList = this.durationTypeList;
-    }
-  }
-
-  _getPreparednessFrequency() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + '/' + this.countryID + '/clockSettings/preparedness').takeUntil(this.ngUnsubscribe).subscribe((frequencySetting: any) => {
-        if (typeof (frequencySetting.durationType) != 'undefined' && typeof (frequencySetting.value) != 'undefined') {
-          this.frequencyDefaultSettings.type = frequencySetting.durationType;
-          this.frequencyDefaultSettings.value = frequencySetting.value;
-        }
-        res(true);
-      });
-    });
-    return promise;
-  }
-
-  _convertDateToTimestamp(date: any) {
+  private convertDateToTimestamp(date: any) {
     return date.getTime();
   }
 
-  _convertTimestampToDate(timestamp: number) {
+  private convertTimestampToDate(timestamp: number) {
     return new Date(timestamp);
   }
 
-  _defaultHazardCategoryValue() {
-    this.actionData.assignHazard = [];
-    var countHazardCategory = this.hazardCategoryList.length;
-    for (var i = 0; i < countHazardCategory; i++) {
-      this.actionData.assignHazard.push(false);
+  /**
+   * Initialising departments
+   */
+  private getDepartments() {
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+        });
+      });
+  }
+
+  /**
+   * Initialising hazards
+   */
+  private getHazards() {
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.hazards = [];
+        snap.forEach((snapshot) => {
+          let x: ModelHazard = new ModelHazard();
+          x.id = snapshot.key;
+          x.category = snapshot.val().category;
+          x.hazardScenario = snapshot.val().hazardScenario;
+          x.isSeasonal = snapshot.val().isSeasonal;
+          this.hazards.push(x);
+        });
+      });
+  }
+
+  /**
+   * Initialising Staff
+   */
+  private initStaff() {
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          this.getStaffDetails(snapshot.key);
+        });
+      });
+  }
+
+  /**
+   * Get staff member public user data (names, etc.)
+   */
+  public getStaffDetails(uid: string) {
+    if (!this.CURRENT_USERS.get(uid)) {
+      this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          let prepUser: PreparednessUser = new PreparednessUser(uid, this.uid == uid);
+          prepUser.firstName = snap.firstName;
+          prepUser.lastName = snap.lastName;
+          this.CURRENT_USERS.set(uid, prepUser);
+          this.updateUser(prepUser);
+        });
+    }
+  }
+  /**
+   * Update method for the user. This will check if it already exists, so as to not cause duplicates in the list
+   */
+  public updateUser(user: PreparednessUser) {
+    let ran: boolean = false;
+    for (let x of this.ASSIGNED_TOO) {
+      if (x.id == user.id) {
+        x = user;
+        ran = true;
+      }
+      x.isMe = (x.id == this.uid);
+    }
+    if (!ran) {
+      user.isMe = (user.id == this.uid);
+      this.ASSIGNED_TOO.push(user);
     }
   }
 
-  _isValidForm() {
-    if (typeof (this.actionData.department) == 'undefined') {
-      return false;
-    }
-    if (typeof (this.actionData.dueDate) == 'undefined') {
-      return false;
-    }
-    return true;
-  }
 
-  _frequencyIsActive() {
-    if (this.actionID || this.copyActionData) {
-      if (this.frequencyDefaultSettings.type != this.actionData.frequencyBase && this.frequencyDefaultSettings.value != this.actionData.frequencyValue) {
-        this.frequencyActive = true;
+  /**
+   * Creating / updating the action
+   */
+  public createOrUpdateAction() {
+    // Remove all the filter locks.
+    this.removeFilterLockTask();
+    this.removeFilterLockDueDate();
+    this.removeFilterLockDepartment();
+    this.removeFilterLockLevel();
+    this.removeFilterLockBudget();
+    this.removeFilterLockDoc();
+
+    // Save/update the action
+    if (this.action.validate()) {
+      let updateObj: any = {};
+      updateObj.dueDate = this.action.dueDate;
+      updateObj.requireDoc = this.action.requireDoc;
+      updateObj.type = this.action.type;
+      updateObj.budget = this.action.budget;
+      if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
+        updateObj.asignee = this.action.asignee;
+      }
+      else {
+        updateObj.asignee = null;
+      }
+      if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
+        updateObj.assignHazard = [];
+        this.action.hazards.forEach((value, key) => {
+          if (value) {
+            updateObj.assignHazard.push(key);
+          }
+        });
+      }
+      if (this.action.isFrequencyActive) {
+        updateObj.frequencyBase = this.action.frequencyType;
+        updateObj.frequencyValue = this.action.frequencyQuantity
+      }
+      else {
+        updateObj.frequencyBase = null;
+        updateObj.frequencyValue = null;
+      }
+      if (this.action.type != ActionType.mandated) {
+        updateObj.department = this.action.department;
+      }
+      if (this.action.type == ActionType.custom) {
+        updateObj.task = this.action.task;
+        updateObj.level = this.action.level;
+      }
+      updateObj.updatedAt = new Date().getTime();
+
+      if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
+        console.log("Removing complete status!");
+        updateObj.isCompleteAt = null;
+        updateObj.isComplete = null;
+      }
+
+      if (this.action.id != null) {
+        // Updating
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+          if (this.action.level == ActionLevel.MPA) {
+            this.router.navigateByUrl("/preparedness/minimum");
+          }
+          else {
+            this.router.navigateByUrl("/preparedness/advanced");
+          }
+        })
+      }
+      else {
+        // Saving
+        updateObj.createdAt = new Date().getTime();
+        this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
+          if (this.action.level == ActionLevel.MPA) {
+            this.router.navigateByUrl("/preparedness/minimum");
+          }
+          else {
+            this.router.navigateByUrl("/preparedness/advanced");
+          }
+        });
       }
     }
   }
 
-  _getHazardImage(key) {
+  public getNow() {
+    return this.now.getTime();
+  }
+  public getNowDate() {
+    return this.now;
+  }
+
+  /**
+   * Error handling disabled methods for all the inputs
+   */
+  protected removeFilterLockTask() {
+    this.filterLockTask = false;
+  }
+  protected removeFilterLockLevel() {
+    this.filterLockLevel = false;
+  }
+  protected removeFilterLockDepartment() {
+    this.filterLockDepartment = false;
+  }
+  protected removeFilterLockDueDate() {
+    this.filterLockDueDate = false;
+  }
+  protected removeFilterLockBudget() {
+    this.filterLockBudget = false;
+  }
+  protected removeFilterLockDoc() {
+    this.filterLockDocument = false;
+  }
+
+  /**
+   * Update if the "check more often" frequency filter is active
+   */
+  protected updateFrequencyActive() {
+    this.action.isFrequencyActive = !this.action.isFrequencyActive;
+  }
+
+
+  /**
+   * Selecting a hazard in the list of hazards
+   */
+  protected selectHazardCategory(hazardKey: number, event: any) {
+    if (hazardKey == -1) {
+      this.action.hazards = new Map<HazardScenario, boolean>();
+      this.action.isAllHazards = true;
+    }
+    else {
+      this.action.isAllHazards = false;
+      this.action.hazards.set(hazardKey, event.target.checked ? event.target.checked : false);
+      this.action.hazards.forEach((value, key) => {
+        if (value) {
+          this.action.allHazardsEnabled = true;
+        }
+      });
+    }
+
+    console.log(this.action.hazards);
+  }
+
+  protected showActionConfirm(modal: string) {
+    jQuery("#" + modal).modal('show');
+  }
+  protected closeActionCancel(modal: string) {
+    jQuery("#" + modal).modal('hide');
+  }
+
+  /**
+   * Copy an action
+   */
+  public copyAction() {
+
+  }
+
+  /**
+   * Archive an action
+   */
+  public archiveAction() {
+    // Updating
+    let updateObj = {
+      isArchived: true
+    };
+    this.closeActionCancel('archive-action');
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    });
+  }
+
+  /**
+   * Delete an action
+   */
+  public deleteAction() {
+    this.closeActionCancel('delete-action');
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).set(null).then(_ => {
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    });
+  }
+
+
+  /**
+   * Get the hazard image for the list of hazards
+   */
+  public getHazardImage(key) {
     return HazardImages.init().getCSS(key);
   }
 
-  anySelected() {
-    let temp = false;
-    this.hazardSelectionMap.forEach((v, k) => {
-      if (k != -1 && v == true) {
-        this.disableAll = true;
-        temp = true;
-      }
-    });
-    if (!temp) {
-      this.disableAll = false;
-    }
+
+  protected backButtonAction() {
+    this._location.back();
+  }
+}
+
+
+/**
+ * Create Edit Prep Action holder for the create-edit page
+ */
+export class CreateEditPrepActionHolder {
+  public id: string = null;
+  public task: string;
+  public level: number;
+  public budget: number = null;
+  public isAllHazards: boolean;
+  public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+  public dueDate: number;
+  public asignee: string = "";
+  public department: string;
+  public requireDoc: boolean;
+  public type: number;
+
+  public isComplete;
+  public isCompleteAt;
+  public computedClockSetting;
+
+  public frequencyQuantity: number = 1;
+  public frequencyType: number = 0;
+
+  public isFrequencyActive: boolean = false;
+  public allHazardsEnabled: boolean;
+
+  constructor() {
+    this.type = ActionType.custom;
   }
 
-  test() {
-    console.log(this.actionData.requireDoc);
+  public validate() {
+    if (this.task != undefined)
+      this.task = this.task.trim();
+    if (this.task == '' || this.task == undefined || this.task.length == 0) {
+      console.log("Failed task check");
+      return false;
+    }
+    if (this.level != ActionLevel.MPA && this.level != ActionLevel.APA) {
+      console.log("Failed level check");
+      return false;
+    }
+    if (this.dueDate == undefined || this.dueDate == 0) {
+      console.log("Failed dueDate check");
+      return false;
+    }
+    if (this.budget == undefined || this.budget == null) {
+      console.log("Failed budget check");
+      return false;
+    }
+    if (this.requireDoc == undefined) {
+      console.log("Failed requireDoc check");
+      return false;
+    }
+
+    return true;
   }
 }

@@ -15,7 +15,7 @@
         <div class="col-lg-8 col-md-10">
           <div class="form-group" [ngClass]="{'has-danger': alerts[textArea]}">
             <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
-            <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" [(ngModel)]="textArea"></textarea>
+            <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" [disabled]="editInitialDisable" [(ngModel)]="textArea"></textarea>
           </div>
         </div>
       </div>
@@ -25,12 +25,12 @@
           <div class="form-group"><label>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.MPA_OR_APA?" | translate}}</label></div>
 
           <div class="Radio--ribbon">
-            <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
+            <input type="radio" name="Prep-level-mpa" id="Min-prep"  [disabled]="editInitialDisable" [checked]="isMpa" (change)="mpaSelected()">
             <label for="Min-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} </label>
           </div>
 
           <div class="Radio--ribbon">
-            <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
+            <input type="radio" name="Prep-level-apa" id="Adv-prep"  [disabled]="editInitialDisable" [checked]="!isMpa" (change)="apaSelected()">
             <label for="Adv-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} </label>
           </div>
 
@@ -38,7 +38,7 @@
             <div class="col-md-6" [ngClass]="{'has-danger': alerts[categorySelected]}">
               <div class="form-group">
                 <label for="Category">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORY" | translate}}</label>
-                <select class="form-control" id="Category" [(ngModel)]="categorySelected">
+                <select class="form-control" id="Category" [(ngModel)]="categorySelected"  [disabled]="editInitialDisable">
                   <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                   <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
                 </select>

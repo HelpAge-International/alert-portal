@@ -39,15 +39,17 @@
         </div>
         <div class="row">
           <div class="col-sm-6">
+            <label>{{"DASHBOARD.CALENDAR.START_DATE" | translate}}:</label>
             <div class="form-group">
-              <label for="S-date">{{"DASHBOARD.CALENDAR.START_DATE" | translate}}:</label>
-              <input type="date" [ngModel] ="addSeasonStart | date:'yyyy-MM-dd'" (ngModelChange)="addSeasonStart = $event" class="form-control form-control-danger" id="S-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <material-datepicker id="S-date" placeholder="{{addSeasonStart ? (addSeasonStart | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectStartDate(addSeasonStartDate)" [(date)]="addSeasonStartDate"></material-datepicker>
             </div>
           </div>
           <div class="col-sm-6">
+            <label>{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
             <div class="form-group">
-              <label for="E-date">{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
-              <input type="date" [ngModel] ="addSeasonEnd | date:'yyyy-MM-dd'" (ngModelChange)="addSeasonEnd = $event" class="form-control form-control-danger" id="E-date" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <material-datepicker id="E-date" placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)" [(date)]="addSeasonEndDate"></material-datepicker>
             </div>
           </div>
         </div>

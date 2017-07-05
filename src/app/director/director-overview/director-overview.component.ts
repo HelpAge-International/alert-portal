@@ -19,7 +19,7 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
-
+  private AlertStatus = AlertStatus;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private menuTab = "officeProfile";

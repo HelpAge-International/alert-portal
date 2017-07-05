@@ -32,8 +32,8 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   private currentChronolineInstance;
 
   public addSeasonName: string;
-  public addSeasonStart: string;
-  public addSeasonEnd: string;
+  public addSeasonStart: number;
+  public addSeasonEnd: number;
   private seasons: string;
   public addSeasonColour: string;
   private colours: ColourSelector[] = ColourSelector.list();
@@ -41,6 +41,9 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   public edit: boolean = false;
   public editSeasonKey: string;
+
+  public addSeasonEndDate: number;
+  public addSeasonStartDate: number;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
@@ -187,9 +190,12 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
       console.error("End Season Error Handling!");
       return;
     }
-    let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName,
-      DashboardSeasonalCalendarComponent.convertYYYYMMDDToUTC(this.addSeasonStart),
-      DashboardSeasonalCalendarComponent.convertYYYYMMDDToUTC(this.addSeasonEnd));
+    console.log(this.addSeasonStart);
+    console.log(this.addSeasonEnd);
+    console.log(this.addSeasonName);
+    console.log(this.addSeasonColour);
+    let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName, this.addSeasonStart, this.addSeasonEnd);
+    console.log(season);
     this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryId + "/").push(season);
     // Below line wasn't working when I was trying to hide it!
     // jQuery("#add_calendar").modal("hide");
@@ -217,9 +223,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
       console.error("End Season Error Handling!");
       return;
     }
-    let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName,
-      DashboardSeasonalCalendarComponent.convertYYYYMMDDToUTC(this.addSeasonStart),
-      DashboardSeasonalCalendarComponent.convertYYYYMMDDToUTC(this.addSeasonEnd));
+    let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName, this.addSeasonStart, this.addSeasonEnd);
 
     console.log("edit for key " + this.editSeasonKey);
     console.log(season);
@@ -246,10 +250,20 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     return  new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
   }
 
+  public selectStartDate(date) {
+    this.addSeasonStart = +date;
+  }
+
+  public selectEndDate(date) {
+    this.addSeasonEnd = +date;
+  }
+
   private addCalendar() {
     this.addSeasonColour = undefined;
     this.addSeasonEnd = undefined;
     this.addSeasonStart = undefined;
+    this.addSeasonStartDate = undefined;
+    this.addSeasonEndDate = undefined;
     this.addSeasonName = undefined;
     this.edit = false;
     this.editSeasonKey = undefined;
@@ -291,8 +305,8 @@ export class ChronolineEvent {
     event.attrs.stroke = season.colorCode;
     event.click = function() {
       component.addSeasonName = season.name;
-      component.addSeasonStart = DashboardSeasonalCalendarComponent.convertUTCToYYYYMMDD(season.startTime);
-      component.addSeasonEnd = DashboardSeasonalCalendarComponent.convertUTCToYYYYMMDD(season.endTime);
+      component.addSeasonStart = season.startTime;
+      component.addSeasonEnd = season.endTime;
       component.addSeasonColour = season.colorCode;
       component.edit = true;
       component.editSeasonKey = seasonKey;

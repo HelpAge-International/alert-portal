@@ -20,6 +20,7 @@ import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -308,6 +309,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Finish Button press on section 10
    */
   onSubmit() {
+
+    // Closing confirmation pop up
+    if (jQuery("#navigate-back").modal) {
+      jQuery("#navigate-back").modal("hide");
+    }
+
     console.log("Finish button pressed");
     this.checkAllSections();
 
@@ -370,13 +377,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 7
     this.activityMap.forEach((v, k) => {
       let sectorInfo = {};
-      sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
-      sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
-      sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
-      sectorInfo["activities"] = v;
-      newResponsePlan.sectors[k] = sectorInfo;
+      if(this.activityInfoMap.get(k)){
+        if(this.activityInfoMap.get(k)["sourcePlan"]){
+          sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
+        }
+        if(this.activityInfoMap.get(k)["bullet1"]){
+          sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
+        }
+        if(this.activityInfoMap.get(k)["bullet2"]){
+          sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
+        }
+        sectorInfo["activities"] = v;
+        newResponsePlan.sectors[k] = sectorInfo;
+      }
     });
-
 
     //section 8
     newResponsePlan.monAccLearning['mALSystemsDescription'] = this.mALSystemsDescriptionText;
@@ -1194,6 +1208,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
+
+    let numberOfCompletedSections = this.getCompleteSectionNumber();
+
+    if (numberOfCompletedSections > 0) {
+      console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
+      jQuery("#navigate-back").modal("show");
+    } else {
+      this.router.navigateByUrl('response-plans');
+    }
+  }
+
+  closeModalAndNavigate() {
+    jQuery("#navigate-back").modal("hide");
     this.router.navigateByUrl('response-plans');
   }
 
@@ -1517,13 +1544,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
+        tempList.push(this.uid);
         list.forEach(x => {
-          tempList.push(x)
+          tempList.push(x.$key)
         });
         return Observable.from(tempList)
       })
       .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
       })
       .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()

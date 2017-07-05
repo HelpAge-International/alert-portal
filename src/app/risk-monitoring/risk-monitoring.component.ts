@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DurationType, HazardScenario} from "../utils/Enums";
+import {AlertMessageType, Countries, DurationType, HazardScenario, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -9,7 +9,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
-import {PageControlService} from "../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import _date = moment.unitOfTime._date;
 
@@ -23,6 +23,7 @@ declare var jQuery: any;
 
 export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
+  private USER_TYPE = UserType;
   private UserType: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -92,6 +93,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private tmpLogData: any[] = [];
 
   private successAddHazardMsg: any;
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
     this.tmpLogData['content'] = '';
@@ -153,6 +155,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               this._getCountryContextIndicators();
             });
           }
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
+
         });
       })
 

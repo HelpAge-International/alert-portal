@@ -14,4 +14,12 @@ export class CustomerValidator {
     }
     return false;
   }
+
+  // Check if any letters from the alphabet exist in the phone number
+  static PhoneNumberValidator(phoneNumber: string): boolean {
+    if (/[a-zA-Z]/.test(phoneNumber)) {
+      return true;
+    }
+    return false;
+  }
 }
