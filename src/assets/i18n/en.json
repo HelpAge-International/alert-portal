@@ -591,6 +591,7 @@
             "EDIT_CHS_ACTION": "Edit CHS action",
             "SAVE_BUTTON_TEXT": "Save new action",
             "EDIT_BUTTON_TEXT": "Save changes",
+            "EDIT_CONFIRM_SAVE_CHANGES": "Changes saved",
             "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
             "CHS_MPA": {
@@ -1597,6 +1598,7 @@
         "DUE_DATE": "Due date",
         "FREQUENCY": "Frequency",
         "BUDGET": "Budget",
+        "BUDGET_NARRATIVE_ERROR": "An error occured submitting your budget narratives",
         "DOCUMENT_REQUIRED_COMPLETION": "Is a document required for completion",
         "SAVE_NEW_ACTION": "Save new action",
         "DELETE_ACTION_BUTTON": "Delete action",

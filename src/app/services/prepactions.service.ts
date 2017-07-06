@@ -110,8 +110,9 @@ export class PrepActionService {
         }
       });
   }
-  public static clockCalculation(type: number, value: number) {
+  public static clockCalculation(value: number, type: number) {
     let val: number = 1000 * 60 * 60 * 24; // Milliseconds in one day
+    val = val * value;
     if (type == DurationType.Week) {
       val = val * 7;
     }
@@ -121,7 +122,7 @@ export class PrepActionService {
     if (type == DurationType.Year) {
       val = val * 365;
     }
-    val = val * value;
+    console.log(val);
     return val;
   }
 
@@ -167,6 +168,7 @@ export class PrepActionService {
   private updateAction(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, updated: (action: PreparednessAction) => void) {
     let run: boolean = this.findAction(id) == null;
     let i = this.findOrCreateIndex(id, whichUser, source);
+    let applyCustom = false; // Fixes bug with frequencyValue and frequencyBase
     if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee;
       else if (action.type == ActionType.custom) this.actions[i].asignee = null;
     if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate;
@@ -210,10 +212,10 @@ export class PrepActionService {
     if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc;
       else if (action.type == ActionType.custom) action.requireDoc = null;
     if (action.hasOwnProperty('task')) this.actions[i].task = action.task; // else action.task = null;
-    if (action.hasOwnProperty('frequencyBase')) this.actions[i].frequencyBase = action.frequencyBase;
-      else if (action.type == ActionType.custom) action.frequencyBase = null;
-    if (action.hasOwnProperty('frequencyValue')) this.actions[i].frequencyValue = action.frequencyValue;
-      else if (action.type == ActionType.custom) action.frequencyValue = null;
+    if (action.hasOwnProperty('frequencyBase')) { this.actions[i].frequencyBase = action.frequencyBase; applyCustom = true; }
+      else action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) { this.actions[i].frequencyValue = action.frequencyValue; applyCustom = true; }
+      else action.frequencyValue = null;
     this.initNotes(af, id, run);
 
     // Document deletion check
@@ -241,10 +243,13 @@ export class PrepActionService {
     // }
 
     // Clock settings
-    if (this.actions[i].frequencyBase && this.actions[i].frequencyValue) {
-      this.actions[i].setComputedClockSetting(this.actions[i].frequencyValue, this.actions[i].frequencyBase);
+    console.log(this.actions[i]);
+    if (applyCustom) {
+      console.log("Applying custom clock settings to " + this.actions[i].task);
+      this.actions[i].setComputedClockSetting(+this.actions[i].frequencyValue, +this.actions[i].frequencyBase);
     }
     else {
+      console.log("Applying generic clock settings to " + this.actions[i].task);
       this.actions[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
     }
 
@@ -253,8 +258,6 @@ export class PrepActionService {
     if (updated != null) {
       updated(this.actions[i]);
     }
-
-    console.log(this.actions[i]);
   }
 
   /**
@@ -340,7 +343,7 @@ export class PrepActionService {
       .subscribe((snap) => {
         if (this.findAction(actionId) != null) {
           let doc = snap.val();
-
+          console.log(doc);
           if (doc != null && doc != undefined) {
             doc.documentId = snap.key;
             this.findAction(actionId).addDoc(doc);
@@ -389,7 +392,7 @@ export class PreparednessAction {
   public computedClockSetting: number;
 
   public setComputedClockSetting(value: number, type: number) {
-    this.computedClockSetting = PrepActionService.clockCalculation(type, value);
+    this.computedClockSetting = PrepActionService.clockCalculation(value, type);
   }
 
   constructor() {

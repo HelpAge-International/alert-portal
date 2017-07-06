@@ -37,6 +37,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
+  public myFirstName: string;
+  public myLastName: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -53,6 +55,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
+  private actionLevelEnum = ActionLevel;
 
   private allUnassigned: boolean = false;
   private allArchived: boolean = false;
@@ -137,7 +140,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.userType = userType;
           this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-          this.getStaffDetails(this.uid);
+          this.getStaffDetails(this.uid, true);
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
             this.permissionsAreEnabled = isEnabled;
@@ -160,11 +163,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 this.initDepartments();
                 this.initDocumentTypes();
               });
-          }
-
-          if (this.userType == UserType.CountryAdmin) {
-            // Country admin not included as a staff member of the country, hence explicit import for me
-            this.getStaffDetails(this.uid);
           }
 
           // Initialise the page control information
@@ -214,12 +212,22 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Initialisation method for the staff under the country office
    */
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
   private initStaff() {
+    this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key);
+          this.getStaffDetails(snapshot.key, false);
         });
       });
   }
@@ -227,7 +235,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Get staff member public user data (names, etc.)
    */
-  public getStaffDetails(uid: string) {
+  public getStaffDetails(uid: string, isMe: boolean) {
     if (!this.CURRENT_USERS.get(uid)) {
       this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
@@ -238,6 +246,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
           this.updateUser(prepUser);
+
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
         });
     }
   }

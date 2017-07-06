@@ -62,7 +62,10 @@ export class DepartmentComponent implements OnInit, OnDestroy {
               x.id = snap.key;
               x.name = snap.val().name;
               this.depts.push(x);
-              this.editDepts.push(x);
+              let y: ModelDepartment = new ModelDepartment();
+              y.id = snap.key;
+              y.name = snap.val().name;
+              this.editDepts.push(y);
             });
           });
     });
@@ -86,7 +89,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   cancelDeleteDepartments(event) {
-    this.deleting = !this.deleting; 
+    this.deleting = !this.deleting;
     this.deleteCandidates = {};
   }
 
@@ -119,14 +122,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   saveEditedDepartments() {
-    console.log("Edited Departments");
-    console.log("HERE!");
-
-    console.log(this.depts);
-    console.log(this.editDepts);
     for (let i = 0; i < this.depts.length; i++) {
-      console.log("A:" + this.depts[i].name);
-      console.log("E:" + this.editDepts[i].name);
       if (this.editDepts[i].name != this.depts[i].name) {
         // A change has happened! Update this item
         let updateObj = {

@@ -17,7 +17,7 @@ import {
 import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as firebase from "firebase";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -42,10 +42,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private uid: string;
   private userType: UserType;
   private UserType = UserType;
+  private userTypes = UserType;
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
   private isViewing: boolean;
+  public myFirstName: string;
+  public myLastName: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -78,6 +81,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private documentActionId: string = "";
   private fileSize: number; // Always in Bytes
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
+  private actionLevelEnum = ActionLevel;
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -93,6 +97,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   protected prepActionService: PrepActionService = new PrepActionService();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(protected pageControl: PageControlService,
                  @Inject(FirebaseApp) firebaseApp: any,
@@ -141,7 +146,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           this.userType = userType;
           this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-          this.getStaffDetails(this.uid);
+          this.getStaffDetails(this.uid, true);
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+            this.permissionsAreEnabled = isEnabled;
+          });
 
           if (this.agencyId && this.countryId && this.systemAdminId) {
             // Initialise everything here! We already have the above
@@ -164,12 +173,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                 this.initAlerts();
               });
           }
-
-          if (this.userType == UserType.CountryAdmin) {
-            // Country admin not included as a staff member of the country, hence explicit import for me
-            this.getStaffDetails(this.uid);
-          }
-
         });
 
       });
@@ -244,12 +247,22 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Initialisation method for the staff under the country office
    */
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
   private initStaff() {
+    this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key);
+          this.getStaffDetails(snapshot.key, false);
         });
       });
   }
@@ -257,7 +270,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Get staff member public user data (names, etc.)
    */
-  public getStaffDetails(uid: string) {
+  public getStaffDetails(uid: string, isMe: boolean) {
     if (!this.CURRENT_USERS.get(uid)) {
       this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
@@ -268,6 +281,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
           this.updateUser(prepUser);
+
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
         });
     }
   }

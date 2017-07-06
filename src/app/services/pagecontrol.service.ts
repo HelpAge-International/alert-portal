@@ -7,6 +7,9 @@ import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/platform-browser";
 import {Pair} from "../utils/bundles";
+import {SettingsService} from "./settings.service";
+import {PermissionSettingsModel} from "../model/permission-settings.model";
+import {Observable} from "rxjs/Observable";
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -546,26 +549,30 @@ export class PageControlService {
           let s = snap.val().permissionSettings;
           // Build the matrix
           let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-          // CHSActions
-          x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
-          x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
-          x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
-          x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
-          x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
-          x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
-          x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
-          x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
-          x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
-          x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
-          x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
-          x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
-          x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
-          x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
-          x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
-          x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
-          x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
-          x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
-          x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+          if (userType == UserType.CountryAdmin) {
+            x.all(true);
+          }
+          else {
+            x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
+            x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
+            x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
+            x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
+            x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
+            x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
+            x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
+            x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
+            x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
+            x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
+            x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
+            x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
+            x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
+            x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
+            x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
+            x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
+            x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
+            x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
+            x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+          }
           fun(x);
         }
       });

@@ -184,6 +184,7 @@ import {DirectorNotificationsComponent} from './director/director-notifications/
 
 import { DashboardOverviewComponent } from './dashboard/dashboard-overview/dashboard-overview.component';
 import {PrepActionService} from "./services/prepactions.service";
+import {SumPipe} from "./utils/pipes/sum.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -338,6 +339,7 @@ const firebaseAuthConfig = {
     CountryOfficeProgrammeComponent,
     DonorListViewComponent,
     ReplacePipe,
+    SumPipe,
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
     ProjectReportComponent,

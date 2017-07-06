@@ -10,7 +10,7 @@
       <h1 *ngIf="!action.id">{{"PREPAREDNESS.TITLE_TEXT_CREATE_PAGE" | translate}}</h1>
       <h1 *ngIf="action.id">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
       <div class="Action-buttons-wrapper__absolute" *ngIf="action.id">
-        <button href="#" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom" (click)="showActionConfirm('delete-action')">
+        <button href="#" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom && (!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Delete) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Delete)) || userType == userTypes.CountryAdmin)" (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
         <button class="btn btn-block btn-outline-primary" *ngIf="action.type != actionType.chs && userType == userTypes.CountryDirector" (click)="showActionConfirm('archive-action')">
@@ -48,7 +48,9 @@
           <strong>{{"PREPAREDNESS.ACTION_SELECT_TEXT" | translate}}</strong>
           <div class="row no-gutters" *ngFor="let aLevel of actionLevelList">
             <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
-              <input [disabled]="editDisableLoading || action.type != actionType.custom" type="radio"
+              <input [disabled]="editDisableLoading || action.type != actionType.custom
+                              || (((aLevel == actionLevelEnum.MPA && (!moduleAccess.minimumPreparedness || !permissionsAreEnabled.customMPA.New))
+                              || (aLevel == actionLevelEnum.APA && (!moduleAccess.advancedPreparedness || !permissionsAreEnabled.customAPA.New))) && userType != userTypes.CountryAdmin)" type="radio"
                      #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel" (change)="removeFilterLockLevel()"
                      [(ngModel)]="action.level">
               {{actionLevel[aLevel] | translate}}
@@ -114,13 +116,19 @@
       <!--
             ASSIGN TOO
       -->
-      <div class="row System-admin--form-wrap">
+      <div class="row System-admin--form-wrap" *ngIf="(!(action.level == actionLevelEnum.MPA && (!permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && (!permissionsAreEnabled.customAPA.Assign))))">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
             <label for="n-AssignTo">{{"PREPAREDNESS.ASSIGN_TO" | translate}}</label>
-            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee">
+            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader">
               <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
               <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>
+            </select>
+
+            <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
+            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert">
+              <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
+              <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
             </select>
           </div>
         </div>
