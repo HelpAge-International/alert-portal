@@ -58,6 +58,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private techSkills: string[] = [];
   private globalUsers: any[] = [];
   private departments: ModelDepartment[] = [];
+  private departmentMap: Map<string, string> = new Map<string, string>();
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -82,11 +83,14 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
+        this.departmentMap.clear();
+        this.departments = [];
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;
           x.name = snapshot.val().name;
           this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
         });
       });
   }

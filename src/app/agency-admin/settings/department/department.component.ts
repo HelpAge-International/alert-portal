@@ -25,6 +25,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private deleteCandidates: any = {};
   private depts: ModelDepartment[] = [];
   private editDepts: ModelDepartment[] = [];
+  private canDeleteItem: Map<string, boolean> = new Map<string, boolean>();
   private alerts = {};
   private newDepartmentErrorInactive: boolean = true;
   private newDepartmentErrorMessage: string;
@@ -33,7 +34,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
 
-
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
@@ -41,33 +41,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
-          .map((val) => {
-            console.log(val.val());
-            return val.val().agencyId;
-          })
-          .flatMap((agencyId) => {
-            this.agencyId = agencyId;
-            console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
-            return this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true});
-          })
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((snapshot) => {
-            this.depts = [];
-            this.editDepts = [];
-            console.log(snapshot.val());
-            snapshot.forEach((snap) => {
-              let x: ModelDepartment = new ModelDepartment();
-              x.id = snap.key;
-              x.name = snap.val().name;
-              this.depts.push(x);
-              let y: ModelDepartment = new ModelDepartment();
-              y.id = snap.key;
-              y.name = snap.val().name;
-              this.editDepts.push(y);
-            });
-          });
+      this.uid = user.uid;
+      this.initDepartments();
     });
   }
 
@@ -80,8 +55,49 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     }
   }
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  private initDepartments() {
+    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
+      .map((val) => {
+        console.log(val.val());
+        return val.val().agencyId;
+      })
+      .flatMap((agencyId) => {
+        this.agencyId = agencyId;
+        console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
+        return this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true});
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        this.initCanDeleteDepartments();
+        this.depts = [];
+        this.editDepts = [];
+        console.log(snapshot.val());
+        snapshot.forEach((snap) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snap.key;
+          x.name = snap.val().name;
+          this.depts.push(x);
+          let y: ModelDepartment = new ModelDepartment();
+          y.id = snap.key;
+          y.name = snap.val().name;
+          this.editDepts.push(y);
+        });
+      });
+  }
+
+  private initCanDeleteDepartments() {
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId, {preserveSnapshot: true})
+      .map((snap) => {
+        let ids: string[] = [];
+        for (let x of snap) {
+          ids.push(x.key);
+        }
+        return ids;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((countryOffices) => {
+        console.log(countryOffices)
+      });
   }
 
   deleteDepartments(event) {
@@ -95,19 +111,22 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   deleteSelectedDepartments(event) {
     this.deleting = !this.deleting;
-
-    for (var item in this.deleteCandidates)
-      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item)
-    .remove()
-    .then(_ => {
-      if (!this.alertShow){
-        this.saved = true;
-        this.alertSuccess = true;
-        this.alertShow = true;
-        this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_REMOVED_SUCCESS";
-      }
-    })
-    .catch(err => console.log(err, 'You do not have access!'));
+    this.saved = true;
+    this.alertSuccess = true;
+    this.alertShow = true;
+    this.alertMessage = "DEPARTMENT DELETION CURRENTLY REMOVED. WILL BE INCLUDED IN NEXT BUILD";
+    // for (var item in this.deleteCandidates)
+    //   this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item)
+    // .remove()
+    // .then(_ => {
+    //   if (!this.alertShow){
+    //     this.saved = true;
+    //     this.alertSuccess = true;
+    //     this.alertShow = true;
+    //     this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_REMOVED_SUCCESS";
+    //   }
+    // })
+    // .catch(err => console.log(err, 'You do not have access!'));
   }
 
   onDepartmentSelected(department) {
@@ -192,5 +211,10 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     this.alertSuccess = true;
     this.alertMessage = "";
   }
+}
 
+export class ModelDepartmentCanDelete {
+  public id: string;
+  public name: string;
+  public canDelete: boolean = false;
 }
