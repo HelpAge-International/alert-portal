@@ -291,7 +291,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     /* TODO if user ERT OR Partner, assign only me */
-    if (this.UserType == UserType.Ert) {
+    if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(staff => {

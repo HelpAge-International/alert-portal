@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       console.log(user);
       this.uid = user.uid;
       this.userType = userType;
-      this.NODE_TO_CHECK = this.userPaths[userType];
+      this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
         this.moduleSettings = isEnabled;
       }));
@@ -178,6 +178,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryId() {
     let promise = new Promise((res, rej) => {
+      console.log(this.NODE_TO_CHECK)
       this.af.database.object(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {

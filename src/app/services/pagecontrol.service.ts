@@ -195,7 +195,14 @@ export class PageControlService {
     "country-admin*"
   ]);
   public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
-    "dashboard*"
+    "dashboard*",
+    "map",
+    "map/map-countries-list",
+    "risk-monitoring*",
+    "export-start-fund*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*"
