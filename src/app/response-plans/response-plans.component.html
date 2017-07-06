@@ -312,6 +312,8 @@
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{dialogContent | translate}}</p></div>
+        <div class="text-center"><a href="mailto:{{dialogEditingUserEmail}}">{{dialogEditingUserName}}</a></div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="closeModal(true)">{{"GLOBAL.OK" | translate}}
