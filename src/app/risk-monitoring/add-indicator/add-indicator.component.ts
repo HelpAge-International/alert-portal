@@ -206,6 +206,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.indicatorData.assignee = undefined;
         });
     } else {
+      console.log('heroare');
       this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyHazardId + "/" + copyIndicatorId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(indicator => {
@@ -296,27 +297,28 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   getUsersForAssign() {
+    
     /* TODO if user ERT OR Partner, assign only me */
     if (this.UserType == UserType.Ert) {
-      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+      this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(staff => {
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((user: ModelUserPublic) => {
-              let userToPush = {userID: staff.$key, firstName: user.firstName + " " + user.lastName};
-              this.usersForAssign.push(userToPush);
-            });
-        });
-    } else {
-      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
-        for (let userID in data) {
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-            var userToPush = {userID: userID, firstName: user.firstName + " " + user.lastName};
+        .subscribe(user => {
+            let userToPush = {userID: this.uid, firstName: user.firstName, lastName: user.lastName};
             this.usersForAssign.push(userToPush);
-          });
-        }
-      });
+        })
+    } else {
+      this.userService.getStaffList(this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staffs => {
+          staffs.forEach(staff => {
+            this.userService.getUser(staff.id)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe( user => {
+                let userToPush = {userID: staff.id, firstName: user.firstName, lastName : user.lastName};
+                this.usersForAssign.push(userToPush);
+              })
+          })
+        })
     }
   }
 
