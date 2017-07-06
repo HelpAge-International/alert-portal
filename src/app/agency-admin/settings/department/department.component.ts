@@ -84,6 +84,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   private initCanDeleteDepartments() {
+    // TODO: Agency Mandated Departments
+    // TODO: Delete all actions because I deleted the ones that weren't assigned
     this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId, {preserveSnapshot: true})
       .map((snap) => {
         let ids: string[] = [];
