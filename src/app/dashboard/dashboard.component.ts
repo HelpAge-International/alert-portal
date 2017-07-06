@@ -81,10 +81,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      console.log(user);
+      console.log(userType);
       this.uid = user.uid;
       this.userType = userType;
+      console.log(this.userType)
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+      console.log(this.NODE_TO_CHECK);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
         this.moduleSettings = isEnabled;
       }));

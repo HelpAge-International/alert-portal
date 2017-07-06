@@ -296,15 +296,19 @@ export class UserService {
       partner.modifiedAt = Date.now();
 
       //add partnerUser group node
-      let partnerUser = {};
-      let agencyAdmin = {};
-      agencyAdmin[agencyId] = true;
-      let systemAdmin = {};
-      systemAdmin[systemId] = true;
-      partnerUser['agencyAdmin'] = agencyAdmin;
-      partnerUser['systemAdmin'] = systemAdmin;
-      partnerUser['countryId'] = countryId;
-      partnerData['/partnerUser/' + uid + '/'] = partnerUser;
+      //TODO DELETE LATER
+      // let partnerUser = {};
+      // let agencyAdmin = {};
+      // agencyAdmin[agencyId] = true;
+      // let systemAdmin = {};
+      // systemAdmin[systemId] = true;
+      // partnerUser['agencyAdmin'] = agencyAdmin;
+      // partnerUser['systemAdmin'] = systemAdmin;
+      // partnerUser['countryId'] = countryId;
+      // partnerData['/partnerUser/' + uid + '/'] = partnerUser;
+
+      partnerData['/partnerUser/' + uid + '/systemAdmin/' + systemId] = true;
+      partnerData['/partnerUser/' + uid + '/agencies/' + agencyId] = countryId;
 
       //update country office partners node
       partnerData['/countryOffice/' + agencyId + '/' + countryId + '/partners/' + uid] = true;
@@ -325,9 +329,9 @@ export class UserService {
         equalTo: email
       }
     })
-      .flatMap(users =>{
-        if (users.length>0) {
-          return this.af.database.object(Constants.APP_STATUS+"/partner/"+users[0].$key, {preserveSnapshot:true})
+      .flatMap(users => {
+        if (users.length > 0) {
+          return this.af.database.object(Constants.APP_STATUS + "/partner/" + users[0].$key, {preserveSnapshot: true})
         } else {
           return Observable.empty;
         }
@@ -433,7 +437,7 @@ export class UserService {
     }
     return af.database.object(paths[index].path)
       .flatMap(obj => {
-        if (obj.agencyAdmin) {
+        if (obj.systemAdmin) {
           return Observable.of(paths[index].type);
         }
         else {
