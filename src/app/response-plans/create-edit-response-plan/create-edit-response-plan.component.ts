@@ -10,7 +10,7 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, BudgetCategory, AlertMessageType
+  ResponsePlanSectors, BudgetCategory, AlertMessageType, UserType
 } from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -38,6 +38,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
   private forEditing: boolean = false;
+  private isCountryAdmin: boolean = false;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
 
@@ -260,6 +261,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
       let userpath = Constants.USER_PATHS[userType];
       this.getSystemAgencyCountryIds(userpath);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
@@ -300,6 +302,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.forEditing) {
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(false);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(null);
     }
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -526,6 +529,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     newResponsePlan.isActive = true;
     newResponsePlan.isEditing = false;
+    newResponsePlan.editingUserId = null;
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
     if (!this.forEditing) {
@@ -1257,6 +1261,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.pageTitle = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.EDIT_RESPONSE_PLAN";
           this.idOfResponsePlanToEdit = params["id"];
           this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(this.uid);
 
           this.loadResponsePlanInfo(this.idOfResponsePlanToEdit);
         }
@@ -1544,7 +1549,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
-        tempList.push(this.uid);
+        // If country admin add user to the list as country admin is not listed under staff
+        if (this.isCountryAdmin) {
+          tempList.push(this.uid);
+        }
         list.forEach(x => {
           tempList.push(x.$key)
         });
@@ -1641,6 +1649,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       if (this.forEditing) {
         let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
         newResponsePlan.isEditing = false;
+        newResponsePlan.editingUserId = null;
         this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
           console.log("Response plan successfully updated");
           this.router.navigateByUrl('response-plans');

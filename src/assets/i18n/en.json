@@ -1409,7 +1409,7 @@
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
             "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!",
             "EDIT_WHILE_ANOTHER_EDITING_TITLE": "Editing is not allowed",
-            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by another member. Please try again later."
+            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by below user."
         },
         "VIEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Scenario Based Response Plan"
@@ -1759,7 +1759,7 @@
         },
         "ADD_HAZARD": {
             "NO_HAZARD": "Please select hazard",
-            "NO_SEASONAL": "Please select seasonal",
+            "NO_SEASONAL": "Please select a season if you want to add a seasonal hazard",
             "HAZARD_DETECTED": "This hazard exists already",
             "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "ADD_NEW_HAZARD": "Add new hazard",
@@ -1776,7 +1776,8 @@
             "ADD_SEASONAL_TO_CALENDAR": "Add season to the calendar",
             "SEASON_NAME": "Season Name",
             "START_DATE": "Start Date",
-            "END_DATE": "End Date"
+            "END_DATE": "End Date",
+            "NEXT": "Next"
         },
         "MAIN_PAGE": {
             "LOGS_NO_CONTENT": "Please enter text for you log.",

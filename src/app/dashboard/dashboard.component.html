@@ -35,8 +35,11 @@
               </div>
             </div>
             <div class="col-md-2 Alert-Widget__item">
-              <div>
-                <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+              <div *ngIf="alert.affectedAreasDisplay">
+                <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                  {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                </a>
               </div>
             </div>
 
@@ -134,8 +137,11 @@
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
-                <div>
-                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                <div *ngIf="alert.affectedAreasDisplay">
+                  <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                    {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                  </a>
                 </div>
               </div>
 
@@ -252,8 +258,11 @@
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
-                <div>
-                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                <div *ngIf="alert.affectedAreasDisplay">
+                  <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                    {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                  </a>
                 </div>
               </div>
 
@@ -310,8 +319,11 @@
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
-                <div>
-                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                <div *ngIf="alert.affectedAreasDisplay">
+                  <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                    {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                  </a>
                 </div>
               </div>
 
@@ -450,11 +462,12 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <a href="">{{getActionTitle(action)}}
-                <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a>
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
+                <span>{{action.task}}</span>
+              </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
                 translate}}
               </a>
             </div>
@@ -464,10 +477,13 @@
         <div *ngFor="let indicator of indicatorsToday">
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
+                <span>{{indicator.name}}</span>
+              </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
                 translate}}
               </a>
             </div>
@@ -479,11 +495,13 @@
             <div class="col-md-1">
               <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
             </div>
-            <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
-              )</strong>.<span>{{action.task}}</span></a>
+            <div class="col-md-8">
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+                <span>{{action.task}}</span>
+              </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
                 translate}}</a>
             </div>
           </div>
@@ -492,11 +510,13 @@
         <div *ngFor="let indicator of indicatorsThisWeek" class="row">
           <div *ngIf="shouldShow(indicator.level, indicator.action)">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
-              translate}}</strong>.<span>{{indicator?.name}}</span></a>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+                <span>{{indicator?.name}}</span>
+              </p>
             </div>
-            <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
-              | translate}}</a>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
         </div>
@@ -562,6 +582,24 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="view-areas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center" *ngIf="affectedAreasToShow">
+          <p *ngFor="let area of affectedAreasToShow">{{area.country | translate}} {{area.areas}}</p></div>
+      </div>
     </div>
   </div>
 </div>

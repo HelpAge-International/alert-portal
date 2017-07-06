@@ -33,6 +33,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private dialogTitle: string;
   private dialogContent: string;
+  private dialogEditingUserName: string;
+  private dialogEditingUserEmail: string;
   private uid: string;
 
   private activePlans: any[] = [];
@@ -94,7 +96,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
         orderByChild: "isActive",
-        equalTo: true
+        equalTo: true 
       }
     })
       .takeUntil(this.ngUnsubscribe)
@@ -187,13 +189,19 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   editResponsePlan(responsePlan) {
-    if (responsePlan.isEditing) {
-      jQuery("#dialog-acknowledge").modal("show");
-      this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
-      this.dialogContent = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_CONTENT";
-      return;
+    if (responsePlan.isEditing && responsePlan.editingUserId != this.uid) {
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + responsePlan.editingUserId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(editingUser => {
+          jQuery("#dialog-acknowledge").modal("show");
+          this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
+          this.dialogContent = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_CONTENT";
+          this.dialogEditingUserName = editingUser.firstName + " " + editingUser.lastName;
+          this.dialogEditingUserEmail = editingUser.email;
+        });
+    }else{
+      this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
     }
-    this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
   }
 
   exportStartFund(responsePlan) {
@@ -201,7 +209,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   exportProposal(responsePlan) {
-    this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
+    //TODO - Export for proposal
+    //this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
   }
 
   submitForApproval(plan) {
@@ -221,7 +230,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   archivePlan(plan) {
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isArchived").set(false);
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
   }
 
   confirmDialog() {
@@ -334,13 +343,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
-          
+
           // Send notification to global director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
           notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
           notification.time = new Date().getTime();
-          
+
           this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => { });
         }
         this.updatePartnerValidation(countryId, approvalData);
@@ -383,7 +392,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   activatePlan(plan) {
     if (this.userType == UserType.CountryAdmin) {
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isArchived").set(true);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
       this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
         .map(list => {
