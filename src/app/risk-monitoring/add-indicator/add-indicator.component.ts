@@ -18,6 +18,10 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { MessageModel } from "../../model/message.model";
+import { NotificationService } from "../../services/notification.service";
+import { TranslateService } from "@ngx-translate/core";
+
 declare var jQuery: any;
 
 @Component({
@@ -113,7 +117,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private storage: LocalStorageService,
               private userService: UserService,
-              private _location: Location) {
+              private _location: Location,
+              private _translate: TranslateService,
+              private _notificationService: NotificationService) {
     this.initIndicatorData();
   }
 
@@ -363,6 +369,15 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.list(urlToPush)
             .push(dataToSave)
             .then(() => {
+              if(dataToSave.assignee) {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", { indicatorName: dataToSave.name});
+                notification.time = new Date().getTime();
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => { });
+              }
+            
               if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
                 this.router.navigate(["/dashboard/dashboard-overview", {
                   "countryId": this.copyCountryId,

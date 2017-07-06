@@ -35,8 +35,11 @@
               </div>
             </div>
             <div class="col-md-2 Alert-Widget__item">
-              <div>
-                <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+              <div *ngIf="alert.affectedAreasDisplay">
+                <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                  {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                </a>
               </div>
             </div>
 
@@ -134,8 +137,11 @@
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
-                <div>
-                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                <div *ngIf="alert.affectedAreasDisplay">
+                  <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                    {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                  </a>
                 </div>
               </div>
 
@@ -252,8 +258,11 @@
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
-                <div>
-                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                <div *ngIf="alert.affectedAreasDisplay">
+                  <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                    {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                  </a>
                 </div>
               </div>
 
@@ -310,8 +319,11 @@
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
-                <div>
-                  <span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}
+                <div *ngIf="alert.affectedAreasDisplay">
+                  <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                    {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+                  </a>
                 </div>
               </div>
 
@@ -570,6 +582,24 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="view-areas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center" *ngIf="affectedAreasToShow">
+          <p *ngFor="let area of affectedAreasToShow">{{area.country | translate}} {{area.areas}}</p></div>
+      </div>
     </div>
   </div>
 </div>

@@ -6,6 +6,9 @@ import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs/Observable";
+import { TranslateService } from "@ngx-translate/core";
+import { NotificationService } from "./notification.service";
+import { MessageModel } from "../model/message.model";
 
 @Injectable()
 export class ResponsePlanService {
@@ -14,7 +17,12 @@ export class ResponsePlanService {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private validPartnerMap = new Map<string, boolean>();
 
-  constructor(private af: AngularFire, private userService: UserService, private router: Router) {
+  constructor(private af: AngularFire,
+              private userService: UserService,
+              private router: Router,
+              private translate: TranslateService,
+              private notificationService: NotificationService) {
+
   }
 
   submitForPartnerValidation(plan, uid) {
@@ -93,7 +101,7 @@ export class ResponsePlanService {
     return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId);
   }
 
-  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector) {
+  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector, responsePlanName, agencyId) {
     let approvalName = this.getUserTypeName(userType);
     if (approvalName) {
       let updateData = {};
@@ -120,6 +128,19 @@ export class ResponsePlanService {
             }
 
             this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+              if(!isApproved)
+              {
+                // Send notification to users with Response plan rejected
+                const responsePlanRejectedNotificationSetting = 5;
+                
+                let notification = new MessageModel();
+                notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", { responsePlan: responsePlanName});
+                notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", { responsePlan: responsePlanName});
+                notification.time = new Date().getTime();
+                
+                this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
+              }
+
               if (rejectNoteContent) {
                 this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
               } else {

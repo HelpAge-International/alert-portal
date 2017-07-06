@@ -65,4 +65,5 @@ export class ResponsePlan {
   public timeUpdated: number;
   public updatedBy: string;
   public isEditing: boolean;
+  public editingUserId: string;
 }

@@ -1409,7 +1409,7 @@
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
             "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!",
             "EDIT_WHILE_ANOTHER_EDITING_TITLE": "Editing is not allowed",
-            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by another member. Please try again later."
+            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by below user."
         },
         "VIEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Scenario Based Response Plan"
@@ -1884,7 +1884,13 @@
             "ASSIGNED_APA_ACTION_TITLE": "An advanced preparedness action has been assigned to you",
             "ASSIGNED_APA_ACTION_CONTENT": "The following advanced preparedness action: {{actionName}} has been assigned to you",
             "RESPONSE_PLAN_APPROVAL_TITLE": "A response plan has been submitted for approval",
-            "RESPONSE_PLAN_APPROVAL_CONTENT": "The following response plan: {{responsePlan}} has been submitted for approval"
+            "RESPONSE_PLAN_APPROVAL_CONTENT": "The following response plan: {{responsePlan}} has been submitted for approval",
+            "RED_ALERT_REQUESTED_TITLE": "A red alert level has been requested for {{riskName}}",
+            "RED_ALERT_REQUESTED_CONTENT": "A red alert has been requested for the following alert: {{riskName}}",
+            "ALERT_LEVEL_UPDATED_TITLE": "The alert level for {{riskName}} has been updated",
+            "ALERT_LEVEL_UPDATED_CONTENT": "The following alert: {{riskName}} has had its level updated from {{levelBefore}} to {{levelAfter}}",
+            "RESPONSE_PLAN_REJECTED_TITLE": "A response plan has been rejected",
+            "RESPONSE_PLAN_REJECTED_CONTENT": "The following response plan: {{responsePlan}} has been rejected"
         }
      }
 }

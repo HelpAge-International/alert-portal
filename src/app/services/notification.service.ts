@@ -257,6 +257,30 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     return this.af.database.object(Constants.APP_STATUS + node).remove();
   }
 
+  saveUserNotificationBasedOnNotificationSetting(message: MessageModel, notificationSetting: number, agencyId: string, countryId: string)
+  {
+    // Regular staff
+    this._userService.getStaffList(countryId).subscribe(staffs => {
+      staffs.forEach(staff => {
+        if(staff.notification && staff.notification.indexOf(notificationSetting) !== -1)
+        {
+          this.saveUserNotification(staff.id, message, staff.userType, agencyId, countryId).then(() => {});
+        }
+      });
+    });
+
+    // Global staff
+    this._userService.getGlobalStaffList(agencyId).subscribe(staffs => {
+      staffs.forEach(staff => {
+        if(staff.notification && (staff.userType === UserType.RegionalDirector || staff.userType === UserType.GlobalDirector) 
+            && staff.notification.indexOf(notificationSetting) !== -1)
+        {
+          this.saveUserNotification(staff.id, message, staff.userType, agencyId, countryId).then(() => {});
+        }
+      });
+    });
+  }
+
   saveUserNotificationWithoutDetails(userId: string, message: MessageModel): Observable<any>{
     if(!userId || !message)
     {

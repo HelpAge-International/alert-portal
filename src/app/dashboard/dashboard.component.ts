@@ -16,6 +16,7 @@ import {
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -64,7 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
-
+  private affectedAreasToShow : any [];
   private userPaths = Constants.USER_PATHS;
 
   // TODO - New Subscriptions - Remove RxHelper and add Subject
@@ -282,6 +283,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  showAffectedAreasForAlert(affectedAreas){
+    this.affectedAreasToShow = affectedAreas;
+    jQuery("#view-areas").modal("show");
+  }
+
   shouldShow(level: number, action: number) {
     if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
       return false;
@@ -356,7 +362,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlert(alertId) {
-    //TODO need to change back to uid!!
     this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
   }
 
