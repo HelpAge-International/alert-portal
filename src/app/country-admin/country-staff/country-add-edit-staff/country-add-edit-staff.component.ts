@@ -12,6 +12,7 @@ import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelStaff} from "../../../model/staff.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import * as moment from "moment";
+import {ModelDepartment} from "../../../model/department.model";
 declare var jQuery: any;
 
 @Component({
@@ -138,11 +139,11 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       });
 
     this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
-    this.departmentList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
+    this.departmentList = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
       .map(departments => {
-        let names = [];
+        let names: ModelDepartment[] = [];
         departments.forEach(department => {
-          names.push(department.$key);
+          names.push(ModelDepartment.create(department.key, department.val().name));
         });
         return names;
       });

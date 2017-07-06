@@ -20,6 +20,7 @@ import {
 } from "../../services/prepactions.service";
 import { MessageModel } from "../../model/message.model";
 import { TranslateService } from "@ngx-translate/core";
+import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 
 
@@ -50,7 +51,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   // Data for the actions
   // --- Declared because we're missing out "inactive" in this page
   private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED"];
-  private DEPARTMENTS: string[] = [];
+  private DEPARTMENTS: ModelDepartment[] = [];
+  private DEPARTMENT_MAP: Map<string, string>  = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
@@ -183,12 +185,18 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        for (const x in snap.val().departments) {
+        this.DEPARTMENTS = [];
+        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
           this.DEPARTMENTS.push(x);
-        }
+          this.DEPARTMENT_MAP.set(x.id, x.name);
+        });
       });
   }
 

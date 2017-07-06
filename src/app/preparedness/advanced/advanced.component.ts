@@ -60,6 +60,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   // Data for the actions
   private ACTION_STATUS = Constants.ACTION_STATUS;
   private DEPARTMENTS: ModelDepartment[] = [];
+  private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
@@ -215,15 +216,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        for (const x in snap.val().departments) {
+        this.DEPARTMENTS = [];
+        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
           let mD: ModelDepartment = new ModelDepartment();
-          mD.id = x;
-          mD.name = snap.val().departments[x].name;
+          mD.id = snapshot.key;
+          mD.name = snapshot.val().name;
           this.DEPARTMENTS.push(mD);
-        }
+          this.DEPARTMENT_MAP.set(mD.id, mD.name);
+        });
       });
   }
 

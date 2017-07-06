@@ -86,7 +86,7 @@
         <!-- DEPARTMENTS -->
         <select class="form-control" id="DepartmentsFilter" [(ngModel)]="filterDepartment">
           <option value="-1" selected>All departments</option>
-          <option *ngFor="let x of DEPARTMENTS" value="{{x}}">{{x}}</option>
+          <option *ngFor="let x of DEPARTMENTS" value="{{x.id}}">{{x.name}}</option>
         </select>
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
@@ -176,7 +176,7 @@
                       Expired on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
                     </div>
                     <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
-                      Expires on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong> {{action.isCompleteAt + action.computedClockSetting}}
+                      Expires on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
                     </div>
 
 
@@ -253,7 +253,7 @@
                       <div class="row">
                         <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
                         <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                        <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
+                        <div class="subrow-line">Department: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
                           : 'Unassigned'}}</strong></div>
@@ -508,7 +508,7 @@
                       <div class="row">
                         <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
                         <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                        <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
+                        <div class="subrow-line">Department: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
                           : 'Unassigned'}}</strong></div>
@@ -716,7 +716,7 @@
                         <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
                         <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong>
                         </div>
-                        <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
+                        <div class="subrow-line">Department: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
                         <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
                           : 'Unassigned'}}</strong></div>

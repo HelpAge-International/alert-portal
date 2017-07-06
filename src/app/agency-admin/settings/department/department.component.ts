@@ -129,6 +129,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
           name: this.depts[i].name
         };
         this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + this.depts[i].id).update(updateObj).then(_ => {
+          this.flipEditDepartments();
           if (!this.alertShow){
             this.saved = true;
             this.alertSuccess = true;

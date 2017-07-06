@@ -13,6 +13,7 @@ import {ModelStaff} from "../../../model/staff.model";
 import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {ModelDepartment} from "../../../model/department.model";
 declare var jQuery: any;
 
 @Component({
@@ -61,7 +62,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private waringMessage: string;
   private countryList: FirebaseListObservable<any[]>;
   private regionList: Observable<any[]>;
-  private departmentList: Observable<any[]>;
+  private departmentList: Observable<ModelDepartment[]>;
   private notificationList: FirebaseListObservable<any[]>;
   private notificationSettings: boolean[] = [];
   private secondApp: firebase.app.App;
@@ -204,11 +205,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
                 });
                 return filteredRegions;
               });
-            this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments")
+            this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
               .map(departments => {
-                let names = [];
+                let names: ModelDepartment[] = [];
                 departments.forEach(department => {
-                  names.push(department.$key);
+                  names.push(ModelDepartment.create(department.key, department.val().name));
                 });
                 return names;
               });

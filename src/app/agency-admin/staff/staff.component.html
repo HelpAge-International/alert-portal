@@ -24,7 +24,7 @@
       <div class="col-lg-3 col-md-4">
         <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
           <option value="allDepartments">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
-          <option *ngFor="let department of departments" [value]="department">{{department}}
+          <option *ngFor="let department of departments" [value]="department.id">{{department.name}}
           </option>
         </select>
       </div>
