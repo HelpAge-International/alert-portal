@@ -793,6 +793,7 @@
                 "DEPARTMENT_NEW_SUCCESS": "New department added",
                 "DEPARTMENT_SAVED_SUCCESS": "Department successfully saved",
                 "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed",
+                "DEPARTMENT_DELETING_ERROR": "Error deleting your departments",
                 "NO_DEPARTMENTS": "No departments are added to your agency"
             },
             "SKILLS": {

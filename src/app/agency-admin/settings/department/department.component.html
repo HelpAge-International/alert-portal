@@ -44,7 +44,8 @@
 
       <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts">
         <!-- Check box for deletion -->
-        <label for="{{department.id}}" *ngIf="deleting">
+        <p>{{department.id}} :: '{{canDeleteItem.get(department.id)}}'</p>
+        <label for="{{department.id}}" *ngIf="deleting && canDeleteItem.get(department.id)">
           <input class="form-check-input" type="checkbox" id="{{department.id}}" [value]="department.id"
                  (change)="onDepartmentSelected(department.id)">
         </label>

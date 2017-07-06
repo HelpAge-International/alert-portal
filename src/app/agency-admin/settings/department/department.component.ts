@@ -23,9 +23,9 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private saved: boolean = false;
   private departmentName: string = "";
   private deleteCandidates: any = {};
-  private depts: ModelDepartment[] = [];
+  private depts: ModelDepartmentCanDelete[] = [];
   private editDepts: ModelDepartment[] = [];
-  private canDeleteItem: Map<string, boolean> = new Map<string, boolean>();
+  public canDeleteItem: Map<string, boolean> = new Map<string, boolean>();
   private alerts = {};
   private newDepartmentErrorInactive: boolean = true;
   private newDepartmentErrorMessage: string;
@@ -68,20 +68,18 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
-        this.initCanDeleteDepartments();
         this.depts = [];
         this.editDepts = [];
         console.log(snapshot.val());
         snapshot.forEach((snap) => {
-          let x: ModelDepartment = new ModelDepartment();
-          x.id = snap.key;
-          x.name = snap.val().name;
+          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
           this.depts.push(x);
           let y: ModelDepartment = new ModelDepartment();
           y.id = snap.key;
           y.name = snap.val().name;
           this.editDepts.push(y);
         });
+        this.initCanDeleteDepartments();
       });
   }
 
@@ -96,25 +94,53 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe((countryOffices) => {
-        console.log(countryOffices)
+        console.log(countryOffices);
+        for (let x of countryOffices) {
+          this.af.database.list(Constants.APP_STATUS + "/action/" + x, {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((snap) => {
+              for (let x of snap) {
+                if (x.val().hasOwnProperty('department')) {
+                  console.log("Marking " + x.val().department + " as true");
+                  this.canDeleteItem.set(x.val().department, true);
+                }
+              }
+            });
+        }
       });
   }
 
-  deleteDepartments(event) {
+  deleteDepartments() {
     this.deleting = !this.deleting;
+    console.log(this.canDeleteItem);
+    console.log(this.canDeleteItem.get('Dep21'));
   }
 
-  cancelDeleteDepartments(event) {
+  cancelDeleteDepartments() {
     this.deleting = !this.deleting;
     this.deleteCandidates = {};
   }
 
-  deleteSelectedDepartments(event) {
+  deleteSelectedDepartments() {
     this.deleting = !this.deleting;
-    this.saved = true;
-    this.alertSuccess = true;
-    this.alertShow = true;
-    this.alertMessage = "DEPARTMENT DELETION CURRENTLY REMOVED. WILL BE INCLUDED IN NEXT BUILD";
+    for (let x in this.deleteCandidates) {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/" + x).set(null).then(_ => {
+          if (!this.alertShow){
+            this.saved = true;
+            this.alertSuccess = true;
+            this.alertShow = true;
+            this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_REMOVED_SUCCESS";
+          }
+        })
+        .catch(_ => {
+          if (!this.alertShow){
+            this.saved = true;
+            this.alertSuccess = false;
+            this.alertShow = true;
+            this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_DELETING_ERROR";
+          }
+        });
+    }
     // for (var item in this.deleteCandidates)
     //   this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/departments/' + item)
     // .remove()
@@ -141,22 +167,24 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   saveEditedDepartments() {
-    for (let i = 0; i < this.depts.length; i++) {
-      if (this.editDepts[i].name != this.depts[i].name) {
-        // A change has happened! Update this item
-        let updateObj = {
-          name: this.depts[i].name
-        };
-        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + this.depts[i].id).update(updateObj).then(_ => {
+    let temps: ModelDepartmentCanDelete[] = [];
+    for (let x of this.depts) {
+      temps.push(new ModelDepartmentCanDelete(x.id, x.name));
+    }
+    for (let i = 0; i < temps.length; i++) {
+      // A change has happened! Update this item
+      let updateObj = {
+        name: temps[i].name
+      };
+      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + temps[i].id).update(updateObj).then(_ => {
+        if (!this.alertShow){
           this.flipEditDepartments();
-          if (!this.alertShow){
-            this.saved = true;
-            this.alertSuccess = true;
-            this.alertShow = true;
-            this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_SAVED_SUCCESS";
-          }
-        });
-      }
+          this.saved = true;
+          this.alertSuccess = true;
+          this.alertShow = true;
+          this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_SAVED_SUCCESS";
+        }
+      });
     }
   }
 
@@ -214,7 +242,12 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 }
 
 export class ModelDepartmentCanDelete {
+  public canDelete: boolean = false;
   public id: string;
   public name: string;
-  public canDelete: boolean = false;
+
+  constructor(id: string, name: string) {
+    this.id = id;
+    this.name = name;
+  }
 }
