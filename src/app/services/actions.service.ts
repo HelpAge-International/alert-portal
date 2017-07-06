@@ -421,11 +421,14 @@ export class ActionsService {
     updateData["estimatedPopulation"] = alert.estimatedPopulation;
     updateData["hazardScenario"] = alert.hazardScenario;
     updateData["infoNotes"] = alert.infoNotes;
-    updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
+    if(alert.reasonForRedAlert){
+      updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
+    }
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
 
+    console.log(updateData);
     this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
