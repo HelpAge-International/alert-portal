@@ -162,68 +162,61 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   validateForm() {
     if (!this.title) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_TITLE';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.firstName) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_FIRST_NAME';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.lastName) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_LAST_NAME';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.userType) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_USER_TYPE';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.countryOffice) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_COUNTRY_OFFICE';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.department) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_DEPARTMENT';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.position) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_POSITION';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.officeType) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_OFFICE_TYPE';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.email) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_EMAIL';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!this.phone) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_PHONE';
-      this.showAlert();
-      return;
+      return false;
     }
     if (typeof (this.isResponseMember) === 'undefined') {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_RESPONSE_TEAM_ANSWER';
-      this.showAlert();
-      return;
+      return false;
     }
     if (!CustomerValidator.EmailValidator(this.email)) {
       this.warningMessage = 'GLOBAL.EMAIL_NOT_VALID';
-      this.showAlert();
-      return;
+      return false;
     }
+    return true;
   }
 
   submit() {
-    this.collectData();
+    if (this.validateForm()) {
+      this.collectData();
+    } else {
+      this.showAlert();
+    }
   }
 
   private collectData() {

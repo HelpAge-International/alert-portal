@@ -166,6 +166,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           var obj = {key: parseInt(s), val: sectorExpertise[s]};
           this.sectorExpertise.push(obj);
         }
+
+        // Adding to select sector expertise pop up list
         if (this.sectorExpertise && this.sectorExpertise.length > 0) {
           this.sectorExpertise.forEach((val, key) => {
             this.TmpSectorExpertise[val.key] = true;
@@ -239,11 +241,10 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   selectedSectors(event: any, sectorID: any) {
 
+    // Checking for selected
     var stateElement: boolean = true;
-
     var className = event.srcElement.className;
     const pattern = /.Selected/;
-
     if (!pattern.test(className)) {
       stateElement = false;
     }
@@ -263,16 +264,12 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
       return false;
     }
-
-    // var dataToUpdate = this.TmpSectorExpertise;
     var dataToUpdate = {};
-
     this.TmpSectorExpertise.forEach((val, key) => {
       if (val) {
         dataToUpdate[key] = val;
       }
     });
-
     this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
       .set(dataToUpdate)
       .then(_ => {
