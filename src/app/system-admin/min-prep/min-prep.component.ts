@@ -5,6 +5,7 @@ import {Constants} from '../../utils/Constants';
 import {ActionType} from '../../utils/Enums';
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ChsMinPreparednessAction} from "../../model/chsMinPreparednessAction";
 declare var jQuery: any;
 
 @Component({
@@ -15,9 +16,9 @@ declare var jQuery: any;
 
 export class MinPrepComponent implements OnInit, OnDestroy {
 
-  private chsMinPrepActions: FirebaseListObservable<any>;
-  private path: string = '';
-  private actionToDelete;
+  private chsActions: CHSListModel[] = [];
+  private actionToDelete: CHSListModel;
+  private systemUid: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -26,13 +27,20 @@ export class MinPrepComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.path = Constants.APP_STATUS + "/action/" + user.uid;
-      this.chsMinPrepActions = this.af.database.list(this.path, {
-        query: {
-          orderByChild: 'type',
-          equalTo: ActionType.chs
-        }
-      });
+      this.systemUid = user.uid;
+      this.af.database.list(Constants.APP_STATUS + "/actionCHS/" + user.uid, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.chsActions = [];
+          snap.forEach((snapshot) => {
+            let x: CHSListModel = new CHSListModel();
+            x.task = snapshot.val().task;
+            x.level = snapshot.val().level;
+            x.type = snapshot.val().type;
+            x.id = snapshot.key;
+            this.chsActions.push(x);
+          });
+        });
     });
   }
 
@@ -41,30 +49,30 @@ export class MinPrepComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  editChsMinPrepAction(chsMinPrepAction) {
-    console.log("Edit button pressed");
-    this.router.navigate(['/system-admin/min-prep/create', {id: chsMinPrepAction.$key}]);
+  protected editChsMinPrepAction(chsMinPrepAction: CHSListModel) {
+    this.router.navigate(['/system-admin/min-prep/create', {id: chsMinPrepAction.id}]);
   }
 
-  deleteChsMinPrepAction(chsMinPrepAction) {
+  protected deleteChsMinPrepAction(chsMinPrepAction: CHSListModel) {
     this.actionToDelete = chsMinPrepAction;
     jQuery("#delete-action").modal("show");
   }
 
-  deleteAction() {
-    console.log("Delete button pressed");
-    this.af.database.object(this.path + "/" + this.actionToDelete.$key).remove()
+  protected deleteAction() {
+    this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.actionToDelete.id).set(null)
       .then(_ => {
-        console.log("Chs action deleted");
         jQuery("#delete-action").modal("hide");
       });
   }
 
-  closeModal() {
+  protected closeModal() {
     jQuery("#delete-action").modal("hide");
   }
+}
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
+export class CHSListModel {
+  public task: string;
+  public type: number;
+  public level: number;
+  public id: string;
 }

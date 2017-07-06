@@ -177,13 +177,13 @@ import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/ap
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
 import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 import {OrderByPipe} from "./utils/pipes/orderby.pipe";
-import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 import {NotificationBadgeComponent} from './commons/notification-badge/notification-badge.component';
 import {NotificationsComponent} from './commons/notifications/notifications.component';
 import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
 import {DirectorNotificationsComponent} from './director/director-notifications/director-notifications.component';
 
 import { DashboardOverviewComponent } from './dashboard/dashboard-overview/dashboard-overview.component';
+import {PrepActionService} from "./services/prepactions.service";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -299,7 +299,6 @@ const firebaseAuthConfig = {
     AddPartnerOrganisationComponent,
     OrdinalPipe,
     OrderByPipe,
-    PreparednessFilter,
     StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,
@@ -397,6 +396,7 @@ const firebaseAuthConfig = {
               SettingsService,
               MessageService,
               NotificationService,
+              PrepActionService,
               NoteService,
               EquipmentService,
               CoordinationArrangementService,

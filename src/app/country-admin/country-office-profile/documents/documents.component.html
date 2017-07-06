@@ -13,7 +13,7 @@
 
     <div class="Sub-header-title__wrap">
       <h2>{{ 'DOCUMENTS.TITLE_TEXT' | translate }}</h2>
-      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
+      <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
       </button>
     </div>
@@ -44,7 +44,7 @@
         <select class="form-control" id="Uploader" [(ngModel)]="userSelected" (change)="filter()">
           <option value="-1" selected>{{ 'DOCUMENTS.UPLOADED_BY_EVERYONE' | translate }}</option>
           <template ngFor let-user [ngForOf]="users" let-userIdx="index">
-            <option value="{{users[userIdx].key}}">{{users[userIdx].fullName}}</option>
+            <option value="{{users[userIdx]?.key}}">{{users[userIdx]?.fullName}}</option>
           </template>
         </select>
       </div>

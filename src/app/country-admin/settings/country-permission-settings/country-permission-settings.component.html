@@ -517,17 +517,17 @@
                             (click) = "selectUserType(permissionSettings?.other.downloadDoc, ['other', 'downloadDoc'], 'PERMISSIONS.DOWNLOAD_DOC', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER')">
                             <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
                 </div>
-                <div class="row Spaced Line-row">
-                    <div class="col-sm-4"><p>{{ "PERMISSIONS.UPLOAD_DOC" | translate }}</p></div>
-                    <div class="col-sm-4">
-                    <p *ngFor="let userType of permissionSettings?.other.uploadDoc | keyValues"
-                        [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
+                <!--<div class="row Spaced Line-row">-->
+                    <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.UPLOAD_DOC" | translate }}</p></div>-->
+                    <!--<div class="col-sm-4">-->
+                    <!--<p *ngFor="let userType of permissionSettings?.other.uploadDoc | keyValues"-->
+                        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
 
-                    </div>
-                    <div class="col-sm-2"><a href="javascript:void(0)"
-                            (click) = "selectUserType(permissionSettings?.other.uploadDoc, ['other', 'uploadDoc'], 'PERMISSIONS.UPLOAD_DOC', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER')">
-                            <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
-                </div>
+                    <!--</div>-->
+                    <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
+                            <!--(click) = "selectUserType(permissionSettings?.other.uploadDoc, ['other', 'uploadDoc'], 'PERMISSIONS.UPLOAD_DOC', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER')">-->
+                            <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
+                <!--</div>-->
             </div>
         </div>
         </div>

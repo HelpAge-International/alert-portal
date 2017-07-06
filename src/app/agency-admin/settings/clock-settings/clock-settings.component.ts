@@ -15,13 +15,6 @@ import {DurationType} from "../../../utils/Enums";
 
 export class ClockSettingsComponent implements OnInit, OnDestroy {
 
-  DURATION_TYPE = Constants.DURATION_TYPE;
-  DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
-  private riskMonitorDurations = [];
-  private riskMonitorHazardsDurations = [];
-  private preparednessDurations = [];
-  private responsePlansDurations = [];
-
   private uid: string = "";
   private settings: any[] = [];
   private saved: boolean = false;
@@ -35,70 +28,20 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   private preparednessFreq: Frequency = new Frequency({value: -1, type: -1});
   private responsePlansFreq: Frequency = new Frequency({value: -1, type: -1});
 
+  DURATION_TYPE = Constants.DURATION_TYPE;
+  DURATION_TYPE_SELECTION = Constants.DURATION_TYPE_SELECTION;
+  private durationMap = new Map();
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  private durationMap = new Map<number,any[]>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
-    let durationsListW = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-      11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-      21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-      31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-      41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-      51];
-
-    let durationsListM = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-      11];
-
-    let durationsListY = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-    ];
+    let durationsListW = Constants.DURATION_LIST_WEEK;
+    let durationsListM = Constants.DURATION_LIST_MONTH;
+    let durationsListY = Constants.DURATION_LIST_YEAR;
 
     this.durationMap.set(DurationType.Week, durationsListW);
     this.durationMap.set(DurationType.Month, durationsListM);
     this.durationMap.set(DurationType.Year, durationsListY);
-
-  }
-
-  setupDropDownValues(type: any, durationsList: any[]) {
-    console.log(this.riskMonitorShowLogForFreq.type);
-    console.log(this.durationMap.get(Number(this.riskMonitorShowLogForFreq.type)));
-
-    if (type == DurationType.Week) {
-
-      durationsList = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-        51];
-
-      this.durationMap.set(DurationType.Week, durationsList);
-
-    } else if (type == DurationType.Month) {
-
-      durationsList = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11];
-
-      this.durationMap.set(DurationType.Month, durationsList);
-    } else {
-
-      durationsList = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-      ];
-
-
-      this.durationMap.set(DurationType.Year, durationsList);
-
-    }
-    // console.log(this.riskMonitorShowLogForFreq.type);
-    // console.log(this.durationMap);
-
-
-    return durationsList;
   }
 
   ngOnInit() {
@@ -118,15 +61,50 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.riskMonitorHazardFreq = new Frequency(this.settings['riskMonitoring']['hazardsValidFor']);
           this.preparednessFreq = new Frequency(this.settings['preparedness']);
           this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
-
-          this.riskMonitorDurations = this.setupDropDownValues(this.riskMonitorShowLogForFreq.type, this.riskMonitorDurations);
-          this.riskMonitorHazardsDurations = this.setupDropDownValues(this.riskMonitorHazardFreq.type, this.riskMonitorHazardsDurations);
-          this.preparednessDurations = this.setupDropDownValues(this.preparednessFreq.type, this.preparednessDurations);
-          this.responsePlansDurations = this.setupDropDownValues(this.responsePlansFreq.type, this.responsePlansDurations);
-
-          console.log(this.riskMonitorDurations);
         });
     });
+  }
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
+  }
+
+  convertToNumber(value): number {
+    return Number(value);
+  }
+
+  validateShowLogsFromValue() {
+    if (this.riskMonitorShowLogForFreq.type == DurationType.Month && this.riskMonitorShowLogForFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.riskMonitorShowLogForFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.riskMonitorShowLogForFreq.type == DurationType.Year && this.riskMonitorShowLogForFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.riskMonitorShowLogForFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validateHazardsValidForValue() {
+    if (this.riskMonitorHazardFreq.type == DurationType.Month && this.riskMonitorHazardFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.riskMonitorHazardFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.riskMonitorHazardFreq.type == DurationType.Year && this.riskMonitorHazardFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.riskMonitorHazardFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validatePreparednessValue() {
+    if (this.preparednessFreq.type == DurationType.Month && this.preparednessFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.preparednessFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.preparednessFreq.type == DurationType.Year && this.preparednessFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.preparednessFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
+  }
+
+  validateResponsePlansValue() {
+    if (this.responsePlansFreq.type == DurationType.Month && this.responsePlansFreq.value > Constants.MONTH_MAX_NUMBER) {
+      this.responsePlansFreq.value = Constants.MONTH_MAX_NUMBER;
+    } else if (this.responsePlansFreq.type == DurationType.Year && this.responsePlansFreq.value > Constants.YEAR_MAX_NUMBER) {
+      this.responsePlansFreq.value = Constants.YEAR_MAX_NUMBER;
+    }
   }
 
   ngOnDestroy() {
@@ -171,31 +149,13 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.alertShow = true;
           this.alertMessage = "AGENCY_ADMIN.SETTINGS.SAVE_SUCCESS_CLOCK_SETTINGS";
         }
-        // try {
-        //   this.countryOfficesSubscriptions.releaseAll();
-        // } catch (e) {
-        //   console.log('Unable to releaseAll');
-        // }
       })
       .catch(err => {
         console.log(err, 'Error occurred!');
         this.alertSuccess = false;
         this.alertShow = true;
-        this.alertMessage = "Error occurred!"
-        // try {
-        //   this.countryOfficesSubscriptions.releaseAll();
-        // } catch (e) {
-        //   console.log('Unable to releaseAll');
-        // }
-
+        this.alertMessage = "Error occurred!";
       });
-
-  }
-
-  onAlertHidden(hidden: boolean) {
-    this.alertShow = !hidden;
-    this.alertSuccess = true;
-    this.alertMessage = "";
   }
 
   private updateCountriesClockSettings() {
@@ -240,6 +200,5 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
         });
       });
   }
-
 
 }

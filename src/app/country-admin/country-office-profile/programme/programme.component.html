@@ -1,3 +1,4 @@
+<script src="programme.component.ts"></script>
 <div *ngIf="!isViewing">
   <app-country-admin-header></app-country-admin-header>
   <app-country-admin-menu></app-country-admin-menu>
@@ -29,8 +30,11 @@
         <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.SECTOR_EXPERTISE" | translate}}</h3>
       </div>
       <div *ngIf="canEdit && isEdit" class="col-sm-0 padding-left-two">
-        <a href="javascript:void(0)" data-toggle="modal" data-target="#sectorSelection">{{"GLOBAL.EDIT" |
-          translate}}</a>
+        <button data-toggle="modal" data-target="#sectorSelection"
+                class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}
+        </button>
+        <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#sectorSelection">{{"GLOBAL.EDIT" |-->
+          <!--translate}}</a>-->
       </div>
     </div>
 
@@ -100,7 +104,7 @@
           <h3>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.NOTE" | translate}}</h3>
           <hr class="d-inline-flex">
           <form>
-            <input type="text" placeholder="Add a log entry" name="log_{{logContent[m.key]}}"
+            <input type="text" placeholder="{{'RISK_MONITORING.MAIN_PAGE.PLACEHOLDER_ADD_LOG' | translate}}" name="log_{{logContent[m.key]}}"
                    [(ngModel)]="logContent[m.key]">
           </form>
 

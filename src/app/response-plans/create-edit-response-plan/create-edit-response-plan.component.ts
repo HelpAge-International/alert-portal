@@ -377,13 +377,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 7
     this.activityMap.forEach((v, k) => {
       let sectorInfo = {};
-      sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
-      sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
-      sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
-      sectorInfo["activities"] = v;
-      newResponsePlan.sectors[k] = sectorInfo;
+      if(this.activityInfoMap.get(k)){
+        if(this.activityInfoMap.get(k)["sourcePlan"]){
+          sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
+        }
+        if(this.activityInfoMap.get(k)["bullet1"]){
+          sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
+        }
+        if(this.activityInfoMap.get(k)["bullet2"]){
+          sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
+        }
+        sectorInfo["activities"] = v;
+        newResponsePlan.sectors[k] = sectorInfo;
+      }
     });
-
 
     //section 8
     newResponsePlan.monAccLearning['mALSystemsDescription'] = this.mALSystemsDescriptionText;
@@ -1537,13 +1544,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
+        tempList.push(this.uid);
         list.forEach(x => {
-          tempList.push(x)
+          tempList.push(x.$key)
         });
         return Observable.from(tempList)
       })
       .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
       })
       .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()

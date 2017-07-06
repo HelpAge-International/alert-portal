@@ -46,7 +46,7 @@ export class Constants {
     UserType.ErtLeader, UserType.Ert];
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
-    static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
+  static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
 
 
   // Global director / Regional director
@@ -124,13 +124,27 @@ export class Constants {
   static USER_TYPE_SELECTION = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert, UserType.CountryUser];
 
-  static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins","non-alert","countryuser"];
+  static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins", "non-alert", "countryuser"];
 
   static STAFF_POSITION = ["AGENCY_ADMIN.STAFF.ALL_POSITIONS", "AGENCY_ADMIN.STAFF.OFFICE_DIRECTOR", "AGENCY_ADMIN.STAFF.OFFICE_STAFF"];
   static STAFF_POSITION_SELECTION = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
 
   static OFFICE_TYPE = ["AGENCY_ADMIN.STAFF.ALL_OFFICES", "AGENCY_ADMIN.STAFF.FIELD_OFFICE", "AGENCY_ADMIN.STAFF.LAB_OFFICE"];
   static OFFICE_TYPE_SELECTION = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+
+  // Clock settings
+  static MONTH_MAX_NUMBER: number = 11;
+  static YEAR_MAX_NUMBER: number = 10;
+  static DURATION_LIST_WEEK = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+    31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+    41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+    51];
+  static DURATION_LIST_MONTH = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  static DURATION_LIST_YEAR = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
 
   static MODULE_NAME = [
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MINIMUM_PREP_ACTIONS",

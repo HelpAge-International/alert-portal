@@ -23,7 +23,7 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group" [ngClass]="{'has-danger': alerts[textArea]}">
           <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
-          <textarea [(ngModel)]="textArea" name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
+          <textarea [disabled]="fieldsDisabled" [(ngModel)]="textArea" name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"></textarea>
         </div>
       </div>
     </div>
@@ -33,12 +33,12 @@
         <p>{{"AGENCY_ADMIN.MANDATED_PA.MPA_OR_APA?" | translate}}</p>
 
         <div class="Radio--ribbon">
-          <input type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
+          <input [disabled]="fieldsDisabled" type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
           <label for="Min-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} </label>
         </div>
 
         <div class="Radio--ribbon">
-          <input type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
+          <input [disabled]="fieldsDisabled" type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
           <label for="Adv-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} </label>
         </div>
 
@@ -46,10 +46,10 @@
           <div class="col-lg-8 col-md-10 col-sm-12" [ngClass]="{'has-danger': alerts[departmentSelected]}">
             <label>{{"GLOBAL.DEPARTMENT" | translate}}</label>
 
-            <select class="form-control" onChange="addDepartmentModal(this, '#add_department')"
-                    [(ngModel)]="departmentSelected" (change)="checkSelectedDepartment()">
+            <select [disabled]="fieldsDisabled" class="form-control" onChange="addDepartmentModal(this, '#add_department')"
+                    [(ngModel)]="departmentSelected">
               <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-              <option *ngFor="let department of departments | async" [value]="department">{{department.toString()}}
+              <option *ngFor="let department of departments" [value]="department.id">{{department.name}}
               </option>
               <option class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_DEPARTMENT" | translate}}</option>
             </select>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <button (click)="onSubmit()" class="btn btn-primary">{{buttonText | translate | uppercase}}</button>
+          <button [disabled]="fieldsDisabled" (click)="onSubmit()" class="btn btn-primary">{{buttonText | translate | uppercase}}</button>
           <button class="btn btn-outline-secondary" routerLink="/agency-admin/agency-mpa">{{"GLOBAL.CANCEL" |
             translate}}
           </button>
