@@ -10,7 +10,7 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, BudgetCategory, AlertMessageType
+  ResponsePlanSectors, BudgetCategory, AlertMessageType, UserType
 } from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -38,6 +38,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
   private forEditing: boolean = false;
+  private isCountryAdmin: boolean = false;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
 
@@ -260,6 +261,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
       let userpath = Constants.USER_PATHS[userType];
       this.getSystemAgencyCountryIds(userpath);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
@@ -1544,7 +1546,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
-        tempList.push(this.uid);
+        // If country admin add user to the list as country admin is not listed under staff
+        if (this.isCountryAdmin) {
+          tempList.push(this.uid);
+        }
         list.forEach(x => {
           tempList.push(x.$key)
         });

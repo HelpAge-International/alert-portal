@@ -89,16 +89,6 @@
             {{'GLOBAL.NO' | translate}}
           </label>
         </div>
-
-        <!--<div class="Radio&#45;&#45;ribbon">-->
-          <!--<input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">-->
-          <!--<label>{{'GLOBAL.YES' | translate}}</label>-->
-        <!--</div>-->
-        <!--<div class="Radio&#45;&#45;ribbon">-->
-          <!--<input type="radio" name="RT" id="RT_no" value="true" (change)="seasonHazard($event)">-->
-          <!--<label>{{'GLOBAL.NO' | translate}}</label>-->
-        <!--</div>-->
-
         <button class="btn btn-outline-primary Spaced-above text-right" *ngIf="selectHazard"
                 (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASON_FROM_CALENDAR" | translate}}
         </button>
@@ -115,10 +105,6 @@
               <img src="assets/images/icons/circle_tick.svg">
               <p>{{season.name}}</p>
             </div>
-            <!--<div class="col-md-6" *ngIf="season == checkedSeasons[0]">-->
-              <!--<a href="javascript:void(0)" (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.EDIT_SEASONS"-->
-                <!--| translate}}</a>-->
-            <!--</div>-->
           </div>
         </div>
 
