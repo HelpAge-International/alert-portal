@@ -595,7 +595,7 @@
             "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
             "CHS_MPA": {
-                "TITLE_TEXT": "CHS minimum preparedness actions",
+                "CHS_TITLE_TEXT": "CHS minimum preparedness actions",
                 "NO_ACTIONS": "No CHS actions have been created",
                 "CHS": "Chs",
                 "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
