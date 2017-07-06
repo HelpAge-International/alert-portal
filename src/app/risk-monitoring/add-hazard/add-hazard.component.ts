@@ -41,7 +41,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private checkedSeasons = [];
   private modalID: string;
   private otherHazard: boolean = false;
-  private saveSelectSeasonsBtn: boolean = true;
   private selectHazard: boolean = false;
   private season: boolean = false;
   private addHazardSeason: string;
@@ -252,7 +251,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;
-    if (this.hazardData.hazardScenario == 'Other') {
+    if (this.hazardData.hazardScenario == 'otherSelected') {
       this.otherHazard = true;
     }
   }
@@ -329,12 +328,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       delete this.hazardData.seasons[seasonKey];
     }
-    if (Object.keys(this.hazardData.seasons).length == 0) {
-      this.saveSelectSeasonsBtn = true;
-    }
-    else {
-      this.saveSelectSeasonsBtn = false;
-    }
   }
 
   detected(i) {
@@ -360,7 +353,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   createSeasonToCalendar(form: NgForm) {
-    this.saveSelectSeasonsBtn = true;
     let dataToSave = form.value;
     dataToSave.startTime = new Date(dataToSave.startTime).getTime();
     dataToSave.endTime = new Date(dataToSave.endTime).getTime();

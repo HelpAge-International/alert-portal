@@ -1776,7 +1776,8 @@
             "ADD_SEASONAL_TO_CALENDAR": "Add season to the calendar",
             "SEASON_NAME": "Season Name",
             "START_DATE": "Start Date",
-            "END_DATE": "End Date"
+            "END_DATE": "End Date",
+            "NEXT": "Next"
         },
         "MAIN_PAGE": {
             "LOGS_NO_CONTENT": "Please enter text for you log.",

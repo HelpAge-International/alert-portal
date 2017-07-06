@@ -450,7 +450,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong>{{"DASHBOARD.TODAY" | translate}}</strong>.
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
                 <span>{{action.task}}</span>
               </p>
             </div>
@@ -466,7 +466,7 @@
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
                 <span>{{indicator.name}}</span>
               </p>
             </div>
@@ -484,7 +484,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong>{{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
                 <span>{{action.task}}</span>
               </p>
             </div>
@@ -499,7 +499,7 @@
           <div *ngIf="shouldShow(indicator.level, indicator.action)">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
                 <span>{{indicator?.name}}</span>
               </p>
             </div>

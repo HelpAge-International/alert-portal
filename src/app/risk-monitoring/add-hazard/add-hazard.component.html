@@ -39,7 +39,7 @@
                 </option>
                 <option *ngFor="let customHazard of customHazards">{{customHazard.$key}}</option>
                 <option *ngFor="let hazard of hazardScenariosList; let num = index" value="{{hazard}}">{{HazardScenario[hazard] | translate}}</option>
-                <option>Other</option>
+                <option value="otherSelected">{{"SECTORS.OTHER" | translate}}</option>
               </select>
             </div>
           </div>
@@ -48,14 +48,14 @@
       <div class="row" style="width:100%" *ngIf="otherHazard">
         <label for="RT_2" class="Checkbox--ribbon__alert Left col-sm-5">
           <input type="text" id="RT_2" class="form-control form-control-sm col-sm-10 customInput"
-                 (input)="newCustomHazard($event)" placeholder="Please specify">
+                 (input)="newCustomHazard($event)" placeholder="{{'GLOBAL.PLEASE_SPECIFY' | translate}}">
         </label>
       </div>
       <!--Confirm/cancel buttons-->
       <br>
       <div class="Form-submit__wrapper">
         <a href="javascript:void(0)"
-           class="btn btn-primary" (click)="submit()">Next
+           class="btn btn-primary" (click)="submit()">{{"RISK_MONITORING.ADD_HAZARD.NEXT" | translate}}
         </a>
       </div>
     </form>
@@ -66,43 +66,56 @@
           <div class="risk-icon__components">
             <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{_getHazardImage(hazardData.hazardScenario)}}"></span>
           </div>
-          <p><b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b></p>
+          <p>
+            <b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b>
+            <b *ngIf="otherHazard">{{hazardName}}</b>
+          </p>
         </label>
       </div>
       <!--Select another hazard-->
       <div class="col-sm-4">
         <div class="Spaced-above"><p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b></p></div>
-        <div class="Accordion--risk hazard-np col-sm-4 Spaced-above text-center">
-          <input type="radio" name="RT" id="RT_yes" value="true" class="Small-spaced"
-                 (change)="seasonHazard($event)">
-          <p class="col-sm-1">No</p>
+        <div class="Radio--ribbon">
+          <input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">
+          <label>{{'GLOBAL.YES' | translate}}</label>
         </div>
-        <div class="Accordion--risk hazard-np col-sm-4 Spaced-above text-center">
-          <input type="radio" name="RT" id="RT_yes" value="false" class="Small-spaced"
-                 (change)="seasonHazard($event)">
-          <p class="col-sm-1">Yes</p>
+        <div class="Radio--ribbon">
+          <input type="radio" name="RT" id="RT_no" value="true" (change)="seasonHazard($event)">
+          <label>{{'GLOBAL.NO' | translate}}</label>
         </div>
         <button class="btn btn-outline-primary Spaced-above text-right" *ngIf="selectHazard"
                 (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASON_FROM_CALENDAR" | translate}}
         </button>
+
         <!--Edit seasons button-->
-        <div class="row" *ngIf="season">
-          <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-sm-6">
-            <img src="assets/images/icons/circle_tick.svg">
-            <p *ngFor="let season of checkedSeasons">{{season.name}}</p>
+        <div *ngIf="season">
+          <br>
+          <div class="col-sm-8">
+            <a href="javascript:void(0)" (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.EDIT_SEASONS"
+              | translate}}</a>
           </div>
-          <div class="edit_seasons_a__wrap--risk col-sm-4"><a href="javascript:void(0)"
-                                                              (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.EDIT_SEASONS" | translate}}</a></div>
+          <div *ngFor="let season of checkedSeasons" class="row">
+            <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
+              <img src="assets/images/icons/circle_tick.svg">
+              <p>{{season.name}}</p>
+            </div>
+            <!--<div class="col-md-6" *ngIf="season == checkedSeasons[0]">-->
+              <!--<a href="javascript:void(0)" (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.EDIT_SEASONS"-->
+                <!--| translate}}</a>-->
+            <!--</div>-->
+          </div>
         </div>
+
       </div>
       <!--Confirm/cancel buttons-->
       <br>
       <div class="Form-submit__wrapper align-items-baseline">
         <a href="javascript:void(0)" class="btn btn-primary" (click)="addHazardBtn()">{{"RISK_MONITORING.ADD_HAZARD.ADD_HAZARD" | translate}}</a>
-        <a href="javascript:void(0)" class="col-sm-1" (click)="cancel()">Cancel</a>
+        <a href="javascript:void(0)" class="col-sm-1" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</a>
       </div>
     </form>
   </div>
+
   <div class="modal fade" id="select-seasons" tabindex="-1" role="dialog"
        aria-labelledby="addCalendarModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -140,10 +153,10 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="closeModal()">
-            Cancel
+            {{"GLOBAL.CANCEL" | translate}}
           </button>
           <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                  (click)="saveSelectSeasons('select-seasons')" [disabled]="saveSelectSeasonsBtn">Save
+                  (click)="saveSelectSeasons('select-seasons')">{{"GLOBAL.SAVE" | translate}}
           </button>
         </div>
       </div>
@@ -166,7 +179,7 @@
                   <div class="form-group">
                     <label for="S-name">{{"RISK_MONITORING.ADD_HAZARD.SEASON_NAME" | translate}}</label>
                     <input type="text" class="form-control form-control-danger" id="S-name"
-                           placeholder="Please enter" name="name" ngModel required>
+                           placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" name="name" ngModel required>
                   </div>
                 </div>
               </div>
@@ -175,14 +188,14 @@
                   <div class="form-group">
                     <label for="S-date">{{"RISK_MONITORING.ADD_HAZARD.START_DATE" | translate}}:</label>
                     <input type="date" class="form-control form-control-danger" id="S-date"
-                           placeholder="Please enter" name="startTime" ngModel required>
+                           name="startTime" ngModel required>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="E-date">{{"RISK_MONITORING.ADD_HAZARD.END_DATE" | translate}}:</label>
                     <input type="date" class="form-control form-control-danger" id="E-date"
-                           placeholder="Please enter" name="endTime" ngModel required>
+                           name="endTime" ngModel required>
                   </div>
                 </div>
               </div>
@@ -204,9 +217,9 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
             <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                    [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">Save
+                    [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"GLOBAL.SAVE" | translate}}
             </button>
           </div>
         </div>
