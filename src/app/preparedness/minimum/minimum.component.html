@@ -213,6 +213,10 @@
                               <i class="fa fa-stack-1x fa-inverse">{{action.notes.length}}</i>
                             </div>
                             <span>Notes</span>
+                            <!-- TOOLTIP 3.3 -->
+                            <tooltip
+                              [level1]="'You can only edit or delete notes you posted. To delete notes others have posted, please get in touch with the user that posted the note or contact your administrator'"
+                            ></tooltip>      
                           </a>
 
                         </div>
@@ -326,10 +330,12 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);"
-                                                                                             class="text-nowrap"
-                                                                                             (click)="exportAllDocuments(action)">Download
-                              all</a>
+                              <h4>Documents 
+                                <!-- TOOLTIP 3.4 -->
+                                <tooltip
+                                  [level1]= "'You can only upload documents to an action if it is assigned to you.'"
+                                ></tooltip>
+                                ({{action.documents.length}})</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap" (click)="exportAllDocuments(action)">Download all</a>
                             </div>
                             <div class="col-sm-6 col-4 text-right">
                               <a (click)="closeDocumentsModal('documents_popover_' + action.id)"
@@ -361,6 +367,10 @@
                       <div class="row">
                         <div class="col-12">
                           <h4>Confirm this action is completed.</h4>
+                          <!-- TOOLTIP 3.1 -->
+                          <tooltip
+                            [level1]="'You can only complete an action that is assigned to you'"
+                          ></tooltip>
                         </div>
                       </div>
                       <div class="row">
@@ -377,6 +387,10 @@
                       <div class="row">
                         <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">Upload
                           documents</label>
+                          <!-- TOOLTIP 3.2 -->
+                          <tooltip
+                          [level1]="'You can upload multiple files. Your agency accepts the following file types as an attachment: <bring up list of approved file types from agency admin settings>'"
+                          ></tooltip>
                         </div>
                         <input type='file' id="docUpload{{action.id}}" name="file"
                                (change)="fileChange($event, action, action.id)"

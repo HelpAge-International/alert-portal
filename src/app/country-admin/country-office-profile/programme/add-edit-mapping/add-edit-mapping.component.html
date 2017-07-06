@@ -32,6 +32,10 @@
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHAT" |
       translate}}</h6></div>
+      <!-- TOOLTIP 5.1 -->
+            <tooltip
+                [level1]="'Title of the Project'"
+            ></tooltip>
     <div class="row">
       <textarea class="col-sm-7" rows="5" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                 [(ngModel)]="programme.what"></textarea>
@@ -39,18 +43,31 @@
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
       translate}}</h6></div>
+      <!-- TOOLTIP 5.2 -->
+            <tooltip
+                [level1]="'Location of the Project'"
+            ></tooltip>
     <div class="row">
       <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.where">
     </div>
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
       translate}}</h6></div>
+      <!-- TOOLTIP 5.3 -->
+            <tooltip
+                [level1]="'Target beneficiaries'"
+            ></tooltip>
     <div class="row">
       <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.toWho">
     </div>
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" |
       translate}}</h6></div>
+      <!-- TOOLTIP 5.4 -->
+            <tooltip
+                [level1]="'Project completion date'"
+            ></tooltip>
+
     <div class="row">
       <div class="col-sm-3 padding-left-none">
         <select class="form-control" id="select1" (change)="setMonth($event)" [(ngModel)]="when['month']">

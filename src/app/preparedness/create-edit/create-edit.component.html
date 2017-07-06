@@ -67,7 +67,12 @@
       -->
       <div class="row System-admin--form-wrap" *ngIf="action.level == actionLevelEnum.APA">
         <div class="col-lg-8 col-md-10">
+          <!--TOOLTIP 3.10 -->
           <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
+          <tooltip
+          [Level1]="'This APA will activate whenever a Red Alert is raised against any of the hazards you select below. '"
+          [Level2]="'This list will only display hazards that are being monitored.'"
+          ></tooltip>
           <div class="row no-gutters">
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
               <input type="checkbox"  [disabled]="editDisableLoading || action.type != actionType.custom" [checked]="action.isAllHazards ? action.isAllHazards : false"
@@ -151,7 +156,11 @@
       <div class="row System-admin--form-wrap" *ngIf="action.level == actionLevelEnum.MPA">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
+            <!-- TOOLTIP 3.8 -->
             <label for="n-Frequency">{{"PREPAREDNESS.FREQUENCY" | translate}}</label>
+            <tooltip
+              [level1]="'How soon an MPA expires is set at agency level, but you may set this MPA  to require updating more frequently.'"
+            ></tooltip>
           </div>
 
           <div class="row no-gutters">
@@ -203,7 +212,11 @@
       -->
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
+          <!-- TOOLTIP 3.9 -->
           <strong>{{"PREPAREDNESS.DOCUMENT_REQUIRED_COMPLETION" | translate}}</strong>
+          <tooltip
+            [level1]="'If set to "Yes", this Preparedness Action cannot be marked as completed unless a document is uploaded as supporting evidence.'"
+          ></tooltip>
           <div class="row no-gutters">
             <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
               <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" (change)="removeFilterLockDoc()"

@@ -47,6 +47,11 @@
     <!--Staff count-->
     <div class="row Spaced">
       <div class="col-sm-0 padding-left-two"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_STAFF" | translate}}: {{totalStaff}}</strong></div>
+      <!-- TOOLTIP 5.5 -->
+            <tooltip
+                [level1]="'The total number of staff in your Country Office, including all emergency response staff and those not involved in emergency response.'"
+            ></tooltip>
+
       <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-two">
         <button href="#edit-total-staff" data-toggle="modal"
                 class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}

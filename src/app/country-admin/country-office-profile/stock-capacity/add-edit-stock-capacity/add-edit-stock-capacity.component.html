@@ -22,6 +22,10 @@
 
         <form (ngSubmit)="submit()">
             <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' | translate }}</strong></p>
+            <!-- TOOLTIP 5.12 -->
+            <tooltip
+                [level1]="'Type of stock'"
+            ></tooltip>
             <div>
                 <input type="text" class="form-control col-sm-4" placeholder="Please enter" name="description"
                     [(ngModel)]="stockCapacity && stockCapacity.description">
@@ -34,6 +38,10 @@
             </div><br>
 
             <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></p>
+            <!-- TOOLTIP 5.13 -->
+            <tooltip
+                [level1]="'Where the stock is currently stored'"
+            ></tooltip>
             <div>
                 <input type="text" class="form-control col-sm-4" placeholder="Please enter" name="location"
                     [(ngModel)]="stockCapacity && stockCapacity.location">

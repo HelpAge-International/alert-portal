@@ -50,6 +50,24 @@
 
     <div class="Header-title__wrap">
       <h1>Advanced Preparedness Actions</h1>
+      <!-- TOOLTIP 3.5 -->
+      <tooltip
+        [level1]="'Advanced Preparedness Actions (APAs) are executed when a disaster is imminent in the early warning phase or immediately after a severe sudden onset disaster. APAs are associated with particular hazards or can apply in any hazard scenario. The corresponding APAs are activated when a Red Alert is raised for a particular hazard.'"
+        [level2]="'The following considerations maybe helpful when defining and prioritising APAs. You are likely to focus on  
+
+Preserving life and assets: Those actions that could prevent people from losing their lives or assets and ensures the organisation can operate after impact: eg.
+•        Supporting community preparedness to reduce impact and ready first responders
+•        Assisting in evacuation
+•        Contacting & co-ordinating with key partners 
+•        Ensuring staff are safe
+•        Secure critical organisational infrastructure
+•        Actions related to your key emergency response objectives
+•        Continuing essential programme activities 
+Time bound: Actions that have a delay or lag time which could impact on achieving your response objectives in a timely manner for example
+•        Logistics chain – ordering, booking, transporting, shipping etc.
+•        Funding and access to cash 
+•        Activating operational agreements with key stakeholders'"
+      ></tooltip>
       <div *ngIf="!isViewing" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Create action
