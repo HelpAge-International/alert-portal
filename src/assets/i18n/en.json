@@ -1759,7 +1759,7 @@
         },
         "ADD_HAZARD": {
             "NO_HAZARD": "Please select hazard",
-            "NO_SEASONAL": "Please select seasonal",
+            "NO_SEASONAL": "Please select a season if you want to add a seasonal hazard",
             "HAZARD_DETECTED": "This hazard exists already",
             "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "ADD_NEW_HAZARD": "Add new hazard",
@@ -1776,7 +1776,8 @@
             "ADD_SEASONAL_TO_CALENDAR": "Add season to the calendar",
             "SEASON_NAME": "Season Name",
             "START_DATE": "Start Date",
-            "END_DATE": "End Date"
+            "END_DATE": "End Date",
+            "NEXT": "Next"
         },
         "MAIN_PAGE": {
             "LOGS_NO_CONTENT": "Please enter text for you log.",

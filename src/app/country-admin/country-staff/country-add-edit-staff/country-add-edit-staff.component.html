@@ -127,10 +127,10 @@
       </div>
 
       <div class="Form-submit__wrapper">
-        <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+        <button *ngIf="!isEdit" class="btn btn-primary" type="submit">
           {{"COUNTRY_ADMIN.STAFF.SAVE_NEW_STAFF" | translate | uppercase}}
         </button>
-        <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+        <button *ngIf="isEdit" class="btn btn-primary" type="submit">
           {{"COUNTRY_ADMIN.STAFF.SAVE_CHANGES" | translate | uppercase}}
         </button>
         <button class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>

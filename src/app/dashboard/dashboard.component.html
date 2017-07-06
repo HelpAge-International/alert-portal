@@ -462,11 +462,12 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <a href="">{{getActionTitle(action)}}
-                <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a>
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
+                <span>{{action.task}}</span>
+              </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
                 translate}}
               </a>
             </div>
@@ -476,10 +477,13 @@
         <div *ngFor="let indicator of indicatorsToday">
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
+                <span>{{indicator.name}}</span>
+              </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
                 translate}}
               </a>
             </div>
@@ -491,11 +495,13 @@
             <div class="col-md-1">
               <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
             </div>
-            <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
-              )</strong>.<span>{{action.task}}</span></a>
+            <div class="col-md-8">
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+                <span>{{action.task}}</span>
+              </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
                 translate}}</a>
             </div>
           </div>
@@ -504,11 +510,13 @@
         <div *ngFor="let indicator of indicatorsThisWeek" class="row">
           <div *ngIf="shouldShow(indicator.level, indicator.action)">
             <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-            <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
-              translate}}</strong>.<span>{{indicator?.name}}</span></a>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+                <span>{{indicator?.name}}</span>
+              </p>
             </div>
-            <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
-              | translate}}</a>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
         </div>
