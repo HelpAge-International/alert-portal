@@ -215,8 +215,7 @@
           <!-- TOOLTIP 3.9 -->
           <strong>{{"PREPAREDNESS.DOCUMENT_REQUIRED_COMPLETION" | translate}}</strong>
           <tooltip
-            [level1]="'If set to "Yes", this Preparedness Action cannot be marked as completed unless a document is uploaded as supporting evidence.'"
-          ></tooltip>
+            [level1]="'If set to 'Yes', this Preparedness Action cannot be marked as completed unless a document is uploaded as supporting evidence.'"></tooltip>
           <div class="row no-gutters">
             <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
               <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" (change)="removeFilterLockDoc()"
