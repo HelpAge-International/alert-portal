@@ -7134,13 +7134,16 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 .row_expanded__wrap--risk .btn-primary-save {
   text-transform: none;
   font-weight: normal;
-  font-size: 0.8em;
+  font-size: 0.9em;
   background: #006EA0;
   padding: 1.25em;
   border: 1px solid #006EA0;
   width: 150px;
   height: 35px;
   color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .row_expanded__wrap--risk .btn-primary-save:hover {
@@ -7152,7 +7155,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 .row_expanded__wrap--risk .btn-primary {
   text-transform: none;
   font-weight: 100;
-  font-size: 1em;
+  font-size: 0.9em;
   background: #46AA31;
   padding: 1.25em;
   border: 1px solid #46AA31;
@@ -7170,7 +7173,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   color: #B1B2B3;
   text-transform: none;
   font-weight: 100;
-  font-size: 1em;
+  font-size: 0.9em;
   background: #EEEEEE;
   padding: 1.25em;
   margin-left: 1.5em;
@@ -7188,7 +7191,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 .row_expanded__wrap--risk .btn-tertiary {
   text-transform: none;
   font-weight: bold;
-  font-size: 0.8em;
+  font-size: 0.9em;
   padding: 0.8em;
   width: 70%;
 }
@@ -7197,7 +7200,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   color: #ffffff;
   text-transform: none;
   font-weight: normal;
-  font-size: 0.8em;
+  font-size: 0.9em;
   background: #F3A500;
   padding: 1.25em;
   margin-left: 1.5em;
@@ -7218,7 +7221,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   color: #ffffff;
   text-transform: none;
   font-weight: 100;
-  font-size: 1em;
+  font-size: 0.9em;
   background: #E10514;
   padding: 1.25em;
   margin-left: 1.5em;

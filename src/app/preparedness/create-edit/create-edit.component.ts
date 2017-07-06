@@ -51,6 +51,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
+  private oldAction;
 
   private departments: ModelDepartment[] = [];
 
@@ -82,7 +83,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private now: Date = new Date();
 
   constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
-              private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
+              private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService,
+              private notificationService: NotificationService, private translate: TranslateService) {
     /* if selected generic action */
     this.actionSelected = this.storage.get('selectedAction');
     if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
@@ -180,6 +182,11 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       }
       this.action.computedClockSetting = action.computedClockSetting;
       this.editDisableLoading = false;
+
+      if(!this.oldAction)
+      {
+        this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
+      }
 
       console.log(action);
       console.log(this.action);
@@ -348,6 +355,17 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (this.action.id != null) {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+          
+          if(updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", { actionName: updateObj.task});
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
+          }
+
           if (this.action.level == ActionLevel.MPA) {
             this.router.navigateByUrl("/preparedness/minimum");
           }
@@ -360,6 +378,16 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         // Saving
         updateObj.createdAt = new Date().getTime();
         this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
+          
+          if(updateObj.asignee) {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: updateObj.task});
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
+          }
+          
           if (this.action.level == ActionLevel.MPA) {
             this.router.navigateByUrl("/preparedness/minimum");
           }

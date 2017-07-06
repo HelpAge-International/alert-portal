@@ -45,7 +45,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   private staffList: ModelStaff[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
@@ -54,7 +54,6 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
               private router: Router, private af:AngularFire) {
     this.userPublicDetails = [];
     this.staffList = [];
-
   }
 
   ngOnDestroy() {

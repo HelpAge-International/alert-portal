@@ -1,7 +1,10 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
-import {AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {
+  AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType,
+  UserType
+} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -15,6 +18,10 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { MessageModel } from "../../model/message.model";
+import { NotificationService } from "../../services/notification.service";
+import { TranslateService } from "@ngx-translate/core";
+
 declare var jQuery: any;
 
 @Component({
@@ -110,7 +117,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private storage: LocalStorageService,
               private userService: UserService,
-              private _location: Location) {
+              private _location: Location,
+              private _translate: TranslateService,
+              private _notificationService: NotificationService) {
     this.initIndicatorData();
   }
 
@@ -157,6 +166,19 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.UserType = userType;
+
+      //check if partner
+      // this.af.database.object(Constants.APP_STATUS+"/partner/"+this.uid, {preserveSnapshot:true})
+      //   .first()
+      //   .subscribe(snapshot =>{
+      //     let isPartner = false;
+      //     if (snapshot.val()) {
+      //       isPartner = true;
+      //     }
+      //
+      //
+      //
+      //   });
 
       this.getCountryID().then(() => {
         this._getHazards();
@@ -275,14 +297,27 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     /* TODO if user ERT OR Partner, assign only me */
-    this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
-      for (let userID in data) {
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-          var userToPush = {userID: userID, firstName: user.firstName};
-          this.usersForAssign.push(userToPush);
+    if (this.UserType == UserType.Ert) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, firstName: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
         });
-      }
-    });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+        for (let userID in data) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: userID, firstName: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
+    }
   }
 
   showDeleteDialog(modalId) {
@@ -334,6 +369,15 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.list(urlToPush)
             .push(dataToSave)
             .then(() => {
+              if(dataToSave.assignee) {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", { indicatorName: dataToSave.name});
+                notification.time = new Date().getTime();
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => { });
+              }
+            
               if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
                 this.router.navigate(["/dashboard/dashboard-overview", {
                   "countryId": this.copyCountryId,
@@ -382,7 +426,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           "systemId": this.copySystemId,
           "from": "risk",
           "canCopy": true,
-          "agencyOverview":this.agencyOverview
+          "agencyOverview": this.agencyOverview
         }]);
       } else {
         this.router.navigate(["/dashboard/dashboard-overview", {
@@ -616,7 +660,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           "systemId": this.copySystemId,
           "from": "risk",
           "canCopy": true,
-          "agencyOverview":this.agencyOverview
+          "agencyOverview": this.agencyOverview
         }]);
       } else {
         this.router.navigate(["/dashboard/dashboard-overview", {
