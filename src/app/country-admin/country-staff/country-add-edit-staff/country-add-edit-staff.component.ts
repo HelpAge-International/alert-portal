@@ -176,10 +176,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_USER_TYPE';
       return false;
     }
-    if (!this.countryOffice) {
-      this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_COUNTRY_OFFICE';
-      return false;
-    }
     if (!this.department) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_DEPARTMENT';
       return false;
