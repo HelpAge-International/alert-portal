@@ -25,7 +25,7 @@
                  required>
           <div class="risk-icon__components no-bg"><img class="Black-Background-Hazard-Icon"
             src="{{_getHazardImage(hazardData.hazardScenario)}}"></div>
-          <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>Risk {{hazard.value}}</p>
+          <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>{{"ALERT.RISK" | translate}} {{hazard.value}}</p>
         </label>
       </div>
       <div class="row" style="width:100%">
@@ -75,14 +75,30 @@
       <!--Select another hazard-->
       <div class="col-sm-4">
         <div class="Spaced-above"><p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b></p></div>
-        <div class="Radio--ribbon">
-          <input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">
-          <label>{{'GLOBAL.YES' | translate}}</label>
+
+        <div class="row no-gutters">
+          <label class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
+            <input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">
+            {{'GLOBAL.YES' | translate}}
+          </label>
         </div>
-        <div class="Radio--ribbon">
-          <input type="radio" name="RT" id="RT_no" value="true" (change)="seasonHazard($event)">
-          <label>{{'GLOBAL.NO' | translate}}</label>
+
+        <div class="row no-gutters">
+          <label class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
+            <input type="radio" name="RT" id="RT_no" value="true" (change)="seasonHazard($event)">
+            {{'GLOBAL.NO' | translate}}
+          </label>
         </div>
+
+        <!--<div class="Radio&#45;&#45;ribbon">-->
+          <!--<input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">-->
+          <!--<label>{{'GLOBAL.YES' | translate}}</label>-->
+        <!--</div>-->
+        <!--<div class="Radio&#45;&#45;ribbon">-->
+          <!--<input type="radio" name="RT" id="RT_no" value="true" (change)="seasonHazard($event)">-->
+          <!--<label>{{'GLOBAL.NO' | translate}}</label>-->
+        <!--</div>-->
+
         <button class="btn btn-outline-primary Spaced-above text-right" *ngIf="selectHazard"
                 (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASON_FROM_CALENDAR" | translate}}
         </button>
@@ -152,11 +168,11 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="closeModal()">
-            {{"GLOBAL.CANCEL" | translate}}
-          </button>
           <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
                   (click)="saveSelectSeasons('select-seasons')">{{"GLOBAL.SAVE" | translate}}
+          </button>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="closeModal()">
+            {{"GLOBAL.CANCEL" | translate}}
           </button>
         </div>
       </div>
@@ -217,10 +233,10 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
             <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
                     [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"GLOBAL.SAVE" | translate}}
             </button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
           </div>
         </div>
       </div>
