@@ -44,7 +44,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private officeTypeSelection = Constants.OFFICE_TYPE_SELECTION;
   private notificationsSettingsSelection = Constants.NOTIFICATION_SETTINGS;
 
-  private countryList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
   private supportSkillList: any;
   private techSkillsList: any;
@@ -137,7 +136,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         this.countryOffice = countryOffice;
       });
 
-    this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
     this.departmentList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
       .map(departments => {
         let names = [];

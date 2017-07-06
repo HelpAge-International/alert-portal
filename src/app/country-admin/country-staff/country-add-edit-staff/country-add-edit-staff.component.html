@@ -50,14 +50,9 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="c-Office">{{"COUNTRY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
-          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
-                  [required]="true" [disabled] = "countryOffice?.location">
-            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let country of countryList | async" [ngValue]="country"
-                    [selected]="country.location == countryOffice?.location">{{countryEnum[country.location] | translate}}
-            </option>
-          </select>
+          <label for="telephone">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
+          <input type="text" class="form-control" id="telephone" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+                 [(ngModel)]="phone" name="phone" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
@@ -88,14 +83,6 @@
                  [(ngModel)]="email" name="email" required>
         </div>
       </div>
-      <div class="row">
-        <div class="col-lg-4 col-md-6 form-group">
-          <label for="telephone">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
-          <input type="text" class="form-control" id="telephone" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
-                 [(ngModel)]="phone" name="phone" required>
-        </div>
-      </div>
-
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
       <div class="row">
         <label *ngFor="let support of supportSkillList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
