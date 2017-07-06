@@ -42,6 +42,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   public countryID: string;
 
   public indicatorData: any;
+  public oldIndicatorData;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -183,6 +184,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.getCountryID().then(() => {
         this._getHazards();
         this.getUsersForAssign();
+        this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
       });
 
       // get the country levels values
@@ -405,6 +407,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.object(urlToEdit)
             .set(dataToSave)
             .then(() => {
+              if(dataToSave.assignee && dataToSave.assignee != this.oldIndicatorData.assignee) {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", { indicatorName: dataToSave.name});
+                notification.time = new Date().getTime();
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => { });
+              }
               this.backToRiskHome();
               // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
               // return true;
