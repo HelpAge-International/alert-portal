@@ -20,6 +20,7 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
   private successMessage: string = "SYSTEM_ADMIN.SETTING.SETTING_SAVED";
   private isSaved: boolean = false;
 
+  // TODO: Change this to use FileExtensions in Enums
   private isPdf: boolean;
   private isDoc: boolean;
   private isDocx: boolean;
@@ -70,7 +71,7 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
       this.modelSystem.fileSettings = x.fileSettings;
       this.modelSystem.fileSize = x.fileSize;
       this.modelSystem.fileType = x.fileType;
-      this.modelSystem.genericAction = x.genericAction;
+      // this.modelSystem.genericAction = x.genericAction;
       //load file setting from database
       this.isPdf = x.fileSettings[FILE_SETTING.PDF];
       this.isDoc = x.fileSettings[FILE_SETTING.DOC];

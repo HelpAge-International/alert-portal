@@ -22,40 +22,42 @@
     <div class="row align-items-center Filter-form System-admin--form-wrap">
       <div class="col-lg-1 col-md-1 col-sm-1">{{"GLOBAL.FILTER" | translate}}</div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" [(ngModel)]="actionLevelSelected" (change)="filter()">
+        <select class="form-control" [(ngModel)]="actionLevelSelected">
           <option *ngFor="let level of levelsList" [value]="level">{{ActionPrepLevel[level] | translate}}</option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
-        <select class="form-control" [(ngModel)]="categorySelected" (change)="filter()">
+        <select class="form-control" [(ngModel)]="categorySelected">
           <option *ngFor="let category of categoriesList" [value]="category">{{Category[category] | translate}}</option>
         </select>
       </div>
     </div>
 
-    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && !isFiltered">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</div>
-    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && isFiltered">{{"GLOBAL.NO_FILTERED_RESULTS" | translate}}</div>
+    <div class="Empty--ribbon" *ngIf="actions.length == 0">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</div>
 
-    <div class="Data--ribbon row no-gutters Generic-action-item" *ngFor="let genericAction of genericActions | async">
-      <div class="col-md-1 col-sm-1 col-1 text-center">
-        <input type="checkbox" (change)="updateSelectedActions(genericAction)" onclick="gpaActionChanged(this)">
-      </div>
-      <div class="col-md-11 col-sm-11 col-11">
-        <div class="col-sm-12">
-          <label class="form-check-label"><p>{{genericAction.task}}</p>
-          </label>
+    <div *ngFor="let genericAction of actions">
+      <div class="Data--ribbon row no-gutters Generic-action-item" *ngIf="(actionLevelSelected == 0 || genericAction.level == actionLevelSelected) &&
+                                                                          (categorySelected == 0 || genericAction.category == categorySelected)">
+        <div class="col-md-1 col-sm-1 col-1 text-center">
+          <input type="checkbox" [(ngModel)]="genericAction.addNew">
         </div>
-        <div class="Info--ribbon--wrap">
-          <div class="col-md-4 col-sm-3 col-4">{{"GLOBAL.CATEGORY:" | translate}}<b>{{GenericActionCategory[genericAction.category]}}</b></div>
-
-          <div class="col-md-6 col-sm-9 col-8 gpa_action_department">{{"GLOBAL.DEPARTMENT:" | translate}}
-            <select class="form-control form-control-sm" onChange="addDepartmentModal(this, '#add_department')" (change)="setDepartment($event.target.value, genericAction)">
-              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-              <option *ngFor="let department of departments | async" value={{department}}>{{department.toString()}}</option>
-              <option value="addNewDepartment" class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_A_DEPARTMENT" | translate}}</option>
-            </select>
+        <div class="col-md-11 col-sm-11 col-11">
+          <div class="col-sm-12">
+            <label class="form-check-label"><p>{{genericAction.task}}</p>
+            </label>
           </div>
+          <div class="Info--ribbon--wrap">
+            <div class="col-md-4 col-sm-3 col-4">{{"GLOBAL.CATEGORY:" | translate}}<b>{{GenericActionCategory[genericAction.category]}}</b></div>
 
+            <div class="col-md-6 col-sm-9 col-8" *ngIf="genericAction.addNew">{{"GLOBAL.DEPARTMENT:" | translate}}
+              <select class="form-control form-control-sm" onChange="addDepartmentModal(this, '#add_department')" [(ngModel)]="genericAction.department">
+                <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                <option *ngFor="let department of departments" value={{department.id}}>{{department.name}}</option>
+                <option value="addNewDepartment" class="add-department">{{"AGENCY_ADMIN.MANDATED_PA.ADD_A_DEPARTMENT" | translate}}</option>
+              </select>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>

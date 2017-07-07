@@ -1,21 +1,19 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, ResponsePlanSectors} from '../../../utils/Enums';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-
-import {AlertMessageModel} from '../../../model/alert-message.model';
-import {ModelUserPublic} from '../../../model/user-public.model';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, UserType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {ModelUserPublic} from "../../../model/user-public.model";
 import {UserService} from "../../../services/user.service";
-import {DisplayError} from "../../../errors/display.error";
 import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
 import {CountryOfficeAddressModel} from "../../../model/countryoffice.address.model";
 import {ContactService} from "../../../services/contact.service";
 import {PointOfContactModel} from "../../../model/point-of-contact.model";
 import {ModelStaff} from "../../../model/staff.model";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-country-office-contacts',
@@ -24,11 +22,13 @@ import {Subject} from "rxjs/Subject";
 })
 
 export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
+  private userType: UserType;
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private isViewing: boolean;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -45,14 +45,15 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   private staffList: ModelStaff[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
               private _contactService: ContactService,
-              private router: Router) {
+              private router: Router, private af:AngularFire) {
     this.userPublicDetails = [];
     this.staffList = [];
-
   }
 
   ngOnDestroy() {
@@ -61,15 +62,27 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+      });
+
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
 
       this.uid = user.uid;
+      this.userType = userType;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-
-        this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-        this.countryId = countryAdminUser.countryId;
-
+      if (this.countryId && this.agencyId) {
         this._agencyService.getAgency(this.agencyId)
           .map(agency => {
             return agency as ModelAgency;
@@ -86,7 +99,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
               })
               .subscribe(countryOfficeAddress => {
                 this.countryOfficeAddress = countryOfficeAddress;
-              })
+              });
             this._contactService.getPointsOfContact(this.countryId)
               .subscribe(pointsOfContact => {
                 this.pointsOfContact = pointsOfContact;
@@ -100,8 +113,55 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
                 });
               });
           });
-      });
-    })
+      } else {
+
+        this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(countryId => {
+            this.countryId = countryId;
+
+            this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyId => {
+                this.agencyId = agencyId;
+              });
+
+            this._agencyService.getAgency(this.agencyId)
+              .map(agency => {
+                return agency as ModelAgency;
+              })
+              .subscribe(agency => {
+                this.agency = agency;
+
+                this._agencyService.getCountryOffice(this.countryId, this.agencyId)
+                  .map(countryOffice => {
+                    let countryOfficeAddress = new CountryOfficeAddressModel();
+                    countryOfficeAddress.mapFromObject(countryOffice);
+
+                    return countryOfficeAddress;
+                  })
+                  .subscribe(countryOfficeAddress => {
+                    this.countryOfficeAddress = countryOfficeAddress;
+                  });
+                this._contactService.getPointsOfContact(this.countryId)
+                  .subscribe(pointsOfContact => {
+                    this.pointsOfContact = pointsOfContact;
+                    this.pointsOfContact.forEach(pointOfContact => {
+                      this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
+                        this.userPublicDetails[pointOfContact.staffMember] = user;
+                      });
+                      this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
+                        this.staffList[pointOfContact.staffMember] = staff;
+                      });
+                    });
+                  });
+              });
+          });
+      }
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+        this.countryPermissionsMatrix = isEnabled;
+      }));
+    });
   }
 
   getPointOfContactName(id) {

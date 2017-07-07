@@ -24,7 +24,14 @@
             </div><br>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP' | translate }}</strong></h6>
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP' | translate }}</strong>
+                <!-- TOOLTIP 5.9 -->
+            <tooltip
+                [level1]="'Is the source of the surge equipment a supplier, partner, regional office, etc?'"
+            ></tooltip>
+                </h6>
+                
+
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="relationship"
                         [(ngModel)]="surgeEquipment.relationship">

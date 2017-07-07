@@ -54,20 +54,15 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="c-Office">{{"COUNTRY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
-          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
-                  [required]="true" [disabled] = "countryOffice?.location">
-            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let country of countryList | async" [ngValue]="country"
-                    [selected]="country.location == countryOffice?.location">{{countryEnum[country.location]}}
-            </option>
-          </select>
+          <label for="telephone">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
+          <input type="text" class="form-control" id="telephone" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+                 [(ngModel)]="phone" name="phone" required>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
+            <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
           </select>
         </div>
       </div>
@@ -88,7 +83,7 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-          <input type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+          <input [disabled]="isEdit" type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email" name="email" required>
         </div>
       </div>
@@ -107,9 +102,12 @@
         </tooltip>
         <!-- Tooltip partial end -->
       <div class="row">
-        <label *ngFor="let support of supportSkillList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-          <input type="checkbox" #box (change)="supportSkillCheck(support,box.checked)"
-              [checked]="skillsMap.get(support.$key)">{{support.name}}</label>
+        <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+          <label *ngIf="allSkills[skillKey].type == SupportSkill"
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+          <input type="checkbox" #box (change)="supportSkillCheck(allSkills[skillKey],box.checked)"
+                 [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
+        </template>
       </div>
 
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
@@ -122,6 +120,10 @@
         <label *ngFor="let tech of techSkillsList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="techSkillCheck(tech,box.checked)"
               [checked]="skillsMap.get(tech.$key)">{{tech.name}}</label>
+        <!--<template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+          <label *ngIf="allSkills[skillKey].type == TechSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
+          type="checkbox" #box (change)="techSkillCheck(allSkills[skillKey],box.checked)" [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
+        </template>-->
       </div>
 
       <div class="row Spaced">
@@ -168,10 +170,10 @@
       </div>
 
       <div class="Form-submit__wrapper">
-        <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+        <button *ngIf="!isEdit" class="btn btn-primary" type="submit">
           {{"COUNTRY_ADMIN.STAFF.SAVE_NEW_STAFF" | translate | uppercase}}
         </button>
-        <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validateForm()">
+        <button *ngIf="isEdit" class="btn btn-primary" type="submit">
           {{"COUNTRY_ADMIN.STAFF.SAVE_CHANGES" | translate | uppercase}}
         </button>
         <button class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL"| translate}}</button>
@@ -187,15 +189,17 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.STAFF.DELETE_DIALOG_TITLE" |
-          translate}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel">
+          <strong *ngIf="firstName && lastName">{{"GLOBAL.DELETE" | translate}} {{firstName + " " + lastName}}?</strong>
+          <strong *ngIf="!(firstName && lastName)">{{"GLOBAL.DELETE" | translate}}?</strong>
+        </h5>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{"COUNTRY_ADMIN.STAFF.DELETE_DIALOG_CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
         <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
     </div>
   </div>

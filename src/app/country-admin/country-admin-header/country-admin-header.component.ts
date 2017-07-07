@@ -8,6 +8,8 @@ import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NotificationService} from "../../services/notification.service";
+import { MessageModel } from "../../model/message.model";
 
 @Component({
   selector: 'app-country-admin-header',
@@ -17,6 +19,9 @@ import {PageControlService} from "../../services/pagecontrol.service";
 })
 
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
+
+  private UserType = UserType;
+  private userType: UserType;
 
   private alertLevel: AlertLevels;
   private alertTitle: string;
@@ -32,13 +37,20 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private countryLocation: any;
   private Countries = Countries;
+  private unreadMessages: MessageModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private isAmber: boolean;
   private isRed: boolean;
   private isAnonym: boolean = false;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private alertService: ActionsService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private _notificationService: NotificationService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private alertService: ActionsService,
+              private userService: UserService) {
   }
 
   ngOnInit() {
@@ -61,6 +73,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           this.userService.getUserType(this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(userType => {
+              this.userType = userType;
               this.USER_TYPE = Constants.USER_PATHS[userType];
               //after user type check, start to do the job
               if (this.USER_TYPE) {
@@ -83,14 +96,18 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.alertService.getAlerts(this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
-        alerts.forEach(alert => {
+        this.isRed = false;
+        this.isAmber = false;
+      alerts.forEach(alert => {
           if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
             this.isRed = true;
           }
-          if (alert.alertLevel == AlertLevels.Amber && alert.approvalStatus == AlertStatus.Approved) {
+          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
+            || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
             this.isAmber = true;
           }
         });
+
         if (this.isRed) {
           this.alertLevel = AlertLevels.Red;
           this.alertTitle = "ALERT.RED_ALERT_LEVEL";
@@ -114,6 +131,10 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  goToHome() {
+    this.router.navigateByUrl("/dashboard");
+  }
+  
   /**
    * Private functions
    */

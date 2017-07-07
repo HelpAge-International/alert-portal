@@ -9,6 +9,9 @@ import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
+import { MessageModel } from "../model/message.model";
+import { TranslateService } from "@ngx-translate/core";
+import { NotificationService } from "../services/notification.service";
 declare const jQuery: any;
 
 @Component({
@@ -23,11 +26,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   @Input() isViewing: boolean;
   @Input() countryIdForViewing: string;
   @Input() agencyIdForViewing: string;
+  @Input() canCopy: boolean;
+  @Input() agencyOverview: boolean;
 
   private isGlobalDirectorMap = new Map<string, boolean>();
 
   private dialogTitle: string;
   private dialogContent: string;
+  private dialogEditingUserName: string;
+  private dialogEditingUserEmail: string;
   private uid: string;
 
   private activePlans: any[] = [];
@@ -45,14 +52,19 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private service: ResponsePlanService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private service: ResponsePlanService,
+              private userService: UserService,
+              private notificationService: NotificationService,
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      console.log("isViewing: " + this.isViewing);
-      console.log("received country id: " + this.countryIdForViewing);
       if (this.isViewing) {
         this.countryId = this.countryIdForViewing;
         this.agencyId = this.agencyIdForViewing;
@@ -84,7 +96,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
         orderByChild: "isActive",
-        equalTo: true
+        equalTo: true 
       }
     })
       .takeUntil(this.ngUnsubscribe)
@@ -93,7 +105,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         for (let x of this.activePlans) {
           this.getNotes(x);
         }
-        console.log(this.activePlans);
         this.checkHaveApprovedPartners(this.activePlans);
       });
 
@@ -103,8 +114,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         equalTo: false
       }
     });
-
-    console.log("get response plan...");
   }
 
   private checkHaveApprovedPartners(activePlans: any[]) {
@@ -126,7 +135,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       //deal directors
       if (plan.approval) {
         let approvalKeys = Object.keys(plan.approval).filter(key => key != "partner");
-        console.log(approvalKeys);
         if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
           this.isGlobalDirectorMap.set(plan.$key, true);
         }
@@ -156,26 +164,53 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   viewResponsePlan(plan, isViewing) {
-    isViewing ? this.router.navigate(["/response-plans/view-plan", {
-      "id": plan.$key,
-      "isViewing": isViewing,
-      "countryId": this.countryIdForViewing,
-      "agencyId": this.agencyId
-    }]) : this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
+    if (isViewing) {
+      if (this.agencyOverview) {
+        this.router.navigate(["/response-plans/view-plan", {
+          "id": plan.$key,
+          "isViewing": isViewing,
+          "countryId": this.countryIdForViewing,
+          "agencyId": this.agencyId,
+          "canCopy": this.canCopy,
+          "agencyOverview": this.agencyOverview
+        }]);
+      } else {
+        this.router.navigate(["/response-plans/view-plan", {
+          "id": plan.$key,
+          "isViewing": isViewing,
+          "countryId": this.countryIdForViewing,
+          "agencyId": this.agencyId,
+          "canCopy": this.canCopy
+        }]);
+      }
+    } else {
+      this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
+    }
   }
 
   editResponsePlan(responsePlan) {
-    if(responsePlan.isEditing){
-      jQuery("#dialog-acknowledge").modal("show");
-      this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
-      this.dialogContent = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_CONTENT";
-      return;
+    if (responsePlan.isEditing && responsePlan.editingUserId != this.uid) {
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + responsePlan.editingUserId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(editingUser => {
+          jQuery("#dialog-acknowledge").modal("show");
+          this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
+          this.dialogContent = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_CONTENT";
+          this.dialogEditingUserName = editingUser.firstName + " " + editingUser.lastName;
+          this.dialogEditingUserEmail = editingUser.email;
+        });
+    }else{
+      this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
     }
-    this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
   }
 
   exportStartFund(responsePlan) {
     this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
+  }
+
+  exportProposal(responsePlan) {
+    //TODO - Export for proposal
+    //this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
   }
 
   submitForApproval(plan) {
@@ -214,11 +249,17 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         })
         .do(director => {
           if (director && director.$value) {
-            console.log("country director");
-            console.log(director);
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
-          } else {
+
+            // Send notification to country director
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => { });
+
+        } else {
             this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
@@ -237,9 +278,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         .first()
         .takeUntil(this.ngUnsubscribe)
         .subscribe(approvalSettings => {
-          // console.log("***");
-          // console.log(approvalSettings);
-          // console.log(approvalData);
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
             approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
@@ -247,12 +285,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
           } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
             console.log("regional enabled");
-            this.updateWithRegionalApproval(countryId, approvalData);
+            this.updateWithRegionalApproval(agencyId, countryId, approvalData);
           } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-            console.log("global enabled")
+            console.log("global enabled");
+            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
           } else {
             console.log("both directors enabled");
-            this.updateWithBothApproval(this.agencyId, countryId, approvalData);
+            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+            this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
           }
         });
     }
@@ -273,20 +313,26 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateWithRegionalApproval(countryId: string, approvalData: {}) {
+  private updateWithRegionalApproval(agencyId: string, countryId: string, approvalData: {}) {
 
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(id => {
-        console.log(id);
         if (id && id.$value && id.$value != "null") {
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
+
+          // Send notification to regional director
+          let notification = new MessageModel();
+          notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+          notification.time = new Date().getTime();
+          this.notificationService.saveUserNotification(id.$value, notification, UserType.RegionalDirector, agencyId, countryId).then(() => { });
         }
         this.updatePartnerValidation(countryId, approvalData);
       });
   }
 
-  private updateWithBothApproval(agencyId: string, countryId: string, approvalData: {}) {
+  private updateWithGlobalApproval(agencyId: string, countryId: string, approvalData: {}) {
     this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
       query: {
         orderByChild: "agencyAdmin/" + agencyId,
@@ -295,19 +341,25 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     })
       .first()
       .subscribe(globalDirector => {
-        console.log(globalDirector)
         if (globalDirector.length > 0 && globalDirector[0].$key) {
-          console.log(globalDirector[0].$key);
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
+
+          // Send notification to global director
+          let notification = new MessageModel();
+          notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+          notification.time = new Date().getTime();
+
+          this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => { });
         }
-        this.updateWithRegionalApproval(countryId, approvalData);
+        this.updatePartnerValidation(countryId, approvalData);
       });
   }
 
   closeModal(isAckModel: boolean) {
-    if (isAckModel){
+    if (isAckModel) {
       jQuery("#dialog-acknowledge").modal("hide");
-    }else{
+    } else {
       jQuery("#dialog-action").modal("hide");
     }
   }
@@ -355,7 +407,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         .first()
         .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
         for (let approval of approvalList) {
-          console.log(approval);
           if (approval["countryDirector"]) {
             this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
               .set(ApprovalStatus.NeedsReviewing);

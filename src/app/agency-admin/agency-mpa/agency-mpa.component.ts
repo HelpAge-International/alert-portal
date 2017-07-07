@@ -5,6 +5,8 @@ import {ActionLevel, ActionType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ModelDepartment} from "../../model/department.model";
+import {UserService} from "../../services/user.service";
 declare var jQuery: any;
 
 @Component({
@@ -16,32 +18,35 @@ declare var jQuery: any;
 export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  private isFiltered: boolean = false;
-  private actions: Observable<any>;
-  private ActionLevel = ActionLevel;
-  private departments: any[] = [];
-  private All_Department: string = "allDepartments"; // <option value="allDepartments">
-  private departmentSelected: string = this.All_Department;
-  private actionLevelSelected = 0;
+  private agencyId: string;
+
+  private departments: ModelDepartment[] = [];
+  private departmentSelected: string = "0";
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
-  private actionToDelete;
+  private ActionLevel = ActionLevel;
+  private actionLevelSelected = 0;
+
+  private actions: MandatedListModel[] = [];
+
+  private actionToDelete: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
-          query: {
-            orderByChild: "type",
-            equalTo: ActionType.mandated
-          }
+      this.uid = user.uid;
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyAdmin) => {
+          console.log(agencyAdmin);
+          this.agencyId = agencyAdmin.agencyId;
+          this.getDepartments();
+          this.getMandatedPrepActions();
         });
-        this.getDepartments();
     });
   }
 
@@ -50,126 +55,65 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  deleteAction(actionKey) {
+  protected deleteAction(actionKey: string) {
     this.actionToDelete = actionKey;
     jQuery("#delete-action").modal("show");
   }
 
-  deleteMandatedAction() {
-    console.log("Delete button pressed");
-    let actionPath: string = Constants.APP_STATUS + '/action/' + this.uid + '/' + this.actionToDelete;
-    this.af.database.object(actionPath).remove()
+  protected deleteMandatedAction() {
+    this.af.database.object(Constants.APP_STATUS + '/actionMandated/' + this.agencyId + '/' + this.actionToDelete).remove()
       .then(_ => {
-          console.log("Mandated preparedness action deleted");
           jQuery("#delete-action").modal("hide");
         }
       );
   }
 
-  closeModal() {
+  protected getMandatedPrepActions() {
+    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId + "/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.actions = [];
+        snap.forEach((snapshot) => {
+          let x: MandatedListModel = new MandatedListModel();
+          x.id = snapshot.key;
+          x.task = snapshot.val().task;
+          x.level = snapshot.val().level;
+          x.department = snapshot.val().department;
+          this.actions.push(x);
+        });
+      });
+  }
+
+  protected closeModal() {
     jQuery("#delete-action").modal("hide");
   }
 
-  editAction(actionKey) {
+  protected editAction(actionKey) {
     this.router.navigate(["/agency-admin/agency-mpa/create-edit-mpa", {id: actionKey}]);
   }
 
-  lookUpGenericActionsPressed() {
+  protected lookUpGenericActionsPressed() {
     this.router.navigate(['agency-admin/agency-mpa/add-generic-action']);
   }
 
-  filter() {
-    console.log("Selected Department ---- " + this.departmentSelected);
-
-    if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected == this.All_Department) {
-      //no filter. show all
-      this.isFiltered = false;
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      });
-    } else if (this.actionLevelSelected != ActionLevel.ALL && this.departmentSelected == this.All_Department) {
-      //filter only with mpa
-      this.isFiltered = true;
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.level == this.actionLevelSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    } else if (this.actionLevelSelected == ActionLevel.ALL && this.departmentSelected != this.All_Department) {
-      //filter only with apa
-      this.isFiltered = true;
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.department == this.departmentSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    } else {
-      // filter both action level and category
-      this.isFiltered = true;
-      this.actions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.uid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.level == this.actionLevelSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.department == this.departmentSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    }
-  }
-
   private getDepartments() {
-
-    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
-      .map(departmentList => {
-        let departments = [];
-        departmentList.forEach(x => {
-          departments.push(x.$key);
-        });
-        return departments;
-      })
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
-        this.departments = x;
+      .subscribe((snap) => {
+        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+        });
       });
   }
+}
 
+export class MandatedListModel {
+  public id: string;
+  public task: string;
+  public level: number;
+  public department: string;
 }

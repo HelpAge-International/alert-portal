@@ -48,9 +48,9 @@ export class HazardImages {
     map.set(10, "Icon--heavy-rain");
     map.set(11, "Icon--humanitarian-access");
     map.set(12, "Icon--insect-infestation");
-    map.set(13, "Icon--landslide-mudslide");
+    map.set(13, "Icon--landslide");
     map.set(14, "Icon--locust-infestation");
-    map.set(15, "Icon--landslide-mudslide");
+    map.set(15, "Icon--landslide");
     map.set(16, "Icon--population-displacement");
     map.set(17, "Icon--population-return");
     map.set(18, "Icon--snow-avalanche");

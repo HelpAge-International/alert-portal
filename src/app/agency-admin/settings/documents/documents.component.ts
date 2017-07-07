@@ -62,7 +62,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
         orderByChild: "location",
         equalTo: this.countriesFilterSubject
       }
-    }
+    };
   }
 
 

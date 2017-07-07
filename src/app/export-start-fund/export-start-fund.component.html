@@ -10,27 +10,31 @@
         <h1>Start Fund</h1>
         <a id="downloadLink" style="display:none;"></a>
 
-        <input type="button" onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport', 'tableBudgetReport', 'tableProjectActivities', 'tableTechnicalGuidance','tableGuidanceReport'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative', 'Report Budget', 'Project Activities', 'Technical Guidance', 'Guidance Report'])"
+        <input type="button" onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport', 'tableBudgetReport', 'tableProjectActivities', 'tableTechnicalGuidance','tableGuidanceReport', 'tableProjectActivity', 'tableReportingDataSheet', 'tableApplicationDatasheet'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative', 'Report Budget', 'Project Activities', 'Technical Guidance', 'Guidance Report', 'Activity Report', 'Reporting Datasheet', 'Application Datasheet'])"
                value="Download All"/>
-
       </div>
 
       <br>
 
       <div>
-        <!--Guidance Report-->
-        <div class="scrollingDiv">
-          <app-export-start-fund-guidance-report></app-export-start-fund-guidance-report>
-        </div>
-
-        <br>
-        <br>
 
         <!--Technical Guidance-->
         <div class="scrollingDiv">
           <app-export-start-fund-technical-guidance></app-export-start-fund-technical-guidance>
         </div>
 
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--Project Narrative-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-narrative></app-export-start-fund-project-narrative>
+        </div>
+
+        <br>
+        <br>
         <br>
         <br>
 
@@ -41,20 +45,6 @@
 
         <br>
         <br>
-
-        <!--Budget Report-->
-        <div class="scrollingDiv">
-          <app-export-start-fund-budget-report></app-export-start-fund-budget-report>
-        </div>
-
-        <br>
-        <br>
-
-        <!--Project Report-->
-        <div class="scrollingDiv">
-          <app-export-start-fund-project-report></app-export-start-fund-project-report>
-        </div>
-
         <br>
         <br>
 
@@ -65,10 +55,62 @@
 
         <br>
         <br>
+        <br>
+        <br>
 
-        <!--Project Narrative-->
+        <!--Application Datasheet-->
         <div class="scrollingDiv">
-          <app-export-start-fund-project-narrative></app-export-start-fund-project-narrative>
+          <app-export-start-fund-application-datasheet></app-export-start-fund-application-datasheet>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--Guidance Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-guidance-report></app-export-start-fund-guidance-report>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--Project Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-report></app-export-start-fund-project-report>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--Activity Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-activity-report></app-export-start-fund-project-activity-report>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--Budget Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-budget-report></app-export-start-fund-budget-report>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--Reporting Datasheet-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-reporting-datasheet></app-export-start-fund-reporting-datasheet>
         </div>
 
       </div>

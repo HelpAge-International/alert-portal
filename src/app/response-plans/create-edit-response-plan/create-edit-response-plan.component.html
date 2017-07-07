@@ -20,6 +20,8 @@
       </div>
     </div>
 
+    <div *ngIf="!totalSections && totalSections == 0" class="Empty--ribbon">{{"RESPONSE_PLANS.NO_SECTIONS_ENABLED" | translate}}</div>
+
     <div class="Ribbon__section__wrap Spaced">
 
 
@@ -316,8 +318,8 @@
                      [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
-            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
+            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part" [hidden]="!moduleAccess.countryOffice"
                      [checked]="isWorkingWithPartners"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
@@ -330,24 +332,28 @@
               <tooltip
               [level1]="'You will be offered the option to submit this plan to the partners named in this section, for their approval. Partner organisations need to be added in the country office profile before they can be named in this plan'">
               </tooltip>
-              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
+              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
+
                     <option value="null" hidden disabled selected>
                       {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
+
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations" 
+                      [value]="partnerOrganisation.$key"
+                      [selected]="partnerOrganisation.$key == partnerOrganisationsSelected[i]">
                       {{partnerOrganisation.organisationName}}
                     </option>
-                    <option value="addNewPartnerOrganisation" class="text-primary">+
-                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
-                    </option>
+                    <!--<option value="addNewPartnerOrganisation" class="text-primary">+-->
+                      <!--{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}-->
+                    <!--</option>-->
                   </select>
                 </div>
                 <div class="col-sm-6">
-                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(dropDown)"
-                     [hidden]="dropDown == 1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
+                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(i)"
+                     [hidden]="i == 0">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
                     | translate}}</a>
                 </div>
               </div>
@@ -369,7 +375,7 @@
 
 
       <!--Response Plan 4/10-->
-      <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]">
+      <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]">
         <div class="Ribbon__response" id="Ribbon__response__4">
           <div class="Ribbon__header__wrap">
             <div class="Ribbon__header__number"><span>{{sectionFourNum}}</span>{{"GLOBAL.OF" | translate}}
@@ -536,18 +542,20 @@
                 Persons not falling into the other categories but who have specific needs within the particular context (e.g., survivors of torture or violence, members of a particular ethnic or religious group, or other protection concerns). Either male or female.
                 If under age 18, use the Child at risk or Unaccompanied and seperated child wherever possible instead.'">
                 </tooltip>
-                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
+                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
-                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
-                      <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                      <option *ngFor="let group of groups">{{group | translate}}
+                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)" >
+                      <option hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                      <option *ngFor="let group of groups"
+                        [value]="group.$key"
+                        [selected] = "group.$key == selectedVulnerableGroups[i]">{{group.name | translate}}
                       </option>
                     </select>
                   </div>
                   <a href="javascript:void(0)" class="Remove__row__cta"
-                     (click)="removeVulnerableGroupDropDown(vulnerableGroupsDropDown)"
-                     [hidden]="vulnerableGroupsDropDown == 1">{{"GLOBAL.REMOVE"
+                     (click)="removeVulnerableGroupDropDown(i)"
+                     [hidden]="i == 0">{{"GLOBAL.REMOVE"
                     | translate}}</a>
                 </div>
                 <div class="form-group">
@@ -614,6 +622,21 @@
               <div class="form-group">
                 <label for="R-success">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.DESCRIBE_THE_RISKS_TEXT"
                   | translate}}</label>
+                  <!-- TOOLTIP 2.16 -->
+                  <tooltip
+                    [level1]="'Once the details of the planned activities have been defined it is important to identify risks that may impact on the successful implementation of the plan.'"
+                    [level2]="'Risks can be minimised in developing and  implementing minimum preparedness actions and in some cases advanced preparedness actions, that provide robust or alternative arrangements to foreseeable risks. Such risk may include but not be limited to
+                        •        Rapid or unexpected changes in the lead time and situation not anticipated in the disaster scenario.
+                        •        Loss of utilities or office space
+                        •        Limited agency capacity (staffing) for your or other agencies upon which you are relying
+                        •        The demands of maintaining existing programmes during the emergency phase.
+                        •        Limited supply structure and timely availability of good and services from suppliers
+                        •        Physical factors limiting access to the location and target beneficiaries – extreme remoteness, damage to physical infrastructure, loss of transport assets, competition for helicopters and airplanes, lack of fuel etc
+                        •        Safety and security issues – limitations on operations due to social and political tensions or conflict, armed parties, 
+                        •        Political factors – pressure to focus activities towards or away from particular areas or groups.
+                        •        Phasing your intervention – some activities will need to be implemented and perhaps completed before others done, failure to phase activities realistically may have negative consequences for the success of the plan.'">
+                  </tooltip>
+                
                 <textarea id="R-success" cols="30" rows="5" class="form-control"
                           [(ngModel)]="riskManagementPlanText"></textarea>
               </div>
@@ -670,7 +693,7 @@
                   <div *ngIf="activityMap.get(sector)?.length > 0">
                     <div *ngFor="let activity of activityMap.get(sector); index as i"
                          class="row Outlined Spaced align-items-center">
-                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i}}</div>
+                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
                       <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
                       <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
                         | translate}}</a></div>
@@ -688,6 +711,23 @@
                       <div class="col-lg-12 form-group">
                         <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
                           | translate}}</label>
+                          <!-- TOOLTIP 2.17 -->
+                          <tooltip
+                            [level1]="'Based on your plan goals and target population what are activities that you will implement in the event of a disaster.'"
+                            [level2]="'Example:
+                                          •        Activity: Distribution of hygiene kits to 4 target communities
+                                          •        Output: 500 Kits distributed within 4 target communities
+                                          •        KPI: 20% change in the proportion of households that report having access to hygiene items in the 4 targeted communities
+
+
+                                          When planning the activities you should consider the following: 
+                                          - The capacity of affected communities to respond
+                                          - The specialisms and expertise of your agency and partner organisations and others
+                                          - Your capacity and that of your partner agencies, other agencies and the government
+                                          - Lead time that can be provided by early warning (to inform choice and scale of anticipatory activities)
+                                          -  Geographical area impacted in relation to your usual operational area and those of partner agencies
+                                          - Access to impacted areas and target populations.'">
+                          </tooltip>
                         <input type="text" class="form-control" #name>
                       </div>
                     </div>
@@ -1237,53 +1277,24 @@
   </div>
 </div>
 
-<div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+
+<!--Navigate back confirmation modal-->
+<div class="modal fade" id="navigate-back" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Export MPA Notes</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
-        <div class="row">
-
-          <div class="col-lg-6">
-            <label>From</label>
-            <select class="form-control">
-              <option>15/02/2016</option>
-              <option>16/02/2016</option>
-              <option>17/02/2016</option>
-            </select>
-          </div>
-
-          <div class="col-lg-6">
-            <label>To</label>
-            <select class="form-control">
-              <option>15/02/2016</option>
-              <option>16/02/2016</option>
-              <option>17/02/2016</option>
-            </select>
-          </div>
-        </div>
-
-        <br>
-
-        <div class="row">
-          <div class="col-lg-12">
-            <label>Email Address</label>
-            <input type="text" class="form-control" placeholder="{{'GLOBAL.USER_INFO.EMAIL' | translate}}">
-          </div>
-        </div>
-
-
+        <div class="text-center"><p>Do you want to save your changes?</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.YES" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"| translate}}</button>
       </div>
     </div>
   </div>

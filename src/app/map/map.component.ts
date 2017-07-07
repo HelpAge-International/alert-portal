@@ -6,7 +6,7 @@ import {Countries} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
-import {PageControlService} from "../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
 declare var jQuery: any;
 
 @Component({
@@ -28,12 +28,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public agencyLogo: string;
 
-  public minThreshRed: number;
   public minThreshYellow: number;
   public minThreshGreen: number;
 
   private isDirector: boolean;
   private userTypePath: string;
+
+  public moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
@@ -65,7 +66,6 @@ export class MapComponent implements OnInit, OnDestroy {
         (departments) => {
           this.mDepartmentMap = departments;
           this.departments = [];
-          this.minThreshRed = this.mapHelper.minThreshRed;
           this.minThreshYellow = this.mapHelper.minThreshYellow;
           this.minThreshGreen = this.mapHelper.minThreshGreen;
           this.mDepartmentMap.forEach((value, key) => {
@@ -86,6 +86,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
       /** Load in the markers on the map! */
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
+        this.moduleAccess = isEnabled;
         if (isEnabled.riskMonitoring) {
           this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
             marker.setMap(this.mapHelper.map);
@@ -110,6 +111,8 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   public openMinimumPreparednessModal(countryCode: string) {
-    jQuery("#minimum-prep-modal-" + countryCode).modal("show");
+    if (this.moduleAccess.minimumPreparedness) {
+      jQuery("#minimum-prep-modal-" + countryCode).modal("show");
+    }
   }
 }

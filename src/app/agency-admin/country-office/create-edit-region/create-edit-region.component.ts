@@ -7,6 +7,7 @@ import {Countries, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-region',
@@ -458,13 +459,22 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     }
   }
 
+  openDeleteRegionModal() {
+    jQuery("#delete-region").modal("show");
+  }
+
+  closeModal() {
+    jQuery("#delete-region").modal("hide");
+  }
+
   deleteRegion() {
     console.log("delete region: " + this.regionId + "/");
+    this.closeModal();
     this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + "/" + this.regionId).remove().then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
     }, error => {
       console.log(error.message);
     });
   }
-
+  
 }

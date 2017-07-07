@@ -6,6 +6,10 @@ import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/platform-browser";
+import {Pair} from "../utils/bundles";
+import {SettingsService} from "./settings.service";
+import {PermissionSettingsModel} from "../model/permission-settings.model";
+import {Observable} from "rxjs/Observable";
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -31,13 +35,17 @@ export class AgencyModulesEnabled {
   public riskMonitoring: boolean;
   public responsePlan: boolean;
   public countryOffice: boolean;
+
   constructor() {
-    this.minimumPreparedness = false;
-    this.advancedPreparedness = false;
-    this.chsPreparedness = false;
-    this.riskMonitoring = false;
-    this.responsePlan = false;
-    this.countryOffice = false;
+    this.all(false);
+  }
+  all(type: boolean) {
+    this.minimumPreparedness = type;
+    this.advancedPreparedness = type;
+    this.chsPreparedness = type;
+    this.riskMonitoring = type;
+    this.responsePlan = type;
+    this.countryOffice = type;
   }
 }
 
@@ -49,6 +57,81 @@ export class AgencyPermissionObject {
   constructor(perm: PermissionsAgency, urls: string[]) {
     this.permission = perm;
     this.urls = urls;
+  }
+}
+
+export class CountryPermissionsMatrix {
+  public chsActions: {
+    Assign: boolean
+  };
+  public mandatedMPA: {
+    Assign: boolean;
+  };
+  public customMPA: {
+    Assign: boolean,
+    Edit: boolean,
+    New: boolean,
+    Delete: boolean
+  };
+  public mandatedAPA: {
+    Assign: boolean
+  };
+  public customAPA: {
+    Assign: boolean,
+    Edit: boolean,
+    New: boolean,
+    Delete: boolean
+  };
+  public notes: {
+    New: boolean,
+    Edit: boolean,
+    Delete: boolean
+  };
+  public countryContacts: {
+    New: boolean,
+    Edit: boolean,
+    Delete: boolean
+  };
+  // public crossCountrySameAgency: {
+  //   AddNote: boolean,
+  //   CopyAction: boolean,
+  //   Download: boolean,
+  //   Edit: boolean,
+  //   View: boolean,
+  //   ViewContacts: boolean
+  // };
+  // public interAgencyCrossCountry: {
+  //   AddNote: boolean,
+  //   CopyAction: boolean,
+  //   Download: boolean,
+  //   Edit: boolean,
+  //   View: boolean,
+  //   ViewContacts: boolean
+  // };
+  public other: {
+    DownloadDocuments: boolean,
+    UploadDocuments: boolean
+  };
+
+  constructor() {
+    this.all(false);
+  }
+
+  public static allTrue(): CountryPermissionsMatrix {
+    let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+    x.all(true);
+    return x;
+  }
+
+  all(type: boolean) {
+    this.chsActions = {Assign: type};
+    this.mandatedMPA = {Assign: type};
+    this.customMPA = {Assign: type, Edit: type, New: type, Delete: type};
+    this.mandatedAPA = {Assign: type};
+    this.customAPA = {Assign: type, Edit: type, New: type, Delete: type};
+    this.notes = {Delete: type, Edit: type, New: type};
+    this.countryContacts = {New: type, Edit: type, Delete: type};
+    this.other = {DownloadDocuments: type, UploadDocuments: type};
   }
 }
 
@@ -69,17 +152,25 @@ export class PageControlService {
   public static GlobalDirector = PageUserType.create(UserType.GlobalDirector, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -89,7 +180,7 @@ export class PageControlService {
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -99,7 +190,17 @@ export class PageControlService {
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
+    "risk-monitoring*",
+    "export-start-fund*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
+  ]);
+  public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
+    "dashboard*",
+    "map",
+    "map/map-countries-list",
     "risk-monitoring*",
     "export-start-fund*",
     "preparedness*",
@@ -112,24 +213,32 @@ export class PageControlService {
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static CountryAdmin = PageUserType.create(UserType.CountryAdmin, "dashboard", [
     "dashboard*",
     "preparedness*",
     "map",
-    "map/map-country-list",
+    "map/map-countries-list",
     "country-admin*",
     "response-plans*",
     "risk-monitoring*",
     "export-start-fund*",
+    "export-proposal*"
   ]);
-  public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", [
-  ]);
+  public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", []);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
     "director*",
     "map;isDirector=true",
-    "map/map-countries-list;isDirector=true"
+    "map/map-countries-list;isDirector=true",
+    "risk-monitoring*",
+    "preparedness*",
+    "response-plans*",
+    "country-admin*"
   ]);
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*"
@@ -151,9 +260,7 @@ export class PageControlService {
   public static ModuleAdvancedPreparedness = new AgencyPermissionObject(PermissionsAgency.AdvancedPreparedness, [
     "preparedness/advanced"
   ]);
-  public static ModuleCHSPreparedness = new AgencyPermissionObject(PermissionsAgency.CHSPreparedness, [
-
-  ]);
+  public static ModuleCHSPreparedness = new AgencyPermissionObject(PermissionsAgency.CHSPreparedness, []);
   public static ModuleResponsePlanning = new AgencyPermissionObject(PermissionsAgency.ResponsePlanning, [
     "response-plans",
     "response-plans/create-edit-response-plan",
@@ -162,9 +269,10 @@ export class PageControlService {
   public static ModuleCountryOffice = new AgencyPermissionObject(PermissionsAgency.CountryOffice, [
     "country-admin/country-office-profile/equipment/add-edit-equipment",
     "country-admin/country-office-profile/equipment/add-edit-surge-equipment",
-    "country-admin/country-office-profile/equipment"
+    "country-admin/country-office-profile/equipment",
+    "response-plans/add-partner-organisation;fromResponsePlans=true"
   ]);
-  public static ModuleRiskMonitoring= new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
+  public static ModuleRiskMonitoring = new AgencyPermissionObject(PermissionsAgency.RiskMonitoring, [
     "risk-monitoring",
     "risk-monitoring/add-hazard",
     "risk-monitoring/create-alert",
@@ -175,6 +283,7 @@ export class PageControlService {
    */
 
   public static pageControlMap: Map<UserType, PageUserType>;
+
   public static initPageControlMap() {
     if (this.pageControlMap == null) {
       this.pageControlMap = new Map<UserType, PageUserType>();
@@ -190,10 +299,13 @@ export class PageControlService {
       this.pageControlMap.set(UserType.CountryUser, PageControlService.CountryUser);
       this.pageControlMap.set(UserType.AgencyAdmin, PageControlService.AgencyAdmin);
       this.pageControlMap.set(UserType.SystemAdmin, PageControlService.SystemAdmin);
+      this.pageControlMap.set(UserType.PartnerUser, PageControlService.PartnerUser);
     }
     return this.pageControlMap;
   }
+
   public static moduleControlMap: AgencyPermissionObject[];
+
   public static initModuleControlArray() {
     if (this.moduleControlMap == null) {
       this.moduleControlMap = [];
@@ -210,23 +322,31 @@ export class PageControlService {
   constructor(private af: AngularFire) {
   }
 
+  /**
+   *  PAGE ACCESS FUNCTIONALITY FOR REGULAR USERS.
+   *
+   *  This does not include UserTypes of NetworkAdmin or NetworkCountryAdmin
+   * =============================================================================================
+   */
   public auth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
     PageControlService.auth(this.af, ngUnsubscribe, route, router, func, null);
   }
+
   public authObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType) => void) {
     PageControlService.auth(this.af, ngUnsubscribe, route, router, null, func);
   }
+
   private static auth(af: AngularFire, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
-                     authUser: (auth: firebase.User, userType: UserType) => void,
-                     authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
+                      authUser: (auth: firebase.User, userType: UserType) => void,
+                      authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
     af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
       if (auth) {
-        UserService.getUserType(af, auth.auth.uid).subscribe(userType => {
+        UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
           if (userType == null) {
             if (authUser != null) {
               authUser(auth.auth, null);
             }
-            else if (authObj != null){
+            else if (authObj != null) {
               authObj(auth, null);
             }
           }
@@ -268,6 +388,41 @@ export class PageControlService {
       }
     });
   }
+  // =============================================================================================
+
+  /**
+   * Method to return all the information you may need from firebase regarding admin
+   */
+  // TODO: New way of doing this, make the call return everything you need it for
+  private authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: string, agencyId: string, systemAdminId: string) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authAgencyAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryAdmins: string[], agencyId: string, systemAdminId: string) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authSystemAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, systemAdminId: string) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authNetworkAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+  private authNetworkCountry(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
+    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+    //
+    // });
+  }
+
+
+
+  // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
     for (let x of type.urls) {
@@ -280,6 +435,8 @@ export class PageControlService {
     return false;
   }
 
+
+  // Build the complete URL path from the ActivatedRoute param
   private static buildEndUrl(route: ActivatedRoute) {
     let parts: string = "";
     route.url.forEach((segments: UrlSegment[]) => {
@@ -297,6 +454,24 @@ export class PageControlService {
     return parts;
   }
 
+
+  /**
+   *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
+   *
+   *  This includes all user types.
+   * =============================================================================================
+   */
+  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
+    // TODO: Implement this functionality
+  }
+  // ========================================================================================================
+
+
+
+  /**
+   *  Agency Modules configurator and matrix for quick-enabling the settings
+   *  ========================================================================================================
+   */
   static agencyDisableMap(): Map<PermissionsAgency, PermissionsAgency[]> {
     let map: Map<PermissionsAgency, PermissionsAgency[]> = new Map<PermissionsAgency, PermissionsAgency[]>();
     map.set(PermissionsAgency.MinimumPreparedness, [PermissionsAgency.CHSPreparedness]);
@@ -326,7 +501,6 @@ export class PageControlService {
         fun(list);
       });
   }
-
   static agencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
     PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, uid, folder, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
@@ -367,4 +541,58 @@ export class PageControlService {
     }
     return false;
   }
+  // ========================================================================================================
+
+  /**
+   * Country Permissions Matrix for the Country Admin Permissions settings
+   */
+  static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
+    // TODO: Implement this
+    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+      .takeUntil(ngUnsubscribe)
+      .map((snap) => {
+        let agencyAdmin: string;
+        for (let x in snap.val().agencyAdmin) {
+          agencyAdmin = x;
+        }
+        return Pair.create(snap.val().countryId, agencyAdmin);
+      })
+      .flatMap((pair: Pair) => {
+        return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+      })
+      .takeUntil(ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val().hasOwnProperty('permissionSettings')) {
+          let s = snap.val().permissionSettings;
+          // Build the matrix
+          let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+          if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
+            x.all(true);
+          }
+          else {
+            x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
+            x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
+            x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
+            x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
+            x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
+            x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
+            x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
+            x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
+            x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
+            x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
+            x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
+            x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
+            x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
+            x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
+            x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
+            x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
+            x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
+            x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
+            x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+          }
+          fun(x);
+        }
+      });
+  }
+  // ========================================================================================================
 }

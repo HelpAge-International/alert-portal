@@ -1,119 +1,130 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
-
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
-
-<div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
-
-        <app-country-office-profile-menu></app-country-office-profile-menu>
-        
-        <div class="Sub-header-title__wrap">
-            <h2>{{ 'DOCUMENTS.TITLE_TEXT' | translate }}</h2>
-            <button type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
-                [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}</button>
-        </div>
-        <div class="row align-items-center Filter-form System-admin--form-wrap">
-            <div class="col-lg-1 col-md-1">
-                {{ 'GLOBAL.FILTER' | translate }}
-            </div>
-            <div class="col-lg-2 col-md-2">
-              <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
-                  <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
-                  <option *ngFor="let country of CountriesEnum; let i = index"
-                          [value]="country"
-                          [selected]="locationId == i">{{COUNTRIES[i] | translate}}</option>
-              </select>
-            </div>
-
-            <div class="col-lg-2 col-md-3">
-
-                <select class="form-control" id="Documents" [(ngModel)]="docTypeSelected" (change)="filter()">
-                   <option value="-1" selected>{{ 'DOCUMENTS.ALL_DOCUMENTS' | translate }}</option>
-                    <template ngFor let-docType [ngForOf]="DocTypeEnum" let-docTypeIdx="index">
-                      <option value="{{docType}}">{{DOCUMENT_TYPE[docTypeIdx] | translate}}</option>
-                    </template>
-                </select>
-            </div>
-            <div class="col-lg-3 col-md-3">
-                <select class="form-control" id="Uploader"  [(ngModel)]="userSelected" (change)="filter()">
-                    <option value="-1" selected>{{ 'DOCUMENTS.UPLOADED_BY_EVERYONE' | translate }}</option>
-                    <template ngFor let-user [ngForOf]="users" let-userIdx="index">
-                      <option value="{{users[userIdx].key}}">{{users[userIdx].fullName}}</option>
-                    </template>
-                </select>
-            </div>
-            <div class="offset-lg-1 col-lg-3 col-md-3">
-                <input #searchField type="text" class="form-control" onkeyup="collapseAll('.collapse', 'show')" name="search" (keyup)="searchByNameOrTitle(searchField.value)" placeholder="Search here">
-            </div>
-        </div>
-
-        <div class="Ribbon__section__wrap Spaced">
-        <template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
-        
-          <div class="Accordion--b-white Accordion__hide-links" >
-              <div class="row align-items-center no-gutters">
-                  <div class="col-sm-1 text-center">
-                      <label class="form-check-label">
-                          <input class="form-check-input" type="checkbox" id="check_{{country.$key}}" [(ngModel)]="country.selected" (change)="countryDocsSelected(country, $event.target)" value="">
-                      </label>
-                  </div>
-                  <div class="col-sm-11">
-                      <h2>{{COUNTRIES[country.location] | translate}}</h2>
-                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all" *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
-                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all" *ngIf="country.hasDocs">{{ 'GLOBAL.SHOW_ALL' | translate }}</a>
-                  </div>
-              </div>
-          </div>
-          <div class="Accordion__Content collapse" id="collapse{{country.$key}}">
-                  <div class="row Line-row Small-spaced Header">
-                  <div class="col-lg-1 col-md-1"></div>
-                  <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.MODULE' | translate }}</div>
-                  <div class="col-lg-3 col-md-3">{{ 'DOCUMENTS.TITLE' | translate }}</div>
-                  <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.NAME' | translate }}</div>
-                  <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.SIZE' | translate }}</div>
-                  <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
-                  <div class="col-lg-1 col-md-2">{{ 'DOCUMENTS.DATE' | translate }}</div>
-              </div>
-
-              <div class="row Line-row Small-spaced"  *ngFor="let doc of country.docsfiltered; let docIdx=index">
-                    <div class="col-lg-1 col-md-1 text-center">
-                        <label class="form-check-label">
-                            <input class="form-check-input check_{{country.$key}}" name="" type="checkbox" id="" value=""
-                                [(ngModel)]="doc.selected"
-                                (change)="selectDocument()">
-                        </label>
-                    </div>
-                    <div class="col-lg-1 col-md-1">{{DOCUMENT_TYPE[doc.module] | translate}}</div>
-                    <div class="col-lg-3 col-md-3">{{doc.title}}</div>
-                    <div class="col-lg-2 col-md-2">{{doc.fileName}}</div>
-                    <div class="col-lg-1 col-md-1">{{doc.size}}</div>
-                    <div class="col-lg-2 col-md-2">{{doc.uploadedBy}}</div>
-                    <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>                    
-              </div>
-          </div>
-        </template>
-    </div>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
 </div>
 
-<div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{ 'DOCUMENTS.DIALOG_EXPORT_TITLE' | translate }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="text-center"><p>{{ 'DOCUMENTS.DIALOG_EXPORT_CONTENT' | translate: { value: docsCount, value2: docsSize | number:'1.0-2'} }}</p></div>
-      </div>
-      <div class="modal-footer">
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
+                  (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
-        <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
 
+    <app-country-office-profile-menu></app-country-office-profile-menu>
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{ 'DOCUMENTS.TITLE_TEXT' | translate }}</h2>
+      <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
+              [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
+      </button>
+    </div>
+    <div class="row align-items-center Filter-form System-admin--form-wrap">
+      <div class="col-lg-1 col-md-1">
+        {{ 'GLOBAL.FILTER' | translate }}
+      </div>
+      <div class="col-lg-2 col-md-2">
+        <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
+          <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
+          <option *ngFor="let country of CountriesEnum; let i = index"
+                  [value]="country"
+                  [selected]="locationId == i">{{COUNTRIES[i] | translate}}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+
+        <select class="form-control" id="Documents" [(ngModel)]="docTypeSelected" (change)="filter()">
+          <option value="-1" selected>{{ 'DOCUMENTS.ALL_DOCUMENTS' | translate }}</option>
+          <template ngFor let-docType [ngForOf]="DocTypeEnum" let-docTypeIdx="index">
+            <option value="{{docType}}">{{DOCUMENT_TYPE[docTypeIdx] | translate}}</option>
+          </template>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-3">
+        <select class="form-control" id="Uploader" [(ngModel)]="userSelected" (change)="filter()">
+          <option value="-1" selected>{{ 'DOCUMENTS.UPLOADED_BY_EVERYONE' | translate }}</option>
+          <template ngFor let-user [ngForOf]="users" let-userIdx="index">
+            <option value="{{users[userIdx]?.key}}">{{users[userIdx]?.fullName}}</option>
+          </template>
+        </select>
+      </div>
+      <div class="offset-lg-1 col-lg-3 col-md-3">
+        <input #searchField type="text" class="form-control" onkeyup="collapseAll('.collapse', 'show')" name="search"
+               (keyup)="searchByNameOrTitle(searchField.value)" placeholder="Search here">
+      </div>
+    </div>
+
+    <div class="Ribbon__section__wrap Spaced">
+      <template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
+
+        <div class="Accordion--b-white Accordion__hide-links">
+          <div class="row align-items-center no-gutters">
+            <div class="col-sm-1 text-center">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" id="check_{{country.$key}}"
+                       [(ngModel)]="country.selected" (change)="countryDocsSelected(country, $event.target)" value="">
+              </label>
+            </div>
+            <div class="col-sm-11">
+              <h2>{{COUNTRIES[country.location] | translate}}</h2>
+              <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all"
+                 *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
+              <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all"
+                 *ngIf="country.hasDocs">{{ 'GLOBAL.SHOW_ALL' | translate }}</a>
+            </div>
+          </div>
+        </div>
+        <div class="Accordion__Content collapse" id="collapse{{country.$key}}">
+          <div class="row Line-row Small-spaced Header">
+            <div class="col-lg-1 col-md-1"></div>
+            <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.MODULE' | translate }}</div>
+            <div class="col-lg-3 col-md-3">{{ 'DOCUMENTS.TITLE' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.NAME' | translate }}</div>
+            <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.SIZE' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
+            <div class="col-lg-1 col-md-2">{{ 'DOCUMENTS.DATE' | translate }}</div>
+          </div>
+
+          <div class="row Line-row Small-spaced" *ngFor="let doc of country.docsfiltered; let docIdx=index">
+            <div class="col-lg-1 col-md-1 text-center">
+              <label class="form-check-label">
+                <input class="form-check-input check_{{country.$key}}" name="" type="checkbox" id="" value=""
+                       [(ngModel)]="doc.selected"
+                       (change)="selectDocument()">
+              </label>
+            </div>
+            <div class="col-lg-1 col-md-1">{{DOCUMENT_TYPE[doc.module] | translate}}</div>
+            <div class="col-lg-3 col-md-3">{{doc.title}}</div>
+            <div class="col-lg-2 col-md-2">{{doc.fileName}}</div>
+            <div class="col-lg-1 col-md-1">{{doc.size}}</div>
+            <div class="col-lg-2 col-md-2">{{doc.uploadedBy}}</div>
+            <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ 'DOCUMENTS.DIALOG_EXPORT_TITLE' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center"><p>{{ 'DOCUMENTS.DIALOG_EXPORT_CONTENT' | translate: { value: docsCount, value2:
+            docsSize | number:'1.0-2'} }}</p></div>
+        </div>
+        <div class="modal-footer">
+
+          <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
+
+        </div>
       </div>
     </div>
   </div>
-</div>

@@ -6,6 +6,7 @@ import {Countries, PhonePrefix} from '../../../utils/Enums';
 import {Observable, Subject} from 'rxjs';
 import {CountryOfficeAddressModel} from '../../../model/countryoffice.address.model';
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {CustomerValidator} from "../../../utils/CustomValidator";
 
 @Component({
   selector: 'app-new-country-details',
@@ -41,30 +42,30 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
-            this.countryAdminName = user.firstName;
-          });
-        this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(countryAdmin => {
-            // Get the country administrator id and agency administrator id
-            this.countryAdminCountryId = countryAdmin.countryId;
-            this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
+      this.uid = user.uid;
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.countryAdminName = user.firstName;
+        });
+      this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryAdmin => {
+          // Get the country administrator id and agency administrator id
+          this.countryAdminCountryId = countryAdmin.countryId;
+          this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
 
-            this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + "/" + this.countryAdminCountryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(countryOffice => {
-                // Get the country office location to pre populate the country select
-                this.CountryOfficeAddressModel.location = countryOffice.location;
+          this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + "/" + this.countryAdminCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryOffice => {
+              // Get the country office location to pre populate the country select
+              this.CountryOfficeAddressModel.location = countryOffice.location;
 
-                // Set the phone prefix
-                this.CountryOfficeAddressModel.phone = '+' + PhonePrefix[Countries[countryOffice.location]];
-              });
-            // If there are any errors raised by firebase, the Country select will not be disabled and will allow user input
-          });
+              // Set the phone prefix
+              this.CountryOfficeAddressModel.phone = '+' + PhonePrefix[Countries[countryOffice.location]];
+            });
+          // If there are any errors raised by firebase, the Country select will not be disabled and will allow user input
+        });
     });
   }
 
@@ -97,6 +98,14 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  validatePhoneNumber() {
+    if (CustomerValidator.PhoneNumberValidator(this.CountryOfficeAddressModel.phone)) {
+      this.alerts[this.CountryOfficeAddressModel.phone] = true;
+      this.errorMessage = 'There are letters in phone number';
+      this.showAlert();
+    }
+  }
+
   private showAlert() {
     this.errorInactive = false;
     Observable.timer(Constants.ALERT_DURATION)
@@ -117,17 +126,17 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
       this.alerts[this.CountryOfficeAddressModel.addressLine1] = true;
       this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
-    } else if (!(this.CountryOfficeAddressModel.location)) {
-      this.alerts[this.CountryOfficeAddressModel.location] = true;
-      this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_COUNTRY";
-      return false;
     } else if (!(this.CountryOfficeAddressModel.city)) {
       this.alerts[this.CountryOfficeAddressModel.city] = true;
       this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_CITY";
       return false;
-    } else if (!(this.CountryOfficeAddressModel.phone)) {
+    } else if (!(this.CountryOfficeAddressModel.phone) || (this.CountryOfficeAddressModel.phone == PhonePrefix[Countries[this.CountryOfficeAddressModel.location]])) {
       this.alerts[this.CountryOfficeAddressModel.phone] = true;
       this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_PHONE";
+      return false;
+    } else if (CustomerValidator.PhoneNumberValidator(this.CountryOfficeAddressModel.phone)) {
+      this.alerts[this.CountryOfficeAddressModel.phone] = true;
+      this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.INVALID_PHONE";
       return false;
     }
     return true;

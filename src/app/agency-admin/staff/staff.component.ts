@@ -7,6 +7,7 @@ import {Observable, Scheduler, Subject} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 
 @Component({
@@ -56,7 +57,8 @@ export class StaffComponent implements OnInit, OnDestroy {
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
   private globalUsers: any[] = [];
-  private departments: any[] = [];
+  private departments: ModelDepartment[] = [];
+  private departmentMap: Map<string, string> = new Map<string, string>();
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -78,18 +80,18 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private initData() {
     this.getStaffData();
-    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
-      .map(departmentList => {
-        let departments = [];
-        departmentList.forEach(x => {
-          departments.push(x.$key);
-        });
-        return departments;
-      })
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribeOn(Scheduler.async)
-      .subscribe(x => {
-        this.departments = x;
+      .subscribe(snap => {
+        this.departmentMap.clear();
+        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        });
       });
   }
 
@@ -414,7 +416,8 @@ export class StaffComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log(this.globalUsers)
+        console.log(this.globalUsers);
+        this.hideLoader = true;
       });
   }
 

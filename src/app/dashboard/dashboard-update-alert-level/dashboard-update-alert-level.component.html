@@ -31,17 +31,17 @@
                                                                              id="green-alert-level"
                                                                              [checked]="loadedAlert?.alertLevel==0"
                                                                              (click)="selectedAlertLevel(0)"><span
-            class="badge badge-success">{{"ALERT.GREEN_ALERT_LEVEL" | translate}}</span></label>
+            class="badge fixed badge-success">{{"ALERT.GREEN_ALERT_LEVEL" | translate}}</span></label>
           <label for="amber-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
                                                                              id="amber-alert-level"
                                                                              [checked]="loadedAlert?.alertLevel==1"
                                                                              (click)="selectedAlertLevel(1)"><span
-            class="badge badge-warning">{{"ALERT.AMBER_ALERT_LEVEL" | translate}}</span></label>
+            class="badge fixed badge-warning">{{"ALERT.AMBER_ALERT_LEVEL" | translate}}</span></label>
           <label for="red-alert-level" class="col-sm-4 text-nowrap"><input type="radio" name="alert-level"
                                                                            id="red-alert-level"
                                                                            [checked]="loadedAlert?.alertLevel==2"
                                                                            (click)="selectedAlertLevel(2)"><span
-            class="badge badge-danger">{{"ALERT.RED_ALERT_LEVEL" | translate}}</span></label>
+            class="badge fixed badge-danger">{{"ALERT.RED_ALERT_LEVEL" | translate}}</span></label>
         </div>
       </div>
     </div>

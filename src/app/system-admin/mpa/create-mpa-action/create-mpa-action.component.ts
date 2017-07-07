@@ -15,16 +15,20 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 
 export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
+  private editActionId: string = "";
+  private systemUid: string = "";
+
+  private editInitialDisable: boolean = false;
   private inactive: Boolean = true;
   private errorMessage: any;
   private alerts = {};
   private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
   private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
   private textArea: string;
-  private path: string;
+
   private isMpa: boolean = true;
+
   private forEditing: Boolean = false;
-  private idOfGenericActionToEdit: string;
   private categorySelected: string;
   private Category = GenericActionCategory;
   private categoriesList = [GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
@@ -37,20 +41,21 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.path = Constants.APP_STATUS+"/action/" + user.uid;
-    });
-
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
-          this.forEditing = true;
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.EDIT_MPA_APA';
           this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
-          this.loadGenericActionInfo(params["id"]);
-          this.idOfGenericActionToEdit = params["id"];
+          this.editActionId = params["id"];
+          this.editInitialDisable = true;
         }
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.systemUid = user.uid;
+          if (this.editActionId !== "") {
+            this.initialEditLoad();
+          }
+        });
       });
   }
 
@@ -63,74 +68,62 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
   onSubmit() {
     if (this.validate()) {
-
-      if (this.forEditing) {
-        this.editGenericAction();
-      } else {
-        this.addNewGenericAction();
-        this.inactive = true;
-      }
+      this.updateGenericAction();
     } else {
       this.showAlert();
     }
   }
 
-  mpaSelected() {
+  private initialEditLoad() {
+    this.af.database.object(Constants.APP_STATUS + "/actionGeneric/" + this.systemUid + "/" + this.editActionId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        console.log(snap.val());
+        if (snap.val() != null) {
+          this.textArea = snap.val().task;
+          this.isMpa = snap.val().level == ActionLevel.MPA;
+          this.categorySelected = GenericActionCategory[snap.val().category];
+        }
+        this.editInitialDisable = false;
+      })
+  }
+
+  protected mpaSelected() {
     this.isMpa = true;
   }
 
-  apaSelected() {
+  protected apaSelected() {
     this.isMpa = false;
   }
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
-
-  private loadGenericActionInfo(actionId: string) {
-    this.af.database.object(this.path + '/' + actionId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((action: GenericMpaOrApaAction) => {
-      this.textArea = action.task;
-      this.isMpa = action.level == ActionLevel.MPA ? true : false;
-      this.categorySelected = GenericActionCategory[action.category];
-    });
-  }
-
-  private addNewGenericAction() {
-
+  protected updateGenericAction() {
     let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let currentDateTime = new Date().getTime();
-
-    let newAction: GenericMpaOrApaAction = new GenericMpaOrApaAction();
-    newAction.task = this.textArea;
-    newAction.type = ActionType.mandated;
-    newAction.level = level;
-    newAction.category = GenericActionCategory[this.categorySelected];
-    newAction.createdAt = currentDateTime;
-
-    this.af.database.list(this.path).push(newAction)
-      .then(_ => {
-          console.log('New Generic action added');
-          this.router.navigateByUrl("/system-admin/mpa");
-        }
-      );
-  }
-
-  private editGenericAction() {
-
-    let level = this.isMpa ? ActionLevel.MPA : ActionLevel.APA;
-    let editedAction: GenericMpaOrApaAction = new GenericMpaOrApaAction();
-    editedAction.task = this.textArea;
-    editedAction.type = ActionType.mandated;
-    editedAction.level = level;
-    editedAction.category = GenericActionCategory[this.categorySelected];
-
-    this.af.database.object(this.path + "/" + this.idOfGenericActionToEdit).update(editedAction).then(_ => {
-        console.log('Generic action updated');
+    if (this.editActionId == "") {
+      // New
+      let valueToPush = {
+        task: this.textArea,
+        type: ActionType.mandated,
+        level: level,
+        category: GenericActionCategory[this.categorySelected],
+        createdAt: new Date().getTime()
+      };
+      this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + this.systemUid).push(valueToPush).then(_ => {
         this.router.navigateByUrl("/system-admin/mpa");
-      }
-    );
+      });
+    }
+    else {
+      // Update
+      let valueToUpdate = {
+        task: this.textArea,
+        type: ActionType.mandated,
+        level: level,
+        category: GenericActionCategory[this.categorySelected],
+        createdAt: new Date().getTime()
+      };
+      this.af.database.object(Constants.APP_STATUS + "/actionGeneric/" + this.systemUid + "/" + this.editActionId).update(valueToUpdate).then(_ => {
+        this.router.navigateByUrl("/system-admin/mpa");
+      });
+    }
   }
 
   private showAlert() {

@@ -34,7 +34,7 @@ Date.prototype.dstHourAdjustment = function() {
 CL_HOUR = 12;
 Date.prototype.stripTime = function(){
     // this is a mutator, so be careful with it
-    // when you get dates from external sources, copy the date first and then apply this fn
+    // when you get dates from external sources, copy the date f and then apply this fn
     this.setHours(CL_HOUR + this.dstHourAdjustment());
     this.setMinutes(0);
     this.setSeconds(0);
@@ -144,7 +144,7 @@ function Chronoline(domElement, events, options) {
     }
     var defaults = {
         defaultStartDate: null,  // the date furthest to the left on load. Defaults to today
-        startDate: null,  // start of the timeline. Defaults to first event date
+        startDate: null,  // start of the timeline. Defaults to f event date
         endDate: null,  // end of the timeline. Defauls to the last event date
 
         visibleSpan: 2592000000,  // in milliseconds,
@@ -744,7 +744,7 @@ function Chronoline(domElement, events, options) {
 
         var newEndMs = newEndDate.getTime();
 
-        if(t.drawnStartMs === null){  // first time
+        if(t.drawnStartMs === null){  // f time
             t.drawnStartMs = newStartMs;
             t.drawnEndMs = newEndMs;
             t.drawLabelsHelper(newStartMs, newEndMs);

@@ -13,10 +13,11 @@ export class ModelStaff extends BaseModel {
   public position: string;
   public officeType: number;
   public skill: string[] =[];
-  public training: string
+  public training: string;
   public notification: number[] =[];
   public isResponseMember: boolean;
   public updatedAt:number;
+  public notes = {};
 
   validate(excludedFields = []): AlertMessageModel {
     // TODO add validation

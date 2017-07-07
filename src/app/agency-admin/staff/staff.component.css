@@ -1,0 +1,14 @@
+/*text allignment bug fix for support skills and notifications*/
+ol,
+ul,
+dl {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+/*blue arrow in additional info*/
+.Popover__ribbon__arrow, .Popover__ribbon:before, .Popover__ribbon:after {
+  left: 69%;
+}

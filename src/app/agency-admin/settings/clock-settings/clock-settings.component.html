@@ -1,9 +1,10 @@
 <app-agency-admin-header></app-agency-admin-header>
 <app-agency-admin-menu></app-agency-admin-menu>
-<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
+                  (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
+  <div class="Full-page__wrap--inner">
 
     <app-settings-menu></app-settings-menu>
 
@@ -131,74 +132,7 @@
           </select>
         </div>
 
-	    <div class="Sub-header-title__wrap">
-	      <h2>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.TITLE_TEXT" | translate}}</h2>
-	      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVE_SETTINGS" | translate | uppercase}}</button>
-        <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">{{"GLOBAL.CANCEL" | translate}}</button>
       </div>
-	    <p>{{"AGENCY_ADMIN.SETTINGS.DEFAULT_AGENCY_CLOCK_SETTINGS_TEXT" | translate}}</p>
-	    <h4 class="System-admin--form-wrap">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING" | translate}}</h4>
-	    <div class="form-group">
-	        <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING_SHOW_LOGS" | translate}}</label>
-	        <div class="row">
-              <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorShowLogForFreq.value" [(ngModel)]="riskMonitorShowLogForFreq.value" name="riskMonitorShowLogForFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
-				</select>
-	          </div>
-              <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorShowLogForFreq.type" [(ngModel)]="riskMonitorShowLogForFreq.type" name="riskMonitorShowLogForFreq.type" required>
-					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
-				</select>
-	          </div>
-	        </div>
-	    </div>
-	    <div class="form-group">
-	      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING_HAZARD_VALID" | translate}}</label>
-	      <div class="row">
-	          <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorHazardFreq.value" [(ngModel)]="riskMonitorHazardFreq.value" name="riskMonitorHazardFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
-				</select>
-	          </div>
-              <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="riskMonitorHazardFreq.type" [(ngModel)]="riskMonitorHazardFreq.type" name="riskMonitorHazardFreq.type" required>
-					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
-				</select>
-	          </div>
-	      </div>
-	    </div>
-	    <h4 class="System-admin--form-wrap">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS" | translate}}</h4>
-	    <div class="form-group">
-	      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS_MPA" | translate}}</label>
-	      <div class="row">
-	          <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="preparednessFreq.value" [(ngModel)]="preparednessFreq.value" name="preparednessFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
-				</select>
-	          </div>
-	          <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="preparednessFreq.type" [(ngModel)]="preparednessFreq.type" name="preparednessFreq.type" required>
-					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
-				</select>
-	          </div>
-	      </div>
-	    </div>
-	    <h4 class="System-admin--form-wrap">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RESPONSE_PLANS" | translate}}</h4>
-	    <div class="form-group">
-	      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RESPONSE_PLANS_STATE" | translate}}</label>
-	      <div class="row">
-	          <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="responsePlansFreq.value" [(ngModel)]="responsePlansFreq.value" name="responsePlansFreq.value" required>
-					<option *ngFor="let duration of durations" [value]="duration">{{duration}}</option>
-				</select>
-	          </div>
-              <div class="col-lg-2 col-md-3">
-				<select class="form-control" id="responsePlansFreq.type" [(ngModel)]="responsePlansFreq.type" name="responsePlansFreq.type" required>
-					<option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}</option>
-				</select>
-	          </div>
-	      </div>
-	    </div>
     </div>
+  </div>
 </div>

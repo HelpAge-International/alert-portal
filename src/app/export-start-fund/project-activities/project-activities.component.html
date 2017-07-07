@@ -108,7 +108,7 @@
       <tr *ngFor="let activity of activityMap.get(sector.id)">
         <td style="background-color: #f8f8f8; text-align: left;"><p>{{SECTORS[sector.id] | translate}}</p></td>
         <td colspan="2" style="background: #f8f8f8; text-align: left;">{{activity.name}}<p></p></td>
-        <td colspan="2" style="background-color: #f8f8f8; text-align: left;"><p></p></td>
+        <td colspan="2" style="background-color: #f8f8f8; text-align: left;"><p>{{activity.output}}</p></td>
         <td colspan="2" style="background-color: #f8f8f8; text-align: left;"><p></p></td>
         <td colspan="2" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
         <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
