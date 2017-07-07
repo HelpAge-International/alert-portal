@@ -21,7 +21,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   private inactive: boolean = true;
   private errorMessage: any;
   private alerts = {};
-  private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION';
+  private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CHS_MPA.CHS_TITLE_TEXT';
   private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
 
   private textArea: string = "";

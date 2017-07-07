@@ -7,6 +7,9 @@ import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/platform-browser";
 import {Pair} from "../utils/bundles";
+import {SettingsService} from "./settings.service";
+import {PermissionSettingsModel} from "../model/permission-settings.model";
+import {Observable} from "rxjs/Observable";
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -534,29 +537,28 @@ export class PageControlService {
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
     // TODO: Implement this
-    if (userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
-      fun(CountryPermissionsMatrix.allTrue());
-    }
-    else {
-      af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
-        .takeUntil(ngUnsubscribe)
-        .map((snap) => {
-          let agencyAdmin: string;
-          for (let x in snap.val().agencyAdmin) {
-            agencyAdmin = x;
+    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+      .takeUntil(ngUnsubscribe)
+      .map((snap) => {
+        let agencyAdmin: string;
+        for (let x in snap.val().agencyAdmin) {
+          agencyAdmin = x;
+        }
+        return Pair.create(snap.val().countryId, agencyAdmin);
+      })
+      .flatMap((pair: Pair) => {
+        return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+      })
+      .takeUntil(ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val().hasOwnProperty('permissionSettings')) {
+          let s = snap.val().permissionSettings;
+          // Build the matrix
+          let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+          if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
+            x.all(true);
           }
-          return Pair.create(snap.val().countryId, agencyAdmin);
-        })
-        .flatMap((pair: Pair) => {
-          return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
-        })
-        .takeUntil(ngUnsubscribe)
-        .subscribe((snap) => {
-          if (snap && snap.val() && snap.val().hasOwnProperty('permissionSettings')) {
-            let s = snap.val().permissionSettings;
-            // Build the matrix
-            let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-            // CHSActions
+          else {
             x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
             x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
             x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
@@ -576,10 +578,10 @@ export class PageControlService {
             x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
             x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
             x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
-            fun(x);
           }
-        });
-    }
+          fun(x);
+        }
+      });
   }
   // ========================================================================================================
 }

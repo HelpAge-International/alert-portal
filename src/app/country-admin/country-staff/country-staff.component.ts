@@ -12,6 +12,7 @@ import {PartnerModel} from "../../model/partner.model";
 import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 @Component({
   selector: 'app-country-staff',
@@ -48,7 +49,8 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private partnerOrganisations: PartnerOrganisationModel[] = [];
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
-  private departments: any[] = [];
+  private departments: ModelDepartment[] = [];
+  private departmentMap: Map<string, string> = new Map<string, string>();
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -79,17 +81,18 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private initData() {
     this.getStaffData();
     this.getPartnerData();
-    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
-      .map(departmentList => {
-        let departments = [this.All_Department];
-        departmentList.forEach(x => {
-          departments.push(x.$key);
-        });
-        return departments;
-      })
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
-        this.departments = x;
+      .subscribe(snap => {
+        this.departments = [];
+        this.departmentMap.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        })
       });
   }
 

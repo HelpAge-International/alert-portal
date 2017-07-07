@@ -11,7 +11,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'angular-2-local-storage';
 import * as firebase from 'firebase';
 import {UserService} from "../../services/user.service";
-import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -20,6 +20,7 @@ import {
 } from "../../services/prepactions.service";
 import { MessageModel } from "../../model/message.model";
 import { TranslateService } from "@ngx-translate/core";
+import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 
 
@@ -37,22 +38,26 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
+  public myFirstName: string;
+  public myLastName: string;
 
   // Filters
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
-  private filterAssigned: string = this.uid;
+  private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
 
   // Data for the actions
   // --- Declared because we're missing out "inactive" in this page
   private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED"];
-  private DEPARTMENTS: string[] = [];
+  private DEPARTMENTS: ModelDepartment[] = [];
+  private DEPARTMENT_MAP: Map<string, string>  = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
+  private actionLevelEnum = ActionLevel;
 
   private allUnassigned: boolean = false;
   private allArchived: boolean = false;
@@ -88,6 +93,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   // Module permissions settings
   private modulesAreEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   protected prepActionService: PrepActionService = new PrepActionService();
 
   constructor(protected pageControl: PageControlService,
@@ -134,9 +140,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
           this.userType = userType;
-          this.filterAssigned = this.uid;
+          this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-          this.getStaffDetails(this.uid);
+          this.getStaffDetails(this.uid, true);
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+            this.permissionsAreEnabled = isEnabled;
+          });
 
           //overview
           if (this.agencyId && this.countryId && this.systemAdminId) {
@@ -157,11 +167,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               });
           }
 
-          if (this.userType == UserType.CountryAdmin) {
-            // Country admin not included as a staff member of the country, hence explicit import for me
-            this.getStaffDetails(this.uid);
-          }
-
           // Initialise the page control information
           PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
             this.modulesAreEnabled = isEnabled;
@@ -180,12 +185,18 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        for (const x in snap.val().departments) {
+        this.DEPARTMENTS = [];
+        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
           this.DEPARTMENTS.push(x);
-        }
+          this.DEPARTMENT_MAP.set(x.id, x.name);
+        });
       });
   }
 
@@ -209,12 +220,22 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Initialisation method for the staff under the country office
    */
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
   private initStaff() {
+    this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key);
+          this.getStaffDetails(snapshot.key, false);
         });
       });
   }
@@ -222,7 +243,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Get staff member public user data (names, etc.)
    */
-  public getStaffDetails(uid: string) {
+  public getStaffDetails(uid: string, isMe: boolean) {
     if (!this.CURRENT_USERS.get(uid)) {
       this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
@@ -233,6 +254,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
           this.updateUser(prepUser);
+
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
         });
     }
   }

@@ -591,10 +591,11 @@
             "EDIT_CHS_ACTION": "Edit CHS action",
             "SAVE_BUTTON_TEXT": "Save new action",
             "EDIT_BUTTON_TEXT": "Save changes",
+            "EDIT_CONFIRM_SAVE_CHANGES": "Changes saved",
             "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
             "CHS_MPA": {
-                "TITLE_TEXT": "CHS minimum preparedness actions",
+                "CHS_TITLE_TEXT": "CHS minimum preparedness actions",
                 "NO_ACTIONS": "No CHS actions have been created",
                 "CHS": "Chs",
                 "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
@@ -792,6 +793,7 @@
                 "DEPARTMENT_NEW_SUCCESS": "New department added",
                 "DEPARTMENT_SAVED_SUCCESS": "Department successfully saved",
                 "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed",
+                "DEPARTMENT_DELETING_ERROR": "Error deleting your departments",
                 "NO_DEPARTMENTS": "No departments are added to your agency"
             },
             "SKILLS": {
@@ -1609,7 +1611,7 @@
     "PREPAREDNESS": {
         "ASSIGN_TO": "Assign to",
         "ADD_A_DEPARTMENT": "+ Add a department",
-        "TITLE_TEXT_CREATE_PAGE": "Create new mandated preparedness action",
+        "TITLE_TEXT_CREATE_PAGE": "Create new custom action",
         "TITLE_TEXT_EDIT_PAGE": "Edit preparedness action",
         "BACK_BUTTON": "Preparedness actions",
         "TASK": "What needs to be done?",
@@ -1619,6 +1621,7 @@
         "DUE_DATE": "Due date",
         "FREQUENCY": "Frequency",
         "BUDGET": "Budget",
+        "BUDGET_NARRATIVE_ERROR": "An error occured submitting your budget narratives",
         "DOCUMENT_REQUIRED_COMPLETION": "Is a document required for completion",
         "SAVE_NEW_ACTION": "Save new action",
         "DELETE_ACTION_BUTTON": "Delete action",
