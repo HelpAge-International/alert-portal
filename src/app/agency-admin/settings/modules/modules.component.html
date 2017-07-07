@@ -15,6 +15,12 @@
         <div class="row Small-spaced align-items-center Header">
             <div class="col-lg-4 col-md-4 col-sm-12">{{"COUNTRY_ADMIN.SETTINGS.MODULES.MODULE" | translate}}</div>
             <div class="col-lg-5 col-md-5 col-sm-7">{{"COUNTRY_ADMIN.SETTINGS.MODULES.PRIVACY_SETTINGS" | translate}}</div>
+            <!--tooltip-->
+            <tooltip
+            [level1]="'Public = People outside your agency can see your data (excluding staff contact details)
+                       Private = Only staff members within your agency can see your data
+                       Network = Only staff from member agencies of a Network you are affiliated with can see your data'">
+            </tooltip>
             <div class="col-lg-3 col-md-3 col-sm-6">{{"COUNTRY_ADMIN.SETTINGS.MODULES.STATUS" | translate}}</div>
         </div>
         <template ngFor let-module [ngForOf]="modules" let-moduleIdx="index">

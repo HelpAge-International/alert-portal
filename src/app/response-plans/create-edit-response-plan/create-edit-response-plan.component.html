@@ -103,6 +103,17 @@
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
               | translate}}</label>
+              <!--tooltip-->
+              <tooltip
+              [level1]="'A scenario is a well evidenced story of what could happen; how a disaster might unfold.'"
+              [level2]="'Scenario development should not be overly time consuming and detailed. Given the level of uncertainty associated with projecting what future events will be like, a scenario should avoid developing unnecessary detail and focus on key elements that influence impact and response.
+              Two scenarios might be defined for a particular hazard; 
+                      most likely scenario (likelihood)
+                      worst case scenario (greatest severity of impact)
+              Choosing both scenarios for each hazard ensures that the demands of a larger event are effectively planned for (worst case scenario) as well as the requirements for responding to the event you are most likely going to respond to (most likely scenario)
+              For chronic threats such as conflict and food insecurity a “most likely” and “worst case” scenario approach may not be effective. Instead an intensification approach using a timeline may be preferable; where a worsening situation requiring ongoing expansion of operations over time is defined and allows planning for an evolving crisis.  
+              It is important to recognise that the situation will not be static but will change over the 4-6 weeks of initial response. Your disaster scenario should use historical data, any existing forecast information and local knowledge to try and estimate how the situation might change over that time; the situation may improve or get worse. '">
+              </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
@@ -127,6 +138,16 @@
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
               | translate}}</label>
+              <!--tooltip-->
+              <tooltip
+              [level1]="'Impact = how severe the impact of the event might be; largely controlled by the vulnerability and coping capacity of the exposed population and responding agencies.'"
+              [level2]="'Human Impact on your target population should be the focus in this section:
+
+              a. Impact statistics (number likely to be killed, injured, made homeless, displaced, otherwise affected and needing humanitarian assistance)
+              b. Demographic characteristics (SADDD)  and locations of those most badly affected needing immediate critical humanitarian response – rescue, urgent medical attention, water, food, security & shelter.
+              c. Economic impacts – markets, income, livelihoods, savings and so on.
+              d. Soci-epidemiological impacts – public access to health care, sanitation, displacement, information/communication, education, psychosocial support, religious needs, burial etc '">
+              </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
@@ -150,6 +171,9 @@
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
               | translate}}</label>
+              <tooltip
+              [level1]="'Early on in the planning process it is important to research and make clear all potential sources of funding available to support your planned response'">
+              </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
@@ -197,6 +221,10 @@
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WHAT_SECTORS?" | translate}}</label>
+            <!--tooltip-->
+            <tooltip
+            [level1]="'It is likely that your intended activities will align to cluster sectors defined by the UN. Your agency might intend to undertake activities under several sectors; for example WaSH and Health. It is useful to structure you planning arrangements with the cluster sectors in mind as any major response will be co-ordinated on the basis of these cluster themes.'">
+            </tooltip>
           </div>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
@@ -253,6 +281,11 @@
           <div class="form-group">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
               translate}}</label>
+            <!--tooltip-->
+            <tooltip
+            [level1]="'Is this plan for an intervention in a country that you have current programmes in, or working through partners, or a country you are not currently working in?'"
+            [level2]="'Your current activities in the effected country will influence the type of response you can launch and how it can best be delivered. You should consider whether you currently have active projects being delivered by your own field staff in the area; or if you don’t work there directly if you have a presence through a partner or perhaps you don’t have a presence in the area at all. This might also influence how you deliver your planned response – will you deploy your own field staff or work through partner agency staff?'">
+            </tooltip>
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
@@ -293,6 +326,10 @@
           <div class="row Spaced subitem" *ngIf="isWorkingWithPartners">
             <div class="col-lg-8 col-md-8">
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
+              <!--tooltip-->
+              <tooltip
+              [level1]="'You will be offered the option to submit this plan to the partners named in this section, for their approval. Partner organisations need to be added in the country office profile before they can be named in this plan'">
+              </tooltip>
               <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
@@ -350,6 +387,13 @@
               <div class="form-group">
                 <label for="n-exp-response">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
                   | translate}}</label>
+                <!--tooltip-->
+                <tooltip
+                [level1]="'Having established the broad sectors that your response will focus on, you should define a series of objectives for the overall plan. Objectives should written in such a way that each statement is specific, measurable, achievable and realistic in the timeframes. 
+                Next you should provide an overview of your intended response. You should 
+                •        Summarise your main activities and what will be achieved if the plan is implemented successfully
+                •        Explain why you have selected this particular form of response to the crisis – justification may be based on your area of expertise, locations in which you work, gaps in the collaborative response or specific analysis undertaken etc. since plans are likely to be shared is it important to justify the focus and type of response.'">
+                </tooltip>
                 <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
                           [(ngModel)]="proposedResponseText"></textarea>
               </div>
@@ -360,6 +404,14 @@
               <div class="form-group">
                 <label for="n-exp-act">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
                   | translate}}</label>
+                <!--tooltip-->
+                <tooltip
+                [level1]="'This is a 6 week plan. It is important to think about how you will begin your main activites as soon as possible, and to think about what you want to achieve in the first 6 weeks.
+
+                Explain how you will start your activities within 7 days of the event starting, activities which will be very similar to your advanced preparedness actions (which are covered further along in the preparedness planning process).
+
+                Also explain what plans will be implemented to move beyond the 45 day period covered by this initial plan (potentially early recovery activities)'">
+                </tooltip>
                 <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
                           [(ngModel)]="progressOfActivitiesPlanText"></textarea>
               </div>
@@ -370,6 +422,10 @@
               <div class="form-group">
                 <label for="n-exp-coo">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_COORDINATION_TEXT?"
                   | translate}}</label>
+                <!--tooltip-->
+                <tooltip
+                [level1]="'State how you will work with specific agencies, government departments, coordination mechanism and cluster groups to deliver the plan'">
+                </tooltip>
                 <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
                           [(ngModel)]="coordinationPlanText"></textarea>
               </div>
@@ -402,6 +458,11 @@
           <div class="form-group">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_MANY_BENEFICIARIES?" |
               translate}}</label>
+              <!--tooltip-->
+            <tooltip
+            [level1]="'A simple way of estimating the number of beneficiaries to target is to use an average of the number of people per household in the area and multiply this by the number of households that you intend to target.'"
+            [level2]="'You may have access to up to date and detailed information about the population in the exposed areas, in which case you may be able to provide quite accurate information about the number of potential households and beneficiaries that you will target. Alternatively, you may have to estimate beneficiaries. A simple way of estimating the number of beneficiaries to target is to use an average of the number of people per household in the area and multiply this by the number of households that you intend to target. '">
+            </tooltip>
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
@@ -440,6 +501,41 @@
               <div class="form-group">
                 <label for="n-Done">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
                   translate}}</label>
+                <!--tooltip-->
+                <tooltip
+                [level1]="'Depending on the expertise and areas of operation of your agency you may plan to target particular locations and specific demographics or groups of people with specific needs (sometimes referred to as vulnerable groups)'"
+                [level2]="'It is important to clearly define your target groups to ensure you reach the people you intend to reach and to ensure that no exposed location or groups of people with specific needs is missed during the collective response.
+
+                UNHCR categorise People with Specific Needs as follows:
+                Child or Adolescent at Risk:Child below the age of 18 who is especially at risk. If the risk is only related to their separated or unaccompanied status, see category (Unaccompanied and seperated child).
+
+                Unaccompanied and separated child: A boy or a girl under the age of 18 who is currently not under the care of either parent or other previous legal or customary primary caregiver. Separated children are those boys and girls separated from both parents, or from their previous legal or customary primary caregiver, but not necessarily from other relatives. Separated children may therefore include boys and girls accompanied by other adult family members. Unaccompanied children are children who have been separated from both parents and or other relatives and who are not being cared for by an adult who, by law or custom, is responsible for doing so.
+
+                Persons with disabilities: 
+                Adult or Child who is physically or mentally impaired by illness, injury or wounds which hinders the normal day to day activity and needs to be addressed to allow the person to function normally.
+
+                Older person at risk:
+                Male or female, 60 years of age or older. Often, older asylum-seekers have been separated from their usual caregivers. They may also suffer from health problems and/or have difficulty adjusting to their new environment and knowing where to seek assistance.
+                
+                Important Medical condition:
+                For individuals under the care and treatment of a medical doctor with conditions that may affect the identification of a durable solution (both positively and negatively) and the requirement of additional assistance in the country of asylum (both for treatment and nutritional and non-food items).
+                In case of disability use the Persons with disabilities category
+                
+                Single parent:
+                Single-parent household (Male or female 18 or older) with one or more dependents, all of whom are under the age of 18, in which the Head of Household (or Principal Applicant) is both the primary income earner and care provider.
+                If the single parent is under age 18, use the Child at risk or Unaccompanied and seperated child categories.
+
+                Woman at risk: 
+                Women who face protection risks particular to their gender, whether they are single heads of families, widowed, unaccompanied girls or accompanied by a male family member, as well as women that are survivors of violence. Protection problems include expulsion, refoulement and other security threats, sexual violence, physical abuse, intimidation, torture, economic hardship or marginalization, lack of integration prospects, community hostility, and different forms of exploitation.
+                If under age 18, use the Child at risk or Unaccompanied and seperated child wherever possible instead.
+
+                Pregnant or lactating: 
+                A temporary status to highlight medical assistance, nutritional enhancement or material requirements for women or girls during period of pregnancy or lactation.
+
+                Specific legal and physical protection needs:
+                Persons not falling into the other categories but who have specific needs within the particular context (e.g., survivors of torture or violence, members of a particular ethnic or religious group, or other protection concerns). Either male or female.
+                If under age 18, use the Child at risk or Unaccompanied and seperated child wherever possible instead.'">
+                </tooltip>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"

@@ -7,6 +7,14 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"RESPONSE_PLANS.HOME.TITLE" | translate}}</h1>
+      <tooltip
+      [level1]="'A scenario based response plan covers what needs to be done once there is a clear prospect of a hazard event causing a humanitarian impact'"
+      [level2]="'Planning in the abstract, with little thought to the possible scale and impacts of an event, is unlikely to be effective. In order to develop effective emergency plans an agency may choose to develop a range of possible disaster scenarios and then develop plans that are able to respond to the demands of those scenarios. 
+
+      It is likely that your agency will define several risks and scenarios and so need to develop several plans tailored to meet each of them. Each plan should have a clear and distinct title and be linked to the disaster scenario which it is based on. 
+
+      Undertake the response planning, then the related Advanced preparedness and Minimum preparedness and circling around again to the response plan will help make sure everything is covered, supported and linked as needed.'">
+      </tooltip>
       <button *ngIf="!isViewing" class="btn btn-primary" (click)="goToCreateNewResponsePlan()">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
       </button>
@@ -237,6 +245,9 @@
         <div class="row align-items-center no-gutters">
           <div class="col-sm-12">
             <h2>{{"RESPONSE_PLANS.HOME.ARCHIVED_PLANS" | translate}}</h2>
+            <tooltip
+            [level1]="'When a plan is reactivated it goes to the ‘Needs reviewing’ status. With all the approval requirements reset.'">
+            </tooltip>
             <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">{{"GLOBAL.HIDE_ALL" |
               translate}}</a>
             <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Show-all">{{"GLOBAL.SHOW_ALL" |
@@ -271,7 +282,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -288,6 +298,10 @@
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{dialogContent | translate}}</p></div>
+        <!--tooltip-->
+        <tooltip
+        [level1]="'Agencies that have been named as partners in the response plan'">
+        </tooltip>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}
