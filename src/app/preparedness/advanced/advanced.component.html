@@ -208,7 +208,7 @@
                         </div>
                       </div>
                       <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" >
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
                         <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
@@ -246,7 +246,7 @@
                     </div>
                     <div class="col-md-3 btn-block">
                       <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                         'ADD NOTE'}}</a>
                       <a href="javascript:void(0)" class="btn btn-block"
@@ -499,7 +499,7 @@
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" >
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
                             <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
@@ -537,7 +537,7 @@
                         </div>
                         <div class="col-md-3 btn-block">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                             'ADD NOTE'}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
@@ -753,7 +753,7 @@
                           </div>
                         </div>
                         <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" >
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
                           <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
@@ -791,7 +791,7 @@
                       </div>
                       <div class="col-md-3 btn-block">
                         <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                           'ADD NOTE'}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
@@ -956,7 +956,7 @@
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" >
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
                             <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
@@ -994,7 +994,7 @@
                         </div>
                         <div class="col-md-3 btn-block">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                                                || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                             'ADD NOTE'}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
@@ -1068,12 +1068,12 @@
       <div class="modal-body">
         <p class="col-sm-12"><strong>Assign to</strong></p>
         <div class="col-sm-12">
-          <select name="" id="" class="form-control" #assignee (change)="selectedAssignToo(assignee.value)" *ngIf="userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader">
+          <select name="" id="" class="form-control" [(ngModel)]="assignActionAsignee" *ngIf="userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.firstName + ' ' + x.lastName}}</option>
           </select>
           <!-- TODO: ADD PARTNER USER INTO THE IF STATEMENT HERE! -->
-          <select name="" id="" class="form-control" #assignee (change)="selectedAssignToo(assignee.value)" *ngIf="userType == UserType.Ert">
+          <select name="" id="" class="form-control" [(ngModel)]="assignActionAsignee" *ngIf="userType == UserType.Ert">
             <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
           </select>
         </div>
