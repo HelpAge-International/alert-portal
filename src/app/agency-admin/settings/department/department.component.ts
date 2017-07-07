@@ -84,8 +84,15 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   private initCanDeleteDepartments() {
-    // TODO: Agency Mandated Departments
-    // TODO: Delete all actions because I deleted the ones that weren't assigned
+    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          if (snapshot.val().hasOwnProperty('department')) {
+            this.canDeleteItem.set(snapshot.val().department, true);
+          }
+        });
+      });
     this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId, {preserveSnapshot: true})
       .map((snap) => {
         let ids: string[] = [];
@@ -103,7 +110,6 @@ export class DepartmentComponent implements OnInit, OnDestroy {
             .subscribe((snap) => {
               for (let x of snap) {
                 if (x.val().hasOwnProperty('department')) {
-                  console.log("Marking " + x.val().department + " as true");
                   this.canDeleteItem.set(x.val().department, true);
                 }
               }
