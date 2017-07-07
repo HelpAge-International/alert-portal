@@ -7,6 +7,7 @@ import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
 import {until} from "selenium-webdriver";
 import elementIsNotSelected = until.elementIsNotSelected;
+import {UserType} from "../utils/Enums";
 
 @Component({
   selector: 'app-login',
@@ -156,22 +157,37 @@ export class LoginComponent implements OnInit, OnDestroy {
   private regularLogin(successUid: string) {
     // Fire off list of calls to check if the user id exists under any one of the nodes
     // - If all of these fail, the results are aggregated in loginAllCallsFinished();
-    this.loginCheckingDeactivated(successUid, "administratorCountry",
-      Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
-      () => {
-        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
-      });
-    this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
-    this.loginCheckingDeactivated(successUid, "countryDirector",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
-      () => {
-        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
-      });
+    // loginCheckingDeactivate params
+    // => my id,
+    // => user type path,
+    // => go to if success,
+    // => go to if first login,
+    // => actions if the account is disabled()
+    // loginChecking params
+    // => my id,
+    // => user type path,
+    // => go to if success
+    // loginCheckingAgency params
+    // => my id,
+    // => user type path,
+    // => go to if success
+    // => go to if first login
     this.loginChecking(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginChecking(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginChecking(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginChecking(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginChecking(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME);
+    this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
+    this.loginCheckingDeactivated(successUid, "administratorCountry",
+      Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
+    this.loginCheckingDeactivated(successUid, "countryDirector",
+      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      () => {
+        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+      });
     this.loginCheckingDeactivated(successUid, "ertLeader",
       Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
       () => {
@@ -303,13 +319,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
+
   /**
    * Method ran when the login calls are finished for the system
    */
   private loginAllCallsFinished() {
     this.userChecks--;
     if (this.userChecks <= 0) {
-      // Run this logic
+      // Run this logic. This happens when it's none of the detected user types!
       this.showAlert(true, "LOGIN.USERTYPE_UNASSIGNED");
     }
   }

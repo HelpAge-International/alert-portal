@@ -92,22 +92,6 @@ export class CountryPermissionsMatrix {
     Edit: boolean,
     Delete: boolean
   };
-  // public crossCountrySameAgency: {
-  //   AddNote: boolean,
-  //   CopyAction: boolean,
-  //   Download: boolean,
-  //   Edit: boolean,
-  //   View: boolean,
-  //   ViewContacts: boolean
-  // };
-  // public interAgencyCrossCountry: {
-  //   AddNote: boolean,
-  //   CopyAction: boolean,
-  //   Download: boolean,
-  //   Edit: boolean,
-  //   View: boolean,
-  //   ViewContacts: boolean
-  // };
   public other: {
     DownloadDocuments: boolean,
     UploadDocuments: boolean
@@ -250,6 +234,17 @@ export class PageControlService {
    *  =========================================================================================
    */
 
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Dynamic module permissions objects
    *  =========================================================================================
@@ -319,8 +314,17 @@ export class PageControlService {
     return this.moduleControlMap;
   }
 
-  constructor(private af: AngularFire) {
+  constructor(private af: AngularFire, private userService: UserService) {
   }
+
+
+
+
+
+
+
+
+
 
   /**
    *  PAGE ACCESS FUNCTIONALITY FOR REGULAR USERS.
@@ -390,14 +394,23 @@ export class PageControlService {
   }
   // =============================================================================================
 
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Method to return all the information you may need from firebase regarding admin
    */
   // TODO: New way of doing this, make the call return everything you need it for
   private authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: string, agencyId: string, systemAdminId: string) => void) {
-    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-    //
-    // });
+    
   }
   private authAgencyAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryAdmins: string[], agencyId: string, systemAdminId: string) => void) {
     // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
@@ -419,6 +432,15 @@ export class PageControlService {
     //
     // });
   }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -455,6 +477,18 @@ export class PageControlService {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   /**
    *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
    *
@@ -465,6 +499,19 @@ export class PageControlService {
     // TODO: Implement this functionality
   }
   // ========================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -542,6 +589,22 @@ export class PageControlService {
     return false;
   }
   // ========================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * Country Permissions Matrix for the Country Admin Permissions settings
