@@ -11,6 +11,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import { NotificationService } from "../../services/notification.service";
+import { MessageModel } from "../../model/message.model";
 
 @Component({
   selector: 'app-create-alert',
@@ -27,6 +29,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   public uid: string;
   private countryID: string;
+  private agencyId: string;
   private directorCountryID: string;
   private alertData: any;
 
@@ -39,58 +42,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
   private countries = Constants.COUNTRIES;
-  private countriesList: number[] = [
-    Countries.GB, Countries.FR, Countries.DE, Countries.AF, Countries.AX,
-    Countries.AX, Countries.DZ, Countries.AS, Countries.AD, Countries.AO,
-    Countries.AI, Countries.AQ, Countries.AG, Countries.AR, Countries.AM,
-    Countries.AW, Countries.AU, Countries.AT, Countries.AZ, Countries.BS,
-    Countries.BH, Countries.BD, Countries.BB, Countries.BY, Countries.BY,
-    Countries.BZ, Countries.BJ, Countries.BM, Countries.BT, Countries.BO,
-    Countries.BQ, Countries.BA, Countries.BW, Countries.BV, Countries.BR,
-    Countries.IO, Countries.BN, Countries.BG, Countries.BF, Countries.BI,
-    Countries.KH, Countries.CM, Countries.CA, Countries.CV, Countries.KY,
-    Countries.CF, Countries.TD, Countries.CL, Countries.CN, Countries.CX,
-    Countries.CC, Countries.CO, Countries.KM, Countries.CG, Countries.CD,
-    Countries.CK, Countries.CR, Countries.CI, Countries.HR, Countries.CU,
-    Countries.CW, Countries.CY, Countries.CZ, Countries.DK, Countries.DJ,
-    Countries.DM, Countries.DO, Countries.EC, Countries.EG, Countries.SV,
-    Countries.GQ, Countries.ER, Countries.EE, Countries.ET, Countries.FK,
-    Countries.FO, Countries.FJ, Countries.FI, Countries.GF, Countries.PF,
-    Countries.TF, Countries.GA, Countries.GM, Countries.GE, Countries.GH,
-    Countries.GI, Countries.GR, Countries.GL, Countries.GD, Countries.GP,
-    Countries.GU, Countries.GT, Countries.GG, Countries.GN, Countries.GW,
-    Countries.GY, Countries.HT, Countries.HM, Countries.VA, Countries.HN,
-    Countries.HK, Countries.HU, Countries.IS, Countries.IN, Countries.ID,
-    Countries.IR, Countries.IQ, Countries.IE, Countries.IM, Countries.IL,
-    Countries.IT, Countries.JM, Countries.JP, Countries.JE, Countries.JO,
-    Countries.KZ, Countries.KE, Countries.KE, Countries.KI, Countries.KP,
-    Countries.KR, Countries.KW, Countries.KG, Countries.LA, Countries.LV,
-    Countries.LB, Countries.LS, Countries.LR, Countries.LY, Countries.LI,
-    Countries.LT, Countries.LU, Countries.MO, Countries.MK, Countries.MG,
-    Countries.MW, Countries.MY, Countries.MV, Countries.ML, Countries.MT,
-    Countries.MH, Countries.MQ, Countries.MR, Countries.MU, Countries.YT,
-    Countries.MX, Countries.FM, Countries.MD, Countries.MC, Countries.MN,
-    Countries.ME, Countries.MS, Countries.MA, Countries.MZ, Countries.MM,
-    Countries.NA, Countries.NR, Countries.NP, Countries.NL, Countries.NC,
-    Countries.NZ, Countries.NI, Countries.NE, Countries.NG, Countries.NU,
-    Countries.NF, Countries.MP, Countries.NO, Countries.OM, Countries.PK,
-    Countries.PW, Countries.PS, Countries.PA, Countries.PG, Countries.PY,
-    Countries.PE, Countries.PH, Countries.PN, Countries.PL, Countries.PT,
-    Countries.PR, Countries.QA, Countries.RE, Countries.RO, Countries.RU,
-    Countries.RW, Countries.BL, Countries.SH, Countries.KN, Countries.LC,
-    Countries.MF, Countries.PM, Countries.VC, Countries.WS, Countries.SM,
-    Countries.ST, Countries.SA, Countries.SN, Countries.RS, Countries.SC,
-    Countries.SL, Countries.SG, Countries.SX, Countries.SK, Countries.SI,
-    Countries.SB, Countries.SO, Countries.ZA, Countries.GS, Countries.SS,
-    Countries.ES, Countries.LK, Countries.SD, Countries.SR, Countries.SJ,
-    Countries.SZ, Countries.SE, Countries.CH, Countries.SY, Countries.TW,
-    Countries.TJ, Countries.TZ, Countries.TH, Countries.TL, Countries.TG,
-    Countries.TK, Countries.TO, Countries.TT, Countries.TN, Countries.TR,
-    Countries.TM, Countries.TC, Countries.TV, Countries.UG, Countries.UA,
-    Countries.AE, Countries.US, Countries.UM, Countries.UY, Countries.UZ,
-    Countries.VU, Countries.VE, Countries.VN, Countries.VG, Countries.VI,
-    Countries.WF, Countries.EH, Countries.YE, Countries.ZM, Countries.ZW
-  ];
+  private countriesList = Constants.COUNTRY_SELECTION;
   private frequency = new Array(100);
 
   private countryLevels: any[] = [];
@@ -100,7 +52,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private hazards: any[] = [];
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private _commonService: CommonService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private _commonService: CommonService,
+              private translate: TranslateService,
+              private userService: UserService,
+              private notificationService: NotificationService) {
     this.initAlertData();
   }
 
@@ -123,6 +82,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this.UserType = userType;
 
       this._getCountryID().then(() => {
+        this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
         this._getHazards();
         this._getDirectorCountryID();
       });
@@ -154,7 +114,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
         this.alertData.approval['countryDirector'] = [];
-        this.alertData.approval['countryDirector'][this.directorCountryID] = 0;
+        this.alertData.approval['countryDirector'][this.directorCountryID] = (this.alertData.alertLevel == AlertLevels.Red ? 0 : 1);
         this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
 
         var dataToSave = this.alertData;
@@ -162,8 +122,23 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
           .then(() => {
+
+            if(dataToSave.alertLevel == 2)
+            {
+              // Send notification to users with Red alert notification
+              const redAlertNotificationSetting = 1;
+              const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[dataToSave.hazardScenario]);
+              
+              let notification = new MessageModel();
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", { riskName: riskNameTranslated});
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", { riskName: riskNameTranslated});
+              notification.time = new Date().getTime();
+              
+              this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, redAlertNotificationSetting, this.agencyId, this.countryID);
+            }
+            
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
-            this.initAlertData();
+            this.router.navigateByUrl('dashboard');
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });
@@ -182,18 +157,18 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
-    let excludeFields = [];
-    let countryLevel1Exists = operationArea.country
-      && this.countryLevelsValues[operationArea.country].levelOneValues
-      && this.countryLevelsValues[operationArea.country].levelOneValues.length > 0;
-    if (!countryLevel1Exists) {
-      excludeFields.push("level1", "level2");
-    } else if (countryLevel1Exists && operationArea.level1
-      && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
-      || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level2].length < 1)) {
-      excludeFields.push("level2");
-    }
-    this.alertMessage = operationArea.validate(excludeFields);
+    // let excludeFields = [];
+    // let countryLevel1Exists = operationArea.country
+    //   && this.countryLevelsValues[operationArea.country].levelOneValues
+    //   && this.countryLevelsValues[operationArea.country].levelOneValues.length > 0;
+    // if (!countryLevel1Exists) {
+    //   excludeFields.push("level1", "level2");
+    // } else if (countryLevel1Exists && operationArea.level1
+    //   && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
+    //   || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level2].length < 1)) {
+    //   excludeFields.push("level2");
+    // }
+    this.alertMessage = operationArea.validate([]);
     return this.alertMessage;
   }
 

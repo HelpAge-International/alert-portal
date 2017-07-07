@@ -1,12 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
-import {Constants} from '../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType} from '../../../utils/Enums';
-import {AlertMessageModel} from '../../../model/alert-message.model';
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
+import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
 
@@ -18,11 +17,31 @@ declare var jQuery: any;
 
 export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
+  private isEdit = false;
+  private canEdit = true; // TODO check the user type and see if he has editing permission
+  private USER_TYPE = UserType;
+
+  private isViewing: boolean;
+  private UserType: number;
+
   private alertMessageType = AlertMessageType;
-  private alertMessage: AlertMessageModel = null; 
+  private alertMessage: AlertMessageModel = null;
   private uid: string;
   private countryID: string;
+
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
+  private ResponsePlanSectorsIcons = Constants.RESPONSE_PLANS_SECTORS_ICONS;
+
+  private mapping: any[] = [];
+  private sectorExpertise: any[] = [];
+  private logContent: any[] = [];
+  private noteTmp: any[] = [];
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private agencyId: string;
+
+
+  private TmpSectorExpertise: any[] = [];
   private ResponsePlanSectorsList: number[] = [
     ResponsePlanSectors.wash,
     ResponsePlanSectors.health,
@@ -31,21 +50,15 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.foodSecurityAndLivelihoods,
     ResponsePlanSectors.protection,
     ResponsePlanSectors.education,
-    ResponsePlanSectors.campManagement,
-    ResponsePlanSectors.other
+    ResponsePlanSectors.campManagement
   ];
 
-  private mapping: any[] = [];
-  private sectorExpertise: any[] = [];
-  private logContent: any[] = [];
-  private noteTmp: any[] = [];
-
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private router: Router,
-              private _userService: UserService,
+              private userService: UserService,
               private af: AngularFire) {
 
   }
@@ -56,12 +69,37 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this._getCountryID().then(() => {
-        this._getProgramme();
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          if (this.isViewing) {
+            this._getProgramme();
+          } else {
+            this._getCountryID().then(() => {
+              this._getProgramme();
+            });
+          }
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
+
+        });
       });
-    });
+
   }
 
   saveNote(programmeID: any) {
@@ -85,10 +123,13 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToEditProgramme() {
-    this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
+  editProgramme() {
+    this.isEdit = true;
   }
 
+  showProgramme() {
+    this.isEdit = false;
+  }
 
   _getProgramme() {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID)
@@ -126,8 +167,12 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           this.sectorExpertise.push(obj);
         }
 
-        console.log(this.mapping);
-
+        // Adding to select sector expertise pop up list
+        if (this.sectorExpertise && this.sectorExpertise.length > 0) {
+          this.sectorExpertise.forEach((val, key) => {
+            this.TmpSectorExpertise[val.key] = true;
+          });
+        }
       });
   }
 
@@ -166,11 +211,10 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   _getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryID: any) => {
           this.countryID = countryID.$value ? countryID.$value : "";
-          console.log(this.countryID);
           res(true);
         });
     });
@@ -193,6 +237,56 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     });
 
     return result;
+  }
+
+  selectedSectors(event: any, sectorID: any) {
+
+    // Checking for selected
+    var stateElement: boolean = true;
+    var className = event.srcElement.className;
+    const pattern = /.Selected/;
+    if (!pattern.test(className)) {
+      stateElement = false;
+    }
+
+    if (stateElement) {
+      this.TmpSectorExpertise[sectorID] = true;
+    } else {
+      if (this.TmpSectorExpertise && this.TmpSectorExpertise.length > 0) {
+        delete this.TmpSectorExpertise[sectorID];
+      }
+    }
+  }
+
+  saveSectors() {
+
+    if (!this.TmpSectorExpertise || !this.TmpSectorExpertise.length) {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
+      return false;
+    }
+    var dataToUpdate = {};
+    this.TmpSectorExpertise.forEach((val, key) => {
+      if (val) {
+        dataToUpdate[key] = val;
+      }
+    });
+    this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
+      .set(dataToUpdate)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);
+      }).catch(error => {
+      console.log("Message creation unsuccessful" + error);
+    });
+  }
+
+  setSelectorClass(sectorID: any) {
+    var selected = '';
+    this.sectorExpertise.forEach((val, key) => {
+      if (val.key == sectorID) {
+        selected = 'Selected';
+      }
+    });
+    return selected;
   }
 
 }

@@ -46,9 +46,10 @@
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.location]}">
               <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
-              <select name="Country" [disabled] = "CountryOfficeAddressModel.location" id="Country" class="form-control" [(ngModel)]="CountryOfficeAddressModel.location">
-                <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
-              </select>
+              <input type="text" class="form-control" id="Country" placeholder="{{'GLOBAL.COUNTRY' | translate}}" disabled value="{{Country[CountryOfficeAddressModel.location] | translate}}"/>
+              <!--<select name="Country" [disabled] = "CountryOfficeAddressModel.location" id="Country" class="form-control" [(ngModel)]="CountryOfficeAddressModel.location">-->
+                <!--<option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>-->
+              <!--</select>-->
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
@@ -68,7 +69,7 @@
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.phone]}">
               <label for="T-number">{{"GLOBAL.USER_INFO.PHONE" | translate}}*</label>
-              <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.phone">
+              <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="CountryOfficeAddressModel.phone" (change)="validatePhoneNumber()">
             </div>
           </div>
         </div>

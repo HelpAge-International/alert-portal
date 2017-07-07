@@ -20,6 +20,8 @@
       </div>
     </div>
 
+    <div *ngIf="!totalSections && totalSections == 0" class="Empty--ribbon">{{"RESPONSE_PLANS.NO_SECTIONS_ENABLED" | translate}}</div>
+
     <div class="Ribbon__section__wrap Spaced">
 
 
@@ -283,8 +285,8 @@
                      [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
-            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
+            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part" [hidden]="!moduleAccess.countryOffice"
                      [checked]="isWorkingWithPartners"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
@@ -297,15 +299,17 @@
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
+
                     <option value="null" hidden disabled selected>
                       {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
+
                     <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
                       {{partnerOrganisation.organisationName}}
                     </option>
-                    <option value="addNewPartnerOrganisation" class="text-primary">+
-                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
-                    </option>
+                    <!--<option value="addNewPartnerOrganisation" class="text-primary">+-->
+                      <!--{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}-->
+                    <!--</option>-->
                   </select>
                 </div>
                 <div class="col-sm-6">
@@ -332,7 +336,7 @@
 
 
       <!--Response Plan 4/10-->
-      <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]">
+      <div *ngIf="responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]">
         <div class="Ribbon__response" id="Ribbon__response__4">
           <div class="Ribbon__header__wrap">
             <div class="Ribbon__header__number"><span>{{sectionFourNum}}</span>{{"GLOBAL.OF" | translate}}
@@ -445,7 +449,7 @@
                     <select class="form-control" id="ff"
                             (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
                       <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                      <option *ngFor="let group of groups">{{group | translate}}
+                      <option *ngFor="let group of groups">{{group.name | translate}}
                       </option>
                     </select>
                   </div>
@@ -589,7 +593,7 @@
                   <div *ngIf="activityMap.get(sector)?.length > 0">
                     <div *ngFor="let activity of activityMap.get(sector); index as i"
                          class="row Outlined Spaced align-items-center">
-                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i}}</div>
+                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
                       <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
                       <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
                         | translate}}</a></div>
@@ -1173,53 +1177,24 @@
   </div>
 </div>
 
-<div class="modal fade" id="export-mda-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+
+<!--Navigate back confirmation modal-->
+<div class="modal fade" id="navigate-back" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Export MPA Notes</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
-        <div class="row">
-
-          <div class="col-lg-6">
-            <label>From</label>
-            <select class="form-control">
-              <option>15/02/2016</option>
-              <option>16/02/2016</option>
-              <option>17/02/2016</option>
-            </select>
-          </div>
-
-          <div class="col-lg-6">
-            <label>To</label>
-            <select class="form-control">
-              <option>15/02/2016</option>
-              <option>16/02/2016</option>
-              <option>17/02/2016</option>
-            </select>
-          </div>
-        </div>
-
-        <br>
-
-        <div class="row">
-          <div class="col-lg-12">
-            <label>Email Address</label>
-            <input type="text" class="form-control" placeholder="{{'GLOBAL.USER_INFO.EMAIL' | translate}}">
-          </div>
-        </div>
-
-
+        <div class="text-center"><p>Do you want to save your changes?</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.YES" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"| translate}}</button>
       </div>
     </div>
   </div>

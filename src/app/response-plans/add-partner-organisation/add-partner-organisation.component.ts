@@ -125,7 +125,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
           .subscribe(user => {
 
           if (!user) {
-            jQuery('#redirect-partners').modal('show');
+            this.redirectToPartnersPage();
           } else {
             setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
           }
@@ -189,8 +189,6 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   redirectToPartnersPage() {
-    this.closeRedirectModal();
-
     const user = new ModelUserPublic(this.partnerOrganisation.firstName, this.partnerOrganisation.lastName,
       this.partnerOrganisation.title, this.partnerOrganisation.email);
     user.phone = this.partnerOrganisation.phone;

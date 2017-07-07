@@ -18,14 +18,14 @@
         {{"GLOBAL.FILTER" | translate}} :
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
-        <select class="form-control" id="Category" (change)="changeFilter($event, 'level')">
+        <select class="form-control" id="Actions" [(ngModel)]="actionLevelSelected">
           <option *ngFor="let levelKey of actionLevelList" [selected]="levelKey == actionLevelSelected ? true : false"
                   [value]="levelKey">{{actionLevel[levelKey] | translate}}
           </option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
-        <select class="form-control" id="Category" (change)="changeFilter($event, 'category')">
+        <select class="form-control" id="Category" [(ngModel)]="categorySelected">
           <option *ngFor="let categoryKey of categoriesList" [selected]="categoryKey == categorySelected ? true : false"
                   [value]="categoryKey">{{category[categoryKey] | translate}}
           </option>
@@ -33,23 +33,23 @@
       </div>
     </div>
 
-    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && !isFiltered">
+    <div class="Empty--ribbon" *ngIf="actions.length == 0">
       {{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}
     </div>
-    <div class="Empty--ribbon" *ngIf="(genericActions | async)?.length == 0 && isFiltered">
-      {{"GLOBAL.NO_FILTERED_RESULTS" | translate}}
-    </div>
 
-    <div class="Data--ribbon" *ngFor="let genericAction of genericActions | async">
-      <div class="col-md-1 col-2">
-        <input type="radio" (change)="selectAction(genericAction)" [(ngModel)]="actionSelectedID"
-               [value]="genericAction.$key" name="selectedActions" class="form-control" id="action1">
-      </div>
-      <div class="col-md-11 col-10">
-        <p>
-          <label for="action1">{{genericAction.task}}</label>
-        </p>
-        <p>{{"GLOBAL.CATEGORY:" | translate}} <b>{{category[genericAction.category] | translate}}</b></p>
+    <div *ngFor="let genericAction of actions">
+      <div class="Data--ribbon" *ngIf="(actionLevelSelected == 0 || genericAction.level == actionLevelSelected) &&
+                                        (categorySelected == 0 || genericAction.category == categorySelected)">
+        <div class="col-md-1 col-2">
+          <input type="radio" (change)="selectAction(genericAction)" [(ngModel)]="actionSelectedID"
+                 [value]="genericAction.id" name="selectedActions" class="form-control" id="action1">
+        </div>
+        <div class="col-md-11 col-10">
+          <p>
+            <label for="action1">{{genericAction.task}}</label>
+          </p>
+          <p>{{"GLOBAL.CATEGORY:" | translate}} <b>{{category[genericAction.category] | translate}}</b></p>
+        </div>
       </div>
     </div>
 

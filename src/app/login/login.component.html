@@ -30,8 +30,17 @@
       </div>
 
       <div class="input-group" [ngClass]="{'has-danger': alerts[localUser.password]}">
+
         <span class="input-group-addon" id="basic-addon2"><i class="fa fa-lock" aria-hidden="true"></i></span>
-        <input name="password" [(ngModel)]="localUser.password" type="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
+        <input name="password" [(ngModel)]="localUser.password" type="password" id="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
+        <label class="input-group-addon" id="basic-addon2">
+          <input type="checkbox" style="display:none"
+                 onclick="(function(e, el){
+          document.getElementById('password').type = el.checked ? 'text' : 'password';
+          el.parentNode.lastElementChild.innerHTML = el.checked ? '<i class=\'fa fa-eye-slash\' aria-hidden=\'true\'>' : '<i class=\'fa fa-eye\' aria-hidden=\'true\'>';
+          })(event, this)">
+          <span><i class="fa fa-eye"></i></span>
+        </label>
       </div>
 
       <input type="submit" class="btn btn-primary Login__button--submit" value="{{'LOGIN.LOGIN' | translate}}"/>

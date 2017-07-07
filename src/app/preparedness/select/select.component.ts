@@ -9,6 +9,7 @@ import {Observable, Subject} from "rxjs";
 
 import {LocalStorageService} from 'angular-2-local-storage';
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserService} from "../../services/user.service";
 
 declare var jQuery: any;
 
@@ -30,7 +31,7 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
   private actionLevelSelected = 0;
   private categorySelected = 0;
 
-  private genericActions: Observable<any>;
+  private actions: GenericToCustomListModel[] = [];
 
   private actionLevel = Constants.ACTION_LEVEL;
   private actionLevelList: number[] = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
@@ -52,22 +53,17 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/systemAdmin')
+        this.userService.getSystemAdminId(Constants.USER_PATHS[userType], this.uid)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe((systemAdminIds) => {
-            this.systemAdminUid = systemAdminIds[0].$key;
-            this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-              query: {
-                orderByChild: "type",
-                equalTo: ActionType.mandated
-              }
-            });
+          .subscribe((systemAdmin) => {
+            this.systemAdminUid = systemAdmin;
+            this.initGenericActions();
           });
     });
   }
@@ -77,109 +73,42 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  changeFilter(event: any, typeFilter: string) {
-
-    if (typeFilter == 'category') {
-      this.categorySelected = event.target.value;
-    }
-
-    if (typeFilter == 'level') {
-      this.actionLevelSelected = event.target.value;
-    }
-
-    this.filter();
-  }
-
-  continueEvent() {
-
+  protected continueEvent() {
     this.storage.set('selectedAction', this.actionSelected);
     this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
-
-  selectAction(action: any) {
+  protected selectAction(action: GenericToCustomListModel) {
     this.actionSelected = action;
   }
 
-  filter() {
-
-    if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
-      //no filter. show all
-      this.isFiltered = false;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
+  protected initGenericActions() {
+    this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + this.systemAdminUid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          let x: GenericToCustomListModel = new GenericToCustomListModel();
+          x.id = snapshot.key;
+          x.level = snapshot.val().level;
+          x.category = snapshot.val().category;
+          x.task = snapshot.val().task;
+          x.type = snapshot.val().type;
+          this.actions.push(x);
+        });
       });
-    } else if (this.actionLevelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
-      //filter only with mpa
-      this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.level == this.actionLevelSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    } else if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
-      //filter only with apa
-      this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.category == this.categorySelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    } else {
-      // filter both action level and category
-      this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.level == this.actionLevelSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.category == this.categorySelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    }
   }
+}
 
+export class GenericToCustomListModel {
+  public category: GenericActionCategory;
+  public level: number;
+  public task: string;
+  public type: number;
+  public id: string;
+  public department: string;
+  public addNew: boolean;
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
+  constructor() {
+    this.addNew = false;
   }
 }

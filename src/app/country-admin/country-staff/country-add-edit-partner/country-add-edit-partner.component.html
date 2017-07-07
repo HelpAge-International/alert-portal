@@ -55,7 +55,7 @@
             </div>
             <div class="col-lg-4 col-md-6 form-group">
                 <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-                <input type="text" class="form-control" [(ngModel)]="userPublic.email" name="email" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
+                <input [disabled]="isEdit" type="text" class="form-control" [(ngModel)]="userPublic.email" name="email" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
             </div>
             <div class="col-lg-4 col-md-6 form-group">
                 <label for="l-Name">{{"GLOBAL.USER_INFO.PHONE"| translate}}</label>
@@ -88,8 +88,8 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="assignCHS" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.assignCHS" 
+                        <input type="checkbox" name="assignCHS"
+                            [(ngModel)] = "partner.permissions && partner.permissions.assignCHS"
                             (checked) = "partner.permissions.assignCHS">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
                 </div>
@@ -108,8 +108,8 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="assignMandatedMpa" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.assignMandatedMpa" 
+                        <input type="checkbox" name="assignMandatedMpa"
+                            [(ngModel)] = "partner.permissions && partner.permissions.assignMandatedMpa"
                             (checked) = "partner.permissions.assignMandatedMpa">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
                 </div>
@@ -128,23 +128,23 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customMpaAssigned" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.assign" 
+                        <input type="checkbox" name="customMpaAssigned"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.assign"
                             (checked) = "partner.permissions.customMpa.assign">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customMpaNew" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.new" 
+                        <input type="checkbox" name="customMpaNew"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.new"
                             (checked) = "partner.permissions.customMpa.new">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customMpaEdit" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.edit" 
+                        <input type="checkbox" name="customMpaEdit"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.edit"
                             (checked) = "partner.permissions.customMpa.edit">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customMpaDelete" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.delete" 
+                        <input type="checkbox" name="customMpaDelete"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customMpa.delete"
                             (checked) = "partner.permissions.customMpa.delete">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
                 </div>
@@ -163,8 +163,8 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                    <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="assignMandatedApa" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.assignMandatedApa" 
+                        <input type="checkbox" name="assignMandatedApa"
+                            [(ngModel)] = "partner.permissions && partner.permissions.assignMandatedApa"
                             (checked) = "partner.permissions.assignMandatedApa">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
                 </div>
@@ -183,23 +183,23 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customApaAssigned" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.assign" 
+                        <input type="checkbox" name="customApaAssigned"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.assign"
                             (checked) = "partner.permissions.customApa.assign">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ASSIGN"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customApaNew" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.new" 
+                        <input type="checkbox" name="customApaNew"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.new"
                             (checked) = "partner.permissions.customApa.new">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customApaEdit" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.edit" 
+                        <input type="checkbox" name="customApaEdit"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.edit"
                             (checked) = "partner.permissions.customApa.edit">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="customApaDelete" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.delete" 
+                        <input type="checkbox" name="customApaDelete"
+                            [(ngModel)] = "partner.permissions && partner.permissions.customApa.delete"
                             (checked) = "partner.permissions.customApa.delete">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
                 </div>
@@ -218,18 +218,18 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="notesNew" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.notes.new" 
+                        <input type="checkbox" name="notesNew"
+                            [(ngModel)] = "partner.permissions && partner.permissions.notes.new"
                             (checked) = "partner.permissions.notes.new">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="notesEdit" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.notes.edit" 
+                        <input type="checkbox" name="notesEdit"
+                            [(ngModel)] = "partner.permissions && partner.permissions.notes.edit"
                             (checked) = "partner.permissions.notes.edit">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="notesDelete" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.notes.delete" 
+                        <input type="checkbox" name="notesDelete"
+                            [(ngModel)] = "partner.permissions && partner.permissions.notes.delete"
                             (checked) = "partner.permissions.notes.delete">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
                 </div>
@@ -248,18 +248,18 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="contactsNew" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.new" 
+                        <input type="checkbox" name="contactsNew"
+                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.new"
                             (checked) = "partner.permissions.contacts.new">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NEW"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="contactsEdit" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.edit" 
+                        <input type="checkbox" name="contactsEdit"
+                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.edit"
                             (checked) = "partner.permissions.contacts.edit">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="contactsDelete" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.delete" 
+                        <input type="checkbox" name="contactsDelete"
+                            [(ngModel)] = "partner.permissions && partner.permissions.contacts.delete"
                             (checked) = "partner.permissions.contacts.delete">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
                 </div>
@@ -278,33 +278,33 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="crossCountryAddNote" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.addNote" 
+                        <input type="checkbox" name="crossCountryAddNote"
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.addNote"
                             (checked) = "partner.permissions.crossCountry.addNote">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ADD_NOTE"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="crossCountryCopyAction" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.copyAction" 
+                        <input type="checkbox" name="crossCountryCopyAction"
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.copyAction"
                             (checked) = "partner.permissions.crossCountry.copyAction">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.COPY_ACTION"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="crossCountryDownload" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.download" 
+                        <input type="checkbox" name="crossCountryDownload"
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.download"
                             (checked) = "partner.permissions.crossCountry.download">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="crossCountryEdit" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.edit" 
+                        <input type="checkbox" name="crossCountryEdit"
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.edit"
                             (checked) = "partner.permissions.crossCountry.edit">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="crossCountryView" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.view" 
+                        <input type="checkbox" name="crossCountryView"
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.view"
                             (checked) = "partner.permissions.crossCountry.view">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="crossCountryViewContacts" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.viewContacts" 
+                        <input type="checkbox" name="crossCountryViewContacts"
+                            [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.viewContacts"
                             (checked) = "partner.permissions.crossCountry.viewContacts">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW_CONTACTS"| translate}}</label>
                 </div>
@@ -322,35 +322,35 @@
             </div>
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
-                    
+
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="interAgencyAddNote" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.addNote" 
+                        <input type="checkbox" name="interAgencyAddNote"
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.addNote"
                             (checked) = "partner.permissions.interAgency.addNote">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.ADD_NOTE"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="interAgencyCopyAction" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.copyAction" 
+                        <input type="checkbox" name="interAgencyCopyAction"
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.copyAction"
                             (checked) = "partner.permissions.interAgency.copyAction">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.COPY_ACTION"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="interAgencyDownload" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.download" 
+                        <input type="checkbox" name="interAgencyDownload"
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.download"
                             (checked) = "partner.permissions.interAgency.download">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="interAgencyEdit" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.edit" 
+                        <input type="checkbox" name="interAgencyEdit"
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.edit"
                             (checked) = "partner.permissions.interAgency.edit">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.EDIT"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="interAgencyView" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.view" 
+                        <input type="checkbox" name="interAgencyView"
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.view"
                             (checked) = "partner.permissions.interAgency.view">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="interAgencyViewContacts" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.viewContacts" 
+                        <input type="checkbox" name="interAgencyViewContacts"
+                            [(ngModel)] = "partner.permissions && partner.permissions.interAgency.viewContacts"
                             (checked) = "partner.permissions.interAgency.viewContacts">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.VIEW_CONTACTS"| translate}}</label>
                 </div>
@@ -369,18 +369,18 @@
             <div class="Response__content No-indent Spaced">
                 <div class="row Spaced">
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-                        <input type="checkbox" name="otherDownloadDoc" 
-                            [(ngModel)] = "partner.permissions && partner.permissions.other.downloadDoc" 
+                        <input type="checkbox" name="otherDownloadDoc"
+                            [(ngModel)] = "partner.permissions && partner.permissions.other.downloadDoc"
                             (checked) = "partner.permissions.other.downloadDoc">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD_DOC"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
                         <input type="checkbox" name="otherUploadDoc"
-                            [(ngModel)] = "partner.permissions && partner.permissions.other.uploadDoc" 
+                            [(ngModel)] = "partner.permissions && partner.permissions.other.uploadDoc"
                             (checked) = "partner.permissions.other.uploadDoc">
                         {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.UPLOAD_DOC"| translate}}</label>
                 </div>
             </div>
-        </div>        
+        </div>
 
         <div class="form-group"><label>{{"COUNTRY_ADMIN.PARTNER.HAS_VALIDATION_PERMISSION"| translate}}</label></div>
         <div class="row">
@@ -413,15 +413,17 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.PARTNER.DELETE_DIALOG_TITLE" |
-          translate}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel">
+          <strong *ngIf="userPublic">{{"GLOBAL.DELETE" | translate}} {{userPublic.firstName + " " + userPublic.lastName}}?</strong>
+          <strong *ngIf="!userPublic">{{"COUNTRY_ADMIN.PARTNER.DELETE_DIALOG_TITLE" | translate}}?</strong>
+        </h5>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{"COUNTRY_ADMIN.PARTNER.DELETE_DIALOG_CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
         <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
       </div>
     </div>
   </div>

@@ -30,7 +30,11 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency");
+      this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency", {
+        query: {
+          orderByChild: 'name'
+        }
+      });
     });
   }
 

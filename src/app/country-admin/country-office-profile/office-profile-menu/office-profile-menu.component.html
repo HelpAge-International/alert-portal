@@ -1,39 +1,91 @@
 <div class="Header-title__wrap">
-    <h1>{{ "COUNTRY_ADMIN.PROFILE.TITLE_TEXT" | translate}}</h1>
+  <h1>{{ "COUNTRY_ADMIN.PROFILE.TITLE_TEXT" | translate}}</h1>
 </div>
 
-<div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
-        <div class="Sub-header_bar--country no-bg">
-            <div class="Hamburger">
-                <span></span>
-            </div>
-            <ul class="subnav_country-office-profile">
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/programme">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/office-capacity">{{ "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/partners">{{ "COUNTRY_ADMIN.PROFILE.MENU.PARTNERS" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/equipment">{{ "COUNTRY_ADMIN.PROFILE.MENU.EQUIPMENT" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/coordination">{{ "COUNTRY_ADMIN.PROFILE.MENU.COORDINATION" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/stock-capacity">{{ "COUNTRY_ADMIN.PROFILE.MENU.STOCK_CAPACITY" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/documents">{{ "COUNTRY_ADMIN.PROFILE.MENU.DOCUMENTS" | translate}}</a>
-                </li>
-                <li class="" routerLinkActive="active">
-                    <a routerLink="/country-admin/country-office-profile/contacts">{{ "COUNTRY_ADMIN.PROFILE.MENU.CONTACTS" | translate}}</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+<!--<div class="Page-top__wrap&#45;&#45;w_sub_header&#45;&#45;no-paddng">-->
+<!--<div class="Full-page__wrap&#45;&#45;inner">-->
+<div class="Sub-header_bar--country no-bg">
+  <div class="Hamburger">
+    <span></span>
+  </div>
+  <ul class="subnav_country-office-profile">
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/programme">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('programme')">
+      <a (click)="viewingToProgramme()">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/office-capacity">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('officeCapacity')">
+      <a (click)="viewingToOfficeCapacity()">{{ "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/partners">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.PARTNERS" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('partners')">
+      <a (click)="viewingToPartners()">{{ "COUNTRY_ADMIN.PROFILE.MENU.PARTNERS" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/equipment">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.EQUIPMENT" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('equipment')">
+      <a (click)="viewingToEquipment()">{{ "COUNTRY_ADMIN.PROFILE.MENU.EQUIPMENT" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/coordination">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.COORDINATION" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('coordination')">
+      <a (click)="viewingToCoordination()">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.COORDINATION" | translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/stock-capacity">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.STOCK_CAPACITY" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('stockCapacity')">
+      <a (click)="viewingToStockCapacity()">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.STOCK_CAPACITY" | translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/documents">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.DOCUMENTS" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('documents')">
+      <a (click)="viewingToDocuments()">{{ "COUNTRY_ADMIN.PROFILE.MENU.DOCUMENTS" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a routerLink="/country-admin/country-office-profile/contacts">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.CONTACTS" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing" [class.active]="activeMap.get('contacts')">
+      <a (click)="viewingToContacts()">{{ "COUNTRY_ADMIN.PROFILE.MENU.CONTACTS" |
+        translate}}</a>
+    </li>
+  </ul>
 </div>
+<!--</div>-->
+<!--</div>-->

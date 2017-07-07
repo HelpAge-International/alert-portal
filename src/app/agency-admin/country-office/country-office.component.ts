@@ -84,7 +84,6 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
         });
         return Array.from(countries);
       })
-      .first()
       .takeUntil(this.ngUnsubscribe)
       .subscribeOn(Scheduler.async)
       .subscribe(result => {
@@ -99,7 +98,6 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
             });
             return countryids;
           })
-          .first()
           .takeUntil(this.ngUnsubscribe)
           .subscribeOn(Scheduler.async)
           .subscribe(result => {
@@ -126,8 +124,10 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
-        // console.log(result);
-        this.otherCountries.push(result);
+        let exist = this.otherCountries.filter(country => country.$key == result.$key).length >0;
+        if (!exist) {
+          this.otherCountries.push(result);
+        }
       });
   }
 
@@ -146,11 +146,17 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   toggleActive() {
     let state: boolean = !this.countryToUpdate.isActive;
 
-    this.otherCountries = [];
+    this.otherCountries.forEach(country =>{
+      console.log(country)
+      if (country.$key == this.countryToUpdate.$key) {
+        country.isActive = state;
+      }
+    });
+    // this.otherCountries = [];
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryToUpdate.$key + '/isActive').set(state)
       .then(_ => {
         console.log("Country state updated");
-        jQuery("#update-country").modal("hide");
+        this.closeModal();
       });
   }
 

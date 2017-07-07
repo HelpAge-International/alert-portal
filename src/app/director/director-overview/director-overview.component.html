@@ -2,12 +2,97 @@
 <app-director-menu></app-director-menu>
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/director">{{"GLOBAL.HOME" | translate}}</div>
+    <div class="Back--button" routerLink="/director">{{agencyName}} : {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+      translate}}
+    </div>
   </div>
 </div>
+
+<!--menu-->
 <app-view-country-menu (onMenuSelected)="menuSelection($event)"></app-view-country-menu>
-<app-country-office-programme *ngIf="tabMap.get('officeProfile')"></app-country-office-programme>
+
+<!--alerts-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div *ngIf="alerts | async as alertList">
+      <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
+        <div class="row">
+          <div class="col-md-3 Alert-Widget__item"
+               [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
+               [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
+               [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+          </div>
+          <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
+            <i div
+               class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+            <div>
+              <span>{{"ALERT.RISK" | translate}}:</span>
+              {{HazardScenariosList[alert.hazardScenario] | translate}}
+            </div>
+          </div>
+          <div class="col-md-3 Alert-Widget__item">
+            <div>
+              <span>{{"ALERT.POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}} {{"ALERT.PEOPLE"
+              | translate}}
+            </div>
+          </div>
+          <div class="col-md-3 Alert-Widget__item">
+            <div *ngIf="alert.affectedAreasDisplay">
+              <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
+              <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--sub pages-->
+<div class="modal fade" id="view-areas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center" *ngIf="affectedAreasToShow">
+          <p *ngFor="let area of affectedAreasToShow">{{area.country | translate}} {{area.areas}}</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-country-office-programme
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-country-office-programme>
+<app-country-office-capacity
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-country-office-capacity>
+<app-country-office-partners
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-country-office-partners>
+<app-country-office-equipment
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-country-office-equipment>
+<app-country-office-coordination
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-country-office-coordination>
+<app-country-office-stock-capacity
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-country-office-stock-capacity>
+<app-country-office-documents
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-country-office-documents>
+<app-country-office-contacts
+  *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-country-office-contacts>
 <app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
 <app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
                     [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId"></app-response-plans>
+<app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
+<app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
+<app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
+
+
 

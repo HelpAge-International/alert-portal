@@ -9,6 +9,8 @@ import {ModelAffectedArea} from "../../model/affectedArea.model";
 import {AlertLevels, AlertStatus, ApprovalStatus} from "../../utils/Enums";
 import {isNumber} from "util";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserService} from "../../services/user.service";
+
 
 @Component({
   selector: 'app-dashboard-update-alert-level',
@@ -26,6 +28,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private uid: string;
   private alertId: string;
   private countryId: string;
+  private agencyId: string;
   private loadedAlert: ModelAlert;
   private reasonForRedAlert: string;
   private infoNotes: string;
@@ -35,12 +38,18 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private preAlertLevel: AlertLevels;
   private isDirector: boolean;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private alertService: ActionsService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private alertService: ActionsService,
+              private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
@@ -120,7 +129,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
         this.loadedAlert.approvalStatus = AlertStatus.WaitingResponse;
       }
     }
-    this.alertService.updateAlert(this.loadedAlert, this.countryId, this.loadedAlert.id);
+    this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.countryId, this.agencyId);
   }
 
   ngOnDestroy() {

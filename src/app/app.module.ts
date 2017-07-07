@@ -8,7 +8,6 @@ import {LoginComponent} from "./login/login.component";
 import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {ResponsePlansComponent} from "./response-plans/response-plans.component";
-import {PreparednessComponent} from "./preparedness/preparedness.component";
 import {RiskMonitoringComponent} from "./risk-monitoring/risk-monitoring.component";
 import {CountryOfficeProfileComponent} from "./country-admin/country-office-profile/country-office-profile.component";
 import {MapComponent} from "./map/map.component";
@@ -118,7 +117,7 @@ import {CountryAdminSettingsMenuComponent} from "./country-admin/settings/settin
 import {CountryOfficeProfileMenuComponent} from "./country-admin/country-office-profile/office-profile-menu/office-profile-menu.component";
 import {EnumKeyValuesPipe} from "./utils/pipes/enum-keyValues.pipe";
 import {MessageService} from "./services/message.service";
-import {NotificationSettingsService} from "./services/notification-settings.service";
+import {NotificationService} from "./services/notification.service";
 import {ReviewResponsePlanComponent} from './dashboard/review-response-plan/review-response-plan.component';
 import {FacetofaceMeetingRequestComponent} from './dashboard/facetoface-meeting-request/facetoface-meeting-request.component';
 import {CountryStatisticsRibbonComponent} from './country-statistics-ribbon/country-statistics-ribbon.component';
@@ -158,7 +157,6 @@ import {ProjectNarrativeComponent} from "./export-start-fund/project-narrative/p
 import {ProjectBudgetComponent} from "./export-start-fund/project-budget/project-budget.component";
 import {ProjectReportComponent} from "./export-start-fund/project-report/project-report.component";
 import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-profile/programme/programme.component";
-import {CountryOfficeEditProgrammeComponent} from "./country-admin/country-office-profile/programme/edit-programme/edit-programme.component";
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
@@ -171,6 +169,22 @@ import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TooltipComponent} from "./utils/tooltips/tooltip.component";
+import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
+import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
+import {ProjectActivityReportComponent} from "./export-start-fund/project-activity-report/project-activity-report.component";
+import {ReportingDatasheetComponent} from "./export-start-fund/reporting-datasheet/reporting-datasheet.component";
+import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
+import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
+import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
+import {OrderByPipe} from "./utils/pipes/orderby.pipe";
+import {NotificationBadgeComponent} from './commons/notification-badge/notification-badge.component';
+import {NotificationsComponent} from './commons/notifications/notifications.component';
+import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
+import {DirectorNotificationsComponent} from './director/director-notifications/director-notifications.component';
+
+import { DashboardOverviewComponent } from './dashboard/dashboard-overview/dashboard-overview.component';
+import {PrepActionService} from "./services/prepactions.service";
+import {SumPipe} from "./utils/pipes/sum.pipe";
 
 export function HttpLoaderFactory(http: Http) {
     return new TranslateHttpLoader(http);
@@ -199,7 +213,6 @@ const firebaseAuthConfig = {
     SystemAdminComponent,
     DashboardComponent,
     ResponsePlansComponent,
-    PreparednessComponent,
     RiskMonitoringComponent,
     CountryOfficeProfileComponent,
     MapComponent,
@@ -286,6 +299,7 @@ const firebaseAuthConfig = {
     CreateEditResponsePlanComponent,
     AddPartnerOrganisationComponent,
     OrdinalPipe,
+    OrderByPipe,
     StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,
@@ -325,10 +339,10 @@ const firebaseAuthConfig = {
     CountryOfficeProgrammeComponent,
     DonorListViewComponent,
     ReplacePipe,
+    SumPipe,
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
     ProjectReportComponent,
-    CountryOfficeEditProgrammeComponent,
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
@@ -337,7 +351,20 @@ const firebaseAuthConfig = {
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
     GuidanceReportComponent,
-    TooltipComponent
+    TooltipComponent,
+    GuidanceReportComponent,
+    TimeAgoPipe,
+    CountryNotificationsComponent,
+    ProjectActivityReportComponent,
+    ReportingDatasheetComponent,
+    ApplicationDatasheet,
+    ExportProposalComponent,
+    AddEditSurgeCapacityComponent,
+    NotificationBadgeComponent,
+    NotificationsComponent,
+    DonorNotificationsComponent,
+    DirectorNotificationsComponent,
+    DashboardOverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -370,7 +397,8 @@ const firebaseAuthConfig = {
               CommonService,
               SettingsService,
               MessageService,
-              NotificationSettingsService,
+              NotificationService,
+              PrepActionService,
               NoteService,
               EquipmentService,
               CoordinationArrangementService,

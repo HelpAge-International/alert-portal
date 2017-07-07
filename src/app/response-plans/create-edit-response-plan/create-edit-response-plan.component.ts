@@ -10,7 +10,7 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, BudgetCategory, AlertMessageType
+  ResponsePlanSectors, BudgetCategory, AlertMessageType, UserType
 } from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -18,8 +18,9 @@ import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../model/budget-item.model";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-edit-response-plan',
@@ -37,6 +38,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
   private forEditing: boolean = false;
+  private isCountryAdmin: boolean = false;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
 
@@ -156,7 +158,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private groups: any[] = [];
   private Other: string = "Other";
   private otherGroup: string = '';
-  private selectedVulnerableGroups = {};
+  private selectedVulnerableGroups = [];
 
   private vulnerableGroupsDropDownsCounter: number = 1;
   private vulnerableGroupsDropDowns: number[] = [this.vulnerableGroupsDropDownsCounter];
@@ -251,6 +253,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private sectionTenNum: number = 0;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
@@ -258,8 +261,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
+      this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
       let userpath = Constants.USER_PATHS[userType];
       this.getSystemAgencyCountryIds(userpath);
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        if (!this.moduleAccess.countryOffice) {
+          this.methodOfImplementationSelectedDirect();
+        }
+      });
     });
   }
 
@@ -292,6 +302,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.forEditing) {
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(false);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(null);
     }
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -301,6 +312,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Finish Button press on section 10
    */
   onSubmit() {
+
+    // Closing confirmation pop up
+    if (jQuery("#navigate-back").modal) {
+      jQuery("#navigate-back").modal("hide");
+    }
+
     console.log("Finish button pressed");
     this.checkAllSections();
 
@@ -353,7 +370,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
     }
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
-    newResponsePlan.vulnerableGroups = this.convertTolist(this.selectedVulnerableGroups);
+    newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
     newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
     newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
@@ -363,13 +380,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 7
     this.activityMap.forEach((v, k) => {
       let sectorInfo = {};
-      sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
-      sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
-      sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
-      sectorInfo["activities"] = v;
-      newResponsePlan.sectors[k] = sectorInfo;
+      if(this.activityInfoMap.get(k)){
+        if(this.activityInfoMap.get(k)["sourcePlan"]){
+          sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
+        }
+        if(this.activityInfoMap.get(k)["bullet1"]){
+          sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
+        }
+        if(this.activityInfoMap.get(k)["bullet2"]){
+          sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
+        }
+        sectorInfo["activities"] = v;
+        newResponsePlan.sectors[k] = sectorInfo;
+      }
     });
-
 
     //section 8
     newResponsePlan.monAccLearning['mALSystemsDescription'] = this.mALSystemsDescriptionText;
@@ -505,6 +529,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     newResponsePlan.isActive = true;
     newResponsePlan.isEditing = false;
+    newResponsePlan.editingUserId = null;
     newResponsePlan.status = ApprovalStatus.InProgress;
     newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
     if (!this.forEditing) {
@@ -708,8 +733,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   methodOfImplementationSelectedWithPartners() {
-    this.isWorkingWithPartners = true;
-    this.isDirectlyThroughFieldStaff = false;
+    if (this.moduleAccess.countryOffice) {
+      this.isWorkingWithPartners = true;
+      this.isDirectlyThroughFieldStaff = false;
+    }
+    else {
+      this.methodOfImplementationSelectedDirect();
+    }
   }
 
   addPartnersDropDown() {
@@ -789,8 +819,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  setGroup(groupSelected, vulnerableGroupsDropDown) {
-    this.selectedVulnerableGroups[vulnerableGroupsDropDown] = groupSelected;
+  setGroup(groupName, vulnerableGroupsDropDown) {
+    let selectedGroup;
+    this.groups.forEach(group => {
+      if(group.name == groupName){
+        selectedGroup = group;
+      }
+    });
+
+    if(selectedGroup){
+      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = selectedGroup.$key;
+    }
   }
 
   // updateOtherGroupToGroups() {
@@ -1173,6 +1212,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
+
+    let numberOfCompletedSections = this.getCompleteSectionNumber();
+
+    if (numberOfCompletedSections > 0) {
+      console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
+      jQuery("#navigate-back").modal("show");
+    } else {
+      this.router.navigateByUrl('response-plans');
+    }
+  }
+
+  closeModalAndNavigate() {
+    jQuery("#navigate-back").modal("hide");
     this.router.navigateByUrl('response-plans');
   }
 
@@ -1209,6 +1261,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.pageTitle = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.EDIT_RESPONSE_PLAN";
           this.idOfResponsePlanToEdit = params["id"];
           this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(this.uid);
 
           this.loadResponsePlanInfo(this.idOfResponsePlanToEdit);
         }
@@ -1359,7 +1412,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.vulnerableGroupsDropDownsCounter++;
           this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
         }
-        this.setGroup(this.vulnerableGroupsDropDownsCounter, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1])
+        this.setGroup(vulnerableGroups[i].name, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1]);
       }
     }
 
@@ -1439,11 +1492,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection10(responsePlan: ResponsePlan) {
-
     if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Inputs]) {
-      console.log("have inputs budget")
       let inputs: {} = responsePlan.budget["item"][BudgetCategory.Inputs];
-      console.log(inputs);
       Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
         this.totalInputs += item.budget;
       });
@@ -1451,9 +1501,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.sectorBudget.set(Number(key), inputs[key]["budget"]);
         this.sectorNarrative.set(Number(key), inputs[key]["narrative"]);
       });
-      console.log("$$$$$$$$")
-      console.log(this.sectorBudget);
-      console.log(this.sectorNarrative);
     }
 
     this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
@@ -1502,13 +1549,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .flatMap(list => {
         this.staffMembers = [];
         let tempList = [];
+        // If country admin add user to the list as country admin is not listed under staff
+        if (this.isCountryAdmin) {
+          tempList.push(this.uid);
+        }
         list.forEach(x => {
-          tempList.push(x)
+          tempList.push(x.$key)
         });
         return Observable.from(tempList)
       })
       .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item.$key)
+        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
       })
       .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()
@@ -1547,14 +1598,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
         .map(groupList => {
           let groups = [];
-          groupList.forEach(x => {
-            groups.push(x.$key);
+          groupList.forEach(group => {
+            groups.push(group);
           });
           return groups;
         })
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(x => {
-          this.groups = x;
+        .subscribe(groups => {
+          this.groups = groups;
         });
     }
   }
@@ -1598,6 +1649,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       if (this.forEditing) {
         let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
         newResponsePlan.isEditing = false;
+        newResponsePlan.editingUserId = null;
         this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
           console.log("Response plan successfully updated");
           this.router.navigateByUrl('response-plans');
@@ -1667,7 +1719,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       counter = counter + 1;
       this.sectionThreeNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.ActivitySummary]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]){
       counter = counter + 1;
       this.sectionFourNum = counter;
     }

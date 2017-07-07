@@ -46,7 +46,7 @@
     </table>
 
     <div [hidden]="(regions|async)?.length == 0" *ngFor="let region of regions | async">
-      <div class="Accordion Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+      <div class="Accordion Map-list Ribbon__response Active" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
            aria-controls="collapseOne">
         <div class="row align-items-center">
           <div class="col-md-4 col-lg-4 col-sm-4"><h4>{{region.name}}</h4></div>
@@ -60,8 +60,10 @@
             <a href="agency-admin__office__region--edit.html" (click)="editRegion(region)">{{"GLOBAL.EDIT_SECTION" |
               translate}}</a>
           </div>
-          <div class="col-md-1 col-lg-1 col-sm-1">
-            <i class="fa fa-caret-down text-primary" aria-hidden="true" (click)="hideCountryList(region)"></i></div>
+          <div class="col-md-1 col-lg-1 col-sm-1 ">
+            <div class="Ribbon__header__chevron text-primary" aria-hidden="true" onclick="ribbonClick(this)" (click)="hideCountryList(region)">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,8 +102,8 @@
             translate}}</h4></div>
           <div class="col-md-5 col-lg-5 col-sm-5"></div>
           <div class="col-md-2 col-lg-2 col-sm-2"></div>
-          <div class="col-md-1 col-lg-1 col-sm-1"><i class="fa fa-caret-down text-primary" aria-hidden="true"
-                                                     (click)="hideCountryList(null)"></i></div>
+          <div class="col-md-1 col-lg-1 col-sm-1"><div class="Ribbon__header__chevron" onclick="ribbonClick(this)" (click)="hideCountryList(null)"><i class="text-primary" aria-hidden="true"
+                                                     ></i></div></div>
         </div>
         <table [hidden]="hideOtherCountries" class="table Table__v-spacing__mid Agency-table">
           <tr>
@@ -142,12 +144,15 @@
     <div class="modal-content">
       <div *ngIf="countryToUpdate" class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">
-          <strong>{{alertTitle | translate}} {{countryNames[countryToUpdate.location] | translate}}</strong>
+          <strong>{{alertTitle | translate}} {{countryNames[countryToUpdate.location] | translate}}?</strong>
         </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div *ngIf="!countryToUpdate" class="modal-header">
         <h5 class="modal-title" id="exampleModalLabelDefault">
-          <strong>{{alertTitle | translate}}</strong>
+          <strong>{{alertTitle | translate}}?</strong>
         </h5>
       </div>
       <div class="modal-body">

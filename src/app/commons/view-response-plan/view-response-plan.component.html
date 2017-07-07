@@ -201,8 +201,8 @@
       <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
         translate}}</b></p>
       <div *ngIf="responsePlanToShow.vulnerableGroups">
-        <p *ngFor="let group of responsePlanToShow.vulnerableGroups">
-          {{group}}
+        <p *ngFor="let group of vulnerableGroupsToShow">
+          {{group.name}}
         </p>
       </div>
       <div *ngIf="responsePlanToShow.otherVulnerableGroup">

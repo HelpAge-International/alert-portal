@@ -1,74 +1,72 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</div>
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
-    <div class="Full-page__wrap--inner">
-        <div class="Back--button" routerLink="/preparedness/minimum">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
-        <div class="Ribbon__section__wrap col-lg-8 Spaced">
-            <div class="Header-title__wrap Small-spaced">
-                <h2>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} {{"PREPAREDNESS.BUDGET" | translate}}</h2>
-            </div>
-            <div class="row text-bold Line-row--no-border align-items-center">
-                <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
-                <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
-                <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
-            </div>
-            <div class="row Line-row text-bold align-items-center" *ngFor="let department of departments" name="department">
-                <div class="col-sm-4 col-4">{{department}}</div>
-                <div class="col-sm-3 col-4">
-                    <input type="text" class="form-control"
-                           (input)="setTotal('MPA')" (keypress)="_keyPress($event)"
-                           [(ngModel)]="minBudget[department] == undefined || minBudget[department].value == undefined ? '' : minBudget[department].value">
-                </div>
-                <div class=" col-sm-5 col-4">
-                    <input type="text" class="form-control"
-                           [(ngModel)]="minBudget[department] == undefined || minBudget[department].narrative == undefined ? '' : minBudget[department].narrative">
-                </div>
-            </div>
-            <div class="row Line-row text-bold align-items-center">
-                <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-                <div class="col-sm-3 col-6">&pound;{{minimumBudgetTotal}}</div>
-            </div>
+  <div class="Full-page__wrap--inner">
+    <div *ngIf="!isViewing" class="Back--button" routerLink="/preparedness/minimum">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
+    <div class="Ribbon__section__wrap col-lg-8 Spaced">
+      <div class="Header-title__wrap Small-spaced">
+        <h2>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} {{"PREPAREDNESS.BUDGET" | translate}}</h2>
+      </div>
+      <div class="row text-bold Line-row--no-border align-items-center">
+        <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
+        <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
+        <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
+      </div>
+      <div class="row Line-row  align-items-center" *ngFor="let dept of departments" name="department">
+        <div class="col-sm-4 col-4 text-bold">{{dept.name}}</div>
+        <div class="col-sm-3 col-4">
+          <p>{{minBudget.get(dept.id) ? minBudget.get(dept.id) : '-'}}</p>
         </div>
-        <div class="Ribbon__section__wrap col-lg-8 Spaced">
-            <div class="Header-title__wrap Small-spaced">
-                <h2>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} {{"PREPAREDNESS.BUDGET" | translate}}</h2>
-            </div>
-            <div class="row text-bold Line-row--no-border align-items-center">
-                <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
-                <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
-                <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
-            </div>
-            <div class="row Line-row text-bold align-items-center" *ngFor="let department of departments">
-                <div class="col-sm-4 col-4">{{department}}</div>
-                <div class="col-sm-3 col-4">
-                    <input type="text" class="form-control" (input)="setTotal('APA')" (keypress)="_keyPress($event)"
-                           [(ngModel)]="advBudget[department] == undefined || advBudget[department].value == undefined ? '' : advBudget[department].value">
-                </div>
-                <div class="col-sm-5 col-4">
-                    <input type="text" class="form-control"
-                           [(ngModel)]="advBudget[department] == undefined || advBudget[department].narrative == undefined ? '' : advBudget[department].narrative">
-                </div>
-            </div>
-            <div class="row Line-row text-bold align-items-center">
-                <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-                <div class="col-sm-3 col-6">&pound;{{advancedBudgetTotal}}</div>
-            </div>
+        <div class=" col-sm-5 col-4">
+          <input type="text" class="form-control" [(ngModel)]="minPrepNarrative[dept.id]" [disabled]="isViewing" >
         </div>
-
-        <div class="Ribbon__section__wrap col-lg-8">
-            <div class="row Line-row--no-border text-bold align-items-center">
-                <div class="col-sm-4 col-6 text-right">{{"GLOBAL.GRAND_TOTAL" | translate}}</div>
-                <div class="col-sm-3 col-6">&pound;{{grandTotal}}</div>
-            </div>
-        </div>
-        <div class="Form-submit__wrapper">
-            <div class="btn btn-primary" (click)="savePreparednessBudget()">{{"GLOBAL.SAVE" | translate}}</div>
-            <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
-            </div>
-        </div>
+      </div>
+      <div class="row Line-row text-bold align-items-center">
+        <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
+        <div class="col-sm-3 col-6">&pound;{{minTotal}}</div>
+      </div>
     </div>
+    <div class="Ribbon__section__wrap col-lg-8 Spaced">
+      <div class="Header-title__wrap Small-spaced">
+        <h2>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} {{"PREPAREDNESS.BUDGET" | translate}}</h2>
+      </div>
+      <div class="row text-bold Line-row--no-border align-items-center">
+        <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
+        <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
+        <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
+      </div>
+      <div class="row Line-row align-items-center" *ngFor="let department of departments">
+        <div class="col-sm-4 col-4 text-bold">{{department.name}}</div>
+        <div class="col-sm-3 col-4">
+          <p>{{advBudget.get(department.id) ? advBudget.get(department.id) : '-'}}</p>
+        </div>
+        <div class="col-sm-5 col-4">
+          <input type="text" class="form-control" [disabled]="isViewing"
+                 [(ngModel)]="advPrepNarrative[department.id]">
+        </div>
+      </div>
+      <div class="row Line-row text-bold align-items-center">
+        <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
+        <div class="col-sm-3 col-6">&pound;{{advTotal}}</div>
+      </div>
+    </div>
+
+    <div class="Ribbon__section__wrap col-lg-8">
+      <div class="row Line-row--no-border text-bold align-items-center">
+        <div class="col-sm-4 col-6 text-right">{{"GLOBAL.GRAND_TOTAL" | translate}}</div>
+        <div class="col-sm-3 col-6">&pound;{{minTotal + advTotal}}</div>
+      </div>
+    </div>
+    <div *ngIf="!isViewing" class="Form-submit__wrapper">
+      <div class="btn btn-primary" (click)="saveNarratives()">{{"GLOBAL.SAVE" | translate}}</div>
+      <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
+      </div>
+    </div>
+  </div>
 </div>

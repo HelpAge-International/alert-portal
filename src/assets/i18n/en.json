@@ -18,6 +18,9 @@
         "CLOSE": "Close",
         "REMOVE": "Remove",
         "REJECT": "Reject",
+        "ACTION_LEVEL": "Action Level",
+        "WARNING": "Warning!",
+        "COUNTRY": "Country",
         "MALE": "Male",
         "FEMALE": "Female",
         "TITLE": "Title",
@@ -89,7 +92,8 @@
             "EXPIRED": "Expired",
             "IN_PROGRESS": "In Progress",
             "COMPLETED": "Completed",
-            "INACTIVE": "Inactive"
+            "INACTIVE": "Inactive",
+            "ARCHIVED": "Archived"
         },
         "ACTION_TYPE": {
             "CHS": "CHS",
@@ -107,6 +111,7 @@
             "MR": "Mr",
             "MRS": "Mrs",
             "MISS": "Miss",
+            "MS": "Ms",
             "DR": "Dr",
             "PROF": "Prof"
         },
@@ -186,7 +191,7 @@
         },
         "COUNTRIES": {
             "AF": "Afghanistan",
-            "AX": "Ã…land Islands",
+            "AX": "Åland Islands",
             "AL": "Albania",
             "DZ": "Algeria",
             "AS": "American Samoa",
@@ -211,14 +216,14 @@
             "BJ": "Benin",
             "BM": "Bermuda",
             "BT": "Bhutan",
-            "BO": "Bolivia, Plurinational State of",
+            "BO": "Bolivia",
             "BQ": "Bonaire, Sint Eustatius and Saba",
             "BA": "Bosnia and Herzegovina",
             "BW": "Botswana",
             "BV": "Bouvet Island",
             "BR": "Brazil",
             "IO": "British Indian Ocean Territory",
-            "BN": "Brunei Darussalam",
+            "BN": "Brunei",
             "BG": "Bulgaria",
             "BF": "Burkina Faso",
             "BI": "Burundi",
@@ -239,10 +244,10 @@
             "CD": "Congo, the Democratic Republic of the",
             "CK": "Cook Islands",
             "CR": "Costa Rica",
-            "CI": "CÃ´te d'Ivoire",
+            "CI": "Ivory Coast",
             "HR": "Croatia",
             "CU": "Cuba",
-            "CW": "CuraÃ§ao",
+            "CW": "Curaçao",
             "CY": "Cyprus",
             "CZ": "Czech Republic",
             "DK": "Denmark",
@@ -256,7 +261,7 @@
             "ER": "Eritrea",
             "EE": "Estonia",
             "ET": "Ethiopia",
-            "FK": "Falkland Islands (Malvinas)",
+            "FK": "Falkland Islands",
             "FO": "Faroe Islands",
             "FJ": "Fiji",
             "FI": "Finland",
@@ -365,11 +370,11 @@
             "PT": "Portugal",
             "PR": "Puerto Rico",
             "QA": "Qatar",
-            "RE": "RÃ©union",
+            "RE": "Réunion",
             "RO": "Romania",
             "RU": "Russian Federation",
             "RW": "Rwanda",
-            "BL": "Saint BarthÃ©lemy",
+            "BL": "Saint Barthélemy",
             "SH": "Saint Helena, Ascension and Tristan da Cunha",
             "KN": "Saint Kitts and Nevis",
             "LC": "Saint Lucia",
@@ -425,8 +430,8 @@
             "UY": "Uruguay",
             "UZ": "Uzbekistan",
             "VU": "Vanuatu",
-            "VE": "Venezuela, Bolivarian Republic of",
-            "VN": "Viet Nam",
+            "VE": "Venezuela",
+            "VN": "Vietnam",
             "VG": "Virgin Islands, British",
             "VI": "Virgin Islands, U.S.",
             "WF": "Wallis and Futuna",
@@ -586,10 +591,11 @@
             "EDIT_CHS_ACTION": "Edit CHS action",
             "SAVE_BUTTON_TEXT": "Save new action",
             "EDIT_BUTTON_TEXT": "Save changes",
+            "EDIT_CONFIRM_SAVE_CHANGES": "Changes saved",
             "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
             "CHS_MPA": {
-                "TITLE_TEXT": "CHS minimum preparedness actions",
+                "CHS_TITLE_TEXT": "CHS minimum preparedness actions",
                 "NO_ACTIONS": "No CHS actions have been created",
                 "CHS": "Chs",
                 "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
@@ -605,6 +611,7 @@
                 "NO_CATEGORY_ERROR": "Please select a category",
                 "ALL_CATEGORIES": "All categories",
                 "CATEGORY": "Category",
+                "ACTION": "Action",
                 "CATEGORIES": {
                     "ALL": "All categories",
                     "CATEGORY0": "Category1",
@@ -623,16 +630,18 @@
         "SETTING": {
             "SETTING_SAVED": "Settings successfully saved!",
             "TITLE": "System Settings",
+            "ADD_A_NEW_DEPARTMENT": "Add a new department",
             "MIN": "Minimum preparedness threshold",
             "ADV": "Advanced preparedness threshold",
             "GREEN": "Green",
             "AMBER": "Amber",
-            "RED": "Red",
             "DOC_SETTING": "Document upload settings",
             "FILE_FORMAT": "File Format",
             "FILE_SIZE": "Maximum file size",
             "SAVE": "Save Settings",
             "PREPAREDNESS": "Preparedness Settings",
+            "ERROR_MIN_THRESHOLD": "Green value for minimum preparedness threshold can not be lower than or same as the amber value. Please select a different value",
+            "ERROR_ADV_THRESHOLD": "Green value for advanced preparedness threshold can not be lower than or same as the amber value. Please select a different value",
             "DOC_SETTINGS": "Document Upload Settings",
             "RESPONSE_PLANS": "Response Plans Settings",
             "VULNERABLE_GROUPS": "Vulnerable groups",
@@ -732,6 +741,7 @@
             "ADDITIONAL_INFO": "Additional Info",
             "SUPPORT_SKILLS": "Support Skills",
             "TECHNICAL_SKILLS": "Technical Skills",
+            "ADDITIONAL_NOTIFICATIONS": "Additional Notifications",
             "IS_PART_OF_RESPONSE_TEAM?": "Is this staff member part of the response team?",
             "SAVE_NEW_STAFF": "Save new staff member",
             "GLOBAL_USERS": "Global Users",
@@ -747,10 +757,14 @@
             "NO_EMAIL": "Please enter the email address of the staff",
             "NO_PHONE": "Please enter the phone number of the staff",
             "NO_TRAINING_NEEDS": "Please enter training needs",
-            "NO_REPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'"
+            "NO_REPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
+            "NO_STAFF_MEMBERS": "No country offices or staff members have been added to your agency",
+            "NO_STAFF_MEMBERS_IN_COUNTRY": "No staff members have been added to this country office"
         },
         "MESSAGES": {
-            "TITLE_TEXT": "Agency Messages"
+            "TITLE_TEXT": "Agency Messages",
+            "NO_MESSAGES": "No messages",
+            "SUCCESS_DELETED": "The message has been successfully deleted"
         },
         "UPDATE_DETAILS": {
             "AGENCY_LOGO": "Agency Logo",
@@ -768,7 +782,7 @@
         },
         "SETTINGS": {
             "TITLE_TEXT": "Agency Settings",
-            "DEFAULT_AGENCY_CLOCK_SETTINGS_TEXT": "These are the default clock settings for your agency however countries have the ability to make these more frequent if they wish",
+            "DEFAULT_AGENCY_CLOCK_SETTINGS_TEXT": "These are the default clock settings for your agency. However, countries have the ability to make these more frequent if they wish",
             "SAVE_SUCCESS_CLOCK_SETTINGS": "Clock Settings successfully saved",
             "SAVE_SUCCESS_RES_PLAN_SETTINGS": "Response Plan Settings successfully saved",
             "DEPARTMENTS": {
@@ -778,7 +792,9 @@
                 "EDIT_DEPARTMENTS": "Edit Departments",
                 "DEPARTMENT_NEW_SUCCESS": "New department added",
                 "DEPARTMENT_SAVED_SUCCESS": "Department successfully saved",
-                "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed"
+                "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed",
+                "DEPARTMENT_DELETING_ERROR": "Error deleting your departments",
+                "NO_DEPARTMENTS": "No departments are added to your agency"
             },
             "SKILLS": {
                 "TITLE_TEXT": "Skills",
@@ -798,10 +814,12 @@
                 "COUNTRY_OFFICE_PROFILE": "Country office profile",
                 "RESPONSE_PLANNING": "Response planning",
                 "GLOBAL_MAPS": "Global maps",
-                "PREP_BUDGET":"Prepare Budget",
-                "SAVE_SUCCESS": "Module Settings successfully saved"
+                "PREP_BUDGET":"Preparedness Budget",
+                "SAVE_SUCCESS": "Module Settings successfully saved",
+                "MODULE_NAME": "This module can not be enabled as Minimum preparedness actions module is disabled"
             },
             "DURATION_TYPE": {
+                "HOURS": "Hours",
                 "DAYS": "Days",
                 "WEEKS": "Weeks",
                 "MONTHS": "Months",
@@ -818,7 +836,7 @@
                 "PLAN_DETAILS": "Plan Details",
                 "PLAN_CONTEXT": "Plan Context",
                 "BASIC_INFORMATION": "Basic Information",
-                "ACTIVITY_SUMMARY": "Activity Summary",
+                "ACTIVITY_SUMMARY": "Response Objectives",
                 "TARGET_POPULATION": "Target Population",
                 "EXPECTED_RESULTS": "Expected Results",
                 "ACTIVITIES": "Activities",
@@ -836,7 +854,8 @@
                   "YOU_ARE_ABOUT_TO_EXPORT": "You are about to export",
                   "DOCUMENT(S)": "document(s)",
                   "WITH_SIZE": "with a total size of",
-                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?"
+                  "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?",
+                  "INVALID_DOCUMENT_TYPE": "Invalid Document Type"
             },
             "DOCUMENT_TYPE": {
                 "MPA": "MPA",
@@ -858,7 +877,8 @@
             "NO_ADDRESS_1": "Please enter address line 1",
             "NO_COUNTRY": "Please select a country",
             "NO_CITY": "Please enter the name of the city",
-            "NO_PHONE": "Please enter the phone number"
+            "NO_PHONE": "Please enter the phone number",
+            "INVALID_PHONE": "Please enter a valid phone number"
         },
         "STAFF": {
             "TITLE_TEXT": "Country Office Staff",
@@ -891,8 +911,7 @@
             "NO_TRAINING_NEEDS": "Please enter training needs",
             "NO_RESPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
             "SUCCESS_STAFF_MEMBER_ADDED": "Staff member successfully saved",
-            "DELETE_DIALOG_TITLE": "Delete Staff",
-            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff? Any assigned indicators and MPAs will be marked as unassigned",
+            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff member? Any assigned indicators and MPAs will be marked as unassigned",
             "ADDITIONAL_INFO": "Additional Info"
         },
         "PARTNER": {
@@ -1013,8 +1032,8 @@
         "PROFILE": {
             "TITLE_TEXT": "Country Office Profile",
             "MENU": {
-                "PROGRAMME": "Programme",
-                "OFFICE_CAPACITY": "Office capacity",
+                "PROGRAMME": "Programmes",
+                "OFFICE_CAPACITY": "Office Capacity",
                 "PARTNERS": "Partners",
                 "EQUIPMENT": "Equipment",
                 "COORDINATION": "Coordination",
@@ -1022,9 +1041,30 @@
                 "DOCUMENTS": "Documents",
                 "CONTACTS": "Contacts"
             },
+            "OFFICE_CAPACITY": {
+               "TITLE_TEXT": "Office & surge capacity",
+               "VIEW_BUTTON_TEXT": "View office & surge capacity",
+               "EDIT_BUTTON_TEXT": "Edit office & surge capacity",
+               "SURGE_CAPACITY": "Surge capacity",
+               "COUNTRY_OFFICE_CAPACITY": "Country office capacity",
+               "ALL_SUPPORT_SKILLS": "All Support Skills",
+               "ALL_TECHNICAL_SKILLS": "All Technical Skills",
+               "TOTAL_STAFF": "Total staff",
+               "TOTAL_RESPONSE_STAFF": "Total response staff",
+               "TECHNICAL": "Technical",
+               "SUPPORT": "Support",
+               "SURGE_CAP_DETAILS": "Surge capacity details",
+               "SUPPORT": "Support",
+               "TYPE_OF_RELATIONSHIP": "Type of relationship",
+               "LENGTH_OF_DEPLOYMENT": "Length of deployment",
+               "SECTOR_OF_EXPERTISE": "Sector of expertise",
+               "ETA": "Estimated time of arrival",
+               "ADD_SURGE_CAPACITY": "Add surge capacity",
+               "EDIT_SURGE_CAPACITY": "Edit surge capacity"
+             },
             "PARTNERS": {
                 "TITLE_TEXT": "Partners",
-                "IMPLEMENTING_PARTNERS": "Current Implementing partners",
+                "IMPLEMENTING_PARTNERS": "Current implementing partners",
                 "EDIT": "Edit partners",
                 "VIEW": "View partners",
                 "EMPTY_LIST": "Use the add partners button to add your partner organisations",
@@ -1118,7 +1158,6 @@
             "TITLE_TEXT": "Stock Capacity",
             "EDIT": "Edit stock capacity",
             "VIEW": "View stock capacity",
-            "UPDATED": "Updated",
             "STOCK_IN": "In-country stock",
             "UPDATED": "Updated",
             "DESCRIPTION": "Description",
@@ -1143,6 +1182,26 @@
             "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this stock capacity?",
             "SUCCESS_SAVED": "The stock capacity was successfully saved",
             "SUCCESS_DELETED": "The stock capacity was successfully deleted"
+          },
+          "SURGE_CAPACITY":{
+            "GO_BACK_TITLE_ADD": "Add Office & surge capacity",
+            "GO_BACK_TITLE_EDIT": "Edit Office & surge capacity",
+            "EMPTY_LIST": "Use the Add button to add surge",
+            "NO_ORGANIZATION": "Please enter the organization name",
+            "NO_RELATIONSHIP": "Please enter the relationship",
+            "NO_NAME": "Please enter the name",
+            "NO_POSITION": "Please enter the position",
+            "NO_EMAIL": "Please enter the email",
+            "NO_LOCATION": "Please enter the location",
+            "NO_TIME_VALUE": "Please enter the arrival time",
+            "TIME_VALUE_INVALID": "Time value must be great than 0!",
+            "NO_TIME_TYPE": "Please select arrival time base type",
+            "NO_DEPLOYMENT": "Please enter duration of deployment",
+            "NO_SECTORS": "Please select at least one sector",
+            "DELETE_DIALOG_TITLE": "Delete surge capacity",
+            "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this surge capacity?",
+            "SUCCESS_SAVED": "The surge capacity was successfully saved",
+            "SUCCESS_DELETED": "The surge capacity was successfully deleted"
           },
         "CONTACTS":{
             "EDIT_COUNTRY_OFFICE_DETAILS": "Edit country office details",
@@ -1198,10 +1257,12 @@
               "TITLE": "Edit Programme",
               "MODAL_EDIT_SECTOR_TITLE": "Sector Expertise Selection"
             },
-            "TITLE": "Programme",
+            "TITLE": "Programmes",
             "COMMON": {
               "SECTOR_EXPERTISE": "Sector expertise",
               "4WMAPPING": "4W Mapping",
+              "ADD_4W_MAPPING": "Add 4W Mapping",
+              "EDIT_4W_MAPPING": "Edit 4W Mapping",
               "NO_SECTOR_SELECTED": "No sector expertise selected",
               "NO_4WMAPPING" : "Use the edit programme button to enter your 4W mapping",
               "TABLE_SECTOR": "Sector",
@@ -1219,7 +1280,8 @@
               "DELETE_NOTE_TEXT_PART_ONE": "Are you sure you want to delete this note?",
               "DELETE_NOTE_TEXT_PART_TWO": "This action cannot be undone"
             },
-            "EDIT_PROGRAMME_BUTTON" : "Edit Programme"
+            "EDIT_PROGRAMME_BUTTON" : "Edit Programmes",
+            "VIEW_PROGRAMME_BUTTON" : "View Programmes"
           }
         },
         "VIEW_MY_AGENCY": {
@@ -1232,24 +1294,32 @@
             "NO_COUNTRIES_BY": "Countries doesn't exist by",
             "ALERT_LEVEL": "Alert level",
             "ALL_ALERT_LEVEL": "All alert levels",
-            "ALERT_LEVEL": "Alert Level",
             "NO_AGENCIES": "No Agencies",
             "AGENCIES_IN": "Agencies in",
             "OVERVIEW": "Overview"
         }
     },
     "DIALOG": {
-        "TITLE": "Alert",
+        "TITLE": "ALERT",
         "CONTENT": "Are you sure you want to proceed this action?",
         "ACTIVATE_AGENCY": "Are you sure you want to activate this agency?",
         "DEACTIVATE_AGENCY": "Are you sure you want to deactivate this agency? The agency users will be unable to login to ALERT"
     },
+    "DELETE_REGION_DIALOG": {
+        "CONTENT": "Are you sure you want to delete this region? The associated regional director will no longer be able to approve response plans from the country offices within this region"
+    },
     "DELETE_ACTION_DIALOG": {
-        "TITLE": "Alert",
+        "TITLE": "Delete",
         "CONTENT": "Are you sure you want to delete this action?"
     },
+    "DELETE_INDICATOR_DIALOG": {
+      "UNABLE_TO_DELETE": "Unable to delete your indicator. Please try again",
+      "DIALOG": "Delete indicator",
+      "TITLE": "Delete Indicator?",
+      "CONTENT": "Are you sure you want to delete this indicator?"
+    },
     "DELETE_MESSAGE_DIALOG": {
-        "TITLE": "Alert",
+        "TITLE": "ALERT",
         "CONTENT": "Are you sure you want to delete this message?"
     },
     "DELETE_AGENCY_DIALOG": {
@@ -1258,7 +1328,7 @@
     "MESSAGES": {
         "TITLE_TEXT": "System Messages",
         "CREATE_NEW_MESSAGE": "Create new message",
-        "NO_MESSAGES": "No sent messages",
+        "NO_MESSAGES": "No messages",
         "MESSAGE_CONTENT": "Message content",
         "RECIPIENTS": "Recipients",
         "SEND_MESSAGE": "Send message",
@@ -1267,7 +1337,7 @@
         "NO_RECIPIENTS_ERROR": "Please select the recipients group",
         "NO_USERS_IN_GROUP": "There are no users in this recipient group(s)",
         "SENT_SUCCESS": "The message has been successfully sent",
-        "DELETE_DIALOG_TITLE": "Alert",
+        "DELETE_DIALOG_TITLE": "ALERT",
         "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this message?",
         "DELETE_SUCCESS": "The message has been successfully deleted"
     },
@@ -1311,6 +1381,7 @@
     },
     "RESPONSE_PLANS": {
         "TITLE_TEXT": "Response Plans",
+        "NO_SECTIONS_ENABLED": "No sections have been enabled by your agency administrator",
         "NO_INFO_TO_SHOW": "No information to show",
         "ADD_BULLET_POINT": "Add bullet point",
         "HOME": {
@@ -1340,7 +1411,7 @@
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
             "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!",
             "EDIT_WHILE_ANOTHER_EDITING_TITLE": "Editing is not allowed",
-            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by another member. Please try again later."
+            "EDIT_WHILE_ANOTHER_EDITING_CONTENT": "This response plan is currently being edited by below user."
         },
         "VIEW_RESPONSE_PLAN": {
             "TITLE_TEXT": "Scenario Based Response Plan"
@@ -1365,7 +1436,7 @@
             },
             "BASIC_INFORMATION": {
                 "TITLE_TEXT": "Basic Information",
-                "WHAT_SECTORS?": "What sectors will the interventionâ€™s activities most relate to?",
+                "WHAT_SECTORS?": "What sectors will the intervention’s activities most relate to?",
                 "PRESENCE_IN_THE_COUNTRY": "Presence in the country before project",
                 "CURRENT_PROGRAMMES": "Current programmes",
                 "PRE-EXISTING_PARTNER": "Pre-existing partner",
@@ -1376,7 +1447,7 @@
                 "REMOVE_FROM_THIS_PLAN": "Remove from this plan"
             },
             "ACTIVITY_SUMMARY": {
-                "TITLE_TEXT": "Activity Summary",
+                "TITLE_TEXT": "Response Objectives",
                 "EXPLAIN_PROPOSED_PLAN_TEXT": "Explain your proposed response and why you have selected this particular response to the crisis",
                 "EXPLAIN_ACTIVITIES_PLAN_TEXT": "Explain how you will start your activities in 7 days and finish within 45 days",
                 "EXPLAIN_COORDINATION_TEXT?": "How are you co-ordinating and with whom?"
@@ -1530,17 +1601,17 @@
         "DIALOG_EXPORT_CONTENT": "You are about to export {{value}} document(s) with a total size of {{value2}}MB. Are you sure you wish to continue?"
     },
     "COPY_ACTION_DIALOG": {
-        "TITLE": "Alert",
+        "TITLE": "Copy",
         "CONTENT": "Are you sure you want to copy action?"
     },
     "ARCHIVE_ACTION_DIALOG": {
-        "TITLE": "Alert",
+        "TITLE": "Archive",
         "CONTENT": "Are you sure you want to archive action?"
     },
     "PREPAREDNESS": {
         "ASSIGN_TO": "Assign to",
         "ADD_A_DEPARTMENT": "+ Add a department",
-        "TITLE_TEXT_CREATE_PAGE": "Create new mandated preparedness action",
+        "TITLE_TEXT_CREATE_PAGE": "Create new custom action",
         "TITLE_TEXT_EDIT_PAGE": "Edit preparedness action",
         "BACK_BUTTON": "Preparedness actions",
         "TASK": "What needs to be done?",
@@ -1550,6 +1621,7 @@
         "DUE_DATE": "Due date",
         "FREQUENCY": "Frequency",
         "BUDGET": "Budget",
+        "BUDGET_NARRATIVE_ERROR": "An error occured submitting your budget narratives",
         "DOCUMENT_REQUIRED_COMPLETION": "Is a document required for completion",
         "SAVE_NEW_ACTION": "Save new action",
         "DELETE_ACTION_BUTTON": "Delete action",
@@ -1595,6 +1667,7 @@
         "ADD_ANOTHER_LOCATION": "Add another location",
         "CONFIRM_ALERT_LEVEL": "Confirm alert level",
         "UPDATE_ALERT_LEVEL": "Update alert level",
+        "ACCEPT_REJECT_ALERT_LEVEL":"Accept or reject",
         "LAST_UPDATED": "Last updated"
     },
     "DASHBOARD": {
@@ -1689,7 +1762,7 @@
         },
         "ADD_HAZARD": {
             "NO_HAZARD": "Please select hazard",
-            "NO_SEASONAL": "Please select seasonal",
+            "NO_SEASONAL": "Please select a season if you want to add a seasonal hazard",
             "HAZARD_DETECTED": "This hazard exists already",
             "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "ADD_NEW_HAZARD": "Add new hazard",
@@ -1706,7 +1779,8 @@
             "ADD_SEASONAL_TO_CALENDAR": "Add season to the calendar",
             "SEASON_NAME": "Season Name",
             "START_DATE": "Start Date",
-            "END_DATE": "End Date"
+            "END_DATE": "End Date",
+            "NEXT": "Next"
         },
         "MAIN_PAGE": {
             "LOGS_NO_CONTENT": "Please enter text for you log.",
@@ -1803,5 +1877,23 @@
          "TITLE_TEXT": "Start Fund",
          "START_FUND_APP_FORM": "Start Fund Project Application Form"
        }
+     },
+     "NOTIFICATIONS": {
+        "TEMPLATES":{
+            "ASSIGNED_INDICATOR_TITLE": "An indicator has been assigned to you",
+            "ASSIGNED_INDICATOR_CONTENT": "The following indicator: {{indicatorName}} has been assigned to you",
+            "ASSIGNED_MPA_ACTION_TITLE": "A minimum preparedness action has been assigned to you",
+            "ASSIGNED_MPA_ACTION_CONTENT": "The following minimum preparedness action: {{actionName}} has been assigned to you",
+            "ASSIGNED_APA_ACTION_TITLE": "An advanced preparedness action has been assigned to you",
+            "ASSIGNED_APA_ACTION_CONTENT": "The following advanced preparedness action: {{actionName}} has been assigned to you",
+            "RESPONSE_PLAN_APPROVAL_TITLE": "A response plan has been submitted for approval",
+            "RESPONSE_PLAN_APPROVAL_CONTENT": "The following response plan: {{responsePlan}} has been submitted for approval",
+            "RED_ALERT_REQUESTED_TITLE": "A red alert level has been requested for {{riskName}}",
+            "RED_ALERT_REQUESTED_CONTENT": "A red alert has been requested for the following alert: {{riskName}}",
+            "ALERT_LEVEL_UPDATED_TITLE": "The alert level for {{riskName}} has been updated",
+            "ALERT_LEVEL_UPDATED_CONTENT": "The following alert: {{riskName}} has had its level updated from {{levelBefore}} to {{levelAfter}}",
+            "RESPONSE_PLAN_REJECTED_TITLE": "A response plan has been rejected",
+            "RESPONSE_PLAN_REJECTED_CONTENT": "The following response plan: {{responsePlan}} has been rejected"
+        }
      }
 }

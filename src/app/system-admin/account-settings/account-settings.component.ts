@@ -30,7 +30,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   private systemAdminEmail: string;
   private systemAdminPhone: string;
   private PersonTitle = Constants.PERSON_TITLE;
-  private personTitleList: number[] = [PersonTitle.Mr, PersonTitle.Mrs, PersonTitle.Miss, PersonTitle.Dr, PersonTitle.Prof];
+  private personTitleList: number[] = Constants.PERSON_TITLE_SELECTION;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 

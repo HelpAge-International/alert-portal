@@ -20,7 +20,7 @@
 
       <div *ngFor="let plan of activePlans" class="Accordion Plans-list">
         <div class="row align-items-center Plans-list__item">
-          <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan.hazardScenario] |
+          <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan?.hazardScenario] |
             translate}}
           </div>
           <div class="col-md-3 col-sm-3">{{plan.name}}</div>
@@ -217,9 +217,9 @@
                 <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
                   translate}} <br/> Start Fund
                   (.doc, 78Kb)</a>
-                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
+                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
                   78Kb)</a>
-                <a class="dropdown-item">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Word (.doc,
+                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Word (.doc,
                   78Kb)</a>
                 <a class="dropdown-item"
                    (click)="archivePlan(plan)">{{"RESPONSE_PLANS.HOME.ARCHIVE_PLAN" | translate}}</a>
@@ -248,7 +248,7 @@
 
         <div *ngFor="let plan of archivedPlans | async" class="Accordion Plans-list">
           <div class="row align-items-center Plans-list__item">
-            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{plan?.hazardScenario}}</div>
+            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan?.hazardScenario] | translate}}</div>
             <div class="col-md-3 col-sm-3">{{plan?.name}}</div>
             <div class="col-md-3 col-sm-2 Plans-list__item--status">
               <a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon6" aria-expanded="false"
@@ -266,8 +266,11 @@
               {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
-              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
+              <a *ngIf="!isViewing" class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
                 | translate}}</a>
+              <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
+                      (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
+              </button>
             </div>
           </div>
         </div>
@@ -309,6 +312,8 @@
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{dialogContent | translate}}</p></div>
+        <div class="text-center"><a href="mailto:{{dialogEditingUserEmail}}">{{dialogEditingUserName}}</a></div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="closeModal(true)">{{"GLOBAL.OK" | translate}}

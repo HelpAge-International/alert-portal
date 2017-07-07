@@ -1,12 +1,9 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Observable} from "rxjs";
-import {
-  ActionLevel, ActionStatus, ActionType, AlertLevels, AlertStatus, Countries, DashboardType,
-  UserType
-} from "../utils/Enums";
+import {ActionLevel, ActionType, AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
@@ -17,8 +14,9 @@ import {
   ChronolineEvent,
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
-import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
+import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -39,7 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
-  private agencyAdminUid: string;
+  private agencyId: string;
   private actionsToday = [];
   private actionsThisWeek = [];
   private indicatorsToday = [];
@@ -66,7 +64,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private responsePlansForApproval: Observable<any[]>;
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
-
+  private redAlerts: Observable<any[]>;
+  private affectedAreasToShow : any [];
   private userPaths = Constants.USER_PATHS;
 
   // TODO - New Subscriptions - Remove RxHelper and add Subject
@@ -76,15 +75,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Module settings
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
+  private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      console.log(user);
+      console.log(userType);
       this.uid = user.uid;
       this.userType = userType;
-      this.NODE_TO_CHECK = this.userPaths[userType];
+      console.log(this.userType)
+      this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+      console.log(this.NODE_TO_CHECK);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
         this.moduleSettings = isEnabled;
       }));
@@ -93,7 +96,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
-      this.loadData();
+      if (this.userType == UserType.PartnerUser) {
+        this.loadDataForPartnerUser();
+      } else {
+        this.loadData();
+      }
+
+      // Load in the country permissions
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
+        this.countryPermissionMatrix = isEnabled;
+      }));
     });
   }
 
@@ -131,6 +143,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getAgencyID().then(() => {
       this.getCountryData();
     });
+  }
+
+  private loadDataForPartnerUser() {
+    this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountries => {
+        this.agencyId = agencyCountries[0].$key;
+        this.countryId = agencyCountries[0].$value;
+
+        if (this.DashboardTypeUsed == DashboardType.default) {
+          this.getAllSeasonsForCountryId(this.countryId);
+        }
+        this.getAlerts();
+        this.getCountryContextIndicators();
+        this.getHazards();
+        this.initData();
+        this.getCountryData();
+      });
   }
 
   public getAllSeasonsForCountryId(countryId: string) {
@@ -187,7 +217,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
-          this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
+          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
           res(true);
         });
     });
@@ -248,7 +278,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
           this.countryLocation = location.$value;
@@ -262,13 +292,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.DashboardTypeUsed == DashboardType.default) {
       console.log(this.countryId);
       this.alerts = this.actionService.getAlerts(this.countryId);
+
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
       this.amberAlerts = this.actionService.getAlerts(this.countryId)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
         });
+      this.redAlerts = this.actionService.getRedAlerts(this.countryId)
+        .map(alerts => {
+          return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+        });
     }
+  }
+
+  showAffectedAreasForAlert(affectedAreas){
+    this.affectedAreasToShow = affectedAreas;
+    jQuery("#view-areas").modal("show");
   }
 
   shouldShow(level: number, action: number) {
@@ -345,7 +385,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlert(alertId) {
-    //TODO need to change back to uid!!
     this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
   }
 
@@ -365,7 +404,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
     this.router.navigate(["/dashboard/facetoface-meeting-request", {
       countryId: this.countryId,
-      agencyId: this.agencyAdminUid
+      agencyId: this.agencyId
     }]);
   }
 

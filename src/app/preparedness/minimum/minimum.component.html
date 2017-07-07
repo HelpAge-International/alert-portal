@@ -1,6 +1,13 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isViewing">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</div>
 
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+
+<!-- EXPORT DOCUMENTS MODAL -->
 <div class="modal fade" id="export_documents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -12,44 +19,47 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>You are about to export <strong>{{docsCount}} document(s)</strong> with a total size
+        <div class="text-center"><p>You are about to export <strong>{{documents.length}} document(s)</strong> with a
+          total size
           of <strong>{{docsSize | number:'1.0-2'}}MB</strong> are you sure you wish to continue?</p></div>
       </div>
       <div class="modal-footer">
-
         <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="export()">Confirm</button>
-
+        <button type="button" class="btn btn-primary" (click)="exportAllDocsFromModal(documentActionId)">Confirm
+        </button>
       </div>
     </div>
   </div>
 </div>
 
+
+<!-- PAGE -->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <ng-template [ngIf]="countrySelected && !agencySelected">
-      <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
-      <app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
-    <ng-template [ngIf]="agencySelected">
-      <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
-      <app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
 
+    <div *ngIf="!isViewing">
+      <ng-template [ngIf]="countrySelected && !agencySelected">
+        <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
+        <app-alert-widget [countryId]="countryId"></app-alert-widget>
+      </ng-template>
+      <ng-template [ngIf]="agencySelected">
+        <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
+        <app-alert-widget [countryId]="countryId"></app-alert-widget>
+      </ng-template>
+    </div>
 
     <div class="Header-title__wrap">
       <h1>Minimum Preparedness Actions</h1>
-
       <!-- Tooltip partial -->
       <tooltip [level1]="'Preparedness Actions that an agency should implement in order to maintain a minimum level of emergency preparedness. These are commonly referred to as MPAs.'"
       [level2]="'In order to define minimum preparedness actions effectively, you need to take two approaches
       •         Continuity minimum preparedness actions:  Reviewing your existing programmes and your organisations main functional activities; identify the supporting tasks that come together to underpin those activities and how risks may impact on these activities. This allows essential activities, those that must be maintained, to be identified. The processes and mechanisms you choose to protect these essential activities and supporting tasks are your MPAs.
       •        Response Plan minimum preparedness actions: Using your Scenario based response plan activity; identify the supporting tasks and functions that come together to underpin and enable those activities and how risks may impact on these activities.
       '"></tooltip></div>
-
+<!--
       <div class="btn-group">
-      <div *ngIf="!isViewing" class="btn-group">
-        
+      <div *ngIf="!isViewing" class="btn-group">-->
+      <div *ngIf="!isViewing  && (permissionsAreEnabled.customMPA.New || userType == userTypes.CountryAdmin)" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Create action
         </button>
@@ -64,46 +74,52 @@
       </div>
     </div>
 
+
+    <!--
+             START :: FILTERS
+    -->
     <div class="row align-items-center Filter-form">
       <div class="col-lg-1 col-md-1 col-sm-6">
         Filter:
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6">
-        <select class="form-control" id="ActionStatusFilter" [(ngModel)]="statusSelected" (change)="filter()">
+        <!-- STATUS -->
+        <select class="form-control" id="ActionStatusFilter" [(ngModel)]="filterStatus">
           <option value="-1" selected>Action Status</option>
-          <template ngFor let-status [ngForOf]="ActionStatusEnum" let-statusIdx="index">
-            <option value="{{status}}">{{ACTION_STATUS[statusIdx] | translate}}</option>
-          </template>
+          <option *ngFor="let x of ACTION_STATUS; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_STATUS[i]
+            | translate}}
+          </option>
         </select>
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
-        <select class="form-control" id="DepartmentsFilter" [(ngModel)]="departmentSelected" (change)="filter()">
+        <!-- DEPARTMENTS -->
+        <select class="form-control" id="DepartmentsFilter" [(ngModel)]="filterDepartment">
           <option value="-1" selected>All departments</option>
-          <template ngFor let-department [ngForOf]="departments" let-departmentIdx="index">
-            <option value="{{department}}">{{department}}</option>
-          </template>
+          <option *ngFor="let x of DEPARTMENTS" value="{{x.id}}">{{x.name}}</option>
         </select>
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
-        <select class="form-control" id="TypesFilter" [(ngModel)]="typeSelected" (change)="filter()">
+        <!-- TYPE -->
+        <select class="form-control" id="TypesFilter" [(ngModel)]="filterType">
           <option value="-1" selected>All types</option>
-          <template ngFor let-type [ngForOf]="ActionTypeEnum" let-typeIdx="index">
-            <option value="{{type}}">{{ACTION_TYPE[typeIdx] | translate}}</option>
-          </template>
+          <option *ngFor="let x of ACTION_TYPE; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_TYPE[i] |
+            translate}}
+          </option>
         </select>
       </div>
       <div class="col-lg-2 col-md-2 col-sm-6 ">
-        <select class="form-control" id="AssignedFilter" [(ngModel)]="userSelected" (change)="filter()">
-          <option value="-1">Assigned to me</option>
+        <!-- ASSIGNED TOO -->
+        <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned">
+          <option value="-1">Unassigned</option>
           <option value="0">Assigned to Anyone</option>
-          <template ngFor let-assignedToUser [ngForOf]="assignedToUsers" let-assignedToUserIdx="index">
-            <option value="{{assignedToUser.$key}}">{{assignedToUser.fullName}}</option>
-          </template>
-          <!-- <option value="A-N-S">Assigned to Name Surname</option> -->
+          <!-- If it's me, show "Assigned to me" instead -->
+          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ?
+            'Assigned to me' : x.firstName + ' ' + x.lastName}}
+          </option>
         </select>
       </div>
       <div class="col-lg-3 col-md-3 col-sm-6 ">
-        <select class="form-control" id="AgencyNetworkFilter" [(ngModel)]="agencyNetworkSelected" (change)="filter()">
+        <select class="form-control" id="AgencyNetworkFilter" [(ngModel)]="filerNetworkAgency">
           <option value="-1" disabled selected hidden>Agency & Network</option>
           <option value="Agency-Only">Agency Only</option>
           <option value="All-Networks">All Networks</option>
@@ -112,26 +128,76 @@
       </div>
     </div>
 
+    <!--
+             START :: ASSIGNED TOO
+    -->
     <div class="Ribbon__section__wrap Spaced">
-      <h2>Actions assigned to {{assignedToUser}}</h2>
+      <h2>Actions assigned to {{
+        filterAssigned == uid ? 'me' : (filterAssigned == '0' ? 'anyone' :
+        (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' +
+        CURRENT_USERS.get(filterAssigned).lastName : 'no-one')
+        )
+        }}</h2>
 
-      <template ngFor let-action [ngForOf]="actions">
-        <template
-          [ngIf]="(action.asignee == assignedToUserKey || (assignedToAnyone && action.asignee)) && action.actionStatus != actionStatus.Inactive">
-          <div class="Accordion Preparedness-list">
-            <div class="row Preparedness-list__item">
-              <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                | date:"d MMM ''yy"}}</strong></div>
-              <div class="col-md-10 col-sm-10">
-                <div class="row">
-                  <div class="col-md-5 col-sm-4">{{action.task}}</div>
-                  <div class="col-md-2 col-sm-2"
-                       [ngClass]="
+      <div *ngFor="let action of prepActionService.actions">
+
+        <!-- FILTERING IF STATEMENT -->
+        <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
+                    (filterType == -1 || action.type == filterType) &&
+                    (filterDepartment == -1 || action.department == filterDepartment) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
+                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
+
+          <!-- BELONGING IN THE MODULE IF STATEMENT -->
+          <div *ngIf="!action.isArchived && (action.asignee != '' && action.asignee != null && action.asignee != undefined)">
+
+            <!-- FILTERING BASED ON THE "COMPLETE/INPROGRESS/EXPIRED" filter -->
+            <div *ngIf="filterStatus == -1 ||
+            (!action.isComplete && action.dueDate > getNow() && !((!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                      || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow()))) && filterStatus == ActionStatus.InProgress) ||
+            (action.isComplete && action.dueDate > getNow() && filterStatus == ActionStatus.Completed) ||
+            ((action.dueDate <= getNow()
+                      || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                      || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow()))) && filterStatus == ActionStatus.Expired)">
+
+              <div class="Accordion Preparedness-list">
+                <div class="Accordion Preparedness-list">
+                  <div class="row Preparedness-list__item">
+
+
+
+                    <!--
+                   Everywhere that the following line is used it's just way of handling the "Expired on" state with the clock settings.
+                   Based on those setting they're sometimes expired. This below checks that. It makes all the IF statements look
+                   a bit messy but it has to be done like this so it's not dependent on a method resolution (and hence live updating gets a bit weird)
+
+                   (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                    -->
+
+                    <!-- Logic for the clock settings -->
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
+                      Due on <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                    </div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
+                      Expired on <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
+                    </div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
+                      Expired on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
+                    </div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date" *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
+                      Expires on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM ''yy"}}</strong>
+                    </div>
+
+
+                    <div class="col-md-10 col-sm-10">
+                      <div class="row">
+                        <div class="col-md-5 col-sm-4">{{action.task}}</div>
+                        <div class="col-md-2 col-sm-2"
+                             [ngClass]="
                                          {
-                                         'text-danger': action.actionStatus == actionStatus.Expired,
-                                         'text-warning': action.actionStatus == actionStatus.InProgress,
-                                         'text-success': action.actionStatus == actionStatus.Completed,
-                                         'text-muted': action.actionStatus == actionStatus.Inactive
+                                         'text-warning': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                         'text-success': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                         'text-danger': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -139,194 +205,231 @@
                                             <i class="fa fa-stack-1x fa-inverse"
                                                [ngClass]="
                                                {
-                                               'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
-                                               'fa-check': action.actionStatus == actionStatus.Completed,
-                                               'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
+                                               'fa-ellipsis-h': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                               'fa-check': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
+                                               'fa-times': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
                                                }
                                                "></i>
                                         </span>
-                    {{ACTION_STATUS[action.actionStatus] | translate}}
-                  </div>
-                  <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-
-                    <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
-                       [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false"
-                       [attr.aria-controls]="'notes_popover_' + action.key">
-                      <div class="fa-stack">
-                        <i class="fa fa-comment fa-stack-2x"></i>
-                        <i class="fa fa-stack-1x fa-inverse">{{action.notesCount}}</i>
+                        {{ACTION_STATUS[action.dueDate <= getNow() || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) ? 0 : (action.isComplete ? 2 : 1)] | translate}}
                       </div>
-                      <span>Notes</span>
-                    </a>
+                        <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 
-                  </div>
-                  <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                             [attr.data-target]="'#notes_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'notes_popover_' + action.id">
+                            <div class="fa-stack">
+                              <i class="fa fa-comment fa-stack-2x"></i>
+                              <i class="fa fa-stack-1x fa-inverse">{{action.notes.length}}</i>
+                            </div>
+                            <span>Notes</span>
+                          </a>
 
-                    <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
-                       [attr.data-target]="'#documents_popover_' + action.key" aria-expanded="false"
-                       [attr.aria-controls]="'documents_popover_' + action.key" *ngIf="action.docsCount > 0">
-                      <div class="fa-stack">
-                        <i class="fa fa-file fa-stack-2x"></i>
-                        <i class="fa fa-stack-1x fa-inverse">{{action.docsCount}}</i>
+                        </div>
+                        <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+
+                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                             [attr.data-target]="'#documents_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'documents_popover_' + action.id"
+                             *ngIf="action.documents.length > 0">
+                            <div class="fa-stack">
+                              <i class="fa fa-file fa-stack-2x"></i>
+                              <i class="fa fa-stack-1x fa-inverse">{{action.documents.length}}</i>
+                            </div>
+                            <span>Doc</span>
+                          </a>
+
+                        </div>
+                        <div class="col-md-3 col-sm-4 btn-block"
+                             *ngIf="!countrySelected">
+                          <div *ngIf="!action.isComplete && action.dueDate > getNow()  && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
+                            <a href="javascript:void(0)" data-toggle="collapse"
+                               [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
+                               aria-controls="popover_content"
+                               class="btn btn-outline-primary btn-block ">Mark as complete</a>
+                          </div>
+
+                          <!-- TODO: PERMISSIONS -->
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
+                            action</a>
+                        </div>
+                        <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                        <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                        <!--</div>-->
                       </div>
-                      <span>Doc</span>
-                    </a>
+                      <div class="row">
+                        <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
+                        <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                        <div class="subrow-line">Department: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
+                        <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
+                          : 'Unassigned'}}</strong></div>
 
-                  </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
-                    <template [ngIf]="action.actionStatus == actionStatus.InProgress">
-                      <a href="javascript:void(0)" data-toggle="collapse"
-                         [attr.data-target]="'#popover_content_' + action.key" aria-expanded="false"
-                         aria-controls="popover_content"
-                         class="btn btn-outline-primary btn-block ">Mark as complete</a>
-                    </template>
-                    <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
-                      action</a>
-                  </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
-                  <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                  <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
-                  <!--TODO assignee???-->
-                  <!--<div class="subrow-line">Assigned to: <strong>{{users[action.assignee]}}</strong></div>-->
-                  <div class="subrow-line">Assigned to: <strong>{{users[action.asignee]}}</strong></div>
-                  <!--<p>testtestsetsetet</p>-->
-                  <!--<p>{{JSON.stringify(action)}}</p>-->
-                </div>
-              </div>
-
-              <div id="notes_popover_{{action.key}}"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-                <!-- Notes -->
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-7">
-                    <div class="row">
-                      <div class="col-12">
-                        <h4>Notes</h4>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-12 form-group">
+
+                    <div id="notes_popover_{{action.id}}"
+                         class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+                      <!-- Notes -->
+                      <div class="row Spaced">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-7">
+                          <div class="row">
+                            <div class="col-12">
+                              <h4>Notes</h4>
+                            </div>
+                          </div>
+                          <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || permissionsAreEnabled.notes.New" >
+                            <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
-                      </div>
-                    </div>
-                    <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
-                      <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
-                      <div class="col-sm-9">
-                        <div class="row">
-                          <div class="col-12">
-                            {{note.content}}
+                            </div>
+                          </div>
+                          <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
+                            <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
+                            <div class="col-sm-9">
+                              <div class="row">
+                                <div class="col-12">
+                                  {{note.content}}
+                                </div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-6 text-bold Small-spaced">
+                                  by {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                  CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
+                                </div>
+                                <div class="col-6 text-bold text-right"
+                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
+                                  <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                     (click)="editNote(note, action)">Edit</a>
+                                  | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                       (click)="deleteNote(note, action)">Delete</a>
+                                </div>
+                                <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
+                                  Editing...
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="row align-items-center">
-                          <div class="col-6 text-bold Small-spaced">
-                            by {{note.uploadByUser}}
+                        <div class="col-md-3 btn-block">
+                          <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
+                            'ADD NOTE'}}</a>
+                          <a href="javascript:void(0)" class="btn btn-block"
+                             onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
+                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
+                             *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div id="documents_popover_{{action.id}}"
+                         class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+                      <!-- Documents -->
+                      <div class="row Spaced">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-10">
+                          <div class="row Spaced align-items-center">
+                            <div class="col-sm-6 col-8">
+                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
+                                                                                             class="text-nowrap"
+                                                                                             (click)="exportAllDocuments(action)">Download
+                              all</a>
+                            </div>
+                            <div class="col-sm-6 col-4 text-right">
+                              <a (click)="closeDocumentsModal('documents_popover_' + action.id)"
+                                 href="javascript:void(0)" class="btn btn-block">Close</a>
+                            </div>
                           </div>
-                          <div class="col-6 text-bold text-right" *ngIf="note.uploadBy == uid">
-                            <a href="javascript:void(0);" class="text-primary" (click)="editNote(note, action)">Edit</a>
-                            | <a href="javascript:void(0);" class="text-danger" (click)="deleteNote(note, action)">Delete</a>
+                          <div class="row documents-popover__item">
+                            <div class="col-12">
+                              <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                                <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                                *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin) || permissionsAreEnabled.other.DownloadDocuments"
+                                href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> |
+                                <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
+                                href="javascript:void(0);" class="text-danger"
+                                (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-3 btn-block">
-                    <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="addNote(action)">ADD
-                      NOTE</a>
-                    <a href="javascript:void(0)" class="btn btn-block"
-                       onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
-                  </div>
                 </div>
 
-              </div>
-
-              <div id="documents_popover_{{action.key}}"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
-                <!-- Documents -->
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-10">
-                    <div class="row Spaced align-items-center">
-                      <div class="col-sm-6 col-8">
-                        <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                         (click)="exportSelectedDocuments(action)">Download all</a>
+                <div id="popover_content_{{action.id}}"
+                     class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
+                  <!-- Mark as complete -->
+                  <div class="row Spaced">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-7">
+                      <div class="row">
+                        <div class="col-12">
+                          <h4>Confirm this action is completed.</h4>
+                        </div>
                       </div>
-                      <div class="col-sm-6 col-4 text-right">
-                        <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
-                      </div>
-                    </div>
-                    <div class="row documents-popover__item">
-                      <div class="col-12">
-                        <p *ngFor="let doc of action.documents | keyValues">
-                          <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                          href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
-                          href="javascript:void(0);" class="text-danger" (click)="deleteDocument(action, doc.key)">Delete</a></span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="popover_content_{{action.key}}"
-               class="Popover__ribbon prevent_parent_collapse collapse col-12 Popover__ribbon__no-arrow">
-            <!-- Mark as complete -->
-            <div class="row Spaced">
-              <div class="col-md-2"></div>
-              <div class="col-md-7">
-                <div class="row">
-                  <div class="col-12">
-                    <h4>Confirm this action is completed.</h4>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12 form-group">
+                      <div class="row">
+                        <div class="col-12 form-group">
                     <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                               placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          <p>Attach documents as proof of completion {{action.requireDoc ? '(required)' : ''}}</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">Upload
+                          documents</label>
+                        </div>
+                        <input type='file' id="docUpload{{action.id}}" name="file"
+                               (change)="fileChange($event, action, action.id)"
+                               class="Input-form--hidden"/>
+                      </div>
+                      <div class="row Spaced">
+                        <div class="col-12">
+                          <p *ngIf="action.attachments && action.attachments.length > 0">Attachments
+                            ({{action.attachments.length}})</p>
+                          <p *ngFor="let attachment of action.attachments">
+                            <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
+                                                                               class="text-danger"
+                                                                               (click)="removeAttachment(action, attachment)">Remove</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 btn-block">
+                      <a href="javascript:void(0)" class="btn btn-primary btn-block"
+                         (click)="completeAction(action)">CONFIRM</a>
+                      <a href="javascript:void(0)" class="btn btn-block"
+                         onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
+                    </div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-12">
-                    <p>Attach documents as proof of completion (required)</p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12"><label for="docUpload" class="btn btn-outline-primary">Upload documents</label>
-                  </div>
-                  <input type='file' id="docUpload" (change)="fileChange($event, action)" class="Input-form--hidden"/>
-                </div>
-                <div class="row Spaced">
-                  <div class="col-12">
-                    <p *ngIf="action.attachments && action.attachments.length > 0">Attachments</p>
-                    <p *ngFor="let attachment of action.attachments">
-                      <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)" class="text-danger"
-                                                                         (click)="removeAttachment(action, attachment)">Remove</a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3 btn-block">
-                <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                   (click)="completeAction(action)">CONFIRM</a>
-                <a href="javascript:void(0)" class="btn btn-block"
-                   onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
               </div>
             </div>
           </div>
-        </template>
-      </template>
+        </div>
 
+      </div>
     </div>
 
+
+    <!--
+             START :: UNASSIGNED
+    -->
     <div class="Ribbon__section__wrap Spaced">
       <div class="Accordion--b-white Accordion__hide-links">
         <div class="row align-items-center no-gutters">
@@ -342,157 +445,182 @@
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseTwo">
-        <template ngFor let-action [ngForOf]="actions">
-          <!--TODO assignee??-->
-          <!--<div class="Accordion Preparedness-list" *ngIf="action.assignee == udefined || action.assignee == null">-->
-          <div class="Accordion Preparedness-list" *ngIf="action.asignee == udefined || action.asignee == null">
-            <div class="row Preparedness-list__item">
-              <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                | date:"d MMM ''yy"}}</strong></div>
-              <div class="col-md-10 col-sm-10">
-                <div class="row">
-                  <div class="col-md-5 col-sm-4">{{action.task}}</div>
-                  <div class="col-md-2 col-sm-2"
-                       [ngClass]="
-                                         {
-                                         'text-danger': action.actionStatus == actionStatus.Expired,
-                                         'text-warning': action.actionStatus == actionStatus.InProgress,
-                                         'text-success': action.actionStatus == actionStatus.Completed,
-                                         'text-muted': action.actionStatus == actionStatus.Inactive
-                                         }
-                                         ">
-                                         <span class="fa-stack">
-                                            <i class="fa fa-circle fa-stack-2x"></i>
-                                            <i class="fa fa-stack-1x fa-inverse"
-                                               [ngClass]="
-                                               {
-                                               'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
-                                               'fa-check': action.actionStatus == actionStatus.Completed,
-                                               'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
-                                               }
-                                               "></i>
-                                        </span>
-                    {{ACTION_STATUS[action.actionStatus] | translate}}
-                  </div>
-                  <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+        <div *ngFor="let action of prepActionService.actions">
+          <!-- FILTERING IF STATEMENT -->
+          <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
+                    (filterType == -1 || action.type == filterType) &&
+                    (filterDepartment == -1 || action.department == filterDepartment) &&
+                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+            <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
+            <!-- BELONGING IN THE MODULE IF STATEMENT -->
+            <div *ngIf="!action.isArchived && !(action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
-                    <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
-                       [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false"
-                       [attr.aria-controls]="'notes_popover_' + action.key">
-                      <div class="fa-stack">
-                        <i class="fa fa-comment fa-stack-2x"></i>
-                        <i class="fa fa-stack-1x fa-inverse">{{action.notesCount}}</i>
+              <div class="Accordion Preparedness-list">
+                <div class="Accordion Preparedness-list">
+                  <div class="row Preparedness-list__item">
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
+                    <div class="col-md-10 col-sm-10">
+                      <div class="row">
+                        <div class="col-md-5 col-sm-4">{{action.task}}</div>
+                        <div class="col-md-2 col-sm-2 text-danger">
+                          <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-stack-1x fa-inverse fa-times"></i>
+                          </span>{{ACTION_STATUS[0] | translate}}
+                        </div>
+                        <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+
+                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                             [attr.data-target]="'#notes_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'notes_popover_' + action.id">
+                            <div class="fa-stack">
+                              <i class="fa fa-comment fa-stack-2x"></i>
+                              <i class="fa fa-stack-1x fa-inverse">{{action.notes.length}}</i>
+                            </div>
+                            <span>Notes</span>
+                          </a>
+                        </div>
+                        <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+
+                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                             [attr.data-target]="'#documents_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'documents_popover_' + action.id"
+                             *ngIf="action.documents.length > 0">
+                            <div class="fa-stack">
+                              <i class="fa fa-file fa-stack-2x"></i>
+                              <i class="fa fa-stack-1x fa-inverse">{{action.documents.length}}</i>
+                            </div>
+                            <span>Doc</span>
+                          </a>
+
+                        </div>
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
+                                    && !((action.type == ActionType.mandated && !permissionsAreEnabled.mandatedMPA) || (action.type == ActionType.chs && !permissionsAreEnabled.chsActions))
+                                    && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
+                          <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
+                             aria-expanded="false" aria-controls="popover_content"
+                             class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
+                            this action</a>
+
+                          <!-- TODO: PERMISSIONS -->
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                             class="btn btn-block">Edit
+                            action</a>
+                        </div>
+                        <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                        <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                        <!--</div>-->
                       </div>
-                      <span>Notes</span>
-                    </a>
+                      <div class="row">
+                        <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
+                        <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                        <div class="subrow-line">Department: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
+                        <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
+                          : 'Unassigned'}}</strong></div>
 
-                  </div>
-                  <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-
-                    <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
-                       [attr.data-target]="'#documents_popover_' + action.key" aria-expanded="false"
-                       [attr.aria-controls]="'documents_popover_' + action.key" *ngIf="action.docsCount > 0">
-                      <div class="fa-stack">
-                        <i class="fa fa-file fa-stack-2x"></i>
-                        <i class="fa fa-stack-1x fa-inverse">{{action.docsCount}}</i>
-                      </div>
-                      <span>Doc</span>
-                    </a>
-
-                  </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
-                    <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
-                       aria-expanded="false" aria-controls="popover_content"
-                       class="btn btn-outline-primary btn-block ">Assign this action</a>
-
-                    <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
-                      action</a>
-                  </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
-                  <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                  <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
-                  <!--TODO assignee?-->
-                  <!--<div class="subrow-line">Assigned to: <strong>{{users[action.assignee]}}</strong></div>-->
-                  <div class="subrow-line">Assigned to: <strong>{{users[action.asignee]}}</strong></div>
-
-                </div>
-              </div>
-
-              <div id="notes_popover_{{action.key}}"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-                <!-- Notes -->
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-7">
-                    <div class="row">
-                      <div class="col-12">
-                        <h4>Notes</h4>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-12 form-group">
-                        <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
-                                  placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
-                      </div>
-                    </div>
-                    <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
-                      <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
-                      <div class="col-sm-9">
+                  </div>
+
+
+
+                  <div id="notes_popover_{{action.id}}"
+                       class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+                    <!-- Notes -->
+                    <div class="row Spaced">
+                      <div class="col-md-2"></div>
+                      <div class="col-md-7">
                         <div class="row">
                           <div class="col-12">
-                            {{note.content}}
+                            <h4>Notes</h4>
                           </div>
                         </div>
-                        <div class="row align-items-center">
-                          <div class="col-6 text-bold Small-spaced">
-                            by {{note.uploadByUser}}
+                        <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || permissionsAreEnabled.notes.New" >
+                          <div class="col-12 form-group">
+                        <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
+                                  placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                           </div>
-                          <div class="col-6 text-bold text-right" *ngIf="note.uploadBy == uid">
-                            <a href="javascript:void(0);" class="text-primary" (click)="editNote(note, action)">Edit</a>
-                            | <a href="javascript:void(0);" class="text-danger" (click)="deleteNote(note, action)">Delete</a>
+                        </div>
+                        <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
+                          <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
+                          <div class="col-sm-9">
+                            <div class="row">
+                              <div class="col-12">
+                                {{note.content}}
+                              </div>
+                            </div>
+                            <div class="row align-items-center">
+                              <div class="col-6 text-bold Small-spaced">
+                                by {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
+                                CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
+                              </div>
+                              <div class="col-6 text-bold text-right"
+                                   *ngIf="note.uploadedBy == uid && note.id != action.noteId">
+                                <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                   (click)="editNote(note, action)">Edit</a>
+                                | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                     (click)="deleteNote(note, action)">Delete</a>
+                              </div>
+                              <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
+                                Editing...
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div class="col-md-3 btn-block">
-                    <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="addNote(action)">ADD
-                      NOTE</a>
-                    <a href="javascript:void(0)" class="btn btn-block"
-                       onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
-                  </div>
-                </div>
-
-              </div>
-
-              <div id="documents_popover_{{action.key}}"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
-                <!-- Documents -->
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-10">
-                    <div class="row Spaced align-items-center">
-                      <div class="col-sm-6 col-8">
-                        <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                         (click)="exportSelectedDocuments(action)">Download all</a>
-                      </div>
-                      <div class="col-sm-6 col-4 text-right">
-                        <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
+                      <div class="col-md-3 btn-block">
+                        <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                           (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
+                          'ADD NOTE'}}</a>
+                        <a href="javascript:void(0)" class="btn btn-block"
+                           onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
+                        <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
+                           *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
                       </div>
                     </div>
-                    <div class="row documents-popover__item">
-                      <div class="col-12">
-                        <p *ngFor="let doc of action.documents | keyValues">
-                          <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                          href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
-                          href="javascript:void(0);" class="text-danger" (click)="deleteDocument(action, doc.key)">Delete</a></span>
-                        </p>
+
+                  </div>
+
+
+                  <div id="documents_popover_{{action.id}}"
+                       class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+                    <!-- Documents -->
+                    <div class="row Spaced">
+                      <div class="col-md-2"></div>
+                      <div class="col-md-10">
+                        <div class="row Spaced align-items-center">
+                          <div class="col-sm-6 col-8">
+                            <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
+                                                                                           class="text-nowrap"
+                                                                                           (click)="exportAllDocuments(action)">Download
+                            all</a>
+                          </div>
+                          <div class="col-sm-6 col-4 text-right">
+                            <a (click)="closeDocumentsModal('documents_popover_' + action.id)"
+                               href="javascript:void(0)" class="btn btn-block">Close</a>
+                          </div>
+                        </div>
+                        <div class="row documents-popover__item">
+                          <div class="col-12">
+                            <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                              <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                              *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin) || permissionsAreEnabled.other.DownloadDocuments"
+                              href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> |
+                                <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
+                                   href="javascript:void(0);" class="text-danger"
+                                   (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -500,189 +628,256 @@
               </div>
             </div>
           </div>
-        </template>
+        </div>
       </div>
     </div>
 
+
+    <!--
+             START :: ARCHIVED
+    -->
     <div class="Ribbon__section__wrap Spaced">
       <div class="Accordion--b-white Accordion__hide-links">
         <div class="row align-items-center no-gutters">
           <div class="col-sm-12">
             <h2>Archived Actions</h2>
             <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Hide-all"
-               [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">Hide all</a>
+               [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">Hide
+              all</a>
             <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Show-all"
-               [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">Show all</a>
+               [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">Show
+              all</a>
           </div>
         </div>
       </div>
       <div class="Accordion__Content collapse" id="collapseThree">
-        <template ngFor let-action [ngForOf]="actions">
-          <div class="Accordion Preparedness-list" *ngIf="action.actionStatus == actionStatus.Inactive">
-            <div class="row Preparedness-list__item">
-              <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate
-                | date:"d MMM ''yy"}}</strong></div>
-              <div class="col-md-10 col-sm-10">
-                <div class="row">
-                  <div class="col-md-5 col-sm-4">{{action.task}}</div>
-                  <div class="col-md-2 col-sm-2"
-                       [ngClass]="
-                                         {
-                                         'text-danger': action.actionStatus == actionStatus.Expired,
-                                         'text-warning': action.actionStatus == actionStatus.InProgress,
-                                         'text-success': action.actionStatus == actionStatus.Completed,
-                                         'text-muted': action.actionStatus == actionStatus.Inactive
-                                         }
-                                         ">
-                                         <span class="fa-stack">
-                                            <i class="fa fa-circle fa-stack-2x"></i>
-                                            <i class="fa fa-stack-1x fa-inverse"
-                                               [ngClass]="
-                                               {
-                                               'fa-ellipsis-h': action.actionStatus == actionStatus.InProgress,
-                                               'fa-check': action.actionStatus == actionStatus.Completed,
-                                               'fa-times': action.actionStatus == actionStatus.Inactive || action.actionStatus == actionStatus.Expired
-                                               }
-                                               "></i>
-                                        </span>
-                    {{ACTION_STATUS[action.actionStatus] | translate}}
-                  </div>
-                  <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+        <div *ngFor="let action of prepActionService.actions">
+          <!-- FILTERING IF STATEMENT -->
+          <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
+                    (filterType == -1 || action.type == filterType) &&
+                    (filterDepartment == -1 || action.department == filterDepartment) &&
+                    (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
+                    (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
+            <!-- BELONGING IN THE MODULE IF STATEMENT -->
+            <div *ngIf="action.isArchived">
 
-                    <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
-                       [attr.data-target]="'#notes_popover_' + action.key" aria-expanded="false"
-                       [attr.aria-controls]="'notes_popover_' + action.key">
-                      <div class="fa-stack">
-                        <i class="fa fa-comment fa-stack-2x"></i>
-                        <i class="fa fa-stack-1x fa-inverse">{{action.notesCount}}</i>
+              <div class="Accordion Preparedness-list">
+                <div class="Accordion Preparedness-list">
+                  <div class="row Preparedness-list__item">
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">Due on <strong>{{action.dueDate != null ? (action.dueDate
+                      | date:"d MMM ''yy") : '-'}}</strong></div>
+                    <div class="col-md-10 col-sm-10">
+                      <div class="row">
+                        <div class="col-md-5 col-sm-4">{{action.task}}</div>
+                        <div class="col-md-2 col-sm-2 text-muted">
+                   <span class="fa-stack">
+                      <i class="fa fa-circle fa-stack-2x"></i>
+                      <i class="fa fa-stack-1x fa-inverse fa-times"></i>
+                   </span>
+                          {{"GLOBAL.ACTION_STATUS.ARCHIVED" | translate}}
+                        </div>
+                        <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+
+                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                             [attr.data-target]="'#notes_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'notes_popover_' + action.id">
+                            <div class="fa-stack">
+                              <i class="fa fa-comment fa-stack-2x"></i>
+                              <i class="fa fa-stack-1x fa-inverse">{{action.notes.length}}</i>
+                            </div>
+                            <span>Notes</span>
+                          </a>
+
+                        </div>
+                        <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
+
+                          <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
+                             [attr.data-target]="'#documents_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'documents_popover_' + action.id"
+                             *ngIf="action.documents.length > 0">
+                            <div class="fa-stack">
+                              <i class="fa fa-file fa-stack-2x"></i>
+                              <i class="fa fa-stack-1x fa-inverse">{{action.documents.length}}</i>
+                            </div>
+                            <span>Doc</span>
+                          </a>
+
+                        </div>
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
+                          <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
+                             aria-expanded="false" aria-controls="popover_content" (click)="reactivate(action)"
+                             class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
+
+
+
+                          <!-- TODO: PERMISSIONS -->
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                            [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                             class="btn btn-block">Edit
+                            action</a>
+                        </div>
+                        <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
+                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                        <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
+                        <!--</div>-->
                       </div>
-                      <span>Notes</span>
-                    </a>
+                      <div class="row">
+                        <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
+                        <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong>
+                        </div>
+                        <div class="subrow-line">Department: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
+                        <div class="subrow-line">Assigned to: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
+                          : 'Unassigned'}}</strong></div>
 
-                  </div>
-                  <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
-
-                    <a href="javascript:void(0)" class="text-primary" data-toggle="collapse"
-                       [attr.data-target]="'#documents_popover_' + action.key" aria-expanded="false"
-                       [attr.aria-controls]="'documents_popover_' + action.key" *ngIf="action.docsCount > 0">
-                      <div class="fa-stack">
-                        <i class="fa fa-file fa-stack-2x"></i>
-                        <i class="fa fa-stack-1x fa-inverse">{{action.docsCount}}</i>
-                      </div>
-                      <span>Doc</span>
-                    </a>
-
-                  </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
-                    <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
-                       aria-expanded="false" aria-controls="popover_content"
-                       class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">Re-activate</a>
-
-
-                    <a [routerLink]="['/preparedness/create-edit-preparedness', action.key]" class="btn btn-block">Edit
-                      action</a>
-                  </div>
-                  <div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">
-                    <a href="javascript:void(0)" (click)="copyAction(action)"
-                       class="btn btn-outline-primary btn-block ">Copy action</a>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
-                  <div class="subrow-line">Type: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                  <div class="subrow-line">Department: <strong>{{action.department}}</strong></div>
-                  <!--TODO assignee???-->
-                  <!--<div class="subrow-line">Assigned to: <strong>{{users[action.assignee]}}</strong></div>-->
-                  <div class="subrow-line">Assigned to: <strong>{{users[action.asignee]}}</strong></div>
-
-                </div>
-              </div>
-
-              <div id="notes_popover_{{action.key}}"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
-                <!-- Notes -->
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-7">
-                    <div class="row">
-                      <div class="col-12">
-                        <h4>Notes</h4>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-12 form-group">
+
+
+                    <div id="notes_popover_{{action.id}}"
+                         class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+                      <!-- Notes -->
+                      <div class="row Spaced">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-7">
+                          <div class="row">
+                            <div class="col-12">
+                              <h4>Notes</h4>
+                            </div>
+                          </div>
+                          <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || permissionsAreEnabled.notes.New" >
+                            <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
-                      </div>
-                    </div>
-                    <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
-                      <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
-                      <div class="col-sm-9">
-                        <div class="row">
-                          <div class="col-12">
-                            {{note.content}}
+                            </div>
+                          </div>
+                          <div class="row notes-popover__item Small-spaced" *ngFor="let note of action.notes">
+                            <div class="col-sm-3">{{note.time | date:"d MMM yyyy"}}</div>
+                            <div class="col-sm-9">
+                              <div class="row">
+                                <div class="col-12">
+                                  {{note.content}}
+                                </div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-6 text-bold Small-spaced">
+                                  by {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                  CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
+                                </div>
+                                <div class="col-6 text-bold text-right"
+                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
+                                  <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                     (click)="editNote(note, action)">Edit</a>
+                                  | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                       (click)="deleteNote(note, action)">Delete</a>
+                                </div>
+                                <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
+                                  Editing...
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="row align-items-center">
-                          <div class="col-6 text-bold Small-spaced">
-                            by {{note.uploadByUser}}
+                        <div class="col-md-3 btn-block">
+                          <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || permissionsAreEnabled.notes.New" href="javascript:void(0)" class="btn btn-primary btn-block"
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
+                            'ADD NOTE'}}</a>
+                          <a href="javascript:void(0)" class="btn btn-block"
+                             onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
+                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
+                             *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div id="documents_popover_{{action.id}}"
+                         class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
+                      <!-- Documents -->
+                      <div class="row Spaced">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-10">
+                          <div class="row Spaced align-items-center">
+                            <div class="col-sm-6 col-8">
+                              <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
+                                                                                             class="text-nowrap"
+                                                                                             (click)="exportAllDocuments(action)">Download
+                              all</a>
+                            </div>
+                            <div class="col-sm-6 col-4 text-right">
+                              <a (click)="closeDocumentsModal('documents_popover_' + action.id)"
+                                 href="javascript:void(0)" class="btn btn-block">Close</a>
+                            </div>
                           </div>
-                          <div class="col-6 text-bold text-right" *ngIf="note.uploadBy == uid">
-                            <a href="javascript:void(0);" class="text-primary" (click)="editNote(note, action)">Edit</a>
-                            | <a href="javascript:void(0);" class="text-danger" (click)="deleteNote(note, action)">Delete</a>
+                          <div class="row documents-popover__item">
+                            <div class="col-12">
+                              <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
+                                <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
+                                *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin) || permissionsAreEnabled.other.DownloadDocuments"
+                                href="javascript:void(0);" (click)="exportDocument(action, i)">Download</a> |
+                                <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
+                                   href="javascript:void(0);" class="text-danger"
+                                   (click)="deleteDocument(action, doc.documentId)">Delete</a></span>
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-3 btn-block">
-                    <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="addNote(action)">ADD
-                      NOTE</a>
-                    <a href="javascript:void(0)" class="btn btn-block"
-                       onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
-                  </div>
-                </div>
-
-              </div>
-
-              <div id="documents_popover_{{action.key}}"
-                   class="Popover__ribbon prevent_parent_collapse collapse col-12 documents-popover">
-                <!-- Documents -->
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-10">
-                    <div class="row Spaced align-items-center">
-                      <div class="col-sm-6 col-8">
-                        <h4>Documents</h4>&nbsp;&nbsp;<a href="javascript:void(0);" class="text-nowrap"
-                                                         (click)="exportSelectedDocuments(action)">Download all</a>
-                      </div>
-                      <div class="col-sm-6 col-4 text-right">
-                        <a href="javascript:void(0);" onClick="$(this).parent().parent().parent().collapse('hide')">Close</a>
-                      </div>
-                    </div>
-                    <div class="row documents-popover__item">
-                      <div class="col-12">
-                        <p *ngFor="let doc of action.documents | keyValues">
-                          <strong>{{action.documents[doc.key].fileName}}</strong>&nbsp;&nbsp;<span><a
-                          href="javascript:void(0);" (click)="exportDocument(action, doc.key)">Download</a> | <a
-                          href="javascript:void(0);" class="text-danger" (click)="deleteDocument(action, doc.key)">Delete</a></span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row Spaced">
-                  <div class="col-md-2"></div>
-                  <div class="col-md-10"><a href="javascript:void(0)" class="btn btn-outline-primary">Upload
-                    documents</a></div>
                 </div>
               </div>
             </div>
           </div>
-        </template>
+        </div>
+      </div>
+    </div>
 
+  </div><!-- end #wrap -->
+</div>
+
+<!--TODO assign staff modal-->
+<!--Lead Agency Selection Modal (first time agency is invited)-->
+<div class="modal fade" id="leadAgencySelection" tabindex="-1" role="dialog"
+     aria-labelledby="leadAgencySelection"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">Assign this action</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <div class="col-sm-12">
+          <select name="" id="" class="form-control" #assignee (change)="selectedAssignToo(assignee.value)" *ngIf="userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader">
+            <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.firstName + ' ' + x.lastName}}
+            </option>
+          </select>
+
+          <!-- TODO: ADD PARTNER USER INTO THE IF STATEMENT HERE! -->
+          <select name="" id="" class="form-control" #assignee (change)="selectedAssignToo(assignee.value)" *ngIf="userType == UserType.Ert">
+            <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row Right-aligned Spaced col-sm-12">
+          <a class="col-sm-9 margin-top-one"
+             (click)="closeModal()">Cancel</a>
+          <button
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">Save
+          </button>
+        </div>
       </div>
     </div>
   </div>
-
-</div><!-- end #wrap -->
+</div>

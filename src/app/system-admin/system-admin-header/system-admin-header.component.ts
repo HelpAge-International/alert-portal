@@ -26,10 +26,10 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.af.database.object(Constants.APP_STATUS+"/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
+      this.uid = user.uid;
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
@@ -46,13 +46,17 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     this.af.auth.logout();
   }
 
-  test() {
-    this.counter++;
-    if (this.counter % 2 == 0) {
-      this.translate.use("en");
-    } else {
-      this.translate.use("fr");
-    }
+  goToHome() {
+    this.router.navigateByUrl("/system-admin/agency");
   }
+
+  // test() {
+  //   this.counter++;
+  //   if (this.counter % 2 == 0) {
+  //     this.translate.use("en");
+  //   } else {
+  //     this.translate.use("fr");
+  //   }
+  // }
 
 }

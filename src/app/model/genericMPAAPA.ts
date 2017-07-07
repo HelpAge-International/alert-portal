@@ -7,6 +7,7 @@ export class GenericMpaOrApaAction {
   public task: string;
   public type: ActionType;
   public level: ActionLevel;
+  public isActive: boolean;
   public category: GenericActionCategory;
   public createdAt: number;
 

@@ -28,7 +28,7 @@
       <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
         <div *ngFor="let y of countries">
           <div *ngIf="x.countries.has(y.countryId)">
-            <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)"
+            <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="moduleAccess.minimumPreparedness ? x.getDepartmentIdHash(y.countryId) : 'err'"
                  aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
               <div class="row align-items-center">
                 <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
@@ -38,13 +38,13 @@
                     translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
                 </div>
                 <div class="col-md-2 col-lg-2 col-sm-2 text-center">
-                  <i *ngIf="y.overallAction() == -1" class="fa fa-times-circle fa-5x text-muted"></i>
-                  <i *ngIf="y.overallAction() >= minThreshGreen" class="fa fa-check-circle fa-5x text-success"
+                  <i *ngIf="y.overallAction() == -1 || !moduleAccess.minimumPreparedness" class="fa fa-times-circle fa-5x text-muted"></i>
+                  <i *ngIf="y.overallAction() >= minThreshGreen && moduleAccess.minimumPreparedness" class="fa fa-check-circle fa-5x text-success"
                      aria-hidden="true"></i>
-                  <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"
+                  <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen) && moduleAccess.minimumPreparedness"
                      class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
                   <i
-                    *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1"
+                    *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1 && moduleAccess.minimumPreparedness"
                     class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
                   <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                 </div>
@@ -66,7 +66,7 @@
               </div>
             </div>
           </div>
-          <div class="Accordion__Content collapse" id="{{x.getDepartmentId(y.countryId)}}">
+          <div class="Accordion__Content collapse" id="{{moduleAccess.minimumPreparedness ? x.getDepartmentId(y.countryId) : 'nomin'}}">
             <div class="info-window container-fluid">
               <div class="info-window__subheading row">
                 <div class="col">{{"MAPS.MPA" | translate}}</div>
@@ -122,7 +122,7 @@
         <div *ngFor="let y of countries">
           <div *ngIf="otherRegion.countries.has(y.countryId)">
             <div class="Accordion Map-list" data-toggle="collapse"
-                 [attr.href]="otherRegion.getDepartmentIdHash(y.countryId)"
+                 [attr.href]="moduleAccess.minimumPreparedness ? otherRegion.getDepartmentIdHash(y.countryId) : 'err'"
                  aria-expanded="true" id="{{otherRegion.getCountryId(y.countryId)}}">
               <div class="row align-items-center">
                 <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
@@ -132,13 +132,13 @@
                     translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
                 </div>
                 <div class="col-md-2 col-lg-2 col-sm-2 text-center">
-                  <i *ngIf="y.overallAction() == -1" class="fa fa-times-circle fa-5x text-muted"></i>
-                  <i *ngIf="y.overallAction() >= minThreshGreen" class="fa fa-check-circle fa-5x text-success"
+                  <i *ngIf="y.overallAction() == -1 || !moduleAccess.minimumPreparedness" class="fa fa-times-circle fa-5x text-muted"></i>
+                  <i *ngIf="y.overallAction() >= minThreshGreen && moduleAccess.minimumPreparedness" class="fa fa-check-circle fa-5x text-success"
                      aria-hidden="true"></i>
-                  <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"
+                  <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen) && moduleAccess.minimumPreparedness"
                      class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
                   <i
-                    *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1"
+                    *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1 && moduleAccess.minimumPreparedness"
                     class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
                   <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                 </div>
@@ -165,7 +165,7 @@
               </div>
             </div>
           </div>
-          <div class="Accordion__Content collapse" id="{{otherRegion.getDepartmentId(y.countryId)}}">
+          <div class="Accordion__Content collapse" id="{{moduleAccess.minimumPreparedness ? otherRegion.getDepartmentId(y.countryId) : 'nomin'}}">
             <div class="info-window container-fluid">
               <div class="info-window__subheading row">
                 <div class="col">{{"MAPS.MPA" | translate}}</div>

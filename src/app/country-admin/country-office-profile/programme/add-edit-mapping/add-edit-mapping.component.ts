@@ -1,5 +1,4 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {RxHelper} from '../../../../utils/RxHelper';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {UserService} from "../../../../services/user.service";
 import {Constants} from '../../../../utils/Constants';
@@ -125,7 +124,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   backButton() {
-    this.router.navigate(['/country-admin/country-office-profile/programme-edit']);
+    this.router.navigate(['/country-admin/country-office-profile/programme']);
   }
 
   saveMapping() {
@@ -141,7 +140,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
             this.programme = new ProgrammeMappingModel();
             this.when = [];
-            this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
+            this.router.navigate(['/country-admin/country-office-profile/programme/']);
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });
@@ -152,7 +151,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
           .update(dataToSave)
           .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
-            this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
+            this.router.navigate(['/country-admin/country-office-profile/programme/']);
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });
@@ -177,8 +176,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   deleteMapping() {
-    this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId).remove().then(() => {
-      this.router.navigate(['/country-admin/country-office-profile/programme-edit/']);
+    jQuery("#deleteMapping").modal("hide");
+    this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
+      .remove().then(() => {
+      this.router.navigate(['/country-admin/country-office-profile/programme/']);
     });
   }
 

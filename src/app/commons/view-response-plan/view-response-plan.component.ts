@@ -29,10 +29,12 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
-  private USER_TYPE: string;
+  // private USER_TYPE: string;
 
   private uid: string;
   private countryId: string;
+  private agencyId: string;
+  private isViewing: boolean;
 
   @Input() responsePlanId: string;
 
@@ -76,15 +78,39 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private managementSupportNarrative: string;
   private activityInfoMap = new Map();
   private activityMap = new Map();
+  private vulnerableGroupsToShow = [];
+  private groups: any[] = [];
+  private systemAdminUid: string;
+  private userPath: string;
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.loadData();
-    });
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["id"]) {
+          this.responsePlanId = params["id"];
+        }
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.userPath = Constants.USER_PATHS[userType];
+          this.loadData(userType);
+        });
+
+      });
   }
 
   ngOnDestroy() {
@@ -133,26 +159,31 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   //
   // }
 
-  private loadData() {
-    this.userService.getUserType(this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(usertype => {
-        this.USER_TYPE = Constants.USER_PATHS[usertype];
-        if (usertype == UserType.GlobalDirector) {
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((params: Params) => {
-              if (params["countryId"]) {
-                this.countryId = params["countryId"];
-                this.handleLoadResponsePlan();
-              }
-            })
-        } else {
-          this.getCountryId().then(() => {
-            this.handleLoadResponsePlan();
-          });
-        }
-      });
+  private loadData(userType) {
+
+    if (this.isViewing) {
+      this.handleLoadResponsePlan();
+    } else {
+      // this.userService.getUserType(this.uid)
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(usertype => {
+      // this.USER_TYPE = Constants.USER_PATHS[usertype];
+      if (userType == UserType.GlobalDirector) {
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["countryId"]) {
+              this.countryId = params["countryId"];
+              this.handleLoadResponsePlan();
+            }
+          })
+      } else {
+        this.getCountryId().then(() => {
+          this.handleLoadResponsePlan();
+        });
+      }
+      // });
+    }
   }
 
   private handleLoadResponsePlan() {
@@ -170,9 +201,36 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private configGroups(responsePlan: ResponsePlan) {
+    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((systemAdminIds) => {
+        this.systemAdminUid = systemAdminIds[0].$key;
+        this.getGroups(responsePlan);
+      });
+  }
+
+  private getGroups(responsePlan: ResponsePlan) {
+    if (this.systemAdminUid) {
+      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')
+        .map(groupList => {
+          let groups = [];
+          groupList.forEach(group => {
+            groups.push(group);
+          });
+          return groups;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(groups => {
+          this.groups = groups;
+          this.loadSection5(responsePlan);
+        });
+    }
+  }
+
   private getCountryId() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
+      this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
           this.countryId = countryId.$value;
@@ -190,6 +248,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlanToShow = responsePlan;
+        this.configGroups(responsePlan);
 
         this.loadSection1PlanLead(responsePlan);
         this.loadSection3(responsePlan);
@@ -212,7 +271,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO -
   private loadSection3(responsePlan: ResponsePlan) {
     console.log(responsePlan);
     if (responsePlan.sectors) {
@@ -233,6 +291,20 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           })
       });
     }
+  }
+
+  private loadSection5(responsePlan: ResponsePlan) {
+    var vulnerableGroups = [];
+    if (this.groups && responsePlan.vulnerableGroups) {
+      this.groups.forEach(originalGroup => {
+        responsePlan.vulnerableGroups.forEach(resGroupKey => {
+          if (originalGroup.$key == resGroupKey) {
+            vulnerableGroups.push(originalGroup);
+          }
+        });
+      });
+    }
+    this.vulnerableGroupsToShow = vulnerableGroups;
   }
 
   // TODO -

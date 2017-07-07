@@ -29,7 +29,7 @@
     "ADD_NEW_AGENCY":"nouvelle agence"
   },
   "DIALOG":{
-    "TITLE":"Alert",
+    "TITLE":"ALERT",
     "CONTENT":"Voulez-vous vraiment effectuer cette action?"
   },
   "MESSAGES": {

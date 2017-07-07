@@ -41,7 +41,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private checkedSeasons = [];
   private modalID: string;
   private otherHazard: boolean = false;
-  private saveSelectSeasonsBtn: boolean = true;
   private selectHazard: boolean = false;
   private season: boolean = false;
   private addHazardSeason: string;
@@ -121,35 +120,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazardImage(key) {
-    let map = new Map<string, string>();
-    map.set("0", "cold_wave");
-    map.set("1", "conflict");
-    map.set("2", "cyclone");
-    map.set("3", "drought");
-    map.set("4", "earthquake");
-    map.set("5", "epidemic");
-    map.set("6", "fire");
-    map.set("7", "flash_flood");
-    map.set("8", "flood");
-    map.set("9", "heatwave");
-    map.set("10", "heavy_rain");
-    map.set("11", "humanitarian_access");
-    map.set("12", "insect_infestation");
-    map.set("13", "landslide_mudslide");
-    map.set("14", "locust_infestation");
-    map.set("15", "landslide_mudslide");
-    map.set("16", "population_displacement");
-    map.set("17", "population_return");
-    map.set("18", "snow_avalanche");
-    map.set("19", "snowfall");
-    map.set("20", "storm");
-    map.set("21", "storm_surge");
-    map.set("22", "technological_disaster");
-    map.set("23", "tornado");
-    map.set("24", "tsunami");
-    map.set("25", "violent_wind");
-    map.set("26", "volcano");
-    return "/assets/images/hazards/" + map.get(key) + ".svg";
+    return HazardImages.init().getCSS((+key));
   }
 
   _getCountryLocation() {
@@ -280,7 +251,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;
-    if (this.hazardData.hazardScenario == 'Other') {
+    if (this.hazardData.hazardScenario == 'otherSelected') {
       this.otherHazard = true;
     }
   }
@@ -289,9 +260,11 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
         this.hazardData.timeCreated = this._getCurrentTimestamp();
+        this.hazardData.isActive = true;
         this.hazardData.hazardScenario = parseInt(this.hazardData.hazardScenario);
         /* TODO RISK PARAM */
         this.hazardData.risk = 10;
+        this.hazardData.isActive = true;
         this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
           .push(this.hazardData)
           .then(() => {
@@ -355,12 +328,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       delete this.hazardData.seasons[seasonKey];
     }
-    if (Object.keys(this.hazardData.seasons).length == 0) {
-      this.saveSelectSeasonsBtn = true;
-    }
-    else {
-      this.saveSelectSeasonsBtn = false;
-    }
   }
 
   detected(i) {
@@ -386,7 +353,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   createSeasonToCalendar(form: NgForm) {
-    this.saveSelectSeasonsBtn = true;
     let dataToSave = form.value;
     dataToSave.startTime = new Date(dataToSave.startTime).getTime();
     dataToSave.endTime = new Date(dataToSave.endTime).getTime();

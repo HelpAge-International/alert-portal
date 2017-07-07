@@ -5,7 +5,7 @@ import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction'
 import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
 import {Observable, Subject} from "rxjs";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {AgencyModulesEnabled, PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
   selector: 'app-create-action',
@@ -15,15 +15,17 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 
 export class CreateActionComponent implements OnInit, OnDestroy {
 
+  private chsUid: string = "";
+  private editInitialDisable: boolean = false;
+
   private inactive: boolean = true;
   private errorMessage: any;
   private alerts = {};
-  private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION';
+  private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CHS_MPA.CHS_TITLE_TEXT';
   private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
-  private textArea: string;
-  private path: string;
-  private forEditing: Boolean = false;
-  private idOfChsActionToEdit: string;
+
+  private textArea: string = "";
+  private systemUid: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -31,20 +33,22 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.path = Constants.APP_STATUS + "/action/" + user.uid;
-    });
-
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["id"]) {
-          this.forEditing = true;
+          // EDIT MODE
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.EDIT_CHS_ACTION';
           this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
-          this.loadCHSActionInfo(params["id"]);
-          this.idOfChsActionToEdit = params["id"];
+          this.chsUid = params["id"];
+          this.editInitialDisable = true;
         }
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.systemUid = user.uid;
+          if (this.chsUid !== "") {
+            this.initialEditLoad();
+          }
+        });
       });
   }
 
@@ -55,57 +59,47 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.validate()) {
-
-      if (this.forEditing) {
-        this.editChsAction();
-      } else {
-        this.addNewChsAction();
-        this.inactive = true;
-      }
+      this.updateCHSAction();
     } else {
       this.showAlert();
     }
   }
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
-
-  private loadCHSActionInfo(actionId: string) {
-    this.af.database.object(this.path + '/' + actionId)
+  private initialEditLoad() {
+    this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.chsUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((action: ChsMinPreparednessAction) => {
-        this.textArea = action.task;
-      });
-  }
-
-  private addNewChsAction() {
-
-    let currentDateTime = new Date().getTime();
-    let newAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
-    newAction.task = this.textArea;
-    newAction.type = ActionType.chs;
-    newAction.level = ActionLevel.MPA;
-    newAction.createdAt = currentDateTime;
-
-    this.af.database.list(this.path).push(newAction)
-      .then(_ => {
-          console.log('New CHS action added');
-          this.router.navigateByUrl("/system-admin/min-prep");
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.textArea = snap.val().task;
         }
-      );
+        this.editInitialDisable = false;
+      })
   }
 
-  private editChsAction() {
-    let editedAction: ChsMinPreparednessAction = new ChsMinPreparednessAction();
-    editedAction.task = this.textArea;
-    editedAction.type = ActionType.chs;
-    editedAction.level = ActionLevel.MPA;
-    this.af.database.object(this.path + "/" + this.idOfChsActionToEdit).update(editedAction).then(_ => {
-        console.log('CHS action updated');
-        this.router.navigateByUrl("/system-admin/min-prep");
+  private updateCHSAction() {
+    if (this.systemUid != null) {
+      if (this.chsUid !== "") {
+        let updateObj = {
+          task: this.textArea,
+          type: ActionType.chs,
+          level: ActionLevel.MPA
+        };
+        this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.chsUid).update(updateObj).then(_ => {
+          this.router.navigateByUrl("/system-admin/min-prep");
+        });
       }
-    );
+      else {
+        let updateObj = {
+          task: this.textArea,
+          type: ActionType.chs,
+          level: ActionLevel.MPA,
+          createdAt: new Date().getTime()
+        };
+        this.af.database.list(Constants.APP_STATUS + "/actionCHS/" + this.systemUid).push(updateObj).then(_ => {
+          this.router.navigateByUrl("/system-admin/min-prep");
+        });
+      }
+    }
   }
 
   private showAlert() {

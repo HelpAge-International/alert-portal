@@ -27,8 +27,12 @@
                 <div class="col-sm-2 logo"><img class="agency-logo-scale" src="{{agencyLogo}}"></div>
                 <div *ngIf="x.location == -1" class="col-sm-8"><h5>Loading...</h5></div>
                 <div *ngIf="(x != null && x.location != -1)" class="col-sm-8"><h5>{{"GLOBAL.COUNTRIES." +
-                  getCountryCode(x.location).toUpperCase() | translate}} ({{getCountryCode(x.location)}})</h5></div>
+                  getCountryCode(x.location).toUpperCase() | translate}} ({{getCountryCode(x.location)}})</h5>
+                </div>
                 <div class="col-sm-2"></div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
               <div class="info-window__subheading row">
                 <div class="col">{{"MAPS.MPA" | translate}}</div>

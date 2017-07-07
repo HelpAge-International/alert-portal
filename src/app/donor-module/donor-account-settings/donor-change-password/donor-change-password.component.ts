@@ -7,6 +7,7 @@ import {ChangePasswordModel} from "../../../model/change-password.model";
 import {DisplayError} from "../../../errors/display.error";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {FirebaseAuthState} from "angularfire2";
 
 @Component({
   selector: 'app-donor-change-password',
@@ -20,13 +21,21 @@ export class DonorChangePasswordComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private changePassword: ChangePasswordModel;
 
+  private user: firebase.User;
+  authState: FirebaseAuthState;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService, private router: Router) {
     this.changePassword = new ChangePasswordModel();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+      this.authState = auth;
+      this.user = auth.auth;
+    });
+  }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
@@ -34,20 +43,18 @@ export class DonorChangePasswordComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      const changePasswordSubscription = this._userService.changePassword(user.email, this.changePassword)
-        .then(() => {
-          this.alertMessage = new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PASSWORD', AlertMessageType.Success);
-          this.changePassword = new ChangePasswordModel();
-        })
-        .catch(err => {
-          if (err instanceof DisplayError) {
-            this.alertMessage = new AlertMessageModel(err.message);
-          } else {
-            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-          }
-        });
-    }) // prevent calling the changePassword() twice
+    this._userService.changePassword(this.user.email, this.changePassword, this.authState)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PASSWORD', AlertMessageType.Success);
+        this.changePassword = new ChangePasswordModel();
+      })
+      .catch(err => {
+        if (err instanceof DisplayError) {
+          this.alertMessage = new AlertMessageModel(err.message);
+        } else {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+        }
+      });
   }
 
   validateForm(): boolean {

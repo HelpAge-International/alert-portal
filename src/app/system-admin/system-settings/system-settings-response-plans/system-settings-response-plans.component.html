@@ -31,7 +31,7 @@
       <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="editGroups($event)">
         {{"SYSTEM_ADMIN.SETTING.EDIT_GROUPS" | translate | uppercase}}
       </button>
-      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups($event)">{{"GLOBAL.SAVE" | translate |
+      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups()">{{"GLOBAL.SAVE" | translate |
         uppercase}}</button>
       <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEditGroups($event)">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
@@ -39,15 +39,15 @@
     <div class="Groups">
       <div class="row Editable-check-text Large-spacing-top" *ngFor="let group of groups | async">
 
-        <ng-container *ngIf="!isEditing">{{group.$key}}</ng-container>
+        <ng-container *ngIf="!isEditing">{{group.name}}</ng-container>
 
-        <input type="text" class="form-control col-md-6" *ngIf="isEditing" [ngModel]="group.$key" (ngModelChange)="setGroupValue(group.$key, $event)">
+        <input type="text" class="form-control col-md-6" *ngIf="isEditing" [ngModel]="group.name" (ngModelChange)="setGroupValue(group, $event)">
       </div>
 
       <div class="row Add-new-department no-gutters" *ngIf="!isEditing">
-        <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[newGroup]}">
+        <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[newGroupName]}">
           <input type="text" class="form-control" placeholder="{{'SYSTEM_ADMIN.SETTING.ADD_NEW_GROUP' | translate}}"
-                 [(ngModel)]="newGroup">
+                 [(ngModel)]="newGroupName">
         </div>
         <div class="col-md-8 col-4">
           <button type="button" class="btn btn-outline-primary" (click)="addGroup()">{{"GLOBAL.SAVE" | translate}}
