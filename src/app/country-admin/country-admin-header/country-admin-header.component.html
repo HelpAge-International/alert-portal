@@ -7,11 +7,9 @@
     </span>
     <ul *ngIf="!isAnonym">
       <li>
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">My
-          agency</a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Category 1</a>
-          <a class="dropdown-item" href="#">Category 2</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{agencyDetail?.name}}</a>
+        <div *ngIf="partnerAgencies.length>1" class="dropdown-menu">
+          <a *ngFor="let agency of partnerAgencies" class="dropdown-item" (click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>
         </div>
       </li>
 
