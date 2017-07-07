@@ -401,7 +401,7 @@
       </div>
 
     </div>
-    <!--       v the best typo -->
+
     <!--empty rubber for default dashboard-->
     <div
       *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
@@ -457,7 +457,7 @@
         *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0">
 
         <div *ngFor="let action of actionsToday">
-          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1">
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
@@ -476,7 +476,9 @@
 
         <div *ngFor="let indicator of indicatorsToday">
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
-            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
             <div class="col-md-8">
               <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
                 <span>{{indicator.name}}</span>
@@ -507,9 +509,11 @@
           </div>
         </div>
 
-        <div *ngFor="let indicator of indicatorsThisWeek" class="row">
-          <div *ngIf="shouldShow(indicator.level, indicator.action)">
-            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+        <div *ngFor="let indicator of indicatorsThisWeek">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
+            </div>
             <div class="col-md-8">
               <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
                 <span>{{indicator?.name}}</span>
