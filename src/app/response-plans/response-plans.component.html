@@ -8,12 +8,8 @@
     <div class="Header-title__wrap">
       <h1>{{"RESPONSE_PLANS.HOME.TITLE" | translate}}</h1>
       <tooltip
-      [level1]="'A scenario based response plan covers what needs to be done once there is a clear prospect of a hazard event causing a humanitarian impact'"
-      [level2]="'Planning in the abstract, with little thought to the possible scale and impacts of an event, is unlikely to be effective. In order to develop effective emergency plans an agency may choose to develop a range of possible disaster scenarios and then develop plans that are able to respond to the demands of those scenarios. 
-
-      It is likely that your agency will define several risks and scenarios and so need to develop several plans tailored to meet each of them. Each plan should have a clear and distinct title and be linked to the disaster scenario which it is based on. 
-
-      Undertake the response planning, then the related Advanced preparedness and Minimum preparedness and circling around again to the response plan will help make sure everything is covered, supported and linked as needed.'">
+      [level1]="{{TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL1}}"
+      [level2]="{{TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL2}}">
       </tooltip>
       <button *ngIf="!isViewing" class="btn btn-primary" (click)="goToCreateNewResponsePlan()">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
@@ -303,7 +299,7 @@
         <div class="text-center"><p>{{dialogContent | translate}}</p></div>
         <!--tooltip-->
         <tooltip
-        [level1]="'Agencies that have been named as partners in the response plan'">
+        [level1]="{{TOOLTIPS.RESPONSE_PLANS.TT2.LEVEL1}}">
         </tooltip>
       </div>
       <div class="modal-footer">

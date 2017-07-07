@@ -44,7 +44,7 @@
           <label for="User-Type">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <!--tooltip-->
           <tooltip
-          [level1]="'Each user type has a corresponding permission level'">
+          [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT7.LEVEL1}}">
           </tooltip>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType" required (change)="selectedUserType(userType)">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
@@ -98,7 +98,7 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
         <!-- Tooltip partial -->
         <tooltip
-        [level1]="'What skills does this person possess for organisational support?'">
+        [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT3.LEVEL1}}">
         </tooltip>
         <!-- Tooltip partial end -->
       <div class="row">
@@ -113,7 +113,7 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
         <!-- Tooltip partial -->
         <tooltip
-        [level1]="'What skills does this person possess for programmatic work?'">
+        [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL1}}">
         </tooltip>
         <!-- Tooltip partial end -->
       <div class="row">
@@ -136,7 +136,7 @@
       <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
       <!--tooltip-->
       <tooltip
-      [level1]="'Apart from agency-level notifications, what other notifications should this person receive?'">
+      [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT5.LEVEL1}}">
       </tooltip>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
@@ -149,14 +149,8 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}</label></div>
       <!--tooltip-->
       <tooltip
-      [level1]="'The Emergency Res'"
-      [level2]="'The User Types are:
-
-      Country Director - this is the head of the Country Office or local organisation
-      Country User - these are staff members that are not part of the Emergency Response Team (ERT).
-      ERT Lead - this person is the focal point of the Emergency Response Team
-      ERT Member - these are staff members that are part of the Emergency Response Team
-      Partner User - these are external users from partner agencies that you are giving access to your Country Office / Agency account.'">
+      [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT6.LEVEL1}}"
+      [level2]="{{TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL2}}">
       </tooltip>
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">
