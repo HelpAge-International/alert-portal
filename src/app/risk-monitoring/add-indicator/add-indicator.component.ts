@@ -208,7 +208,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.indicatorData.assignee = undefined;
         });
     } else {
-      console.log('heroare');
       this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyHazardId + "/" + copyIndicatorId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(indicator => {
@@ -299,28 +298,27 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   getUsersForAssign() {
-    
     /* TODO if user ERT OR Partner, assign only me */
-    if (this.UserType == UserType.Ert) {
-      this.userService.getUser(this.uid)
+    if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(user => {
-            let userToPush = {userID: this.uid, firstName: user.firstName, lastName: user.lastName};
-            this.usersForAssign.push(userToPush);
-        })
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+        });
     } else {
-      this.userService.getStaffList(this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(staffs => {
-          staffs.forEach(staff => {
-            this.userService.getUser(staff.id)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe( user => {
-                let userToPush = {userID: staff.id, firstName: user.firstName, lastName : user.lastName};
-                this.usersForAssign.push(userToPush);
-              })
-          })
-        })
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+        for (let userID in data) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
     }
   }
 
@@ -381,7 +379,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
                 notification.time = new Date().getTime();
                 this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => { });
               }
-            
+
               if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
                 this.router.navigate(["/dashboard/dashboard-overview", {
                   "countryId": this.copyCountryId,

@@ -1,12 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AngularFire} from 'angularfire2';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Constants} from '../../utils/Constants';
-import {ModelStaffDisplay} from '../../model/staff-display.model';
-import {Observable, Subject} from 'rxjs';
-import {ModelStaff} from '../../model/staff.model';
-import {ModelUserPublic} from '../../model/user-public.model';
-import {OfficeType, SkillType, StaffPosition, UserType} from '../../utils/Enums';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Observable, Subject} from "rxjs";
+import {ModelStaff} from "../../model/staff.model";
+import {ModelUserPublic} from "../../model/user-public.model";
+import {OfficeType, SkillType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {PartnerModel} from "../../model/partner.model";
 import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
@@ -97,7 +96,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   private getStaffData() {
-    const staffSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
       .do(list => {
         list.forEach(item => {
           this.staffList.push(this.addStaff(item));
@@ -109,22 +108,42 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   private getPartnerData() {
-    this._userService.getPartnerUsers()
+    this._userService.getPartnerUserIds(this.agencyAdminId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(partners => {
-        this.partnersList = partners;
-        this.partnersList.forEach(partner => {
-          this._userService.getUser(partner.id)
+        this.partnersList = [];
+        partners.forEach(partnerId =>{
+          this._userService.getPartnerUserById(partnerId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(partnerPublicUser => {
-              this.partnerPublicUser[partner.id] = partnerPublicUser;
-            });
-          this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(partnerOrganisation => {
-              this.partnerOrganisations[partner.id] = partnerOrganisation
+            .subscribe(partner =>{
+              this.partnersList.push(partner);
+
+              this._userService.getUser(partner.id)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(partnerPublicUser => {
+                  this.partnerPublicUser[partner.id] = partnerPublicUser;
+                });
+
+              this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(partnerOrganisation => {
+                  this.partnerOrganisations[partner.id] = partnerOrganisation
+                });
             });
         });
+        // this.partnersList = partners;
+        // this.partnersList.forEach(partner => {
+        //   this._userService.getUser(partner.id)
+        //     .takeUntil(this.ngUnsubscribe)
+        //     .subscribe(partnerPublicUser => {
+        //       this.partnerPublicUser[partner.id] = partnerPublicUser;
+        //     });
+        //   this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+        //     .takeUntil(this.ngUnsubscribe)
+        //     .subscribe(partnerOrganisation => {
+        //       this.partnerOrganisations[partner.id] = partnerOrganisation
+        //     });
+        // });
       });
   }
 

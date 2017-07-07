@@ -9,7 +9,7 @@ import { PartnerOrganisationModel } from "../model/partner-organisation.model";
 @Injectable()
 export class PartnerOrganisationService {
 
-  constructor(private af: AngularFire, private subscriptions: RxHelper) {}
+  constructor(private af: AngularFire) {}
 
   getCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
      let partnerOrganisationsList: PartnerOrganisationModel[] = [];

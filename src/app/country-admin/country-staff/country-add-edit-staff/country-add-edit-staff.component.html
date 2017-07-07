@@ -79,7 +79,7 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-          <input type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+          <input [disabled]="isEdit" type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email" name="email" required>
         </div>
       </div>
