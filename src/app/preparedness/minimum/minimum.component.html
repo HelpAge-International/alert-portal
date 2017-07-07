@@ -50,6 +50,13 @@
 
     <div class="Header-title__wrap">
       <h1>Minimum Preparedness Actions</h1>
+      <!-- Tooltip partial -->
+      <tooltip [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL1'"
+      [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL2'"></tooltip>
+      </div>
+<!--
+      <div class="btn-group">
+      <div *ngIf="!isViewing" class="btn-group">-->
       <div *ngIf="!isViewing  && (permissionsAreEnabled.customMPA.New || userType == userTypes.CountryAdmin)" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Create action
@@ -63,7 +70,6 @@
           <a class="dropdown-item" routerLink="/preparedness/select">Select from generic actions</a>
         </div>
       </div>
-    </div>
 
 
     <!--
