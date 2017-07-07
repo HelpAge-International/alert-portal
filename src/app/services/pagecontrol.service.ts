@@ -547,52 +547,79 @@ export class PageControlService {
    * Country Permissions Matrix for the Country Admin Permissions settings
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
-    // TODO: Implement this
-    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
-      .takeUntil(ngUnsubscribe)
-      .map((snap) => {
-        let agencyAdmin: string;
-        for (let x in snap.val().agencyAdmin) {
-          agencyAdmin = x;
-        }
-        return Pair.create(snap.val().countryId, agencyAdmin);
-      })
-      .flatMap((pair: Pair) => {
-        return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
-      })
-      .takeUntil(ngUnsubscribe)
-      .subscribe((snap) => {
-        if (snap.val().hasOwnProperty('permissionSettings')) {
-          let s = snap.val().permissionSettings;
-          // Build the matrix
+    if (userType == UserType.PartnerUser) {
+      af.database.object(Constants.APP_STATUS + "/partner/" + uid + "/permissions", {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
           let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-          if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
-            x.all(true);
-          }
-          else {
-            x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
-            x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
-            x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
-            x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
-            x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
-            x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
-            x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
-            x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
-            x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
-            x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
-            x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
-            x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
-            x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
-            x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
-            x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
-            x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
-            x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
-            x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
-            x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
-          }
+          x.chsActions.Assign = snap.val().assignCHS;
+          x.countryContacts.New = snap.val().contacts.new;
+          x.countryContacts.Edit = snap.val().contacts.edit;
+          x.countryContacts.Delete = snap.val().contacts.delete;
+          x.customAPA.Assign = snap.val().customApa.assign;
+          x.customAPA.Edit = snap.val().customApa.edit;
+          x.customAPA.New = snap.val().customApa.new;
+          x.customAPA.Delete = snap.val().customApa.delete;
+          x.mandatedAPA.Assign = snap.val().assignMandatedApa;
+          x.customMPA.Assign = snap.val().customMpa.assign;
+          x.customMPA.Edit = snap.val().customMpa.edit;
+          x.customMPA.New = snap.val().customMpa.new;
+          x.customMPA.Delete = snap.val().customMpa.delete;
+          x.mandatedMPA.Assign = snap.val().assignMandatedMpa;
+          x.notes.New = snap.val().notes.new;
+          x.notes.Edit = snap.val().notes.edit;
+          x.notes.Delete = snap.val().notes.delete;
+          x.other.DownloadDocuments = snap.val().other.downloadDoc;
           fun(x);
-        }
-      });
+        });
+    }
+    else {
+      af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .map((snap) => {
+          let agencyAdmin: string;
+          for (let x in snap.val().agencyAdmin) {
+            agencyAdmin = x;
+          }
+          return Pair.create(snap.val().countryId, agencyAdmin);
+        })
+        .flatMap((pair: Pair) => {
+          return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+        })
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap.val().hasOwnProperty('permissionSettings')) {
+            let s = snap.val().permissionSettings;
+            // Build the matrix
+            let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+            if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
+              x.all(true);
+            }
+            else {
+              x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
+              x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
+              x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
+              x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
+              x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
+              x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
+              x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
+              x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
+              x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
+              x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
+              x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
+              x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
+              x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
+              x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
+              x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
+              x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
+              x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
+              x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
+              x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+            }
+            fun(x);
+          }
+        });
+    }
   }
   // ========================================================================================================
 }
