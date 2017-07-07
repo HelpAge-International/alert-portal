@@ -60,7 +60,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private waringMessage: string;
-  private countryList: FirebaseListObservable<any[]>;
+  private countryList: any [];
   private regionList: Observable<any[]>;
   private departmentList: Observable<ModelDepartment[]>;
   private notificationList: FirebaseListObservable<any[]>;
@@ -194,7 +194,25 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           .subscribe(systemId => {
             this.systemId = systemId;
 
-            this.countryList = this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId);
+            this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe( countries => {
+              this.countryList = [];
+              this.af.database.list(Constants.APP_STATUS + "/directorCountry").takeUntil(this.ngUnsubscribe).subscribe( directorCountries => {
+                var countryExistsInDirectorCountries = false;
+
+                countries.forEach(country => {
+                  directorCountries.forEach(directorCountry => {
+                    if(country.$key == directorCountry.$key){
+                      countryExistsInDirectorCountries = true;
+                    }
+                  });
+                  if(!countryExistsInDirectorCountries){
+                    this.countryList.push(country);
+                  }
+                  countryExistsInDirectorCountries = false;
+                });
+              });
+            });
+
             this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId)
               .map(region => {
                 let filteredRegions = [];
