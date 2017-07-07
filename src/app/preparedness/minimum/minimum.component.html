@@ -247,7 +247,7 @@
                           </div>
 
                           <!-- TODO: PERMISSIONS -->
-                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -493,15 +493,16 @@
 
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
-                                    && !((action.type == ActionType.mandated && !permissionsAreEnabled.mandatedMPA) || (action.type == ActionType.chs && !permissionsAreEnabled.chsActions))
-                                    && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
+                                    && !((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
+                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions))
+                                    && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                              aria-expanded="false" aria-controls="popover_content"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
 
                           <!-- TODO: PERMISSIONS -->
-                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
@@ -708,7 +709,7 @@
 
 
                           <!-- TODO: PERMISSIONS -->
-                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
