@@ -47,8 +47,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   private countryList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
-  private supportSkillList: any;
-  private techSkillsList: any;
   private notificationList: FirebaseListObservable<any[]>;
   private notificationSettings: boolean[] = [];
   private skillsMap = new Map();
@@ -80,6 +78,12 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private hideRegion: boolean;
   private isFirstLogin: boolean;
   private systemId: string;
+
+  private allSkills: any = {};
+  private skillKeys: string[] = [];
+  private editedSkills: any = [];
+  private SupportSkill = SkillType.Support;
+  private TechSkill = SkillType.Tech;  
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -148,12 +152,27 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         return names;
       });
 
-    this.af.database.list(Constants.APP_STATUS + '/skill')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(skills => {
-        this.techSkillsList = skills.filter(skill => skill.type === SkillType.Tech);
-        this.supportSkillList = skills.filter(skill => skill.type === SkillType.Support);
+    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/skills')
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe(_ => {
+      _.filter(skill => skill.$value).map(skill => {
+        this.af.database.list(Constants.APP_STATUS + '/skill/', {
+          query: {
+            orderByKey: true,
+            equalTo: skill.$key
+          }
+        })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(_skill => {
+            if (_skill[0] != undefined)
+              this.allSkills[_skill[0].$key] = _skill[0];
+            else
+              delete this.allSkills[skill.$key];
+    
+            this.skillKeys = Object.keys(this.allSkills);
+          });
       });
+    });
 
     this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
   }
@@ -177,10 +196,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     }
     if (!this.userType) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_USER_TYPE';
-      return false;
-    }
-    if (!this.countryOffice) {
-      this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_COUNTRY_OFFICE';
       return false;
     }
     if (!this.department) {
