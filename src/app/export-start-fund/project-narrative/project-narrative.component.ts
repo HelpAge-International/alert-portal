@@ -30,6 +30,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private planLeadName: string = '';
   private planLeadEmail: string = '';
   private planLeadPhone: string = '';
+  private planLeadPosition: string = '';
+  private memberAgencyName: string = '';
   private sectorsRelatedToMap = new Map<number, boolean>();
   private PresenceInTheCountry = PresenceInTheCountry;
   private MethodOfImplementation = MethodOfImplementation;
@@ -80,11 +82,13 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
               if (params["countryId"]) {
                 this.countryId = params["countryId"];
                 this.downloadResponsePlanData();
+                this.downloadAgencyData(usertype);
               }
             })
         } else {
           this.getCountryId().then(() => {
             this.downloadResponsePlanData();
+            this.downloadAgencyData(usertype);
           });
         }
       });
@@ -121,6 +125,18 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
       });
   }
 
+  private downloadAgencyData(userType){
+    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((agencyId) => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+          if(name != null){
+            this.memberAgencyName = name.$value;
+          }
+        });
+      });
+  }
+
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
       this.userService.getUser(responsePlan.planLead)
@@ -130,6 +146,12 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
+
+          this.af.database.object(Constants.APP_STATUS+ "/staff/"+this.countryId+"/"+user.id+"/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if(position != null){
+              this.planLeadPosition = position.$value;
+            }
+          });
         });
     }
   }

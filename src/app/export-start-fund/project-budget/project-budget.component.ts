@@ -26,6 +26,7 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private responsePlan: ResponsePlan = new ResponsePlan;
 
+  private memberAgencyName: string = '';
   private totalInputs: number;
   private totalOfAllCosts: number;
   private total: number;
@@ -78,13 +79,27 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
               if (params["countryId"]) {
                 this.countryId = params["countryId"];
                 this.downloadResponsePlanData();
+                this.downloadAgencyData(usertype);
               }
             })
         } else {
           this.getCountryId().then(() => {
             this.downloadResponsePlanData();
+            this.downloadAgencyData(usertype);
           });
         }
+      });
+  }
+
+  private downloadAgencyData(userType){
+    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((agencyId) => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+          if(name != null){
+            this.memberAgencyName = name.$value;
+          }
+        });
       });
   }
 
