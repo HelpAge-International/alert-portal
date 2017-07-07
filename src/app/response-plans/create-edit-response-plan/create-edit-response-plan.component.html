@@ -295,7 +295,7 @@
           <div class="row Spaced subitem" *ngIf="isWorkingWithPartners">
             <div class="col-lg-8 col-md-8">
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
-              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
+              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
@@ -304,7 +304,9 @@
                       {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
 
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations" 
+                      [value]="partnerOrganisation.$key"
+                      [selected]="partnerOrganisation.$key == partnerOrganisationsSelected[i]">
                       {{partnerOrganisation.organisationName}}
                     </option>
                     <!--<option value="addNewPartnerOrganisation" class="text-primary">+-->
@@ -313,8 +315,8 @@
                   </select>
                 </div>
                 <div class="col-sm-6">
-                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(dropDown)"
-                     [hidden]="dropDown == 1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
+                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(i)"
+                     [hidden]="i == 0">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
                     | translate}}</a>
                 </div>
               </div>
@@ -444,18 +446,20 @@
               <div class="form-group">
                 <label for="n-Done">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
                   translate}}</label>
-                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
+                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
-                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
-                      <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                      <option *ngFor="let group of groups">{{group.name | translate}}
+                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)" >
+                      <option hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                      <option *ngFor="let group of groups"
+                        [value]="group.$key"
+                        [selected] = "group.$key == selectedVulnerableGroups[i]">{{group.name | translate}}
                       </option>
                     </select>
                   </div>
                   <a href="javascript:void(0)" class="Remove__row__cta"
-                     (click)="removeVulnerableGroupDropDown(vulnerableGroupsDropDown)"
-                     [hidden]="vulnerableGroupsDropDown == 1">{{"GLOBAL.REMOVE"
+                     (click)="removeVulnerableGroupDropDown(i)"
+                     [hidden]="i == 0">{{"GLOBAL.REMOVE"
                     | translate}}</a>
                 </div>
                 <div class="form-group">

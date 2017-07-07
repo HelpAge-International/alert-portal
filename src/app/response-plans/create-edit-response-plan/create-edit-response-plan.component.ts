@@ -819,16 +819,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  setGroup(groupName, vulnerableGroupsDropDown) {
-    let selectedGroup;
-    this.groups.forEach(group => {
-      if(group.name == groupName){
-        selectedGroup = group;
-      }
-    });
-
-    if(selectedGroup){
-      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = selectedGroup.$key;
+  setGroup(groupKey, vulnerableGroupsDropDown) {    
+    if(groupKey)
+    {
+      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = groupKey;  
     }
   }
 
@@ -1383,7 +1377,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.partnersDropDownsCounter++;
           this.partnersDropDowns.push(this.partnersDropDownsCounter);
         }
-        this.partnerOrganisationsSelected[this.partnersDropDownsCounter] = partnerOrganisations[this.partnersDropDownsCounter - 1];
+        this.partnerOrganisationsSelected[i] = partnerOrganisations[i];
       }
     } else {
       console.log("Response Plan's partner organisations list is null");
@@ -1412,7 +1406,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.vulnerableGroupsDropDownsCounter++;
           this.vulnerableGroupsDropDowns.push(this.vulnerableGroupsDropDownsCounter);
         }
-        this.setGroup(vulnerableGroups[i].name, vulnerableGroups[this.vulnerableGroupsDropDownsCounter - 1]);
+        this.setGroup(vulnerableGroups[i], this.vulnerableGroupsDropDownsCounter);
       }
     }
 
