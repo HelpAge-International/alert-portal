@@ -1,16 +1,14 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire} from 'angularfire2';
-import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, UserType} from '../../../utils/Enums';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-
-import {AlertMessageModel} from '../../../model/alert-message.model';
-import {PartnerOrganisationService} from '../../../services/partner-organisation.service';
-import {PartnerOrganisationModel} from '../../../model/partner-organisation.model';
-import {PartnerModel} from '../../../model/partner.model';
-import {NotificationService} from '../../../services/notification.service';
-import {ModelUserPublic} from '../../../model/user-public.model';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire} from "angularfire2";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, UserType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {PartnerOrganisationService} from "../../../services/partner-organisation.service";
+import {PartnerOrganisationModel} from "../../../model/partner-organisation.model";
+import {PartnerModel} from "../../../model/partner.model";
+import {NotificationService} from "../../../services/notification.service";
+import {ModelUserPublic} from "../../../model/user-public.model";
 import {UserService} from "../../../services/user.service";
 import {CountryAdminModel} from "../../../model/country-admin.model";
 import {DisplayError} from "../../../errors/display.error";

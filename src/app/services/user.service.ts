@@ -297,15 +297,15 @@ export class UserService {
 
       //add partnerUser group node
       //TODO DELETE LATER
-      // let partnerUser = {};
-      // let agencyAdmin = {};
-      // agencyAdmin[agencyId] = true;
-      // let systemAdmin = {};
-      // systemAdmin[systemId] = true;
-      // partnerUser['agencyAdmin'] = agencyAdmin;
-      // partnerUser['systemAdmin'] = systemAdmin;
-      // partnerUser['countryId'] = countryId;
-      // partnerData['/partnerUser/' + uid + '/'] = partnerUser;
+      let partnerUser = {};
+      let agencyAdmin = {};
+      agencyAdmin[agencyId] = true;
+      let systemAdmin = {};
+      systemAdmin[systemId] = true;
+      partnerUser['agencyAdmin'] = agencyAdmin;
+      partnerUser['systemAdmin'] = systemAdmin;
+      partnerUser['countryId'] = countryId;
+      partnerData['/partnerUser/' + uid + '/'] = partnerUser;
 
       partnerData['/partnerUser/' + uid + '/systemAdmin/' + systemId] = true;
       partnerData['/partnerUser/' + uid + '/agencies/' + agencyId] = countryId;
