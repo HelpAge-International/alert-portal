@@ -468,6 +468,7 @@ export class UserService {
   }
 
   //return current user type enum number
+  // TODO: Do this recursively!
   getUserType(uid: string): Observable<any> {
 
     const paths = [

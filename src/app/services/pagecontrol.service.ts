@@ -92,22 +92,6 @@ export class CountryPermissionsMatrix {
     Edit: boolean,
     Delete: boolean
   };
-  // public crossCountrySameAgency: {
-  //   AddNote: boolean,
-  //   CopyAction: boolean,
-  //   Download: boolean,
-  //   Edit: boolean,
-  //   View: boolean,
-  //   ViewContacts: boolean
-  // };
-  // public interAgencyCrossCountry: {
-  //   AddNote: boolean,
-  //   CopyAction: boolean,
-  //   Download: boolean,
-  //   Edit: boolean,
-  //   View: boolean,
-  //   ViewContacts: boolean
-  // };
   public other: {
     DownloadDocuments: boolean,
     UploadDocuments: boolean
@@ -250,6 +234,17 @@ export class PageControlService {
    *  =========================================================================================
    */
 
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Dynamic module permissions objects
    *  =========================================================================================
@@ -319,8 +314,17 @@ export class PageControlService {
     return this.moduleControlMap;
   }
 
-  constructor(private af: AngularFire) {
+  constructor(private af: AngularFire, private userService: UserService) {
   }
+
+
+
+
+
+
+
+
+
 
   /**
    *  PAGE ACCESS FUNCTIONALITY FOR REGULAR USERS.
@@ -390,24 +394,84 @@ export class PageControlService {
   }
   // =============================================================================================
 
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Method to return all the information you may need from firebase regarding admin
+   * If it's an agencyAdmin, countryId is a list of countryAdmins!
    */
-  // TODO: New way of doing this, make the call return everything you need it for
-  private authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: string, agencyId: string, systemAdminId: string) => void) {
-    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-    //
-    // });
-  }
-  private authAgencyAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryAdmins: string[], agencyId: string, systemAdminId: string) => void) {
-    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-    //
-    // });
-  }
-  private authSystemAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, systemAdminId: string) => void) {
-    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-    //
-    // });
+  public authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+      if (auth) {
+        this.checkAuth(ngUnsubscribe, auth.auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
+          if (userObj != null || userType != null) {
+            // To make it here we are signed in and we have the user type userType
+            // userObj is the object under <status>/<usertype>/<uid> for my user
+            // Exception logic for the partner user. This needs to return the selection agency/country info
+            let systemId: string;
+            let agencyId: string;
+            let countryId: any;
+            if (userObj.hasOwnProperty('systemAdmin')) {
+              for (let x in userObj.systemAdmin) {
+                systemId = x;
+              }
+            }
+            if (userObj.hasOwnProperty('agencyAdmin')) {
+              for (let x in userObj.agencyAdmin) {
+                agencyId = x;
+              }
+            }
+            if (userObj.hasOwnProperty('countryId')) {
+              countryId = userObj.countryId;
+            }
+            // IF YOU'RE A PARTNER USER
+            if (userType == UserType.PartnerUser) {
+              let runOnce: boolean = false;
+              for (let x in userObj.selection) {
+                // Find the selection
+                if (!runOnce) {
+                  agencyId = x;
+                  countryId = userObj.selection[x];
+                }
+                runOnce = true;
+              }
+              if (!runOnce) {
+                // Selection not found. Find the default agency
+                for (let x in userObj.agencies) {
+                  if (!runOnce) {
+                    agencyId = x;
+                    countryId = userObj.agencies[x];
+                  }
+                  runOnce = true;
+                }
+              }
+            }
+            // IF YOU'RE AN AGENCY ADMIN
+            else if (userType == UserType.AgencyAdmin) {
+              if (userObj.hasOwnProperty('agencyId')) {
+                agencyId = userObj.agencyId;
+              }
+              if (userObj.hasOwnProperty('countryAdmins')) {
+                countryId = [];
+                for (let x in userObj.countryAdmins) {
+                  countryId.push(x);
+                }
+              }
+            }
+            this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, func);
+          }
+        });
+      }
+    });
   }
   private authNetworkAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
     // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
@@ -422,6 +486,65 @@ export class PageControlService {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+  // Given we are authenticated and valid, check permissions to see if we need to be kicked out
+  private checkPageControl(authState: FirebaseAuthState, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, userType: UserType, countryId: any, agencyId: string, systemId: string,
+                           func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    let type: PageUserType = PageControlService.initPageControlMap().get(userType);
+    if (PageControlService.checkUrl(route, userType, type)) {
+      PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
+        let s = PageControlService.buildEndUrl(route);
+        let skip = false;
+        // We have [AgencyPermissionObj], need to iterate through those.
+        //  For every one of those, check if our current URL is contained in one of thise
+        //   If so and we're not authorised to view it, kick us out
+        for (let x of list) {
+          for (let y of x.urls) {
+            // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
+            if ((s == y) && !x.isAuthorized && !skip) {
+              router.navigateByUrl(type.redirectTo);
+              skip = true;
+            }
+          }
+        }
+        if (!skip) {
+          func(authState.auth, userType, countryId, agencyId, systemId);
+        }
+      });
+    }
+    else {
+      router.navigateByUrl(type.redirectTo);
+    }
+  }
+  // Method to recursively return the user object for a usertype
+  private checkAuth(ngUnsubscribe: Subject<void>, uid: string, modelTypes: ModelUserTypeReturn[], index: number, fun: (userType: UserType, user: any) => void) {
+    if (index == modelTypes.length) {
+      fun(null, null);
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid, {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap.val() != null) {
+            // It's this user type!
+            fun(modelTypes[index].userType, snap.val());
+          }
+          else {
+            this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
+          }
+        });
+    }
+  }
+
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
@@ -434,7 +557,6 @@ export class PageControlService {
     // Attempted to access a page that's not allowed.
     return false;
   }
-
 
   // Build the complete URL path from the ActivatedRoute param
   private static buildEndUrl(route: ActivatedRoute) {
@@ -455,6 +577,18 @@ export class PageControlService {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   /**
    *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
    *
@@ -465,6 +599,19 @@ export class PageControlService {
     // TODO: Implement this functionality
   }
   // ========================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -543,56 +690,138 @@ export class PageControlService {
   }
   // ========================================================================================================
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /**
    * Country Permissions Matrix for the Country Admin Permissions settings
    */
   static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
-    // TODO: Implement this
-    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
-      .takeUntil(ngUnsubscribe)
-      .map((snap) => {
-        let agencyAdmin: string;
-        for (let x in snap.val().agencyAdmin) {
-          agencyAdmin = x;
-        }
-        return Pair.create(snap.val().countryId, agencyAdmin);
-      })
-      .flatMap((pair: Pair) => {
-        return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
-      })
-      .takeUntil(ngUnsubscribe)
-      .subscribe((snap) => {
-        if (snap.val().hasOwnProperty('permissionSettings')) {
-          let s = snap.val().permissionSettings;
-          // Build the matrix
+    if (userType == UserType.PartnerUser) {
+      af.database.object(Constants.APP_STATUS + "/partner/" + uid + "/permissions", {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
           let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-          if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
-            x.all(true);
-          }
-          else {
-            x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
-            x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
-            x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
-            x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
-            x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
-            x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
-            x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
-            x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
-            x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
-            x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
-            x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
-            x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
-            x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
-            x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
-            x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
-            x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
-            x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
-            x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
-            x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
-          }
+          x.chsActions.Assign = snap.val().assignCHS;
+          x.countryContacts.New = snap.val().contacts.new;
+          x.countryContacts.Edit = snap.val().contacts.edit;
+          x.countryContacts.Delete = snap.val().contacts.delete;
+          x.customAPA.Assign = snap.val().customApa.assign;
+          x.customAPA.Edit = snap.val().customApa.edit;
+          x.customAPA.New = snap.val().customApa.new;
+          x.customAPA.Delete = snap.val().customApa.delete;
+          x.mandatedAPA.Assign = snap.val().assignMandatedApa;
+          x.customMPA.Assign = snap.val().customMpa.assign;
+          x.customMPA.Edit = snap.val().customMpa.edit;
+          x.customMPA.New = snap.val().customMpa.new;
+          x.customMPA.Delete = snap.val().customMpa.delete;
+          x.mandatedMPA.Assign = snap.val().assignMandatedMpa;
+          x.notes.New = snap.val().notes.new;
+          x.notes.Edit = snap.val().notes.edit;
+          x.notes.Delete = snap.val().notes.delete;
+          x.other.DownloadDocuments = snap.val().other.downloadDoc;
           fun(x);
-        }
-      });
+        });
+    }
+    else {
+      af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .map((snap) => {
+          let agencyAdmin: string;
+          for (let x in snap.val().agencyAdmin) {
+            agencyAdmin = x;
+          }
+          return Pair.create(snap.val().countryId, agencyAdmin);
+        })
+        .flatMap((pair: Pair) => {
+          return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+        })
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap.val().hasOwnProperty('permissionSettings')) {
+            let s = snap.val().permissionSettings;
+            // Build the matrix
+            let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+            if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
+              x.all(true);
+            }
+            else {
+              x.chsActions.Assign = (s.chsActions[userType] ? s.chsActions[userType] : false);
+              x.countryContacts.Delete = (s.countryContacts.delete[userType] ? s.countryContacts.delete[userType] : false);
+              x.countryContacts.Edit = (s.countryContacts.edit[userType] ? s.countryContacts.edit[userType] : false);
+              x.countryContacts.New = (s.countryContacts.new[userType] ? s.countryContacts.new[userType] : false);
+              x.customAPA.Assign = (s.customApa.assign[userType] ? s.customApa.assign[userType] : false);
+              x.customAPA.Edit = (s.customApa.edit[userType] ? s.customApa.edit[userType] : false);
+              x.customAPA.New = (s.customApa.new[userType] ? s.customApa.new[userType] : false);
+              x.customAPA.Delete = (s.customApa.delete[userType] ? s.customApa.delete[userType] : false);
+              x.mandatedAPA.Assign = (s.mandatedApaAssign[userType] ? s.mandatedApaAssign[userType] : false);
+              x.customMPA.Assign = (s.customMpa.assign[userType] ? s.customMpa.assign[userType] : false);
+              x.customMPA.Edit = (s.customMpa.edit[userType] ? s.customMpa.edit[userType] : false);
+              x.customMPA.New = (s.customMpa.new[userType] ? s.customMpa.new[userType] : false);
+              x.customMPA.Delete = (s.customMpa.delete[userType] ? s.customMpa.delete[userType] : false);
+              x.mandatedMPA.Assign = (s.mandatedMpaAssign[userType] ? s.mandatedMpaAssign[userType] : false);
+              x.notes.New = (s.notes.new[userType] ? s.notes.new[userType] : false);
+              x.notes.Edit = (s.notes.edit[userType] ? s.notes.edit[userType] : false);
+              x.notes.Delete = (s.notes.delete[userType] ? s.notes.delete[userType] : false);
+              x.other.DownloadDocuments = (s.other.downloadDoc[userType] ? s.other.downloadDoc[userType] : false);
+              x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
+            }
+            fun(x);
+          }
+        });
+    }
   }
   // ========================================================================================================
+}
+
+
+export class ModelUserTypeReturn {
+  public userType: UserType;
+  public path: string;
+
+  constructor(userType: UserType, path: string) {
+    this.userType = userType;
+    this.path = path;
+  }
+
+  public static list(): ModelUserTypeReturn[] {
+    let x: ModelUserTypeReturn[] = [];
+    x.push(new ModelUserTypeReturn(UserType.GlobalDirector, "globalDirector"));
+    x.push(new ModelUserTypeReturn(UserType.RegionalDirector, "directorRegion"));
+    x.push(new ModelUserTypeReturn(UserType.CountryDirector, "directorCountry"));
+    x.push(new ModelUserTypeReturn(UserType.ErtLeader, "ertLeader"));
+    x.push(new ModelUserTypeReturn(UserType.Ert, "ert"));
+    x.push(new ModelUserTypeReturn(UserType.Donor, "donor"));
+    x.push(new ModelUserTypeReturn(UserType.GlobalUser, "globalUser"));
+    x.push(new ModelUserTypeReturn(UserType.CountryAdmin, "administratorCountry"));
+    // x.push(new ModelUserTypeReturn(UserType.NonAlert, "globalDirector"));
+    x.push(new ModelUserTypeReturn(UserType.CountryUser, "countryUser"));
+    x.push(new ModelUserTypeReturn(UserType.AgencyAdmin, "administratorAgency"));
+    x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "systemAdmin"));
+    x.push(new ModelUserTypeReturn(UserType.PartnerUser, "partnerUser"));
+    return x;
+  }
+
+  public static getPath(userType: UserType) {
+    let x: ModelUserTypeReturn[] = ModelUserTypeReturn.list();
+    for (let i of x) {
+      if (i.userType == userType) {
+        return i.path;
+      }
+    }
+    return null;
+  }
 }

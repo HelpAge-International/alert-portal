@@ -310,31 +310,21 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
       this.assignActionId = action.id;
-      this.assignActionCategoryUid = this.countryId;
     }
-  }
-
-  public selectedAssignToo(uid: string) {
-    if (uid == "0" || uid == null) {
-      return;
-    }
-    this.assignActionAsignee = uid;
   }
 
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
-      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined ||
-      this.assignActionCategoryUid == null || this.assignActionCategoryUid === "0" || this.assignActionCategoryUid === undefined) {
+      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
         // Send notification to the assignee
         let notification = new MessageModel();
         notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
         notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: this.assignActionTask});
         notification.time = new Date().getTime();
-
         this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {});
       });
     this.closeModal();
