@@ -407,20 +407,71 @@ export class PageControlService {
 
   /**
    * Method to return all the information you may need from firebase regarding admin
+   * If it's an agencyAdmin, countryId is a list of countryAdmins!
    */
-  // TODO: New way of doing this, make the call return everything you need it for
-  private authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: string, agencyId: string, systemAdminId: string) => void) {
-    
-  }
-  private authAgencyAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryAdmins: string[], agencyId: string, systemAdminId: string) => void) {
-    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-    //
-    // });
-  }
-  private authSystemAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, systemAdminId: string) => void) {
-    // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-    //
-    // });
+  public authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+      if (auth) {
+        this.checkAuth(ngUnsubscribe, auth.auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
+          if (userObj != null || userType != null) {
+            // To make it here we are signed in and we have the user type userType
+            // userObj is the object under <status>/<usertype>/<uid> for my user
+            // Exception logic for the partner user. This needs to return the selection agency/country info
+            let systemId: string;
+            let agencyId: string;
+            let countryId: any;
+            if (userObj.hasOwnProperty('systemAdmin')) {
+              for (let x in userObj.systemAdmin) {
+                systemId = x;
+              }
+            }
+            if (userObj.hasOwnProperty('agencyAdmin')) {
+              for (let x in userObj.agencyAdmin) {
+                agencyId = x;
+              }
+            }
+            if (userObj.hasOwnProperty('countryId')) {
+              countryId = userObj.countryId;
+            }
+            // IF YOU'RE A PARTNER USER
+            if (userType == UserType.PartnerUser) {
+              let runOnce: boolean = false;
+              for (let x in userObj.selection) {
+                // Find the selection
+                if (!runOnce) {
+                  agencyId = x;
+                  countryId = userObj.selection[x];
+                }
+                runOnce = true;
+              }
+              if (!runOnce) {
+                // Selection not found. Find the default agency
+                for (let x in userObj.agencies) {
+                  if (!runOnce) {
+                    agencyId = x;
+                    countryId = userObj.agencies[x];
+                  }
+                  runOnce = true;
+                }
+              }
+            }
+            // IF YOU'RE AN AGENCY ADMIN
+            else if (userType == UserType.AgencyAdmin) {
+              if (userObj.hasOwnProperty('agencyId')) {
+                agencyId = userObj.agencyId;
+              }
+              if (userObj.hasOwnProperty('countryAdmins')) {
+                countryId = [];
+                for (let x in userObj.countryAdmins) {
+                  countryId.push(x);
+                }
+              }
+            }
+            this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, func);
+          }
+        });
+      }
+    });
   }
   private authNetworkAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
     // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
@@ -444,6 +495,56 @@ export class PageControlService {
 
 
 
+
+
+  // Given we are authenticated and valid, check permissions to see if we need to be kicked out
+  private checkPageControl(authState: FirebaseAuthState, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, userType: UserType, countryId: any, agencyId: string, systemId: string,
+                           func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    let type: PageUserType = PageControlService.initPageControlMap().get(userType);
+    if (PageControlService.checkUrl(route, userType, type)) {
+      PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
+        let s = PageControlService.buildEndUrl(route);
+        let skip = false;
+        // We have [AgencyPermissionObj], need to iterate through those.
+        //  For every one of those, check if our current URL is contained in one of thise
+        //   If so and we're not authorised to view it, kick us out
+        for (let x of list) {
+          for (let y of x.urls) {
+            // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
+            if ((s == y) && !x.isAuthorized && !skip) {
+              router.navigateByUrl(type.redirectTo);
+              skip = true;
+            }
+          }
+        }
+        if (!skip) {
+          func(authState.auth, userType, countryId, agencyId, systemId);
+        }
+      });
+    }
+    else {
+      router.navigateByUrl(type.redirectTo);
+    }
+  }
+  // Method to recursively return the user object for a usertype
+  private checkAuth(ngUnsubscribe: Subject<void>, uid: string, modelTypes: ModelUserTypeReturn[], index: number, fun: (userType: UserType, user: any) => void) {
+    if (index == modelTypes.length) {
+      fun(null, null);
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid, {preserveSnapshot: true})
+        .takeUntil(ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap.val() != null) {
+            // It's this user type!
+            fun(modelTypes[index].userType, snap.val());
+          }
+          else {
+            this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
+          }
+        });
+    }
+  }
+
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
@@ -456,7 +557,6 @@ export class PageControlService {
     // Attempted to access a page that's not allowed.
     return false;
   }
-
 
   // Build the complete URL path from the ActivatedRoute param
   private static buildEndUrl(route: ActivatedRoute) {
@@ -685,4 +785,43 @@ export class PageControlService {
     }
   }
   // ========================================================================================================
+}
+
+
+export class ModelUserTypeReturn {
+  public userType: UserType;
+  public path: string;
+
+  constructor(userType: UserType, path: string) {
+    this.userType = userType;
+    this.path = path;
+  }
+
+  public static list(): ModelUserTypeReturn[] {
+    let x: ModelUserTypeReturn[] = [];
+    x.push(new ModelUserTypeReturn(UserType.GlobalDirector, "globalDirector"));
+    x.push(new ModelUserTypeReturn(UserType.RegionalDirector, "directorRegion"));
+    x.push(new ModelUserTypeReturn(UserType.CountryDirector, "directorCountry"));
+    x.push(new ModelUserTypeReturn(UserType.ErtLeader, "ertLeader"));
+    x.push(new ModelUserTypeReturn(UserType.Ert, "ert"));
+    x.push(new ModelUserTypeReturn(UserType.Donor, "donor"));
+    x.push(new ModelUserTypeReturn(UserType.GlobalUser, "globalUser"));
+    x.push(new ModelUserTypeReturn(UserType.CountryAdmin, "administratorCountry"));
+    // x.push(new ModelUserTypeReturn(UserType.NonAlert, "globalDirector"));
+    x.push(new ModelUserTypeReturn(UserType.CountryUser, "countryUser"));
+    x.push(new ModelUserTypeReturn(UserType.AgencyAdmin, "administratorAgency"));
+    x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "systemAdmin"));
+    x.push(new ModelUserTypeReturn(UserType.PartnerUser, "partnerUser"));
+    return x;
+  }
+
+  public static getPath(userType: UserType) {
+    let x: ModelUserTypeReturn[] = ModelUserTypeReturn.list();
+    for (let i of x) {
+      if (i.userType == userType) {
+        return i.path;
+      }
+    }
+    return null;
+  }
 }
