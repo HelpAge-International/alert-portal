@@ -124,7 +124,6 @@ export class PrepActionService {
     if (type == DurationType.Year) {
       val = val * 365;
     }
-    console.log(val);
     return val;
   }
 
@@ -245,13 +244,10 @@ export class PrepActionService {
     // }
 
     // Clock settings
-    console.log(this.actions[i]);
     if (applyCustom) {
-      console.log("Applying custom clock settings to " + this.actions[i].task);
       this.actions[i].setComputedClockSetting(+this.actions[i].frequencyValue, +this.actions[i].frequencyBase);
     }
     else {
-      console.log("Applying generic clock settings to " + this.actions[i].task);
       this.actions[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
     }
 

@@ -75,16 +75,16 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
       this.systemId = systemId;
       this.downloadThreshold(() => {
         this.downloadDefaultClockSettings(() => {
-            this.initAlerts(() => {
-              this.getCountryNumber();
-              this.getApprovedResponsePlansCount();
-              this.prepActionService.addUpdater(() => {
-                this.recalculateAll();
-              });
-              this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, userType, null, this.countryId, this.agencyId, this.systemId)
+          this.initAlerts(() => {
+            this.getCountryNumber();
+            this.getApprovedResponsePlansCount();
+            this.prepActionService.addUpdater(() => {
+              this.recalculateAll();
             });
+            this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, userType, null, this.countryId, this.agencyId, this.systemId)
           });
         });
+      });
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled => {
         this.userPermissions = isEnabled;
       }));
@@ -195,21 +195,25 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
-            let res: boolean = true;
+            let res: boolean = false;
             for (const userTypes in snapshot.val().approval) {
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] == 0) {
-                  res = false;
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
                 }
               }
             }
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
           }
           else {
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
           }
-          fun();
         });
+        fun();
       });
 
     // Populate actions
@@ -220,8 +224,18 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
    * Preparedness Actions
    */
   private isActionCompleted(action: PreparednessAction) {
-    if (action.isComplete != null) {
-      return action.isCompleteAt + action.computedClockSetting > this.date;
+    if (action.isArchived == true) {
+      return false;
+    }
+    if (action.level == ActionLevel.APA) {
+      if (action.isRedAlertActive(this.hazardRedAlert) && action.isComplete != null) {
+        return action.isCompleteAt + action.computedClockSetting > this.date;
+      }
+    }
+    else if (action.level == ActionLevel.MPA) {
+      if (action.isComplete != null) {
+        return action.isCompleteAt + action.computedClockSetting > this.date;
+      }
     }
     return false;
   }
@@ -233,6 +247,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     let advGreen: number = 0;
     let chsTotal: number = 0;
     let chsGreen: number = 0;
+    console.log(this.prepActionService.actions);
     for (let x of this.prepActionService.actions) {
       if (x.level == ActionLevel.MPA) {
         minTotal++;
@@ -253,6 +268,8 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
         }
       }
     }
+    console.log("Min: " + minGreen + " / " + minTotal);
+    console.log("Adv: " + advGreen + " / " + advTotal);
     this.minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     this.advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
     this.chsPrepPercentage = chsTotal == 0 ? 0 : (chsGreen * 100) / chsTotal;

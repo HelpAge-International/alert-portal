@@ -196,7 +196,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             let res: boolean = false;
             for (const userTypes in snapshot.val().approval) {
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                console.log(snapshot.val().approval[userTypes]);
                 if (snapshot.val().approval[userTypes][thisUid] != 0) {
                   res = true;
                 }
@@ -205,7 +204,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
               this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
             }
-            console.log(res);
           }
           else {
             if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
@@ -213,7 +211,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             }
           }
         });
-        console.log(this.hazardRedAlert);
       });
 
     // Populate actions
