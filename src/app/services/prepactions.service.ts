@@ -26,6 +26,8 @@ export class PrepActionService {
   private defaultClockType: number;
   private defaultClockValue: number;
 
+  private updater: () => void;
+
   constructor() {
     this.actions = [];
   }
@@ -64,8 +66,8 @@ export class PrepActionService {
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
     this.getDefaultClockSettings(af, this.agencyId, this.countryId, () => {
-      if (isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-        this.init(af, "actionCHS", this.systemAdminId, true, PrepSourceTypes.SYSTEM);
+      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
       }
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
@@ -129,22 +131,22 @@ export class PrepActionService {
   /**
    * General init method. Goes to a node and lists all relevant actions
    */
-  private init(af: AngularFire, path: string, userId: string, isMPA: boolean, source: PrepSourceTypes) {
+  private init(af: AngularFire, path: string, userId: string, isMPA: boolean, source: PrepSourceTypes, updated?: (action: PreparednessAction) => void) {
     af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          if (isMPA && snapshot.val().level == ActionLevel.MPA) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, null);
-            return;
+          if (isMPA == null) {
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+          }
+          else if (isMPA && snapshot.val().level == ActionLevel.MPA) {
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
           }
           else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, null);
-            return;
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
           }
-          if (this.findAction(snapshot.key) != null) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, null);
-            return;
+          else if (this.findAction(snapshot.key) != null) {
+            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
           }
         });
       });
@@ -258,6 +260,15 @@ export class PrepActionService {
     if (updated != null) {
       updated(this.actions[i]);
     }
+
+    // Subscriber method
+    if (this.updater != null) {
+      this.updater();
+    }
+  }
+
+  public addUpdater(func: () => void) {
+    this.updater = func;
   }
 
   /**
@@ -411,7 +422,7 @@ export class PreparednessAction {
       }
       return false;
     }
-    else if (this.type == ActionType.mandated) {
+    else if (this.type == ActionType.mandated || this.type == ActionType.custom) {
       let returnValue: boolean = false;
       map.forEach((value, key) => {
         if (value) {

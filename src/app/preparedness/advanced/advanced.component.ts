@@ -193,20 +193,27 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
-            let res: boolean = true;
+            let res: boolean = false;
             for (const userTypes in snapshot.val().approval) {
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] == 0) {
-                  res = false;
+                console.log(snapshot.val().approval[userTypes]);
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
                 }
               }
             }
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+            console.log(res);
           }
           else {
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
           }
         });
+        console.log(this.hazardRedAlert);
       });
 
     // Populate actions
