@@ -388,7 +388,7 @@
                    Based on those setting they're sometimes expired. This below checks that. It makes all the IF statements look
                    a bit messy but it has to be done like this so it's not dependent on a method resolution (and hence live updating gets a bit weird)
 
-                   (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                   (actcalculatedIsCompletelete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!actcalculatedIsCompletelete && (action.updatedAt + action.computedClockSetting < getNow()))
                     -->
 
                     <!-- Logic for the clock settings -->

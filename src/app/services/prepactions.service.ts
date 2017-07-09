@@ -206,8 +206,8 @@ export class PrepActionService {
       else if (action.type == ActionType.custom) action.budget = null;
     if (action.hasOwnProperty('department')) this.actions[i].department = action.department; // else action.department = null;
     if (action.hasOwnProperty('level')) this.actions[i].level = action.level; // else action.level = null;
-    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete;
-      else if (action.type == ActionType.custom) action.isComplete = null;
+    if (action.hasOwnProperty('calculatedIsComplete')) this.actions[i].isComplete = action.calculatedIsComplete;
+      else if (action.type == ActionType.custom) action.calculatedIsComplete = null;
     if (action.hasOwnProperty('isCompleteAt')) this.actions[i].isCompleteAt = action.isCompleteAt;
       else if (action.type == ActionType.custom) action.isCompleteAt = null;
     if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc;

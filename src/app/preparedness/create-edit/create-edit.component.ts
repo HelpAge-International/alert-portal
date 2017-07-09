@@ -379,13 +379,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
         console.log("Removing complete status!");
         updateObj.isCompleteAt = null;
-        updateObj.isComplete = null;
+        updateObj.calculatedIsComplete = null;
       }
 
       if (this.action.id != null) {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
-          
+
           if(updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
@@ -408,7 +408,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         // Saving
         updateObj.createdAt = new Date().getTime();
         this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
-          
+
           if(updateObj.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
@@ -417,7 +417,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
           }
-          
+
           if (this.action.level == ActionLevel.MPA) {
             this.router.navigateByUrl("/preparedness/minimum");
           }
