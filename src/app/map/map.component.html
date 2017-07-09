@@ -46,7 +46,7 @@
                 </thead>
                 <tbody *ngIf="(x != null && x.location != -1)">
                 <tr *ngFor="let y of x.departments">
-                  <td>{{y.department}}</td>
+                  <td>{{DEPARTMENT_MAP.get(y.department)}}</td>
                   <td *ngIf="y.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                   aria-hidden="true"></i></td>
                   <td *ngIf="y.actionStatus >= minThreshYellow && !(y.actionStatus >= minThreshGreen)"><i

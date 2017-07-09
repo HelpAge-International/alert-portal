@@ -34,6 +34,8 @@ export class MapComponent implements OnInit, OnDestroy {
   private isDirector: boolean;
   private userTypePath: string;
 
+  public DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
+
   public moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
@@ -49,7 +51,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.department = new SDepHolder("Something");
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
 
       this.route.params
@@ -83,6 +85,15 @@ export class MapComponent implements OnInit, OnDestroy {
           }
         }
       );
+
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/departments", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.DEPARTMENT_MAP.clear();
+          for (let x of snap) {
+            this.DEPARTMENT_MAP.set(x.key, x.val());
+          }
+        });
 
       /** Load in the markers on the map! */
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {

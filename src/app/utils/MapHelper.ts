@@ -17,6 +17,11 @@ import {Subject} from "rxjs/Subject";
 
 export class SuperMapComponents {
 
+  public static BLUE_COLOUR = "#0F1240";
+  public static GREEN_COLOUR = "#5BA920";
+  public static YELLOW_COLOUR = "#E3A700";
+  public static RED_COLOUR = "#CD2811";
+
   private af: AngularFire;
   private ngUnsubscribe: Subject<void>;
   public map: google.maps.Map;
@@ -378,8 +383,13 @@ export class SuperMapComponents {
         let red: string[] = [];
         let yellow: string[] = [];
         let green: string[] = [];
+        let blue: string[] = [];
         for (let h of holder) {
-          if (h.overallAction() >= greenThresh) {
+          console.log(h.overallAction());
+          if (h.overallAction() == -1) {
+            blue.push(Countries[h.location]);
+          }
+          else if (h.overallAction() >= greenThresh) {
             green.push(Countries[h.location]);
           }
           else if (h.overallAction() >= yellowThresh) {
@@ -394,7 +404,7 @@ export class SuperMapComponents {
         for (let h of holder) {
           returnMap.set(Countries[h.location].toString(), h);
         }
-        this.doneWithEmbeddedStyles(red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map, mapIconClicked);
+        this.doneWithEmbeddedStyles(blue, "#0F1240", red, "#CD2811", yellow, "#E3A700", green, "#5BA920", this.map, mapIconClicked);
         done(returnMap);
       });
     });
@@ -763,19 +773,33 @@ export class SuperMapComponents {
   }
 
   /** Function for where **/
-  private doneWithEmbeddedStyles(red, redCol, yellow, yellowCol, green, greenCol, map, funct: (countryCode: string) => void) {
+  private doneWithEmbeddedStyles(blue, blueCol, red, redCol, yellow, yellowCol, green, greenCol, map, funct: (countryCode: string) => void) {
     let layer = new google.maps.FusionTablesLayer({
       suppressInfoWindows: true,
       query: {
         select: '*',
         from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
-        where: this.arrayToQuote(red.concat(yellow.concat(green)))
+        where: this.arrayToQuote(red.concat(yellow.concat(green.concat(blue))))
       },
       styles: [
         {
           polygonOptions: {
             fillColor: '#f00ff9',
             strokeOpacity: 0.0
+          }
+        },
+        {
+          where: this.arrayToQuote(blue),
+          polygonOptions: {
+            fillColor: blueCol,
+            fillOpacity: 1.0,
+            strokeOpacity: 0.0,
+            strokeColor: "#FFFFFF"
+          },
+          polylineOptions: {
+            strokeColor: "#FFFFFF",
+            strokeOpacity: 1.0,
+            strokeWeight: 1.0
           }
         },
         {
