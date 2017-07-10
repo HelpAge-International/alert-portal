@@ -492,12 +492,11 @@
                           </a>
 
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
-                                    && !((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
-                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions.Assign))
-                                    && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
-                             aria-expanded="false" aria-controls="popover_content"
+                             aria-expanded="false" aria-controls="popover_content" *ngIf="!((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
+                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions.Assign))
+                                    && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
 
