@@ -7,6 +7,7 @@ import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
+import {MapCountry, MapService} from "../services/map.service";
 declare var jQuery: any;
 
 @Component({
@@ -21,10 +22,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public uid: string;
   public mapHelper: SuperMapComponents;
+
+  public mapService: MapService;
+
   public department: SDepHolder;
-  private mDepartmentMap: Map<string, SDepHolder>;
+  private countries: MapCountry[] = [];
   private agencyMap: Map<string, string> = new Map<string, string>();
-  private departments: SDepHolder[];
 
   public agencyLogo: string;
 
@@ -53,6 +56,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.department.departments.push(new DepHolder("Loading", 100, 1));
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.userTypePath = Constants.USER_PATHS[userType];
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -62,36 +66,53 @@ export class MapComponent implements OnInit, OnDestroy {
           }
         });
 
-      this.userTypePath = Constants.USER_PATHS[userType];
-      /** Initialise map and colour the relevant countries */
-      this.mapHelper.initMapFrom("global-map", this.uid, Constants.USER_PATHS[userType],
-        (departments) => {
-          this.mDepartmentMap = departments;
-          this.departments = [];
-          this.minThreshYellow = this.mapHelper.minThreshYellow;
-          this.minThreshGreen = this.mapHelper.minThreshGreen;
-          this.mDepartmentMap.forEach((value, key) => {
-            console.log(value);
-            this.departments.push(value);
-          });
-        },
-        (mapCountryClicked) => {
-          if (this.mDepartmentMap != null) {
-            this.openMinimumPreparednessModal(mapCountryClicked);
-            console.log(this.mDepartmentMap.get(mapCountryClicked).countryId);
+      this.mapService = MapService.init(this.af, this.ngUnsubscribe);
+      this.mapService.initMap("global-map", this.uid, userType, agencyId, systemId,
+        ((countries, green, yellow) => {
+          console.log(countries);
+          console.log("BOOM!");
+          this.minThreshGreen = green;
+          this.minThreshYellow = yellow;
+          this.countries = countries;
+        }),
+        (countryClicked) => {
+          if (this.countries != null) {
+            this.openMinimumPreparednessModal(countryClicked);
           }
           else {
             console.log("TODO: Map is yet to initialise properly / it failed to do so");
           }
-        }
-      );
+        });
+
+      /** Initialise map and colour the relevant countries */
+      // this.mapHelper.initMapFrom("global-map", this.uid, Constants.USER_PATHS[userType],
+      //   (departments) => {
+      //     this.mDepartmentMap = departments;
+      //     this.departments = [];
+      //     this.minThreshYellow = this.mapHelper.minThreshYellow;
+      //     this.minThreshGreen = this.mapHelper.minThreshGreen;
+      //     this.mDepartmentMap.forEach((value, key) => {
+      //       this.departments.push(value);
+      //     });
+      //   },
+      //   (mapCountryClicked) => {
+      //     if (this.mDepartmentMap != null) {
+      //       this.openMinimumPreparednessModal(mapCountryClicked);
+      //       console.log(this.mDepartmentMap.get(mapCountryClicked).countryId);
+      //     }
+      //     else {
+      //       console.log("TODO: Map is yet to initialise properly / it failed to do so");
+      //     }
+      //   }
+      // );
 
       this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/departments", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           this.DEPARTMENT_MAP.clear();
+          this.DEPARTMENT_MAP.set("unassigned", "Unassigned");
           for (let x of snap) {
-            this.DEPARTMENT_MAP.set(x.key, x.val());
+            this.DEPARTMENT_MAP.set(x.key, x.val().name);
           }
         });
 

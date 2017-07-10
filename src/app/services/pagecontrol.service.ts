@@ -456,7 +456,7 @@ export class PageControlService {
               }
             }
             // IF YOU'RE AN AGENCY ADMIN
-            else if (userType == UserType.AgencyAdmin) {
+            if (userType == UserType.AgencyAdmin) {
               if (userObj.hasOwnProperty('agencyId')) {
                 agencyId = userObj.agencyId;
               }
@@ -500,6 +500,9 @@ export class PageControlService {
   // Given we are authenticated and valid, check permissions to see if we need to be kicked out
   private checkPageControl(authState: FirebaseAuthState, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, userType: UserType, countryId: any, agencyId: string, systemId: string,
                            func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    console.log(countryId);
+    console.log(agencyId);
+    console.log(systemId);
     let type: PageUserType = PageControlService.initPageControlMap().get(userType);
     if (PageControlService.checkUrl(route, userType, type)) {
       PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
@@ -535,7 +538,10 @@ export class PageControlService {
         .takeUntil(ngUnsubscribe)
         .subscribe((snap) => {
           if (snap.val() != null) {
+            console.log(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid);
             // It's this user type!
+            console.log("RETURNING:");
+            console.log(snap.val());
             fun(modelTypes[index].userType, snap.val());
           }
           else {
@@ -800,14 +806,14 @@ export class ModelUserTypeReturn {
   public static list(): ModelUserTypeReturn[] {
     let x: ModelUserTypeReturn[] = [];
     x.push(new ModelUserTypeReturn(UserType.GlobalDirector, "globalDirector"));
-    x.push(new ModelUserTypeReturn(UserType.RegionalDirector, "directorRegion"));
-    x.push(new ModelUserTypeReturn(UserType.CountryDirector, "directorCountry"));
+    x.push(new ModelUserTypeReturn(UserType.RegionalDirector, "regionDirector"));
+    x.push(new ModelUserTypeReturn(UserType.CountryDirector, "countryDirector"));
     x.push(new ModelUserTypeReturn(UserType.ErtLeader, "ertLeader"));
     x.push(new ModelUserTypeReturn(UserType.Ert, "ert"));
     x.push(new ModelUserTypeReturn(UserType.Donor, "donor"));
     x.push(new ModelUserTypeReturn(UserType.GlobalUser, "globalUser"));
     x.push(new ModelUserTypeReturn(UserType.CountryAdmin, "administratorCountry"));
-    // x.push(new ModelUserTypeReturn(UserType.NonAlert, "globalDirector"));
+    // x.push(new ModelUserTypeReturn(UserType.NonAlert, "alertuser"));
     x.push(new ModelUserTypeReturn(UserType.CountryUser, "countryUser"));
     x.push(new ModelUserTypeReturn(UserType.AgencyAdmin, "administratorAgency"));
     x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "systemAdmin"));

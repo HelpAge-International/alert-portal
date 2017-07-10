@@ -103,6 +103,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
   private downloadThreshold(fun: () => void) {
     if (this.ranThresh) { fun(); }
     else {
+      console.log(Constants.APP_STATUS + "/system/" + this.systemId);
       this.af.database.object(Constants.APP_STATUS + "/system/" + this.systemId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {

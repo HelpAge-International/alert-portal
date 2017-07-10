@@ -81,7 +81,7 @@ export class SuperMapComponents {
               });
               funct(marker);
             }
-          })
+          });
         });
       });
   };

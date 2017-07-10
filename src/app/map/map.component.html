@@ -16,8 +16,8 @@
     <div class="Ribbon__section__wrap Spaced">
       <div id="global-map" style="height: 500px;"></div>
     </div>
-    <div *ngIf="(departments != null)">
-      <div *ngFor="let x of departments" class="modal fade" id="minimum-prep-modal-{{getCountryCode(x.location)}}"
+    <div *ngIf="(countries != null)">
+      <div *ngFor="let x of countries" class="modal fade" id="minimum-prep-modal-{{getCountryCode(x.location)}}"
            tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
            aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -46,21 +46,21 @@
                 </thead>
                 <tbody *ngIf="(x != null && x.location != -1)">
                 <tr *ngFor="let y of x.departments">
-                  <td>{{DEPARTMENT_MAP.get(y.department)}}</td>
-                  <td *ngIf="y.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                  <td>{{DEPARTMENT_MAP.get(y.id)}}</td>
+                  <td *ngIf="y.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                   aria-hidden="true"></i></td>
-                  <td *ngIf="y.actionStatus >= minThreshYellow && !(y.actionStatus >= minThreshGreen)"><i
+                  <td *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen)"><i
                     class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                  <td *ngIf="!(y.actionStatus >= minThreshYellow) && !(y.actionStatus >= minThreshGreen)"><i
+                  <td *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen)"><i
                     class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                 </tr>
                 <tr>
                   <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
-                  <td *ngIf="x.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                  <td *ngIf="x.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                      aria-hidden="true"></i></td>
-                  <td *ngIf="x.overallAction() >= minThreshYellow && !(x.overallAction() >= minThreshGreen)"><i
+                  <td *ngIf="x.overall() >= minThreshYellow && !(x.overall() >= minThreshGreen)"><i
                     class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                  <td *ngIf="!(x.overallAction() >= minThreshYellow) && !(x.overallAction() >= minThreshGreen)"><i
+                  <td *ngIf="!(x.overall() >= minThreshYellow) && !(x.overall() >= minThreshGreen)"><i
                     class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                 </tr>
                 </tbody>

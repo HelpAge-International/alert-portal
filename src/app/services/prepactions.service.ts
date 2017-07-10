@@ -209,7 +209,9 @@ export class PrepActionService {
     if (action.hasOwnProperty('calculatedIsComplete')) this.actions[i].isComplete = action.calculatedIsComplete;
       else if (action.type == ActionType.custom) action.calculatedIsComplete = null;
     if (action.hasOwnProperty('isCompleteAt')) this.actions[i].isCompleteAt = action.isCompleteAt;
-      else if (action.type == ActionType.custom) action.isCompleteAt = null;
+    else if (action.type == ActionType.custom) action.isCompleteAt = null;
+    if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete;
+    else if (action.type == ActionType.custom) action.isComplete = null;
     if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc;
       else if (action.type == ActionType.custom) action.requireDoc = null;
     if (action.hasOwnProperty('task')) this.actions[i].task = action.task; // else action.task = null;
@@ -257,10 +259,14 @@ export class PrepActionService {
       updated(this.actions[i]);
     }
 
+    console.log("Updating!");
+    console.log(this.actions[i]);
+
     // Subscriber method
     if (this.updater != null) {
       this.updater();
     }
+
   }
 
   public addUpdater(func: () => void) {
@@ -308,7 +314,7 @@ export class PrepActionService {
   // Listen for changes on the notes
   public initNotes(af: AngularFire, actionId: string, run: boolean) {
     if (run) {
-      af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
+      af.database.list(Constants.APP_STATUS + "/note/" + this.countryId + '/' + actionId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           let action: PreparednessAction = this.findAction(actionId);
