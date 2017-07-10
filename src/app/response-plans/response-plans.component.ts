@@ -53,6 +53,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
 
+
+  private approvalsList: any[] = [];
+  private approvalsToShowExceptPartner = {};
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
@@ -381,6 +385,28 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     });
   }
 
+  getApprovalsExceptPartner(plan) {
+    this.approvalsList = [];
+    this.approvalsToShowExceptPartner = {};
+    this.approvalsList = Object.keys(plan.approval).filter(key => key != "partner").map(key => plan.approval[key]);
+
+    console.log(this.approvalsList);
+
+    this.approvalsList.forEach(approve => {
+
+      let tmpList = Object.keys(approve).map(key => approve[key]);
+      console.log(tmpList[0]);
+      if (tmpList[0] == ApprovalStatus.Approved) {
+        this.approvalsToShowExceptPartner[approve] = true;
+        console.log("HERE AT 1");
+      } else {
+        this.approvalsToShowExceptPartner[approve] = false;
+        console.log("HERE AT 2");
+      }
+    });
+    console.log(this.approvalsToShowExceptPartner);
+  }
+
   getApproves(plan) {
     if (!plan.approval) {
       return [];
@@ -389,13 +415,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   getApproveStatus(approve) {
-    if (!approve) {
-      return -1;
-    }
-    let list = Object.keys(approve).map(key => approve[key]);
-    console.log("List -")
-    console.log(list)
-    return list[0] == ApprovalStatus.Approved;
+    console.log(approve);
+    // if (!approve) {
+    //   return -1;
+    // }
+    // let list = Object.keys(approve).map(key => approve[key]);
+    // return list[0] == ApprovalStatus.Approved;
   }
 
   activatePlan(plan) {
