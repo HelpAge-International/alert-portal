@@ -73,10 +73,4 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   //     this.translate.use("fr");
   //   }
   // }
-
-  goToNotifications() {
-    this._notificationService.setAgencyNotificationsAsRead(this.uid).subscribe(() => {
-      this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
-    })
-  }
 }
