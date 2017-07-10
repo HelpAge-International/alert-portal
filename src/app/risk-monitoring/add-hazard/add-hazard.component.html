@@ -11,11 +11,23 @@
     <div class="Back--button row" routerLink="/risk-monitoring">{{"DASHBOARD.RISK_MONITORING" | translate}}</div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
       <h1>{{"RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" | translate}}</h1>
+      <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT8.LEVEL1'"
+      ></tooltip>
     </div>
-    <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="https://www.inform-index.org/">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX" | translate}}.</a></p>
+    <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="https://www.inform-index.org/">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX" | translate}}.</a>
+      <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT9.LEVEL1'"
+        [level2]="'TOOLTIPS.RISK_MONITORING.TT9.LEVEL2'"
+      ></tooltip>
+    </p>
     <div class="Ribbon__section__wrap--risk Spaced"></div>
     <div class="row Spaced-above"> <!-- Alert selection section start -->
-      <div></div>
+      <div>
+        <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT7.LEVEL1'"
+      ></tooltip>
+      </div>
     </div>
     <form #newHazard="ngForm" novalidate *ngSwitchCase="1">
       <div class="row" style="width:100%" *ngFor="let hazard of hazardScenariosListTop; let num = index">
@@ -74,7 +86,11 @@
       </div>
       <!--Select another hazard-->
       <div class="col-sm-4">
-        <div class="Spaced-above"><p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b></p></div>
+        <div class="Spaced-above"><p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b>
+          <tooltip
+            [level1]= "'TOOLTIPS.RISK_MONITORING.TT10.LEVEL1'"
+          ></tooltip>
+        </p></div>
 
         <div class="row no-gutters">
           <label class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
@@ -169,7 +185,11 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"><b>{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR" | translate}}</b></h5>
+            <h5 class="modal-title" id="exampleModalLabel"><b>{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR" | translate}}</b>
+              <tooltip
+                [level1]= "'TOOLTIPS.RISK_MONITORING.TT11.LEVEL1'"
+              ></tooltip>
+            </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
