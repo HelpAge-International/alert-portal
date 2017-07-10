@@ -96,11 +96,18 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
+      this.agencyID = agencyId;
+      this.countryID = countryId;
       this._loadData();
     });
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   this.UserType = userType;
+    //   this._loadData();
+    // });
   }
 
   ngOnDestroy() {
@@ -154,10 +161,10 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _loadData() {
-    this._getCountryID().then(() => {
-      this._getCustomHazards();
-      this._getCountryLocation();
-    });
+    // this._getCountryID().then(() => {
+    this._getCustomHazards();
+    this._getCountryLocation();
+    // });
   }
 
   _getCustomHazards() {

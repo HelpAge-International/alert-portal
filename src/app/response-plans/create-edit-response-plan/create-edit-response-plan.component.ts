@@ -259,18 +259,45 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
       let userpath = Constants.USER_PATHS[userType];
-      this.getSystemAgencyCountryIds(userpath);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
         this.moduleAccess = isEnabled;
         if (!this.moduleAccess.countryOffice) {
           this.methodOfImplementationSelectedDirect();
         }
       });
+      if (userType == UserType.PartnerUser) {
+        this.countryId = countryId;
+        this.agencyAdminUid = agencyId;
+        this.systemAdminUid = systemId;
+        this.prepareData();
+      } else {
+        this.getSystemAgencyCountryIds(userpath);
+      }
     });
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+    //   let userpath = Constants.USER_PATHS[userType];
+    //   this.getSystemAgencyCountryIds(userpath);
+    //   PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
+    //     this.moduleAccess = isEnabled;
+    //     if (!this.moduleAccess.countryOffice) {
+    //       this.methodOfImplementationSelectedDirect();
+    //     }
+    //   });
+    // });
+  }
+
+  private prepareData() {
+    this.getStaff();
+    this.setupForEdit();
+    this.getSettings();
+    this.getPartners();
+    this.getGroups();
   }
 
   private getSystemAgencyCountryIds(userPath: string) {
@@ -380,14 +407,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     //section 7
     this.activityMap.forEach((v, k) => {
       let sectorInfo = {};
-      if(this.activityInfoMap.get(k)){
-        if(this.activityInfoMap.get(k)["sourcePlan"]){
+      if (this.activityInfoMap.get(k)) {
+        if (this.activityInfoMap.get(k)["sourcePlan"]) {
           sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
         }
-        if(this.activityInfoMap.get(k)["bullet1"]){
+        if (this.activityInfoMap.get(k)["bullet1"]) {
           sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
         }
-        if(this.activityInfoMap.get(k)["bullet2"]){
+        if (this.activityInfoMap.get(k)["bullet2"]) {
           sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
         }
         sectorInfo["activities"] = v;
@@ -819,10 +846,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  setGroup(groupKey, vulnerableGroupsDropDown) {    
-    if(groupKey)
-    {
-      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = groupKey;  
+  setGroup(groupKey, vulnerableGroupsDropDown) {
+    if (groupKey) {
+      this.selectedVulnerableGroups[vulnerableGroupsDropDown - 1] = groupKey;
     }
   }
 
@@ -964,6 +990,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   selectNeighbour(sector, value) {
     this.checkActivityInfo(sector, value, 0, -1);
   }
+
   selectLocal(sector, value) {
     this.checkActivityInfo(sector, value, 0, -1);
   }
@@ -1701,43 +1728,43 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private storeAvailableSettingSections() {
     var counter = 0;
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanDetails]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanDetails]) {
       counter = counter + 1;
       this.sectionOneNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanContext]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanContext]) {
       counter = counter + 1;
       this.sectionTwoNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.BasicInformation]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.BasicInformation]) {
       counter = counter + 1;
       this.sectionThreeNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]) {
       counter = counter + 1;
       this.sectionFourNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.TargetPopulation]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.TargetPopulation]) {
       counter = counter + 1;
       this.sectionFiveNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.ExpectedResults]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.ExpectedResults]) {
       counter = counter + 1;
       this.sectionSixNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.Activities]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.Activities]) {
       counter = counter + 1;
       this.sectionSevenNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.MonitoringAccLearning]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.MonitoringAccLearning]) {
       counter = counter + 1;
       this.sectionEightNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.DoubleCounting]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.DoubleCounting]) {
       counter = counter + 1;
       this.sectionNineNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.Budget]){
+    if (this.responsePlanSettings[ResponsePlanSectionSettings.Budget]) {
       counter = counter + 1;
       this.sectionTenNum = counter;
     }

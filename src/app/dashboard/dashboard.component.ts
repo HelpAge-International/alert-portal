@@ -81,13 +81,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      console.log(userType);
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-      console.log(this.userType)
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-      console.log(this.NODE_TO_CHECK);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
         this.moduleSettings = isEnabled;
       }));
@@ -97,7 +94,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.DashboardTypeUsed = DashboardType.default;
       }
       if (this.userType == UserType.PartnerUser) {
-        this.loadDataForPartnerUser(null, null);
+        this.agencyId = agencyId;
+        this.countryId = countryId;
+        this.loadDataForPartnerUser(agencyId, countryId);
       } else {
         this.loadData();
       }
@@ -107,6 +106,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.countryPermissionMatrix = isEnabled;
       }));
     });
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   console.log(userType);
+    //   this.uid = user.uid;
+    //   this.userType = userType;
+    //   console.log(this.userType)
+    //   this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+    //   console.log(this.NODE_TO_CHECK);
+    //   PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
+    //     this.moduleSettings = isEnabled;
+    //   }));
+    //   if (userType == UserType.CountryDirector) {
+    //     this.DashboardTypeUsed = DashboardType.director;
+    //   } else {
+    //     this.DashboardTypeUsed = DashboardType.default;
+    //   }
+    //   if (this.userType == UserType.PartnerUser) {
+    //     this.loadDataForPartnerUser(null, null);
+    //     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (auth, userType, countryId, agencyId, systemId) => {
+    //       console.log("******")
+    //       console.log(agencyId)
+    //       console.log(countryId)
+    //       console.log("******")
+    //     });
+    //   } else {
+    //     this.loadData();
+    //   }
+    //
+    //   // Load in the country permissions
+    //   PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
+    //     this.countryPermissionMatrix = isEnabled;
+    //   }));
+    // });
   }
 
   // TODO - New Subscriptions - Remove all subscriptions

@@ -51,7 +51,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               private _stockService: StockService,
               private _noteService: NoteService,
               private router: Router,
-              private af:AngularFire,
+              private af: AngularFire,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -75,11 +75,11 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
 
-          if (this.countryId && this.agencyId) {
+          if (this.countryId && this.agencyId && this.isViewing) {
             this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
               this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
@@ -99,36 +99,38 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               })
             });
           } else {
-            this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agencyId => {
-                this.agencyId = agencyId;
+            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(agencyId => {
+            //     this.agencyId = agencyId;
+            //
+            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+            //       .takeUntil(this.ngUnsubscribe)
+            //       .subscribe(countryId => {
+            //         this.countryId = countryId;
+            this.countryId = countryId;
+            this.agencyId = agencyId;
 
-                this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(countryId => {
-                    this.countryId = countryId;
+            this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
+              this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
+              this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
 
-                    this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
-                      this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
-                      this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+              // Get notes
+              stockCapacities.forEach(stockCapacity => {
+                const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+                  .replace('{countryId}', this.countryId)
+                  .replace('{id}', stockCapacity.id);
+                this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                  stockCapacity.notes = notes;
 
-                      // Get notes
-                      stockCapacities.forEach(stockCapacity => {
-                        const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-                          .replace('{countryId}', this.countryId)
-                          .replace('{id}', stockCapacity.id);
-                        this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
-                          stockCapacity.notes = notes;
-
-                          // Create the new note model for partner organisation
-                          this.newNote[stockCapacity.id] = new NoteModel();
-                          this.newNote[stockCapacity.id].uploadedBy = this.uid;
-                        });
-                      })
-                    });
-                  });
-              });
+                  // Create the new note model for partner organisation
+                  this.newNote[stockCapacity.id] = new NoteModel();
+                  this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                });
+              })
+            });
+            //     });
+            // });
           }
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {

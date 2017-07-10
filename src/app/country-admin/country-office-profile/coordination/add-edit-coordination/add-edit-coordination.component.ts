@@ -1,19 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../../utils/Constants';
-import { AlertMessageType, ResponsePlanSectors } from '../../../../utils/Enums';
-import { RxHelper } from '../../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-
-import { AlertMessageModel } from '../../../../model/alert-message.model';
-import { DisplayError } from "../../../../errors/display.error";
-import { UserService } from "../../../../services/user.service";
-import { EquipmentService } from "../../../../services/equipment.service";
-import { EquipmentModel } from "../../../../model/equipment.model";
-import { CoordinationArrangementService } from "../../../../services/coordination-arrangement.service";
-import { CoordinationArrangementModel } from "../../../../model/coordination-arrangement.model";
-import { ModelStaff } from "../../../../model/staff.model";
-import { AgencyService } from "../../../../services/agency-service.service";
-import { ModelAgency } from "../../../../model/agency.model";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../../utils/Constants";
+import {AlertMessageType, ResponsePlanSectors} from "../../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../../model/alert-message.model";
+import {DisplayError} from "../../../../errors/display.error";
+import {UserService} from "../../../../services/user.service";
+import {CoordinationArrangementService} from "../../../../services/coordination-arrangement.service";
+import {CoordinationArrangementModel} from "../../../../model/coordination-arrangement.model";
+import {ModelStaff} from "../../../../model/staff.model";
+import {AgencyService} from "../../../../services/agency-service.service";
+import {ModelAgency} from "../../../../model/agency.model";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -48,9 +44,9 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
               private _agencyService: AgencyService,
               private router: Router,
               private route: ActivatedRoute) {
-                this.coordinationArrangement = new CoordinationArrangementModel();
-                this.staffList = [];
-                this.staffNamesList = [];
+    this.coordinationArrangement = new CoordinationArrangementModel();
+    this.staffList = [];
+    this.staffNamesList = [];
   }
 
   ngOnDestroy() {
@@ -59,38 +55,42 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.countryId = countryId;
+      this.agencyId = agencyId;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
-        this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+      // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+      //   this.countryId = countryAdminUser.countryId;
+      //   this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
 
-        this._agencyService.getAgency(this.agencyId)
-              .map(agency => {
-                return agency as ModelAgency;
-              })
-              .subscribe(agency => {
-                this.agency = agency;
+      this._agencyService.getAgency(this.agencyId)
+        .map(agency => {
+          return agency as ModelAgency;
+        })
+        .subscribe(agency => {
+          this.agency = agency;
 
-                this._userService.getStaffList(this.countryId).subscribe(staffList => {
-                this.staffList = staffList;
-                this.staffList.forEach(staff => {
+          this._userService.getStaffList(this.countryId).subscribe(staffList => {
+            this.staffList = staffList;
+            this.staffList.forEach(staff => {
 
-                  this._userService.getUser(staff.id).subscribe(user => {
-                    this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
-                  });
-                });
-              });
-
-              const editSubscription = this.route.params.subscribe((params: Params) => {
-                    if (params['id']) {
-                      this._coordinationArrangementService.getCoordinationArrangement(this.countryId, params['id'])
-                            .subscribe(coordinationArrangement => { this.coordinationArrangement = coordinationArrangement; });
-                    }
+              this._userService.getUser(staff.id).subscribe(user => {
+                this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
               });
             });
-      });
+          });
+
+          this.route.params.subscribe((params: Params) => {
+            if (params['id']) {
+              this._coordinationArrangementService.getCoordinationArrangement(this.countryId, params['id'])
+                .subscribe(coordinationArrangement => {
+                  this.coordinationArrangement = coordinationArrangement;
+                });
+            }
+          });
+        });
+      // });
     })
   }
 
@@ -101,19 +101,18 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
   }
 
   submit() {
-      this._coordinationArrangementService.saveCoordinationArrangement(this.countryId, this.coordinationArrangement)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_SAVED', AlertMessageType.Success);
-              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            },
-            err =>
-            {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
+    this._coordinationArrangementService.saveCoordinationArrangement(this.countryId, this.coordinationArrangement)
+      .then(() => {
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
+        err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
   }
 
   goBack() {
@@ -133,7 +132,7 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeModal() {
     jQuery('#delete-action').modal('hide');

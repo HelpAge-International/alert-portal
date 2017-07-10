@@ -1,14 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../../utils/Constants';
-import { AlertMessageType } from '../../../../utils/Enums';
-import { RxHelper } from '../../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-
-import { AlertMessageModel } from '../../../../model/alert-message.model';
-import { DisplayError } from "../../../../errors/display.error";
-import { UserService } from "../../../../services/user.service";
-import { EquipmentService } from "../../../../services/equipment.service";
-import { SurgeEquipmentModel } from "../../../../model/equipment-surge.model";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../../utils/Constants";
+import {AlertMessageType} from "../../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../../model/alert-message.model";
+import {DisplayError} from "../../../../errors/display.error";
+import {UserService} from "../../../../services/user.service";
+import {EquipmentService} from "../../../../services/equipment.service";
+import {SurgeEquipmentModel} from "../../../../model/equipment-surge.model";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -36,7 +34,7 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
               private _equipmentService: EquipmentService,
               private router: Router,
               private route: ActivatedRoute) {
-                this.surgeEquipment = new SurgeEquipmentModel();
+    this.surgeEquipment = new SurgeEquipmentModel();
   }
 
   ngOnDestroy() {
@@ -45,19 +43,23 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.countryId = countryId;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
+      // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+      //   this.countryId = countryAdminUser.countryId;
 
-        const editSubscription = this.route.params.subscribe((params: Params) => {
-              if (params['id']) {
-                this._equipmentService.getSurgeEquipment(this.countryId, params['id'])
-                      .subscribe(equipment => { this.surgeEquipment = equipment; });
-              }
-        });
+      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+        if (params['id']) {
+          this._equipmentService.getSurgeEquipment(this.countryId, params['id'])
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(equipment => {
+              this.surgeEquipment = equipment;
+            });
+        }
       });
+      // });
     })
   }
 
@@ -68,19 +70,18 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
   }
 
   submit() {
-      this._equipmentService.saveSurgeEquipment(this.countryId, this.surgeEquipment)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SURGE_SUCCESS_SAVED', AlertMessageType.Success);
-              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            },
-            err =>
-            {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
+    this._equipmentService.saveSurgeEquipment(this.countryId, this.surgeEquipment)
+      .then(() => {
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SURGE_SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
+        err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
   }
 
   goBack() {
@@ -100,7 +101,7 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SURGE_SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeModal() {
     jQuery('#delete-action').modal('hide');
