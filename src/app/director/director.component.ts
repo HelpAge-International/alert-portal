@@ -7,7 +7,6 @@ import {SuperMapComponents, SDepHolder} from "../utils/MapHelper";
 import {RegionHolder} from "../map/map-countries-list/map-countries-list.component";
 import {Countries, UserType, AlertLevels} from "../utils/Enums";
 import {ActionsService} from "../services/actions.service";
-import * as moment from "moment";
 import {AgencyService} from "../services/agency-service.service";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
@@ -191,7 +190,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private loadData() {
 
-    if (this.userType == UserType.GlobalDirector) {
+    if (this.userType != UserType.RegionalDirector) {
       this.userService.getAllCountryIdsForAgency(this.agencyId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryIds => {
@@ -227,12 +226,12 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private initData() {
 
-    if ((this.userType == UserType.GlobalDirector) || (this.userType == UserType.RegionalDirector)) {
+    // if ((this.userType == UserType.GlobalDirector) || (this.userType == UserType.RegionalDirector)) {
 
       // let startOfToday = moment().startOf("day").valueOf();
       // let endOfToday = moment().endOf("day").valueOf();
 
-      if (this.userType == UserType.GlobalDirector) {
+      if (this.userType != UserType.RegionalDirector) {
         this.countryIds.forEach(countryId => {
 
 
@@ -299,7 +298,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
         }
       }
 
-    }
+    // }
 
     this.getAgencyName();
     this.getAllRegionsAndCountries();
@@ -339,7 +338,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
                 for (let country in region.countries) {
                   this.idsOfCountriesInRegion.push(country);
                 }
-                this.getCountryCodesForCountriesInRegion(true)
+                this.getCountryCodesForCountriesInRegion(true);
                 res(true);
               });
           }

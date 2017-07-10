@@ -141,7 +141,8 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "dashboard/review-response-plan*"
+    "dashboard/review-response-plan*",
+    "new-user-password"
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
     "director*",
@@ -151,7 +152,8 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "dashboard/review-response-plan*"
+    "dashboard/review-response-plan*",
+    "new-user-password"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
     "dashboard*",
@@ -203,7 +205,8 @@ export class PageControlService {
     "risk-monitoring*",
     "preparedness*",
     "response-plans*",
-    "country-admin*"
+    "country-admin*",
+    "new-user-password"
   ]);
   public static CountryAdmin = PageUserType.create(UserType.CountryAdmin, "dashboard", [
     "dashboard*",
@@ -224,7 +227,8 @@ export class PageControlService {
     "risk-monitoring*",
     "preparedness*",
     "response-plans*",
-    "country-admin*"
+    "country-admin*",
+    "new-user-password"
   ]);
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*"
