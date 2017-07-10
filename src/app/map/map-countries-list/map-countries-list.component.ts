@@ -12,6 +12,7 @@ import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
+import {MapService} from "../../services/map.service";
 
 @Component({
   selector: 'app-map-countries-list',

@@ -23,6 +23,7 @@ export class MapService {
   private uid: string;
   private agencyId: string;
   private systemId: string;
+  private initMapEnabled: boolean = false;
 
   private af: AngularFire;
   private ngUnsubscribe: Subject<void>;
@@ -61,16 +62,27 @@ export class MapService {
   }
 
   public initMap(elementId: string, uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void)  {
+    // Download everything we need then set the parallel actions calls going
+    this.clickedCountry = countryClicked;
+    this.initMapEnabled = true;
+    if (this.map == null) {
+      this.initBlankMap(elementId);
+    }
+    this.init(uid, userType, agencyId, systemId, done);
+  }
+
+  public initCountry(uid: string, userType: UserType, agencyId: string, systemId: string, done: (countries: MapCountry[], minGreen: number, minYellow: number) => void) {
+    this.initMapEnabled = false;
+    this.clickedCountry = null;
+    this.init(uid, userType, agencyId, systemId, done);
+  }
+
+  private init(uid: string, userType: UserType, agencyId: string, systemId: string, done: (countries: MapCountry[], minGreen: number, minYellow: number) => void) {
     this.uid = uid;
     this.agencyId = agencyId;
     this.systemId = systemId;
     this.done = done;
-    this.clickedCountry = countryClicked;
 
-    // Download everything we need then set the parallel actions calls going
-    if (this.map == null) {
-      this.initBlankMap(elementId);
-    }
     this.downloadThreshold(() => {
       this.downloadDefaultClockSettings(() => {
         this.downloadDepartments(() => {
@@ -95,25 +107,29 @@ export class MapService {
     this.mapCountries.forEach((value, key) => {
       value.calculateDepartments();
       this.listCountries.push(value);
-      let position = 0;
-      value.hazards.forEach((_, hazardScenario) => {
-        this.geocoder.geocode({"address": Countries[value.location]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-          if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-            let pos = {
-              lng: geoResult[0].geometry.location.lng() + position,
-              lat: geoResult[0].geometry.location.lat()
-            };
-            let marker = new google.maps.Marker({
-              position: pos,
-              icon: HazardImages.init().get(hazardScenario)
-            });
-            marker.setMap(this.map);
-            position += 1.2;
-          }
+      if (this.initMapEnabled) {
+        let position = 0;
+        value.hazards.forEach((_, hazardScenario) => {
+          this.geocoder.geocode({"address": Countries[value.location]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+              let pos = {
+                lng: geoResult[0].geometry.location.lng() + position,
+                lat: geoResult[0].geometry.location.lat()
+              };
+              let marker = new google.maps.Marker({
+                position: pos,
+                icon: HazardImages.init().get(hazardScenario)
+              });
+              marker.setMap(this.map);
+              position += 1.2;
+            }
+          });
         });
-      })
+      }
     });
-    this.doneWithEmbeddedStyles(this.clickedCountry);
+    if (this.initMapEnabled) {
+      this.doneWithEmbeddedStyles(this.clickedCountry);
+    }
     this.done(this.listCountries, this.threshGreen, this.threshYellow);
   }
 
@@ -319,7 +335,7 @@ export class MapService {
     // Populate actions
   }
 
-  public getRegionsForAgency(agencyId: string, folder: string, funct: (key: string, region: ModelRegion) => void) {
+  public getRegionsForAgency(agencyId: string, funct: (key: string, region: ModelRegion) => void) {
     this.af.database.object(Constants.APP_STATUS + "/region/" + agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
@@ -793,7 +809,6 @@ export class MapService {
     });
     layer.setMap(this.map);
     google.maps.event.addListener(layer, 'click', function (e) {
-      console.log(e.row.ISO_2DIGIT.value);
       countryClicked(e.row.ISO_2DIGIT.value);
       // let c: Countries = <Countries>Countries["GB"];
 
