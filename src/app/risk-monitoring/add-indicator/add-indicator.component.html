@@ -38,7 +38,11 @@
     </div>
 
     <!--Indicator -->
-    <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.INDICATOR" | translate}}</b></h6>
+    <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.INDICATOR" | translate}}</b>
+      <tooltip
+        [level1]= "'TOOLTIPS.RISK_MONITORING.TT2.LEVEL1'"
+      ></tooltip>
+    </h6>
     <div class="Spaced-above form-group col-sm-12 row">
       <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Please enter"
              [(ngModel)]="indicatorData.name">
@@ -69,7 +73,12 @@
     <div class="row Spaced" *ngIf="indicatorData.trigger && indicatorData.trigger.length > 0"> <!--start of row-->
       <div class="col Spaced"><!--Trigger Values-->
         <div class="row">
-          <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.TRIGGER_VALUES" | translate}}</b></h6>
+          <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.TRIGGER_VALUES" | translate}}</b>
+            <tooltip
+              [level1]= "'TOOLTIPS.RISK_MONITORING.TT3.LEVEL1'"
+              [level2]= "'TOOLTIPS.RISK_MONITORING.TT3.LEVEL2'"
+            ></tooltip>
+          </h6>
           <a placement="right" tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
              data-content="This is an example for a tooltip/explanation text inside of a dialogue box.">
             <img src="assets/images/icons/question_bubble.svg">

@@ -29,6 +29,7 @@
   box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
   color: #006EA0;
   display: none;
+  z-index: 1;
 }
 .Info__bubble p {
   margin: 10px 0 0 0;
