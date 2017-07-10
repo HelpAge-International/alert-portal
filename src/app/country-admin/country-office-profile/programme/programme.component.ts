@@ -82,15 +82,16 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
           if (this.isViewing) {
             this._getProgramme();
           } else {
-            this._getCountryID().then(() => {
-              this._getProgramme();
-            });
+            this.countryID = countryId;
+            // this._getCountryID().then(() => {
+            this._getProgramme();
+            // });
           }
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {

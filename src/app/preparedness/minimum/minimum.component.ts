@@ -1,25 +1,32 @@
-import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {
-  ActionType, ActionLevel, SizeType, DocumentType, UserType, HazardScenario,
-  FileExtensionsEnding, AlertMessageType, AlertLevels, ActionStatusMin
+  ActionLevel,
+  ActionStatusMin,
+  ActionType,
+  AlertMessageType,
+  DocumentType,
+  FileExtensionsEnding,
+  SizeType,
+  UserType
 } from "../../utils/Enums";
-import {Subject} from 'rxjs';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {LocalStorageService} from 'angular-2-local-storage';
-import * as firebase from 'firebase';
+import {Subject} from "rxjs";
+import {LocalStorageService} from "angular-2-local-storage";
+import * as firebase from "firebase";
 import {UserService} from "../../services/user.service";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
-  PrepActionService, PreparednessAction, PreparednessNotes,
+  PrepActionService,
+  PreparednessAction,
+  PreparednessNotes,
   PreparednessUser
 } from "../../services/prepactions.service";
-import { MessageModel } from "../../model/message.model";
-import { TranslateService } from "@ngx-translate/core";
+import {MessageModel} from "../../model/message.model";
+import {TranslateService} from "@ngx-translate/core";
 import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 
@@ -52,7 +59,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   // --- Declared because we're missing out "inactive" in this page
   private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED"];
   private DEPARTMENTS: ModelDepartment[] = [];
-  private DEPARTMENT_MAP: Map<string, string>  = new Map<string, string>();
+  private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
@@ -97,14 +104,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected prepActionService: PrepActionService = new PrepActionService();
 
   constructor(protected pageControl: PageControlService,
-                @Inject(FirebaseApp) firebaseApp: any,
-                protected af: AngularFire,
-                protected router: Router,
-                protected route: ActivatedRoute,
-                protected storage: LocalStorageService,
-                protected userService: UserService,
-                protected notificationService: NotificationService,
-                protected translate: TranslateService) {
+              @Inject(FirebaseApp) firebaseApp: any,
+              protected af: AngularFire,
+              protected router: Router,
+              protected route: ActivatedRoute,
+              protected storage: LocalStorageService,
+              protected userService: UserService,
+              protected notificationService: NotificationService,
+              protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
     this.route.params.subscribe((params: Params) => {
@@ -137,12 +144,20 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.systemAdminId = params["systemId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          console.log("here******")
           this.uid = user.uid;
           this.assignActionAsignee = this.uid;
           this.userType = userType;
           this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+          if (this.systemAdminId == null) {
+            this.systemAdminId = systemId;
+          }
+          if (!this.isViewing) {
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+          }
           this.getStaffDetails(this.uid, true);
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
@@ -150,23 +165,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           });
 
           //overview
-          if (this.agencyId && this.countryId && this.systemAdminId) {
-            this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-              this.countryId, this.agencyId, this.systemAdminId);
-            this.initStaff();
-            this.initDepartments();
-            this.initDocumentTypes();
-          } else {
-            this.prepActionService.initActions(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-              (countryId, agencyId, systemAdmin) => {
-                this.countryId = countryId;
-                this.agencyId = agencyId;
-                this.systemAdminId = systemAdmin;
-                this.initStaff();
-                this.initDepartments();
-                this.initDocumentTypes();
-              });
-          }
+          this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
+            this.countryId, this.agencyId, this.systemAdminId);
+          this.initStaff();
+          this.initDepartments();
+          this.initDocumentTypes();
 
           // Initialise the page control information
           PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
@@ -230,6 +233,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   private initStaff() {
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
@@ -286,9 +290,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         // Send notification to the assignee
         let notification = new MessageModel();
         notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: this.assignActionTask});
+        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: this.assignActionTask});
         notification.time = new Date().getTime();
-        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => { });
+        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+        });
       });
     this.closeModal();
   }
@@ -450,7 +455,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
+            isComplete: true,
+            isCompleteAt: new Date().getTime()
+          });
           this.addNote(action);
         }
         else {
@@ -464,7 +472,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
+          isComplete: true,
+          isCompleteAt: new Date().getTime()
+        });
         this.addNote(action);
         this.closePopover(action);
       }

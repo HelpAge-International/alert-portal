@@ -36,6 +36,7 @@ export class PrepActionService {
   public initActions(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
           ids: (countryId: string, agencyId: string, systemId: string) => void) {
     this.isMPA = isMPA;
+    this.actions = [];
     this.ngUnsubscribe = ngUnsubscribe;
     af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)

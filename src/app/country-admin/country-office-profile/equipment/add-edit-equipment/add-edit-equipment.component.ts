@@ -1,14 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Constants } from '../../../../utils/Constants';
-import { AlertMessageType } from '../../../../utils/Enums';
-import { RxHelper } from '../../../../utils/RxHelper';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-
-import { AlertMessageModel } from '../../../../model/alert-message.model';
-import { DisplayError } from "../../../../errors/display.error";
-import { UserService } from "../../../../services/user.service";
-import { EquipmentService } from "../../../../services/equipment.service";
-import { EquipmentModel } from "../../../../model/equipment.model";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../../utils/Constants";
+import {AlertMessageType} from "../../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../../model/alert-message.model";
+import {DisplayError} from "../../../../errors/display.error";
+import {UserService} from "../../../../services/user.service";
+import {EquipmentService} from "../../../../services/equipment.service";
+import {EquipmentModel} from "../../../../model/equipment.model";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -36,7 +34,7 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
               private _equipmentService: EquipmentService,
               private router: Router,
               private route: ActivatedRoute) {
-                this.equipment = new EquipmentModel();
+    this.equipment = new EquipmentModel();
   }
 
   ngOnDestroy() {
@@ -45,19 +43,24 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
 
-      this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-        this.countryId = countryAdminUser.countryId;
+      this.countryId = countryId;
 
-        const editSubscription = this.route.params.subscribe((params: Params) => {
-              if (params['id']) {
-                this._equipmentService.getEquipment(this.countryId, params['id'])
-                      .subscribe(equipment => { this.equipment = equipment; });
-              }
-        });
+      // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+      //   this.countryId = countryAdminUser.countryId;
+
+      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+        if (params['id']) {
+          this._equipmentService.getEquipment(this.countryId, params['id'])
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(equipment => {
+              this.equipment = equipment;
+            });
+        }
       });
+      // });
     })
   }
 
@@ -68,19 +71,18 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   }
 
   submit() {
-      this._equipmentService.saveEquipment(this.countryId, this.equipment)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_SAVED', AlertMessageType.Success);
-              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            },
-            err =>
-            {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
+    this._equipmentService.saveEquipment(this.countryId, this.equipment)
+      .then(() => {
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
+        err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
   }
 
   goBack() {
@@ -100,7 +102,7 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
- }
+  }
 
   closeModal() {
     jQuery('#delete-action').modal('hide');

@@ -409,7 +409,15 @@ export class PageControlService {
    * Method to return all the information you may need from firebase regarding admin
    * If it's an agencyAdmin, countryId is a list of countryAdmins!
    */
+  public authUserObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    this.authoriseUser(ngUnsubscribe, route, router, null, func);
+  }
   public authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    this.authoriseUser(ngUnsubscribe, route, router, func, null);
+  }
+  private authoriseUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
+                        userCallback: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,
+                        authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
     this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
       if (auth) {
         this.checkAuth(ngUnsubscribe, auth.auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
@@ -467,7 +475,7 @@ export class PageControlService {
                 }
               }
             }
-            this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, func);
+            this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, userCallback, authStateCallback);
           }
         });
       }
@@ -499,7 +507,8 @@ export class PageControlService {
 
   // Given we are authenticated and valid, check permissions to see if we need to be kicked out
   private checkPageControl(authState: FirebaseAuthState, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, userType: UserType, countryId: any, agencyId: string, systemId: string,
-                           func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+                           userCallback: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,
+                           authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,) {
     let type: PageUserType = PageControlService.initPageControlMap().get(userType);
     if (PageControlService.checkUrl(route, userType, type)) {
       PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
@@ -518,7 +527,12 @@ export class PageControlService {
           }
         }
         if (!skip) {
-          func(authState.auth, userType, countryId, agencyId, systemId);
+          if (userCallback != null && authStateCallback == null) {
+            userCallback(authState.auth, userType, countryId, agencyId, systemId);
+          }
+          else if (userCallback == null && authStateCallback != null) {
+            authStateCallback(authState, userType, countryId, agencyId, systemId);
+          }
         }
       });
     }
@@ -559,7 +573,7 @@ export class PageControlService {
   }
 
   // Build the complete URL path from the ActivatedRoute param
-  private static buildEndUrl(route: ActivatedRoute) {
+  public static buildEndUrl(route: ActivatedRoute) {
     let parts: string = "";
     route.url.forEach((segments: UrlSegment[]) => {
       segments.forEach((value) => {
@@ -800,8 +814,8 @@ export class ModelUserTypeReturn {
   public static list(): ModelUserTypeReturn[] {
     let x: ModelUserTypeReturn[] = [];
     x.push(new ModelUserTypeReturn(UserType.GlobalDirector, "globalDirector"));
-    x.push(new ModelUserTypeReturn(UserType.RegionalDirector, "directorRegion"));
-    x.push(new ModelUserTypeReturn(UserType.CountryDirector, "directorCountry"));
+    x.push(new ModelUserTypeReturn(UserType.RegionalDirector, "regionDirector"));
+    x.push(new ModelUserTypeReturn(UserType.CountryDirector, "countryDirector"));
     x.push(new ModelUserTypeReturn(UserType.ErtLeader, "ertLeader"));
     x.push(new ModelUserTypeReturn(UserType.Ert, "ert"));
     x.push(new ModelUserTypeReturn(UserType.Donor, "donor"));

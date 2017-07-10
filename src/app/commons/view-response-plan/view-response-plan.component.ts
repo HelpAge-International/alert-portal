@@ -104,11 +104,24 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           this.isViewing = params["isViewing"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userPath = Constants.USER_PATHS[userType];
-          this.loadData(userType);
+          if (userType == UserType.PartnerUser) {
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+            this.systemAdminUid = systemId;
+            this.handleLoadResponsePlan();
+          } else {
+            this.loadData(userType);
+          }
         });
+
+        // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        //   this.uid = user.uid;
+        //   this.userPath = Constants.USER_PATHS[userType];
+        //   this.loadData(userType);
+        // });
 
       });
   }

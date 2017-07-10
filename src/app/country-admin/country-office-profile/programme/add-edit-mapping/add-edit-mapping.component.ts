@@ -65,24 +65,25 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
 
+  ngOnInit() {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.countryID = countryId;
+      this.initData();
+    });
+  }
+
   initData() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        this._getCountryID().then(() => {
-          if (params && params['programmeId']) {
-            this.programmeId = params['programmeId'];
-            this._getProgramme(params['programmeId']);
-          }
-        });
+        // this._getCountryID().then(() => {
+        if (params && params['programmeId']) {
+          this.programmeId = params['programmeId'];
+          this._getProgramme(params['programmeId']);
+        }
+        // });
       });
-  }
-
-  ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.initData();
-    });
   }
 
 

@@ -1,9 +1,8 @@
-import {Component, OnInit, Input} from '@angular/core';
-import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
+import {Component, Input, OnInit} from "@angular/core";
+import {DomSanitizer} from "@angular/platform-browser";
 import {Constants} from "../../utils/Constants";
-import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
-import {Countries, DocumentType, SizeType} from "../../utils/Enums";
-import {AgencySubmenuComponent} from '../agency-submenu/agency-submenu.component';
+import {AngularFire} from "angularfire2";
+import {AgencySubmenuComponent} from "../agency-submenu/agency-submenu.component";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 

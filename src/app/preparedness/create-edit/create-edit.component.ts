@@ -2,16 +2,11 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {
-  ActionLevel, ActionType, AlertMessageType, DurationType, HazardCategory,
-  HazardScenario, UserType
-} from "../../utils/Enums";
-import {Action} from "../../model/action";
-import {ModelUserPublic} from "../../model/user-public.model";
-import {LocalStorageService} from 'angular-2-local-storage';
-import {AlertMessageModel} from '../../model/alert-message.model';
+import {ActionLevel, ActionType, AlertMessageType, DurationType, HazardScenario, UserType} from "../../utils/Enums";
+import {LocalStorageService} from "angular-2-local-storage";
+import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
-import {Observable, Subject} from "rxjs";
+import {Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import {Location} from "@angular/common";
 import {PrepActionService, PreparednessUser} from "../../services/prepactions.service";
@@ -19,8 +14,8 @@ import {ModelDepartment} from "../../model/department.model";
 import {UserService} from "../../services/user.service";
 import {ModelHazard} from "../../model/hazard.model";
 import {NotificationService} from "../../services/notification.service";
-import { TranslateService } from "@ngx-translate/core";
-import { MessageModel } from "../../model/message.model";
+import {TranslateService} from "@ngx-translate/core";
+import {MessageModel} from "../../model/message.model";
 declare var jQuery: any;
 
 @Component({
@@ -66,7 +61,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private hazards: ModelHazard[] = [];
   private hazardCategoryIconClass = Constants.HAZARD_CATEGORY_ICON_CLASS;
 
-  private frequencyQuantities = [1,2,3,4,5,6,7,8,9,10];
+  private frequencyQuantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   private durationType = Constants.DURATION_TYPE;
   private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
 
@@ -119,9 +114,11 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.action.id = params['id'];
         this.editDisableLoading = true;
       }
-      this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
         this.userType = userType;
+        this.countryId = countryId;
+        this.agencyId = agencyId;
         this.getStaffDetails(this.uid, true);
 
         PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, user.uid, Constants.USER_PATHS[userType], (isEnabled) => {
@@ -135,19 +132,24 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           }
         });
 
-        this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((countryId) => {
-            this.countryId = countryId;
-            this.getHazards();
-            this.initStaff();
-          });
-        this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((agencyId) => {
-            this.agencyId = agencyId;
-            this.getDepartments();
-          });
+        this.getHazards();
+        this.initStaff();
+        this.getDepartments();
+
+
+        // this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe((countryId) => {
+        //     this.countryId = countryId;
+        //     this.getHazards();
+        //     this.initStaff();
+        //   });
+        // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe((agencyId) => {
+        //     this.agencyId = agencyId;
+        //     this.getDepartments();
+        //   });
       });
     });
   }
@@ -198,8 +200,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.computedClockSetting = action.computedClockSetting;
       this.editDisableLoading = false;
 
-      if(!this.oldAction)
-      {
+      if (!this.oldAction) {
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
 
@@ -275,6 +276,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   private initStaff() {
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -307,6 +309,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         });
     }
   }
+
   /**
    * Update method for the user. This will check if it already exists, so as to not cause duplicates in the list
    */
@@ -385,15 +388,16 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (this.action.id != null) {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
-          
-          if(updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+
+          if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
             const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", { actionName: updateObj.task});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: updateObj.task});
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+            });
           }
 
           if (this.action.level == ActionLevel.MPA) {
@@ -408,16 +412,17 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         // Saving
         updateObj.createdAt = new Date().getTime();
         this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
-          
-          if(updateObj.asignee) {
+
+          if (updateObj.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: updateObj.task});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task});
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+            });
           }
-          
+
           if (this.action.level == ActionLevel.MPA) {
             this.router.navigateByUrl("/preparedness/minimum");
           }
@@ -432,6 +437,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   public getNow() {
     return this.now.getTime();
   }
+
   public getNowDate() {
     return this.now;
   }
@@ -442,18 +448,23 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected removeFilterLockTask() {
     this.filterLockTask = false;
   }
+
   protected removeFilterLockLevel() {
     this.filterLockLevel = false;
   }
+
   protected removeFilterLockDepartment() {
     this.filterLockDepartment = false;
   }
+
   protected removeFilterLockDueDate() {
     this.filterLockDueDate = false;
   }
+
   protected removeFilterLockBudget() {
     this.filterLockBudget = false;
   }
+
   protected removeFilterLockDoc() {
     this.filterLockDocument = false;
   }
@@ -490,6 +501,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected showActionConfirm(modal: string) {
     jQuery("#" + modal).modal('show');
   }
+
   protected closeActionCancel(modal: string) {
     jQuery("#" + modal).modal('hide');
   }
