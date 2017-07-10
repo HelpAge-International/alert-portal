@@ -494,7 +494,7 @@
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
                                     && !((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
-                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions))
+                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions.Assign))
                                     && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                              aria-expanded="false" aria-controls="popover_content"
