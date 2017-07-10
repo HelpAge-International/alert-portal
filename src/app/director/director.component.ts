@@ -101,6 +101,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.userType = userType;
       console.log("Auth found!");
+      console.log("uid -- " + this.uid);
       this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyId => {
@@ -133,7 +134,12 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   countryOverview(countryId) {
     //TODO disabled for uat
-    this.router.navigate(["/director/director-overview", {"countryId": countryId, "isViewing": true, "agencyId":this.agencyId, "systemId":this.systemAdminId}]);
+    this.router.navigate(["/director/director-overview", {
+      "countryId": countryId,
+      "isViewing": true,
+      "agencyId": this.agencyId,
+      "systemId": this.systemAdminId
+    }]);
   }
 
   getCountryCodeFromLocation(location: number) {
@@ -185,20 +191,26 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private loadData() {
 
-    console.log("Agency Admin ---- " + this.agencyId);
-    console.log("System Admin ---- " + this.systemAdminId);
-    this.userService.getAllCountryIdsForAgency(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(countryIds => {
-        this.countryIds = countryIds;
+    if (this.userType == UserType.GlobalDirector) {
+      this.userService.getAllCountryIdsForAgency(this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryIds => {
+          this.countryIds = countryIds;
 
-        this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(countryAlertLevels => {
-            this.overallAlertLevels = countryAlertLevels;
-            this.initData();
-          });
-      });
+          this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryAlertLevels => {
+              this.overallAlertLevels = countryAlertLevels;
+              this.initData();
+            });
+        });
+    } else if (this.userType == UserType.RegionalDirector) {
+      this.getCountryIdsForRegion().then(() => {
+        this.initData();
+      }, error => {
+        console.log(error.message);
+      })
+    }
 
   }
 
@@ -214,57 +226,80 @@ export class DirectorComponent implements OnInit, OnDestroy {
   // }
 
   private initData() {
-    let startOfToday = moment().startOf("day").valueOf();
-    let endOfToday = moment().endOf("day").valueOf();
 
-    this.countryIds.forEach(countryId => {
+    if ((this.userType == UserType.GlobalDirector) || (this.userType == UserType.RegionalDirector)) {
 
-      //for each country do following
-      this.actionService.getActionsDueInWeek(countryId, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(actions => {
-          this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday).concat(this.actionsToday);
-          this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday).concat(this.actionsThisWeek);
-        });
+      // let startOfToday = moment().startOf("day").valueOf();
+      // let endOfToday = moment().endOf("day").valueOf();
 
-      this.actionService.getIndicatorsDueInWeek(countryId, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(indicators => {
-          let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
-          let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
-          if (dayIndicators.length > 0) {
-            dayIndicators.forEach(indicator => {
-              if (this.actionService.isExist(indicator.$key, this.indicatorsToday)) {
-                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsToday);
-                if (index != -1) {
-                  this.indicatorsToday[index] = indicator;
-                }
-              } else {
-                this.indicatorsToday.push(indicator);
-              }
+      if (this.userType == UserType.GlobalDirector) {
+        this.countryIds.forEach(countryId => {
+
+
+          this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryId, this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(plans => {
+              this.approvalPlans = this.approvalPlans.concat(plans);
             });
-          }
-          if (weekIndicators.length > 0) {
-            weekIndicators.forEach(indicator => {
-              if (this.actionService.isExist(indicator.$key, this.indicatorsThisWeek)) {
-                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsThisWeek);
-                if (index != -1) {
-                  this.indicatorsThisWeek[index] = indicator;
-                }
-              } else {
-                this.indicatorsThisWeek.push(indicator);
-              }
-            });
-          }
-        });
 
-      this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryId, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(plans => {
-          this.approvalPlans = this.approvalPlans.concat(plans);
-        });
 
-    });
+          //for each country do following
+          // this.actionService.getActionsDueInWeek(countryId, this.uid)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(actions => {
+          //     this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday).concat(this.actionsToday);
+          //     this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday).concat(this.actionsThisWeek);
+          //   });
+
+          // this.actionService.getIndicatorsDueInWeek(countryId, this.uid)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(indicators => {
+          //     let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
+          //     let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
+          //     if (dayIndicators.length > 0) {
+          //       dayIndicators.forEach(indicator => {
+          //         if (this.actionService.isExist(indicator.$key, this.indicatorsToday)) {
+          //           let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsToday);
+          //           if (index != -1) {
+          //             this.indicatorsToday[index] = indicator;
+          //           }
+          //         } else {
+          //           this.indicatorsToday.push(indicator);
+          //         }
+          //       });
+          //     }
+          //     if (weekIndicators.length > 0) {
+          //       weekIndicators.forEach(indicator => {
+          //         if (this.actionService.isExist(indicator.$key, this.indicatorsThisWeek)) {
+          //           let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsThisWeek);
+          //           if (index != -1) {
+          //             this.indicatorsThisWeek[index] = indicator;
+          //           }
+          //         } else {
+          //           this.indicatorsThisWeek.push(indicator);
+          //         }
+          //       });
+          //     }
+          //   });
+
+        });
+      } else {
+
+        if (this.idsOfCountriesInRegion.length > 0) {
+          this.idsOfCountriesInRegion.forEach(countryId => {
+
+            this.actionService.getResponsePlanFoRegionalDirectorToApproval(countryId, this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(plans => {
+                this.approvalPlans = this.approvalPlans.concat(plans);
+              });
+          });
+        } else {
+          console.log("No values in list");
+        }
+      }
+
+    }
 
     this.getAgencyName();
     this.getAllRegionsAndCountries();
@@ -289,24 +324,29 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   private getCountryIdsForRegion() {
 
-    this.userService.getRegionId(this.userPaths[this.userType], this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(regionId => {
-        this.regionId = regionId;
+    let promise = new Promise((res, rej) => {
+      this.userService.getRegionId(this.userPaths[this.userType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(regionId => {
+          this.regionId = regionId;
 
-        if (this.agencyId && this.regionId) {
-          this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((region) => {
+          if (this.agencyId && this.regionId) {
+            this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((region) => {
 
-              this.regionName = region.name ? region.name : "Region";
-              for (let country in region.countries) {
-                this.idsOfCountriesInRegion.push(country);
-              }
-              this.getCountryCodesForCountriesInRegion(true)
-            });
-        }
-      });
+                this.regionName = region.name ? region.name : "Region";
+                for (let country in region.countries) {
+                  this.idsOfCountriesInRegion.push(country);
+                }
+                this.getCountryCodesForCountriesInRegion(true)
+                res(true);
+              });
+          }
+        });
+    });
+    return promise;
+
 
   }
 

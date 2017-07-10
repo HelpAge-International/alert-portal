@@ -853,7 +853,6 @@ export class Constants {
     '#9012FE'
   ];
 
-  // TODO - Check when new users are added to the database, Make sure the path is correct
   static USER_PATHS = [
     ,
     'globalDirector',

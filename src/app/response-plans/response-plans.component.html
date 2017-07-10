@@ -78,14 +78,16 @@
                       class="fa fa-check-circle" aria-hidden="true"></i></div>
                   </div>
                 </div>
+
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
+
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
                     <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                       translate}}
                     </div>
                     <div class="col-6 text-left" *ngIf="idx==1">
-                      {{isGlobalDirectorMap.get(plan.$key)?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                      {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key) ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                       translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                       translate)}}
                     </div>
@@ -97,8 +99,10 @@
                       {{getApproveStatus(approve) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
                       ('RESPONSE_PLANS.HOME.WAITING_APPROVAL'
                       | translate)}}
-                      <i class="fa fa-check-circle" aria-hidden="true"></i></div>
+                      <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    </div>
                   </div>
+
                 </div>
               </div>
 
