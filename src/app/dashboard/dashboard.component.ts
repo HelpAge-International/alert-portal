@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
-  private affectedAreasToShow : any [];
+  private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
   // TODO - New Subscriptions - Remove RxHelper and add Subject
@@ -97,7 +97,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.DashboardTypeUsed = DashboardType.default;
       }
       if (this.userType == UserType.PartnerUser) {
-        this.loadDataForPartnerUser();
+        this.loadDataForPartnerUser(null, null);
       } else {
         this.loadData();
       }
@@ -145,22 +145,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadDataForPartnerUser() {
-    this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(agencyCountries => {
-        this.agencyId = agencyCountries[0].$key;
-        this.countryId = agencyCountries[0].$value;
+  private loadDataForPartnerUser(agencyId, countryId) {
+    if (agencyId != null && countryId != null) {
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      this.prepareData();
+    } else {
+      this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountries => {
+          this.agencyId = agencyCountries[0].$key;
+          this.countryId = agencyCountries[0].$value;
+          this.prepareData();
+        });
+    }
+  }
 
-        if (this.DashboardTypeUsed == DashboardType.default) {
-          this.getAllSeasonsForCountryId(this.countryId);
-        }
-        this.getAlerts();
-        this.getCountryContextIndicators();
-        this.getHazards();
-        this.initData();
-        this.getCountryData();
-      });
+  private prepareData() {
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.getAllSeasonsForCountryId(this.countryId);
+    }
+    this.getAlerts();
+    this.getCountryContextIndicators();
+    this.getHazards();
+    this.initData();
+    this.getCountryData();
   }
 
   public getAllSeasonsForCountryId(countryId: string) {
@@ -306,7 +315,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  showAffectedAreasForAlert(affectedAreas){
+  showAffectedAreasForAlert(affectedAreas) {
     this.affectedAreasToShow = affectedAreas;
     jQuery("#view-areas").modal("show");
   }
@@ -406,6 +415,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       countryId: this.countryId,
       agencyId: this.agencyId
     }]);
+  }
+
+  requestAgencyPartner(agency) {
+    console.log("called from dashboard");
+    console.log(agency);
+    this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
   private navigateToLogin() {
