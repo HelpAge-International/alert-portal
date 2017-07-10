@@ -75,6 +75,12 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
                 (this.userType == UserType.GlobalUser) ||
                 (this.userType == UserType.CountryUser)) {
                 this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+              } else if (
+                (this.userType == UserType.CountryDirector) ||
+                (this.userType == UserType.ErtLeader) ||
+                (this.userType == UserType.Ert) ||
+                (this.userType == UserType.PartnerUser)) {
+                this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
               }
 
             });

@@ -163,7 +163,8 @@ export class PageControlService {
     "export-start-fund*",
     "preparedness*",
     "response-plans*",
-    "country-admin*"
+    "country-admin*",
+    "new-user-password"
   ]);
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",
@@ -173,7 +174,8 @@ export class PageControlService {
     "export-start-fund*",
     "preparedness*",
     "response-plans*",
-    "country-admin*"
+    "country-admin*",
+    "new-user-password"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
@@ -183,7 +185,8 @@ export class PageControlService {
     "export-start-fund*",
     "preparedness*",
     "response-plans*",
-    "country-admin*"
+    "country-admin*",
+    "new-user-password"
   ]);
   public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
     "dashboard*",
@@ -193,7 +196,8 @@ export class PageControlService {
     "export-start-fund*",
     "preparedness*",
     "response-plans*",
-    "country-admin*"
+    "country-admin*",
+    "new-user-password"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*"

@@ -174,6 +174,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                     console.log("exist")
                     let partners = {};
                     partners["/partnerUser/" + snapshot.key + "/agencies/" + this.agencyId] = this.countryId;
+                    partners["/partnerUser/" + snapshot.key + "/firstLogin"] = true;
                     partners["/countryOffice/" + this.agencyId + "/" + this.countryId + "/partners/" + snapshot.key] = true;
                     this.af.database.object(Constants.APP_STATUS).update(partners).then(() => {
                       this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);

@@ -176,7 +176,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginCheckingFirstLoginValue(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
-    this.loginChecking(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME);
+    this.loginChecking(successUid, "partnerUser", 'new-user-password');
     this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
     this.loginCheckingDeactivated(successUid, "administratorCountry",
       Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
@@ -184,17 +184,17 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
     this.loginCheckingDeactivated(successUid, "countryDirector",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
     this.loginCheckingDeactivated(successUid, "ertLeader",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
     this.loginCheckingDeactivated(successUid, "ert",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
