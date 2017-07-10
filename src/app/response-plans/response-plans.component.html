@@ -37,9 +37,9 @@
           </div>
 
           <div *ngIf="plan?.status==1" class="col-md-3 col-sm-2 Plans-list__item--status">
-            <a href="javascript:void(0)" class=" text-muted" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
+            <a href="#" class=" text-muted" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
                aria-expanded="false"
-               aria-controls="popover_content" (click)="getApprovalsExceptPartner(plan)">
+               aria-controls="popover_content">
                  <span class="fa-stack">
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i class="fa fa-ellipsis-h fa-stack-1x fa-inverse"></i>
@@ -82,7 +82,7 @@
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
 
-                  <div *ngFor="let approve of approvalsList; let idx = index" class="row no-gutters Small-spaced">
+                  <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
                     <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                       translate}}
                     </div>
@@ -94,14 +94,13 @@
                     <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                       translate}}
                     </div>
-
-                    <div class="col-md-6 text-right" [class.text-success]="approvalsToShowExceptPartner[approve]"
-                         [class.text-muted]="!approvalsToShowExceptPartner[approve]">
-                      {{getApproveStatus(approvalsToShowExceptPartner[approve]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
-                      ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                    <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
+                         [class.text-muted]="!getApproveStatus(approve)">
+                      {{getApproveStatus(approve) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
+                      ('RESPONSE_PLANS.HOME.WAITING_APPROVAL'
+                      | translate)}}
                       <i class="fa fa-check-circle" aria-hidden="true"></i>
                     </div>
-
                   </div>
 
                 </div>
