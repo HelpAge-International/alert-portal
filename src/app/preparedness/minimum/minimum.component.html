@@ -52,7 +52,11 @@
       <h1>Minimum Preparedness Actions</h1>
       <!-- Tooltip partial -->
       <tooltip [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL1'"
-      [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL2'"></tooltip>
+      [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL2'">
+      </tooltip>
+      <tooltip [level1]="'TOOLTIPS.PREPAREDNESS.TT0.LEVEL1'"
+      [level2]="'TOOLTIPS.PREPAREDNESS.TT0.LEVEL2'">
+      </tooltip>
       </div>
 <!--
       <div class="btn-group">
@@ -374,6 +378,10 @@
                       <div class="row">
                         <div class="col-12">
                           <h4>Confirm this action is completed.</h4>
+                          <!--tooltip-->
+                          <tooltip
+                          [level1]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL1'">
+                          </tooltip>
                         </div>
                       </div>
                       <div class="row">
@@ -391,6 +399,10 @@
                         <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">Upload
                           documents</label>
                         </div>
+                        <!--tooltip-->
+                        <tooltip
+                        [level1]="'TOOLTIPS.PREPAREDNESS.TT2.LEVEL1'">
+                        </tooltip>
                         <input type='file' id="docUpload{{action.id}}" name="file"
                                (change)="fileChange($event, action, action.id)"
                                class="Input-form--hidden"/>
@@ -476,6 +488,10 @@
                               <i class="fa fa-stack-1x fa-inverse">{{action.notes.length}}</i>
                             </div>
                             <span>Notes</span>
+                            <!--tooltip-->
+                            <tooltip
+                            [level1]="'TOOLTIPS.PREPAREDNESS.TT3.LEVEL1'">
+                            </tooltip>
                           </a>
                         </div>
                         <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
@@ -596,7 +612,13 @@
                       <div class="col-md-10">
                         <div class="row Spaced align-items-center">
                           <div class="col-sm-6 col-8">
-                            <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
+                            <h4>Documents ({{action.documents.length}})</h4>
+                            <!--tooltip-->
+                            <tooltip
+                            [level1]="'TOOLTIPS.PREPAREDNESS.TT4.LEVEL1'">
+                            </tooltip>
+                            
+                            &nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
                                                                                            class="text-nowrap"
                                                                                            (click)="exportAllDocuments(action)">Download
                             all</a>

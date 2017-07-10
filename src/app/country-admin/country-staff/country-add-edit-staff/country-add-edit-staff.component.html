@@ -44,7 +44,7 @@
           <label for="User-Type">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
           <!--tooltip-->
           <tooltip
-          [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT7.LEVEL1}}">
+          [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT7.LEVEL1'">
           </tooltip>
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType" required (change)="selectedUserType(userType)">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
@@ -98,7 +98,7 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
         <!-- Tooltip partial -->
         <tooltip
-        [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT3.LEVEL1}}">
+        [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT3.LEVEL1'">
         </tooltip>
         <!-- Tooltip partial end -->
       <div class="row">
@@ -113,7 +113,7 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
         <!-- Tooltip partial -->
         <tooltip
-        [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL1}}">
+        [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL1'">
         </tooltip>
         <!-- Tooltip partial end -->
       <div class="row">
@@ -136,7 +136,7 @@
       <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
       <!--tooltip-->
       <tooltip
-      [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT5.LEVEL1}}">
+      [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT5.LEVEL1'">
       </tooltip>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
@@ -149,8 +149,8 @@
       <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}</label></div>
       <!--tooltip-->
       <tooltip
-      [level1]="{{TOOLTIPS.COUNTRY_ADMIN.TT6.LEVEL1}}"
-      [level2]="{{TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL2}}">
+      [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT6.LEVEL1'"
+      [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL2'">
       </tooltip>
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">

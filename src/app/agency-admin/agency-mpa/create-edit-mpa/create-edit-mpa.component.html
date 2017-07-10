@@ -35,11 +35,21 @@
         <div class="Radio--ribbon">
           <input [disabled]="fieldsDisabled" type="radio" name="Prep-level-mpa" id="Min-prep" [checked]="isMpa" (change)="mpaSelected()">
           <label for="Min-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} </label>
+          <!--tooltip-->
+          <tooltip
+          [level1]="'TOOLTIPS.PREPAREDNESS.TT6.LEVEL1'"
+          [level2]="'TOOLTIPS.PREPAREDNESS.TT6.LEVEL2'">
+          </tooltip>
         </div>
 
         <div class="Radio--ribbon">
           <input [disabled]="fieldsDisabled" type="radio" name="Prep-level-apa" id="Adv-prep" [checked]="!isMpa" (change)="apaSelected()">
           <label for="Adv-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} </label>
+          <!--tooltip-->
+          <tooltip
+          [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'"
+          [level2]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL2'">
+          </tooltip>
         </div>
 
         <div class="row">
