@@ -1,4 +1,4 @@
-<app-country-admin-header></app-country-admin-header>
+<app-country-admin-header (partnerAgencyRequest)="requestAgencyPartner($event)"></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
@@ -401,7 +401,7 @@
       </div>
 
     </div>
-    <!--       v the best typo -->
+
     <!--empty rubber for default dashboard-->
     <div
       *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
@@ -435,8 +435,8 @@
       <br>
       <div *ngIf="DashboardTypeUsed == DashboardType.director">
         <div *ngIf="responsePlansForApproval | async as plans">
-          <div class="row" *ngFor="let plan of plans">
-            <div class="col-sm-9">
+          <div *ngFor="let plan of plans" class="row Spaced">
+            <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
                 {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
               <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
@@ -445,9 +445,11 @@
                 (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
             </div>
             <div class="col-md-3">
-              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
-              </button>
+              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+                <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+              <!--</button>-->
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
             </div>
           </div>
         </div>
@@ -457,7 +459,7 @@
         *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0">
 
         <div *ngFor="let action of actionsToday">
-          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1">
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
@@ -476,7 +478,9 @@
 
         <div *ngFor="let indicator of indicatorsToday">
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
-            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
             <div class="col-md-8">
               <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
                 <span>{{indicator.name}}</span>
@@ -507,9 +511,11 @@
           </div>
         </div>
 
-        <div *ngFor="let indicator of indicatorsThisWeek" class="row">
-          <div *ngIf="shouldShow(indicator.level, indicator.action)">
-            <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+        <div *ngFor="let indicator of indicatorsThisWeek">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
+            </div>
             <div class="col-md-8">
               <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
                 <span>{{indicator?.name}}</span>

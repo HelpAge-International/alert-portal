@@ -108,11 +108,12 @@ export class GuidanceReportComponent implements OnInit, OnDestroy {
           responsePlan.sectorsRelatedTo.forEach(sector => {
             this.sectorsRelatedToMap.set(sector, true);
           });
-
-          this.bindProjectLeadData(responsePlan);
-          this.bindPartnersData(responsePlan);
-          this.bindSourcePlanData(responsePlan);
         }
+
+        this.bindProjectLeadData(responsePlan);
+        this.bindPartnersData(responsePlan);
+        this.bindSourcePlanData(responsePlan);
+
       });
   }
 

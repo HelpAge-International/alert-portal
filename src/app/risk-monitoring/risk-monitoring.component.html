@@ -61,7 +61,7 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a *ngIf="indicatorsCC.length > 0" href="javascript:void(0)" data-toggle="modal"
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard">
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
@@ -293,11 +293,11 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE"
                   | translate}}</a>
-                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#deleteHazardModal"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                 <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
@@ -603,11 +603,11 @@
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                  <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#archiveHazard"
                      (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE"
                     | translate}}</a>
-                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                  <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                   <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
@@ -922,8 +922,6 @@
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="updateHazardActiveStatus('archiveHazard')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-               (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>

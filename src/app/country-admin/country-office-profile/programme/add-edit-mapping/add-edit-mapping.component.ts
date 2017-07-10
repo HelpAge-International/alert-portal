@@ -22,6 +22,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   private uid: string;
   private countryID: string;
+  private userType;
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectorsList: number[] = [
     ResponsePlanSectors.wash,
@@ -59,11 +60,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.programme = new ProgrammeMappingModel();
   }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
+  ngOnInit() {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      this.initData();
+    });
   }
-
 
   initData() {
     this.route.params
@@ -78,13 +81,17 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.initData();
+  _getCountryID() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid + '/countryId')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((countryID: any) => {
+          this.countryID = countryID.$value ? countryID.$value : "";
+          res(true);
+        });
     });
+    return promise;
   }
-
 
   _getProgramme(programmeID: string) {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + programmeID)
@@ -96,20 +103,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this._convertTimestampToDate(programme.when);
       });
   }
-
-
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-          this.countryID = countryID.$value ? countryID.$value : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
 
   setSelectorClass(sectorID: any) {
     var selected = '';
@@ -134,16 +127,20 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       var dataToSave = this.programme;
 
       if (!this.programmeId) {
-        this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
-          .push(dataToSave)
-          .then(() => {
-            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
-            this.programme = new ProgrammeMappingModel();
-            this.when = [];
-            this.router.navigate(['/country-admin/country-office-profile/programme/']);
-          }).catch((error: any) => {
-          console.log(error, 'You do not have access!')
-        });
+        if (this.countryID){
+          this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
+            .push(dataToSave)
+            .then(() => {
+              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
+              this.programme = new ProgrammeMappingModel();
+              this.when = [];
+              this.router.navigate(['/country-admin/country-office-profile/programme/']);
+            }).catch((error: any) => {
+            console.log(error, 'You do not have access!')
+          });
+        } else {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
+        }
       } else {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
@@ -188,6 +185,11 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     var date = new Date(timestamp);
     this.when['month'] = date.getMonth();
     this.when['year'] = date.getFullYear();
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

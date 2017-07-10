@@ -853,7 +853,6 @@ export class Constants {
     '#9012FE'
   ];
 
-  // TODO - Check when new users are added to the database, Make sure the path is correct
   static USER_PATHS = [
     ,
     'globalDirector',
@@ -868,6 +867,7 @@ export class Constants {
     'countryUser',
     'administratorAgency',
     ,
+    'partnerUser'
   ];
 
   // Nodes List, used for saving Notes
@@ -900,6 +900,9 @@ export class Constants {
   ];
 
   static UTC_ONE_DAY = 60 * 60 * 24;
+
+  //firebase error
+  static EMAIL_DUPLICATE_ERROR = "auth/email-already-in-use";
 }
 
 export enum FILE_SETTING {

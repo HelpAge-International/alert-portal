@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
-  private agencyAdminUid: string;
+  private agencyId: string;
   private actionsToday = [];
   private actionsThisWeek = [];
   private indicatorsToday = [];
@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
-  private affectedAreasToShow : any [];
+  private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
   // TODO - New Subscriptions - Remove RxHelper and add Subject
@@ -82,10 +82,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      console.log(user);
+      console.log(userType);
       this.uid = user.uid;
       this.userType = userType;
-      this.NODE_TO_CHECK = this.userPaths[userType];
+      console.log(this.userType)
+      this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+      console.log(this.NODE_TO_CHECK);
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
         this.moduleSettings = isEnabled;
       }));
@@ -94,12 +96,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
-      this.loadData();
+      if (this.userType == UserType.PartnerUser) {
+        this.loadDataForPartnerUser(null, null);
+      } else {
+        this.loadData();
+      }
 
       // Load in the country permissions
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
         this.countryPermissionMatrix = isEnabled;
-        console.log(this.countryPermissionMatrix);
       }));
     });
   }
@@ -138,6 +143,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getAgencyID().then(() => {
       this.getCountryData();
     });
+  }
+
+  private loadDataForPartnerUser(agencyId, countryId) {
+    if (agencyId != null && countryId != null) {
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      this.prepareData();
+    } else {
+      this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountries => {
+          this.agencyId = agencyCountries[0].$key;
+          this.countryId = agencyCountries[0].$value;
+          this.prepareData();
+        });
+    }
+  }
+
+  private prepareData() {
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.getAllSeasonsForCountryId(this.countryId);
+    }
+    this.getAlerts();
+    this.getCountryContextIndicators();
+    this.getHazards();
+    this.initData();
+    this.getCountryData();
   }
 
   public getAllSeasonsForCountryId(countryId: string) {
@@ -194,7 +226,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
-          this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
+          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
           res(true);
         });
     });
@@ -255,7 +287,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
           this.countryLocation = location.$value;
@@ -278,12 +310,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
       this.redAlerts = this.actionService.getRedAlerts(this.countryId)
         .map(alerts => {
-         return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+          return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
     }
   }
 
-  showAffectedAreasForAlert(affectedAreas){
+  showAffectedAreasForAlert(affectedAreas) {
     this.affectedAreasToShow = affectedAreas;
     jQuery("#view-areas").modal("show");
   }
@@ -381,8 +413,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
     this.router.navigate(["/dashboard/facetoface-meeting-request", {
       countryId: this.countryId,
-      agencyId: this.agencyAdminUid
+      agencyId: this.agencyId
     }]);
+  }
+
+  requestAgencyPartner(agency) {
+    console.log("called from dashboard");
+    console.log(agency);
+    this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
   private navigateToLogin() {

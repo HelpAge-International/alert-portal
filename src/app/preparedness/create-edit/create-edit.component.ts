@@ -10,7 +10,7 @@ import {Action} from "../../model/action";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AlertMessageModel} from '../../model/alert-message.model';
-import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
+import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import {Observable, Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import {Location} from "@angular/common";
@@ -39,6 +39,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private userTypes = UserType;
   private agencyId: string;
   private countryId: string;
+  public myFirstName: string;
+  public myLastName: string;
 
   private action: CreateEditPrepActionHolder = new CreateEditPrepActionHolder();
   private editDisableLoading: boolean = false;
@@ -79,6 +81,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private prepActionService: PrepActionService = new PrepActionService();
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   private now: Date = new Date();
 
@@ -119,14 +122,19 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
         this.userType = userType;
+        this.getStaffDetails(this.uid, true);
 
         PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, user.uid, Constants.USER_PATHS[userType], (isEnabled) => {
           this.moduleAccess = isEnabled;
         });
 
-        if (this.action.id != null) {
-          this.initFromExistingActionId();
-        }
+        PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, user.uid, userType, (isEnabled) => {
+          this.permissionsAreEnabled = isEnabled;
+          if (this.action.id != null) {
+            this.initFromExistingActionId(userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customMPA.Edit, userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customAPA.Edit);
+          }
+        });
+
         this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((countryId) => {
@@ -140,9 +148,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             this.agencyId = agencyId;
             this.getDepartments();
           });
-        if (this.userType == UserType.CountryAdmin) {
-          this.getStaffDetails(this.uid);
-        }
       });
     });
   }
@@ -155,8 +160,18 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Initialisation
    */
-  public initFromExistingActionId() {
+  public initFromExistingActionId(canEditMPA: boolean, canEditAPA: boolean) {
     this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+
+      if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/preparedness/minimum");
+        }
+        else {
+          this.router.navigateByUrl("/preparedness/advanced");
+        }
+      }
+
       this.action.id = action.id;
       this.action.type = action.type;
       this.action.level = action.level;
@@ -250,12 +265,22 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Initialising Staff
    */
+
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
   private initStaff() {
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key);
+          this.getStaffDetails(snapshot.key, false);
         });
       });
   }
@@ -263,7 +288,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Get staff member public user data (names, etc.)
    */
-  public getStaffDetails(uid: string) {
+
+  public getStaffDetails(uid: string, isMe: boolean) {
     if (!this.CURRENT_USERS.get(uid)) {
       this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
@@ -274,6 +300,10 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
           this.updateUser(prepUser);
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
         });
     }
   }
@@ -349,13 +379,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
         console.log("Removing complete status!");
         updateObj.isCompleteAt = null;
-        updateObj.isComplete = null;
+        updateObj.calculatedIsComplete = null;
       }
 
       if (this.action.id != null) {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
-          
+
           if(updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
@@ -378,7 +408,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         // Saving
         updateObj.createdAt = new Date().getTime();
         this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
-          
+
           if(updateObj.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
@@ -387,7 +417,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
           }
-          
+
           if (this.action.level == ActionLevel.MPA) {
             this.router.navigateByUrl("/preparedness/minimum");
           }
@@ -534,7 +564,7 @@ export class CreateEditPrepActionHolder {
   public asignee: string = "";
   public department: string;
   public requireDoc: boolean;
-  public type: number;
+  public type: number = -1;
 
   public isComplete;
   public isCompleteAt;

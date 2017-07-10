@@ -18,19 +18,18 @@
         <div class="col-sm-3 col-4">{{"PREPAREDNESS.BUDGET" | translate}} (&pound;)</div>
         <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
       </div>
-      <div class="row Line-row  align-items-center" *ngFor="let department of departments" name="department">
-        <div class="col-sm-4 col-4 text-bold">{{department}}</div>
+      <div class="row Line-row  align-items-center" *ngFor="let dept of departments" name="department">
+        <div class="col-sm-4 col-4 text-bold">{{dept.name}}</div>
         <div class="col-sm-3 col-4">
-          <p>{{minBudget[department].value}}</p>
+          <p>{{minBudget.get(dept.id) ? minBudget.get(dept.id) : '-'}}</p>
         </div>
         <div class=" col-sm-5 col-4">
-          <input type="text" class="form-control" [disabled]="isViewing"
-                 [(ngModel)]="minBudget[department] == undefined || minBudget[department].narrative == undefined ? '' : minBudget[department].narrative">
+          <input type="text" class="form-control" [(ngModel)]="minPrepNarrative[dept.id]" [disabled]="isViewing" >
         </div>
       </div>
       <div class="row Line-row text-bold align-items-center">
         <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-        <div class="col-sm-3 col-6">&pound;{{minimumBudgetTotal}}</div>
+        <div class="col-sm-3 col-6">&pound;{{minTotal}}</div>
       </div>
     </div>
     <div class="Ribbon__section__wrap col-lg-8 Spaced">
@@ -43,29 +42,29 @@
         <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
       </div>
       <div class="row Line-row align-items-center" *ngFor="let department of departments">
-        <div class="col-sm-4 col-4 text-bold">{{department}}</div>
+        <div class="col-sm-4 col-4 text-bold">{{department.name}}</div>
         <div class="col-sm-3 col-4">
-          <p>{{advBudget[department].value}}</p>
+          <p>{{advBudget.get(department.id) ? advBudget.get(department.id) : '-'}}</p>
         </div>
         <div class="col-sm-5 col-4">
           <input type="text" class="form-control" [disabled]="isViewing"
-                 [(ngModel)]="advBudget[department] == undefined || advBudget[department].narrative == undefined ? '' : advBudget[department].narrative">
+                 [(ngModel)]="advPrepNarrative[department.id]">
         </div>
       </div>
       <div class="row Line-row text-bold align-items-center">
         <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-        <div class="col-sm-3 col-6">&pound;{{advancedBudgetTotal}}</div>
+        <div class="col-sm-3 col-6">&pound;{{advTotal}}</div>
       </div>
     </div>
 
     <div class="Ribbon__section__wrap col-lg-8">
       <div class="row Line-row--no-border text-bold align-items-center">
         <div class="col-sm-4 col-6 text-right">{{"GLOBAL.GRAND_TOTAL" | translate}}</div>
-        <div class="col-sm-3 col-6">&pound;{{grandTotal}}</div>
+        <div class="col-sm-3 col-6">&pound;{{minTotal + advTotal}}</div>
       </div>
     </div>
     <div *ngIf="!isViewing" class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="savePreparednessBudget()">{{"GLOBAL.SAVE" | translate}}</div>
+      <div class="btn btn-primary" (click)="saveNarratives()">{{"GLOBAL.SAVE" | translate}}</div>
       <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
       </div>
     </div>

@@ -580,6 +580,27 @@ export class ActionsService {
       });
   }
 
+  getResponsePlanFoRegionalDirectorToApproval(countryId, uid) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
+      query: {
+        orderByChild: "/approval/regionDirector/" + uid,
+        equalTo: ApprovalStatus.WaitingApproval
+      }
+    }))
+      .map(plans => {
+        plans.forEach(plan => {
+          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              plan["displayName"] = user.firstName + " " + user.lastName;
+              plan["countryId"] = countryId;
+            });
+        });
+        return plans;
+      });
+  }
+
 
   unSubscribeNow() {
     this.ngUnsubscribe.next();

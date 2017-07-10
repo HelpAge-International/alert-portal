@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -9,7 +9,7 @@ import {ModelAlert} from "../../model/alert.model";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
-import { MessageModel } from "../../model/message.model";
+import {MessageModel} from "../../model/message.model";
 
 @Component({
   selector: 'app-country-admin-header',
@@ -19,6 +19,10 @@ import { MessageModel } from "../../model/message.model";
 })
 
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
+
+  @Output() partnerAgencyRequest = new EventEmitter();
+
+  private partnerAgencies = [];
 
   private UserType = UserType;
   private userType: UserType;
@@ -30,7 +34,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
-  private agencyAdminId: string;
+  private agencyId: string;
+  private agencyDetail: any;
 
   private firstName: string = "";
   private lastName: string = "";
@@ -77,12 +82,21 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               this.USER_TYPE = Constants.USER_PATHS[userType];
               //after user type check, start to do the job
               if (this.USER_TYPE) {
-                this.getCountryId().then(() => {
-                  this.getAgencyID().then(() => {
-                    this.getCountryData();
-                    this.checkAlerts();
+                if (this.userType == UserType.PartnerUser) {
+                  this.initDataForPartnerUser();
+                } else {
+                  this.getCountryId().then(() => {
+                    this.getAgencyID().then(() => {
+                      this.getCountryData();
+                      this.checkAlerts();
+                      this.userService.getAgencyDetail(this.agencyId)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(agencyDetail => {
+                          this.agencyDetail = agencyDetail;
+                        });
+                    });
                   });
-                });
+                }
               }
             });
         }
@@ -92,13 +106,44 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  private initDataForPartnerUser() {
+    this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountries => {
+
+        this.agencyId = agencyCountries[0].$key;
+        this.countryId = agencyCountries[0].$value;
+
+        this.userService.getAgencyDetail(this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agencyDetail => {
+            this.agencyDetail = agencyDetail;
+          });
+
+        console.log(agencyCountries);
+        this.partnerAgencies = [];
+        agencyCountries.forEach(item => {
+          this.userService.getAgencyDetail(item.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agency => {
+              agency["relatedCountryId"] = item.$value;
+              this.partnerAgencies.push(agency);
+              console.log(this.partnerAgencies);
+            });
+        });
+
+        this.getCountryData();
+        this.checkAlerts();
+      });
+  }
+
   private checkAlerts() {
     this.alertService.getAlerts(this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
         this.isRed = false;
         this.isAmber = false;
-      alerts.forEach(alert => {
+        alerts.forEach(alert => {
           if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
             this.isRed = true;
           }
@@ -126,6 +171,21 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  selectAgencyCountryForPartner(agency) {
+    if (agency.$key != this.agencyId) {
+      this.partnerAgencyRequest.emit(agency);
+      this.agencyId = agency.$key;
+      this.countryId = agency.relatedCountryId;
+      this.userService.getAgencyDetail(agency.$key)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyDetail => {
+          this.agencyDetail = agencyDetail;
+          this.getCountryData();
+          this.checkAlerts();
+        });
+    }
+  }
+
   logout() {
     console.log("logout");
     this.af.auth.logout();
@@ -134,7 +194,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   goToHome() {
     this.router.navigateByUrl("/dashboard");
   }
-  
+
   /**
    * Private functions
    */
@@ -156,7 +216,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
-          this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
+          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
           res(true);
         });
     });
@@ -165,7 +225,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryId + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
           this.countryLocation = location.$value;

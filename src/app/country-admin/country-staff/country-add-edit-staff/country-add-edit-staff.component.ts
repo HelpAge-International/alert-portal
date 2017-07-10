@@ -12,6 +12,7 @@ import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelStaff} from "../../../model/staff.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import * as moment from "moment";
+import {ModelDepartment} from "../../../model/department.model";
 declare var jQuery: any;
 
 @Component({
@@ -44,9 +45,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private officeTypeSelection = Constants.OFFICE_TYPE_SELECTION;
   private notificationsSettingsSelection = Constants.NOTIFICATION_SETTINGS;
 
+  private countryList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
-  private supportSkillList: any;
-  private techSkillsList: any;
   private notificationList: FirebaseListObservable<any[]>;
   private notificationSettings: boolean[] = [];
   private skillsMap = new Map();
@@ -78,6 +78,11 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private hideRegion: boolean;
   private isFirstLogin: boolean;
   private systemId: string;
+  private allSkills: any = {};
+  private skillKeys: string[] = [];
+  private editedSkills: any = [];
+  private SupportSkill = SkillType.Support;
+  private TechSkill = SkillType.Tech;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -130,27 +135,59 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
+    /*Filtering country director option in the user types if there exists a country director for this country already*/
+    this.af.database.list(Constants.APP_STATUS + "/directorCountry").takeUntil(this.ngUnsubscribe).subscribe( directorCountries => {
+      let directorExists = false;
+      directorCountries.forEach(directorCountry => {
+        if (!directorExists && this.countryId == directorCountry.$key){
+          directorExists = true;
+          this.userTypeSelection = this.userTypeSelection.filter(function(el) {
+            return el !== UserType.CountryDirector;
+          });
+          this.userTypeConstant = this.userTypeConstant.filter(function(el) {
+            return el !== "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS";
+          });
+        }
+      });
+    });
+
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + '/' + this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryOffice => {
         this.countryOffice = countryOffice;
       });
 
-    this.departmentList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
+    this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
+    this.departmentList = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
       .map(departments => {
-        let names = [];
+        let names: ModelDepartment[] = [];
         departments.forEach(department => {
-          names.push(department.$key);
+          names.push(ModelDepartment.create(department.key, department.val().name));
         });
         return names;
       });
 
-    this.af.database.list(Constants.APP_STATUS + '/skill')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(skills => {
-        this.techSkillsList = skills.filter(skill => skill.type === SkillType.Tech);
-        this.supportSkillList = skills.filter(skill => skill.type === SkillType.Support);
+    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/skills')
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe(_ => {
+      _.filter(skill => skill.$value).map(skill => {
+        this.af.database.list(Constants.APP_STATUS + '/skill/', {
+          query: {
+            orderByKey: true,
+            equalTo: skill.$key
+          }
+        })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(_skill => {
+            if (_skill[0] != undefined)
+              this.allSkills[_skill[0].$key] = _skill[0];
+            else
+              delete this.allSkills[skill.$key];
+
+            this.skillKeys = Object.keys(this.allSkills);
+          });
       });
+    });
 
     this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
   }
@@ -174,10 +211,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     }
     if (!this.userType) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_USER_TYPE';
-      return false;
-    }
-    if (!this.countryOffice) {
-      this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_COUNTRY_OFFICE';
       return false;
     }
     if (!this.department) {
@@ -311,7 +344,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
     // staff extra info
     let staff = new ModelStaff();
+    console.log("User Type :");
     console.log(this.userType);
+
     staff.userType = Number(this.userType);
 
     staff.department = this.department;
@@ -468,6 +503,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   selectedUserType(userType) {
     // userType-1 to ignore f all option
+
     this.notificationSettings = [];
     this.notificationList
       .takeUntil(this.ngUnsubscribe)

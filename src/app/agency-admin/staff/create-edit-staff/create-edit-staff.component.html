@@ -60,7 +60,7 @@
           <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
                   [required]="!hideCountry">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let country of countryList | async" [ngValue]="country"
+            <option *ngFor="let country of countryList" [ngValue]="country"
                     [selected]="country.location == countryOffice?.location">{{Countries[country.location] | translate}}
             </option>
           </select>
@@ -69,7 +69,7 @@
           <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
+            <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
           </select>
         </div>
         <!--</div>-->
@@ -101,7 +101,7 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-          <input type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+          <input [disabled]="isEdit" type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email"
                  name="email" required>
         </div>

@@ -21,6 +21,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   private agencyId: string;
 
   private departments: ModelDepartment[] = [];
+  private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private departmentSelected: string = "0";
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
@@ -101,11 +102,13 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.departments = [];
+        this.DEPARTMENT_MAP.clear();
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;
           x.name = snapshot.val().name;
           this.departments.push(x);
+          this.DEPARTMENT_MAP.set(x.id, x.name);
         });
       });
   }

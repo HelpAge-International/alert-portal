@@ -112,7 +112,7 @@ For detailed instructions on using routes and route parameters, please refer to 
 │   │   │   ├── map.component.css
 │   │   │   ├── map.component.html
 │   │   │   ├── map.component.spec.ts
-│   │   │   └── map.component.ts
+│   │   │   └── map.service.ts
 │   │   ├── preparedness
 │   │   │   ├── preparedness.component.css
 │   │   │   ├── preparedness.component.html

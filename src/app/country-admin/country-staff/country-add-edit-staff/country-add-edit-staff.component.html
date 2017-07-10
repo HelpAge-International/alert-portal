@@ -58,7 +58,7 @@
           <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
+            <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
           </select>
         </div>
       </div>
@@ -79,22 +79,42 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-          <input type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+          <input [disabled]="isEdit" type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email" name="email" required>
         </div>
       </div>
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
+
+      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label>
+        <!-- Tooltip partial -->
+        <tooltip
+        [level1]="'What skills does this person possess for organisational support?'">
+        </tooltip>
+        <!-- Tooltip partial end -->
+      </div>
       <div class="row">
-        <label *ngFor="let support of supportSkillList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-          <input type="checkbox" #box (change)="supportSkillCheck(support,box.checked)"
-              [checked]="skillsMap.get(support.$key)">{{support.name}}</label>
+        <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+          <label *ngIf="allSkills[skillKey].type == SupportSkill"
+               class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+          <input type="checkbox" #box (change)="supportSkillCheck(allSkills[skillKey],box.checked)"
+                 [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
+        </template>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
+      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label>
+        <!-- Tooltip partial -->
+        <tooltip
+        [level1]="'What skills does this person possess for programmatic work?'">
+        </tooltip>
+        <!-- Tooltip partial end -->
+      </div>
       <div class="row">
         <label *ngFor="let tech of techSkillsList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="techSkillCheck(tech,box.checked)"
               [checked]="skillsMap.get(tech.$key)">{{tech.name}}</label>
+        <!--<template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+          <label *ngIf="allSkills[skillKey].type == TechSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
+          type="checkbox" #box (change)="techSkillCheck(allSkills[skillKey],box.checked)" [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
+        </template>-->
       </div>
 
       <div class="row Spaced">
@@ -105,7 +125,13 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
+      <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label>
+        <!-- Tooltip partial -->
+        <tooltip
+        [level1]="'Apart from agency-level notifications, what other notifications should this person receive?'">
+        </tooltip>
+        <!-- Tooltip partial end -->
+      </div>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
@@ -114,7 +140,13 @@
           translate}}</label>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}</label></div>
+      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}</label>
+        <!-- Tooltip partial -->
+        <tooltip
+        [level1]="'The Emergency Res'">
+        </tooltip>
+        <!-- Tooltip partial end -->
+      </div>
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">
           <input type="radio" name="RT" id="RT_no" [value]="false" [(ngModel)]="isResponseMember">{{"GLOBAL.NO"|
@@ -161,4 +193,3 @@
     </div>
   </div>
 </div>
-

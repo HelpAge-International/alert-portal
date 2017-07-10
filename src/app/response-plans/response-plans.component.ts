@@ -30,6 +30,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   @Input() agencyOverview: boolean;
 
   private isGlobalDirectorMap = new Map<string, boolean>();
+  private isRegionalDirectorMap = new Map<string, boolean>();
 
   private dialogTitle: string;
   private dialogContent: string;
@@ -51,6 +52,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
+
+
+  private approvalsList: any[] = [];
+
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -137,6 +142,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         let approvalKeys = Object.keys(plan.approval).filter(key => key != "partner");
         if (approvalKeys.length == 2 && approvalKeys.includes("globalDirector")) {
           this.isGlobalDirectorMap.set(plan.$key, true);
+        } else if (approvalKeys.length == 2 && approvalKeys.includes("regionDirector")) {
+          this.isRegionalDirectorMap.set(plan.$key, true);
+        } else if (approvalKeys.length == 3) {
+          this.isGlobalDirectorMap.set(plan.$key, true);
+          this.isRegionalDirectorMap.set(plan.$key, true);
         }
       }
     });

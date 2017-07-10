@@ -103,6 +103,7 @@ export class ResponsePlanService {
 
   updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector, responsePlanName, agencyId) {
     let approvalName = this.getUserTypeName(userType);
+    console.log("USER TYPE ---- " + Constants.USER_PATHS[userType]);
     if (approvalName) {
       let updateData = {};
       updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/approval/" + approvalName + "/" + uid] = isApproved ? ApprovalStatus.Approved : ApprovalStatus.NeedsReviewing;
@@ -113,7 +114,7 @@ export class ResponsePlanService {
       }
 
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
-        .takeUntil(this.ngUnsubscribe)
+        .take(1)
         .subscribe(result => {
           if (result) {
             let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
@@ -132,12 +133,12 @@ export class ResponsePlanService {
               {
                 // Send notification to users with Response plan rejected
                 const responsePlanRejectedNotificationSetting = 5;
-                
+
                 let notification = new MessageModel();
                 notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", { responsePlan: responsePlanName});
                 notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", { responsePlan: responsePlanName});
                 notification.time = new Date().getTime();
-                
+
                 this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
               }
 

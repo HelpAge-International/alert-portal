@@ -356,16 +356,17 @@
     <!--1.1 Basic Information-->
     <td colspan="4"><p style="width:7.5em; text-align: center;"></p></td>
     <td colspan="4"><p style="width:7.5em; text-align: center;"></p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;"></p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;"></p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{responsePlan.name}}</p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{memberAgencyName}}</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadName}}</p></td>
-    <td colspan="1"><p style="width:5em; text-align: center;"></p></td>
+    <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadPosition}}</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadEmail}}</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">{{planLeadPhone}}</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;">{{responsePlan.location}}</p></td>
     <td colspan="2"><p style="width:10em; text-align: center;">{{responsePlan.location}}</p></td>
     <td colspan="2"><p style="width:10em; text-align: center;"></p></td>
     <td colspan="2"><p style="width:10em; text-align: center;"></p></td>
+
     <!--1.What sectors will...-->
     <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.wash)">X</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.health)">X</p></td>
@@ -376,16 +377,20 @@
     <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.education)">X</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.campManagement)">X</p></td>
     <td colspan="1"><p style="width:5em; text-align: center;" *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.other)">X</p></td>
+
     <!--2.Presence in country...-->
     <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">X</p></td>
     <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">X</p></td>
     <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">X</p></td>
+
     <!--3.Method of implementation...-->
     <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">X</p></td>
     <td colspan="2"><p style="width:5em; text-align: center;"></p></td>
     <td colspan="2"><p style="width:5em; text-align: center;" *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">X</p></td>
+
     <!--empty title-->
     <td colspan="4"><p style="width:10em; text-align: center;"></p></td>
+
     <!--empty title-->
     <td colspan="14">
       <ol *ngIf="responsePlan.scenarioCrisisList" style="width:10em; text-align: left;">

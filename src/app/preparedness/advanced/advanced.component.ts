@@ -17,7 +17,7 @@ import {
 import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as firebase from "firebase";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -42,21 +42,25 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private uid: string;
   private userType: UserType;
   private UserType = UserType;
+  private userTypes = UserType;
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
   private isViewing: boolean;
+  public myFirstName: string;
+  public myLastName: string;
 
   // Filters
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
-  private filterAssigned: string = this.uid;
+  private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
 
   // Data for the actions
   private ACTION_STATUS = Constants.ACTION_STATUS;
   private DEPARTMENTS: ModelDepartment[] = [];
+  private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
@@ -78,6 +82,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private documentActionId: string = "";
   private fileSize: number; // Always in Bytes
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
+  private actionLevelEnum = ActionLevel;
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -93,6 +98,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   protected prepActionService: PrepActionService = new PrepActionService();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(protected pageControl: PageControlService,
                  @Inject(FirebaseApp) firebaseApp: any,
@@ -139,9 +145,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
           this.userType = userType;
-          this.filterAssigned = this.uid;
+          this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-          this.getStaffDetails(this.uid);
+          this.getStaffDetails(this.uid, true);
+
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+            this.permissionsAreEnabled = isEnabled;
+          });
 
           if (this.agencyId && this.countryId && this.systemAdminId) {
             // Initialise everything here! We already have the above
@@ -164,12 +174,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                 this.initAlerts();
               });
           }
-
-          if (this.userType == UserType.CountryAdmin) {
-            // Country admin not included as a staff member of the country, hence explicit import for me
-            this.getStaffDetails(this.uid);
-          }
-
         });
 
       });
@@ -189,18 +193,22 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
-            let res: boolean = true;
+            let res: boolean = false;
             for (const userTypes in snapshot.val().approval) {
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] == 0) {
-                  res = false;
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
                 }
               }
             }
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
           }
           else {
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
           }
         });
       });
@@ -212,15 +220,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        for (const x in snap.val().departments) {
+        this.DEPARTMENTS = [];
+        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
           let mD: ModelDepartment = new ModelDepartment();
-          mD.id = x;
-          mD.name = snap.val().departments[x].name;
+          mD.id = snapshot.key;
+          mD.name = snapshot.val().name;
           this.DEPARTMENTS.push(mD);
-        }
+          this.DEPARTMENT_MAP.set(mD.id, mD.name);
+        });
       });
   }
 
@@ -244,12 +255,22 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Initialisation method for the staff under the country office
    */
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
   private initStaff() {
+    this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key);
+          this.getStaffDetails(snapshot.key, false);
         });
       });
   }
@@ -257,7 +278,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Get staff member public user data (names, etc.)
    */
-  public getStaffDetails(uid: string) {
+  public getStaffDetails(uid: string, isMe: boolean) {
     if (!this.CURRENT_USERS.get(uid)) {
       this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
@@ -268,6 +289,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
           this.updateUser(prepUser);
+
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
         });
     }
   }
@@ -288,31 +314,21 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
       this.assignActionId = action.id;
-      this.assignActionCategoryUid = this.countryId;
     }
-  }
-
-  public selectedAssignToo(uid: string) {
-    if (uid == "0" || uid == null) {
-      return;
-    }
-    this.assignActionAsignee = uid;
   }
 
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
-      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined ||
-      this.assignActionCategoryUid == null || this.assignActionCategoryUid === "0" || this.assignActionCategoryUid === undefined) {
+      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
         // Send notification to the assignee
         let notification = new MessageModel();
         notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
         notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: this.assignActionTask});
         notification.time = new Date().getTime();
-
         this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {});
       });
     this.closeModal();
@@ -378,10 +394,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     action.noteId = '';
 
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + action.id + '/' + noteId).set(note);
+      this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + action.id).push(note);
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
     }
   }
 
@@ -393,7 +409,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // Delete note
   protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
-    this.af.database.list(Constants.APP_STATUS + '/note/' + action.id + '/' + note.id).remove();
+    this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
   }
 
   // Disable editing a note

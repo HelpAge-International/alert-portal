@@ -591,10 +591,11 @@
             "EDIT_CHS_ACTION": "Edit CHS action",
             "SAVE_BUTTON_TEXT": "Save new action",
             "EDIT_BUTTON_TEXT": "Save changes",
+            "EDIT_CONFIRM_SAVE_CHANGES": "Changes saved",
             "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
             "CHS_MPA": {
-                "TITLE_TEXT": "CHS minimum preparedness actions",
+                "CHS_TITLE_TEXT": "CHS minimum preparedness actions",
                 "NO_ACTIONS": "No CHS actions have been created",
                 "CHS": "Chs",
                 "CREATE_NEW_CHS_MPA": "Create new CHS minimum preparedness action",
@@ -792,6 +793,7 @@
                 "DEPARTMENT_NEW_SUCCESS": "New department added",
                 "DEPARTMENT_SAVED_SUCCESS": "Department successfully saved",
                 "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed",
+                "DEPARTMENT_DELETING_ERROR": "Error deleting your departments",
                 "NO_DEPARTMENTS": "No departments are added to your agency"
             },
             "SKILLS": {
@@ -1058,7 +1060,9 @@
                "SECTOR_OF_EXPERTISE": "Sector of expertise",
                "ETA": "Estimated time of arrival",
                "ADD_SURGE_CAPACITY": "Add surge capacity",
-               "EDIT_SURGE_CAPACITY": "Edit surge capacity"
+               "EDIT_SURGE_CAPACITY": "Edit surge capacity",
+               "NO_TECHNICAL_SKILLS": "No technical skills to show",
+               "NO_SUPPORT_SKILLS": "No support skills to show"
              },
             "PARTNERS": {
                 "TITLE_TEXT": "Partners",
@@ -1419,6 +1423,7 @@
             "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
             "EDIT_RESPONSE_PLAN": "Edit response plan",
             "NO_COMPLETED_SECTIONS": "Please complete at least one section to create a response plan",
+            "DO_YOU_WANT_TO_SAVE": "Do you want to save your changes?",
             "PLAN_DETAILS": {
                 "TITLE_TEXT": "Plan Details",
                 "PLAN_NAME": "Plan name",
@@ -1609,7 +1614,7 @@
     "PREPAREDNESS": {
         "ASSIGN_TO": "Assign to",
         "ADD_A_DEPARTMENT": "+ Add a department",
-        "TITLE_TEXT_CREATE_PAGE": "Create new mandated preparedness action",
+        "TITLE_TEXT_CREATE_PAGE": "Create new custom action",
         "TITLE_TEXT_EDIT_PAGE": "Edit preparedness action",
         "BACK_BUTTON": "Preparedness actions",
         "TASK": "What needs to be done?",
@@ -1619,6 +1624,7 @@
         "DUE_DATE": "Due date",
         "FREQUENCY": "Frequency",
         "BUDGET": "Budget",
+        "BUDGET_NARRATIVE_ERROR": "An error occured submitting your budget narratives",
         "DOCUMENT_REQUIRED_COMPLETION": "Is a document required for completion",
         "SAVE_NEW_ACTION": "Save new action",
         "DELETE_ACTION_BUTTON": "Delete action",
@@ -1891,6 +1897,17 @@
             "ALERT_LEVEL_UPDATED_CONTENT": "The following alert: {{riskName}} has had its level updated from {{levelBefore}} to {{levelAfter}}",
             "RESPONSE_PLAN_REJECTED_TITLE": "A response plan has been rejected",
             "RESPONSE_PLAN_REJECTED_CONTENT": "The following response plan: {{responsePlan}} has been rejected"
+        }
+     },
+     "TOOLTIPS": {
+        "COUNTRY_ADMIN": {
+            "TT1" : {
+                "LEVEL1": "Preparedness Actions that an agency should implement in order to maintain a minimum level of emergency preparedness. These are commonly referred to as MPAs.",
+                "LEVEL2": "In order to define minimum preparedness actions effectively, you need to take two approaches. 1. Continuity minimum preparedness actions:  Reviewing your existing programmes and your organisations main functional activities; identify the supporting tasks that come together to underpin those activities and how risks may impact on these activities. This allows essential activities, those that must be maintained, to be identified. The processes and mechanisms you choose to protect these essential activities and supporting tasks are your MPAs. 2.Response Plan minimum preparedness actions: Using your Scenario based response plan activity; identify the supporting tasks and functions that come together to underpin and enable those activities and how risks may impact on these activities."
+            }
+        },
+        "RESPONSE_PLANS": {
+
         }
      }
 }
