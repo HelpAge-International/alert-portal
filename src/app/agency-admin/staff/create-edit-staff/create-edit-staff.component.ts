@@ -60,7 +60,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private waringMessage: string;
+  private originalCountryList: any [];
   private countryList: any [];
+  private directorCountries: any [];
+
   private regionList: Observable<any[]>;
   private departmentList: Observable<ModelDepartment[]>;
   private notificationList: FirebaseListObservable<any[]>;
@@ -195,21 +198,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
             this.systemId = systemId;
 
             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe( countries => {
-              this.countryList = [];
+              this.countryList = countries;
+              this.originalCountryList = countries;
               this.af.database.list(Constants.APP_STATUS + "/directorCountry").takeUntil(this.ngUnsubscribe).subscribe( directorCountries => {
-                var countryExistsInDirectorCountries = false;
-
-                countries.forEach(country => {
-                  directorCountries.forEach(directorCountry => {
-                    if(country.$key == directorCountry.$key){
-                      countryExistsInDirectorCountries = true;
-                    }
-                  });
-                  if(!countryExistsInDirectorCountries){
-                    this.countryList.push(country);
-                  }
-                  countryExistsInDirectorCountries = false;
-                });
+                this.directorCountries = directorCountries;
               });
             });
 
@@ -534,6 +526,27 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private checkUserType() {
+    if(this.userType == UserType.CountryDirector){
+      let countryExistsInDirectorCountries = false;
+      let filteredCountries = [];
+        if(this.countryList && this.directorCountries){
+          this.countryList.forEach(country => {
+            this.directorCountries.forEach(directorCountry => {
+              if(country.$key == directorCountry.$key){
+                countryExistsInDirectorCountries = true;
+              }
+            });
+            if(!countryExistsInDirectorCountries){
+              filteredCountries.push(country);
+            }
+            countryExistsInDirectorCountries = false;
+          });
+          this.countryList = filteredCountries;
+        }
+    }else{
+      this.countryList = this.originalCountryList;
+    }
+
     if (this.userType == UserType.RegionalDirector) {
       this.hideCountry = true;
       this.hideRegion = false;

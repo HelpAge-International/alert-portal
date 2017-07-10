@@ -124,7 +124,7 @@ export enum StaffPosition {
     OfficeStarff = 2
 }
 
-export enum UserType {
+    export enum UserType {
     All = 0,
     GlobalDirector = 1,
     RegionalDirector = 2,
