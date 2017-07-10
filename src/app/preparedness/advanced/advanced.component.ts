@@ -193,18 +193,22 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
-            let res: boolean = true;
+            let res: boolean = false;
             for (const userTypes in snapshot.val().approval) {
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] == 0) {
-                  res = false;
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
                 }
               }
             }
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
           }
           else {
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
           }
         });
       });
@@ -390,10 +394,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     action.noteId = '';
 
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + action.id + '/' + noteId).set(note);
+      this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + action.id).push(note);
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
     }
   }
 
@@ -405,7 +409,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // Delete note
   protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
-    this.af.database.list(Constants.APP_STATUS + '/note/' + action.id + '/' + note.id).remove();
+    this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
   }
 
   // Disable editing a note

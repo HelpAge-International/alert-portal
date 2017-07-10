@@ -176,7 +176,7 @@
                     <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">Inactive until Red Alert Level
 
                       <!-- TODO: PERMISSIONS -->
-                      <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                      <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                          [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                         action</a>
                     </div>
@@ -388,7 +388,7 @@
                    Based on those setting they're sometimes expired. This below checks that. It makes all the IF statements look
                    a bit messy but it has to be done like this so it's not dependent on a method resolution (and hence live updating gets a bit weird)
 
-                   (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
+                   (actcalculatedIsCompletelete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!actcalculatedIsCompletelete && (action.updatedAt + action.computedClockSetting < getNow()))
                     -->
 
                     <!-- Logic for the clock settings -->
@@ -467,7 +467,7 @@
                           </div>
 
                           <!-- TODO: PERMISSIONS -->
-                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
@@ -719,7 +719,7 @@
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">Assign
                             this action</a>
 
-                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>
@@ -922,7 +922,7 @@
 
 
                           <!-- TODO: PERMISSIONS -->
-                          <a *ngIf="!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Edit))"
+                          <a *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                             [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                              class="btn btn-block">Edit
                             action</a>

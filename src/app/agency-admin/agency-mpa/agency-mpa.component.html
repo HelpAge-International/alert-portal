@@ -37,7 +37,7 @@
           <p>{{action.task}}</p>
           <div class="row">
             <div class="col-sm-4">{{"GLOBAL.TYPE"| translate}}<b>Mandated</b></div>
-            <div class="col-sm-4">{{"GLOBAL.DEPARTMENT:"| translate}} <b>{{action.department}}</b></div>
+            <div class="col-sm-4">{{"GLOBAL.DEPARTMENT:"| translate}} <b>{{DEPARTMENT_MAP.get(action.department)}}</b></div>
             <div class="col-sm-4">{{"AGENCY_ADMIN.MANDATED_PA.PREPAREDNESS_LEVEL"| translate}} <b>{{action.level == ActionLevel.MPA ? 'Minimum' : 'Advanced'}}</b></div>
           </div>
         </div>
