@@ -141,7 +141,7 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "dashboard/review-response-plan*"
+    "dashboard/review-response-plan*",
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
     "director*",

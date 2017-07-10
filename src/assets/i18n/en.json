@@ -1423,6 +1423,7 @@
             "CREATE_NEW_RESPONSE_PLAN": "Create new response Plan",
             "EDIT_RESPONSE_PLAN": "Edit response plan",
             "NO_COMPLETED_SECTIONS": "Please complete at least one section to create a response plan",
+            "DO_YOU_WANT_TO_SAVE": "Do you want to save your changes?",
             "PLAN_DETAILS": {
                 "TITLE_TEXT": "Plan Details",
                 "PLAN_NAME": "Plan name",

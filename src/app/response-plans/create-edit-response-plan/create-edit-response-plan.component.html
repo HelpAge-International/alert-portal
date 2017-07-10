@@ -304,7 +304,7 @@
                       {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
 
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations" 
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations"
                       [value]="partnerOrganisation.$key"
                       [selected]="partnerOrganisation.$key == partnerOrganisationsSelected[i]">
                       {{partnerOrganisation.organisationName}}
@@ -536,11 +536,11 @@
                         •        The demands of maintaining existing programmes during the emergency phase.
                         •        Limited supply structure and timely availability of good and services from suppliers
                         •        Physical factors limiting access to the location and target beneficiaries – extreme remoteness, damage to physical infrastructure, loss of transport assets, competition for helicopters and airplanes, lack of fuel etc
-                        •        Safety and security issues – limitations on operations due to social and political tensions or conflict, armed parties, 
+                        •        Safety and security issues – limitations on operations due to social and political tensions or conflict, armed parties,
                         •        Political factors – pressure to focus activities towards or away from particular areas or groups.
                         •        Phasing your intervention – some activities will need to be implemented and perhaps completed before others done, failure to phase activities realistically may have negative consequences for the success of the plan.'">
                   </tooltip>
-                
+
                 <textarea id="R-success" cols="30" rows="5" class="form-control"
                           [(ngModel)]="riskManagementPlanText"></textarea>
               </div>
@@ -624,7 +624,7 @@
                                           •        KPI: 20% change in the proportion of households that report having access to hygiene items in the 4 targeted communities
 
 
-                                          When planning the activities you should consider the following: 
+                                          When planning the activities you should consider the following:
                                           - The capacity of affected communities to respond
                                           - The specialisms and expertise of your agency and partner organisations and others
                                           - Your capacity and that of your partner agencies, other agencies and the government
@@ -1194,7 +1194,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>Do you want to save your changes?</p></div>
+        <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.YES" | translate}}</button>

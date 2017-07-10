@@ -7,7 +7,6 @@ import {SuperMapComponents, SDepHolder} from "../utils/MapHelper";
 import {RegionHolder} from "../map/map-countries-list/map-countries-list.component";
 import {Countries, UserType, AlertLevels} from "../utils/Enums";
 import {ActionsService} from "../services/actions.service";
-import * as moment from "moment";
 import {AgencyService} from "../services/agency-service.service";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
