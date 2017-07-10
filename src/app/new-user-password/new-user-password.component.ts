@@ -2,21 +2,22 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from 'angularfire2';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
-import {Constants} from "../../utils/Constants";
-import {CustomerValidator} from "../../utils/CustomValidator";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {Constants} from "../utils/Constants";
+import {PageControlService} from "../services/pagecontrol.service";
+import {CustomerValidator} from "../utils/CustomValidator";
+import {UserType} from "../utils/Enums";
 
 @Component({
-  selector: 'app-new-director-password',
-  templateUrl: './new-director-password.component.html',
-  styleUrls: ['./new-director-password.component.css']
+  selector: 'app-new-user-password',
+  templateUrl: 'new-user-password.component.html',
+  styleUrls: ['new-user-password.component.css']
 })
 
-export class NewDirectorPasswordComponent implements OnInit, OnDestroy {
+export class NewUserPasswordComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private userType;
-  private directorName: string;
+  private firstNameToShow: string;
 
   private successInactive: boolean = true;
   private successMessage: string = "GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PASSWORD";
@@ -43,7 +44,7 @@ export class NewDirectorPasswordComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          this.directorName = user.firstName;
+          this.firstNameToShow = user.firstName;
         });
     });
   }
@@ -67,7 +68,15 @@ export class NewDirectorPasswordComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(() => {
               this.successInactive = true;
-              this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+
+              if (
+                (this.userType == UserType.GlobalDirector) ||
+                (this.userType == UserType.RegionalDirector) ||
+                (this.userType == UserType.GlobalUser) ||
+                (this.userType == UserType.CountryUser)) {
+                this.router.navigateByUrl(Constants.G_OR_R_DIRECTOR_DASHBOARD);
+              }
+
             });
 
         }, error => {

@@ -172,10 +172,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     // => user type path,
     // => go to if success
     // => go to if first login
-    this.loginCheckingFirstLoginValue(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'director/new-director-password');
-    this.loginCheckingFirstLoginValue(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'director/new-director-password');
-    this.loginChecking(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-    this.loginChecking(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
+    this.loginCheckingFirstLoginValue(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginChecking(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME);
     this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
     this.loginCheckingDeactivated(successUid, "administratorCountry",

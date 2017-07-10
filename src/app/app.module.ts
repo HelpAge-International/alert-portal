@@ -185,7 +185,7 @@ import {DirectorNotificationsComponent} from './director/director-notifications/
 import {DashboardOverviewComponent} from './dashboard/dashboard-overview/dashboard-overview.component';
 import {PrepActionService} from "./services/prepactions.service";
 import {SumPipe} from "./utils/pipes/sum.pipe";
-import {NewDirectorPasswordComponent} from './director/new-director-password/new-director-password.component';
+import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -366,7 +366,7 @@ const firebaseAuthConfig = {
     DonorNotificationsComponent,
     DirectorNotificationsComponent,
     DashboardOverviewComponent,
-    NewDirectorPasswordComponent
+    NewUserPasswordComponent
   ],
   imports: [
     BrowserModule,

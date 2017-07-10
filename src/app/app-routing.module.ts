@@ -115,7 +115,7 @@ import {AddEditSurgeCapacityComponent} from "./country-admin/country-office-prof
 import {DonorNotificationsComponent} from "./donor-module/donor-notifications/donor-notifications.component";
 import {DirectorNotificationsComponent} from "./director/director-notifications/director-notifications.component";
 import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
-import {NewDirectorPasswordComponent} from "./director/new-director-password/new-director-password.component";
+import {NewUserPasswordComponent} from "./new-user-password/new-user-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -127,6 +127,11 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
+
+  /**
+   * New User
+   */
+  {path: 'new-user-password', component: NewUserPasswordComponent},
 
   /**
    * System admin
@@ -323,7 +328,6 @@ const routes: Routes = [
   {path: 'director/director-overview', component: DirectorOverviewComponent},
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
   {path: 'director/director-notifications', component: DirectorNotificationsComponent},
-  {path: 'director/new-director-password', component: NewDirectorPasswordComponent},
 
   /**
    * Donor
