@@ -78,12 +78,11 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private hideRegion: boolean;
   private isFirstLogin: boolean;
   private systemId: string;
-
   private allSkills: any = {};
   private skillKeys: string[] = [];
   private editedSkills: any = [];
   private SupportSkill = SkillType.Support;
-  private TechSkill = SkillType.Tech;  
+  private TechSkill = SkillType.Tech;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -136,6 +135,22 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
+    /*Filtering country director option in the user types if there exists a country director for this country already*/
+    this.af.database.list(Constants.APP_STATUS + "/directorCountry").takeUntil(this.ngUnsubscribe).subscribe( directorCountries => {
+      let directorExists = false;
+      directorCountries.forEach(directorCountry => {
+        if (!directorExists && this.countryId == directorCountry.$key){
+          directorExists = true;
+          this.userTypeSelection = this.userTypeSelection.filter(function(el) {
+            return el !== UserType.CountryDirector;
+          });
+          this.userTypeConstant = this.userTypeConstant.filter(function(el) {
+            return el !== "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS";
+          });
+        }
+      });
+    });
+
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + '/' + this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryOffice => {
@@ -168,7 +183,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
               this.allSkills[_skill[0].$key] = _skill[0];
             else
               delete this.allSkills[skill.$key];
-    
+
             this.skillKeys = Object.keys(this.allSkills);
           });
       });
@@ -329,7 +344,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
     // staff extra info
     let staff = new ModelStaff();
+    console.log("User Type :");
     console.log(this.userType);
+
     staff.userType = Number(this.userType);
 
     staff.department = this.department;
@@ -486,6 +503,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   selectedUserType(userType) {
     // userType-1 to ignore f all option
+
     this.notificationSettings = [];
     this.notificationList
       .takeUntil(this.ngUnsubscribe)

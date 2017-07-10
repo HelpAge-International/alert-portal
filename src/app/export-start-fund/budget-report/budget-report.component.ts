@@ -35,6 +35,7 @@ export class BudgetReportComponent implements OnInit, OnDestroy {
   private staffingAndSupportBudget: number;
   private monitoringAndEvolutionBudget: number;
   private capitalItemsBudget: number;
+  private memberAgencyName: string = '';
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -71,13 +72,27 @@ export class BudgetReportComponent implements OnInit, OnDestroy {
               if (params["countryId"]) {
                 this.countryId = params["countryId"];
                 this.downloadResponsePlanData();
+                this.downloadAgencyData(usertype);
               }
             })
         } else {
           this.getCountryId().then(() => {
             this.downloadResponsePlanData();
+            this.downloadAgencyData(usertype);
           });
         }
+      });
+  }
+
+  private downloadAgencyData(userType){
+    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((agencyId) => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+          if(name != null){
+            this.memberAgencyName = name.$value;
+          }
+        });
       });
   }
 
