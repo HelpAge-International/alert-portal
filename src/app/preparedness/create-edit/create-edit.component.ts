@@ -134,8 +134,11 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, user.uid, userType, (isEnabled) => {
           this.permissionsAreEnabled = isEnabled;
           if (this.action.id != null) {
-            this.showDueDate = false;
+            this.showDueDate = true;
             this.initFromExistingActionId(userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customMPA.Edit, userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customAPA.Edit);
+          }
+          else {
+            this.action.isAllHazards = true;
           }
         });
 
@@ -223,6 +226,12 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   public selectDate(date: any) {
     this.action.dueDate = this.convertDateToTimestamp(date);
+    if (this.action.dueDate >= (new Date().getTime() - (1000 * 60 * 60 * 24))) {
+      console.log("Valid date!");
+    }
+    else {
+      console.log("INVALID DATE!");
+    }
     this.removeFilterLockDueDate();
     return true;
   }
@@ -489,6 +498,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
   protected removeFilterLockLevel() {
     this.filterLockLevel = false;
+    if (this.action.id == null) {
+      this.showDueDate = this.action.level != ActionLevel.APA;
+    }
   }
   protected removeFilterLockDepartment() {
     this.filterLockDepartment = false;
@@ -655,7 +667,7 @@ export class CreateEditPrepActionHolder {
       console.log("Failed level check");
       return false;
     }
-    if (this.dueDate == undefined || this.dueDate == 0 && amShowingDueDate) {
+    if ((this.dueDate == undefined || this.dueDate == 0) && amShowingDueDate) {
       console.log("Failed dueDate check");
       return false;
     }
