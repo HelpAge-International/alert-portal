@@ -99,15 +99,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+
       this.initData();
-      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
-        if (params["id"]) {
-          this.selectedStaffId = params["id"];
-          this.selectedOfficeId = params["officeId"];
-          this.isEdit = true;
-          this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
-        }
-      });
     });
   }
 
@@ -164,7 +157,19 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           })
             .takeUntil(this.ngUnsubscribe)
             .subscribe(regions => {
-              this.region = regions[0];
+              this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId)
+                .map(region => {
+                  let filteredRegions = [];
+                  region.forEach(item => {
+                    if (item.directorId == "null" || (item.$key == regions[0].$key)) {
+                      filteredRegions.push(item);
+                      if(item.$key == regions[0].$key){
+                        this.region = item;
+                      }
+                    }
+                  });
+                  return filteredRegions;
+                });
             });
         }
       });
@@ -249,9 +254,17 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
             this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/notificationSetting");
 
           });
+
+        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+          if (params["id"]) {
+            this.selectedStaffId = params["id"];
+            this.selectedOfficeId = params["officeId"];
+            this.isEdit = true;
+
+            this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
+          }
+        });
       });
-
-
   }
 
   validateForm(): boolean {
