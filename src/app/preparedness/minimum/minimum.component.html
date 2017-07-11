@@ -54,8 +54,8 @@
       <tooltip [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL1'"
       [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL2'">
       </tooltip>
-      <tooltip [level1]="'TOOLTIPS.PREPAREDNESS.TT0.LEVEL1'"
-      [level2]="'TOOLTIPS.PREPAREDNESS.TT0.LEVEL2'">
+      <tooltip [level1]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL1'"
+      [level2]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL2'">
       </tooltip>
       </div>
 <!--
@@ -380,7 +380,7 @@
                           <h4>Confirm this action is completed.</h4>
                           <!--tooltip-->
                           <tooltip
-                          [level1]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL1'">
+                          [level1]="'TOOLTIPS.PREPAREDNESS.TT3.LEVEL1'">
                           </tooltip>
                         </div>
                       </div>
@@ -401,7 +401,7 @@
                         </div>
                         <!--tooltip-->
                         <tooltip
-                        [level1]="'TOOLTIPS.PREPAREDNESS.TT2.LEVEL1'">
+                        [level1]="'TOOLTIPS.PREPAREDNESS.TT4.LEVEL1'">
                         </tooltip>
                         <input type='file' id="docUpload{{action.id}}" name="file"
                                (change)="fileChange($event, action, action.id)"
@@ -490,7 +490,7 @@
                             <span>Notes</span>
                             <!--tooltip-->
                             <tooltip
-                            [level1]="'TOOLTIPS.PREPAREDNESS.TT3.LEVEL1'">
+                            [level1]="'TOOLTIPS.PREPAREDNESS.TT5.LEVEL1'">
                             </tooltip>
                           </a>
                         </div>
@@ -615,7 +615,7 @@
                             <h4>Documents ({{action.documents.length}})</h4>
                             <!--tooltip-->
                             <tooltip
-                            [level1]="'TOOLTIPS.PREPAREDNESS.TT4.LEVEL1'">
+                            [level1]="'TOOLTIPS.PREPAREDNESS.TT6.LEVEL1'">
                             </tooltip>
                             
                             &nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
