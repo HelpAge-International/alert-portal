@@ -201,7 +201,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       let updateObj = {
         name: this.departmentName
       };
-      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/departments').push(updateObj).then(_ => {
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments').push(updateObj).then(_ => {
         if (!this.alertShow){
           this.saved = true;
           this.alertSuccess = true;

@@ -18,6 +18,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   private uid: string = "";
   private settings: any[] = [];
   private saved: boolean = false;
+  private agencyId: string;
 
   private alertMessage: string = "";
   private alertSuccess: boolean = true;
@@ -47,20 +48,25 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/clockSettings/')
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(_ => {
-          _.map(setting => {
-            let settingKey = setting.$key;
-            delete setting.$key;
-            delete setting.$exists;
-            this.settings[settingKey] = setting;
-          });
+        .subscribe(id => {
+          this.agencyId = id.$value;
+          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(_ => {
+              _.map(setting => {
+                let settingKey = setting.$key;
+                delete setting.$key;
+                delete setting.$exists;
+                this.settings[settingKey] = setting;
+              });
 
-          this.riskMonitorShowLogForFreq = new Frequency(this.settings['riskMonitoring']['showLogsFrom']);
-          this.riskMonitorHazardFreq = new Frequency(this.settings['riskMonitoring']['hazardsValidFor']);
-          this.preparednessFreq = new Frequency(this.settings['preparedness']);
-          this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
+              this.riskMonitorShowLogForFreq = new Frequency(this.settings['riskMonitoring']['showLogsFrom']);
+              this.riskMonitorHazardFreq = new Frequency(this.settings['riskMonitoring']['hazardsValidFor']);
+              this.preparednessFreq = new Frequency(this.settings['preparedness']);
+              this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
+            });
         });
     });
   }
@@ -140,7 +146,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
 
     this.updateCountriesClockSettings();
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/clockSettings/')
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
       .set(this.settings)
       .then(_ => {
         if (!this.alertShow) {
@@ -159,7 +165,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   }
 
   private updateCountriesClockSettings() {
-    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.uid)
+    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(_ => {
         _.map(setting => {
@@ -192,7 +198,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
             }
 
             if (update) {
-              this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.uid + '/' + setting.$key + '/clockSettings/')
+              this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + setting.$key + '/clockSettings/')
                 .set(clockSettings)
                 .catch(err => console.log(err, 'Error occurred!'));
             }
