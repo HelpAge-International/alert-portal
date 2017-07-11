@@ -57,11 +57,11 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
     } else if (preData && !currData) {
       //delete user account
       console.log("delete user: " + userId);
-      // admin.auth().deleteUser(userId).then(() => {
-      //   console.log("successfully deleted user: " + userId);
-      // }, error => {
-      //   console.log(error.message);
-      // });
+      admin.auth().deleteUser(userId).then(() => {
+        console.log("successfully deleted user: " + userId);
+      }, error => {
+        console.log(error.message);
+      });
     }
   });
 
@@ -80,11 +80,11 @@ exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId
     } else if (preData && !currData) {
       //delete user account
       console.log("delete user: " + userId);
-      // admin.auth().deleteUser(userId).then(() => {
-      //   console.log("successfully deleted user: " + userId);
-      // }, error => {
-      //   console.log(error.message);
-      // });
+      admin.auth().deleteUser(userId).then(() => {
+        console.log("successfully deleted user: " + userId);
+      }, error => {
+        console.log(error.message);
+      });
     }
   });
 
@@ -103,11 +103,11 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
     } else if (preData && !currData) {
       //delete user account
       console.log("delete user: " + userId);
-      // admin.auth().deleteUser(userId).then(() => {
-      //   console.log("successfully deleted user: " + userId);
-      // }, error => {
-      //   console.log(error.message);
-      // });
+      admin.auth().deleteUser(userId).then(() => {
+        console.log("successfully deleted user: " + userId);
+      }, error => {
+        console.log(error.message);
+      });
     }
   });
 
