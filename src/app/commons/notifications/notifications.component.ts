@@ -82,6 +82,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'administratorAgency':
           this._notificationService.deleteAgencyAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -89,6 +90,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'administratorCountry':
           this._notificationService.deleteCountryAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -96,6 +98,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'countryUser':
           this._notificationService.deleteCountryUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -103,6 +106,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'countryDirector':
           this._notificationService.deleteCountryDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -110,6 +114,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'regionDirector':
           this._notificationService.deleteRegionalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -117,6 +122,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'globalDirector':
           this._notificationService.deleteGlobalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -124,6 +130,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'globalUser':
           this._notificationService.deleteGlobalUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -131,6 +138,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'ertLeader':
           this._notificationService.deleteERTLeadsNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -138,6 +146,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'ert':
           this._notificationService.deleteERTNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -145,6 +154,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         case 'donor':
           this._notificationService.deleteDonorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
                 .then(() => {
+                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
                   this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
                 })
                 .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
@@ -160,73 +170,184 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
       switch(this._USER_TYPE){
         case 'administratorAgency':
-          this._notificationService.getAgencyNotifications(this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesAdministratorAgency = this._notificationService.getAgencyAdministratorNodes(this._agencyId);
+
+          for (let node of nodesAdministratorAgency) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'administratorCountry':
-          this._notificationService.getCountryAdminNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesAdministratorCountry = this._notificationService.getCountryAdministratorNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesAdministratorCountry) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'countryUser':
-          this._notificationService.getCountryUserNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesCountryUser = this._notificationService.getCountryUserNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesCountryUser) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'countryDirector':
-          this._notificationService.getCountryDirectorNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesCountryDirector = this._notificationService.getCountryDirectorNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesCountryDirector) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'regionDirector':
-          this._notificationService.getRegionalDirectorNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesRegionDirector = this._notificationService.getRegionDirectorNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesRegionDirector) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'globalDirector':
-          this._notificationService.getGlobalDirectorNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesGlobalDirector = this._notificationService.getGlobalDirectorNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesGlobalDirector) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'globalUser':
-          this._notificationService.getGlobalUserNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesGlobalUser = this._notificationService.getGlobalUserNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesGlobalUser) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'ertLeader':
-          this._notificationService.getERTLeadsNotifications(this._userId, this._countryId, this._agencyId)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesErtLeader = this._notificationService.getErtLeaderNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesErtLeader) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'ert':
-          this._notificationService.getERTNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesErt = this._notificationService.getErtNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesErt) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
         case 'donor':      
-          this._notificationService.getDonorNotifications(this._userId, this._countryId, this._agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(messages => {
-                  this.messages = messages;
+          let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesDonor) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .subscribe(list => {
+                list.forEach((x) => {
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .subscribe(message => {
+                      if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                      {
+                        this.messages.push(message);
+                      }
+                    });
                 });
+              });
+          }
           break;
       }
     }
