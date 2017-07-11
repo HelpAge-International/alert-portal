@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
 import {
-  AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType,
+  AlertLevels, GeoLocation, Countries, DetailedDurationType, HazardScenario, AlertMessageType,
   UserType
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -49,8 +49,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private alertImages = Constants.ALERT_IMAGES;
   private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
 
-  private durationType = Constants.DURATION_TYPE;
-  private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
+  private durationType = Constants.DETAILED_DURATION_TYPE;
+  private durationTypeList: number[] = [DetailedDurationType.Hour, DetailedDurationType.Day, DetailedDurationType.Week, DetailedDurationType.Month, DetailedDurationType.Year];
 
   private geoLocation = Constants.GEO_LOCATION;
   private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
@@ -659,17 +659,24 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     var CurrentDate = new Date();
     var currentYear = new Date().getFullYear();
 
+    var hour = 3600;
     var day = 86400;
     var week = 604800;
 
-    if (durationType == 0) {
+    if (durationType == DetailedDurationType.Hour) {
+      var differenceTime = frequencyValue * hour;
+    } else if (durationType == DetailedDurationType.Day) {
+      var differenceTime = frequencyValue * day;
+    } else if (durationType == DetailedDurationType.Week) {
       var differenceTime = frequencyValue * week;
-    } else if (durationType == 1) {
+    } else if (durationType == DetailedDurationType.Month) {
       var resultDate = CurrentDate.setMonth(CurrentDate.getMonth() + frequencyValue);
       var differenceTime = resultDate - currentUnixTime;
-    } else if (durationType == 2) {
+    } else if (durationType == DetailedDurationType.Year) {
       differenceTime = this._getDifferenceTimeByYear(frequencyValue);
     }
+
+    console.log(currentUnixTime + differenceTime);
 
     var dueDate = currentUnixTime + differenceTime;
     return dueDate;

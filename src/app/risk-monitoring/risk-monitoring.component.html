@@ -691,8 +691,8 @@
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                       </div>
-                      <p>Last update: <strong>01 March 2016</strong></p>
-                      <p>Next update: <strong>16 June 2016</strong></p>
+                      <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
+                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
                     </div>
                     <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
