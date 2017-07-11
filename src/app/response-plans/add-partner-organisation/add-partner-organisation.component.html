@@ -86,7 +86,7 @@
                             <div class="row" *ngFor="let operationArea of project?.operationAreas; let opin = index;">
                                  <div class="col-sm-3">
                                     <div class="form-group">
-                                        <select class="form-control" name="CountryArea"
+                                        <select class="form-control" name="CountryArea_{{opin}}"
                                                 [(ngModel)] = "operationArea.country">
                                             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                                             <option *ngFor="let country of countryLevelsValues | keyValues" [value] = "country.key">{{countryEnum[country.key] | translate}}
@@ -97,7 +97,7 @@
                                  && countryLevelsValues[operationArea.country]
                                  && countryLevelsValues[operationArea.country].levelOneValues">
                                  <div class="form-group">
-                                    <select class="form-control" name="CountryAreaLevelOne"
+                                    <select class="form-control" name="CountryAreaLevelOne_{{opin}}"
                                             [(ngModel)] = "operationArea.level1">
                                         <option value="undefined" disabled selected hidden>
                                             {{ "GLOBAL.PLEASE_SELECT" | translate }}</option>
@@ -111,7 +111,7 @@
                                  && countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1]
                                  && countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues">
                                  <div class="form-group">
-                                    <select class="form-control" name="CountryAreaLevelTwo"
+                                    <select class="form-control" name="CountryAreaLevelTwo_{{opin}}"
                                             [(ngModel)] = "operationArea.level2">
                                         <option value="undefined" disabled selected hidden>
                                             {{ "GLOBAL.PLEASE_SELECT" | translate }}</option>
