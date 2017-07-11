@@ -84,6 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
+
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
         this.moduleSettings = isEnabled;
@@ -310,7 +311,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     //TODO change temp id to actual uid
-    this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid);
+    if (this.userType = UserType.PartnerUser) {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+    } else {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
+    }
     this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.approvalPlans = plans
     });

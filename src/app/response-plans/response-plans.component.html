@@ -63,16 +63,16 @@
                   <div *ngFor="let partner of plan?.partnerOrganisations; index as i"
                        class="row no-gutters Small-spaced">
                     <div class="col-6 text-left">Partner {{i+1}}</div>
-                    <div *ngIf="!plan?.approval?.partner[partner]"
+                    <div *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partner])"
                          class="col-6 text-right text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
                       translate}}<i
                       class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
-                    <div *ngIf="plan?.approval?.partner[partner] == 1" class="col-6 text-right text-warning">
+                    <div *ngIf="plan?.approval?.partner && plan?.approval?.partner[partner] == 1" class="col-6 text-right text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_APPROVAL" |
                       translate}}<i
                       class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
-                    <div *ngIf="plan?.approval?.partner[partner] == 2" class="col-6 text-right text-success">
+                    <div *ngIf="plan?.approval?.partner && plan?.approval?.partner[partner] == 2" class="col-6 text-right text-success">
                       {{"RESPONSE_PLANS.HOME.APPROVAL" |
                       translate}}<i
                       class="fa fa-check-circle" aria-hidden="true"></i></div>

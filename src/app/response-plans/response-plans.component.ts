@@ -254,7 +254,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForPartnerValidation(plan) {
-    this.service.submitForPartnerValidation(plan, this.uid);
+    this.service.submitForPartnerValidation(plan, this.uid, this.countryId);
   }
 
   archivePlan(plan) {
@@ -304,7 +304,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           });
           return setting;
         })
-        .first()
         .takeUntil(this.ngUnsubscribe)
         .subscribe(approvalSettings => {
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
@@ -328,13 +327,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private updatePartnerValidation(countryId: string, approvalData: {}) {
-    if (this.planToApproval.partnerOrganisations) {
-      let partnerData = {};
-      this.planToApproval.partnerOrganisations.forEach(item => {
-        partnerData[item] = ApprovalStatus.InProgress;
-      });
-      approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/partner/"] = partnerData;
-    }
+    //TODO need double check for this
+    // if (this.planToApproval.partnerOrganisations) {
+    //   let partnerData = {};
+    //   this.planToApproval.partnerOrganisations.forEach(item => {
+    //     partnerData[item] = ApprovalStatus.InProgress;
+    //   });
+    //   approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/partner/"] = partnerData;
+    // }
     this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
       console.log("success");
     }, error => {

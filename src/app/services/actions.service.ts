@@ -11,9 +11,9 @@ import {Subject} from "rxjs/Subject";
 import {CommonService} from "./common.service";
 import {ModelJsonLocation} from "../model/json-location.model";
 import {Router} from "@angular/router";
-import { NotificationService } from "./notification.service";
+import {NotificationService} from "./notification.service";
 import {TranslateService} from "@ngx-translate/core";
-import { MessageModel } from "../model/message.model";
+import {MessageModel} from "../model/message.model";
 
 @Injectable()
 export class ActionsService {
@@ -202,15 +202,15 @@ export class ActionsService {
             this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
               let obj = {
                 country: "",
-                areas:""
+                areas: ""
               };
-              if(affectedArea.affectedCountry > -1){
+              if (affectedArea.affectedCountry > -1) {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
-              if(affectedArea.affectedLevel1 > -1){
+              if (affectedArea.affectedLevel1 > -1) {
                 obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
               }
-              if(affectedArea.affectedLevel2 > -1){
+              if (affectedArea.affectedLevel2 > -1) {
                 obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
               }
               affectedAreasToDisplay.push(obj);
@@ -221,7 +221,7 @@ export class ActionsService {
       });
   }
 
-  private getCountryNameById(countryId : number){
+  private getCountryNameById(countryId: number) {
     return Constants.COUNTRIES[countryId];
   }
 
@@ -297,15 +297,15 @@ export class ActionsService {
             this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
               let obj = {
                 country: "",
-                areas:""
+                areas: ""
               };
-              if(affectedArea.affectedCountry > -1){
+              if (affectedArea.affectedCountry > -1) {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
-              if(affectedArea.affectedLevel1 > -1){
+              if (affectedArea.affectedLevel1 > -1) {
                 obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
               }
-              if(affectedArea.affectedLevel2 > -1){
+              if (affectedArea.affectedLevel2 > -1) {
                 obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
               }
               affectedAreasToDisplay.push(obj);
@@ -421,7 +421,7 @@ export class ActionsService {
     updateData["estimatedPopulation"] = alert.estimatedPopulation;
     updateData["hazardScenario"] = alert.hazardScenario;
     updateData["infoNotes"] = alert.infoNotes;
-    if(alert.reasonForRedAlert){
+    if (alert.reasonForRedAlert) {
       updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
     }
     updateData["timeCreated"] = alert.timeCreated;
@@ -437,8 +437,12 @@ export class ActionsService {
       const levelAfter = this.translate.instant(Constants.ALERTS[alert.alertLevel]);
 
       let notification = new MessageModel();
-      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_TITLE", { riskName: riskNameTranslated});
-      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_CONTENT", { riskName: riskNameTranslated, levelBefore: levelBefore, levelAfter: levelAfter});
+      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_TITLE", {riskName: riskNameTranslated});
+      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_CONTENT", {
+        riskName: riskNameTranslated,
+        levelBefore: levelBefore,
+        levelAfter: levelAfter
+      });
       notification.time = new Date().getTime();
 
       this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, alertChangedNotificationSetting, agencyId, countryId);
@@ -509,15 +513,15 @@ export class ActionsService {
             this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
               let obj = {
                 country: "",
-                areas:""
+                areas: ""
               };
-              if(affectedArea.affectedCountry > -1){
+              if (affectedArea.affectedCountry > -1) {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
-              if(affectedArea.affectedLevel1 > -1){
+              if (affectedArea.affectedLevel1 > -1) {
                 obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
               }
-              if(affectedArea.affectedLevel2 > -1){
+              if (affectedArea.affectedLevel2 > -1) {
                 obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
               }
               affectedAreasToDisplay.push(obj);
@@ -539,10 +543,10 @@ export class ActionsService {
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  getResponsePlanForCountryDirectorToApproval(countryId, uid) {
+  getResponsePlanForCountryDirectorToApproval(countryId, uid, isPartnerUser) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: "/approval/countryDirector/" + uid,
+        orderByChild: isPartnerUser ? "/approval/partner/" + uid : "/approval/countryDirector/" + uid,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))

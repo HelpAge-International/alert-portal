@@ -35,6 +35,8 @@
              *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
           <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
           <br>
+
+          <!--response plans-->
           <div class="row" *ngFor="let plan of approvalPlans">
             <div class="col-sm-9">
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
