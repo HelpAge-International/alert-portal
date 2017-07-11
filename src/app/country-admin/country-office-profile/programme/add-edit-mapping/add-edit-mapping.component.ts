@@ -61,9 +61,9 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.userType = userType;
+      this.countryID = countryId;
       this.initData();
     });
   }
@@ -72,25 +72,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        this._getCountryID().then(() => {
-          if (params && params['programmeId']) {
-            this.programmeId = params['programmeId'];
-            this._getProgramme(params['programmeId']);
-          }
-        });
+        // this._getCountryID().then(() => {
+        if (params && params['programmeId']) {
+          this.programmeId = params['programmeId'];
+          this._getProgramme(params['programmeId']);
+        }
+        // });
       });
-  }
-
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-          this.countryID = countryID.$value ? countryID.$value : "";
-          res(true);
-        });
-    });
-    return promise;
   }
 
   _getProgramme(programmeID: string) {

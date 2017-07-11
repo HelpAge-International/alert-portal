@@ -18,9 +18,9 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
-import { MessageModel } from "../../model/message.model";
-import { NotificationService } from "../../services/notification.service";
-import { TranslateService } from "@ngx-translate/core";
+import {MessageModel} from "../../model/message.model";
+import {NotificationService} from "../../services/notification.service";
+import {TranslateService} from "@ngx-translate/core";
 
 declare var jQuery: any;
 
@@ -162,39 +162,72 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 
-      });
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          this.countryID = countryId;
 
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.UserType = userType;
+          //check if partner
+          // this.af.database.object(Constants.APP_STATUS+"/partner/"+this.uid, {preserveSnapshot:true})
+          //   .first()
+          //   .subscribe(snapshot =>{
+          //     let isPartner = false;
+          //     if (snapshot.val()) {
+          //       isPartner = true;
+          //     }
+          //
+          //
+          //
+          //   });
 
-      //check if partner
-      // this.af.database.object(Constants.APP_STATUS+"/partner/"+this.uid, {preserveSnapshot:true})
-      //   .first()
-      //   .subscribe(snapshot =>{
-      //     let isPartner = false;
-      //     if (snapshot.val()) {
-      //       isPartner = true;
-      //     }
-      //
-      //
-      //
-      //   });
+          // this.getCountryID().then(() => {
+          this._getHazards();
+          this.getUsersForAssign();
+          this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
+          // });
 
-      this.getCountryID().then(() => {
-        this._getHazards();
-        this.getUsersForAssign();
-        this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
-      });
-
-      // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(content => {
-          this.countryLevelsValues = content;
-          err => console.log(err);
+          // get the country levels values
+          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
         });
-    });
+
+      });
+
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   this.UserType = userType;
+    //
+    //   //check if partner
+    //   // this.af.database.object(Constants.APP_STATUS+"/partner/"+this.uid, {preserveSnapshot:true})
+    //   //   .first()
+    //   //   .subscribe(snapshot =>{
+    //   //     let isPartner = false;
+    //   //     if (snapshot.val()) {
+    //   //       isPartner = true;
+    //   //     }
+    //   //
+    //   //
+    //   //
+    //   //   });
+    //
+    //   this.getCountryID().then(() => {
+    //     this._getHazards();
+    //     this.getUsersForAssign();
+    //     this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
+    //   });
+    //
+    //   // get the country levels values
+    //   this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe(content => {
+    //       this.countryLevelsValues = content;
+    //       err => console.log(err);
+    //     });
+    // });
   }
 
   private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string, copyHazardId: string) {
@@ -236,29 +269,52 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         }
 
         this.hazardID = params['hazardID'];
+        console.log(this.hazardID);
 
         if (params['indicatorID']) {
           this.isEdit = true;
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
 
-          this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-            if (auth) {
-              this.uid = auth.uid;
-              this.userService.getUserType(this.uid)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(userType => {
-                  this.UserType = userType;
-
-                  this.getCountryID().then(() => {
-                    this._getIndicator(this.hazardID, this.indicatorID);
-                  });
-                });
+          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            if (user) {
+              this.uid = user.uid;
+              this.UserType = userType;
+              this.countryID = countryId;
+              console.log(this.countryID)
+              this._getIndicator(this.hazardID, this.indicatorID);
+              // this.userService.getUserType(this.uid)
+              //   .takeUntil(this.ngUnsubscribe)
+              //   .subscribe(userType => {
+              //
+              //
+              //     this.getCountryID().then(() => {
+              //       this._getIndicator(this.hazardID, this.indicatorID);
+              //     });
+              //   });
 
             } else {
               this.navigateToLogin();
             }
           });
+
+          // this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
+          //   if (auth) {
+          //     this.uid = auth.uid;
+          //     this.userService.getUserType(this.uid)
+          //       .takeUntil(this.ngUnsubscribe)
+          //       .subscribe(userType => {
+          //         this.UserType = userType;
+          //
+          //         this.getCountryID().then(() => {
+          //           this._getIndicator(this.hazardID, this.indicatorID);
+          //         });
+          //       });
+          //
+          //   } else {
+          //     this.navigateToLogin();
+          //   }
+          // });
 
         } else {
           this.addAnotherSource();
@@ -371,13 +427,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.list(urlToPush)
             .push(dataToSave)
             .then(() => {
-              if(dataToSave.assignee) {
+              if (dataToSave.assignee) {
                 // Send notification to the assignee
                 let notification = new MessageModel();
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
-                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", { indicatorName: dataToSave.name});
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => { });
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                });
               }
 
               if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
@@ -405,13 +462,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.object(urlToEdit)
             .set(dataToSave)
             .then(() => {
-              if(dataToSave.assignee && dataToSave.assignee != this.oldIndicatorData.assignee) {
+              if (dataToSave.assignee && dataToSave.assignee != this.oldIndicatorData.assignee) {
                 // Send notification to the assignee
                 let notification = new MessageModel();
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
-                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", { indicatorName: dataToSave.name});
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => { });
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                });
               }
               this.backToRiskHome();
               // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
@@ -504,8 +562,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.url = Constants.APP_STATUS + "/indicator/" + hazardID + "/" + indicatorID;
     }
 
-    this.af.database.object(this.url).subscribe((indicator: any) => {
+    console.log(this.url);
+
+    this.af.database.object(this.url).takeUntil(this.ngUnsubscribe).subscribe((indicator: any) => {
       if (indicator.$value === null) {
+        console.log(indicator)
         this.router.navigate(['/risk-monitoring']);
         return false;
       }

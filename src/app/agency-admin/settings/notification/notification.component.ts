@@ -44,6 +44,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   ];
   private userNotified = [];
   private notificationID: number;
+  private agencyId: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -53,7 +54,12 @@ export class NotificationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this.loadAgencyData(this.uid);
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(id => {
+          this.agencyId = id.$value;
+          this.loadAgencyData(this.agencyId);
+        });
     });
   }
 
@@ -64,7 +70,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   selectUserType(settingID: number) {
     this.notificationID = settingID;
-    this.loadAgencyData(this.uid);
+    this.loadAgencyData(this.agencyId);
     jQuery("#select-user-type").modal("show");
   }
 
@@ -91,7 +97,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/notificationSetting/' + this.notificationID + '/usersNotified')
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/notificationSetting/' + this.notificationID + '/usersNotified')
       .set(dataToSend)
       .then(() => {
         this.closeModal();

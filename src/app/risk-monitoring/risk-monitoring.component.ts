@@ -135,32 +135,69 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           this.agencyOverview = params["agencyOverview"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-          this.uid = user.uid;
-          this.UserType = userType;
+        if (this.agencyId && this.countryID) {
+          this._getHazards()
+          this.getCountryLocation();
+          this._getCountryContextIndicators();
+        } else {
+          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            this.uid = user.uid;
+            this.UserType = userType;
 
-          if (this.agencyId && this.countryID) {
-            this._getHazards().then(() => {
-
-            });
+            // if (this.agencyId && this.countryID) {
+            //   this._getHazards()
+            //   this._getCountryContextIndicators();
+            // } else {
+            this.agencyId = agencyId;
+            this.countryID = countryId;
+            this.systemId = systemId;
+            this._getHazards();
+            this.getCountryLocation();
             this._getCountryContextIndicators();
-          } else {
-            this._getCountryID().then(() => {
-              this.getAgencyID().then(() => {
-                this.getCountryLocation();
-              });
-              this._getHazards().then(() => {
+            // this._getCountryID().then(() => {
+            //   this.getAgencyID().then(() => {
+            //     this.getCountryLocation();
+            //   });
+            //   this._getHazards().then(() => {
+            //
+            //   });
+            //   this._getCountryContextIndicators();
+            // });
+            // }
 
-              });
-              this._getCountryContextIndicators();
-            });
-          }
+            PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+              this.countryPermissionsMatrix = isEnabled;
+            }));
+          });
+        }
 
-          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-            this.countryPermissionsMatrix = isEnabled;
-          }));
 
-        });
+        // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        //   this.uid = user.uid;
+        //   this.UserType = userType;
+        //
+        //   if (this.agencyId && this.countryID) {
+        //     this._getHazards().then(() => {
+        //
+        //     });
+        //     this._getCountryContextIndicators();
+        //   } else {
+        //     this._getCountryID().then(() => {
+        //       this.getAgencyID().then(() => {
+        //         this.getCountryLocation();
+        //       });
+        //       this._getHazards().then(() => {
+        //
+        //       });
+        //       this._getCountryContextIndicators();
+        //     });
+        //   }
+        //
+        //   PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+        //     this.countryPermissionsMatrix = isEnabled;
+        //   }));
+        //
+        // });
       })
 
 

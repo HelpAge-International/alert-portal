@@ -68,11 +68,11 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
 
-          if (this.countryId && this.agencyId) {
+          if (this.countryId && this.agencyId && this.isViewing) {
             this._agencyService.getAgency(this.agencyId)
               .map(agency => {
                 return agency as ModelAgency;
@@ -86,32 +86,33 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
                   });
               });
           } else {
-            this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(agencyId => {
+            //     this.agencyId = agencyId;
+            //
+            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+            //       .takeUntil(this.ngUnsubscribe)
+            //       .subscribe(countryId => {
+            //         this.countryId = countryId;
+            this.countryId = countryId;
+            this.agencyId = agencyId;
+            this._agencyService.getAgency(this.agencyId)
+              .map(agency => {
+                return agency as ModelAgency;
+              })
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(agencyId => {
-                this.agencyId = agencyId;
+              .subscribe(agency => {
+                this.agency = agency;
 
-                this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe(countryId => {
-                    this.countryId = countryId;
-
-                    this._agencyService.getAgency(this.agencyId)
-                      .map(agency => {
-                        return agency as ModelAgency;
-                      })
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(agency => {
-                        this.agency = agency;
-
-                        this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(coordinationArrangements => {
-                            this.coordinationArrangements = coordinationArrangements;
-                          });
-                      });
+                  .subscribe(coordinationArrangements => {
+                    this.coordinationArrangements = coordinationArrangements;
                   });
               });
+            //     });
+            // });
           }
         });
       });

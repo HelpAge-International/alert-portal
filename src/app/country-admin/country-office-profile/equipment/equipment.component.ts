@@ -76,11 +76,11 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
 
-          if (this.countryId && this.agencyId) {
+          if (this.countryId && this.agencyId && this.isViewing) {
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
@@ -117,52 +117,55 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
               });
           } else {
 
-            this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agencyId => {
-                this.agencyId = agencyId;
-                this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(countryId => {
-                    this.countryId = countryId;
+            this.agencyId = agencyId;
+            this.countryId = countryId;
 
-                    this._equipmentService.getEquipments(this.countryId)
-                      .subscribe(equipments => {
-                        this.equipments = equipments;
+            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(agencyId => {
+            //     this.agencyId = agencyId;
+            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+            //       .takeUntil(this.ngUnsubscribe)
+            //       .subscribe(countryId => {
+            //         this.countryId = countryId;
 
-                        this.equipments.forEach(equipment => {
-                          const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
+            this._equipmentService.getEquipments(this.countryId)
+              .subscribe(equipments => {
+                this.equipments = equipments;
 
-                          this._noteService.getNotes(equipmentNode).subscribe(notes => {
-                            equipment.notes = notes;
-                          });
+                this.equipments.forEach(equipment => {
+                  const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
 
-                          // Create the new note model
-                          this.newNote[equipment.id] = new NoteModel();
-                          this.newNote[equipment.id].uploadedBy = this.uid;
-                        });
-                      });
+                  this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    equipment.notes = notes;
+                  });
 
-                    this._equipmentService.getSurgeEquipments(this.countryId)
-                      .subscribe(surgeEquipments => {
-                        this.surgeEquipments = surgeEquipments;
-
-                        this.surgeEquipments.forEach(surgeEquipment => {
-                          const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
-
-                          this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
-                            surgeEquipment.notes = notes;
-                          });
-
-                          // Create the new note model
-                          this.newNote[surgeEquipment.id] = new NoteModel();
-                          this.newNote[surgeEquipment.id].uploadedBy = this.uid;
-                        });
-
-                      });
-
-                  })
+                  // Create the new note model
+                  this.newNote[equipment.id] = new NoteModel();
+                  this.newNote[equipment.id].uploadedBy = this.uid;
+                });
               });
+
+            this._equipmentService.getSurgeEquipments(this.countryId)
+              .subscribe(surgeEquipments => {
+                this.surgeEquipments = surgeEquipments;
+
+                this.surgeEquipments.forEach(surgeEquipment => {
+                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
+
+                  this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    surgeEquipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[surgeEquipment.id] = new NoteModel();
+                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                });
+
+              });
+
+            //     })
+            // });
           }
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {

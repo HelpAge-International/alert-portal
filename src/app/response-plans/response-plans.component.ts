@@ -9,9 +9,9 @@ import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
-import { MessageModel } from "../model/message.model";
-import { TranslateService } from "@ngx-translate/core";
-import { NotificationService } from "../services/notification.service";
+import {MessageModel} from "../model/message.model";
+import {TranslateService} from "@ngx-translate/core";
+import {NotificationService} from "../services/notification.service";
 declare const jQuery: any;
 
 @Component({
@@ -68,7 +68,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       if (this.isViewing) {
         this.countryId = this.countryIdForViewing;
@@ -77,9 +77,27 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       } else {
         this.userType = userType;
         let userPath = Constants.USER_PATHS[userType];
-        this.getSystemAgencyCountryIds(userPath);
+        if (this.userType == UserType.PartnerUser) {
+          this.agencyId = agencyId;
+          this.countryId = countryId;
+          this.getResponsePlans(this.countryId);
+        } else {
+          this.getSystemAgencyCountryIds(userPath);
+        }
       }
     });
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   if (this.isViewing) {
+    //     this.countryId = this.countryIdForViewing;
+    //     this.agencyId = this.agencyIdForViewing;
+    //     this.getResponsePlans(this.countryId);
+    //   } else {
+    //     this.userType = userType;
+    //     let userPath = Constants.USER_PATHS[userType];
+    //     this.getSystemAgencyCountryIds(userPath);
+    //   }
+    // });
   }
 
   private getSystemAgencyCountryIds(userPath: string) {
@@ -101,7 +119,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
         orderByChild: "isActive",
-        equalTo: true 
+        equalTo: true
       }
     })
       .takeUntil(this.ngUnsubscribe)
@@ -209,7 +227,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.dialogEditingUserName = editingUser.firstName + " " + editingUser.lastName;
           this.dialogEditingUserEmail = editingUser.email;
         });
-    }else{
+    } else {
       this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
     }
   }
@@ -265,11 +283,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             // Send notification to country director
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => { });
+            this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
+            });
 
-        } else {
+          } else {
             this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
             this.showAlert();
             return;
@@ -334,9 +353,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           // Send notification to regional director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
           notification.time = new Date().getTime();
-          this.notificationService.saveUserNotification(id.$value, notification, UserType.RegionalDirector, agencyId, countryId).then(() => { });
+          this.notificationService.saveUserNotification(id.$value, notification, UserType.RegionalDirector, agencyId, countryId).then(() => {
+          });
         }
         this.updatePartnerValidation(countryId, approvalData);
       });
@@ -357,10 +377,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           // Send notification to global director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name});
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
           notification.time = new Date().getTime();
 
-          this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => { });
+          this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => {
+          });
         }
         this.updatePartnerValidation(countryId, approvalData);
       });

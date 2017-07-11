@@ -9,7 +9,8 @@
       <li>
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{agencyDetail?.name}}</a>
         <div *ngIf="partnerAgencies.length>1" class="dropdown-menu">
-          <a *ngFor="let agency of partnerAgencies" class="dropdown-item" (click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>
+          <a *ngFor="let agency of partnerAgencies" class="dropdown-item"
+             (click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>
         </div>
       </li>
 

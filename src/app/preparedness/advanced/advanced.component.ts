@@ -25,9 +25,9 @@ import {
   PreparednessUser
 } from "../../services/prepactions.service";
 import {ModelDepartment} from "../../model/department.model";
-import { MessageModel } from "../../model/message.model";
+import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
-import { TranslateService } from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
 declare var jQuery: any;
 
 @Component({
@@ -101,14 +101,14 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(protected pageControl: PageControlService,
-                 @Inject(FirebaseApp) firebaseApp: any,
-                protected af: AngularFire,
-                protected router: Router,
-                protected route: ActivatedRoute,
-                protected storage: LocalStorageService,
-                protected userService: UserService,
-                protected notificationService: NotificationService,
-                protected translate: TranslateService) {
+              @Inject(FirebaseApp) firebaseApp: any,
+              protected af: AngularFire,
+              protected router: Router,
+              protected route: ActivatedRoute,
+              protected storage: LocalStorageService,
+              protected userService: UserService,
+              protected notificationService: NotificationService,
+              protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
     this.route.params.subscribe((params: Params) => {
@@ -142,7 +142,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           this.systemAdminId = params["systemId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
           this.filterAssigned = "0";
@@ -153,7 +153,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.permissionsAreEnabled = isEnabled;
           });
 
-          if (this.agencyId && this.countryId && this.systemAdminId) {
+          if (this.agencyId && this.countryId && this.systemAdminId && this.isViewing) {
             // Initialise everything here! We already have the above
             this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
               this.countryId, this.agencyId, this.systemAdminId);
@@ -162,17 +162,16 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.initDocumentTypes();
             this.initAlerts();
           } else {
+            this.countryId = countryId;
+            this.agencyId = agencyId;
+            this.systemAdminId = systemId;
             // Initialise everything here but we need to get countryId, agencyId, systemId
-            this.prepActionService.initActions(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
-              (countryId, agencyId, systemAdmin) => {
-                this.countryId = countryId;
-                this.agencyId = agencyId;
-                this.systemAdminId = systemAdmin;
-                this.initStaff();
-                this.initDepartments();
-                this.initDocumentTypes();
-                this.initAlerts();
-              });
+            this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
+              this.countryId, this.agencyId, this.systemAdminId);
+            this.initStaff();
+            this.initDepartments();
+            this.initDocumentTypes();
+            this.initAlerts();
           }
         });
 
@@ -264,6 +263,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   private initStaff() {
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
@@ -327,9 +327,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         // Send notification to the assignee
         let notification = new MessageModel();
         notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: this.assignActionTask});
+        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: this.assignActionTask});
         notification.time = new Date().getTime();
-        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {});
+        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+        });
       });
     this.closeModal();
   }
@@ -482,7 +483,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
+            isComplete: true,
+            isCompleteAt: new Date().getTime()
+          });
           this.addNote(action);
           this.closePopover(action);
         }
@@ -497,7 +501,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({isComplete: true, isCompleteAt: new Date().getTime()});
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
+          isComplete: true,
+          isCompleteAt: new Date().getTime()
+        });
         this.addNote(action);
         this.closePopover(action);
       }

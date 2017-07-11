@@ -113,7 +113,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.agencyID = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
 
@@ -125,16 +125,16 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
             });
           } else {
-            this._getAgencyID().then(() => {
-              this._getCountryID().then(() => {
-                this._getTotalStaff();
-                this.getStaff();
-                this.getSurgeCapacity();
-                this._getCountryOfficeCapacity().then(() => {
-
-                });
-              });
-            });
+            this.agencyID = agencyId;
+            this.countryID = countryId;
+            // this._getAgencyID().then(() => {
+            //   this._getCountryID().then(() => {
+            this._getTotalStaff();
+            this.getStaff();
+            this.getSurgeCapacity();
+            this._getCountryOfficeCapacity();
+            // });
+            // });
           }
 
           this._getSkills();
@@ -449,8 +449,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             }
           }
         }
-        console.log(this.suportedSkills);
-        console.log(this.techSkills);
       });
   }
 

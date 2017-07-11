@@ -23,6 +23,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   @Output() partnerAgencyRequest = new EventEmitter();
 
   private partnerAgencies = [];
+  private agenciesMap = new Map();
 
   private UserType = UserType;
   private userType: UserType;
@@ -59,7 +60,9 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.agencyId = agencyId;
+      this.countryId = countryId;
       this.isAnonym = user && !user.anonymous ? false : true;
       if (user) {
         if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
@@ -83,7 +86,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               //after user type check, start to do the job
               if (this.USER_TYPE) {
                 if (this.userType == UserType.PartnerUser) {
-                  this.initDataForPartnerUser();
+                  this.initDataForPartnerUser(agencyId, countryId);
                 } else {
                   this.getCountryId().then(() => {
                     this.getAgencyID().then(() => {
@@ -106,13 +109,15 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initDataForPartnerUser() {
+  private initDataForPartnerUser(agencyId, countryId) {
     this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountries => {
 
-        this.agencyId = agencyCountries[0].$key;
-        this.countryId = agencyCountries[0].$value;
+        // this.agencyId = agencyCountries[0].$key;
+        // this.countryId = agencyCountries[0].$value;
+        this.agencyId = agencyId;
+        this.countryId = countryId;
 
         this.userService.getAgencyDetail(this.agencyId)
           .takeUntil(this.ngUnsubscribe)
@@ -120,21 +125,29 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
             this.agencyDetail = agencyDetail;
           });
 
-        console.log(agencyCountries);
-        this.partnerAgencies = [];
-        agencyCountries.forEach(item => {
-          this.userService.getAgencyDetail(item.$key)
+        // this.partnerAgencies = [];
+        agencyCountries.forEach(ids => {
+          this.userService.getAgencyDetail(ids.$key)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agency => {
-              agency["relatedCountryId"] = item.$value;
-              this.partnerAgencies.push(agency);
-              console.log(this.partnerAgencies);
+              // console.log(this.partnerAgencies);
+              agency["relatedCountryId"] = ids.$value;
+              this.agenciesMap.set(ids.$key, agency);
+              this.partnerAgencies = this.getPartnerAgencies(this.agenciesMap);
             });
         });
 
         this.getCountryData();
         this.checkAlerts();
       });
+  }
+
+  getPartnerAgencies(agencies: Map<any, any>) {
+    let data = [];
+    agencies.forEach((v, k) => {
+      data.push(v);
+    });
+    return data;
   }
 
   private checkAlerts() {
@@ -183,6 +196,24 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           this.getCountryData();
           this.checkAlerts();
         });
+
+      //update selection in firebase
+      let selection = {};
+      selection[this.agencyId] = this.countryId;
+      this.af.database.object(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/selection").set(selection).then(() => {
+
+        // Navigate to the same page again - force reload
+        // console.log(PageControlService.buildEndUrl(this.route));
+        this.router.navigateByUrl(PageControlService.buildEndUrl(this.route)).then(() => {
+          window.location.reload();
+        }, error => {
+          console.log(error.message);
+        });
+      }, error => {
+        console.log(error.message);
+      });
+
+
     }
   }
 

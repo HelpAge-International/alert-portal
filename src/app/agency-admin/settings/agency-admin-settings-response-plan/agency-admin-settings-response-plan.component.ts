@@ -19,6 +19,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
   protected ResponsePlansApprovalSettings = Object.keys(ResponsePlansApprovalSettings).map(k => ResponsePlansApprovalSettings[k]).filter(v => typeof v !== "string") as string[];
 
   private uid: string = "";
+  private agencyId: string;
 
   private sections: any[] = [];
   private approvals: any[] = [];
@@ -34,30 +35,35 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType)  => {
-        this.uid = user.uid;
-        this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/responsePlanSettings/sections')
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(_ => {
-            this.ResponsePlanSectionSettings.map(sectionSetting => {
-              this.sections[sectionSetting] = {$key: sectionSetting, $value: false};
+      this.uid = user.uid;
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(id => {
+          this.agencyId = id.$value;
+          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(_ => {
+              this.ResponsePlanSectionSettings.map(sectionSetting => {
+                this.sections[sectionSetting] = {$key: sectionSetting, $value: false};
+              });
+
+              _.map(section => {
+                this.sections[section.$key] = section;
+              });
             });
 
-            _.map(section => {
-              this.sections[section.$key] = section;
-            });
-          });
+          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/approvalHierachy')
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(_ => {
+              this.ResponsePlansApprovalSettings.map(approvalSetting => {
+                this.approvals[approvalSetting] = {$key: approvalSetting, $value: false};
+              });
 
-        this.af.database.list(Constants.APP_STATUS + '/agency/' + this.uid + '/responsePlanSettings/approvalHierachy')
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(_ => {
-            this.ResponsePlansApprovalSettings.map(approvalSetting => {
-              this.approvals[approvalSetting] = {$key: approvalSetting, $value: false};
+              _.map(approval => {
+                this.approvals[approval.$key] = approval;
+              });
             });
-
-            _.map(approval => {
-              this.approvals[approval.$key] = approval;
-            });
-          });
+        });
     });
   }
 
@@ -103,7 +109,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
       return this.sections[index];
     });
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/responsePlanSettings/sections')
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
       .set(sectionItems)
       .then(_ => {
         if (!this.alertShow) {
@@ -123,7 +129,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
       return this.approvals[index];
     });
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.uid + '/responsePlanSettings/approvalHierachy')
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/approvalHierachy')
       .set(approvalItems)
       .then(_ => {
         if (!this.alertShow) {

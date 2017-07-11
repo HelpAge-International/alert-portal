@@ -58,28 +58,33 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
-      if (this.countryId != null && this.agencyId != null) {
+      if (this.countryId != null && this.agencyId != null && this.isViewing) {
         this.populateDepartments();
         this.populateNarratives();
         this.populateBudgets();
       }
       else {
-        this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((agencyId) => {
-            this.agencyId = agencyId;
-            this.populateDepartments();
-            this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((countryId) => {
-                this.countryId = countryId;
-                this.populateNarratives();
-                this.populateBudgets();
-              });
-          });
+        this.agencyId = agencyId;
+        this.countryId = countryId;
+        this.populateDepartments();
+        this.populateNarratives();
+        this.populateBudgets();
+        // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe((agencyId) => {
+        //     this.agencyId = agencyId;
+        //     this.populateDepartments();
+        //     this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
+        //       .takeUntil(this.ngUnsubscribe)
+        //       .subscribe((countryId) => {
+        //         this.countryId = countryId;
+        //         this.populateNarratives();
+        //         this.populateBudgets();
+        //       });
+        //   });
       }
     });
   }

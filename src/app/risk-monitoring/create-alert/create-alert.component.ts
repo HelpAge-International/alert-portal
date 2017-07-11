@@ -11,8 +11,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
-import { NotificationService } from "../../services/notification.service";
-import { MessageModel } from "../../model/message.model";
+import {NotificationService} from "../../services/notification.service";
+import {MessageModel} from "../../model/message.model";
 
 @Component({
   selector: 'app-create-alert',
@@ -77,15 +77,20 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
+      this.agencyId = agencyId;
+      this.countryID = countryId;
+      this._getHazards();
+      this._getDirectorCountryID();
 
-      this._getCountryID().then(() => {
-        this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-        this._getHazards();
-        this._getDirectorCountryID();
-      });
+      // this._getCountryID().then(() => {
+      //   this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
+      //   this._getHazards();
+      //   this._getDirectorCountryID();
+      // });
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -94,6 +99,24 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         err => console.log(err);
       });
     });
+
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   this.UserType = userType;
+    //
+    //   this._getCountryID().then(() => {
+    //     this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
+    //     this._getHazards();
+    //     this._getDirectorCountryID();
+    //   });
+    //
+    //   // get the country levels values
+    //   this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+    //     .takeUntil(this.ngUnsubscribe).subscribe(content => {
+    //     this.countryLevelsValues = content;
+    //     err => console.log(err);
+    //   });
+    // });
   }
 
   ngOnDestroy(): void {
@@ -123,20 +146,19 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
           .push(dataToSave)
           .then(() => {
 
-            if(dataToSave.alertLevel == 2)
-            {
+            if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
               const redAlertNotificationSetting = 1;
               const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[dataToSave.hazardScenario]);
-              
+
               let notification = new MessageModel();
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", { riskName: riskNameTranslated});
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", { riskName: riskNameTranslated});
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", {riskName: riskNameTranslated});
               notification.time = new Date().getTime();
-              
+
               this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, redAlertNotificationSetting, this.agencyId, this.countryID);
             }
-            
+
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
             this.router.navigateByUrl('dashboard');
           }).catch((error: any) => {
