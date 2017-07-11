@@ -59,7 +59,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private globalUsers: any[] = [];
   private departments: ModelDepartment[] = [];
   private departmentMap: Map<string, string> = new Map<string, string>();
-
+  private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
@@ -79,26 +79,32 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.getStaffData();
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid + "/departments", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(snap => {
-        this.departmentMap.clear();
-        this.departments = [];
-        snap.forEach((snapshot) => {
-          let x: ModelDepartment = new ModelDepartment();
-          x.id = snapshot.key;
-          x.name = snapshot.val().name;
-          this.departments.push(x);
-          this.departmentMap.set(x.id, x.name);
-        });
+      .subscribe(id => {
+        this.agencyId = id.$value;
+        this.getStaffData();
+
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(snap => {
+            this.departmentMap.clear();
+            this.departments = [];
+            snap.forEach((snapshot) => {
+              let x: ModelDepartment = new ModelDepartment();
+              x.id = snapshot.key;
+              x.name = snapshot.val().name;
+              this.departments.push(x);
+              this.departmentMap.set(x.id, x.name);
+            });
+          });
       });
   }
 
   private getStaffData() {
     this.staffs = [];
     this.dealedStaff = [];
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
       .do(list => {
         list.forEach(item => {
           this.staffDisplay = new ModelStaffDisplay();
@@ -310,7 +316,7 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private filterGlobalUsers() {
     this.globalUsers = [];
-    this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(users => {
         if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {

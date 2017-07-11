@@ -192,7 +192,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyId => {
         this.agencyId = agencyId;
-        this.agencyService.getSystemId(this.agencyId)
+        this.agencyService.getSystemId(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(systemId => {
             this.systemId = systemId;
@@ -414,9 +414,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staffData["/userPublic/" + uid + "/"] = user;
     //add to group
     staffData["/group/systemadmin/allusersgroup/" + uid + "/"] = true;
-    staffData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + uid + "/"] = true;
+    staffData["/group/agency/" + this.uid + "/agencyallusersgroup/" + uid + "/"] = true;
     console.log("group path: "+ (this.userType - 1)+"/"+Constants.GROUP_PATH_AGENCY[this.userType - 1]);
-    staffData["/group/agency/" + this.agencyId + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
+    staffData["/group/agency/" + this.uid + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
     //staff extra info
     let staff = new ModelStaff();
     staff.userType = Number(this.userType);
@@ -599,8 +599,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     delData["/staff/" + this.selectedOfficeId + "/" + this.selectedStaffId + "/"] = null;
 
     delData["/group/systemadmin/allusersgroup/" + this.selectedStaffId + "/"] = null;
-    delData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + this.selectedStaffId + "/"] = null;
-    delData["/group/agency/" + this.agencyId + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + this.selectedStaffId + "/"] = null;
+    delData["/group/agency/" + this.uid + "/agencyallusersgroup/" + this.selectedStaffId + "/"] = null;
+    delData["/group/agency/" + this.uid + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + this.selectedStaffId + "/"] = null;
 
     this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
