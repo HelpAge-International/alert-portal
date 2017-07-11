@@ -1740,7 +1740,8 @@
                 "LOCATION_SELECT": "Please select the locations affected",
                 "ADD_ANOTHER_LOCATION": "Add another location"
             },
-            "SAVE_INDICATOR": "Save new indicator",
+            "SAVE_INDICATOR": "Save indicator",
+            "SAVE_NEW_INDICATOR": "Save new indicator",
             "TITLE_EDIT_INDICATOR": "Edit Indicator"
         },
         "ADD_ALERT": {
