@@ -203,12 +203,14 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/selection").set(selection).then(() => {
 
         // Navigate to the same page again - force reload
-        // console.log(PageControlService.buildEndUrl(this.route));
-        this.router.navigateByUrl(PageControlService.buildEndUrl(this.route)).then(() => {
-          window.location.reload();
-        }, error => {
-          console.log(error.message);
-        });
+        let url = PageControlService.buildEndUrl(this.route);
+        if (url.includes("preparedness")) {
+          this.router.navigateByUrl(PageControlService.buildEndUrl(this.route)).then(() => {
+            window.location.reload();
+          }, error => {
+            console.log(error.message);
+          });
+        }
       }, error => {
         console.log(error.message);
       });
