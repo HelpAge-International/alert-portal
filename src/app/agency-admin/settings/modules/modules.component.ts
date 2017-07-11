@@ -23,7 +23,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   private uid: string = "";
   private modules: any[] = [];
   private saved: boolean = false;
-
+  private agencyId: string;
   private alertMessage: string = "Message";
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
@@ -46,20 +46,24 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.af.database.list(Constants.APP_STATUS + '/module/' + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(_ => {
+      this.uid = user.uid;
+      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(id => {
+          this.agencyId = id.$value;
+          this.af.database.list(Constants.APP_STATUS + '/module/' + this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(_ => {
+              this.ModuleName.map(moduleName => {
+                this.modules[moduleName] = {$key: moduleName, privacy:-1, status:false};
+              });
 
-            this.ModuleName.map(moduleName => {
-              this.modules[moduleName] = {$key: moduleName, privacy:-1, status:false};
+              _.map(module => {
+                this.modules[module.$key] = module;
+              });
+
+              this.populateEnabledButtonsList();
             });
-
-            _.map(module => {
-              this.modules[module.$key] = module;
-            });
-
-            this.populateEnabledButtonsList();
         });
     });
   }
@@ -110,7 +114,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   		return this.modules[index];
   	});
 
-  	this.af.database.object(Constants.APP_STATUS + '/module/' + this.uid)
+  	this.af.database.object(Constants.APP_STATUS + '/module/' + this.agencyId)
   	.set(moduleItems)
   	.then(_ => {
       if (!this.alertShow){

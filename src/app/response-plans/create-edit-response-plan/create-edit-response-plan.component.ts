@@ -1038,6 +1038,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
+      this.doublerCounting();
+      this.continueButtonPressedOnSection9();
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[6], false);

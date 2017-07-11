@@ -62,9 +62,9 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(id => {
           this.agencyId = id.$value;
+          console.log("Agency admin uid: " + this.agencyId);
           this.loadAgencyData(this.agencyId);
         });
-      console.log("Agency admin uid: " + this.agencyId);
     });
   }
 

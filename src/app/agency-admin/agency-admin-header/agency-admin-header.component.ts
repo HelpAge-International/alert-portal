@@ -39,15 +39,22 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
         this.USER_TYPE = Constants.USER_PATHS[UserType.AgencyAdmin];
+
+        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(id => {
+          this.af.database.object(Constants.APP_STATUS + "/agency/" + id.$value)
+            .takeUntil(this.ngUnsubscribe).subscribe(agency => {
+            this.agencyName = agency.name;
+          });
+        });
+
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe).subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
         });
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid)
-          .takeUntil(this.ngUnsubscribe).subscribe(agency => {
-          this.agencyName = agency.name;
-        });
+
     });
   }
 

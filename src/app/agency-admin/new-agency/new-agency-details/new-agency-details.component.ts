@@ -17,7 +17,6 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private agencyId: string;
-  private agencyName: string;
   private agencyAdminName: string;
 
   private successInactive: boolean = true;
@@ -59,17 +58,32 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(id => {
             this.agencyId = id.$value;
+            console.log("Agency Id: "+ this.agencyId);
+            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                if(agency.logoPath != null){
+                  this.agencyLogo = agency.logoPath;
+                }
+                this.agencyAddressLine1 = agency.addressLine1 ? agency.addressLine1 : '';
+                this.agencyAddressLine2 = agency.addressLine2 ? agency.addressLine2 : '';
+                this.agencyAddressLine3 = agency.addressLine3 ? agency.addressLine3 : '';
+                this.agencyCity = agency.city ? agency.city : '';
+                this.agencyPostCode = agency.postCode ? agency.postCode : '';
+                this.agencyWebAddress = agency.website ? agency.website : '';
+                this.agencyPhone = agency.phone ? agency.phone : '';
+                if(agency.country != null){
+                  this.agencyCountry = agency.country;
+                }
+                if(agency.currency != null){
+                  this.agencyCurrency = agency.currency;
+                }
+              });
           });
-        console.log("New agency admin uid: " + this.uid);
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
           this.agencyAdminName = user.firstName;
-        });
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(agency => {
-          this.agencyName = agency.name;
         });
     });
   }
@@ -80,8 +94,6 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log("New agency name: " + this.agencyName);
-
     if (this.validate()) {
 
       let agencyData = {};
