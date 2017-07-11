@@ -412,9 +412,9 @@
                         <div class="col-md-2 col-sm-2"
                              [ngClass]="
                                          {
-                                         'text-warning': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                         'text-success': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                         'text-danger': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
+                                         'text-warning': action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()),
+                                         'text-success': action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()),
+                                         'text-danger': (action.asignee == '' || action.asignee == null) && !((!action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && (action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())))
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -422,13 +422,15 @@
                                             <i class="fa fa-stack-1x fa-inverse"
                                                [ngClass]="
                                                {
-                                               'fa-ellipsis-h': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                               'fa-check': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                               'fa-times': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
+                                               'fa-ellipsis-h': action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()),
+                                               'fa-check': action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()),
+                                               'fa-times': (action.asignee == '' || action.asignee == null) && !((!action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && (action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())))
                                                }
                                                "></i>
                                         </span>
-                          {{ACTION_STATUS[action.dueDate <= getNow() || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) ? 0 : (action.isComplete ? 2 : 1)] | translate}}
+                        {{ACTION_STATUS[
+                            action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()) ? 1 :
+                                ((action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())) ? 2 : 0)] | translate}}
                         </div>
                         <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 

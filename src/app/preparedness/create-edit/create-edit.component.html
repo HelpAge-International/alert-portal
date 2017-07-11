@@ -13,7 +13,12 @@
         <button href="#" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom && (!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Delete) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Delete)) || userType == userTypes.CountryAdmin)" (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
-        <button class="btn btn-block btn-outline-primary" *ngIf="action.type != actionType.chs && userType == userTypes.CountryDirector" (click)="showActionConfirm('archive-action')">
+        <button class="btn btn-block btn-outline-primary" *ngIf="
+                !(action.type == actionType.chs ||
+                 (action.type == actionType.mandated && userType != userTypes.CountryDirector) ||
+                 (action.type == actionType.custom && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Delete) ||
+                 (action.type == actionType.custom && action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Delete))
+            " (click)="showActionConfirm('archive-action')">
           {{"PREPAREDNESS.ARCHIVE_ACTION_BUTTON" | translate}}
         </button>
       </div>
@@ -121,8 +126,8 @@
           <div class="form-group">
             <label for="n-AssignTo">{{"PREPAREDNESS.ASSIGN_TO" | translate}}</label>
             <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader"
-                    [disabled]="((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
-                                    || ((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions))
+                    [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
+                                    || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions))
                                     || ((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
               <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
               <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>

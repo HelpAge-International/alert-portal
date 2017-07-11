@@ -16,12 +16,14 @@
 
     <!-- Region header -->
     <div *ngFor="let x of regions">
-      <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
+      <div class="Accordion Ribbon__response Ribbon__section__wrap"  role="tablist" aria-multiselectable="true"
            [attr.data-target]="x.listOfCountries()" data-toggle="collapse" [attr.href]="x.getRegionIdHash()"
            aria-expanded="true">
-        <div class="row">
-          <h3 class="col-sm-11">{{x.regionName}}</h3>
-          <i class="fa fa-caret-down text-primary col-sm-1 align-self-center" aria-hidden="true"></i>
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number">
+            <h4> {{x.regionName}}</h4>
+          </div>
+          <div class="Ribbon__header__chevron"></div>
         </div>
       </div>
 
@@ -38,13 +40,13 @@
                     translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
                 </div>
                 <div class="col-md-2 col-lg-2 col-sm-2 text-center">
-                  <i *ngIf="y.overallAction() == -1 || !moduleAccess.minimumPreparedness" class="fa fa-times-circle fa-5x text-muted"></i>
-                  <i *ngIf="y.overallAction() >= minThreshGreen && moduleAccess.minimumPreparedness" class="fa fa-check-circle fa-5x text-success"
+                  <i *ngIf="y.overall() == -1 || !moduleAccess.minimumPreparedness" class="fa fa-times-circle fa-5x text-muted"></i>
+                  <i *ngIf="y.overall() >= minThreshGreen && moduleAccess.minimumPreparedness" class="fa fa-check-circle fa-5x text-success"
                      aria-hidden="true"></i>
-                  <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen) && moduleAccess.minimumPreparedness"
+                  <i *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen) && moduleAccess.minimumPreparedness"
                      class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
                   <i
-                    *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1 && moduleAccess.minimumPreparedness"
+                    *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen) && y.overall() != -1 && moduleAccess.minimumPreparedness"
                     class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
                   <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                 </div>
@@ -84,21 +86,21 @@
                 </thead>
                 <tbody>
                 <tr *ngFor="let z of y.departments">
-                  <td>{{z.department}}</td>
-                  <td *ngIf="z.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                  <td>{{DEPARTMENT_MAP.get(z.id)}}</td>
+                  <td *ngIf="z.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                   aria-hidden="true"></i></td>
-                  <td *ngIf="z.actionStatus >= minThreshYellow && !(z.actionStatus >= minThreshGreen)"><i
+                  <td *ngIf="z.overall() >= minThreshYellow && !(z.overall() >= minThreshGreen)"><i
                     class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                  <td *ngIf="!(z.actionStatus >= minThreshYellow) && !(z.actionStatus >= minThreshGreen)"><i
+                  <td *ngIf="!(z.overall() >= minThreshYellow) && !(z.overall() >= minThreshGreen)"><i
                     class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                 </tr>
                 <tr *ngIf="y.departments.length != 0">
                   <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
-                  <td *ngIf="y.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                  <td *ngIf="y.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                      aria-hidden="true"></i></td>
-                  <td *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"><i
+                  <td *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen)"><i
                     class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                  <td *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen)"><i
+                  <td *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen)"><i
                     class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                 </tr>
                 </tbody>
@@ -109,13 +111,14 @@
       </div>
     </div>
     <div>
-      <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
-           [attr.data-target]="otherRegion.listOfCountries()" data-toggle="collapse"
-           [attr.href]="otherRegion.getRegionIdHash()"
+      <div class="Accordion Ribbon__response Ribbon__section__wrap"  role="tablist" aria-multiselectable="true"
+           [attr.data-target]="otherRegion.listOfCountries()" data-toggle="collapse" [attr.href]="otherRegion.getRegionIdHash()"
            aria-expanded="true">
-        <div class="row">
-          <h3 class="col-sm-11">{{otherRegion.regionName}}</h3>
-          <i class="fa fa-caret-down text-primary col-sm-1 align-self-center" aria-hidden="true"></i>
+        <div class="Ribbon__header__wrap">
+          <div class="Ribbon__header__number">
+            <h4> {{otherRegion.regionName}}</h4>
+          </div>
+          <div class="Ribbon__header__chevron"></div>
         </div>
       </div>
       <div id="{{otherRegion.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
@@ -132,13 +135,13 @@
                     translate}} ({{getCountryCodeFromLocation(y.location)}})</strong></p>
                 </div>
                 <div class="col-md-2 col-lg-2 col-sm-2 text-center">
-                  <i *ngIf="y.overallAction() == -1 || !moduleAccess.minimumPreparedness" class="fa fa-times-circle fa-5x text-muted"></i>
-                  <i *ngIf="y.overallAction() >= minThreshGreen && moduleAccess.minimumPreparedness" class="fa fa-check-circle fa-5x text-success"
+                  <i *ngIf="y.overall() == -1 || !moduleAccess.minimumPreparedness" class="fa fa-times-circle fa-5x text-muted"></i>
+                  <i *ngIf="y.overall() >= minThreshGreen && moduleAccess.minimumPreparedness" class="fa fa-check-circle fa-5x text-success"
                      aria-hidden="true"></i>
-                  <i *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen) && moduleAccess.minimumPreparedness"
+                  <i *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen) && moduleAccess.minimumPreparedness"
                      class="fa fa-exclamation-circle fa-5x text-warning" aria-hidden="true"></i>
                   <i
-                    *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen) && y.overallAction() != -1 && moduleAccess.minimumPreparedness"
+                    *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen) && y.overall() != -1 && moduleAccess.minimumPreparedness"
                     class="fa fa-times-circle fa-5x text-danger" aria-hidden="true"></i>
                   <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                 </div>
@@ -183,21 +186,21 @@
                 </thead>
                 <tbody>
                 <tr *ngFor="let z of y.departments">
-                  <td>{{z.department}}</td>
-                  <td *ngIf="z.actionStatus >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                  <td>{{DEPARTMENT_MAP.get(z.id)}}</td>
+                  <td *ngIf="z.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                   aria-hidden="true"></i></td>
-                  <td *ngIf="z.actionStatus >= minThreshYellow && !(z.actionStatus >= minThreshGreen)"><i
+                  <td *ngIf="z.overall() >= minThreshYellow && !(z.overall() >= minThreshGreen)"><i
                     class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                  <td *ngIf="!(z.actionStatus >= minThreshYellow) && !(z.actionStatus >= minThreshGreen)"><i
+                  <td *ngIf="!(z.overall() >= minThreshYellow) && !(z.overall() >= minThreshGreen)"><i
                     class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                 </tr>
                 <tr *ngIf="y.departments.length != 0">
                   <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
-                  <td *ngIf="y.overallAction() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                  <td *ngIf="y.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
                                                                      aria-hidden="true"></i></td>
-                  <td *ngIf="y.overallAction() >= minThreshYellow && !(y.overallAction() >= minThreshGreen)"><i
+                  <td *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen)"><i
                     class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
-                  <td *ngIf="!(y.overallAction() >= minThreshYellow) && !(y.overallAction() >= minThreshGreen)"><i
+                  <td *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen)"><i
                     class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
                 </tr>
                 </tbody>

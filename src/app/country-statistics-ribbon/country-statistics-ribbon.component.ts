@@ -272,6 +272,9 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     this.minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     this.advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
     this.chsPrepPercentage = chsTotal == 0 ? 0 : (chsGreen * 100) / chsTotal;
+    this.minPrepPercentage = Math.round(this.minPrepPercentage);
+    this.advPrepPercentage = Math.round(this.advPrepPercentage);
+    this.chsPrepPercentage = Math.round(this.chsPrepPercentage);
     if (minTotal == 0) {
       this.mpaStatusColor = 'grey';
       this.mpaStatusIcon = 'fa-times';
