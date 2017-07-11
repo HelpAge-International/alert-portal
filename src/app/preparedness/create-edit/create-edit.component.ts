@@ -3,7 +3,7 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {
-  ActionLevel, ActionType, AlertMessageType, DurationType, HazardCategory,
+  ActionLevel, ActionType, AlertLevels, AlertMessageType, DurationType, HazardCategory,
   HazardScenario, UserType
 } from "../../utils/Enums";
 import {Action} from "../../model/action";
@@ -76,12 +76,15 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private filterLockDueDate: boolean = true;
   private filterLockBudget: boolean = true;
   private filterLockDocument: boolean = true;
+  private showDueDate: boolean = true;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private prepActionService: PrepActionService = new PrepActionService();
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
+  private hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
 
   private now: Date = new Date();
 
@@ -131,6 +134,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, user.uid, userType, (isEnabled) => {
           this.permissionsAreEnabled = isEnabled;
           if (this.action.id != null) {
+            this.showDueDate = false;
             this.initFromExistingActionId(userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customMPA.Edit, userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customAPA.Edit);
           }
         });
@@ -162,7 +166,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   public initFromExistingActionId(canEditMPA: boolean, canEditAPA: boolean) {
     this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
-
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/preparedness/minimum");
@@ -170,6 +173,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         else {
           this.router.navigateByUrl("/preparedness/advanced");
         }
+      }
+      if (action.type == ActionLevel.MPA) {
+        this.showDueDate = true;
+        this.editDisableLoading = false;
+      }
+      else {
+        this.initialiseListOfHazardsHazards();
       }
 
       this.action.id = action.id;
@@ -196,7 +206,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.action.frequencyQuantity = action.frequencyValue;
       }
       this.action.computedClockSetting = action.computedClockSetting;
-      this.editDisableLoading = false;
 
       if(!this.oldAction)
       {
@@ -224,6 +233,37 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private convertTimestampToDate(timestamp: number) {
     return new Date(timestamp);
+  }
+
+  private initialiseListOfHazardsHazards() {
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+        this.evaluateDueDate(0);
+        this.editDisableLoading = false;
+      });
+
+    // Populate actions
   }
 
   /**
@@ -339,9 +379,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.removeFilterLockDoc();
 
     // Save/update the action
-    if (this.action.validate()) {
+    if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
-      updateObj.dueDate = this.action.dueDate;
+      if (this.showDueDate) {
+        updateObj.dueDate = this.action.dueDate;
+      }
+      else {
+        updateObj.dueDate = null;
+      }
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;
@@ -472,7 +517,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected selectHazardCategory(hazardKey: number, event: any) {
     if (hazardKey == -1) {
       this.action.hazards = new Map<HazardScenario, boolean>();
-      this.action.isAllHazards = true;
+      this.action.isAllHazards = !this.action.isAllHazards;
     }
     else {
       this.action.isAllHazards = false;
@@ -484,7 +529,26 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       });
     }
 
-    console.log(this.action.hazards);
+    // Evaluate DueDate
+    this.evaluateDueDate(hazardKey);
+  }
+
+  protected evaluateDueDate(hazardKey: number) {
+    let result: boolean = false;
+    if (this.action.isAllHazards == true) {
+      this.hazardRedAlert.forEach((value, key) => {
+        if (value) {
+          result = true;
+        }
+      });
+    }
+    this.action.hazards.forEach((value, key) => {
+      if (value && this.hazardRedAlert.get(key) && this.hazardRedAlert.get(key) == true) {
+        result = true;
+      }
+    });
+
+    this.showDueDate = result;
   }
 
   protected showActionConfirm(modal: string) {
@@ -580,7 +644,7 @@ export class CreateEditPrepActionHolder {
     this.type = ActionType.custom;
   }
 
-  public validate() {
+  public validate(amShowingDueDate: boolean) {
     if (this.task != undefined)
       this.task = this.task.trim();
     if (this.task == '' || this.task == undefined || this.task.length == 0) {
@@ -591,7 +655,7 @@ export class CreateEditPrepActionHolder {
       console.log("Failed level check");
       return false;
     }
-    if (this.dueDate == undefined || this.dueDate == 0) {
+    if (this.dueDate == undefined || this.dueDate == 0 && amShowingDueDate) {
       console.log("Failed dueDate check");
       return false;
     }

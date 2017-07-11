@@ -77,7 +77,9 @@
           <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
           <div class="row no-gutters">
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
-              <input type="checkbox"  [disabled]="editDisableLoading || action.type != actionType.custom" [checked]="action.isAllHazards ? action.isAllHazards : false"
+              <input type="checkbox"
+                     [disabled]="editDisableLoading || action.type != actionType.custom"
+                     [checked]="action.isAllHazards ? action.isAllHazards : false"
                      (change)="selectHazardCategory(-1, $event)">
               <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm Icon--alert"></span>&nbsp;
               {{"PREPAREDNESS.ALL_HAZARDS" | translate}}
@@ -147,7 +149,7 @@
       <!--
             DUE DATE
       -->
-      <div class="row System-admin--form-wrap">
+      <div class="row System-admin--form-wrap" *ngIf="showDueDate">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
             <label for="n-DueDate">{{"PREPAREDNESS.DUE_DATE" | translate}}:</label>
