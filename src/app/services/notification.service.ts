@@ -324,9 +324,9 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
   getCountryAdministratorNodes(agencyId: string, countryId: string, userId: string)
   {
     return [
-            "/messageRef/agency/" + agencyId + "/countryadmins/" + userId,
-            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
-            "/messageRef/systemadmin/allcountryadminsgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
+            "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
             "/messageRef/systemadmin/allusersgroup/" + countryId];
   }
 
