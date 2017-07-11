@@ -458,14 +458,50 @@
       <div
         *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0">
 
-        <div *ngFor="let action of actionsToday">
+        <div *ngFor="let action of actionsOverdue">
+          <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getActionTitle(action)}}<strong> {{action.dueDate | date:'mediumDate'}}</strong>.
+                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+                translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div *ngFor="let indicator of indicatorsOverdue">
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1">
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{indicator.dueDate | date:'mediumDate'}}</strong>.
+                <span>{{indicator.name}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
+                translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div *ngFor="let action of actionsToday">
+          <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
               <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
-                <span>{{action.task}}</span>
+                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
             <div class="col-md-3">
@@ -501,7 +537,7 @@
             </div>
             <div class="col-md-8">
               <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
-                <span>{{action.task}}</span>
+                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
             <div class="col-md-3">

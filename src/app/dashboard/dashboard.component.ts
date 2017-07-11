@@ -38,8 +38,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private uid: string;
   private countryId: string;
   private agencyId: string;
+  private systemId: string;
+  private actionsOverdue = [];
   private actionsToday = [];
   private actionsThisWeek = [];
+  private indicatorsOverdue = [];
   private indicatorsToday = [];
   private indicatorsThisWeek = [];
 
@@ -143,6 +146,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getAgencyID().then(() => {
       this.getCountryData();
     });
+    this.userService.getSystemAdminId(this.NODE_TO_CHECK, this.uid)
+      .subscribe(systemId => { this.systemId = systemId;})
   }
 
   private loadDataForPartnerUser(agencyId, countryId) {
@@ -240,8 +245,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
+        this.actionsOverdue = [];
         this.actionsToday = [];
         this.actionsThisWeek = [];
+        this.actionsOverdue = actions.filter(action => action.dueDate < startOfToday);
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
       });
@@ -249,8 +256,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
+        let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
+        if (overdueIndicators.length > 0) {
+          overdueIndicators.forEach(indicator => {
+            if (this.actionService.isExist(indicator.$key, this.indicatorsOverdue)) {
+              let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsOverdue);
+              if (index != -1) {
+                this.indicatorsOverdue[index] = indicator;
+              }
+            } else {
+              this.indicatorsOverdue.push(indicator);
+            }
+          });
+        }
         if (dayIndicators.length > 0) {
           dayIndicators.forEach(indicator => {
             if (this.actionService.isExist(indicator.$key, this.indicatorsToday)) {
@@ -372,6 +392,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getActionTitle(action): string {
     return this.actionService.getActionTitle(action);
+  }
+
+  getCHSActionTask(action) {
+    if (action.type == ActionType.chs) {
+      this.actionService.getCHSActionTask(action, this.systemId)
+        .subscribe(task => { action.task = task; })
+    }
   }
 
   getIndicatorName(indicator): string {

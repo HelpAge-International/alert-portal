@@ -347,7 +347,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     return indicatorClass;
   }
 
-  updateIndicatorStatus(hazardID: string, indicatorID: string, indicatorKey: number) {
+  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
+    const indicatorID = indicator.$key;
 
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');
@@ -356,6 +357,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     var triggerSelected = this.indicatorTrigger[indicatorID];
     var dataToSave = {triggerSelected: triggerSelected, updatedAt: new Date().getTime()};
+    dataToSave['dueDate'] = this._getIndicatorFutureTimestamp(indicator); // update the due date
 
     var urlToUpdate;
 

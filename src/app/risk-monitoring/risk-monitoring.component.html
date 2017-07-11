@@ -161,7 +161,7 @@
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
-                         (click)="updateIndicatorStatus('countryContext', indicatorC.$key, indicatorKey)">
+                         (click)="updateIndicatorStatus('countryContext', indicatorC, indicatorKey)">
                       {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
                     </div>
                     <br>
@@ -392,7 +392,7 @@
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
-                         (click)="updateIndicatorStatus(hazard.id, indicator.$key, indicatorKey)">
+                         (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
                       {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
                     </div>
                     <br>
@@ -697,7 +697,7 @@
                     <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
-                           (click)="updateIndicatorStatus(hazard.id, indicator.$key, indicatorKey)">
+                           (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
                         {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
                       </div>
                       <br>

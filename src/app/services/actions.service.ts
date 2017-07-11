@@ -32,17 +32,22 @@ export class ActionsService {
   }
 
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
+    // Only retrieve a 7 days period actions
+    let today = new Date();
+    let limitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+
     return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {
       query: {
         orderByChild: "dueDate",
-        startAt: moment().startOf('day').valueOf()
+        //startAt: moment().startOf('day').valueOf(),  SHOW ALSO EXPIRED ACTIONS
+        endAt: limitDate.getTime()
       }
     })
       .map(actions => {
         let filteredActions = [];
         actions.forEach(action => {
           // TODO - Change to 'assignee' in db
-          if (action.asignee === uid) {
+          if (action.asignee === uid && !action.isComplete) {
             filteredActions.push(action);
           }
         });
@@ -52,10 +57,16 @@ export class ActionsService {
 
   getIndicatorsDueInWeek(countryId, uid) {
     let startOfToday = moment().startOf('day').valueOf();
+
+    // Only retrieve a 7 days period indicator
+    let today = new Date();
+    let limitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+
     let countryContextIndicators = this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId, {
       query: {
         orderByChild: "dueDate",
-        startAt: startOfToday
+        // startAt: startOfToday, SHOW ALSO EXPIRED INDICATORS
+        endAt: limitDate.getTime()
       }
     })
       .map(indicators => {
@@ -76,7 +87,8 @@ export class ActionsService {
         return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardId, {
           query: {
             orderByChild: "dueDate",
-            startAt: startOfToday
+            // startAt: startOfToday, SHOW ALSO EXPIRED INDICATORS
+            endAt: limitDate.getTime()  
           }
         })
       })
@@ -106,27 +118,58 @@ export class ActionsService {
     return -1;
   }
 
+  getCHSActionTask(action, systemId: string) {
+    
+    return this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + systemId + "/" + action.$key)
+      .takeUntil(this.ngUnsubscribe)
+      .map(chsAction => {
+        if (chsAction != null) {
+          return chsAction.task;
+        }
+      });
+  }
+
   getActionTitle(action): string {
     let title = "";
+    let today = moment().startOf('day').valueOf();
+
     if (action.type == ActionType.chs) {
-      title = "A CHS preparedness action needs to be completed"
+      title = "A CHS preparedness action"
     } else if (action.level == ActionLevel.MPA) {
-      title = "A minimum preparedness action needs to be completed"
+      title = "A minimum preparedness action"
     } else if (action.level == ActionLevel.APA) {
-      title = "An advanced preparedness action needs to be completed"
+      title = "An advanced preparedness action"
     }
+
+    if(action.dueDate && today > action.dueDate)
+    {
+      title+= "  was due on";
+    } else {
+      title+= "  needs to be completed";
+    }
+
     return title;
   }
 
   getIndicatorTitle(indicator): string {
     let title = "";
+    let today = moment().startOf('day').valueOf();
+
     if (indicator.triggerSelected == AlertLevels.Green) {
-      title = "A green level indicator needs to be completed"
+      title = "A green level indicator"
     } else if (indicator.triggerSelected == AlertLevels.Amber) {
-      title = "An amber level indicator needs to be completed"
+      title = "An amber level indicator"
     } else if (indicator.triggerSelected == AlertLevels.Red) {
-      title = "A red level indicator needs to be completed"
+      title = "A red level indicator"
     }
+
+    if(indicator.dueDate && today > indicator.dueDate)
+    {
+      title+= "  was due on";
+    } else {
+      title+= "  needs to be completed";
+    }
+
     return title;
   }
 
