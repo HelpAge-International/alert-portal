@@ -104,6 +104,7 @@ export class MapService {
     this.listCountries = [];
     this.mapCountries.forEach((value, key) => {
       value.calculateDepartments();
+      value.calculateHazardsList();
       this.listCountries.push(value);
       let position = 0;
       if (this.clickedCountry != null) {
@@ -827,6 +828,7 @@ export class MapCountry {
   public actionMap: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
   public departments: MapDepartment[] = [];
   public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+  public hazardScenarioList: HazardScenario[] = [];
 
   constructor(countryId: string, location: number) {
     this.location = location;
@@ -846,6 +848,15 @@ export class MapCountry {
     });
     depMap.forEach((value, key) => {
       this.departments.push(value);
+    });
+  }
+
+  public calculateHazardsList() {
+    this.hazardScenarioList = [];
+    this.hazards.forEach((value, key) => {
+      if (value) {
+        this.hazardScenarioList.push(key);
+      }
     });
   }
 

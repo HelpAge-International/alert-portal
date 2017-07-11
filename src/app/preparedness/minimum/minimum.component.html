@@ -302,12 +302,11 @@
                                   CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
                                 <div class="col-6 text-bold text-right"
-                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                     *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">Edit</a>
-                                  | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                        (click)="deleteNote(note, action)">Delete</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
@@ -560,12 +559,11 @@
                                 CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                               </div>
                               <div class="col-6 text-bold text-right"
-                                   *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                                <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                   *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                                <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                    (click)="editNote(note, action)">Edit</a>
-                                | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                      (click)="deleteNote(note, action)">Delete</a>
                               </div>
                               <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
@@ -766,12 +764,11 @@
                                   CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
                                 <div class="col-6 text-bold text-right"
-                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                     *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">Edit</a>
-                                  | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                        (click)="deleteNote(note, action)">Delete</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">

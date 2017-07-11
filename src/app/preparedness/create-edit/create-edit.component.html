@@ -9,7 +9,7 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!action.id">{{"PREPAREDNESS.TITLE_TEXT_CREATE_PAGE" | translate}}</h1>
       <h1 *ngIf="action.id">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
-      <div class="Action-buttons-wrapper__absolute" *ngIf="action.id">
+      <div class="Action-buttons-wrapper__absolute" *ngIf="!editDisableLoading && action.id">
         <button href="#" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom && (!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Delete) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Delete)) || userType == userTypes.CountryAdmin)" (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>

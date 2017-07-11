@@ -51,15 +51,15 @@
                   <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                 </div>
                 <div class="col-sm-7">
-                  <div *ngFor="let z of hazards">
-                    <div *ngIf="z.location == y.location" class="col-sm- col-md-2 text-center pull-right">
+                  <div *ngFor="let z of y.hazardScenarioList">
+                    <div class="col-sm- col-md-2 text-center pull-right">
                       <p class="text-center"><i
-                        class="Icon__circle Icon--b-black {{(isNumber(z.hazardScenario) ? getCSSHazard(z.hazardScenario) : 'Icon--alert')}} Icon--sm text-center"></i>
+                        class="Icon__circle Icon--b-black {{(isNumber(z) ? getCSSHazard(z) : 'Icon--alert')}} Icon--sm text-center"></i>
                       </p>
-                      <p *ngIf="isNumber(z.hazardScenario)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z.hazardScenario | translate}}</b></span>
+                      <p *ngIf="isNumber(z)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z | translate}}</b></span>
                       </p>
-                      <p class="MapList__HazardOverflow" *ngIf="!isNumber(z.hazardScenario)">
-                        <b>{{z.hazardScenario}}</b></p>
+                      <p class="MapList__HazardOverflow" *ngIf="!isNumber(z)">
+                        <b>{{z}}</b></p>
                     </div>
                   </div>
                 </div>
@@ -146,15 +146,16 @@
                   <p>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</p>
                 </div>
                 <div class="col-sm-7">
-                  <div *ngFor="let z of hazards">
-                    <div *ngIf="z.location == y.location" class="col-sm- col-md-2 text-center pull-right">
+                  <div *ngFor="let z of y.hazardScenarioList">
+                    <p>HAZARDS!</p>
+                    <div class="col-sm- col-md-2 text-center pull-right">
                       <p class="text-center"><i
-                        class="Icon__circle Icon--b-black {{(isNumber(z.hazardScenario) ? getCSSHazard(z.hazardScenario) : 'Icon--alert')}} Icon--sm text-center"></i>
+                        class="Icon__circle Icon--b-black {{(isNumber(z) ? getCSSHazard(z) : 'Icon--alert')}} Icon--sm text-center"></i>
                       </p>
-                      <p *ngIf="isNumber(z.hazardScenario)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z.hazardScenario | translate}}</b></span>
+                      <p *ngIf="isNumber(z)"><span><b>{{"GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z | translate}}</b></span>
                       </p>
-                      <p class="MapList__HazardOverflow" *ngIf="!isNumber(z.hazardScenario)">
-                        <b>{{z.hazardScenario}}</b></p>
+                      <p class="MapList__HazardOverflow" *ngIf="!isNumber(z)">
+                        <b>{{z}}</b></p>
                     </div>
                   </div>
                 </div>
