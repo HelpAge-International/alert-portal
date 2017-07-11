@@ -89,7 +89,7 @@
                                         <select class="form-control" name="CountryArea"
                                                 [(ngModel)] = "operationArea.country">
                                             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                                            <option *ngFor="let country of countryLevelsValues | keyValues" [value] = "country.key">{{countryEnum[country.key]}}
+                                            <option *ngFor="let country of countryLevelsValues | keyValues" [value] = "country.key">{{countryEnum[country.key] | translate}}
                                     </select>
                                 </div>
                             </div>

@@ -34,7 +34,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   alertMessageType = AlertMessageType;
   responsePlansSectors = ResponsePlanSectors;
   responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
-  countryEnum = Countries;
+  countryEnum = Constants.COUNTRIES;
   userTitle = Constants.PERSON_TITLE;
   userTitleSelection = Constants.PERSON_TITLE_SELECTION;
 
