@@ -819,10 +819,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     delete this.selectedVulnerableGroups[vulnerableGroupDropDown];
   }
 
-  setGroup(groupKey, vulnerableGroupsDropDown) {    
+  setGroup(groupKey, vulnerableGroupsDropDown) {
     if(groupKey)
     {
-      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = groupKey;  
+      this.selectedVulnerableGroups[vulnerableGroupsDropDown-1] = groupKey;
     }
   }
 
@@ -1011,6 +1011,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
+      this.doublerCounting();
+      this.continueButtonPressedOnSection9();
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[6], false);
