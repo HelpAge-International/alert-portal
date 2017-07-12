@@ -26,6 +26,7 @@ export class MapService {
   private uid: string;
   private agencyId: string;
   private systemId: string;
+  private initMapEnabled: boolean = false;
 
   private af: AngularFire;
   private ngUnsubscribe: Subject<void>;
@@ -336,6 +337,19 @@ export class MapService {
       });
 
     // Populate actions
+  }
+
+  public getRegionsForAgency(agencyId: string, funct: (key: string, region: ModelRegion) => void) {
+    this.af.database.object(Constants.APP_STATUS + "/region/" + agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((result) => {
+        if (result.childCount == 0) {
+          funct("", null);
+        }
+        result.forEach((snapshot) => {
+          funct(snapshot.key, snapshot.val());
+        })
+      });
   }
 
   /**
