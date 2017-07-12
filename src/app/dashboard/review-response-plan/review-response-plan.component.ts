@@ -39,10 +39,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((params: Params) => {
@@ -61,31 +63,32 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlan(responsePlanId: string) {
-    if (this.isDirector) {
-      // this.userType = UserType.GlobalDirector;
-      this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(responsePlan => {
-          this.loadedResponseplan = responsePlan;
-          this.handlePlanApproval(this.loadedResponseplan);
-        });
-    } else {
-      this.userService.getUserType(this.uid)
-        .flatMap(userType => {
-          this.userType = userType;
-          return this.userService.getCountryId(Constants.USER_TYPE_PATH[userType], this.uid)
-        })
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
-          this.responsePlanService.getResponsePlan(countryId, responsePlanId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(responsePlan => {
-              this.loadedResponseplan = responsePlan;
-              this.handlePlanApproval(this.loadedResponseplan);
-            });
-        })
-    }
+    // if (this.isDirector) {
+    // this.userType = UserType.GlobalDirector;
+    this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(responsePlan => {
+        this.loadedResponseplan = responsePlan;
+        this.handlePlanApproval(this.loadedResponseplan);
+      });
+    // }
+    // else {
+    //   // this.userService.getUserType(this.uid)
+    //   //   .flatMap(userType => {
+    //   //     this.userType = userType;
+    //   //     return this.userService.getCountryId(Constants.USER_TYPE_PATH[userType], this.uid)
+    //   //   })
+    //   //   .takeUntil(this.ngUnsubscribe)
+    //   //   .subscribe(countryId => {
+    //   //     this.countryId = countryId;
+    //   this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe(responsePlan => {
+    //       this.loadedResponseplan = responsePlan;
+    //       this.handlePlanApproval(this.loadedResponseplan);
+    //     });
+    //   // })
+    // }
 
   }
 
@@ -102,11 +105,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
           item["status"] = partners[key];
           return item;
         });
+        console.log(this.partnerApproveList);
         this.partnerApproveList.forEach(partner => {
-          this.userService.getOrganisationName(partner.id)
+          this.userService.getUser(partner.id)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(organisation => {
-              partner.name = organisation.organisationName;
+            .subscribe(user => {
+              partner.name = user.firstName + " " + user.lastName;
             });
         })
       }

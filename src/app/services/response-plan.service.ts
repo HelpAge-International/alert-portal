@@ -6,9 +6,10 @@ import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs/Observable";
-import { TranslateService } from "@ngx-translate/core";
-import { NotificationService } from "./notification.service";
-import { MessageModel } from "../model/message.model";
+import {TranslateService} from "@ngx-translate/core";
+import {NotificationService} from "./notification.service";
+import {MessageModel} from "../model/message.model";
+import {User} from "firebase/app";
 
 @Injectable()
 export class ResponsePlanService {
@@ -25,12 +26,12 @@ export class ResponsePlanService {
 
   }
 
-  submitForPartnerValidation(plan, uid) {
+  submitForPartnerValidation(plan, uid, countryId) {
     console.log("submitForPartnerValidation");
     this.userService.getUserType(uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(user => {
-        this.updatePartnerValidation(uid, user, plan);
+        this.updatePartnerValidation(uid, user, plan, countryId);
       });
   }
 
@@ -45,54 +46,84 @@ export class ResponsePlanService {
     return true;
   }
 
-  private updatePartnerValidation(uid: string, user: UserType, plan: any) {
-    const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
-      Constants.APP_STATUS + "/directorCountry/", , , , , Constants.APP_STATUS + "/administratorCountry/",]
+  private updatePartnerValidation(uid: string, user: UserType, plan: any, passedCountryId: string) {
+    console.log(plan.$key);
+    const needValidResponsePlanId = plan.$key;
+    // const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
+    //   Constants.APP_STATUS + "/directorCountry/", , , , , Constants.APP_STATUS + "/administratorCountry/",]
     // if (user == UserType.CountryAdmin) {
-    let countryId = "";
-    this.userService.getCountryId(Constants.USER_PATHS[user], uid)
-    // this.af.database.object(paths[user] + uid)
-      .flatMap(fetchedCountryId => {
-        countryId = fetchedCountryId;
-        return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key)
+    // let countryId = "";
+    // this.userService.getCountryId(Constants.USER_PATHS[user], uid)
+    // // this.af.database.object(paths[user] + uid)
+    //   .flatMap(fetchedCountryId => {
+    //     countryId = fetchedCountryId;
+    //     return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key)
+    //   })
+    let partnerOrgIds = [];
+    plan.partnerOrganisations.forEach(partnerOrg => {
+      partnerOrgIds.push(partnerOrg);
+    });
+    // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key)
+    //   .flatMap(responsePlan => {
+    //     this.responsePlan = responsePlan;
+    //     let partnerIds = [];
+    //     responsePlan.partnerOrganisations.forEach(partner => {
+    //       partnerIds.push(partner);
+    //     });
+    //     return Observable.from(partnerIds);
+    //   })
+    Observable.from(partnerOrgIds)
+      .flatMap(partnerOrgId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId);
       })
-      .flatMap(responsePlan => {
-        this.responsePlan = responsePlan;
+      .do(partnerOrg => {
+        this.validPartnerMap.set(partnerOrg.$key, partnerOrg.isApproved);
+      })
+      .flatMap(partnerOrg => {
         let partnerIds = [];
-        responsePlan.partnerOrganisations.forEach(partner => {
-          partnerIds.push(partner);
-        });
+        if (partnerOrg.partners) {
+          partnerIds = Object.keys(partnerOrg.partners);
+        }
         return Observable.from(partnerIds);
       })
       .flatMap(partnerId => {
-        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerId);
+        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerId)
       })
-      .do(partner => {
-        this.validPartnerMap.set(partner.$key, partner.isApproved);
+      .map(partner => {
+        if (partner.hasValidationPermission) {
+          return partner;
+        }
+        return null;
       })
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(() => {
-        console.log(this.validPartnerMap);
-        console.log(this.responsePlan);
-        let approvalData = {};
-        if (this.responsePlan.approval) {
-          approvalData = this.responsePlan.approval;
+      .subscribe(partnerObject => {
+        if (partnerObject) {
+          console.log(partnerObject);
+          // console.log(this.validPartnerMap);
+          // console.log(this.responsePlan);
+          // let approvalData = {};
+          // if (this.responsePlan.approval) {
+          //   approvalData = this.responsePlan.approval;
+          // }
+          // let partnerData = {};
+          // this.responsePlan.partnerOrganisations.forEach(partnerId => {
+          //   if (this.validPartnerMap.get(partnerId)) {
+          //     partnerData[partnerId] = ApprovalStatus.WaitingApproval;
+          //   }
+          // });
+          // approvalData["partner"] = partnerData;
+          //
+          let updateData = {};
+          // updateData["/responsePlan/" + passedCountryId + "/" + plan.$key + "/approval/"] = approvalData;
+          // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
+          updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + partnerObject.$key] = ApprovalStatus.WaitingApproval;
+          console.log(updateData);
+          this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+            console.log("update success")
+          }, error => {
+            console.log(error.message);
+          });
         }
-        let partnerData = {};
-        this.responsePlan.partnerOrganisations.forEach(partnerId => {
-          if (this.validPartnerMap.get(partnerId)) {
-            partnerData[partnerId] = ApprovalStatus.WaitingApproval;
-          }
-        });
-        approvalData["partner"] = partnerData;
-
-        let updateData = {};
-        updateData["/responsePlan/" + countryId + "/" + plan.$key + "/approval/"] = approvalData;
-        // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
-        this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-        }, error => {
-          console.log(error.message);
-        });
       });
     // }
   }
@@ -113,30 +144,31 @@ export class ResponsePlanService {
         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.NeedsReviewing;
       }
 
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
-        .take(1)
-        .subscribe(result => {
-          if (result) {
-            let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
-            let waitingApprovalList = [];
-            approvePair.forEach(item => {
-              let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
-              waitingApprovalList = waitingApprovalList.concat(waiting);
-            });
+      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
 
-            if (waitingApprovalList.length == 0) {
-              updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
-            }
+        this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+          .take(1)
+          .subscribe(result => {
+            if (result) {
+              let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
+              let waitingApprovalList = [];
+              approvePair.forEach(item => {
+                let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+                waitingApprovalList = waitingApprovalList.concat(waiting);
+              });
 
-            this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-              if(!isApproved)
-              {
+              if (waitingApprovalList.length == 0) {
+                // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+                this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
+              }
+
+              if (!isApproved) {
                 // Send notification to users with Response plan rejected
                 const responsePlanRejectedNotificationSetting = 5;
 
                 let notification = new MessageModel();
-                notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", { responsePlan: responsePlanName});
-                notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", { responsePlan: responsePlanName});
+                notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
+                notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
                 notification.time = new Date().getTime();
 
                 this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
@@ -147,14 +179,71 @@ export class ResponsePlanService {
               } else {
                 isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
               }
-            }, error => {
-              console.log(error.message);
-            });
-          }
-        });
+            }
+          });
+
+        // if (!isApproved) {
+        //   // Send notification to users with Response plan rejected
+        //   const responsePlanRejectedNotificationSetting = 5;
+        //
+        //   let notification = new MessageModel();
+        //   notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
+        //   notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
+        //   notification.time = new Date().getTime();
+        //
+        //   this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
+        // }
+        //
+        // if (rejectNoteContent) {
+        //   this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
+        // } else {
+        //   isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+        // }
+      }, error => {
+        console.log(error.message);
+      });
+
+      // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+      //   .take(1)
+      //   .subscribe(result => {
+      //     if (result) {
+      //       let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
+      //       let waitingApprovalList = [];
+      //       approvePair.forEach(item => {
+      //         let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+      //         waitingApprovalList = waitingApprovalList.concat(waiting);
+      //       });
+      //
+      //       if (waitingApprovalList.length == 0) {
+      //         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+      //       }
+      //
+      //       // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+      //       //   if (!isApproved) {
+      //       //     // Send notification to users with Response plan rejected
+      //       //     const responsePlanRejectedNotificationSetting = 5;
+      //       //
+      //       //     let notification = new MessageModel();
+      //       //     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
+      //       //     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
+      //       //     notification.time = new Date().getTime();
+      //       //
+      //       //     this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
+      //       //   }
+      //       //
+      //       //   if (rejectNoteContent) {
+      //       //     this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
+      //       //   } else {
+      //       //     isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+      //       //   }
+      //       // }, error => {
+      //       //   console.log(error.message);
+      //       // });
+      //     }
+      //   });
 
     } else {
-      console.log("user type is empty");
+      console.log("user type returned data is empty");
     }
   }
 
@@ -177,6 +266,8 @@ export class ResponsePlanService {
       return "regionDirector";
     } else if (userType == UserType.GlobalDirector) {
       return "globalDirector";
+    } else if (userType == UserType.PartnerUser) {
+      return "partner"
     } else {
       return "";
     }
@@ -184,6 +275,26 @@ export class ResponsePlanService {
 
   getPartnerOrgnisation(id) {
     return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id);
+  }
+
+  getPartnerBasedOnOrgId(orgId) {
+    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + orgId)
+      .flatMap(partnerOrg => {
+        let partnerIds = [];
+        if (partnerOrg.partners) {
+          partnerIds = Object.keys(partnerOrg.partners);
+        }
+        return Observable.from(partnerIds);
+      })
+      .flatMap(partnerId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerId)
+      })
+      .map(partner => {
+        if (partner.hasValidationPermission) {
+          return partner.$key;
+        }
+        return "";
+      });
   }
 
   serviceDestroy() {

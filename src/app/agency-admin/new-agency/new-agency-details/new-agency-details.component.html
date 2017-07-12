@@ -81,7 +81,7 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyPhone]}">
             <label for="T-number">{{"GLOBAL.USER_INFO.PHONE" | translate}}*</label>
-            <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyPhone">
+            <input type="number" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyPhone">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">

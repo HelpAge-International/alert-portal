@@ -699,6 +699,58 @@ export class PageControlService {
     });
   }
 
+
+  /**
+   * Explicit copy of the agency permission smatrix. \
+   *
+   * TODO: When erverything migrates over to pageControl.authUser() call with the agencyId, use the below methods and delete
+   * TODO: this method below. AgencyID Should be passed in from compoment
+   * @param af
+   * @param ngUnsubscribe
+   * @param uid
+   * @param folder
+   * @param fun
+   */
+  static agencyModuleListMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, agencyId: string, fun: (list: AgencyPermissionObject[]) => void) {
+    af.database.object(Constants.APP_STATUS + "/module/" + agencyId)
+      .takeUntil(ngUnsubscribe)
+      .subscribe((val) => {
+        let list = PageControlService.initModuleControlArray();
+        for (let x of list) {
+          if (val[x.permission] != null) {
+            x.isAuthorized = val[x.permission].status;
+          }
+        }
+        fun(list);
+      });
+  }
+  static agencyModuleMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, agencyId: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
+    PageControlService.agencyModuleListMatrix(af, ngUnsubscribe,agencyId, (list) => {
+      let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
+      for (let x of list) {
+        if (x.permission === PermissionsAgency.MinimumPreparedness) {
+          agency.minimumPreparedness = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.AdvancedPreparedness) {
+          agency.advancedPreparedness = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.CHSPreparedness) {
+          agency.chsPreparedness = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.CountryOffice) {
+          agency.countryOffice = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.RiskMonitoring) {
+          agency.riskMonitoring = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.ResponsePlanning) {
+          agency.responsePlan = x.isAuthorized;
+        }
+      }
+      fun(agency);
+    });
+  }
+
   static agencySelfCheck(userType: UserType, activatedRoute: ActivatedRoute, router: Router, perm: AgencyPermissionObject) {
     let routeInfo = PageControlService.buildEndUrl(activatedRoute);
     for (let x of perm.urls) {

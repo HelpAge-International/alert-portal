@@ -12,6 +12,7 @@ import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
+import {MapCountry, MapService} from "../../services/map.service";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -23,33 +24,34 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private uid: string;
-  private mapHelper: SuperMapComponents;
+  public agencyId: string;
+
+  private mapService: MapService;
+
+  public countries: MapCountry[];
+  public otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
   public regions: RegionHolder[];
-  public countries: SDepHolder[];
-  public hazards: RegionHazard[];
+
   public showRegionHeaders: boolean = true;
 
   public minThreshGreen: number = -1;
   public minThreshYellow: number = -1;
 
-  private countryIdsForOther: Set<string> = new Set<string>();
-  private allCountries: Set<string> = new Set<string>();
-  private otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
   private isDirector: boolean;
-  private userTypePath: string;
+
+  private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
-    this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
-    this.countries = [];
-    this.hazards = [];
+    this.mapService = MapService.init(this.af, this.ngUnsubscribe);
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -59,30 +61,26 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
           }
         });
 
-      /** Setup the minimum threshold **/
-      this.mapHelper.getSystemInfo(this.uid, Constants.USER_PATHS[userType], (yellow, green) => {
-        this.minThreshGreen = green;
-        this.minThreshYellow = yellow;
-      });
-
       /** Setup the region count **/
       this.otherRegion = new RegionHolder();
       this.otherRegion.regionId = "unassigned";
       this.otherRegion.regionName = "Other";
-      this.mapHelper.getRegionsForAgency(this.uid, Constants.USER_PATHS[userType], (key, obj) => {
-        console.log("Updating Region");
-        // this.showRegionHeaders = key != "";
-        // if (!this.showRegionHeaders) return;
-        let hRegion = new RegionHolder();
-        hRegion.regionName = obj.name;
-        hRegion.regionId = key;
-        for (let x in obj.countries) {
-          hRegion.countries.add(x);
-          this.countryIdsForOther.add(x);
-        }
-        this.evaluateOthers();
-        this.addOrUpdateRegion(hRegion);
+
+      // Initialise the department map
+      this.initDepartments();
+
+      // Initialise the countries
+      this.mapService.initCountries(this.uid, userType, agencyId, systemId, (countries, minGreen, minYellow) => {
+        this.countries = countries;
+        this.minThreshGreen = minGreen;
+        this.minThreshYellow = minYellow;
+
+        // Process everything we need for the regions
+        this.evaluateRegionsAndCountries();
       });
+
+      // Find all the regions
+      this.findAllRegions();
 
       /** Permissions for the minimum preparedness **/
       if (userType != UserType.AgencyAdmin &&
@@ -90,30 +88,11 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
         userType != UserType.All) {
         PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
           this.moduleAccess = isEnabled;
-          console.log(this.moduleAccess);
         });
       }
       else {
         this.moduleAccess.all(true);
       }
-
-      /** Country list **/
-      this.mapHelper.initCountries(this.uid, Constants.USER_PATHS[userType], (departments => {
-        console.log("Updating country");
-        this.allCountries.clear();
-        for (let x of departments) {
-          this.addOrUpdateCountry(x);
-          this.allCountries.add(x.countryId);
-        }
-        this.evaluateOthers();
-      }));
-
-      /** Markers */
-      this.mapHelper.actionInfoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (location, marker) => {
-        let hazard: RegionHazard = new RegionHazard(location, marker);
-        this.addOrUpdateHazard(hazard);
-        console.log(this.hazards);
-      });
     });
   }
 
@@ -126,54 +105,66 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
     this.isDirector ? this.router.navigate(["/map", {"isDirector": true}]) : this.router.navigateByUrl('map');
   }
 
-  private evaluateOthers() {
-    if (this.allCountries.size > 0) {
-      this.allCountries.forEach(country => {
-        if (!this.countryIdsForOther.has(country)) {
-          this.otherRegion.countries.add(country);
-        } else {
-          this.otherRegion.countries.delete(country);
+  /**
+   * Handlers for the regions[] list.
+   */
+  public findAllRegions() {
+    this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.regions = [];
+        for (let x of snap) {
+          let thisVal: RegionHolder = new RegionHolder();
+          thisVal.regionName = x.val().name;
+          thisVal.regionId = x.key;
+          thisVal.directorId = x.val().directorId;
+          for (let country in x.val().countries) {
+            if (x.val().countries[country]) {
+              thisVal.countries.add(country);
+            }
+          }
+          this.regions.push(thisVal);
         }
-
-      });
-    }
+        this.evaluateRegionsAndCountries();
+      })
   }
 
-  private addOrUpdateCountry(holder: SDepHolder) {
-    for (let x of this.countries) {
-      if (x.countryId == holder.countryId) {
-        x.location = holder.location;
-        x.departments = holder.departments;
-        return;
+  public evaluateRegionsAndCountries() {
+    if (this.regions != null && this.countries != null) {
+      // Joint logic run here
+      // Construct the otherRegion object, remove all countryIds that already exist in a region
+      console.log("Preparing other region");
+      console.log(this.countries);
+      for (let x of this.countries) {
+        this.otherRegion.countries.add(x.countryId);
       }
-    }
-    this.countries.push(holder);
-    return;
-  }
-
-  private addOrUpdateRegion(holder: RegionHolder) {
-    for (let x of this.regions) {
-      if (x.regionId == holder.regionId) {
-        x.regionName = holder.regionName;
-        x.countries = holder.countries;
-        return;
+      for (let x of this.regions) {
+        x.countries.forEach((value, key) => {
+          this.otherRegion.countries.delete(key);
+        });
       }
+      console.log(this.regions);
+      console.log(this.otherRegion);
     }
-    this.regions.push(holder);
-    return;
   }
 
-  public addOrUpdateHazard(holder: RegionHazard) {
-    for (let x of this.hazards) {
-      if (x.hazardScenario == holder.hazardScenario) {
-        x.location = holder.location;
-        return;
-      }
-    }
-    this.hazards.push(holder);
-    return;
+  public initDepartments() {
+    console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((deps) => {
+        this.DEPARTMENT_MAP.clear();
+        this.DEPARTMENT_MAP.set("unassigned", "Unassigned");
+        for (let x of deps) {
+          this.DEPARTMENT_MAP.set(x.key, x.val().name);
+        }
+        console.log(this.DEPARTMENT_MAP);
+      })
   }
 
+  /**
+   * Utility methods for the UI, getting CountryCodes and some simple tests
+   */
   public getCountryCodeFromLocation(location: number) {
     return Countries[location];
   }

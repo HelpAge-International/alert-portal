@@ -66,7 +66,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private currentlyAssignedToo: PreparednessUser;
   private actionLevelEnum = ActionLevel;
 
-  private allUnassigned: boolean = false;
+  private allUnassigned: boolean = true;
   private allArchived: boolean = false;
   // --- Declared because we're missing out "inactive" in this page
   private ActionStatus = ActionStatusMin;

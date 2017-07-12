@@ -13,6 +13,7 @@ import {UserService} from "../../services/user.service";
 import {Http} from "@angular/http";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {HazardImages} from "../../utils/HazardImages";
+import {ColourSelector} from "../../utils/ColourSelector";
 
 declare var jQuery: any;
 
@@ -44,11 +45,16 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private selectHazard: boolean = false;
   private season: boolean = false;
   private addHazardSeason: string;
+  public addSeasonStart: number;
+  public addSeasonEnd: number;
+  public addSeasonColour: string;
   private isCustomDisabled: boolean = true;
   private HazardScenario = Constants.HAZARD_SCENARIOS;
   private scenarioColors = Constants.SCENARIO_COLORS;
   private hazardImages: HazardImages = new HazardImages();
   private hazardScenariosListTop: InformHolder[] = [];
+  private colours: ColourSelector[] = ColourSelector.list();
+  private submitNewCalendar: boolean = true;
 
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
@@ -359,10 +365,29 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     jQuery("#" + this.modalID).modal("show");
   }
 
+  public selectStartDate(date) {
+    this.addSeasonStart = +date;
+  }
+
+  public selectEndDate(date) {
+    this.addSeasonEnd = +date;
+  }
+
+  public setCurrentColour(colourCode: string) {
+    this.addSeasonColour = colourCode;
+  }
+
   createSeasonToCalendar(form: NgForm) {
+    this.submitNewCalendar = false;
     let dataToSave = form.value;
-    dataToSave.startTime = new Date(dataToSave.startTime).getTime();
-    dataToSave.endTime = new Date(dataToSave.endTime).getTime();
+    if (this.addSeasonStart == null || this.addSeasonEnd == null || this.addSeasonColour == null) {
+       this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_DATE");
+       return;
+    }
+    dataToSave.startTime = this.addSeasonStart;
+    dataToSave.endTime = this.addSeasonEnd;
+    dataToSave.colour = this.addSeasonColour;
+    console.log(dataToSave);
     this.closeModal();
     this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
       .push(dataToSave)

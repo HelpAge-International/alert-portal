@@ -63,6 +63,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.agencyId = agencyId;
       this.countryId = countryId;
+      this.userType = userType;
       this.isAnonym = user && !user.anonymous ? false : true;
       if (user) {
         if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
@@ -71,37 +72,37 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           });
         }
         if (!user.anonymous) {
-          this.uid = user.auth.uid;
+          this.uid = user.uid;
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(user => {
               this.firstName = user.firstName;
               this.lastName = user.lastName;
             });
-          this.userService.getUserType(this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(userType => {
-              this.userType = userType;
-              this.USER_TYPE = Constants.USER_PATHS[userType];
-              //after user type check, start to do the job
-              if (this.USER_TYPE) {
-                if (this.userType == UserType.PartnerUser) {
-                  this.initDataForPartnerUser(agencyId, countryId);
-                } else {
-                  this.getCountryId().then(() => {
-                    this.getAgencyID().then(() => {
-                      this.getCountryData();
-                      this.checkAlerts();
-                      this.userService.getAgencyDetail(this.agencyId)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(agencyDetail => {
-                          this.agencyDetail = agencyDetail;
-                        });
-                    });
+          // this.userService.getUserType(this.uid)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(userType => {
+          //     this.userType = userType;
+          this.USER_TYPE = Constants.USER_PATHS[userType];
+          //after user type check, start to do the job
+          // if (this.USER_TYPE) {
+          if (this.userType == UserType.PartnerUser) {
+            this.initDataForPartnerUser(agencyId, countryId);
+          } else {
+            this.getCountryId().then(() => {
+              this.getAgencyID().then(() => {
+                this.getCountryData();
+                this.checkAlerts();
+                this.userService.getAgencyDetail(this.agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agencyDetail => {
+                    this.agencyDetail = agencyDetail;
                   });
-                }
-              }
+              });
             });
+          }
+          // }
+          // });
         }
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
@@ -113,7 +114,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountries => {
-
+        console.log(agencyCountries);
         // this.agencyId = agencyCountries[0].$key;
         // this.countryId = agencyCountries[0].$value;
         this.agencyId = agencyId;
@@ -203,12 +204,14 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/selection").set(selection).then(() => {
 
         // Navigate to the same page again - force reload
-        // console.log(PageControlService.buildEndUrl(this.route));
-        this.router.navigateByUrl(PageControlService.buildEndUrl(this.route)).then(() => {
-          window.location.reload();
-        }, error => {
-          console.log(error.message);
-        });
+        let url = PageControlService.buildEndUrl(this.route);
+        if (url.includes("preparedness")) {
+          this.router.navigateByUrl(PageControlService.buildEndUrl(this.route)).then(() => {
+            window.location.reload();
+          }, error => {
+            console.log(error.message);
+          });
+        }
       }, error => {
         console.log(error.message);
       });
@@ -219,7 +222,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     console.log("logout");
-    this.af.auth.logout();
+    this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH)}, error=>{console.log(error.message)});
   }
 
   goToHome() {
