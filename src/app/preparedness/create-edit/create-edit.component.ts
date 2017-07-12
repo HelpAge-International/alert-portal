@@ -390,20 +390,16 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
+      console.log(this.showDueDate);
+      console.log(this.action.dueDate);
       if (this.showDueDate) {
         updateObj.dueDate = this.action.dueDate;
-      }
-      else {
-        updateObj.dueDate = null;
       }
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;
       if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
         updateObj.asignee = this.action.asignee;
-      }
-      else {
-        updateObj.asignee = null;
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
@@ -499,7 +495,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected removeFilterLockLevel() {
     this.filterLockLevel = false;
     if (this.action.id == null) {
-      this.showDueDate = this.action.level != ActionLevel.APA;
+      this.showDueDate = this.action.level == ActionLevel.MPA;
     }
   }
   protected removeFilterLockDepartment() {
@@ -560,7 +556,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.showDueDate = result;
+    this.showDueDate = this.action.level == ActionLevel.MPA || result;
   }
 
   protected showActionConfirm(modal: string) {

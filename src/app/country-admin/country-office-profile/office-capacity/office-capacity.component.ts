@@ -63,7 +63,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
   private skillTypeList: number[] = [SkillType.Support, SkillType.Tech];
   private skillType = Constants.SKILL_TYPE;
-  private officeTypeList: number[] = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private officeTypeList: number[] = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
   private officeType = Constants.OFFICE_TYPE;
 
   private suportedSkills: any[] = [];

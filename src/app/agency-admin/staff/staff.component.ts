@@ -48,7 +48,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private userTypesList = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
   private OfficeType = Constants.OFFICE_TYPE;
-  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
   private staffMap = new Map();
   private dealedStaff: string[] = [];
   private showCountryStaff = new Map();

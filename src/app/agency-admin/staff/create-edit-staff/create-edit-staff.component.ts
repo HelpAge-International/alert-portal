@@ -92,6 +92,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private systemId: string;
   private regionOfficeList: string[];
 
+  private isDonor: boolean = false;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
 
@@ -197,6 +199,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           .subscribe(systemId => {
             this.systemId = systemId;
 
+            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/isDonor", {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                this.isDonor = snap.val();
+              });
+
             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe( countries => {
               this.countryList = countries;
               this.originalCountryList = countries;
@@ -250,8 +258,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
           });
       });
-
-
   }
 
   validateForm(): boolean {
@@ -550,7 +556,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.RegionalDirector) {
       this.hideCountry = true;
       this.hideRegion = false;
-    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser) {
+    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser || this.userType == UserType.Donor) {
       this.hideCountry = true;
       this.hideRegion = true;
     } else {
