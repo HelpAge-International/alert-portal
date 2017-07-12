@@ -1,7 +1,10 @@
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
-import {ActionLevel, ActionType, AlertLevels, Countries, HazardScenario, UserType} from "../utils/Enums";
+import {
+  ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface, HazardScenario,
+  UserType
+} from "../utils/Enums";
 import {PrepActionService} from "./prepactions.service";
 import {ModelDepartment} from "../model/department.model";
 import {AgencyModulesEnabled, PageControlService} from "./pagecontrol.service";
@@ -109,7 +112,8 @@ export class MapService {
       let position = 0;
       if (this.clickedCountry != null) {
         value.hazards.forEach((_, hazardScenario) => {
-          this.geocoder.geocode({"address": Countries[value.location]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+          console.log("For " + value.countryId + " -> " + Countries[value.location]);
+          this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
             if (status == GeocoderStatus.OK && geoResult.length >= 1) {
               let pos = {
                 lng: geoResult[0].geometry.location.lng() + position,
