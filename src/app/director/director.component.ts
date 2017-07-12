@@ -43,6 +43,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private regionId: string;
   private regionName: string = '';
   private countriesInRegion: SDepHolder[] = [];
+  private regionCountryOffice = [];
   private idsOfCountriesInRegion: string[];
   private locationsOfCountriesInRegion: any = [];
 
@@ -171,19 +172,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
     return this.directorName;
   }
 
-  filter() {
-    if (this.userType == UserType.RegionalDirector) {
-      if (this.alertLevelSelected == AlertLevels.All) {
-        this.getCountryCodesForCountriesInRegion(true);
-      } else {
-        this.getCountryCodesForCountriesInRegion(false);
-      }
-    } else {
-
-      // TODO - Filter for countries with regions
-    }
-  }
-
   /**
    * Private functions
    */
@@ -205,6 +193,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
         });
     } else if (this.userType == UserType.RegionalDirector) {
       this.getCountryIdsForRegion().then(() => {
+        this.idsOfCountriesInRegion.forEach(countryId => { this.getCountryCodesForCountriesInRegion(countryId); })
         this.initData();
       }, error => {
         console.log(error.message);
@@ -305,9 +294,9 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.setupAlertLevelColours();
     this.getResponsePlans();
     this.getThresholds();
-    if (this.userType == UserType.RegionalDirector) {
-      this.getCountryIdsForRegion();
-    }
+    // if (this.userType == UserType.RegionalDirector) {
+    //   this.getCountryIdsForRegion();
+    // }
     this.loaderInactive = true;
   }
 
@@ -321,7 +310,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getCountryIdsForRegion() {
+  private getCountryIdsForRegion(): Promise<any> {
 
     let promise = new Promise((res, rej) => {
       this.userService.getRegionId(this.userPaths[this.userType], this.uid)
@@ -338,7 +327,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
                 for (let country in region.countries) {
                   this.idsOfCountriesInRegion.push(country);
                 }
-                this.getCountryCodesForCountriesInRegion(true);
                 res(true);
               });
           }
@@ -349,55 +337,17 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   }
 
-  private getCountryCodesForCountriesInRegion(getAllAlertLevels: boolean) {
+  private getCountryCodesForCountriesInRegion(countryId: string) {
 
-    if (getAllAlertLevels) {
-      if (this.idsOfCountriesInRegion) {
         this.countriesInRegion = [];
 
-        this.idsOfCountriesInRegion.forEach(countryId => {
-          this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(country => {
-              if (country) {
-
-                let countryToAdd = new SDepHolder(country.$key);
-                countryToAdd.location = country.location;
-                countryToAdd.alertLevel = country.alertLevel;
-                this.countriesInRegion.push(countryToAdd);
-                console.log(country.alertLevel);
-                if (country.location || country.location == 0) {
-                  this.locationsOfCountriesInRegion[countryId] = Countries[country.location];
-                }
-              }
-            });
-        });
-      }
-    } else {
-
-      if (this.idsOfCountriesInRegion) {
-        this.countriesInRegion = [];
-
-        this.idsOfCountriesInRegion.forEach(countryId => {
-          this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(country => {
-              console.log(country.alertLevel);
-              if (country && country.alertLevel == this.alertLevelSelected) {
-
-                let countryToAdd = new SDepHolder(country.$key);
-                countryToAdd.location = country.location;
-                countryToAdd.alertLevel = country.alertLevel;
-                this.countriesInRegion.push(countryToAdd);
-                if (country.location || country.location == 0) {
-                  this.locationsOfCountriesInRegion[countryId] = Countries[country.location];
-                }
-              }
-            });
-        });
-      }
-
-    }
+        this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(country => {
+            if (country) {
+              this.regionCountryOffice.push(country);
+            }
+          });
   }
 
   private getAllRegionsAndCountries() {
