@@ -11531,7 +11531,7 @@ h3, h4 {
 
 .Response__content {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   display: none;
   margin-left: -webkit-calc(100px + 1em);
   margin-left: -moz-calc(100px + 1em);
