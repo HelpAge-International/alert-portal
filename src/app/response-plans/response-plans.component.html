@@ -62,25 +62,28 @@
                   <strong>{{"RESPONSE_PLANS.HOME.PARTNERS" | translate}}</strong>
                   <div *ngFor="let partnerOrg of plan?.partnerOrganisations; index as i"
                        class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left">Partner {{i+1}}</div>
+                    <div>
+                    <div class="col-12 text-left">Partner {{i+1}}</div>
                     <div
                       *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)])"
-                      class="col-6 text-right text-warning">
+                      class="col-12 text-left text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
                       translate}}<i
-                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                      class="fa fa-exclamation-circle text-right" aria-hidden="true"></i></div>
+
                     <div
                       *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 1"
-                      class="col-6 text-right text-warning">
+                      class="col-12 text-left text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_APPROVAL" |
                       translate}}<i
-                      class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+                      class="fa fa-exclamation-circle Right-aligned" aria-hidden="true"></i></div>
                     <div
                       *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 2"
-                      class="col-6 text-right text-success">
+                      class="col-12 text-left text-success text-right">
                       {{"RESPONSE_PLANS.HOME.APPROVAL" |
                       translate}}<i
-                      class="fa fa-check-circle" aria-hidden="true"></i></div>
+                      class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
+                    </div>
                   </div>
                 </div>
 
