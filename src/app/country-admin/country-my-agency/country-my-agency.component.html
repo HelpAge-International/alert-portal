@@ -15,13 +15,13 @@
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <select class="form-control" (change)="filterAlertLevel($event)">
                     <option value="all" selected>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>
-                    <option *ngFor="let alertLevelKey of this.alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] | translate}}</option>
+                    <option *ngFor="let alertLevelKey of alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] | translate}}</option>
                 </select>
             </div>
         </div>
 
-        <div class="Ribbon__section__wrap Spaced" *ngIf="countryOfficeData && countryOfficeData.length > 0">
-            <div class="Accordion Preparedness__agency-list" *ngFor="let countryData of countryOfficeData">
+        <div class="Ribbon__section__wrap Spaced" *ngIf="countryOfficeData && filteredCountryOfficeData.length > 0">
+            <div class="Accordion Preparedness__agency-list" *ngFor="let countryData of filteredCountryOfficeData">
                  <div class="row" (click)="overviewCountry(countryData.$key)">
                     <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right">
                     <a routerLink="/country-admin/country-office-profile/{{countryData.$key}}"><div class="Icon--md Icon--align-center Icon__country" [style.background-image]="getBackground(countryData.location)"></div></a>
@@ -55,15 +55,15 @@
                     </div>
                     <div class="col-sm-2 col-6 Preparedness__agency-list__item">
                         <div class="Icon">
-                            <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{percentageCHS[countryData.$key]}}%</div>
+                            <div class="Icon__circle Icon--align-center Icon--green Icon--md">{{percentageCHS[countryData.$key]}}%</div>
                         </div>
                         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="Ribbon__section__wrap Spaced" *ngIf="!countryOfficeData || !countryOfficeData.length">
-            <h1 *ngIf="filter != 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES_BY" | translate}} {{countries[filter] | translate}}</h1>
+        <div class="Ribbon__section__wrap Spaced" *ngIf="!filteredCountryOfficeData || !filteredCountryOfficeData.length">
+            <h1 *ngIf="filter != 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES_BY" | translate}} {{alertLevels[filter] | translate}}</h1>
             <h1 *ngIf="filter == 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES" | translate}}</h1>
         </div>
     </div>
