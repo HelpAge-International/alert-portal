@@ -162,14 +162,14 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
         //   .takeUntil(this.ngUnsubscribe)
         //   .subscribe(user => {
 
-            // http://localhost:4200/country-admin/country-office-profile/programme
+        // http://localhost:4200/country-admin/country-office-profile/programme
 
-            // if (!user) {
-            //   this.redirectToPartnersPage();
-            // } else {
-            //   setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            // }
-          // });
+        // if (!user) {
+        //   this.redirectToPartnersPage();
+        // } else {
+        //   setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        // }
+        // });
 
       })
       .catch(err => {
@@ -252,7 +252,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
     if (!this.alertMessage) {
       project.operationAreas.forEach(operationArea => {
-        this.alertMessage = this.validateOperationArea(operationArea);
+        let modelArea = new OperationAreaModel();
+        modelArea.mapFromObject(operationArea);
+        this.alertMessage = this.validateOperationArea(modelArea);
       });
     }
 
