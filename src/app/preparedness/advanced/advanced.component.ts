@@ -67,7 +67,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private currentlyAssignedToo: PreparednessUser;
   private hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
 
-  private allUnassigned: boolean = false;
+  private allUnassigned: boolean = true;
   private allArchived: boolean = false;
   private ActionStatus = ActionStatus;
   private ActionType = ActionType;
@@ -175,7 +175,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               });
           }
         });
-
       });
   }
 

@@ -442,7 +442,7 @@
           </div>
         </div>
       </div>
-      <div class="Accordion__Content collapse" id="collapseTwo">
+      <div class="Accordion__Content collapse show" id="collapseTwo">
         <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
