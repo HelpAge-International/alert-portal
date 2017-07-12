@@ -92,6 +92,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private systemId: string;
   private regionOfficeList: string[];
 
+  private isDonor: boolean = false;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService, private userService: UserService) {
   }
 
@@ -201,6 +203,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(systemId => {
             this.systemId = systemId;
+
+            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/isDonor", {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                this.isDonor = snap.val();
+              });
 
             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe( countries => {
               this.countryList = countries;
@@ -476,7 +484,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       if (this.isEmailChange) {
         userData["firstLogin"] = true;
       } else {
-        userData["firstLogin"] = this.isFirstLogin;
+        if(this.isFirstLogin != null){
+          userData["firstLogin"] = this.isFirstLogin;
+        }
       }
     }
 
@@ -509,6 +519,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     } else if (this.userType == UserType.CountryUser) {
       staffData["/countryUser/" + uid] = userData;
     }
+
+    console.log(staff);
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       if (!this.hideRegion) {
@@ -563,7 +575,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.RegionalDirector) {
       this.hideCountry = true;
       this.hideRegion = false;
-    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser) {
+    } else if (this.userType == UserType.GlobalDirector || this.userType == UserType.GlobalUser || this.userType == UserType.Donor) {
       this.hideCountry = true;
       this.hideRegion = true;
     } else {
@@ -633,6 +645,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {
+    if(officeList == null){
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+      return;
+    }
+
     let directorRegion = {};
     for (let office of officeList) {
       directorRegion["/directorRegion/" + office + "/"] = regionalDirectorId;

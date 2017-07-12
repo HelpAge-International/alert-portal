@@ -143,7 +143,7 @@ export enum StaffPosition {
 export enum OfficeType {
     All = 0,
     FieldOffice = 1,
-    LabOffice = 2
+    MainOffice = 2
 }
 
 export enum SkillType {

@@ -37,7 +37,8 @@
             <div class="col-md-2 Alert-Widget__item">
               <div *ngIf="alert.affectedAreasDisplay">
                 <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
-                <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                <a href="javascript:void(0)" class="text-primary"
+                   (click)="showAffectedAreasForAlert(alert.affectedAreasDisplay)">
                   {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
                 </a>
               </div>
@@ -139,7 +140,8 @@
               <div class="col-md-2 Alert-Widget__item">
                 <div *ngIf="alert.affectedAreasDisplay">
                   <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
-                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                  <a href="javascript:void(0)" class="text-primary"
+                     (click)="showAffectedAreasForAlert(alert.affectedAreasDisplay)">
                     {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
                   </a>
                 </div>
@@ -260,7 +262,8 @@
               <div class="col-md-2 Alert-Widget__item">
                 <div *ngIf="alert.affectedAreasDisplay">
                   <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
-                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                  <a href="javascript:void(0)" class="text-primary"
+                     (click)="showAffectedAreasForAlert(alert.affectedAreasDisplay)">
                     {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
                   </a>
                 </div>
@@ -321,7 +324,8 @@
               <div class="col-md-2 Alert-Widget__item">
                 <div *ngIf="alert.affectedAreasDisplay">
                   <!--<span>{{"ALERT.AFFECTED_AREAS" | translate}}:</span> {{alert.affectedAreasDisplay}}-->
-                  <a href="javascript:void(0)" class="text-primary" (click) = "showAffectedAreasForAlert(alert.affectedAreasDisplay)">
+                  <a href="javascript:void(0)" class="text-primary"
+                     (click)="showAffectedAreasForAlert(alert.affectedAreasDisplay)">
                     {{alert.affectedAreasDisplay.length}} {{"ALERT.AFFECTED_AREAS" | translate}}
                   </a>
                 </div>
@@ -402,14 +406,30 @@
 
     </div>
 
-    <!--empty rubber for default dashboard-->
-    <div
-      *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
-      class="Widget">
-      <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
-      <div class="My-Tasks container-fluid">
-        <div class="Empty--ribbon">
-          {{"DASHBOARD.EMPTY_DEFAULT" | translate}}
+    <!--empty rubber for default dashboard not partner-->
+    <div *ngIf="userType!=UserType.PartnerUser">
+      <div
+        *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
+        class="Widget">
+        <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+        <div class="My-Tasks container-fluid">
+          <div class="Empty--ribbon">
+            {{"DASHBOARD.EMPTY_DEFAULT" | translate}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--empty rubber for default dashboard only partner user-->
+    <div *ngIf="userType==UserType.PartnerUser">
+      <div
+        *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0"
+        class="Widget">
+        <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+        <div class="My-Tasks container-fluid">
+          <div class="Empty--ribbon">
+            {{"DASHBOARD.EMPTY_DEFAULT" | translate}}
+          </div>
         </div>
       </div>
     </div>
@@ -446,7 +466,28 @@
             </div>
             <div class="col-md-3">
               <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-                <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+              <!--</button>-->
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="userType == UserType.PartnerUser">
+        <div *ngIf="responsePlansForApproval | async as plans">
+          <div *ngFor="let plan of plans" class="row Spaced">
+            <div class="col-sm-9" col-md-1>
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
               <!--</button>-->
               <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
                 {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
@@ -464,7 +505,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong> {{action.dueDate | date:'mediumDate'}}</strong>.
+              <p>{{getActionTitle(action)}}<strong> {{action.dueDate | date:'mediumDate'}}</strong>.<br/>
                 <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
@@ -482,7 +523,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}}<strong> {{indicator.dueDate | date:'mediumDate'}}</strong>.
+              <p>{{getIndicatorName(indicator)}}<strong> {{indicator.dueDate | date:'mediumDate'}}</strong>.<br/>
                 <span>{{indicator.name}}</span>
               </p>
             </div>
@@ -500,12 +541,13 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.<br/>
                 <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+                |
                 translate}}
               </a>
             </div>
@@ -518,12 +560,13 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.<br/>
                 <span>{{indicator.name}}</span>
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+                |
                 translate}}
               </a>
             </div>
@@ -536,12 +579,13 @@
               <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.<br/>
                 <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+                |
                 translate}}</a>
             </div>
           </div>
@@ -553,12 +597,13 @@
               <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.<br/>
                 <span>{{indicator?.name}}</span>
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE" | translate}}</a>
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+                | translate}}</a>
             </div>
           </div>
         </div>

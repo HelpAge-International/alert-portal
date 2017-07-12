@@ -154,6 +154,41 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   submit() {
+
+    this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + this.partner.partnerOrganisationId + "/partners", {preserveSnapshot: true})
+      .first()
+      .subscribe(snapshot => {
+        if (snapshot.val()) {
+          //has partners, check validation permission, if select yes, all others need to be false
+          if (this.partner.hasValidationPermission) {
+            let partnerIds = Object.keys(snapshot.val());
+            let partners = {};
+            partnerIds.forEach(id => {
+              partners["/partner/" + id + "/hasValidationPermission"] = false;
+            });
+            this.af.database.object(Constants.APP_STATUS).update(partners).then(() => {
+              this.updatePartners();
+            }, error => {
+              console.log(error.message)
+            });
+          } else {
+            this.updatePartners();
+          }
+
+        } else {
+          //if no partners, grant permission must be set to true to proceed
+          if (this.partner.hasValidationPermission) {
+            this.updatePartners();
+          } else {
+            this.alertMessage = new AlertMessageModel("No partners for this organization, please set grant permission to true to proceed!");
+          }
+        }
+      });
+
+
+  }
+
+  private updatePartners() {
     this._userService.savePartnerUser(this.systemId, this.agencyId, this.countryId, this.partner, this.userPublic)
       .then(user => {
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
@@ -169,8 +204,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
               this._userService.findPartnerId(this.userPublic.email)
                 .take(1)
                 .subscribe(snapshot => {
-                  console.log(snapshot.val())
-                  if (snapshot.val()) {
+                  console.log(snapshot)
+                  if (snapshot && snapshot.val()) {
                     console.log("exist")
                     let partners = {};
                     partners["/partnerUser/" + snapshot.key + "/agencies/" + this.agencyId] = this.countryId;

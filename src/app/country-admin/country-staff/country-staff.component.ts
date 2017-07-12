@@ -30,7 +30,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private UserType = Constants.COUNTRY_ADMIN_USER_TYPE;
   private userTypesList = Constants.COUNTRY_ADMIN_USER_TYPE_SELECTION;
   private OfficeType = Constants.OFFICE_TYPE;
-  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
   private notificationSettings = Constants.NOTIFICATION_SETTINGS;
 
   All_Department = 'All departments';

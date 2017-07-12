@@ -9,11 +9,16 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!action.id">{{"PREPAREDNESS.TITLE_TEXT_CREATE_PAGE" | translate}}</h1>
       <h1 *ngIf="action.id">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
-      <div class="Action-buttons-wrapper__absolute" *ngIf="action.id">
+      <div class="Action-buttons-wrapper__absolute" *ngIf="!editDisableLoading && action.id">
         <button href="#" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom && (!((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Delete) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Delete)) || userType == userTypes.CountryAdmin)" (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
-        <button class="btn btn-block btn-outline-primary" *ngIf="action.type != actionType.chs && userType == userTypes.CountryDirector" (click)="showActionConfirm('archive-action')">
+        <button class="btn btn-block btn-outline-primary" *ngIf="
+                !(action.type == actionType.chs ||
+                 (action.type == actionType.mandated && userType != userTypes.CountryDirector) ||
+                 (action.type == actionType.custom && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Delete) ||
+                 (action.type == actionType.custom && action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Delete))
+            " (click)="showActionConfirm('archive-action')">
           {{"PREPAREDNESS.ARCHIVE_ACTION_BUTTON" | translate}}
         </button>
       </div>
@@ -72,7 +77,9 @@
           <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
           <div class="row no-gutters">
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
-              <input type="checkbox"  [disabled]="editDisableLoading || action.type != actionType.custom" [checked]="action.isAllHazards ? action.isAllHazards : false"
+              <input type="checkbox"
+                     [disabled]="editDisableLoading || action.type != actionType.custom"
+                     [checked]="action.isAllHazards ? action.isAllHazards : false"
                      (change)="selectHazardCategory(-1, $event)">
               <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm Icon--alert"></span>&nbsp;
               {{"PREPAREDNESS.ALL_HAZARDS" | translate}}
@@ -120,13 +127,17 @@
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
             <label for="n-AssignTo">{{"PREPAREDNESS.ASSIGN_TO" | translate}}</label>
-            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader">
+            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader"
+                    [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
+                                    || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions))
+                                    || ((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
               <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
               <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>
             </select>
-
             <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
-            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert">
+            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser" [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
+                                    || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions.Assign))
+                                    || ((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
               <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
               <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
             </select>
@@ -146,7 +157,7 @@
                                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)"
                                  [(date)]="dueDate"></material-datepicker>
           </div>
-          <div [hidden]="dueDate != undefined || filterLockDueDate" class="alert alert-danger">
+          <div [hidden]="(dueDate != undefined || filterLockDueDate) || !showDueDate" class="alert alert-danger">
             {{"PREPAREDNESS.NO_DUE_DATE" | translate}}
           </div>
         </div>
