@@ -50,6 +50,10 @@
 
     <div class="Header-title__wrap">
       <h1>Advanced Preparedness Actions</h1>
+      <!--tooltip-->
+      <tooltip
+      [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
+      </tooltip>
       <div *ngIf="!isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin)" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Create action

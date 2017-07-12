@@ -75,6 +75,11 @@
       <div class="row System-admin--form-wrap" *ngIf="action.level == actionLevelEnum.APA">
         <div class="col-lg-8 col-md-10">
           <strong>{{"PREPAREDNESS.HAZARD_SELECT_TEXT" | translate}}</strong>
+          <!--tooltip-->
+          <tooltip
+          [level1]="'TOOLTIPS.PREPAREDNESS.TT12.LEVEL1'"
+          [level2]="'TOOLTIPS.PREPAREDNESS.TT12.LEVEL2'">
+          </tooltip>
           <div class="row no-gutters">
             <label class="Checkbox--ribbon Left col-md-4 col-sm-5">
               <input type="checkbox"
@@ -179,6 +184,10 @@
                      [checked]="action.isFrequencyActive" (change)="updateFrequencyActive()">
                 {{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}
             </label>
+            <!--tooltip-->
+            <tooltip
+            [level1]="'TOOLTIPS.PREPAREDNESS.TT11.LEVEL1'">
+            </tooltip>
           </div>
           <div class="row align-items-center" *ngIf="action.isFrequencyActive">
             <div class="col-sm-1 col-2">{{"PREPAREDNESS.EVERY" | translate}}</div>
@@ -223,6 +232,10 @@
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <strong>{{"PREPAREDNESS.DOCUMENT_REQUIRED_COMPLETION" | translate}}</strong>
+          <!--tooltip-->
+          <tooltip
+          [level1]="'TOOLTIPS.PREPAREDNESS.TT10.LEVEL1'">
+          </tooltip>
           <div class="row no-gutters">
             <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
               <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" (change)="removeFilterLockDoc()"

@@ -56,7 +56,7 @@
           </div>
         </div>
 
-        <!-------------collapsible content Country Context Start------------->
+        <!-- collapsible content Country Context Start -->
         <div class="Accordion__Content collapse" id="collapseOne" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
@@ -172,12 +172,16 @@
                   </div>
                 </div>
 
-                <!-------Tooltip bubble One------->
+                <!-- Tooltip bubble One -->
 
                 <div class="Tooltip__bubble container-fluid Blue log collapse" id="{{'tooltipLog' + indicatorC.$key}}"
                      attr.data-parent="#{{'collapse' + indicatorC.$key}}" style="" aria-expanded="true">
                   <div class="log_left p-3">
-                    <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
+                    <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
+                      <tooltip
+                        [level1]= "'TOOLTIPS.RISK_MONITORING.TT1.LEVEL1'"
+                      ></tooltip>
+                    </h3>                      
                     <hr class="d-inline-flex">
                     <form>
                       <input [disabled]="!countryPermissionsMatrix.notes.New && UserType!=USER_TYPE.CountryAdmin"
@@ -408,7 +412,11 @@
                        id="{{'tooltipLog' + hazard.hazardScenario}}"
                        attr.data-parent="#{{'collapse' + hazard.hazardScenario}}">
                     <div class="log_left p-3">
-                      <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
+                      <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
+                        <tooltip
+                          [level1]= "'TOOLTIPS.RISK_MONITORING.TT1.LEVEL1'"
+                        ></tooltip>
+                        </h3>      
                       <hr class="d-inline-flex">
                       <form>
                         <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
