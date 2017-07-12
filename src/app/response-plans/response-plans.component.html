@@ -83,24 +83,46 @@
                   <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
 
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
-                      translate}}
+
+                    <div *ngIf="idx==0">
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                        translate}}
+                      </div>
+
+                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[0])" [class.text-muted]="!getApproveStatus(getApproves(plan)[0])">
+                          {{getApproveStatus(getApproves(plan)[0]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                          <i class="fa fa-check-circle" aria-hidden="true"></i>
+                      </div>
                     </div>
-                    <div class="col-6 text-left" *ngIf="idx==1">
-                      {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key) ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
-                      translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
-                      translate)}}
+
+                    <div  *ngIf="idx==1">
+                      <div class="col-12 text-left">
+                        {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key) ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                        translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                        translate)}}
+                      </div>
+                      <div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)" class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[2])" [class.text-muted]="!getApproveStatus(getApproves(plan)[2])">
+                        {{getApproveStatus(getApproves(plan)[2]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                        <i class="fa fa-check-circle" aria-hidden="true"></i>
+                      </div>
+                      <div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))
+                           || (!isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key))"
+                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
+                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                        <i class="fa fa-check-circle" aria-hidden="true"></i>
+                      </div>
                     </div>
-                    <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
-                      translate}}
+
+                    <div  *ngIf="idx==2">
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                        translate}}
+                      </div>
+                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
+                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                        <i class="fa fa-check-circle" aria-hidden="true"></i>
+                      </div>
                     </div>
-                    <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(approve)"
-                         [class.text-muted]="!getApproveStatus(approve)">
-                      {{getApproveStatus(approve) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
-                      ('RESPONSE_PLANS.HOME.WAITING_APPROVAL'
-                      | translate)}}
-                      <i class="fa fa-check-circle" aria-hidden="true"></i>
-                    </div>
+
                   </div>
 
                 </div>
@@ -190,7 +212,7 @@
           </div>
 
           <div class="col-md-1 col-sm-2 Plans-list__item--progress">
-            <div>{{plan.sectionsCompleted/plan.totalSections*100}}%</div>
+            <div>{{plan.sectionsCompleted/plan.totalSections*100 | number: 0}}%</div>
             {{plan.startDate | date:'d/MM/y'}}
           </div>
           <div class="col-sm-3">
