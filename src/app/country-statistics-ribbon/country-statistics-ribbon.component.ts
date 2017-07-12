@@ -251,27 +251,36 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     console.log(this.prepActionService.actions);
     for (let x of this.prepActionService.actions) {
       if (x.level == ActionLevel.MPA) {
-        minTotal++;
-        if (this.isActionCompleted(x)) {
-          minGreen++;
+        if (!x.isArchived) {
+          minTotal++;
+          if (this.isActionCompleted(x)) {
+            minGreen++;
+          }
         }
       }
       else if (x.level == ActionLevel.APA) {
-        advTotal++;
-        if (this.isActionCompleted(x)) {
-          advGreen++;
+        if (!x.isArchived && x.isRedAlertActive(this.hazardRedAlert)) {
+          advTotal++;
+          if (this.isActionCompleted(x)) {
+            advGreen++;
+          }
         }
       }
       if (x.type == ActionType.chs) {
-        chsTotal++;
-        if (this.isActionCompleted(x)) {
-          chsGreen++;
+        if (!x.isArchived) {
+          chsTotal++;
+          if (this.isActionCompleted(x)) {
+            chsGreen++;
+          }
         }
       }
     }
     this.minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     this.advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
     this.chsPrepPercentage = chsTotal == 0 ? 0 : (chsGreen * 100) / chsTotal;
+    this.minPrepPercentage = Math.round(this.minPrepPercentage);
+    this.advPrepPercentage = Math.round(this.advPrepPercentage);
+    this.chsPrepPercentage = Math.round(this.chsPrepPercentage);
     if (minTotal == 0) {
       this.mpaStatusColor = 'grey';
       this.mpaStatusIcon = 'fa-times';

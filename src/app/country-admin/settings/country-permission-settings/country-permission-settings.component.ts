@@ -26,7 +26,8 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
   // Constants and enums
   private userTypeConstant = Constants.USER_TYPE;
   private userTypeSelection =
-    Constants.USER_TYPE_SELECTION.filter(x => x != UserType.All && x != UserType.NonAlert && x != UserType.GlobalUser);
+    Constants.USER_TYPE_SELECTION.filter(x => x != UserType.All && x != UserType.NonAlert && x != UserType.GlobalUser
+        && x != UserType.CountryAdmin && x != UserType.RegionalDirector && x != UserType.GlobalDirector);
 
   // Models
   private alertMessage: AlertMessageModel = null;

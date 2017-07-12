@@ -229,12 +229,11 @@
                               CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                             </div>
                             <div class="col-6 text-bold text-right"
-                                 *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                              <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                 *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                              <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                  (click)="editNote(note, action)">Edit</a>
-                              | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                              | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                    (click)="deleteNote(note, action)">Delete</a>
                             </div>
                             <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
@@ -412,9 +411,9 @@
                         <div class="col-md-2 col-sm-2"
                              [ngClass]="
                                          {
-                                         'text-warning': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                         'text-success': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                         'text-danger': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
+                                         'text-warning': action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()),
+                                         'text-success': action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()),
+                                         'text-danger': (action.asignee == '' || action.asignee == null) && !((!action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && (action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())))
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -422,13 +421,15 @@
                                             <i class="fa fa-stack-1x fa-inverse"
                                                [ngClass]="
                                                {
-                                               'fa-ellipsis-h': !action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                               'fa-check': action.isComplete && action.dueDate > getNow() && !((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))),
-                                               'fa-times': action.dueDate <= getNow() || ((action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())))
+                                               'fa-ellipsis-h': action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()),
+                                               'fa-check': action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()),
+                                               'fa-times': (action.asignee == '' || action.asignee == null) && !((!action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && (action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())))
                                                }
                                                "></i>
                                         </span>
-                          {{ACTION_STATUS[action.dueDate <= getNow() || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())) || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) ? 0 : (action.isComplete ? 2 : 1)] | translate}}
+                        {{ACTION_STATUS[
+                            action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()) ? 1 :
+                                ((action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())) ? 2 : 0)] | translate}}
                         </div>
                         <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 
@@ -520,12 +521,11 @@
                                   CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
                                 <div class="col-6 text-bold text-right"
-                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                     *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">Edit</a>
-                                  | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                        (click)="deleteNote(note, action)">Delete</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
@@ -661,7 +661,7 @@
           </div>
         </div>
       </div>
-      <div class="Accordion__Content collapse" id="collapseTwo">
+      <div class="Accordion__Content collapse show" id="collapseTwo">
         <div *ngFor="let action of prepActionService.actions">
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
@@ -774,12 +774,11 @@
                                 CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                               </div>
                               <div class="col-6 text-bold text-right"
-                                   *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                                <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                   *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                                <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                    (click)="editNote(note, action)">Edit</a>
-                                | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                      (click)="deleteNote(note, action)">Delete</a>
                               </div>
                               <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
@@ -977,12 +976,11 @@
                                   CURRENT_USERS.get(note.uploadedBy).lastName : 'Unassigned'}}
                                 </div>
                                 <div class="col-6 text-bold text-right"
-                                     *ngIf="note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
+                                     *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
+                                                || note.uploadedBy == uid && note.id != action.noteId">
+                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)" href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">Edit</a>
-                                  | <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
-                                                || (note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
+                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)" href="javascript:void(0);" class="text-danger"
                                        (click)="deleteNote(note, action)">Delete</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">

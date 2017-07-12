@@ -60,17 +60,27 @@ export class MapService {
     return x;
   }
 
-  public initMap(elementId: string, uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void)  {
-    this.uid = uid;
-    this.agencyId = agencyId;
-    this.systemId = systemId;
-    this.done = done;
-    this.clickedCountry = countryClicked;
-
+  public initMap(elementId: string, uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
     // Download everything we need then set the parallel actions calls going
     if (this.map == null) {
       this.initBlankMap(elementId);
     }
+    this.clickedCountry = countryClicked;
+    this.initialiseMap(uid, userType, agencyId, systemId, done);
+  }
+
+  public initCountries(uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void) {
+    this.clickedCountry = null;
+    this.initialiseMap(uid, userType, agencyId, systemId, done);
+  }
+
+  private initialiseMap(uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
+    this.uid = uid;
+    this.agencyId = agencyId;
+    this.systemId = systemId;
+    this.done = done;
+
+    // Download everything we need then set the parallel actions calls going
     this.downloadThreshold(() => {
       this.downloadDefaultClockSettings(() => {
         this.downloadDepartments(() => {
@@ -94,26 +104,31 @@ export class MapService {
     this.listCountries = [];
     this.mapCountries.forEach((value, key) => {
       value.calculateDepartments();
+      value.calculateHazardsList();
       this.listCountries.push(value);
       let position = 0;
-      value.hazards.forEach((_, hazardScenario) => {
-        this.geocoder.geocode({"address": Countries[value.location]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-          if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-            let pos = {
-              lng: geoResult[0].geometry.location.lng() + position,
-              lat: geoResult[0].geometry.location.lat()
-            };
-            let marker = new google.maps.Marker({
-              position: pos,
-              icon: HazardImages.init().get(hazardScenario)
-            });
-            marker.setMap(this.map);
-            position += 1.2;
-          }
+      if (this.clickedCountry != null) {
+        value.hazards.forEach((_, hazardScenario) => {
+          this.geocoder.geocode({"address": Countries[value.location]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+              let pos = {
+                lng: geoResult[0].geometry.location.lng() + position,
+                lat: geoResult[0].geometry.location.lat()
+              };
+              let marker = new google.maps.Marker({
+                position: pos,
+                icon: HazardImages.init().get(hazardScenario)
+              });
+              marker.setMap(this.map);
+              position += 1.2;
+            }
+          });
         });
-      })
+      }
     });
-    this.doneWithEmbeddedStyles(this.clickedCountry);
+    if (this.clickedCountry != null) {
+      this.doneWithEmbeddedStyles(this.clickedCountry);
+    }
     this.done(this.listCountries, this.threshGreen, this.threshYellow);
   }
 
@@ -317,19 +332,6 @@ export class MapService {
       });
 
     // Populate actions
-  }
-
-  public getRegionsForAgency(agencyId: string, folder: string, funct: (key: string, region: ModelRegion) => void) {
-    this.af.database.object(Constants.APP_STATUS + "/region/" + agencyId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((result) => {
-        if (result.childCount == 0) {
-          funct("", null);
-        }
-        result.forEach((snapshot) => {
-          funct(snapshot.key, snapshot.val());
-        })
-      });
   }
 
   /**
@@ -826,6 +828,7 @@ export class MapCountry {
   public actionMap: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
   public departments: MapDepartment[] = [];
   public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+  public hazardScenarioList: HazardScenario[] = [];
 
   constructor(countryId: string, location: number) {
     this.location = location;
@@ -845,6 +848,15 @@ export class MapCountry {
     });
     depMap.forEach((value, key) => {
       this.departments.push(value);
+    });
+  }
+
+  public calculateHazardsList() {
+    this.hazardScenarioList = [];
+    this.hazards.forEach((value, key) => {
+      if (value) {
+        this.hazardScenarioList.push(key);
+      }
     });
   }
 

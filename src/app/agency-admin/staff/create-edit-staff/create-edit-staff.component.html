@@ -43,7 +43,7 @@
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0 || idx==8" [value]="type">
+            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0 || idx==8 || (idx==6 && !isDonor)" [value]="type">
               {{USER_TYPE[type] | translate}}
             </option>
           </select>

@@ -189,15 +189,17 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="S-date">{{"RISK_MONITORING.ADD_HAZARD.START_DATE" | translate}}:</label>
-                    <input type="date" class="form-control form-control-danger" id="S-date"
-                           name="startTime" ngModel required>
+                    <material-datepicker id="S-date" placeholder="{{addSeasonStart ? (addSeasonStart | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
+                                         dateFormat="DD-MM-YYYY" (onSelect)="selectStartDate(addSeasonStartDate)" [(date)]="addSeasonStartDate" required></material-datepicker>
+                    <div [hidden]="submitNewCalendar || addSeasonStart != null" class="alert alert-danger">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_START_DATE" | translate}}</div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="E-date">{{"RISK_MONITORING.ADD_HAZARD.END_DATE" | translate}}:</label>
-                    <input type="date" class="form-control form-control-danger" id="E-date"
-                           name="endTime" ngModel required>
+                    <material-datepicker id="E-date" placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
+                                         dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)" [(date)]="addSeasonEndDate" required></material-datepicker>
+                    <div [hidden]="submitNewCalendar || addSeasonEnd != null" class="alert alert-danger">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_END_DATE" | translate}}</div>
                   </div>
                 </div>
               </div>
@@ -206,14 +208,10 @@
                   <label>Color:</label>
                 </div>
                 <div class="col-sm-12">
-                  <label for="{{colors}}" *ngFor="let colors of scenarioColors">
-                    <div class="Color__swatch"
-                         [ngStyle]="{'background':colors}">
-                      <input type="radio" [value]="colors" id="{{colors}}" name="colorCode"
-                             ngModel hidden required>
-                    </div>
-                  </label>
-
+                  <div *ngFor="let x of colours" class="{{x.cssName}} {{x.colorCode == addSeasonColour ? 'Active' : ''}}" (click)="setCurrentColour(x.colorCode)"></div>
+                </div>
+                <div class="col-xs-1"> </div>
+                <div class="col-xs-10 alert alert-danger" [hidden]="submitNewCalendar || addSeasonColour != null">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_COLOUR" | translate}}
                 </div>
               </div>
             </form>
