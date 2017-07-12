@@ -88,7 +88,7 @@ export class ActionsService {
           query: {
             orderByChild: "dueDate",
             // startAt: startOfToday, SHOW ALSO EXPIRED INDICATORS
-            endAt: limitDate.getTime()  
+            endAt: limitDate.getTime()
           }
         })
       })
@@ -119,7 +119,7 @@ export class ActionsService {
   }
 
   getCHSActionTask(action, systemId: string) {
-    
+
     return this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + systemId + "/" + action.$key)
       .takeUntil(this.ngUnsubscribe)
       .map(chsAction => {
