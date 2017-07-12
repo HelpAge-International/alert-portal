@@ -251,21 +251,27 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     console.log(this.prepActionService.actions);
     for (let x of this.prepActionService.actions) {
       if (x.level == ActionLevel.MPA) {
-        minTotal++;
-        if (this.isActionCompleted(x)) {
-          minGreen++;
+        if (!x.isArchived) {
+          minTotal++;
+          if (this.isActionCompleted(x)) {
+            minGreen++;
+          }
         }
       }
       else if (x.level == ActionLevel.APA) {
-        advTotal++;
-        if (this.isActionCompleted(x)) {
-          advGreen++;
+        if (!x.isArchived && x.isRedAlertActive(this.hazardRedAlert)) {
+          advTotal++;
+          if (this.isActionCompleted(x)) {
+            advGreen++;
+          }
         }
       }
       if (x.type == ActionType.chs) {
-        chsTotal++;
-        if (this.isActionCompleted(x)) {
-          chsGreen++;
+        if (!x.isArchived) {
+          chsTotal++;
+          if (this.isActionCompleted(x)) {
+            chsGreen++;
+          }
         }
       }
     }
