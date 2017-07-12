@@ -15,6 +15,7 @@ import {NoteService} from "../../../services/note.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
+import {OperationAreaModel} from "../../../model/operation-area.model";
 declare var jQuery: any;
 
 @Component({
@@ -181,16 +182,27 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     if (partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
       partnerOrganisation.projects.forEach(project => {
         project.operationAreas.forEach(location => {
-          const locationName =
-            this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
-          areasOfOperation.push(locationName);
-          if (!this.areasOfOperation.find(x => x == locationName)) {
-            this.areasOfOperation.push(locationName);
+          let areaName = this.getLocationName(location);
+          // const locationName =
+          //   this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+          areasOfOperation.push(areaName);
+          if (!this.areasOfOperation.find(x => x == areaName)) {
+            this.areasOfOperation.push(areaName);
             this.areasOfOperation.sort();
           }
         });
-      })
+      });
       return areasOfOperation.join(',');
+    }
+  }
+
+  private getLocationName(location: OperationAreaModel): string {
+    if (location.level2) {
+      return this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+    } else if (location.level1) {
+      return this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+    } else {
+      return this.countryLevelsValues[location.country].value;
     }
   }
 

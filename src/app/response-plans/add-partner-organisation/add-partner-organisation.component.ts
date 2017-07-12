@@ -137,7 +137,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     if (!this.alertMessage) {
       // Validate organisation projects
       this.partnerOrganisation.projects.forEach(project => {
-        this.alertMessage = this.validateProject(project);
+        let modelProject = new PartnerOrganisationProjectModel();
+        modelProject.mapFromObject(project);
+        this.alertMessage = this.validateProject(modelProject);
       });
     }
 
@@ -218,11 +220,12 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    if (this.fromResponsePlans) {
-      this.router.navigateByUrl('response-plans/create-edit-response-plan');
-    } else {
-      this.router.navigateByUrl('country-admin/country-staff');
-    }
+    this.router.navigateByUrl("country-admin/country-office-profile/partners")
+    // if (this.fromResponsePlans) {
+    //   this.router.navigateByUrl('response-plans/create-edit-response-plan');
+    // } else {
+    //   this.router.navigateByUrl('country-admin/country-staff');
+    // }
   }
 
   redirectToPartnersPage() {
