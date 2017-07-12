@@ -54,16 +54,14 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
-      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
-          this._loadData();
-        });
-
+      this.countryId = countryId;
+      this.agencyID = agencyId;
+      this.systemAdminID = systemId;
+      this.getAgencyName();
+      this._loadData();
     });
   }
 
@@ -79,21 +77,21 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   }
 
   _loadData() {
-    this._getAgencyID().then(() => {
-      this._getCountryList().then(() => {
-        this._getResponsePlans();
-        this._getSystemAdminID().then(() => {
-          this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
-            this.minTreshold = minTreshold;
-          });
-          this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-            this.advTreshold = advTreshold;
-          });
-        }).then(() => {
-          this._getAllActions();
+    // this._getAgencyID().then(() => {
+    this._getCountryList().then(() => {
+      this._getResponsePlans();
+      this._getSystemAdminID().then(() => {
+        this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
+          this.minTreshold = minTreshold;
         });
+        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+          this.advTreshold = advTreshold;
+        });
+      }).then(() => {
+        this._getAllActions();
       });
     });
+    // });
   }
 
   _getAgencyID() {

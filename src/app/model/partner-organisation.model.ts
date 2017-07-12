@@ -26,7 +26,8 @@ export class PartnerOrganisationModel extends BaseModel {
     this.projects = [new PartnerOrganisationProjectModel()];
     this.notes = [];
     this.partners = [];
-    this.isApproved = false;
+    //TODO need to update based on requirements
+    this.isApproved = true;
     this.externalPartner = true;
   }
 
@@ -59,10 +60,10 @@ export class PartnerOrganisationModel extends BaseModel {
     if (!this.phone && !this.isExcluded('phone', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_PHONE');
     }
-    
+
     return null;
   }
-} 
+}
 export class PartnerOrganisationProjectModel extends BaseModel {
   public title: string;
   public endDate: number;

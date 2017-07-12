@@ -87,10 +87,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-      this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
-        this.moduleSettings = isEnabled;
-      }));
+
+
       if (userType == UserType.CountryDirector) {
         this.DashboardTypeUsed = DashboardType.director;
       } else {
@@ -101,8 +99,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.countryId = countryId;
         this.loadDataForPartnerUser(agencyId, countryId);
       } else {
+        this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
         this.loadData();
       }
+
+      PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
+        this.moduleSettings = isEnabled;
+        console.log(this.moduleSettings);
+      }));
 
       // Load in the country permissions
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
@@ -330,7 +334,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     //TODO change temp id to actual uid
-    this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid);
+    if (this.userType == UserType.PartnerUser) {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+    } else if (this.userType == UserType.CountryDirector) {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
+    }
     this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.approvalPlans = plans
     });

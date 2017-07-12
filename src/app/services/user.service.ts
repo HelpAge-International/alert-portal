@@ -256,7 +256,7 @@ export class UserService {
         .catch(err => {
           // console.log((err as firebase.FirebaseError).code)
           // console.log(err.message)
-          if (err['code'].match(Constants.EMAIL_DUPLICATE_ERROR)) {
+          if (err['code'] && err['code'].match(Constants.EMAIL_DUPLICATE_ERROR)) {
             // console.log('email in use')
             return Promise.reject(err);
           } else {
@@ -297,15 +297,15 @@ export class UserService {
 
       //add partnerUser group node
       //TODO DELETE LATER
-      let partnerUser = {};
-      let agencyAdmin = {};
-      agencyAdmin[agencyId] = true;
-      let systemAdmin = {};
-      systemAdmin[systemId] = true;
-      partnerUser['agencyAdmin'] = agencyAdmin;
-      partnerUser['systemAdmin'] = systemAdmin;
-      partnerUser['countryId'] = countryId;
-      partnerData['/partnerUser/' + uid + '/'] = partnerUser;
+      // let partnerUser = {};
+      // let agencyAdmin = {};
+      // agencyAdmin[agencyId] = true;
+      // let systemAdmin = {};
+      // systemAdmin[systemId] = true;
+      // partnerUser['agencyAdmin'] = agencyAdmin;
+      // partnerUser['systemAdmin'] = systemAdmin;
+      // partnerUser['countryId'] = countryId;
+      // partnerData['/partnerUser/' + uid + '/'] = partnerUser;
 
       partnerData['/partnerUser/' + uid + '/systemAdmin/' + systemId] = true;
       partnerData['/partnerUser/' + uid + '/agencies/' + agencyId] = countryId;
@@ -318,6 +318,7 @@ export class UserService {
       partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
       + '/partners/' + partner.id] = true; // add the partner to the partner organisation
 
+      console.log(partnerData);
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
   }

@@ -154,16 +154,20 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
         this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
-        this._userService.getUserByEmail(this.partnerOrganisation.email)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
+        setTimeout(() => this.router.navigateByUrl("country-admin/country-office-profile/partners"), Constants.ALERT_REDIRECT_DURATION);
 
-            if (!user) {
-              this.redirectToPartnersPage();
-            } else {
-              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            }
-          });
+        // this._userService.getUserByEmail(this.partnerOrganisation.email)
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe(user => {
+
+            // http://localhost:4200/country-admin/country-office-profile/programme
+
+            // if (!user) {
+            //   this.redirectToPartnersPage();
+            // } else {
+            //   setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+            // }
+          // });
 
       })
       .catch(err => {
