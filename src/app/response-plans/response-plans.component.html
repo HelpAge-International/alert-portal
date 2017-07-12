@@ -85,39 +85,39 @@
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
 
                     <div *ngIf="idx==0">
-                      <div class="col-6 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                         translate}}
                       </div>
 
-                      <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(getApproves(plan)[0])" [class.text-muted]="!getApproveStatus(getApproves(plan)[0])">
+                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[0])" [class.text-muted]="!getApproveStatus(getApproves(plan)[0])">
                           {{getApproveStatus(getApproves(plan)[0]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                           <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                     </div>
 
                     <div  *ngIf="idx==1">
-                      <div class="col-6 text-left">
+                      <div class="col-12 text-left">
                         {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key) ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                         translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                         translate)}}
                       </div>
-                      <div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)" class="col-md-6 text-right" [class.text-success]="getApproveStatus(getApproves(plan)[2])" [class.text-muted]="!getApproveStatus(getApproves(plan)[2])">
+                      <div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)" class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[2])" [class.text-muted]="!getApproveStatus(getApproves(plan)[2])">
                         {{getApproveStatus(getApproves(plan)[2]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                       <div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))
                            || (!isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key))"
-                           class="col-md-6 text-right" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
+                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
                         {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                     </div>
 
                     <div  *ngIf="idx==2">
-                      <div class="col-6 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                         translate}}
                       </div>
-                      <div class="col-md-6 text-right" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
+                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
                         {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
