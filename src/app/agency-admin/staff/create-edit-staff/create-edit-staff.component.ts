@@ -476,7 +476,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       if (this.isEmailChange) {
         userData["firstLogin"] = true;
       } else {
-        userData["firstLogin"] = this.isFirstLogin;
+        if(this.isFirstLogin != null){
+          userData["firstLogin"] = this.isFirstLogin;
+        }
       }
     }
 
@@ -509,6 +511,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     } else if (this.userType == UserType.CountryUser) {
       staffData["/countryUser/" + uid] = userData;
     }
+
+    console.log(staff);
 
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       if (!this.hideRegion) {
@@ -633,6 +637,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {
+    if(officeList == null){
+      this.router.navigateByUrl(Constants.AGENCY_ADMIN_HOME);
+      return;
+    }
+
     let directorRegion = {};
     for (let office of officeList) {
       directorRegion["/directorRegion/" + office + "/"] = regionalDirectorId;
