@@ -87,7 +87,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      this.systemId = systemId;
+      this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
 
       if (userType == UserType.CountryDirector) {
         this.DashboardTypeUsed = DashboardType.director;
@@ -286,6 +289,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.actionsOverdue = actions.filter(action => action.dueDate < startOfToday);
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
+
+        for (let x of this.actionsOverdue) {
+          this.updateTaskDataForActions(x.$key, x, (action) => {
+            x.task = action.task;
+            x.level = action.level;
+          });
+        }
+        for (let x of this.actionsToday) {
+          this.updateTaskDataForActions(x.$key, x, (action) => {
+            x.task = action.task;
+            x.level = action.level;
+          });
+        }
+        for (let x of this.actionsThisWeek) {
+          this.updateTaskDataForActions(x.$key, x, (action) => {
+            x.task = action.task;
+            x.level = action.level;
+          });
+        }
       });
 
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
@@ -342,6 +364,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.approvalPlans = plans
     });
+  }
+
+  private updateTaskDataForActions(actionId: string, action: any, fun: (action) => void) {
+    let node: string = "";
+    let typeId: string = "";
+    if (action.type == ActionType.mandated) {
+      node = "actionMandated";
+      typeId = this.agencyId;
+    }
+    if (action.type == ActionType.chs) {
+      node = "actionCHS";
+      typeId = this.systemId;
+    }
+    this.af.database.object(Constants.APP_STATUS + "/" + node + "/" + typeId + "/" + actionId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        fun(snap.val());
+      });
   }
 
   private getCountryData() {
