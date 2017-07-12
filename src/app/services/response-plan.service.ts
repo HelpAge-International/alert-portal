@@ -9,6 +9,7 @@ import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "./notification.service";
 import {MessageModel} from "../model/message.model";
+import {User} from "firebase/app";
 
 @Injectable()
 export class ResponsePlanService {
@@ -143,22 +144,24 @@ export class ResponsePlanService {
         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.NeedsReviewing;
       }
 
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
-        .take(1)
-        .subscribe(result => {
-          if (result) {
-            let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
-            let waitingApprovalList = [];
-            approvePair.forEach(item => {
-              let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
-              waitingApprovalList = waitingApprovalList.concat(waiting);
-            });
+      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
 
-            if (waitingApprovalList.length == 0) {
-              updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
-            }
+        this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+          .take(1)
+          .subscribe(result => {
+            if (result) {
+              let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
+              let waitingApprovalList = [];
+              approvePair.forEach(item => {
+                let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+                waitingApprovalList = waitingApprovalList.concat(waiting);
+              });
 
-            this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+              if (waitingApprovalList.length == 0) {
+                // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+                this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
+              }
+
               if (!isApproved) {
                 // Send notification to users with Response plan rejected
                 const responsePlanRejectedNotificationSetting = 5;
@@ -176,14 +179,71 @@ export class ResponsePlanService {
               } else {
                 isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
               }
-            }, error => {
-              console.log(error.message);
-            });
-          }
-        });
+            }
+          });
+
+        // if (!isApproved) {
+        //   // Send notification to users with Response plan rejected
+        //   const responsePlanRejectedNotificationSetting = 5;
+        //
+        //   let notification = new MessageModel();
+        //   notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
+        //   notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
+        //   notification.time = new Date().getTime();
+        //
+        //   this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
+        // }
+        //
+        // if (rejectNoteContent) {
+        //   this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
+        // } else {
+        //   isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+        // }
+      }, error => {
+        console.log(error.message);
+      });
+
+      // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+      //   .take(1)
+      //   .subscribe(result => {
+      //     if (result) {
+      //       let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
+      //       let waitingApprovalList = [];
+      //       approvePair.forEach(item => {
+      //         let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+      //         waitingApprovalList = waitingApprovalList.concat(waiting);
+      //       });
+      //
+      //       if (waitingApprovalList.length == 0) {
+      //         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+      //       }
+      //
+      //       // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+      //       //   if (!isApproved) {
+      //       //     // Send notification to users with Response plan rejected
+      //       //     const responsePlanRejectedNotificationSetting = 5;
+      //       //
+      //       //     let notification = new MessageModel();
+      //       //     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
+      //       //     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
+      //       //     notification.time = new Date().getTime();
+      //       //
+      //       //     this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
+      //       //   }
+      //       //
+      //       //   if (rejectNoteContent) {
+      //       //     this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
+      //       //   } else {
+      //       //     isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+      //       //   }
+      //       // }, error => {
+      //       //   console.log(error.message);
+      //       // });
+      //     }
+      //   });
 
     } else {
-      console.log("user type is empty");
+      console.log("user type returned data is empty");
     }
   }
 
@@ -206,6 +266,8 @@ export class ResponsePlanService {
       return "regionDirector";
     } else if (userType == UserType.GlobalDirector) {
       return "globalDirector";
+    } else if (userType == UserType.PartnerUser) {
+      return "partner"
     } else {
       return "";
     }
@@ -213,6 +275,26 @@ export class ResponsePlanService {
 
   getPartnerOrgnisation(id) {
     return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id);
+  }
+
+  getPartnerBasedOnOrgId(orgId) {
+    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + orgId)
+      .flatMap(partnerOrg => {
+        let partnerIds = [];
+        if (partnerOrg.partners) {
+          partnerIds = Object.keys(partnerOrg.partners);
+        }
+        return Observable.from(partnerIds);
+      })
+      .flatMap(partnerId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerId)
+      })
+      .map(partner => {
+        if (partner.hasValidationPermission) {
+          return partner.$key;
+        }
+        return "";
+      });
   }
 
   serviceDestroy() {

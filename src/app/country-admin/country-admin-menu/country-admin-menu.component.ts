@@ -34,11 +34,10 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-      PageControlService.agencyBuildPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid,
-        Constants.USER_PATHS[this.userType], (list: AgencyPermissionObject[]) => {
+      PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
           for (const value of list) {
             if (value.permission === PermissionsAgency.MinimumPreparedness) {
               this.permMinimumPreparedness = !value.isAuthorized;

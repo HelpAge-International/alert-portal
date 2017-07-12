@@ -222,7 +222,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     console.log("logout");
-    this.af.auth.logout();
+    this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH)}, error=>{console.log(error.message)});
   }
 
   goToHome() {

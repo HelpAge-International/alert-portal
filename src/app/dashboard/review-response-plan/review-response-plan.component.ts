@@ -105,11 +105,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
           item["status"] = partners[key];
           return item;
         });
+        console.log(this.partnerApproveList);
         this.partnerApproveList.forEach(partner => {
-          this.userService.getOrganisationName(partner.id)
+          this.userService.getUser(partner.id)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(organisation => {
-              partner.name = organisation.organisationName;
+            .subscribe(user => {
+              partner.name = user.firstName + " " + user.lastName;
             });
         })
       }

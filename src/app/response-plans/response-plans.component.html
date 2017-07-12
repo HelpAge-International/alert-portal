@@ -60,19 +60,24 @@
               <div class="row">
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.PARTNERS" | translate}}</strong>
-                  <div *ngFor="let partner of plan?.partnerOrganisations; index as i"
+                  <div *ngFor="let partnerOrg of plan?.partnerOrganisations; index as i"
                        class="row no-gutters Small-spaced">
                     <div class="col-6 text-left">Partner {{i+1}}</div>
-                    <div *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partner])"
-                         class="col-6 text-right text-warning">
+                    <div
+                      *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)])"
+                      class="col-6 text-right text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
                       translate}}<i
                       class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
-                    <div *ngIf="plan?.approval?.partner && plan?.approval?.partner[partner] == 1" class="col-6 text-right text-warning">
+                    <div
+                      *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 1"
+                      class="col-6 text-right text-warning">
                       {{"RESPONSE_PLANS.HOME.REQUIRE_APPROVAL" |
                       translate}}<i
                       class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
-                    <div *ngIf="plan?.approval?.partner && plan?.approval?.partner[partner] == 2" class="col-6 text-right text-success">
+                    <div
+                      *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 2"
+                      class="col-6 text-right text-success">
                       {{"RESPONSE_PLANS.HOME.APPROVAL" |
                       translate}}<i
                       class="fa fa-check-circle" aria-hidden="true"></i></div>
@@ -87,7 +92,8 @@
                       translate}}
                     </div>
                     <div class="col-6 text-left" *ngIf="idx==1">
-                      {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key) ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                      {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key)
+                      ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                       translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                       translate)}}
                     </div>
@@ -119,38 +125,39 @@
                 </span>
               {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
             </a>
-            <div id="{{plan.$key}}"
-                 class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon--b-white Popover__ribbon--float">
-              <!-- Approved -->
-              <div class="row  Spaced">
-                <div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>
-                <div class="col-sm-2 col-4 text-right">
-                  <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">
-                    {{"GLOBAL.CLOSE" | translate}}
-                  </button>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
-                  <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
-                    <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
-                      translate}}
-                    </div>
-                    <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
-                      translate}}
-                    </div>
-                    <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
-                      translate}}
-                    </div>
-                    <div class="col-md-6 text-right text-success">
-                      {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
-                      <i class="fa fa-check-circle" aria-hidden="true"></i></div>
-                  </div>
-                </div>
-              </div>
+            <!--TODO need to match requirements-->
+            <!--<div id="{{plan.$key}}"-->
+            <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
+            <!--&lt;!&ndash; Approved &ndash;&gt;-->
+            <!--<div class="row  Spaced">-->
+            <!--<div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>-->
+            <!--<div class="col-sm-2 col-4 text-right">-->
+            <!--<button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">-->
+            <!--{{"GLOBAL.CLOSE" | translate}}-->
+            <!--</button>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="row">-->
+            <!--<div class="col-md-12">-->
+            <!--<strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>-->
+            <!--<div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">-->
+            <!--<div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |-->
+            <!--translate}}-->
+            <!--</div>-->
+            <!--<div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |-->
+            <!--translate}}-->
+            <!--</div>-->
+            <!--<div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |-->
+            <!--translate}}-->
+            <!--</div>-->
+            <!--<div class="col-md-6 text-right text-success">-->
+            <!--{{"RESPONSE_PLANS.HOME.APPROVED" | translate}}-->
+            <!--<i class="fa fa-check-circle" aria-hidden="true"></i></div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
 
-            </div>
+            <!--</div>-->
           </div>
 
           <div *ngIf="plan?.status==3" class="col-md-3 col-sm-2 Plans-list__item--status">
@@ -221,9 +228,11 @@
                 <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
                   translate}} <br/> Start Fund
                   (.doc, 78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
+                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                  translate}} <br/> Excel (.xls,
                   78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Word (.doc,
+                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                  translate}} <br/> Word (.doc,
                   78Kb)</a>
                 <a class="dropdown-item"
                    (click)="archivePlan(plan)">{{"RESPONSE_PLANS.HOME.ARCHIVE_PLAN" | translate}}</a>
@@ -252,7 +261,9 @@
 
         <div *ngFor="let plan of archivedPlans | async" class="Accordion Plans-list">
           <div class="row align-items-center Plans-list__item">
-            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan?.hazardScenario] | translate}}</div>
+            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan?.hazardScenario] |
+              translate}}
+            </div>
             <div class="col-md-3 col-sm-3">{{plan?.name}}</div>
             <div class="col-md-3 col-sm-2 Plans-list__item--status">
               <a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon6" aria-expanded="false"
@@ -299,7 +310,8 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal(false)">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal(false)">{{"GLOBAL.CANCEL"|
+          translate}}
         </button>
       </div>
     </div>

@@ -52,6 +52,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
+  private partnersApprovalMap = new Map<string, string>();
 
 
   private approvalsList: any[] = [];
@@ -129,12 +130,28 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.getNotes(x);
         }
         this.checkHaveApprovedPartners(this.activePlans);
+        this.getNeedToApprovedPartners(this.activePlans);
       });
 
     this.archivedPlans = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
         orderByChild: "isActive",
         equalTo: false
+      }
+    });
+  }
+
+  private getNeedToApprovedPartners(activePlans: any[]) {
+    activePlans.forEach(plan => {
+      if (plan.partnerOrganisations) {
+        let partnerOrgIds = Object.keys(plan.partnerOrganisations).map(key => plan.partnerOrganisations[key]);
+        partnerOrgIds.forEach(partnerOrgId => {
+          this.service.getPartnerBasedOnOrgId(partnerOrgId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(partnerId => {
+              this.partnersApprovalMap.set(partnerOrgId, partnerId)
+            });
+        })
       }
     });
   }
