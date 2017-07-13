@@ -41,24 +41,6 @@ export class SuperMapComponents {
   }
 
   /**
-   *   Get the list of countries to highlight on the map based on the folder
-   */
-  public highlightedCountriesAgencyAdmin(uid: string, folder: string, funct: (red: string[], yellow: string[], green: string[]) => void) {
-    this.getCountryOffice(uid, folder)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((countryIds) => {
-        let red: string[] = [];
-        let yellow: string[] = [];
-        let green: string[] = [];
-        for (let obj in countryIds) {
-          green.push(Countries[countryIds[obj].location]);
-        }
-        funct(red, yellow, green);
-      });
-  }
-
-
-  /**
    *    Markers for the map based on a node (ie. administratorCountry, administratorAdmin, etc.
    */
   private markersForAgencyAdminMap: Map<string, number> = new Map<string, number>();

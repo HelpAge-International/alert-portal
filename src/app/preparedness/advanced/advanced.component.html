@@ -248,7 +248,7 @@
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                         'ADD NOTE'}}</a>
-                      <a href="javascript:void(0)" class="btn btn-block"
+                      <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                          onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
                       <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                          *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
@@ -540,7 +540,7 @@
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                             'ADD NOTE'}}</a>
-                          <a href="javascript:void(0)" class="btn btn-block"
+                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
@@ -793,7 +793,7 @@
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                           'ADD NOTE'}}</a>
-                        <a href="javascript:void(0)" class="btn btn-block"
+                        <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                            onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
                         <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                            *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
@@ -995,7 +995,7 @@
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
                             'ADD NOTE'}}</a>
-                          <a href="javascript:void(0)" class="btn btn-block"
+                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              onClick="$(this).parent().parent().parent().collapse('hide')">Cancel</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">Stop editing</a>
