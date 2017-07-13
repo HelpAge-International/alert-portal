@@ -1450,6 +1450,7 @@
                 "METHOD_OF_IMPLEMENTATION": "Method of implementation",
                 "DIRECTLY_THROUGH_STAFF": "Directly through field staff",
                 "WORKING_WITH_PARTNERS": "Working with partners",
+                "WORKING_WITH_BOTH": "Working with field staff and partners",
                 "REMOVE_FROM_THIS_PLAN": "Remove from this plan"
             },
             "ACTIVITY_SUMMARY": {
