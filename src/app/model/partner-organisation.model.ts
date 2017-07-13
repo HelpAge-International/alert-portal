@@ -15,6 +15,7 @@ export class PartnerOrganisationModel extends BaseModel {
   public email: string;
   public position: string;
   public projects: PartnerOrganisationProjectModel[];
+  public projectsToDisplay : any[];
   public notes: Array<NoteModel>;
   public partners: any[];
   public isApproved: boolean;
