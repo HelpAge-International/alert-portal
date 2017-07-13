@@ -1591,41 +1591,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getPartners() {
-
-    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
-      .flatMap(list => {
-        this.partnerOrganisations = [];
-        let tempList = [];
-        list.forEach(x => {
-          tempList.push(x);
-        });
-        return Observable.from(tempList)
-      })
-      .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/partner/' + item.$key + '/partnerOrganisationId')
-      })
-      .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
-      })
-      .takeUntil(this.ngUnsubscribe)
-      .distinctUntilChanged()
-      .subscribe(x => {
-        this.partnerOrganisations.push(x);
-      });
-  }
-
   // private getPartners() {
   //
-  //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partnerOrganisations')
+  //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
   //     .flatMap(list => {
-  //       console.log(list)
   //       this.partnerOrganisations = [];
   //       let tempList = [];
-  //       if (list) {
-  //         tempList = Object.keys(list);
-  //       }
+  //       list.forEach(x => {
+  //         tempList.push(x);
+  //       });
   //       return Observable.from(tempList)
+  //     })
+  //     .flatMap(item => {
+  //       return this.af.database.object(Constants.APP_STATUS + '/partner/' + item.$key + '/partnerOrganisationId')
   //     })
   //     .flatMap(item => {
   //       return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
@@ -1636,6 +1614,27 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   //       this.partnerOrganisations.push(x);
   //     });
   // }
+
+  private getPartners() {
+
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partnerOrganisations', {preserveSnapshot:true})
+      .flatMap(snapshot => {
+        this.partnerOrganisations = [];
+        let tempList = [];
+        if (snapshot && snapshot.val()) {
+          tempList = Object.keys(snapshot.val());
+        }
+        return Observable.from(tempList)
+      })
+      .flatMap(item => {
+        return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item)
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .distinctUntilChanged()
+      .subscribe(x => {
+        this.partnerOrganisations.push(x);
+      });
+  }
 
   private getGroups() {
 
