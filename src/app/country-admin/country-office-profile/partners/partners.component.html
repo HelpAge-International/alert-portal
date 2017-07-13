@@ -78,7 +78,7 @@
       <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
       <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
       <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
-      <p class="col-sm-2">{{ getAreasOfOperation(partnerOrganisation) }}</p> <!--Areas of operation-->
+      <span *ngFor="let area of getAreasOfOperation(partnerOrganisation)" class="col-sm-1">{{ area | translate }}</span> <!--Areas of operation-->
 
       <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg"
                                  alt="{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHI_DETAILS' | translate }}">

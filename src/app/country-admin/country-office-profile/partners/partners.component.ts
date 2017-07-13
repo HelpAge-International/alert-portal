@@ -192,7 +192,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
           }
         });
       });
-      return areasOfOperation.join(',');
+      // return areasOfOperation.join(',');
+      return areasOfOperation;
     }
   }
 
@@ -202,7 +203,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     } else if (location.level1) {
       return this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
     } else {
-      return this.countryLevelsValues[location.country].value;
+      return Constants.COUNTRIES[location.country];
     }
   }
 
@@ -332,7 +333,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
     let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
 
-    if (areasOfOperation.search(locationName) !== -1) {
+    if (areasOfOperation.join(",").search(locationName) !== -1) {
       exists = true;
     }
 

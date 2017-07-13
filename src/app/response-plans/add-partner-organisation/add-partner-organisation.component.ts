@@ -16,6 +16,7 @@ import {SessionService} from "../../services/session.service";
 import {CommonService} from "../../services/common.service";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-add-partner-organisation',
@@ -217,6 +218,11 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   changeDate(date, project: PartnerOrganisationProjectModel) {
     project.endDate = date;
+  }
+
+  selectDate(date, project: PartnerOrganisationProjectModel) {
+    let newEndDate = moment(date).valueOf();
+    project.endDate = newEndDate;
   }
 
   goBack() {
