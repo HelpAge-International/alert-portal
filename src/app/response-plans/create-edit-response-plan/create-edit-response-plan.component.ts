@@ -1615,6 +1615,28 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
   }
 
+  // private getPartners() {
+  //
+  //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partnerOrganisations')
+  //     .flatMap(list => {
+  //       console.log(list)
+  //       this.partnerOrganisations = [];
+  //       let tempList = [];
+  //       if (list) {
+  //         tempList = Object.keys(list);
+  //       }
+  //       return Observable.from(tempList)
+  //     })
+  //     .flatMap(item => {
+  //       return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
+  //     })
+  //     .takeUntil(this.ngUnsubscribe)
+  //     .distinctUntilChanged()
+  //     .subscribe(x => {
+  //       this.partnerOrganisations.push(x);
+  //     });
+  // }
+
   private getGroups() {
 
     if (this.systemAdminUid) {
