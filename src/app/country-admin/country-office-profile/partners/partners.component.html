@@ -78,7 +78,12 @@
       <p class="col-sm-1">{{ partnerOrganisation.modifiedAt | date: 'MM/yy'}}</p> <!--Updated-->
       <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
       <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
-      <p *ngFor="let area of getAreasOfOperation(partnerOrganisation)" class="col-sm-2">{{ area | translate }}</p> <!--Areas of operation-->
+      <!--Areas of operation-->
+      <p class="col-sm-2" *ngIf="partnerOrganisation.projectsToDisplay">
+        <a href="javascript:void(0)" class="text-primary" (click)="showAffectedAreasForPartner(partnerOrganisation.projectsToDisplay)">
+          {{'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW_FOR_PROJECTS' | translate}} {{partnerOrganisation.projectsToDisplay.length}} {{'COUNTRY_ADMIN.PROFILE.PARTNERS.PROJECTS_LOWERCASE' | translate}}
+        </a>
+      </p>
 
       <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg"
                                  alt="{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHI_DETAILS' | translate }}">
@@ -287,3 +292,25 @@
   </div>
 </div>
 
+<!-- Areas of operation popup-->
+<div class="modal fade" id="view-areas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-left" *ngIf="currProjectsToDisplay">
+          <div *ngFor="let project of currProjectsToDisplay">
+            <p><strong>{{project.title}}</strong></p>
+            <p *ngFor="let affectedArea of project.affectedAreas">{{affectedArea.country | translate}} {{affectedArea.areas}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

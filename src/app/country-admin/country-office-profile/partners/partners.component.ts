@@ -34,7 +34,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private countryId: string;
   private isViewing: boolean;
-
+  private currProjectsToDisplay: any[];
   // Constants and enums
   private alertMessageType = AlertMessageType;
   filterOrganisation = null;
@@ -105,6 +105,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
 
+                this.assignProjectsToDisplayPerPartnerOrg();
+
                 // Get the partner organisation notes
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
@@ -118,7 +120,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 });
               });
 
-            // get the country levels values
+              // get the country levels values
             this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
               .subscribe(content => {
                 this.countryLevelsValues = content;
@@ -141,6 +143,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
+
+                this.assignProjectsToDisplayPerPartnerOrg();
 
                 // Get the partner organisation notes
                 this.partnerOrganisations.forEach(partnerOrganisation => {
@@ -177,24 +181,45 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/country-admin/country-staff');
   }
 
-  getAreasOfOperation(partnerOrganisation: PartnerOrganisationModel) {
-    let areasOfOperation: string[] = [];
-    if (partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
-      partnerOrganisation.projects.forEach(project => {
-        project.operationAreas.forEach(location => {
-          let areaName = this.getLocationName(location);
-          // const locationName =
-          //   this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
-          areasOfOperation.push(areaName);
-          if (!this.areasOfOperation.find(x => x == areaName)) {
-            this.areasOfOperation.push(areaName);
-            this.areasOfOperation.sort();
-          }
-        });
+  private assignProjectsToDisplayPerPartnerOrg() {
+    this.partnerOrganisations.forEach(partnerOrganisation => {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+        let projects = [];
+        if (partnerOrganisation && partnerOrganisation.projects) {
+          partnerOrganisation.projects.forEach(project => {
+
+            let affectedAreaObj = {country: "", areas: ""};
+            let projectObj = {title: "", affectedAreas: []};
+
+            projectObj.title = project.title;
+            project.operationAreas.forEach(affectedArea => {
+              affectedAreaObj = {country: "", areas: ""};
+              if (affectedArea.country != null && affectedArea.country > -1) {
+                affectedAreaObj.country = this.getCountryNameById(affectedArea.country);
+              }
+              if (affectedArea.level1 != null && affectedArea.level1 > -1) {
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level1].value
+              }
+              if (affectedArea.level2 != null && affectedArea.level2 > -1) {
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level2].value
+              }
+              projectObj.affectedAreas.push(affectedAreaObj);
+            });
+            projects.push(projectObj);
+          });
+        }
+        partnerOrganisation.projectsToDisplay = projects;
       });
-      // return areasOfOperation.join(',');
-      return areasOfOperation;
-    }
+    });
+  }
+
+  showAffectedAreasForPartner(projectsToDisplay : any[]){
+    this.currProjectsToDisplay = projectsToDisplay;
+    jQuery("#view-areas").modal("show");
+  }
+
+  private getCountryNameById(countryId: number) {
+    return Constants.COUNTRIES[countryId];
   }
 
   private getLocationName(location: OperationAreaModel): string {
@@ -330,12 +355,15 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: string): boolean {
     let exists = false;
+    console.log(partnerOrganisation.projectsToDisplay);
 
-    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
+    //TODO Filter
 
-    if (areasOfOperation.join(",").search(locationName) !== -1) {
+    //let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
+
+    //if (areasOfOperation.join(",").search(locationName) !== -1) {
       exists = true;
-    }
+    //}
 
     return exists;
   }
