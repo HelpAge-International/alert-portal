@@ -1073,7 +1073,10 @@
                 "UPDATED": "Updated",
                 "ORGANISATION": "Organisation",
                 "RELATIONSHIP": "Relationship",
-                "AREAS_OF_OPERATION": "Areas of operation",
+                "AREAS_OF_OPERATION": "Area(s) of operation",
+                "VIEW_FOR_PROJECTS": "View for all ",
+                "PROJECTS": "Project(s)",
+                "PROJECTS_LOWERCASE": "project(s)",
                 "STATUS": "Status",
                 "PARTNERSHIP_DETAILS": "Partnership details",
                 "NOTES": "Notes",
@@ -1447,6 +1450,7 @@
                 "METHOD_OF_IMPLEMENTATION": "Method of implementation",
                 "DIRECTLY_THROUGH_STAFF": "Directly through field staff",
                 "WORKING_WITH_PARTNERS": "Working with partners",
+                "WORKING_WITH_BOTH": "Working with field staff and partners",
                 "REMOVE_FROM_THIS_PLAN": "Remove from this plan"
             },
             "ACTIVITY_SUMMARY": {

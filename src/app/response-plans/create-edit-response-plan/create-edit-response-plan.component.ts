@@ -131,6 +131,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private presenceInTheCountry: PresenceInTheCountry;
   private isDirectlyThroughFieldStaff: boolean;
   private isWorkingWithPartners: boolean;
+  private isWorkingWithStaffAndPartners: boolean;
 
   private partnersDropDownsCounter: number = 1;
   private partnersDropDowns: number[] = [this.partnersDropDownsCounter];
@@ -769,6 +770,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  methodOfImplementationSelectedBoth() {
+    if (this.moduleAccess.countryOffice) {
+      this.isWorkingWithStaffAndPartners = true;
+      this.isDirectlyThroughFieldStaff = false;
+      this.isWorkingWithPartners = false;
+    }
+    else {
+      this.methodOfImplementationSelectedDirect();
+    }
+  }
+
   addPartnersDropDown() {
     this.partnersDropDownsCounter++;
     this.partnersDropDowns.push(this.partnersDropDownsCounter);
@@ -792,7 +804,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     let sectionsSelected: boolean = (this.sectorsRelatedTo.length != 0) || (this.otherRelatedSector != '');
     let presenceSelected: boolean = this.presenceInTheCountry != null;
-    let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff || this.isWorkingWithPartners;
+    let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff || this.isWorkingWithPartners || this.isWorkingWithStaffAndPartners;
 
     if (sectionsSelected && presenceSelected && methodOfImplementationSelected && !this.otherSectorSelected ||
       sectionsSelected && presenceSelected && methodOfImplementationSelected && this.otherSectorSelected && this.otherRelatedSector != "") {
@@ -1359,6 +1371,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.presenceInTheCountry = responsePlan.presenceInTheCountry;
       this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff;
       this.isWorkingWithPartners = responsePlan.methodOfImplementation === MethodOfImplementation.withPartner;
+      this.isWorkingWithStaffAndPartners = responsePlan.methodOfImplementation === MethodOfImplementation.both;
 
     }
     if (!responsePlan.sectors && responsePlan.sectorsRelatedTo) {
@@ -1369,6 +1382,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.presenceInTheCountry = responsePlan.presenceInTheCountry;
       this.isDirectlyThroughFieldStaff = responsePlan.methodOfImplementation === MethodOfImplementation.fieldStaff;
       this.isWorkingWithPartners = responsePlan.methodOfImplementation === MethodOfImplementation.withPartner;
+      this.isWorkingWithStaffAndPartners = responsePlan.methodOfImplementation === MethodOfImplementation.both;
 
     }
   }
@@ -1591,22 +1605,43 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
   }
 
+  // private getPartners() {
+  //
+  //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
+  //     .flatMap(list => {
+  //       this.partnerOrganisations = [];
+  //       let tempList = [];
+  //       list.forEach(x => {
+  //         tempList.push(x);
+  //       });
+  //       return Observable.from(tempList)
+  //     })
+  //     .flatMap(item => {
+  //       return this.af.database.object(Constants.APP_STATUS + '/partner/' + item.$key + '/partnerOrganisationId')
+  //     })
+  //     .flatMap(item => {
+  //       return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
+  //     })
+  //     .takeUntil(this.ngUnsubscribe)
+  //     .distinctUntilChanged()
+  //     .subscribe(x => {
+  //       this.partnerOrganisations.push(x);
+  //     });
+  // }
+
   private getPartners() {
 
-    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
-      .flatMap(list => {
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partnerOrganisations', {preserveSnapshot: true})
+      .flatMap(snapshot => {
         this.partnerOrganisations = [];
         let tempList = [];
-        list.forEach(x => {
-          tempList.push(x);
-        });
+        if (snapshot && snapshot.val()) {
+          tempList = Object.keys(snapshot.val());
+        }
         return Observable.from(tempList)
       })
       .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/partner/' + item.$key + '/partnerOrganisationId')
-      })
-      .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item.$value)
+        return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item)
       })
       .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()

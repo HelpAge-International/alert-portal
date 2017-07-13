@@ -16,6 +16,7 @@ import {SessionService} from "../../services/session.service";
 import {CommonService} from "../../services/common.service";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-add-partner-organisation',
@@ -137,7 +138,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     if (!this.alertMessage) {
       // Validate organisation projects
       this.partnerOrganisation.projects.forEach(project => {
-        this.alertMessage = this.validateProject(project);
+        let modelProject = new PartnerOrganisationProjectModel();
+        modelProject.mapFromObject(project);
+        this.alertMessage = this.validateProject(modelProject);
       });
     }
 
@@ -160,14 +163,14 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
         //   .takeUntil(this.ngUnsubscribe)
         //   .subscribe(user => {
 
-            // http://localhost:4200/country-admin/country-office-profile/programme
+        // http://localhost:4200/country-admin/country-office-profile/programme
 
-            // if (!user) {
-            //   this.redirectToPartnersPage();
-            // } else {
-            //   setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-            // }
-          // });
+        // if (!user) {
+        //   this.redirectToPartnersPage();
+        // } else {
+        //   setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        // }
+        // });
 
       })
       .catch(err => {
@@ -217,12 +220,18 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     project.endDate = date;
   }
 
+  selectDate(date, project: PartnerOrganisationProjectModel) {
+    let newEndDate = moment(date).valueOf();
+    project.endDate = newEndDate;
+  }
+
   goBack() {
-    if (this.fromResponsePlans) {
-      this.router.navigateByUrl('response-plans/create-edit-response-plan');
-    } else {
-      this.router.navigateByUrl('country-admin/country-staff');
-    }
+    this.router.navigateByUrl("country-admin/country-office-profile/partners")
+    // if (this.fromResponsePlans) {
+    //   this.router.navigateByUrl('response-plans/create-edit-response-plan');
+    // } else {
+    //   this.router.navigateByUrl('country-admin/country-staff');
+    // }
   }
 
   redirectToPartnersPage() {
@@ -249,7 +258,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
     if (!this.alertMessage) {
       project.operationAreas.forEach(operationArea => {
-        this.alertMessage = this.validateOperationArea(operationArea);
+        let modelArea = new OperationAreaModel();
+        modelArea.mapFromObject(operationArea);
+        this.alertMessage = this.validateOperationArea(modelArea);
       });
     }
 
