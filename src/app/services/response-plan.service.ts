@@ -28,11 +28,12 @@ export class ResponsePlanService {
 
   submitForPartnerValidation(plan, uid, countryId) {
     console.log("submitForPartnerValidation");
-    this.userService.getUserType(uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        this.updatePartnerValidation(uid, user, plan, countryId);
-      });
+    this.updatePartnerValidation(plan, countryId);
+    // this.userService.getUserType(uid)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(user => {
+    //     this.updatePartnerValidation(uid, user, plan, countryId);
+    //   });
   }
 
   needShowWaringBypassValidation(plan) {
@@ -46,7 +47,7 @@ export class ResponsePlanService {
     return true;
   }
 
-  private updatePartnerValidation(uid: string, user: UserType, plan: any, passedCountryId: string) {
+  private updatePartnerValidation(plan: any, passedCountryId: string) {
     console.log(plan.$key);
     const needValidResponsePlanId = plan.$key;
     // const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",

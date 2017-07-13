@@ -118,10 +118,16 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
   submit() {
     this.loadedAlert.estimatedPopulation = this.estimatedPopulation;
-    this.loadedAlert.reasonForRedAlert = this.reasonForRedAlert;
     this.loadedAlert.infoNotes = this.infoNotes;
     this.loadedAlert.timeUpdated = Date.now();
     this.loadedAlert.updatedBy = this.uid;
+
+    if(this.preAlertLevel == AlertLevels.Red && this.loadedAlert.alertLevel == AlertLevels.Amber){
+      this.loadedAlert.reasonForRedAlert = null;
+    }else{
+      this.loadedAlert.reasonForRedAlert = this.reasonForRedAlert;
+    }
+
     if (this.loadedAlert.alertLevel != this.preAlertLevel && this.loadedAlert.alertLevel == AlertLevels.Red) {
       if (this.isDirector) {
         this.loadedAlert.approvalStatus = AlertStatus.Approved;
