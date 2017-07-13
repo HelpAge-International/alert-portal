@@ -378,7 +378,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
     } else {
       if (Object.keys(this.partnerOrganisationsSelected).length != 0) {
-        newResponsePlan.methodOfImplementation = MethodOfImplementation.withPartner;
+
+        this.isWorkingWithPartners ? newResponsePlan.methodOfImplementation = MethodOfImplementation.withPartner : newResponsePlan.methodOfImplementation = MethodOfImplementation.both;
+
         newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
       } else {
         newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
@@ -758,12 +760,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   methodOfImplementationSelectedDirect() {
     this.isDirectlyThroughFieldStaff = true;
     this.isWorkingWithPartners = false;
+    this.isWorkingWithStaffAndPartners = false;
   }
 
   methodOfImplementationSelectedWithPartners() {
     if (this.moduleAccess.countryOffice) {
       this.isWorkingWithPartners = true;
       this.isDirectlyThroughFieldStaff = false;
+      this.isWorkingWithStaffAndPartners = false;
     }
     else {
       this.methodOfImplementationSelectedDirect();
