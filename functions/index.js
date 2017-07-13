@@ -220,3 +220,38 @@ function calculateTime(durationType, value) {
   return timeDifference;
 }
 
+//firebase deploy --only functions:sendPartnerOrganisationValidationEmail
+exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/partnerOrganisation/{partnerId}')
+.onWrite(event => {
+  console.log("partner organisation created");
+  console.log(event.params)
+
+});
+
+// exports.sendPartnerOrganisationValidationEmail = functions.auth.user().onCreate(event => {
+
+//   const user = event.data; // The Firebase user.
+//   const email = user.email; // The email of the user.
+
+//   return sendWelcomeEmail(email);
+// });
+
+// // Sends a welcome email to the given user.
+// function sendWelcomeEmail(email) {
+//   const mailOptions = {
+//     from: '"ALERT" <noreply@firebase.com>',
+//     to: email
+//   };
+
+//   // \n https://uat.portal.alertpreparedness.org
+//   mailOptions.subject = `Welcome to ${APP_NAME}!`;
+//   mailOptions.text = `Hello,
+//                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
+//                       \n Your temporary password is "testtest", please login with your email address to update your credentials.
+//                       \n https://uat.portal.alertpreparedness.org
+//                       \n Thanks
+//                       \n Your ALERT team `;
+//   return mailTransport.sendMail(mailOptions).then(() => {
+//     console.log('New welcome email sent to:', email);
+//   });
+// }
