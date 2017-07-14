@@ -2,6 +2,8 @@ const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 const admin = require('firebase-admin');
 const moment = require('moment');
+const cors = require('cors')({origin: true});
+const uuidv4 = require('uuid/v4');
 admin.initializeApp(functions.config().firebase);
 
 const gmailEmail = encodeURIComponent(functions.config().gmail.email);
@@ -223,35 +225,89 @@ function calculateTime(durationType, value) {
 //firebase deploy --only functions:sendPartnerOrganisationValidationEmail
 exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/partnerOrganisation/{partnerId}')
 .onWrite(event => {
-  console.log("partner organisation created");
-  console.log(event.params)
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
 
+  let partnerOrganisation = event.data.val();
+  let isApproved = partnerOrganisation.isApproved;
+
+  if (!preData && currData) {
+    console.log("Partner Organisation created");
+
+    let partnerId = event.params['partnerId'];
+    let email = partnerOrganisation.email;
+    let expiry = moment.utc().add(1, 'days').valueOf();
+
+    let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+    console.log("email: " + email);
+
+    admin.database().ref('sand/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+      console.log('success validationToken');
+      const mailOptions = {
+        from: '"ALERT partner organisation" <noreply@firebase.com>',
+        to: email
+      };
+
+      // \n https://uat.portal.alertpreparedness.org
+      mailOptions.subject = `Welcome to ${APP_NAME}!`;
+      mailOptions.text = `Hello,
+                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+                          \n To confirm, please click on the link below
+                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n Thanks
+                          \n Your ALERT team `;
+      return mailTransport.sendMail(mailOptions).then(() => {
+        console.log('New welcome email sent to:', email);
+      });
+    }, error => {
+      console.log(error.message);
+    });
+  }
 });
 
-// exports.sendPartnerOrganisationValidationEmail = functions.auth.user().onCreate(event => {
+//firebase deploy --only functions:validatePartnerOrganisationRequest
+exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res) => {
+  // Forbidding anything except GET requests.
+  if (req.method !== 'GET') {
+    res.status(403).send('Forbidden!');
+  }
 
-//   const user = event.data; // The Firebase user.
-//   const email = user.email; // The email of the user.
+  // Enable CORS using the `cors` express middleware.
+  cors(req, res, () => {
+    // Reading date format from URL query parameter.
+    let token = req.query.token;
+    let partnerId = req.query.partnerId;
+    let invalid = true;
 
-//   return sendWelcomeEmail(email);
-// });
+    admin.database().ref('sand/partnerOrganisationValidation/' + partnerId + '/validationToken')
+    .on('value', snapshot => {
+      if (snapshot.val()) {
+        let validationToken = snapshot.val();
 
-// // Sends a welcome email to the given user.
-// function sendWelcomeEmail(email) {
-//   const mailOptions = {
-//     from: '"ALERT" <noreply@firebase.com>',
-//     to: email
-//   };
+        if (token === validationToken.token) {
+          let expiry = validationToken.expiry;
+          let serverTime = moment.utc();
+          let tokenExpiryTime = moment.utc(expiry)
 
-//   // \n https://uat.portal.alertpreparedness.org
-//   mailOptions.subject = `Welcome to ${APP_NAME}!`;
-//   mailOptions.text = `Hello,
-//                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-//                       \n Your temporary password is "testtest", please login with your email address to update your credentials.
-//                       \n https://uat.portal.alertpreparedness.org
-//                       \n Thanks
-//                       \n Your ALERT team `;
-//   return mailTransport.sendMail(mailOptions).then(() => {
-//     console.log('New welcome email sent to:', email);
-//   });
-// }
+          if (serverTime.isBefore(tokenExpiryTime))
+            invalid = false;
+        }
+
+        if (invalid)
+          res.status(200).send('Invalid request');
+        else {
+          admin.database().ref('sand/partnerOrganisation/' + partnerId + '/isApproved').set(true).then(() => {
+            console.log('partner organisaition validated');
+            res.status(200).send('Thank you for your confirmation. Detailed instructions will be sent to your email soon!');  
+          }, error => {
+            console.log(error.message);
+            end();
+          });
+        }
+      } else {
+        res.status(200).send('Invalid request');
+      }
+    });        
+  });
+});
