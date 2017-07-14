@@ -130,7 +130,7 @@
                   </div>
                   <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned"><img
                     src="assets/images/icons/info_source.svg">
-                    <div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
+                    <div class="log_bubble"><p>wutwut</p><img src="assets/images/icons/log_bubble.svg">
                       <p>{{indicatorC.logs && indicatorC.logs.length > 0 ? indicatorC.logs.length : 0}}</p></div>
                     <div class="info-log-text__wrap--risk" data-toggle="collapse"
                          attr.href="#{{'infoTooltip' + indicatorC.$key}}" aria-expanded="true"
@@ -170,6 +170,7 @@
                          (click)="changeIndicatorState(false, 'countryContext', indicatorKey)">Cancel</a>
                     </p>
                   </div>
+
                 </div>
 
                 <!-------Tooltip bubble One------->
@@ -358,20 +359,33 @@
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                       {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                   </div>
-                  <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned">
-                    <img src="assets/images/icons/info_source.svg">
-                    <div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
-                      <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
-                    <div class="info-log-text__wrap--risk" data-toggle="collapse"
-                         attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
-                         attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}">
-                      <p>{{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p>
-                      <p data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
-                         aria-expanded="true"
-                         attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
-                        {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
-                      </p>
+
+                    <!--Info sources & log-->
+                    <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
+                      <div class="row">
+
+                        <div class="col-sm-5"></div>
+                        <div class="col-sm-4"><img src="assets/images/icons/info_source.svg"></div>
+                        <div class="col-sm-2"><div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
+                          <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
+                      </div>
+
+                        <div class="info-log__wrap--risk row">
+                          <div class="col-sm-4"></div>
+                          <div class="col-sm-5"><p data-toggle="collapse"
+                            attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
+                            attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}">
+                            {{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p></div>
+                          <div class="col-sm-2"><p data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
+                                                   aria-expanded="true"
+                                                   attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
+                            {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
+                          </p></div>
+                        </div>
+
                     </div>
+                      <div class="Line-row--risk"></div>
+
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
