@@ -186,7 +186,7 @@ import {DashboardOverviewComponent} from './dashboard/dashboard-overview/dashboa
 import {PrepActionService} from "./services/prepactions.service";
 import {SumPipe} from "./utils/pipes/sum.pipe";
 import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
-import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
+import {CountryOverviewComponent} from "./commons/country-overview/country-overview.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -194,11 +194,18 @@ export function HttpLoaderFactory(http: Http) {
 
 // Must export the config
 export const firebaseConfig = {
-  apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-  authDomain: "alert-190fa.firebaseapp.com",
-  // authDomain: "test.alertplatform.co.uk",
-  databaseURL: "https://alert-190fa.firebaseio.com",
-  storageBucket: "alert-190fa.appspot.com",
+  /*apiKey for SAND: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+   apiKey for LIVE: "AIzaSyC3HmARInyyYi6B8IGRkEZV_gQR0SoGgjU",*/
+  apiKey: "AIzaSyC3HmARInyyYi6B8IGRkEZV_gQR0SoGgjU",
+  // authDomain SAND: "alert-190fa.firebaseapp.com",
+  // authDomain LIVE: "alert-live.firebaseio.com",
+  authDomain: "alert-live.firebaseio.com",
+  // databaseURL SAND: "https://alert-190fa.firebaseio.com",
+  // databaseURL LIVE: "https://alert-live.firebaseio.com/",
+  databaseURL: "https://alert-live.firebaseio.com/",
+  // storageBucket SAND: "alert-190fa.appspot.com",
+  // storageBucket LIVE: "alert-live.appspot.com/",
+  storageBucket: "alert-live.appspot.com/",
   messagingSenderId: "305491871378"
 };
 
