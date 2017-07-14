@@ -376,6 +376,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (this.isDirectlyThroughFieldStaff) {
       newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
+      newResponsePlan.partnerOrganisations = null;
     } else {
       if (Object.keys(this.partnerOrganisationsSelected).length != 0) {
 
