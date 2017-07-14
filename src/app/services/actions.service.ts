@@ -442,16 +442,18 @@ export class ActionsService {
     console.log("update alert");
     let updateData = {};
     let areaData = {};
+    let index: number = 0;
     alert.affectedAreas.forEach(area => {
       let subData = {};
-      subData["country"] = Number(area.affectedCountry);
-      if (area.affectedLevel1) {
-        subData["level1"] = Number(area.affectedLevel1);
+      subData["country"] = Number(area.country);
+      if (area.level1) {
+        subData["level1"] = Number(area.level1);
       }
-      if (area.affectedLevel2) {
-        subData["level2"] = Number(area.affectedLevel2);
+      if (area.level2) {
+        subData["level2"] = Number(area.level2);
       }
-      areaData[area.affectedCountry] = subData;
+      areaData[index] = subData;
+      index++;
     });
     updateData["affectedAreas"] = areaData;
     updateData["alertLevel"] = alert.alertLevel;

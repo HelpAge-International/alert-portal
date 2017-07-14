@@ -25,6 +25,11 @@ export class ModelAlert extends BaseModel {
     public updatedBy: string;
     public updatedByName: string;
 
+    constructor() {
+      super();
+      this.affectedAreas = [];
+    }
+
     validate(excludedFields = []): AlertMessageModel {
         if (typeof (this.hazardScenario) == 'undefined' && !this.isExcluded('hazardScenario', excludedFields)) {
             return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_HAZARD');
