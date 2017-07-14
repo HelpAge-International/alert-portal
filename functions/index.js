@@ -4,8 +4,10 @@ const admin = require('firebase-admin');
 const moment = require('moment');
 admin.initializeApp(functions.config().firebase);
 
-const gmailEmail = encodeURIComponent(functions.config().gmail.email);
-const gmailPassword = encodeURIComponent(functions.config().gmail.password);
+// const gmailEmail = encodeURIComponent(functions.config().gmail.email);
+const gmailEmail ="alertpreparedness@gmail.com";
+// const gmailPassword = encodeURIComponent(functions.config().gmail.password);
+const gmailPassword = "Alert999";
 const mailTransport = nodemailer.createTransport(
   `smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
 
@@ -29,12 +31,15 @@ function sendWelcomeEmail(email) {
     to: email
   };
 
+  console.log(gmailEmail);
+  console.log(gmailPassword);
+
   // \n https://uat.portal.alertpreparedness.org
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
                       \n Your temporary password is "AYPQWBIU", please login with your email address to update your credentials.
-                      \n https://uat.portal.alertpreparedness.org
+                      \n https://live.portal.alertpreparedness.org
                       \n Thanks
                       \n Your ALERT team `;
   return mailTransport.sendMail(mailOptions).then(() => {
