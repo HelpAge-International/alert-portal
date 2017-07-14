@@ -195,7 +195,10 @@
 
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="saveIndicator()">{{"RISK_MONITORING.ADD_INDICATOR.SAVE_INDICATOR" |
+      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="isEdit">{{"RISK_MONITORING.ADD_INDICATOR.SAVE_INDICATOR" |
+        translate}}
+      </div>
+      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="!isEdit">{{"RISK_MONITORING.ADD_INDICATOR.SAVE_NEW_INDICATOR" |
         translate}}
       </div>
       <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>

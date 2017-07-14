@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DurationType, HazardScenario, UserType} from "../utils/Enums";
+import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -82,8 +82,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private isIndicatorUpdate: any[] = [];
 
-  private durationType = Constants.DURATION_TYPE;
-  private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
+  private durationType = Constants.DETAILED_DURATION_TYPE;
+  private durationTypeList: number[] = [DetailedDurationType.Hour, DetailedDurationType.Day, DetailedDurationType.Week, DetailedDurationType.Month, DetailedDurationType.Year];
   private indicatorTrigger: any[] = [];
   private alertImages = Constants.ALERT_IMAGES;
   private logContent: any[] = [];
@@ -247,13 +247,17 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     let trigger = triggers[indicator.triggerSelected];
     if (indicator.updatedAt != null) {
       let updatedAt = new Date(indicator.updatedAt);
-      if (trigger.durationType == "0") {
+      if (trigger.durationType == DetailedDurationType.Hour) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * Constants.UTC_ONE_HOUR * 1000));
+      } else if (trigger.durationType == DetailedDurationType.Day) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * Constants.UTC_ONE_DAY * 1000));
+      } else if (trigger.durationType == DetailedDurationType.Week) {
         return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * 7 * Constants.UTC_ONE_DAY * 1000));
       }
-      else if (trigger.durationType == "1") {
+      else if (trigger.durationType == DetailedDurationType.Month) {
         return updatedAt.setMonth(updatedAt.getUTCMonth() + (+trigger.frequencyValue));
       }
-      else if (trigger.durationType == "2") {
+      else if (trigger.durationType == DetailedDurationType.Year) {
         return updatedAt.setFullYear(updatedAt.getFullYear() + (+trigger.frequencyValue));
       }
       else {
