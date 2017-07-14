@@ -236,7 +236,7 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
 
     let partnerId = event.params['partnerId'];
     let email = partnerOrganisation.email;
-    let expiry = moment.utc().add(1, 'days').valueOf();
+    let expiry = moment.utc().add(1, 'weeks').valueOf();
 
     let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
