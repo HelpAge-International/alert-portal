@@ -33,7 +33,7 @@ function sendWelcomeEmail(email) {
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-                      \n Your temporary password is "testtest", please login with your email address to update your credentials.
+                      \n Your temporary password is "AYPQWBIU", please login with your email address to update your credentials.
                       \n https://uat.portal.alertpreparedness.org
                       \n Thanks
                       \n Your ALERT team `;
@@ -89,6 +89,29 @@ exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId
   });
 
 exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}')
+  .onWrite(event => {
+    console.log("agency node triggered");
+    const userId = event.params.userId;
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+    if (!preData && currData) {
+      //add user account
+      console.log("user added: " + userId);
+    } else if (preData && currData) {
+      //user account change
+      console.log("user data changed: " + userId);
+    } else if (preData && !currData) {
+      //delete user account
+      console.log("delete user: " + userId);
+      admin.auth().deleteUser(userId).then(() => {
+        console.log("successfully deleted user: " + userId);
+      }, error => {
+        console.log(error.message);
+      });
+    }
+  });
+
+exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
     const userId = event.params.userId;

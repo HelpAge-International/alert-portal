@@ -8,7 +8,7 @@ import {
 
 export class Constants {
 
-  static TEMP_PASSWORD = "testtest";
+  static TEMP_PASSWORD = "AYPQWBIU";
   static ALERT_DURATION: number = 5000;
   static ALERT_REDIRECT_DURATION: number = 1500;
 
@@ -16,7 +16,7 @@ export class Constants {
   static INFORM_WORKFLOW: number = 261;
 
   /*PATHS*/
-  static APP_STATUS = "/sand";
+  static APP_STATUS = "/uat";
   static LOGIN_PATH = "/login";
   // static COUNTRY_LEVELS_FILE = "/assets/json/country_levels.json";
   static COUNTRY_LEVELS_VALUES_FILE = "/assets/json/country_levels_values.json";

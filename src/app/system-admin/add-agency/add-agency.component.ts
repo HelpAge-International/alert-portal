@@ -155,7 +155,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private updateWithNewEmail() {
     console.log("new email");
     // let secondApp = firebase.initializeApp(firebaseConfig, "second");
-    let tempPassword = "testtest";
+    let tempPassword = Constants.TEMP_PASSWORD;
     this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
       console.log("user " + x.uid + " created successfully");
       let uid: string = x.uid;
@@ -248,7 +248,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private createNewUser() {
     console.log("start register new agency");
     // let secondApp = firebase.initializeApp(firebaseConfig, "fourth");
-    let tempPassword = "testtest";
+    let tempPassword = Constants.TEMP_PASSWORD;
     this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
       console.log("user " + success.uid + " created successfully");
       let uid: string = success.uid;
