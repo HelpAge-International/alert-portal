@@ -120,7 +120,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 });
               });
 
-              // get the country levels values
+            // get the country levels values
             this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
               .subscribe(content => {
                 this.countryLevelsValues = content;
@@ -196,12 +196,15 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
               affectedAreaObj = {country: "", areas: ""};
               if (affectedArea.country != null && affectedArea.country > -1) {
                 affectedAreaObj.country = this.getCountryNameById(affectedArea.country);
+                this.addLocationForFilter(affectedAreaObj.country);
               }
               if (affectedArea.level1 != null && affectedArea.level1 > -1) {
-                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level1].value
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level1].value;
+                this.addLocationForFilter(affectedAreaObj.areas);
               }
               if (affectedArea.level2 != null && affectedArea.level2 > -1) {
-                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level2].value
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level2].value;
+                this.addLocationForFilter(affectedAreaObj.areas);
               }
               projectObj.affectedAreas.push(affectedAreaObj);
             });
@@ -213,7 +216,14 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     });
   }
 
-  showAffectedAreasForPartner(projectsToDisplay : any[]){
+  private addLocationForFilter(location: string) {
+    let parsedLocation = location.replace(/,/g, '');
+    if (!this.areasOfOperation.includes(parsedLocation)) {
+      this.areasOfOperation.push(parsedLocation);
+    }
+  }
+
+  showAffectedAreasForPartner(projectsToDisplay: any[]) {
     this.currProjectsToDisplay = projectsToDisplay;
     jQuery("#view-areas").modal("show");
   }
@@ -353,18 +363,28 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     return exists;
   }
 
-  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: string): boolean {
+  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: any): boolean {
     let exists = false;
-    console.log(partnerOrganisation.projectsToDisplay);
+    console.log(locationName);
 
     //TODO Filter
 
-    //let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
+    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation.projectsToDisplay);
 
-    //if (areasOfOperation.join(",").search(locationName) !== -1) {
+    if (areasOfOperation.join(",").search(locationName) !== -1) {
       exists = true;
-    //}
+    }
 
     return exists;
   }
+
+  private getAreasOfOperation(projects): string[] {
+    let areas = [];
+    console.log(projects);
+    projects.forEach(project =>{
+      let area = project.affectedAreas;
+    });
+    return areas;
+  }
+
 }
