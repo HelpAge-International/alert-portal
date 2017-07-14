@@ -61,3 +61,11 @@
    justify-content: none;
   left: 50%;
 }
+
+.Tooltip__bubble.Blue:after {
+  right: 34.5%;
+}
+
+.Tooltip__bubble.Blue.info:after {
+  right: 39.5%;
+}
