@@ -204,8 +204,8 @@ export const firebaseConfig = {
   // databaseURL LIVE: "https://alert-live.firebaseio.com/",
   databaseURL: "https://alert-live.firebaseio.com/",
   // storageBucket SAND: "alert-190fa.appspot.com",
-  // storageBucket LIVE: "alert-live.appspot.com/",
-  storageBucket: "alert-live.appspot.com/",
+  // storageBucket LIVE: "alert-live.appspot.com",
+  storageBucket: "alert-live.appspot.com",
   messagingSenderId: "305491871378"
 };
 
