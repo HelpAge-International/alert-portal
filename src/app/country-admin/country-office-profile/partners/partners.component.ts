@@ -365,9 +365,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: any): boolean {
     let exists = false;
-    console.log(locationName);
-
-    //TODO Filter
 
     let areasOfOperation = this.getAreasOfOperation(partnerOrganisation.projectsToDisplay);
 
@@ -380,9 +377,14 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   private getAreasOfOperation(projects): string[] {
     let areas = [];
-    console.log(projects);
-    projects.forEach(project =>{
-      let area = project.affectedAreas;
+    projects.forEach(project => {
+      project.affectedAreas.forEach(area => {
+        areas.push(area.country);
+        if (area.areas) {
+          areas.push(area.areas);
+        }
+      });
+
     });
     return areas;
   }
