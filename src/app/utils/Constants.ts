@@ -8,6 +8,9 @@ import {
 
 export class Constants {
 
+  // Live Password = "AYPQWBIU"
+  // Sand/ Test Password = "testtest"
+
   static TEMP_PASSWORD = "AYPQWBIU";
   static ALERT_DURATION: number = 5000;
   static ALERT_REDIRECT_DURATION: number = 1500;
