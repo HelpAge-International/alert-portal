@@ -36,7 +36,7 @@ function sendWelcomeEmail(email) {
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-                      \n Your temporary password is "AYPQWBIU", please login with your email address to update your credentials.
+                      \n Your temporary password is "BXQQLBJK", please login with your email address to update your credentials.
                       \n https://live.portal.alertpreparedness.org
                       \n Thanks
                       \n Your ALERT team `;
