@@ -35,7 +35,7 @@ function sendWelcomeEmail(email) {
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-                      \n Your temporary password is "AYPQWBIU", please login with your email address to update your credentials.
+                      \n Your temporary password is "BXQQLBJK", please login with your email address to update your credentials.
                       \n https://uat.portal.alertpreparedness.org
                       \n Thanks
                       \n Your ALERT team `;
@@ -322,7 +322,7 @@ exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res
         else {
           admin.database().ref('sand/partnerOrganisation/' + partnerId + '/isApproved').set(true).then(() => {
             console.log('partner organisaition validated');
-            res.status(200).send('Thank you for your confirmation. Detailed instructions will be sent to your email soon!');  
+            res.status(200).send('Thank you for your confirmation. Detailed instructions will be sent to your email soon!');
           }, error => {
             console.log(error.message);
             end();
@@ -331,6 +331,6 @@ exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res
       } else {
         res.status(200).send('Invalid request');
       }
-    });        
+    });
   });
 });
