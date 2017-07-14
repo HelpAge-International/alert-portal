@@ -4,14 +4,12 @@ const admin = require('firebase-admin');
 const moment = require('moment');
 admin.initializeApp(functions.config().firebase);
 
-// const gmailEmail = encodeURIComponent(functions.config().gmail.email);
-const gmailEmail ="alertpreparedness@gmail.com";
-// const gmailPassword = encodeURIComponent(functions.config().gmail.password);
-const gmailPassword = "Alert999";
+const gmailEmail = encodeURIComponent(functions.config().gmail.email);
+const gmailPassword = encodeURIComponent(functions.config().gmail.password);
 const mailTransport = nodemailer.createTransport(
   `smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
 
-const APP_NAME = 'ALERT';
+const APP_NAME = 'Alert Preparedness';
 const WEEK = 0;
 const MONTH = 1;
 const YEAR = 2;
@@ -27,7 +25,7 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
 // Sends a welcome email to the given user.
 function sendWelcomeEmail(email) {
   const mailOptions = {
-    from: '"ALERT" <noreply@firebase.com>',
+    from: '"Alert Preparedness" <noreply@firebase.com>',
     to: email
   };
 
