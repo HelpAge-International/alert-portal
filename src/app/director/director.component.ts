@@ -170,15 +170,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.getAgencyName();
     
     if (this.userType != UserType.RegionalDirector) {
-      
-      
-      this.countryIds.forEach(countryId => {
-        this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryId, this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(plans => {
-            this.approvalPlans = this.approvalPlans.concat(plans);
-          });
-
         //for each country do following
         // this.actionService.getActionsDueInWeek(countryId, this.uid)
         //   .takeUntil(this.ngUnsubscribe)
@@ -218,10 +209,16 @@ export class DirectorComponent implements OnInit, OnDestroy {
         //     }
         //   });
 
-      });
-
       
       this.getAllRegionsAndCountries().then(() => {
+        this.countryOffices.forEach(countryOffice => {
+          this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryOffice.$key, this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(plans => {
+              this.approvalPlans = this.approvalPlans.concat(plans);
+            });
+        })
+
         this.regions.forEach(region => {
           this.regionalCountryOffices[region.regionId] = this.countryOffices.filter(x => region.countries.has(x.$key));
         })

@@ -108,30 +108,27 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     if(this._userId && this._userType && this._systemId && this._agencyId && this._countryOfficeData) {
         this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
           this.minTreshold = minTreshold;
-        });
-        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-          this.advTreshold = advTreshold;
-        });
-        console.log(this._countryOfficeData);
-        this._countryOfficeData.forEach(countryOffice => {
-          console.log(countryOffice);
-          this.prepActionService[countryOffice.$key]= new PrepActionService();
-          this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
-          console.log('a ajuns pana aici3');
-          this._getResponsePlans(countryOffice);
-          console.log('a ajuns pana aici2');
-          this._getAlertLevel(countryOffice);
-
-          console.log('a ajuns pana aici');
-          this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
           
-          this.prepActionService[countryOffice.$key].addUpdater(() => {
-            console.log(this.prepActionService[countryOffice.$key]);
-            this.recalculateAll(countryOffice);
-          });
-        })
+          this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+            this.advTreshold = advTreshold;
 
-        this.filteredCountryOfficeData = this._countryOfficeData;
+            this._countryOfficeData.forEach(countryOffice => {
+              this.prepActionService[countryOffice.$key]= new PrepActionService();
+              this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
+
+              this._getResponsePlans(countryOffice);
+              this._getAlertLevel(countryOffice);
+
+              this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
+              
+              this.prepActionService[countryOffice.$key].addUpdater(() => {
+                this.recalculateAll(countryOffice);
+              });
+            });
+
+            this.filteredCountryOfficeData = this._countryOfficeData;
+          });
+        });
     }
   }
 

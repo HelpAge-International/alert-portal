@@ -12,7 +12,7 @@
 
         <div class="Back--button" routerLink="{{isDirector?'/director':'/dashboard'}}">{{"GLOBAL.HOME" | translate}}</div>
 
-        <app-view-response-plan [responsePlanId]="responsePlanId"></app-view-response-plan>
+        <app-view-response-plan [responsePlanId]="responsePlanId" [_countryId]="countryId" [_agencyId]="agencyId" [_isViewing]="true"></app-view-response-plan>
 
         <br/>
 
