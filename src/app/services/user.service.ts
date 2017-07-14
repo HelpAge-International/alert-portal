@@ -614,6 +614,17 @@ export class UserService {
       })
   }
 
+  getAllCountryOfficesForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryOffices = [];
+        countries.forEach(country => {
+          countryOffices.push(country);
+        });
+        return countryOffices;
+      })
+  }
+
   getAllCountryAlertLevelsForAgency(agencyId: string): Observable<any> {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
       .map(countries => {
