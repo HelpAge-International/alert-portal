@@ -6,13 +6,13 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from "../../model/message";
 import {MessageModel} from "../../model/message.model";
 import {Subject} from "rxjs";
-import {PageControlService} from "../../services/pagecontrol.service";
 import {UserService} from "../../services/user.service";
-import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus } from "../../utils/Enums";
+import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType } from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
 import { AgencyService } from "../../services/agency-service.service";
+import { PageControlService } from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 @Component({
@@ -298,12 +298,15 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewCountry(countryId) {
-    this.router.navigate(["/dashboard/dashboard-overview", {
-      "countryId": countryId,
-      "isViewing": true,
-      "agencyId": this._agencyId,
-      "systemId": this._systemId,
-      "canCopy": true
-    }]);
+    if(this._userType == UserType.CountryAdmin)
+    {
+      this.router.navigate(["/dashboard/dashboard-overview", {
+        "countryId": countryId,
+        "isViewing": true,
+        "agencyId": this._agencyId,
+        "systemId": this._systemId,
+        "canCopy": true
+      }]);
+    }
   }
 }
