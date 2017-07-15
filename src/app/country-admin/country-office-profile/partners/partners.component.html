@@ -44,7 +44,7 @@
                 [(ngModel)]="filterLocation">
           <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
           <option *ngFor="let location of areasOfOperation"
-                  [value]="location">{{ location }}
+                  [value]="location">{{ location | translate }}
           </option>
         </select>
       </div>

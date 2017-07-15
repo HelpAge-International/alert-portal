@@ -8,7 +8,7 @@ import {
 
 export class Constants {
 
-  static TEMP_PASSWORD = "AYPQWBIU";
+  static TEMP_PASSWORD = "testtest";
   static ALERT_DURATION: number = 5000;
   static ALERT_REDIRECT_DURATION: number = 1500;
 
@@ -153,6 +153,14 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RISK_MONITORING",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.COUNTRY_OFFICE_PROFILE",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING"
+  ];
+
+  static DETAILED_DURATION_TYPE = [
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.HOURS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.DAYS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.WEEKS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.MONTHS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.YEARS"
   ];
 
   static DURATION_TYPE = [
@@ -900,6 +908,7 @@ export class Constants {
   ];
 
   static UTC_ONE_DAY = 60 * 60 * 24;
+  static UTC_ONE_HOUR = 60 * 60;
 
   //firebase error
   static EMAIL_DUPLICATE_ERROR = "auth/email-already-in-use";
