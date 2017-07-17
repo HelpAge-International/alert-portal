@@ -9,7 +9,9 @@
         {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
     </div>
 
-    <div class="row align-items-center Filter-form Spaced">
+    <app-country-overview [systemId]="systemAdminID" [agencyId]="agencyID" [userId]="uid" [userType]="UserType" [countryOfficeData]="countryOfficeData"></app-country-overview>
+    
+    <!--<div class="row align-items-center Filter-form Spaced">
       <div class="col-lg-1 col-md-2 col-sm-6">
         {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.SORT_BY" | translate}}:
       </div>
@@ -77,7 +79,7 @@
 
     <div class="Ribbon__section__wrap Spaced" *ngIf="!countryOffices || !countryOffices.length">
       <h1 style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_AGENCIES" | translate}}</h1>
-    </div>
+    </div>-->
 
   </div>
 
