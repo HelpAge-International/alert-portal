@@ -166,17 +166,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
     });
     return promise;
   }
-  _getActionsBySystemAdmin() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((actions: any) => {
-          res(actions);
-        });
-    });
-    return promise;
-  }
-
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
