@@ -167,6 +167,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         return names;
       });
 
+
     this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/skills')
     .takeUntil(this.ngUnsubscribe)
     .subscribe(_ => {
@@ -485,7 +486,15 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
             this.notificationsMap.set(Number(notification), true);
           }
         }
+        
+        let userNode = Constants.USER_PATHS[this.userType];
+        this.af.database.object(Constants.APP_STATUS + '/' + userNode + '/' + staffId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(userData => {
+            this.isFirstLogin = userData.firstLogin;
+          });
       });
+
   }
 
   private checkUserType() {

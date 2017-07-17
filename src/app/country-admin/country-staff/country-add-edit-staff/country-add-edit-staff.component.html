@@ -108,13 +108,10 @@
         <!-- Tooltip partial end -->
       </div>
       <div class="row">
-        <label *ngFor="let tech of techSkillsList" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
-          <input type="checkbox" #box (change)="techSkillCheck(tech,box.checked)"
-              [checked]="skillsMap.get(tech.$key)">{{tech.name}}</label>
-        <!--<template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+        <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == TechSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
           type="checkbox" #box (change)="techSkillCheck(allSkills[skillKey],box.checked)" [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
-        </template>-->
+        </template>
       </div>
 
       <div class="row Spaced">
@@ -132,6 +129,7 @@
         </tooltip>
         <!-- Tooltip partial end -->
       </div>
+
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">

@@ -99,7 +99,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  
   filterAlertLevel(event: any) {
     this.filter = event.target.value;
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
