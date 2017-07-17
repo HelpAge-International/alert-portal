@@ -61,43 +61,51 @@
         <label>{{"ALERT.AFFECTED_AREAS" | translate}}</label>
 
         <div *ngIf="loadedAlert">
-          <div *ngFor="let area of loadedAlert.affectedAreas; index as i" class="row align-items-center">
-            <div class="col-sm-3 form-group">
-              <select class="form-control" #country (change)="changeCountry(i, country.value)">
-                <option selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                <option *ngFor="let country of COUNTRIES" [value]="country"
-                        [selected]="COUNTRIES.indexOf(country)==area.affectedCountry">{{country | translate}}
-                </option>
-              </select>
-            </div>
-            <div class="col-sm-3 form-group">
-              <select class="form-control" #level1 (change)="changeLevel1(i, level1.value)">
-                <option selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                <option *ngFor="let level1 of geoMap.get(area.affectedCountry)?geoMap.get(area.affectedCountry):temp"
-                        [value]="level1.id"
-                        [selected]="level1.id==area.affectedLevel1">
-                  {{level1.value}}
-                </option>
-              </select>
-            </div>
-            <div class="col-sm-3 form-group">
-              <select class="form-control" #level2 (change)="changeLevel2(i, level2.value)">
-                <option selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                <option
-                  *ngFor="let level2 of geoMap.get(area.affectedCountry)&&geoMap.get(area.affectedCountry)[area.affectedLevel1]?geoMap.get(area.affectedCountry)[area.affectedLevel1]?.levelTwoValues:temp"
-                  [value]="level2.id" [selected]="level2.id==area.affectedLevel2">
-                  {{level2.value}}
-                </option>
-              </select>
-            </div>
-            <div *ngIf="loadedAlert?.affectedAreas?.length>1" class="col-sm-3 form-group">
-              <a href="javascript:void(0)" class="text-danger" (click)="removeArea(i)">{{"GLOBAL.REMOVE" | translate}}</a>
-            </div>
-          </div>
+          <div class="locations_affected__wrap--risk row text-left Spaced-above">
+            <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+            <div class="col-sm-12 row" *ngFor="let location of loadedAlert.affectedAreas; let locationKey = index">
+              <div class="col-sm-3">
+                <div class="form-group-risk-frequency ">
+                  <select class="form-control" name="CountryArea"
+                          [(ngModel)] = "location.country">
+                    <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                    <option *ngFor="let countryKey of countriesList" [ngValue]="countryKey">{{countries[countryKey] | translate}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group-risk-frequency" *ngIf="location.country != undefined && countryLevelsValues[location.country]?.levelOneValues.length > 0">
+                  <select class="form-control" name="CountryAreaLevelOne"
+                          [(ngModel)] = "location.level1">
+                    <option value="undefined" disabled selected hidden>
+                      {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[0].value | translate }}</option>
+                    <option
+                      *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
+                      [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group-risk-frequency" *ngIf="location.level1 != undefined && location.country != undefined && countryLevelsValues[location.country]?.levelOneValues[location.level1]?.levelTwoValues.length > 0">
+                  <select class="form-control" name="CountryAreaLevelTwo"
+                          [(ngModel)] = "location.level2">
+                    <option value="undefined" disabled selected hidden>
+                      {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{  countryLevels[location.country]?.levels[1].value | translate }}</option>
+                    <option
+                      *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1]?.levelTwoValues"
+                      [ngValue] = "countryLevel2Value.id">{{countryLevel2Value.value}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <a href="javascript:void(0)" class="text-danger" *ngIf = "loadedAlert.affectedAreas.length > 1" (click) = "removeAnotherArea(locationKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
+              </div>
         </div>
 
         <div class="row no-gutters">
-          <a href="javascript:void(0)" class="Add__row__cta" (click)="addNewArea()">{{"ALERT.ADD_ANOTHER_LOCATION" |
+          <a href="javascript:void(0)" class="Add__row__cta" (click)="addAnotherAreas()">{{"ALERT.ADD_ANOTHER_LOCATION" |
             translate}}</a>
         </div>
       </div>
