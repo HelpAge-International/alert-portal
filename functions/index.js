@@ -245,6 +245,7 @@ function calculateTime(durationType, value) {
   return timeDifference;
 }
 
+//for sand
 //firebase deploy --only functions:sendPartnerOrganisationValidationEmail
 exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/partnerOrganisation/{partnerId}')
 .onWrite(event => {
@@ -332,5 +333,278 @@ exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res
         res.status(200).send('Invalid request');
       }
     });
+  });
+});
+
+//for test
+//firebase deploy --only functions:sendPartnerOrganisationValidationEmail
+exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/test/partnerOrganisation/{partnerId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    let partnerOrganisation = event.data.val();
+    let isApproved = partnerOrganisation.isApproved;
+
+    if (!preData && currData) {
+      console.log("Partner Organisation created");
+
+      let partnerId = event.params['partnerId'];
+      let email = partnerOrganisation.email;
+      let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+      let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+      console.log("email: " + email);
+
+      admin.database().ref('test/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+        console.log('success validationToken');
+        const mailOptions = {
+          from: '"ALERT partner organisation" <noreply@firebase.com>',
+          to: email
+        };
+
+        // \n https://uat.portal.alertpreparedness.org
+        mailOptions.subject = `Welcome to ${APP_NAME}!`;
+        mailOptions.text = `Hello,
+                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+                          \n To confirm, please click on the link below
+                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n Thanks
+                          \n Your ALERT team `;
+        return mailTransport.sendMail(mailOptions).then(() => {
+          console.log('New welcome email sent to:', email);
+        });
+      }, error => {
+        console.log(error.message);
+      });
+    }
+  });
+
+//firebase deploy --only functions:validatePartnerOrganisationRequest
+exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res) => {
+  // Forbidding anything except GET requests.
+  if (req.method !== 'GET') {
+    res.status(403).send('Forbidden!');
+  }
+
+  // Enable CORS using the `cors` express middleware.
+  cors(req, res, () => {
+    // Reading date format from URL query parameter.
+    let token = req.query.token;
+    let partnerId = req.query.partnerId;
+    let invalid = true;
+
+    admin.database().ref('test/partnerOrganisationValidation/' + partnerId + '/validationToken')
+      .on('value', snapshot => {
+        if (snapshot.val()) {
+          let validationToken = snapshot.val();
+
+          if (token === validationToken.token) {
+            let expiry = validationToken.expiry;
+            let serverTime = moment.utc();
+            let tokenExpiryTime = moment.utc(expiry)
+
+            if (serverTime.isBefore(tokenExpiryTime))
+              invalid = false;
+          }
+
+          if (invalid)
+            res.status(200).send('Invalid request');
+          else {
+            admin.database().ref('test/partnerOrganisation/' + partnerId + '/isApproved').set(true).then(() => {
+              console.log('partner organisaition validated');
+              res.status(200).send('Thank you for your confirmation. Detailed instructions will be sent to your email soon!');
+            }, error => {
+              console.log(error.message);
+              end();
+            });
+          }
+        } else {
+          res.status(200).send('Invalid request');
+        }
+      });
+  });
+});
+
+//for uat
+//firebase deploy --only functions:sendPartnerOrganisationValidationEmail
+exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/uat/partnerOrganisation/{partnerId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    let partnerOrganisation = event.data.val();
+    let isApproved = partnerOrganisation.isApproved;
+
+    if (!preData && currData) {
+      console.log("Partner Organisation created");
+
+      let partnerId = event.params['partnerId'];
+      let email = partnerOrganisation.email;
+      let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+      let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+      console.log("email: " + email);
+
+      admin.database().ref('uat/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+        console.log('success validationToken');
+        const mailOptions = {
+          from: '"ALERT partner organisation" <noreply@firebase.com>',
+          to: email
+        };
+
+        // \n https://uat.portal.alertpreparedness.org
+        mailOptions.subject = `Welcome to ${APP_NAME}!`;
+        mailOptions.text = `Hello,
+                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+                          \n To confirm, please click on the link below
+                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n Thanks
+                          \n Your ALERT team `;
+        return mailTransport.sendMail(mailOptions).then(() => {
+          console.log('New welcome email sent to:', email);
+        });
+      }, error => {
+        console.log(error.message);
+      });
+    }
+  });
+
+//firebase deploy --only functions:validatePartnerOrganisationRequest
+exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res) => {
+  // Forbidding anything except GET requests.
+  if (req.method !== 'GET') {
+    res.status(403).send('Forbidden!');
+  }
+
+  // Enable CORS using the `cors` express middleware.
+  cors(req, res, () => {
+    // Reading date format from URL query parameter.
+    let token = req.query.token;
+    let partnerId = req.query.partnerId;
+    let invalid = true;
+
+    admin.database().ref('uat/partnerOrganisationValidation/' + partnerId + '/validationToken')
+      .on('value', snapshot => {
+        if (snapshot.val()) {
+          let validationToken = snapshot.val();
+
+          if (token === validationToken.token) {
+            let expiry = validationToken.expiry;
+            let serverTime = moment.utc();
+            let tokenExpiryTime = moment.utc(expiry)
+
+            if (serverTime.isBefore(tokenExpiryTime))
+              invalid = false;
+          }
+
+          if (invalid)
+            res.status(200).send('Invalid request');
+          else {
+            admin.database().ref('uat/partnerOrganisation/' + partnerId + '/isApproved').set(true).then(() => {
+              console.log('partner organisaition validated');
+              res.status(200).send('Thank you for your confirmation. Detailed instructions will be sent to your email soon!');
+            }, error => {
+              console.log(error.message);
+              end();
+            });
+          }
+        } else {
+          res.status(200).send('Invalid request');
+        }
+      });
+  });
+});
+
+//for live
+//firebase deploy --only functions:sendPartnerOrganisationValidationEmail
+exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/live/partnerOrganisation/{partnerId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    let partnerOrganisation = event.data.val();
+    let isApproved = partnerOrganisation.isApproved;
+
+    if (!preData && currData) {
+      console.log("Partner Organisation created");
+
+      let partnerId = event.params['partnerId'];
+      let email = partnerOrganisation.email;
+      let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+      let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+      console.log("email: " + email);
+
+      admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+        console.log('success validationToken');
+        const mailOptions = {
+          from: '"ALERT partner organisation" <noreply@firebase.com>',
+          to: email
+        };
+
+        // \n https://uat.portal.alertpreparedness.org
+        mailOptions.subject = `Welcome to ${APP_NAME}!`;
+        mailOptions.text = `Hello,
+                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+                          \n To confirm, please click on the link below
+                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n Thanks
+                          \n Your ALERT team `;
+        return mailTransport.sendMail(mailOptions).then(() => {
+          console.log('New welcome email sent to:', email);
+        });
+      }, error => {
+        console.log(error.message);
+      });
+    }
+  });
+
+//firebase deploy --only functions:validatePartnerOrganisationRequest
+exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res) => {
+  // Forbidding anything except GET requests.
+  if (req.method !== 'GET') {
+    res.status(403).send('Forbidden!');
+  }
+
+  // Enable CORS using the `cors` express middleware.
+  cors(req, res, () => {
+    // Reading date format from URL query parameter.
+    let token = req.query.token;
+    let partnerId = req.query.partnerId;
+    let invalid = true;
+
+    admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken')
+      .on('value', snapshot => {
+        if (snapshot.val()) {
+          let validationToken = snapshot.val();
+
+          if (token === validationToken.token) {
+            let expiry = validationToken.expiry;
+            let serverTime = moment.utc();
+            let tokenExpiryTime = moment.utc(expiry)
+
+            if (serverTime.isBefore(tokenExpiryTime))
+              invalid = false;
+          }
+
+          if (invalid)
+            res.status(200).send('Invalid request');
+          else {
+            admin.database().ref('live/partnerOrganisation/' + partnerId + '/isApproved').set(true).then(() => {
+              console.log('partner organisaition validated');
+              res.status(200).send('Thank you for your confirmation. Detailed instructions will be sent to your email soon!');
+            }, error => {
+              console.log(error.message);
+              end();
+            });
+          }
+        } else {
+          res.status(200).send('Invalid request');
+        }
+      });
   });
 });
