@@ -271,7 +271,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForPartnerValidation(plan) {
-    this.service.submitForPartnerValidation(plan, this.uid, this.countryId);
+    this.service.submitForPartnerValidation(plan, this.countryId);
   }
 
   archivePlan(plan) {
