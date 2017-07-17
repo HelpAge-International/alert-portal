@@ -365,8 +365,12 @@
                       <div class="row">
 
                         <div class="col-sm-5"></div>
-                        <div class="col-sm-4"><img src="assets/images/icons/info_source.svg"></div>
-                        <div class="col-sm-2"><div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
+                        <div class="col-sm-4"><img data-toggle="collapse"
+                                                   attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
+                                                   attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}" src="assets/images/icons/info_source.svg"></div>
+                        <div class="col-sm-2"><div data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
+                                                   aria-expanded="true"
+                                                   attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}"  class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
                           <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
                       </div>
 
@@ -379,9 +383,8 @@
                           <div class="col-sm-2"><p data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
                                                    aria-expanded="true"
                                                    attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
-                            {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
-                          </p></div>
-                        </div>
+                            {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</p></div>
+                        </div><!--Info sources & log End-->
 
                     </div>
                       <div class="Line-row--risk"></div>
