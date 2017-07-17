@@ -49,6 +49,14 @@
   margin-left: 19.25em;
 }
 
+.low_risk_text__wrap--risk-middle-amber {
+  margin-top: 0.25em;
+}
+
+.low_risk_text__wrap--risk-right-red {
+  margin-top: 0.25em;
+}
+
 .low_risk_text__wrap--risk-right-red-checkbox {
   margin-top: 0;
   margin-left: 35em;
