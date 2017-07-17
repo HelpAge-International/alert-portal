@@ -318,6 +318,11 @@ export class UserService {
       partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
       + '/partners/' + partner.id] = true; // add the partner to the partner organisation
 
+      if (partner.hasValidationPermission) {
+        partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
+        + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
+      }
+
       console.log(partnerData);
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
@@ -611,6 +616,17 @@ export class UserService {
           countryIds.push(country.$key);
         });
         return countryIds;
+      })
+  }
+
+  getAllCountryOfficesForAgency(agencyId: string): Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countries => {
+        let countryOffices = [];
+        countries.forEach(country => {
+          countryOffices.push(country);
+        });
+        return countryOffices;
       })
   }
 

@@ -186,6 +186,7 @@ import {DashboardOverviewComponent} from './dashboard/dashboard-overview/dashboa
 import {PrepActionService} from "./services/prepactions.service";
 import {SumPipe} from "./utils/pipes/sum.pipe";
 import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
+import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -366,7 +367,8 @@ const firebaseAuthConfig = {
     DonorNotificationsComponent,
     DirectorNotificationsComponent,
     DashboardOverviewComponent,
-    NewUserPasswordComponent
+    NewUserPasswordComponent,
+    CountryOverviewComponent
   ],
   imports: [
     BrowserModule,

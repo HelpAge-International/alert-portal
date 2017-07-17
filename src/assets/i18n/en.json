@@ -1073,7 +1073,10 @@
                 "UPDATED": "Updated",
                 "ORGANISATION": "Organisation",
                 "RELATIONSHIP": "Relationship",
-                "AREAS_OF_OPERATION": "Areas of operation",
+                "AREAS_OF_OPERATION": "Area(s) of operation",
+                "VIEW_FOR_PROJECTS": "View for all ",
+                "PROJECTS": "Project(s)",
+                "PROJECTS_LOWERCASE": "project(s)",
                 "STATUS": "Status",
                 "PARTNERSHIP_DETAILS": "Partnership details",
                 "NOTES": "Notes",
@@ -1292,8 +1295,8 @@
             "APA": "Advanced preparedness",
             "CHS": "CHS Preparedness",
             "SORT_BY": "Sort by",
-            "NO_COUNTRIES": "Countries doesn't",
-            "NO_COUNTRIES_BY": "Countries doesn't exist by",
+            "NO_COUNTRIES": "No countries",
+            "NO_COUNTRIES_BY": "Countries doesn't exist with",
             "ALERT_LEVEL": "Alert level",
             "ALL_ALERT_LEVEL": "All alert levels",
             "NO_AGENCIES": "No Agencies",
@@ -1447,6 +1450,7 @@
                 "METHOD_OF_IMPLEMENTATION": "Method of implementation",
                 "DIRECTLY_THROUGH_STAFF": "Directly through field staff",
                 "WORKING_WITH_PARTNERS": "Working with partners",
+                "WORKING_WITH_BOTH": "Working with field staff and partners",
                 "REMOVE_FROM_THIS_PLAN": "Remove from this plan"
             },
             "ACTIVITY_SUMMARY": {
@@ -1741,7 +1745,8 @@
                 "LOCATION_SELECT": "Please select the locations affected",
                 "ADD_ANOTHER_LOCATION": "Add another location"
             },
-            "SAVE_INDICATOR": "Save new indicator",
+            "SAVE_INDICATOR": "Save indicator",
+            "SAVE_NEW_INDICATOR": "Save new indicator",
             "TITLE_EDIT_INDICATOR": "Edit Indicator"
         },
         "ADD_ALERT": {

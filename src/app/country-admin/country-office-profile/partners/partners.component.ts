@@ -15,6 +15,7 @@ import {NoteService} from "../../../services/note.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
+import {OperationAreaModel} from "../../../model/operation-area.model";
 declare var jQuery: any;
 
 @Component({
@@ -33,7 +34,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private countryId: string;
   private isViewing: boolean;
-
+  private currProjectsToDisplay: any[];
   // Constants and enums
   private alertMessageType = AlertMessageType;
   filterOrganisation = null;
@@ -104,6 +105,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
 
+                this.assignProjectsToDisplayPerPartnerOrg();
+
                 // Get the partner organisation notes
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
@@ -141,6 +144,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
 
+                this.assignProjectsToDisplayPerPartnerOrg();
+
                 // Get the partner organisation notes
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
@@ -176,21 +181,64 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/country-admin/country-staff');
   }
 
-  getAreasOfOperation(partnerOrganisation: PartnerOrganisationModel) {
-    let areasOfOperation: string[] = [];
-    if (partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
-      partnerOrganisation.projects.forEach(project => {
-        project.operationAreas.forEach(location => {
-          const locationName =
-            this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
-          areasOfOperation.push(locationName);
-          if (!this.areasOfOperation.find(x => x == locationName)) {
-            this.areasOfOperation.push(locationName);
-            this.areasOfOperation.sort();
-          }
-        });
-      })
-      return areasOfOperation.join(',');
+  private assignProjectsToDisplayPerPartnerOrg() {
+    this.partnerOrganisations.forEach(partnerOrganisation => {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+        let projects = [];
+        if (partnerOrganisation && partnerOrganisation.projects) {
+          partnerOrganisation.projects.forEach(project => {
+
+            let affectedAreaObj = {country: "", areas: ""};
+            let projectObj = {title: "", affectedAreas: []};
+
+            projectObj.title = project.title;
+            project.operationAreas.forEach(affectedArea => {
+              affectedAreaObj = {country: "", areas: ""};
+              if (affectedArea.country != null && affectedArea.country > -1) {
+                affectedAreaObj.country = this.getCountryNameById(affectedArea.country);
+                this.addLocationForFilter(affectedAreaObj.country);
+              }
+              if (affectedArea.level1 != null && affectedArea.level1 > -1) {
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level1].value;
+                this.addLocationForFilter(affectedAreaObj.areas);
+              }
+              if (affectedArea.level2 != null && affectedArea.level2 > -1) {
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level2].value;
+                this.addLocationForFilter(affectedAreaObj.areas);
+              }
+              projectObj.affectedAreas.push(affectedAreaObj);
+            });
+            projects.push(projectObj);
+          });
+        }
+        partnerOrganisation.projectsToDisplay = projects;
+      });
+    });
+  }
+
+  private addLocationForFilter(location: string) {
+    let parsedLocation = location.replace(/,/g, '');
+    if (!this.areasOfOperation.includes(parsedLocation)) {
+      this.areasOfOperation.push(parsedLocation);
+    }
+  }
+
+  showAffectedAreasForPartner(projectsToDisplay: any[]) {
+    this.currProjectsToDisplay = projectsToDisplay;
+    jQuery("#view-areas").modal("show");
+  }
+
+  private getCountryNameById(countryId: number) {
+    return Constants.COUNTRIES[countryId];
+  }
+
+  private getLocationName(location: OperationAreaModel): string {
+    if (location.level2) {
+      return this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+    } else if (location.level1) {
+      return this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+    } else {
+      return Constants.COUNTRIES[location.country];
     }
   }
 
@@ -315,15 +363,30 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     return exists;
   }
 
-  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: string): boolean {
+  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: any): boolean {
     let exists = false;
 
-    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
+    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation.projectsToDisplay);
 
-    if (areasOfOperation.search(locationName) !== -1) {
+    if (areasOfOperation.join(",").search(locationName) !== -1) {
       exists = true;
     }
 
     return exists;
   }
+
+  private getAreasOfOperation(projects): string[] {
+    let areas = [];
+    projects.forEach(project => {
+      project.affectedAreas.forEach(area => {
+        areas.push(area.country);
+        if (area.areas) {
+          areas.push(area.areas);
+        }
+      });
+
+    });
+    return areas;
+  }
+
 }

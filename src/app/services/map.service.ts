@@ -1,7 +1,10 @@
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
-import {ActionLevel, ActionType, AlertLevels, Countries, HazardScenario, UserType} from "../utils/Enums";
+import {
+  ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface, HazardScenario,
+  UserType
+} from "../utils/Enums";
 import {PrepActionService} from "./prepactions.service";
 import {ModelDepartment} from "../model/department.model";
 import {AgencyModulesEnabled, PageControlService} from "./pagecontrol.service";
@@ -23,6 +26,7 @@ export class MapService {
   private uid: string;
   private agencyId: string;
   private systemId: string;
+  private initMapEnabled: boolean = false;
 
   private af: AngularFire;
   private ngUnsubscribe: Subject<void>;
@@ -109,7 +113,8 @@ export class MapService {
       let position = 0;
       if (this.clickedCountry != null) {
         value.hazards.forEach((_, hazardScenario) => {
-          this.geocoder.geocode({"address": Countries[value.location]}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+          console.log("For " + value.countryId + " -> " + Countries[value.location]);
+          this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
             if (status == GeocoderStatus.OK && geoResult.length >= 1) {
               let pos = {
                 lng: geoResult[0].geometry.location.lng() + position,
@@ -332,6 +337,19 @@ export class MapService {
       });
 
     // Populate actions
+  }
+
+  public getRegionsForAgency(agencyId: string, funct: (key: string, region: ModelRegion) => void) {
+    this.af.database.object(Constants.APP_STATUS + "/region/" + agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((result) => {
+        if (result.childCount == 0) {
+          funct("", null);
+        }
+        result.forEach((snapshot) => {
+          funct(snapshot.key, snapshot.val());
+        })
+      });
   }
 
   /**

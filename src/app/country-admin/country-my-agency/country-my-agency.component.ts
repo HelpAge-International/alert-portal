@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, Countries} from "../../utils/Enums";
+import { AlertLevels, Countries, AlertStatus, ActionLevel, ActionType, HazardScenario } from "../../utils/Enums";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -8,11 +8,15 @@ import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {AgencyService} from "../../services/agency-service.service";
+import {ActionsService} from "../../services/actions.service";
+import {ModelAlert} from "../../model/alert.model";
+import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
 
 @Component({
   selector: 'app-country-account-settings',
   templateUrl: './country-my-agency.component.html',
-  styleUrls: ['./country-my-agency.component.css']
+  styleUrls: ['./country-my-agency.component.css'],
+  providers: [ActionsService]
 })
 
 export class CountryMyAgencyComponent implements OnInit, OnDestroy {
@@ -29,7 +33,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
 
   private countries = Constants.COUNTRIES;
   private countryOfficeData: any = [];
-  private countryIDs: string[] = [];
+  private filteredCountryOfficeData: any = [];
   protected CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
 
   private countResponsePlans: any = [];
@@ -49,19 +53,29 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private UserType: number;
 
+  private prepActionService: PrepActionService[] = [];
+  private hazardRedAlert: Map<HazardScenario, boolean>[] = [];
 
-  constructor(private pageControl: PageControlService, private agencyService: AgencyService, private route: ActivatedRoute, private af: AngularFire, private router: Router, protected _sanitizer: DomSanitizer, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private agencyService: AgencyService,
+              private route: ActivatedRoute, private af: AngularFire,
+              private router: Router,
+              protected _sanitizer: DomSanitizer,
+              private userService: UserService,
+              private actionsService: ActionsService) {
   }
 
   ngOnInit() {
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.UserType = userType;
-      this.countryId = countryId;
-      this.agencyID = agencyId;
-      this.systemAdminID = systemId;
-      this.getAgencyName();
-      this._loadData();
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryId => {
+          this.countryId = countryId;
+          this._loadData();
+        });
+
     });
   }
 
@@ -70,28 +84,14 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  filterAlertLevel(event: any) {
-    this.filter = event.target.value;
-    console.log(this.filter);
-    this._getCountryList();
-  }
-
   _loadData() {
-    // this._getAgencyID().then(() => {
-    this._getCountryList().then(() => {
-      this._getResponsePlans();
-      this._getSystemAdminID().then(() => {
-        this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
-          this.minTreshold = minTreshold;
-        });
-        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-          this.advTreshold = advTreshold;
-        });
-      }).then(() => {
-        this._getAllActions();
+    this._getAgencyID().then(() => {
+      this._getCountryList().then(() => {
+        this._getSystemAdminID().then(() => {
+          
+        })
       });
     });
-    // });
   }
 
   _getAgencyID() {
@@ -123,92 +123,15 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countries: any) => {
-          console.log(countries)
           this.countryOfficeData = [];
-          this.countryIDs = [];
-          if (this.filter == 'all') {
-            this.countryOfficeData = countries.filter(country => country.$key != this.countryId);
-            countries.forEach((val, key) => {
-              if (this.countryId != val.$key) {
-                this.countryIDs.push(val.$key);
-              }
-            });
-          } else {
-            // TODO filter is not working properly
-            countries.forEach((val, key) => {
-              if (val.alertLevel == this.filter && this.countryId != val.$key) {
-                this.countryOfficeData.push(val);
-                this.countryIDs.push(val.$key);
-              }
-            });
-          }
+          this.countryOfficeData = countries.filter(country => country.$key != this.countryId);
+          
           res(true);
         });
     });
     return promise;
   }
 
-  _getResponsePlans() {
-    let promise = new Promise((res, rej) => {
-      this.countryIDs.forEach((countryID) => {
-        this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryID)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((responsePlans: any) => {
-            this._getCountApprovalStatus(responsePlans, countryID);
-            res(true);
-          });
-      });
-    });
-    return promise;
-  }
-
-  _getCountApprovalStatus(responsePlans: any, countryID: string) {
-    responsePlans.forEach((responsePlan: any) => {
-      var approvals = responsePlan.approval;
-      this.count = 0;
-      this._recursiveParseArray(approvals, countryID);
-    });
-  }
-
-  _recursiveParseArray(approvals: any, countryID: string) {
-    for (let A in approvals) {
-      if (typeof (approvals[A]) == 'object') {
-        this._recursiveParseArray(approvals[A], countryID);
-      } else {
-        var approvalStatus = approvals[A];
-        if (approvalStatus == 2) {
-          this.count = this.count + 1;
-          this.countResponsePlans[countryID] = this.count;
-        }
-      }
-    }
-  }
-
-  _getAllActions() {
-    let promise = new Promise((res, rej) => {
-      this.countryIDs.forEach((countryID) => {
-        this.af.database.list(Constants.APP_STATUS + "/action/" + countryID)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((actions: any) => {
-            this._getPercenteActions(actions, countryID);
-            res(true);
-          });
-      });
-    });
-    return promise;
-  }
-
-
-  _getSystemThreshold(tresholdType: string) {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminID + '/' + tresholdType)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((treshold: any) => {
-          res(treshold);
-        });
-    });
-    return promise;
-  }
 
   _getSystemAdminID() {
     let promise = new Promise((res, rej) => {
@@ -222,109 +145,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  _getPercenteActions(actions: any, countryID: string) {
-
-    let promise = new Promise((res, rej) => {
-      var countAllMinimumActions = 0;
-      var countAllAdvancedActions = 0;
-      var countCompletedMinimumActions = 0;
-      var countCompletedAdvancedActions = 0;
-      var countCompletedAllActions = 0;
-
-      actions.forEach((action: any) => {
-        if (action.level == 1) {
-          countAllMinimumActions = countAllMinimumActions + 1;
-          if (action.actionStatus == 2) {
-            countCompletedMinimumActions = countCompletedMinimumActions + 1;
-          }
-        }
-
-        if (action.level == 2) {
-          countAllAdvancedActions = countAllAdvancedActions + 1;
-          if (action.actionStatus == 2) {
-            countCompletedAdvancedActions = countCompletedAdvancedActions + 1;
-          }
-        }
-
-        if (action.actionStatus == 2) {
-          countCompletedAllActions = countCompletedAllActions + 1;
-        }
-      });
-
-      var percentageMinimumCompletedActions = (countCompletedMinimumActions / countAllMinimumActions) * 100;
-      percentageMinimumCompletedActions = percentageMinimumCompletedActions ? percentageMinimumCompletedActions : 0;
-
-      var percentageAdvancedCompletedActions = (countCompletedAdvancedActions / countAllAdvancedActions) * 100;
-      percentageAdvancedCompletedActions = percentageAdvancedCompletedActions ? percentageAdvancedCompletedActions : 0;
-
-      if (percentageMinimumCompletedActions && percentageMinimumCompletedActions >= this.minTreshold[0].$value) {
-        this.mpaStatusColors[countryID] = 'green';
-        this.mpaStatusIcons[countryID] = 'fa-check';
-      }
-      if (percentageMinimumCompletedActions && percentageMinimumCompletedActions >= this.minTreshold[1].$value) {
-        this.mpaStatusColors[countryID] = 'orange';
-        this.mpaStatusIcons[countryID] = 'fa-ellipsis-h';
-      }
-      if (!percentageMinimumCompletedActions) {
-        this.mpaStatusColors[countryID] = 'red';
-        this.mpaStatusIcons[countryID] = 'fa-times'
-      }
-
-
-      if (percentageAdvancedCompletedActions && percentageAdvancedCompletedActions >= this.advTreshold[0].$value) {
-        this.advStatusColors[countryID] = 'green';
-        this.advStatusIcons[countryID] = 'fa-check';
-      }
-      if (percentageAdvancedCompletedActions && percentageAdvancedCompletedActions >= this.advTreshold[1].$value) {
-        this.advStatusColors[countryID] = 'orange';
-        this.advStatusIcons[countryID] = 'fa-ellipsis-h';
-      }
-      if (!percentageAdvancedCompletedActions) {
-        this.advStatusColors[countryID] = 'red';
-        this.advStatusIcons[countryID] = 'fa-times'
-      }
-
-      this._getActionsBySystemAdmin().then((actions: any) => {
-        var countAllActionsSysAdmin = actions.length && actions.length > 0 ? actions.length : 0;
-        this.percentageCHS[countryID] = Math.round((countCompletedAllActions / countAllActionsSysAdmin) * 100);
-      });
-
-      res(true);
-    });
-
-    return promise;
-  }
-
-  _getActionsBySystemAdmin() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((actions: any) => {
-          res(actions);
-        });
-    });
-    return promise;
-  }
-
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
-
-  protected getBackground(location) {
-    if (location)
-      return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[location] + '.svg)');
-  }
-
-  overviewCountry(countryId) {
-    console.log(countryId);
-    this.router.navigate(["/dashboard/dashboard-overview", {
-      "countryId": countryId,
-      "isViewing": true,
-      "agencyId": this.agencyID,
-      "systemId": this.systemAdminID,
-      "canCopy": true
-    }]);
-  }
-
-
 }

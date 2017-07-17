@@ -26,13 +26,14 @@ export class ResponsePlanService {
 
   }
 
-  submitForPartnerValidation(plan, uid, countryId) {
+  submitForPartnerValidation(plan, countryId) {
     console.log("submitForPartnerValidation");
-    this.userService.getUserType(uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        this.updatePartnerValidation(uid, user, plan, countryId);
-      });
+    this.updatePartnerValidation(plan, countryId);
+    // this.userService.getUserType(uid)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(user => {
+    //     this.updatePartnerValidation(uid, user, plan, countryId);
+    //   });
   }
 
   needShowWaringBypassValidation(plan) {
@@ -46,7 +47,7 @@ export class ResponsePlanService {
     return true;
   }
 
-  private updatePartnerValidation(uid: string, user: UserType, plan: any, passedCountryId: string) {
+  private updatePartnerValidation(plan: any, passedCountryId: string) {
     console.log(plan.$key);
     const needValidResponsePlanId = plan.$key;
     // const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
@@ -79,22 +80,22 @@ export class ResponsePlanService {
       .do(partnerOrg => {
         this.validPartnerMap.set(partnerOrg.$key, partnerOrg.isApproved);
       })
+      // .flatMap(partnerOrg => {
+      //   let partnerIds = [];
+      //   if (partnerOrg.partners) {
+      //     partnerIds = Object.keys(partnerOrg.partners);
+      //   }
+      //   return Observable.from(partnerIds);
+      // })
       .flatMap(partnerOrg => {
-        let partnerIds = [];
-        if (partnerOrg.partners) {
-          partnerIds = Object.keys(partnerOrg.partners);
-        }
-        return Observable.from(partnerIds);
+        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerOrg.validationPartnerUserId)
       })
-      .flatMap(partnerId => {
-        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerId)
-      })
-      .map(partner => {
-        if (partner.hasValidationPermission) {
-          return partner;
-        }
-        return null;
-      })
+      // .map(partner => {
+      //   if (partner.hasValidationPermission) {
+      //     return partner;
+      //   }
+      //   return null;
+      // })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(partnerObject => {
         if (partnerObject) {
@@ -123,6 +124,8 @@ export class ResponsePlanService {
           }, error => {
             console.log(error.message);
           });
+        } else {
+          console.log("no partner user found!!!!!!!")
         }
       });
     // }
