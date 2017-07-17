@@ -360,34 +360,41 @@
                       {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                   </div>
 
-                    <!--Info sources & log-->
-                    <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
-                      <div class="row">
+                  <!--Info sources & log-->
+                  <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
+                    <div class="row">
 
-                        <div class="col-sm-5"></div>
-                        <div class="col-sm-4"><img data-toggle="collapse"
-                                                   attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
-                                                   attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}" src="assets/images/icons/info_source.svg"></div>
-                        <div class="col-sm-2"><div data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
-                                                   aria-expanded="true"
-                                                   attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}"  class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
+                      <div class="col-sm-5"></div>
+                      <div class="col-sm-4"><img data-toggle="collapse"
+                                                 attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 aria-expanded="true"
+                                                 attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 src="assets/images/icons/info_source.svg"></div>
+                      <div class="col-sm-2">
+                        <div data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                             aria-expanded="true"
+                             attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}" class="log_bubble"><img
+                          src="assets/images/icons/log_bubble.svg">
                           <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
                       </div>
 
-                        <div class="info-log__wrap--risk row">
-                          <div class="col-sm-4"></div>
-                          <div class="col-sm-5"><p data-toggle="collapse"
-                            attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
-                            attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}">
-                            {{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p></div>
-                          <div class="col-sm-2"><p data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
-                                                   aria-expanded="true"
-                                                   attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
-                            {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</p></div>
-                        </div><!--Info sources & log End-->
+                      <div class="info-log__wrap--risk row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-5"><p data-toggle="collapse"
+                                                 attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 aria-expanded="true"
+                                                 attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
+                          {{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p></div>
+                        <div class="col-sm-2"><p data-toggle="collapse"
+                                                 attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 aria-expanded="true"
+                                                 attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 class="Flex-right">
+                          {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</p></div>
+                      </div><!--Info sources & log End-->
 
                     </div>
-                      <div class="Line-row--risk"></div>
+                    <div class="Line-row--risk"></div>
 
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
@@ -422,8 +429,8 @@
 
                 <div class="card">
                   <div class="Tooltip__bubble container-fluid collapse Blue log"
-                       id="{{'tooltipLog' + hazard.hazardScenario}}"
-                       attr.data-parent="#{{'collapse' + hazard.hazardScenario}}">
+                       id="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                       attr.data-parent="#{{'collapse' + hazard.hazardScenario+'_'+indicatorKey}}">
                     <div class="log_left p-3">
                       <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
                       <hr class="d-inline-flex">
@@ -473,9 +480,9 @@
                         {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
                       </div>
                       <br>
-                      <br><a data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
+                      <br><a data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
                              aria-expanded="true"
-                             attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}">{{"GLOBAL.CANCEL" |
+                             attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}">{{"GLOBAL.CANCEL" |
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
@@ -487,14 +494,14 @@
                   </div>
                 </div>
                 <div class="Tooltip__bubble container-fluid Blue info log collapse"
-                     id="{{'infoTooltip' + hazard.hazardScenario}}"
-                     attr.data-parent="#{{'infoTooltip' + hazard.hazardScenario}}"
-                     attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
+                     id="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                     attr.data-parent="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                     attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
                   <div class="log_left p-3 row col-sm-12">
                     <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
                        aria-expanded="true"
-                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
                        class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
                       translate}}</a>
                   </div>
