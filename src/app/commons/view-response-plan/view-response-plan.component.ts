@@ -37,15 +37,15 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
 
   @Input() responsePlanId: string;
-  @Input() set _countryId(_countryId: string){
-    this.countryId = _countryId;
-  }
-  @Input() set _agencyId(_agencyId: string){
-    this.agencyId = _agencyId;
-  }
-  @Input() set _isViewing(_isViewing: boolean){
-    this.isViewing = _isViewing;
-  }
+  // @Input() set _countryId(_countryId: string){
+  //   this.countryId = _countryId;
+  // }
+  // @Input() set _agencyId(_agencyId: string){
+  //   this.agencyId = _agencyId;
+  // }
+  // @Input() set _isViewing(_isViewing: boolean){
+  //   this.isViewing = _isViewing;
+  // }
 
   private responsePlanToShow: ResponsePlan = new ResponsePlan;
 
