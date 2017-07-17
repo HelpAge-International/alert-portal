@@ -193,7 +193,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       //   .subscribe(usertype => {
       // this.USER_TYPE = Constants.USER_PATHS[usertype];
       console.log("check here")
-      if (userType == UserType.GlobalDirector) {
+      if (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) {
         this.route.params
           .takeUntil(this.ngUnsubscribe)
           .subscribe((params: Params) => {
