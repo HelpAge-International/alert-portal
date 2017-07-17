@@ -51,13 +51,10 @@
     <div class="Header-title__wrap">
       <h1>Minimum Preparedness Actions</h1>
       <!-- Tooltip partial -->
-      <tooltip [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL1'"
-      [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT1.LEVEL2'">
-      </tooltip>
       <tooltip [level1]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL1'"
       [level2]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL2'">
       </tooltip>
-      </div>
+
 <!--
       <div class="btn-group">
       <div *ngIf="!isViewing" class="btn-group">-->
@@ -74,7 +71,7 @@
           <a class="dropdown-item" routerLink="/preparedness/select">Select from generic actions</a>
         </div>
       </div>
-
+    </div>
 
     <!--
              START :: FILTERS
@@ -617,7 +614,7 @@
                             <tooltip
                             [level1]="'TOOLTIPS.PREPAREDNESS.TT6.LEVEL1'">
                             </tooltip>
-                            
+
                             &nbsp;&nbsp;<a *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
                                                                                            class="text-nowrap"
                                                                                            (click)="exportAllDocuments(action)">Download

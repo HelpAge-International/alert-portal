@@ -37,7 +37,7 @@
             </option>
           </select>
         </div>
-      </div> 
+      </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminFirstName]}">
           <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
@@ -116,7 +116,7 @@
       </div>
     </div>
     <div class="form-group"><label>{{"SYSTEM_ADMIN.AGENCIES.IS_DONOR" | translate}}*</label>
-      <tooltip 
+      <tooltip
       [level1]="'TOOLTIPS.SYSTEM_ADMIN.TT1.LEVEL1'">
       </tooltip>
     </div>
@@ -145,10 +145,6 @@
         {{"GLOBAL.NO" | translate}}
       </label>
     </div>
-    <div class="form-group"><label>{{"SYSTEM_ADMIN.AGENCIES.IS_DONOR" | translate}}*</label>
-
-      <!-- Tooltip partial -->
-    <tooltip [level1]="'TOOLTIPS.SYSTEM_ADMIN.TT1.LEVEL1'"></tooltip></div>
 
     <div class="Form-submit__wrapper">
       <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" |

@@ -1926,7 +1926,7 @@
                 "LEVEL2": "The User Types are: Country Director - this is the head of the Country Office or local organisation. Country User - these are staff members that are not part of the Emergency Response Team (ERT). ERT Lead - this person is the focal point of the Emergency Response Team. ERT Member - these are staff members that are part of the Emergency Response Team. Partner User - these are external users from partner agencies that you are giving access to your Country Office / Agency account."
             },
             "TT7" : {
-                "LEVEL1": "Each user type has a corresponding permission level" 
+                "LEVEL1": "Each user type has a corresponding permission level"
             },
             "TT8" : {
                 "LEVEL1": "Public = People outside your agency can see your data (excluding staff contact details). Private = Only staff members within your agency can see your data. Network = Only staff from member agencies of a Network you are affiliated with can see your data"
@@ -2051,10 +2051,10 @@
                 "LEVEL2": "In order to articulate APAs and distinguish them from MPAs it is useful to consider when they will be actioned. •        Day to day – planning, preparing, reviewing & changing processes, training etc. These are MPAs •        In the early warning “getting ready to respond” phase – if warning communications allow moving to a state of readiness because the disaster is imminent. Moving stored items to forward positions, distributing equipment, getting ready to move to emergency procedures. These are APAs •        In the initial response phase 72h – implementing emergency procedures for essential activities, maintaining essential programme and operational services and implementing planned emergency response activities. These are APAs."
             },
             "TT10" : {
-                "LEVEL1": "How soon an MPA expires is set at agency level, but you may set this MPA  to require updating more frequently."
+                "LEVEL1": "If set to 'Yes', this Preparedness Action cannot be marked as completed unless a document is uploaded as supporting evidence."
             },
             "TT11" : {
-                "LEVEL1": "If set to 'Yes', this Preparedness Action cannot be marked as completed unless a document is uploaded as supporting evidence."
+                "LEVEL1": "How soon an MPA expires is set at agency level, but you may set this MPA  to require updating more frequently."
             },
             "TT12" : {
                 "LEVEL1": "This APA will activate whenever a Red Alert is raised against any of the hazards you select below.",
@@ -2062,7 +2062,7 @@
             },
             "TT13" : {
                 "LEVEL1": "A collection of sample preparedness actions that can be adopted and customised for your agency's use"
-            }                
+            }
         },
         "RISK_MONITORING" : {
             "TT1" : {
@@ -2102,7 +2102,7 @@
                 "LEVEL1": "Seasonal events can refer to both climate-related seasons (Typhoon season, Dry season) or even man-made events (elections, harvest season, cultural or religious events). These events are understood to have a certain degree of recurrence over a period of time."
             }
         },
-        
+
         "COUNTRY_OFFICE_PROFILE" : {
             "TT1" : {
                 "LEVEL1": "Title of the Project"
@@ -2138,7 +2138,7 @@
                 "LEVEL1": "Where the stock is currently stored"
             }
         }
-        
+
      }
 
 }
