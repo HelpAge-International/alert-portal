@@ -7,7 +7,7 @@ import {Message} from "../../model/message";
 import {MessageModel} from "../../model/message.model";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
-import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType } from "../../utils/Enums";
+import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType, ApprovalStatus } from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
@@ -68,7 +68,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   protected CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
 
   private countResponsePlans: any = [];
-  private count: number = 0;
   private percentageCHS: any = [];
 
   private filter: any = 'all';
@@ -148,7 +147,13 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryOffice.$key)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((responsePlans: any) => {
-            this._getCountApprovalStatus(responsePlans, countryOffice.$key);
+              this.countResponsePlans[countryOffice.$key] = 0;
+              responsePlans.forEach(plan => {
+                  if(plan.status == ApprovalStatus.Approved){
+                    this.countResponsePlans[countryOffice.$key] = this.countResponsePlans[countryOffice.$key] + 1;
+                  }
+              });
+
             res(true);
           });
     });
@@ -172,28 +177,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
           }
         });
       });
-  }
-
-  _getCountApprovalStatus(responsePlans: any, countryID: string) {
-    responsePlans.forEach((responsePlan: any) => {
-      var approvals = responsePlan.approval;
-      this.count = 0;
-      this._recursiveParseArray(approvals, countryID);
-    });
-  }
-
-  _recursiveParseArray(approvals: any, countryID: string) {
-    for (let A in approvals) {
-      if (typeof (approvals[A]) == 'object') {
-        this._recursiveParseArray(approvals[A], countryID);
-      } else {
-        var approvalStatus = approvals[A];
-        if (approvalStatus == 2) {
-          this.count = this.count + 1;
-          this.countResponsePlans[countryID] = this.count;
-        }
-      }
-    }
   }
 
   _getSystemThreshold(tresholdType: string) {
