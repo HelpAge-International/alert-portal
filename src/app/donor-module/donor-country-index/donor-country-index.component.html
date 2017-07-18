@@ -57,7 +57,7 @@
 
       <div *ngIf="countryOffices.length > 0">
         <div *ngFor="let country of countryOffices" class="Accordion Preparedness__agency-list">
-          <div class="row">
+          <div class="row" (click)="overviewCountry(country)">
 
             <div class="col-sm-2 col-6 Preparedness__agency-list__item border-center">
               <!--<div class="Icon&#45;&#45;md Icon&#45;&#45;align-center Icon__donors&#45;&#45;default"></div>-->

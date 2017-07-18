@@ -142,6 +142,7 @@ export class PageControlService {
     "response-plans*",
     "country-admin*",
     "dashboard/review-response-plan*",
+    "dashboard/dashboard-overview*",
     "new-user-password"
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
@@ -153,6 +154,7 @@ export class PageControlService {
     "response-plans*",
     "country-admin*",
     "dashboard/review-response-plan*",
+    "dashboard/dashboard-overview*",
     "new-user-password"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
@@ -200,7 +202,8 @@ export class PageControlService {
     "new-user-password"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
-    "donor-module*"
+    "donor-module*",
+    "dashboard/dashboard-overview*"
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
     "director*",
