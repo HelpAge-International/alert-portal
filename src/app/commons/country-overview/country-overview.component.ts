@@ -7,7 +7,7 @@ import {Message} from "../../model/message";
 import {MessageModel} from "../../model/message.model";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
-import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType } from "../../utils/Enums";
+import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType, ApprovalStatus } from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
@@ -22,6 +22,7 @@ declare var jQuery: any;
 })
 export class CountryOverviewComponent implements OnInit, OnDestroy {
   private _agencyId: string;
+  private _agencies: string;
   private _systemId: string;
   private _userId: string;
   private _countryOfficeData: any;
@@ -32,7 +33,12 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this._agencyId = agencyId;
     this._loadData();
   }
-  
+
+  @Input() set agencies(agencies: any){
+    this._agencies = agencies;
+    this._loadData();
+  }
+
   @Input() set systemId(systemId: string){
     this._systemId = systemId;
     this._loadData();
@@ -62,7 +68,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   protected CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
 
   private countResponsePlans: any = [];
-  private count: number = 0;
   private percentageCHS: any = [];
 
   private filter: any = 'all';
@@ -79,6 +84,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   private prepActionService: PrepActionService[] = [];
   private hazardRedAlert: Map<HazardScenario, boolean>[] = [];
+
+  private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
 
   constructor(private pageControl: PageControlService,
               private agencyService: AgencyService,
@@ -104,14 +111,18 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
   }
   _loadData() {
-    if(this._userId && this._userType && this._systemId && this._agencyId && this._countryOfficeData) {
+    if(this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._countryOfficeData) {
         this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
           this.minTreshold = minTreshold;
-          
+
           this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
             this.advTreshold = advTreshold;
-
             this._countryOfficeData.forEach(countryOffice => {
+
+              if(countryOffice.agencyId) {
+                this._agencyId = countryOffice.agencyId;
+              }
+
               this.prepActionService[countryOffice.$key]= new PrepActionService();
               this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
 
@@ -119,7 +130,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               this._getAlertLevel(countryOffice);
 
               this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
-              
+
               this.prepActionService[countryOffice.$key].addUpdater(() => {
                 this.recalculateAll(countryOffice);
               });
@@ -136,7 +147,13 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryOffice.$key)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((responsePlans: any) => {
-            this._getCountApprovalStatus(responsePlans, countryOffice.$key);
+              this.countResponsePlans[countryOffice.$key] = 0;
+              responsePlans.forEach(plan => {
+                  if(plan.status == ApprovalStatus.Approved && plan.isActive == true){
+                    this.countResponsePlans[countryOffice.$key] = this.countResponsePlans[countryOffice.$key] + 1;
+                  }
+              });
+
             res(true);
           });
     });
@@ -162,28 +179,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       });
   }
 
-  _getCountApprovalStatus(responsePlans: any, countryID: string) {
-    responsePlans.forEach((responsePlan: any) => {
-      var approvals = responsePlan.approval;
-      this.count = 0;
-      this._recursiveParseArray(approvals, countryID);
-    });
-  }
-
-  _recursiveParseArray(approvals: any, countryID: string) {
-    for (let A in approvals) {
-      if (typeof (approvals[A]) == 'object') {
-        this._recursiveParseArray(approvals[A], countryID);
-      } else {
-        var approvalStatus = approvals[A];
-        if (approvalStatus == 2) {
-          this.count = this.count + 1;
-          this.countResponsePlans[countryID] = this.count;
-        }
-      }
-    }
-  }
-
   _getSystemThreshold(tresholdType: string) {
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this._systemId + '/' + tresholdType)
@@ -206,31 +201,41 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
     let minPrepPercentage: number;
     let advPrepPercentage: number;
-  
+
     for (let x of this.prepActionService[countryOffice.$key].actions) {
       if (x.level == ActionLevel.MPA) {
-        minTotal++;
-        if (this.isActionCompleted(x, countryID)) {
-          minGreen++;
+        if (!x.isArchived) {
+          minTotal++;
+          if (this.isActionCompleted(x, countryID)) {
+            minGreen++;
+          }
         }
       }
       else if (x.level == ActionLevel.APA) {
-        advTotal++;
-        if (this.isActionCompleted(x, countryID)) {
-          advGreen++;
+        if (!x.isArchived && x.isRedAlertActive(this.hazardRedAlert[countryID])) {
+          advTotal++;
+          if (this.isActionCompleted(x, countryID)) {
+            advGreen++;
+          }
         }
       }
       if (x.type == ActionType.chs) {
-        chsTotal++;
-        if (this.isActionCompleted(x, countryID)) {
-          chsGreen++;
+        if (!x.isArchived) {
+          chsTotal++;
+          if (this.isActionCompleted(x, countryID)) {
+            chsGreen++;
+          }
         }
       }
     }
     minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
     this.percentageCHS[countryID] = chsTotal == 0 ? 0 : (chsGreen * 100) / chsTotal;
-    
+
+    minPrepPercentage = Math.round(minPrepPercentage);
+    advPrepPercentage = Math.round(advPrepPercentage);
+    this.percentageCHS[countryID] = Math.round(this.percentageCHS[countryID]);
+
     if (minTotal == 0) {
       this.mpaStatusColors[countryID] = 'grey';
       this.mpaStatusIcons[countryID] = 'fa-times';
@@ -297,15 +302,13 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewCountry(countryId) {
-    if(this._userType == UserType.CountryAdmin)
-    {
       this.router.navigate(["/dashboard/dashboard-overview", {
         "countryId": countryId,
         "isViewing": true,
         "agencyId": this._agencyId,
         "systemId": this._systemId,
+        "isDirector": this._userType === UserType.RegionalDirector || this._userType === UserType.GlobalDirector,
         "canCopy": true
       }]);
-    }
   }
 }

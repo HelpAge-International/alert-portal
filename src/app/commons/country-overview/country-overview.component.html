@@ -13,9 +13,14 @@
 <div class="Ribbon__section__wrap Spaced" *ngIf="filteredCountryOfficeData && filteredCountryOfficeData.length > 0">
     <div class="Accordion Preparedness__agency-list" *ngFor="let countryData of filteredCountryOfficeData">
             <div class="row" (click)="overviewCountry(countryData.$key)">
-            <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right">
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right" *ngIf="!_agencies">
             <div class="Icon--md Icon--align-center Icon__country" [style.background-image]="getBackground(countryData.location)"></div>
                 <span>{{countries[countryData.location] | translate}}</span>
+            </div>
+            <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right" *ngIf="_agencies">
+                <div class="Agency-logo--no-border Agency-logo--md Icon--align-center"
+                    [ngStyle]="_agencies && _agencies[countryData.countryId]?.logoPath ? { 'background-image': 'url(' + _agencies[countryData.countryId].logoPath + ')'} : { 'background-image': 'url(' + defaultAgencyLogo + ')'}"></div>
+                <span>{{_agencies && _agencies[countryData.countryId]?.name}}</span>
             </div>
             <div class="col-sm-2 col-6 Preparedness__agency-list__item">
                 <div class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertColors[countryData.alertLevel] ? alertColors[countryData.alertLevel] : 'red'}}"></div><span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>

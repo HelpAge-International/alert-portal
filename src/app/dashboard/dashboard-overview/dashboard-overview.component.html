@@ -1,16 +1,22 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<div *ngIf="!isDirector">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+</div>
+<div *ngIf="isDirector">
+    <app-director-header></app-director-header>
+    <app-director-menu></app-director-menu>
+</div>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div *ngIf="!agencyOverview" class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
+    <div *ngIf="!agencyOverview && !isDirector" class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
       {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
       translate}}
     </div>
-    <div *ngIf="agencyOverview" class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+    <div *ngIf="agencyOverview && !isDirector" class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
       {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
       translate}}
     </div>

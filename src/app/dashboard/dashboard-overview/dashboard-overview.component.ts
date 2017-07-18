@@ -42,6 +42,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private alerts: Observable<any>;
   private areaContent: any;
   private canCopy: boolean;
+  private isDirector: boolean = false;
   private affectedAreasToShow : any [];
 
   constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private router: Router) {
@@ -98,8 +99,13 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         if (params["canCopy"]) {
           this.canCopy = params["canCopy"];
         }
+
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+        }
+        
+        if (params["isDirector"]) {
+          this.isDirector = params["isDirector"];
         }
 
         if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
