@@ -26,7 +26,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  private loaderInactive: boolean = true;
+  private loaderInactive: boolean;
 
   public uid: string;
   public mapHelper: SuperMapComponents;
@@ -89,6 +89,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initBlankMap("global-map");
+    this.loaderInactive = true;
     this.initData();
   }
 
