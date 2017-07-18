@@ -87,18 +87,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         }
       }
     });
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   if (this.isViewing) {
-    //     this.countryId = this.countryIdForViewing;
-    //     this.agencyId = this.agencyIdForViewing;
-    //     this.getResponsePlans(this.countryId);
-    //   } else {
-    //     this.userType = userType;
-    //     let userPath = Constants.USER_PATHS[userType];
-    //     this.getSystemAgencyCountryIds(userPath);
-    //   }
-    // });
   }
 
   private getSystemAgencyCountryIds(userPath: string) {
@@ -117,28 +105,29 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private getResponsePlans(id: string) {
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
-      query: {
-        orderByChild: "isActive",
-        equalTo: true
-      }
-    })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(plans => {
-        this.activePlans = plans;
-        for (let x of this.activePlans) {
-          this.getNotes(x);
-        }
-        this.checkHaveApprovedPartners(this.activePlans);
-        this.getNeedToApprovedPartners(this.activePlans);
-      });
+    /*Active Plans*/
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" +id).subscribe(plans => {
+      this.activePlans = [];
+       plans.forEach(plan => {
+         if(plan.isActive){
+           this.activePlans.push(plan);
+           this.getNotes(plan);
+           }
+       });
+      this.checkHaveApprovedPartners(this.activePlans);
+      this.getNeedToApprovedPartners(this.activePlans);
+    });
 
-    this.archivedPlans = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
+    /*Archived Plans*/
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
         orderByChild: "isActive",
         equalTo: false
       }
-    });
+    }).takeUntil(this.ngUnsubscribe)
+      .subscribe(plans => {
+        this.archivedPlans = plans;
+      });
   }
 
   private getNeedToApprovedPartners(activePlans: any[]) {
