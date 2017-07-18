@@ -54,6 +54,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private partnersMap = new Map();
   private partnersApprovalMap = new Map<string, string>();
 
+
   private approvalsList: any[] = [];
 
 
@@ -104,28 +105,29 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private getResponsePlans(id: string) {
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
-      query: {
-        orderByChild: "isActive",
-        equalTo: true
-      }
-    })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(plans => {
-        this.activePlans = plans;
-        for (let x of this.activePlans) {
-          this.getNotes(x);
-        }
-        this.checkHaveApprovedPartners(this.activePlans);
-        this.getNeedToApprovedPartners(this.activePlans);
-      });
+    /*Active Plans*/
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" +id).subscribe(plans => {
+      this.activePlans = [];
+       plans.forEach(plan => {
+         if(plan.isActive){
+           this.activePlans.push(plan);
+           this.getNotes(plan);
+           }
+       });
+      this.checkHaveApprovedPartners(this.activePlans);
+      this.getNeedToApprovedPartners(this.activePlans);
+    });
 
-    this.archivedPlans = this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
+    /*Archived Plans*/
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id, {
       query: {
         orderByChild: "isActive",
         equalTo: false
       }
-    });
+    }).takeUntil(this.ngUnsubscribe)
+      .subscribe(plans => {
+        this.archivedPlans = plans;
+      });
   }
 
   private getNeedToApprovedPartners(activePlans: any[]) {
@@ -331,6 +333,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private updatePartnerValidation(countryId: string, approvalData: {}) {
+    //TODO need double check for this
+    // if (this.planToApproval.partnerOrganisations) {
+    //   let partnerData = {};
+    //   this.planToApproval.partnerOrganisations.forEach(item => {
+    //     partnerData[item] = ApprovalStatus.InProgress;
+    //   });
+    //   approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/partner/"] = partnerData;
+    // }
     this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
       console.log("success");
     }, error => {
@@ -458,4 +468,5 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
     }
   }
+
 }

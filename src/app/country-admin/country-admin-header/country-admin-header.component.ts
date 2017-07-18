@@ -75,16 +75,15 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         if (!user.anonymous) {
           this.uid = user.uid;
 
-          this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(countryId => {
-              console.log("Printing");
-              console.log(countryId);
-              if (countryId.$value == null) {
-                console.log("came nav");
-                this.router.navigateByUrl(Constants.LOGIN_PATH);
-              }
-            });
+          if(userType == UserType.CountryAdmin){
+            this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryId => {
+                if (countryId.$value == null) {
+                  this.router.navigateByUrl(Constants.LOGIN_PATH);
+                }
+              });
+          }
 
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
             .takeUntil(this.ngUnsubscribe)
