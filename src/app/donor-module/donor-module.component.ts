@@ -1,14 +1,16 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Countries} from "../utils/Enums";
+import {Countries, CountriesMapsSearchInterface} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
 import {MapService} from "../services/map.service";
-import {Observable} from "rxjs/Observable";
+import GeocoderStatus = google.maps.GeocoderStatus;
+import GeocoderResult = google.maps.GeocoderResult;
+import {HazardImages} from "../utils/HazardImages";
 declare var jQuery: any;
 
 @Component({
@@ -21,8 +23,7 @@ declare var jQuery: any;
 
 export class DonorModuleComponent implements OnInit, OnDestroy {
   private map: google.maps.Map;
-  private mapService: MapService;
-  private clickedCountry: (country: string) => void;
+  private geocoder: google.maps.Geocoder;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -40,9 +41,14 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   private userTypePath: string;
 
+  @ViewChild("globalMap") globalMap: ElementRef;
+  private hazardMap = new Map<number, Set<number>>();
+  private countryLocationMap = new Map<string, number>();
+  private countryAgencyRefMap = new Map<number,any>();
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
-    this.mapService = MapService.init(this.af, this.ngUnsubscribe);
+    this.geocoder = new google.maps.Geocoder;
   }
 
   goToListView() {
@@ -88,7 +94,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.initBlankMap("global-map");
+    this.initBlankMap();
     this.initData();
   }
 
@@ -97,11 +103,25 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       .map(snap => {
         let locations = [];
         if (snap && snap.val()) {
-          let countryObjects = Object.keys(snap.val()).map(key => snap.val()[key]);
+          let countryObjects = Object.keys(snap.val()).map(key => {
+            let countryWithAgencyId = snap.val()[key];
+            countryWithAgencyId["agencyId"] = key;
+            return countryWithAgencyId;
+          });
           countryObjects.forEach(item => {
-            let countries = Object.keys(item).map(key => item[key]);
+            let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
+              let country = item[key];
+              country["countryId"] = key;
+              country["agencyId"] = item.agencyId;
+              return country;
+            });
             countries.forEach(country => {
               locations.push(country.location);
+              this.hazardMap.set(Number(country.location), new Set<number>());
+              this.countryAgencyRefMap.set(Number(country.location), country);
+            });
+            countries.forEach(country => {
+              this.getHazardInfo(country);
             });
           });
         }
@@ -110,9 +130,69 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(allLocations => {
         this.doneWithEmbeddedStyles(country => {
-          console.log(country);
+          let navRef = this.countryAgencyRefMap.get(Countries[country]);
+          this.router.navigate(["donor-module/donor-country-index",{"countryId":navRef.countryId,"agencyId":navRef.agencyId}]);
         }, allLocations);
-      })
+      });
+
+    // let position = 0;
+    // this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(0)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+    //   if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+    //     let pos = {
+    //       lng: geoResult[0].geometry.location.lng() + position,
+    //       lat: geoResult[0].geometry.location.lat()
+    //     };
+    //     let marker = new google.maps.Marker({
+    //       position: pos,
+    //       icon: HazardImages.init().get(1)
+    //     });
+    //     marker.setMap(this.map);
+    //     position += 1.2;
+    //   }
+    // });
+  }
+
+  private getHazardInfo(country: any) {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(country => {
+        this.countryLocationMap.set(country.$key, Number(country.location));
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(hazards => {
+            hazards.forEach(hazard => {
+              let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
+              this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
+              this.drawHazardMarkers();
+            });
+          });
+      });
+  }
+
+  private drawHazardMarkers() {
+    this.hazardMap.forEach((v, k) => {
+      if (v.size > 0) {
+        let position = 0;
+        let scenarios = Array.from(v);
+        scenarios.forEach(item => {
+
+          this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(k)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+              let pos = {
+                lng: geoResult[0].geometry.location.lng() + position,
+                lat: geoResult[0].geometry.location.lat()
+              };
+              let marker = new google.maps.Marker({
+                position: pos,
+                icon: HazardImages.init().get(item)
+              });
+              marker.setMap(this.map);
+              position += 1.2;
+            }
+          });
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -128,35 +208,17 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   private doneWithEmbeddedStyles(countryClicked: (country: string) => void, locations) {
 
     let blue: string[] = [];
-    let red: string[] = [];
-    let yellow: string[] = [];
-    let green: string[] = [];
 
     locations.forEach(location => {
       blue.push(Countries[location]);
     });
-
-    // for (let x of this.listCountries) {
-    //   if (x.overall() == -1) {
-    //     blue.push(Countries[x.location]);
-    //   }
-    //   else if (x.overall() >= this.threshGreen) {
-    //     green.push(Countries[x.location]);
-    //   }
-    //   else if (x.overall() >= this.threshYellow) {
-    //     yellow.push(Countries[x.location]);
-    //   }
-    //   else {
-    //     red.push(Countries[x.location]);
-    //   }
-    // }
 
     let layer = new google.maps.FusionTablesLayer({
       suppressInfoWindows: true,
       query: {
         select: '*',
         from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
-        where: this.arrayToQuote(red.concat(yellow.concat(green.concat(blue))))
+        where: this.arrayToQuote(blue)
       },
       styles: [
         {
@@ -169,48 +231,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
           where: this.arrayToQuote(blue),
           polygonOptions: {
             fillColor: MapService.COLOUR_BLUE,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: this.arrayToQuote(red),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_RED,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: this.arrayToQuote(yellow),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_YELLOW,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: this.arrayToQuote(green),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_GREEN,
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
             strokeColor: "#FFFFFF"
@@ -252,9 +272,9 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   /**
    * Map initialisation stuff
    */
-  public initBlankMap(elementId: string) {
+  public initBlankMap() {
     let uluru = {lat: 20, lng: 0};
-    this.map = new google.maps.Map(document.getElementById(elementId), {
+    this.map = new google.maps.Map(this.globalMap.nativeElement, {
       zoom: 2,
       center: uluru,
       mapTypeControlOptions: {
