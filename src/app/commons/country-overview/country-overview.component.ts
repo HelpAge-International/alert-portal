@@ -6,13 +6,13 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from "../../model/message";
 import {MessageModel} from "../../model/message.model";
 import {Subject} from "rxjs";
-import {PageControlService} from "../../services/pagecontrol.service";
 import {UserService} from "../../services/user.service";
-import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus } from "../../utils/Enums";
+import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType } from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
 import { AgencyService } from "../../services/agency-service.service";
+import { PageControlService } from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 @Component({
@@ -99,7 +99,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  
   filterAlertLevel(event: any) {
     this.filter = event.target.value;
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
@@ -108,30 +107,27 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     if(this._userId && this._userType && this._systemId && this._agencyId && this._countryOfficeData) {
         this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
           this.minTreshold = minTreshold;
-        });
-        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-          this.advTreshold = advTreshold;
-        });
-        console.log(this._countryOfficeData);
-        this._countryOfficeData.forEach(countryOffice => {
-          console.log(countryOffice);
-          this.prepActionService[countryOffice.$key]= new PrepActionService();
-          this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
-          console.log('a ajuns pana aici3');
-          this._getResponsePlans(countryOffice);
-          console.log('a ajuns pana aici2');
-          this._getAlertLevel(countryOffice);
-
-          console.log('a ajuns pana aici');
-          this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
           
-          this.prepActionService[countryOffice.$key].addUpdater(() => {
-            console.log(this.prepActionService[countryOffice.$key]);
-            this.recalculateAll(countryOffice);
-          });
-        })
+          this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+            this.advTreshold = advTreshold;
 
-        this.filteredCountryOfficeData = this._countryOfficeData;
+            this._countryOfficeData.forEach(countryOffice => {
+              this.prepActionService[countryOffice.$key]= new PrepActionService();
+              this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
+
+              this._getResponsePlans(countryOffice);
+              this._getAlertLevel(countryOffice);
+
+              this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
+              
+              this.prepActionService[countryOffice.$key].addUpdater(() => {
+                this.recalculateAll(countryOffice);
+              });
+            });
+
+            this.filteredCountryOfficeData = this._countryOfficeData;
+          });
+        });
     }
   }
 
@@ -301,12 +297,15 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewCountry(countryId) {
-    this.router.navigate(["/dashboard/dashboard-overview", {
-      "countryId": countryId,
-      "isViewing": true,
-      "agencyId": this._agencyId,
-      "systemId": this._systemId,
-      "canCopy": true
-    }]);
+    if(this._userType == UserType.CountryAdmin)
+    {
+      this.router.navigate(["/dashboard/dashboard-overview", {
+        "countryId": countryId,
+        "isViewing": true,
+        "agencyId": this._agencyId,
+        "systemId": this._systemId,
+        "canCopy": true
+      }]);
+    }
   }
 }

@@ -37,6 +37,15 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
 
   @Input() responsePlanId: string;
+  // @Input() set _countryId(_countryId: string){
+  //   this.countryId = _countryId;
+  // }
+  // @Input() set _agencyId(_agencyId: string){
+  //   this.agencyId = _agencyId;
+  // }
+  // @Input() set _isViewing(_isViewing: boolean){
+  //   this.isViewing = _isViewing;
+  // }
 
   private responsePlanToShow: ResponsePlan = new ResponsePlan;
 
@@ -173,15 +182,18 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   // }
 
   private loadData(userType) {
+    console.log("loadData");
 
     if (this.isViewing) {
+      console.log("is viewing")
       this.handleLoadResponsePlan();
     } else {
       // this.userService.getUserType(this.uid)
       //   .takeUntil(this.ngUnsubscribe)
       //   .subscribe(usertype => {
       // this.USER_TYPE = Constants.USER_PATHS[usertype];
-      if (userType == UserType.GlobalDirector) {
+      console.log("check here")
+      if (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) {
         this.route.params
           .takeUntil(this.ngUnsubscribe)
           .subscribe((params: Params) => {
@@ -191,6 +203,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             }
           })
       } else {
+        console.log("here")
         this.getCountryId().then(() => {
           this.handleLoadResponsePlan();
         });
@@ -246,6 +259,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
+        console.log(countryId)
           this.countryId = countryId.$value;
           res(true);
         });
@@ -256,6 +270,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    console.log(responsePlansPath);
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)

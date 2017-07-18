@@ -127,7 +127,7 @@
     </div>
 
     <div
-      *ngIf="responsePlanToShow.methodOfImplementation == MethodOfImplementation.withPartner && responsePlanToShow.partnerOrganisations"
+      *ngIf="responsePlanToShow.methodOfImplementation == MethodOfImplementation.withPartner && responsePlanToShow.partnerOrganisations || MethodOfImplementation.both && responsePlanToShow.partnerOrganisations"
       class="Response__rule__seperator col-sm-12">
       <p><b>Partners</b></p>
       <p *ngFor="let name of partnerList">{{name}}</p>

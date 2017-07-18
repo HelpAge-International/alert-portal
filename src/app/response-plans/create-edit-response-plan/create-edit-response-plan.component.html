@@ -104,7 +104,14 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
-              | translate}}</label>
+              | translate}}
+              <!--tooltip-->
+              <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
+              </tooltip>
+            
+            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
@@ -128,7 +135,12 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
-              | translate}}</label>
+              | translate}}
+              <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
+              </tooltip>
+            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
@@ -151,7 +163,11 @@
 
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
-              | translate}}</label>
+              | translate}}
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
+              </tooltip>
+            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
@@ -198,7 +214,12 @@
         </div>
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
-            <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WHAT_SECTORS?" | translate}}</label>
+            <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WHAT_SECTORS?" | translate}}
+              <tooltip
+            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
+            </tooltip>
+            </label>
+            
           </div>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
@@ -254,7 +275,12 @@
 
           <div class="form-group">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
-              translate}}</label>
+              translate}}
+            <tooltip
+            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
+            [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
+            </tooltip>
+            </label>
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
@@ -299,7 +325,11 @@
 
           <div class="row Spaced subitem" *ngIf="isWorkingWithPartners || isWorkingWithStaffAndPartners">
             <div class="col-lg-8 col-md-8">
-              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
+              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}
+                <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
+              </tooltip>
+              </label>
               <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
@@ -360,7 +390,11 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-response">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
-                  | translate}}</label>
+                  | translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
+                </tooltip>
+                </label>
                 <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
                           [(ngModel)]="proposedResponseText"></textarea>
               </div>
@@ -370,7 +404,11 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-act">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
-                  | translate}}</label>
+                  | translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
+                </tooltip>
+                </label>
                 <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
                           [(ngModel)]="progressOfActivitiesPlanText"></textarea>
               </div>
@@ -380,7 +418,11 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-coo">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_COORDINATION_TEXT?"
-                  | translate}}</label>
+                  | translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
+                </tooltip>
+                </label>
                 <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
                           [(ngModel)]="coordinationPlanText"></textarea>
               </div>
@@ -412,7 +454,12 @@
         <div class="Response__content Spaced">
           <div class="form-group">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_MANY_BENEFICIARIES?" |
-              translate}}</label>
+              translate}}
+              <tooltip
+            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
+            [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
+            </tooltip>
+            </label>
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
@@ -450,7 +497,12 @@
             <div class="col-lg-8 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-Done">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
-                  translate}}</label>
+                  translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
+                </tooltip>
+                </label>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
@@ -482,7 +534,12 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
-              | translate}}</label>
+              | translate}}
+              <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
+                </tooltip>
+            </label>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
@@ -533,18 +590,9 @@
                   | translate}}</label>
                   <!-- TOOLTIP 2.16 -->
                   <tooltip
-                    [level1]="'Once the details of the planned activities have been defined it is important to identify risks that may impact on the successful implementation of the plan.'"
-                    [level2]="'Risks can be minimised in developing and  implementing minimum preparedness actions and in some cases advanced preparedness actions, that provide robust or alternative arrangements to foreseeable risks. Such risk may include but not be limited to
-                        •        Rapid or unexpected changes in the lead time and situation not anticipated in the disaster scenario.
-                        •        Loss of utilities or office space
-                        •        Limited agency capacity (staffing) for your or other agencies upon which you are relying
-                        •        The demands of maintaining existing programmes during the emergency phase.
-                        •        Limited supply structure and timely availability of good and services from suppliers
-                        •        Physical factors limiting access to the location and target beneficiaries – extreme remoteness, damage to physical infrastructure, loss of transport assets, competition for helicopters and airplanes, lack of fuel etc
-                        •        Safety and security issues – limitations on operations due to social and political tensions or conflict, armed parties,
-                        •        Political factors – pressure to focus activities towards or away from particular areas or groups.
-                        •        Phasing your intervention – some activities will need to be implemented and perhaps completed before others done, failure to phase activities realistically may have negative consequences for the success of the plan.'">
-                  </tooltip>
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL2'">
+                </tooltip>
 
                 <textarea id="R-success" cols="30" rows="5" class="form-control"
                           [(ngModel)]="riskManagementPlanText"></textarea>
@@ -622,20 +670,8 @@
                           | translate}}</label>
                           <!-- TOOLTIP 2.17 -->
                           <tooltip
-                            [level1]="'Based on your plan goals and target population what are activities that you will implement in the event of a disaster.'"
-                            [level2]="'Example:
-                                          •        Activity: Distribution of hygiene kits to 4 target communities
-                                          •        Output: 500 Kits distributed within 4 target communities
-                                          •        KPI: 20% change in the proportion of households that report having access to hygiene items in the 4 targeted communities
-
-
-                                          When planning the activities you should consider the following:
-                                          - The capacity of affected communities to respond
-                                          - The specialisms and expertise of your agency and partner organisations and others
-                                          - Your capacity and that of your partner agencies, other agencies and the government
-                                          - Lead time that can be provided by early warning (to inform choice and scale of anticipatory activities)
-                                          -  Geographical area impacted in relation to your usual operational area and those of partner agencies
-                                          - Access to impacted areas and target populations.'">
+                          [level1]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL1'"
+                          [level2]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL2'">
                           </tooltip>
                         <input type="text" class="form-control" #name>
                       </div>
@@ -895,10 +931,18 @@
           <div class="row">
             <div class="col-lg-12">
               <div class="row Demographic__text">
+                  <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
+              </tooltip>
                 <div class="col-lg-3">
                   <div class="row  align-items-center"></div>
                   <div class="row  align-items-center">
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES" | translate}}
+                    <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL1'"
+                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL2'">
+                  </tooltip>
                   </div>
                   <div class="row  align-items-center">
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES_ADJUSTED" | translate}}
