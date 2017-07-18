@@ -41,7 +41,13 @@
       </div>
       <div class="row">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="User-Type">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
+          <label for="User-Type">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}
+          <!--tooltip-->
+          <tooltip
+          [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT7.LEVEL1'">
+          </tooltip>
+          </label>
+
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType" required (change)="selectedUserType(userType)">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let type of userTypeSelection;let i = index" [hidden] = "i==0" [value]="type">
@@ -84,13 +90,13 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label>
-        <!-- Tooltip partial -->
+      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}
+      <!-- Tooltip partial -->
         <tooltip
-        [level1]="'What skills does this person possess for organisational support?'">
+        [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT3.LEVEL1'">
         </tooltip>
-        <!-- Tooltip partial end -->
-      </div>
+        <!-- Tooltip partial end --></label></div>
+
       <div class="row">
         <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == SupportSkill"
@@ -100,13 +106,13 @@
         </template>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label>
-        <!-- Tooltip partial -->
+      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}
+      <!-- Tooltip partial -->
         <tooltip
-        [level1]="'What skills does this person possess for programmatic work?'">
+        [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL1'">
         </tooltip>
-        <!-- Tooltip partial end -->
-      </div>
+        <!-- Tooltip partial end --></label></div>
+
       <div class="row">
         <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == TechSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input
@@ -121,7 +127,7 @@
               [(ngModel)]="trainingNeeds"></textarea>
         </div>
       </div>
-
+      
       <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label>
         <!-- Tooltip partial -->
         <tooltip
@@ -138,13 +144,14 @@
           translate}}</label>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}</label>
-        <!-- Tooltip partial -->
-        <tooltip
-        [level1]="'The Emergency Res'">
-        </tooltip>
-        <!-- Tooltip partial end -->
-      </div>
+      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}
+      <!--tooltip-->
+      <tooltip
+      [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT6.LEVEL1'"
+      [level2]="'TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL2'">
+      </tooltip>
+      </label></div>
+
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">
           <input type="radio" name="RT" id="RT_no" [value]="false" [(ngModel)]="isResponseMember">{{"GLOBAL.NO"|

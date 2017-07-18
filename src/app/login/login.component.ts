@@ -198,11 +198,12 @@ export class LoginComponent implements OnInit, OnDestroy {
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
-    this.loginCheckingDeactivated(successUid, "donor",
-      Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
-      () => {
-        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
-      });
+    // this.loginCheckingDeactivated(successUid, "donor",
+    //   Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
+    //   () => {
+    //     this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+    //   });
+    this.loginCheckingFirstLoginValue(successUid, "donor", Constants.DONOR_HOME, 'new-user-password');
     this.loginCheckingAgency(successUid, "administratorAgency",
       Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
   }

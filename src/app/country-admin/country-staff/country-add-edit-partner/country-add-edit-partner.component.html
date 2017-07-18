@@ -63,7 +63,13 @@
             </div>
         </div>
 
-        <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
+        <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}
+        <!--tooltip-->
+        <tooltip
+        [level1]="'Apart from agency-level notifications, what other notifications should this person receive?'">
+        </tooltip>
+        </label></div>
+        
         <div class="row Spaced">
             <label *ngFor="let notification of partner?.notificationSettings | keyValues"
                 class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">

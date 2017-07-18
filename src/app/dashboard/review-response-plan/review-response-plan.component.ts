@@ -40,7 +40,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
+      this.uid = user.auth.uid;
       this.userType = userType;
       this.agencyId = agencyId;
       this.countryId = countryId;
@@ -65,6 +65,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private loadResponsePlan(responsePlanId: string) {
     // if (this.isDirector) {
     // this.userType = UserType.GlobalDirector;
+    console.log(this.countryId);
     this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(responsePlan => {

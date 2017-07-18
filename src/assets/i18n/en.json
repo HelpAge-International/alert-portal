@@ -1777,7 +1777,7 @@
             "ADD_NEW_HAZARD": "Add new hazard",
             "INFORMATION_PROVIDED": "Information provided by ",
             "INFORM_INDEX": "Inform Index",
-            "NOTE_HAZARD": "Note: this list will only display the hazards that donâ€™t appear in your risk monitoring list (you cannot add the same hazard twice)",
+            "NOTE_HAZARD": "Note: this list will only display the hazards that don't appear in your risk monitoring list (you cannot add the same hazard twice)",
             "SELECT_ANOTHER_HAZARD": "Select another hazard",
             "IS_SEASONAL_HAZARD": "Is this a seasonal hazard?",
             "SELECT_SEASON_FROM_CALENDAR": "SELECT SEASON(S) FROM THE CALENDAR",
@@ -1913,10 +1913,237 @@
             "TT1" : {
                 "LEVEL1": "Preparedness Actions that an agency should implement in order to maintain a minimum level of emergency preparedness. These are commonly referred to as MPAs.",
                 "LEVEL2": "In order to define minimum preparedness actions effectively, you need to take two approaches. 1. Continuity minimum preparedness actions:  Reviewing your existing programmes and your organisations main functional activities; identify the supporting tasks that come together to underpin those activities and how risks may impact on these activities. This allows essential activities, those that must be maintained, to be identified. The processes and mechanisms you choose to protect these essential activities and supporting tasks are your MPAs. 2.Response Plan minimum preparedness actions: Using your Scenario based response plan activity; identify the supporting tasks and functions that come together to underpin and enable those activities and how risks may impact on these activities."
+            },
+            "TT2" : {
+                "LEVEL1": "These are external users from partner agencies that you are giving access to your Country Office / Agency account."
+            },
+            "TT3" : {
+                "LEVEL1": "What skills does this person possess for organisational support?"
+            },
+            "TT4" : {
+                "LEVEL1": "What skills does this person possess for programmatic work?"
+            },
+            "TT5" : {
+                "LEVEL1": "Apart from agency-level notifications, what other notifications should this person receive?"
+            },
+            "TT6" : {
+                "LEVEL1": "The Emergency Res",
+                "LEVEL2": "The User Types are: Country Director - this is the head of the Country Office or local organisation. Country User - these are staff members that are not part of the Emergency Response Team (ERT). ERT Lead - this person is the focal point of the Emergency Response Team. ERT Member - these are staff members that are part of the Emergency Response Team. Partner User - these are external users from partner agencies that you are giving access to your Country Office / Agency account."
+            },
+            "TT7" : {
+                "LEVEL1": "Each user type has a corresponding permission level"
+            },
+            "TT8" : {
+                "LEVEL1": "Public = People outside your agency can see your data (excluding staff contact details). Private = Only staff members within your agency can see your data. Network = Only staff from member agencies of a Network you are affiliated with can see your data"
+            },
+            "TT9" : {
+                "LEVEL1": "How often your Country Office / Organisation needs to update your hazard analysis"
+            },
+            "TT10" : {
+                "LEVEL1": "You can set this to be more frequent than your agency settings, but not less frequent"
             }
+
         },
         "RESPONSE_PLANS": {
 
+            "TT1" : {
+                "LEVEL1": "A scenario based response plan covers what needs to be done once there is a clear prospect of a hazard event causing a humanitarian impact",
+                "LEVEL2": "Planning in the abstract, with little thought to the possible scale and impacts of an event, is unlikely to be effective. In order to develop effective emergency plans an agency may choose to develop a range of possible disaster scenarios and then develop plans that are able to respond to the demands of those scenarios. It is likely that your agency will define several risks and scenarios and so need to develop several plans tailored to meet each of them. Each plan should have a clear and distinct title and be linked to the disaster scenario which it is based on. Undertake the response planning, then the related Advanced preparedness and Minimum preparedness and circling around again to the response plan will help make sure everything is covered, supported and linked as needed."
+            },
+            "TT2" : {
+                "LEVEL1": "Agencies that have been named as partners in the response plan."
+            },
+            "TT3" : {
+                "LEVEL1": "The selected sectors will be included in the downloaded document. The document will be exported into the START Fund Proposal template."
+            },
+            "TT4" : {
+                "LEVEL1": "When a plan is reactivated it goes to the ‘Needs reviewing’ status. With all the approval requirements reset."
+            },
+            "TT5" : {
+                "LEVEL1": "A scenario is a well evidenced story of what could happen; how a disaster might unfold.",
+                "LEVEL2": "Scenario development should not be overly time consuming and detailed. Given the level of uncertainty associated with projecting what future events will be like, a scenario should avoid developing unnecessary detail and focus on key elements that influence impact and response. Two scenarios might be defined for a particular hazard; 1. Most likely scenario (likelihood) 2. Worst case scenario (greatest severity of impact). Choosing both scenarios for each hazard ensures that the demands of a larger event are effectively planned for (worst case scenario) as well as the requirements for responding to the event you are most likely going to respond to (most likely scenario). For chronic threats such as conflict and food insecurity a “most likely” and “worst case” scenario approach may not be effective. Instead an intensification approach using a timeline may be preferable; where a worsening situation requiring ongoing expansion of operations over time is defined and allows planning for an evolving crisis. It is important to recognise that the situation will not be static but will change over the 4-6 weeks of initial response. Your disaster scenario should use historical data, any existing forecast information and local knowledge to try and estimate how the situation might change over that time; the situation may improve or get worse."
+            },
+            "TT6" : {
+                "LEVEL1": "Impact = how severe the impact of the event might be; largely controlled by the vulnerability and coping capacity of the exposed population and responding agencies.",
+                "LEVEL2": "Human Impact on your target population should be the focus in this section: a. Impact statistics (number likely to be killed, injured, made homeless, displaced, otherwise affected and needing humanitarian assistance) b. Demographic characteristics (SADDD)  and locations of those most badly affected needing immediate critical humanitarian response – rescue, urgent medical attention, water, food, security & shelter. c. Economic impacts – markets, income, livelihoods, savings and so on. d. Soci-epidemiological impacts – public access to health care, sanitation, displacement, information/communication, education, psychosocial support, religious needs, burial etc"
+            },
+            "TT7" : {
+                "LEVEL1": "Early on in the planning process it is important to research and make clear all potential sources of funding available to support your planned response"
+            },
+            "TT8" : {
+                "LEVEL1": "It is likely that your intended activities will align to cluster sectors defined by the UN. Your agency might intend to undertake activities under several sectors; for example WaSH and Health. It is useful to structure you planning arrangements with the cluster sectors in mind as any major response will be co-ordinated on the basis of these cluster themes."
+            },
+            "TT9" : {
+                "LEVEL1": "Is this plan for an intervention in a country that you have current programmes in, or working through partners, or a country you are not currently working in?",
+                "LEVEL2": "Your current activities in the effected country will influence the type of response you can launch and how it can best be delivered. You should consider whether you currently have active projects being delivered by your own field staff in the area; or if you don’t work there directly if you have a presence through a partner or perhaps you don’t have a presence in the area at all. This might also influence how you deliver your planned response – will you deploy your own field staff or work through partner agency staff?"
+            },
+            "TT10" : {
+                "LEVEL1": "You will be offered the option to submit this plan to the partners named in this section, for their approval. Partner organisations need to be added in the country office profile before they can be named in this plan."
+            },
+            "TT11" : {
+                "LEVEL1": "Having established the broad sectors that your response will focus on, you should define a series of objectives for the overall plan. Objectives should written in such a way that each statement is specific, measurable, achievable and realistic in the timeframes. Next you should provide an overview of your intended response. You should: 1. Summarise your main activities and what will be achieved if the plan is implemented successfully. 2.Explain why you have selected this particular form of response to the crisis – justification may be based on your area of expertise, locations in which you work, gaps in the collaborative response or specific analysis undertaken etc. since plans are likely to be shared is it important to justify the focus and type of response."
+            },
+            "TT12" : {
+                "LEVEL1": "This is a 6 week plan. It is important to think about how you will begin your main activites as soon as possible, and to think about what you want to achieve in the first 6 weeks. Explain how you will start your activities within 7 days of the event starting, activities which will be very similar to your advanced preparedness actions (which are covered further along in the preparedness planning process). Also explain what plans will be implemented to move beyond the 45 day period covered by this initial plan (potentially early recovery activities)"
+            },
+            "TT13" : {
+                "LEVEL1": "State how you will work with specific agencies, government departments, coordination mechanism and cluster groups to deliver the plan."
+            },
+            "TT14" : {
+                "LEVEL1": "A simple way of estimating the number of beneficiaries to target is to use an average of the number of people per household in the area and multiply this by the number of households that you intend to target.",
+                "LEVEL2": "You may have access to up to date and detailed information about the population in the exposed areas, in which case you may be able to provide quite accurate information about the number of potential households and beneficiaries that you will target. Alternatively, you may have to estimate beneficiaries. A simple way of estimating the number of beneficiaries to target is to use an average of the number of people per household in the area and multiply this by the number of households that you intend to target."
+            },
+            "TT15" : {
+                "LEVEL1": "Depending on the expertise and areas of operation of your agency you may plan to target particular locations and specific demographics or groups of people with specific needs (sometimes referred to as vulnerable groups).",
+                "LEVEL2": "It is important to clearly define your target groups to ensure you reach the people you intend to reach and to ensure that no exposed location or groups of people with specific needs is missed during the collective response. UNHCR categorise People with Specific Needs as follows: Child or Adolescent at Risk:Child below the age of 18 who is especially at risk. If the risk is only related to their separated or unaccompanied status, see category (Unaccompanied and seperated child). Unaccompanied and separated child: A boy or a girl under the age of 18 who is currently not under the care of either parent or other previous legal or customary primary caregiver. Separated children are those boys and girls separated from both parents, or from their previous legal or customary primary caregiver, but not necessarily from other relatives. Separated children may therefore include boys and girls accompanied by other adult family members. Unaccompanied children are children who have been separated from both parents and or other relatives and who are not being cared for by an adult who, by law or custom, is responsible for doing so. Persons with disabilities: Adult or Child who is physically or mentally impaired by illness, injury or wounds which hinders the normal day to day activity and needs to be addressed to allow the person to function normally. Older person at risk: Male or female, 60 years of age or older. Often, older asylum-seekers have been separated from their usual caregivers. They may also suffer from health problems and/or have difficulty adjusting to their new environment and knowing where to seek assistance. Important Medical condition: For individuals under the care and treatment of a medical doctor with conditions that may affect the identification of a durable solution (both positively and negatively) and the requirement of additional assistance in the country of asylum (both for treatment and nutritional and non-food items). In case of disability use the 'Persons with disabilities' category. Single parent: Single-parent household (Male or female 18 or older) with one or more dependents, all of whom are under the age of 18, in which the Head of Household (or Principal Applicant) is both the primary income earner and care provider. If the single parent is under age 18, use the 'Child at risk' or 'Unaccompanied and seperated child' categories. Woman at risk: Women who face protection risks particular to their gender, whether they are single heads of families, widowed, unaccompanied girls or accompanied by a male family member, as well as women that are survivors of violence. Protection problems include expulsion, refoulement and other security threats, sexual violence, physical abuse, intimidation, torture, economic hardship or marginalization, lack of integration prospects, community hostility, and different forms of exploitation. If under age 18, use the 'Child at risk' or 'Unaccompanied and seperated child' wherever possible instead. Pregnant or lactating: A temporary status to highlight medical assistance, nutritional enhancement or material requirements for women or girls during period of pregnancy or lactation. Specific legal and physical protection needs: Persons not falling into the other categories but who have specific needs within the particular context (e.g., survivors of torture or violence, members of a particular ethnic or religious group, or other protection concerns). Either male or female. If under age 18, use the 'Child at risk' or 'Unaccompanied and seperated child' wherever possible instead."
+            },
+            "TT16" : {
+                "LEVEL1": "Working with communities during your preparedness phase will ensure the planned agency response meets the needs and expectations of those at risk.",
+                "LEVEL2": "Examples of why agencies might engage with the beneficiaries and the wider community might be: During the preparedness phase involving communities in planning and preparedness providing greater insight into their views of risks and priorities and the suitability of agency planned responses. Training for a role in humanitarian response. To gain an insight into the location, impact, needs and capacities of those affected particularly the most vulnerable. To raise awareness of distribution schedules and locations and the effective use of any resources provided. To provide input into monitoring process via workshops, focus groups, questionnaires or interviews. Emergency Response Teamss should work with colleagues involved in community based DRR projects and alike to develop relationships with community groups who can provide an input into the planning process. It is possible that ‘at risk’ communities who are being supported in DRR may have been encouraged to develop community emergency response plans, and links to early warning mechanisms. Knowledge of their plans and process will be helpful if and when an emergency occurs."
+            },
+            "TT17" : {
+                "LEVEL1": "Once the details of the planned activities have been defined it is important to identify risks that may impact on the successful implementation of the plan.",
+                "LEVEL2": "Risks can be minimised in developing and  implementing minimum preparedness actions and in some cases advanced preparedness actions, that provide robust or alternative arrangements to foreseeable risks. Such risk may include but not be limited to: Rapid or unexpected changes in the lead time and situation not anticipated in the disaster scenario. Loss of utilities or office space. Limited agency capacity (staffing) for your or other agencies upon which you are relying. The demands of maintaining existing programmes during the emergency phase. Limited supply structure and timely availability of good and services from suppliers. Physical factors limiting access to the location and target beneficiaries – extreme remoteness, damage to physical infrastructure, loss of transport assets, competition for helicopters and airplanes, lack of fuel etc. Safety and security issues – limitations on operations due to social and political tensions or conflict, armed parties. Political factors – pressure to focus activities towards or away from particular areas or groups. Phasing your intervention – some activities will need to be implemented and perhaps completed before others done, failure to phase activities realistically may have negative consequences for the success of the plan."
+                         },
+            "TT18" : {
+                "LEVEL1": "Based on your plan goals and target population what are activities that you will implement in the event of a disaster.",
+                "LEVEL2": "Example: Activity: Distribution of hygiene kits to 4 target communities. Output: 500 Kits distributed within 4 target communities. KPI: 20% change in the proportion of households that report having access to hygiene items in the 4 targeted communities. When planning the activities you should consider the following: - The capacity of affected communities to respond - The specialisms and expertise of your agency and partner organisations and others - Your capacity and that of your partner agencies, other agencies and the government - Lead time that can be provided by early warning (to inform choice and scale of anticipatory activities) -  Geographical area impacted in relation to your usual operational area and those of partner agencies - Access to impacted areas and target populations."
+            },
+            "TT19" : {
+                 "LEVEL1": "If the plan is activated then the targeting (who receives), effectiveness (do they get what they need when they need it) and success (does it have the desired impact) should be monitored.  This will allow the ERT to demonstrate accountability to both donors and beneficiaries.",
+                "LEVEL2": "Additionaly, key phases and activities in the response should be critically reviewed with a view to identifying lessons that need to be learned and to improve the preparedness process (e.g. the risk assessment, disaster scenarios and plans and the aligned preparedness activities including SOPs and procedures).  In addition, the response activities should be reviewed to ensure that standards were met and good practice observed. The development and review of your agencies monitoring and evaluation process and mechanism for identifying and learning lessons are likely to be MPAs."
+            },
+            "TT20" : {
+                "LEVEL1": "",
+                "LEVEL2": ""
+            },
+            "TT21" : {
+                "LEVEL1": "",
+                "LEVEL2": ""
+            }
+        },
+        "PREPAREDNESS" : {
+            "TT1" : {
+                "LEVEL1": "Minimum preparedness actions (MPAs) are activities that need to be regularly carried out and updated in order that your agency is prepared to respond to an emergency.",
+                "LEVEL2": "MPAs can fall into two categories: 1) Continuity planning: Actions that ensure the continuity of existing services and organizational functions (i.e the continued delivery of services for existing programmes). 2) Response Plan Specific MPAs: Actions that support the implementation of the activities defined in your emergency response plan. All activities will be underpinned by a range of supporting tasks (see fig 3.1 below) aligned to different departments across the agency o        Accountability o        Office Administration o        Communications & Media o        Donor Funding & Reporting o        Finance o        Human Resources (including staff safety & security) o        IT and Field Communications o        Logistics o        Programmes. Preparedness actions may take the form of - A clearly defined process, a document describing ways of doing things during a crisis – for example cash handling procedures for paying staff wages or for cash based programmes. - Records of information such as contact details, suppliers, donors etc - Contracts or agreements such as those set up with other agencies to support response or those with supplier to provide goods or services such as Banks - Procurement, preparation, storage and associated records of maintenance for equipment such as phones, generators etc. - Training - etc"
+            },
+            "TT2" : {
+                "LEVEL1": "MPA types are: Custom preparedness actions, Mandated preparedness actions, CHS preparedness tasks.",
+                "LEVEL2": "1. Custom preparedness actions: these MPAs recognize that every office and context is different and that scenario based planning may generate a number of preparedness actions that are specific to the local response plan. Each office can add its own specific preparedness actions. 2. Mandated preparedness actions:  are the preparedness actions that an agency commonly requires their offices to implement. Considering that the CHS preparedness actions will already cover an important number of preparedness actions and they are automatically “mandated” the next step for an agency is to create a list of mandated additional MPAs, so the full spectrum of the agency’s activities and requirements are met. It is likely that this suite of MPAs will become common across the sector – those that every agency is expected to have. 3. CHS preparedness tasks: these are required minimum preparedness actions derived from the nine Core Humanitarian Standards. They were developed in collaboration with the CHS Alliance and the UK START Network members. All agencies should strive to achieve the CHS preparedness tasks as a way of achieving a minimum level of preparedness."
+            },
+            "TT3" : {
+                "LEVEL1": "You can only complete an action that is assigned to you"
+            },
+            "TT4" : {
+                "LEVEL1": "You can upload multiple files. Your agency accepts the following file types as an attachment: <bring up list of approved file types from agency admin settings>/"
+            },
+            "TT5" : {
+                "LEVEL1": "You can only edit or delete notes you posted. To delete notes others have posted, please get in touch with the user that posted the note or contact your administrator"
+            },
+            "TT6" : {
+                "LEVEL1": "You can only upload documents to an action if it is assigned to you."
+            },
+            "TT7" : {
+                "LEVEL1": "Advanced Preparedness Actions (APAs) are executed when a disaster is imminent in the early warning phase or immediately after a severe sudden onset disaster. APAs are associated with particular hazards or can apply in any hazard scenario. The corresponding APAs are activated when a Red Alert is raised for a particular hazard.",
+                "LEVEL2": "The following considerations maybe helpful when defining and prioritising APAs. You are likely to focus on: Preserving life and assets: Those actions that could prevent people from losing their lives or assets and ensures the organisation can operate after impact: eg. •        Supporting community preparedness to reduce impact and ready first responders •        Assisting in evacuation •        Contacting & co-ordinating with key partners •        Ensuring staff are safe •        Secure critical organisational infrastructure •        Actions related to your key emergency response objectives •        Continuing essential programme activities Time bound: Actions that have a delay or lag time which could impact on achieving your response objectives in a timely manner for example •        Logistics chain – ordering, booking, transporting, shipping etc. •        Funding and access to cash •        Activating operational agreements with key stakeholders"
+            },
+            "TT8" : {
+                "LEVEL1": "Country Context is not a hazard per se, but a collection of macro-level indicators that when viewed together provides a holistic picture of the country's socioeconomic and political status",
+                "LEVEL2": "In order to articulate APAs and distinguish them from MPAs it is useful to consider when they will be actioned. •        Day to day – planning, preparing, reviewing & changing processes, training etc. These are MPAs •        In the early warning “getting ready to respond” phase – if warning communications allow moving to a state of readiness because the disaster is imminent. Moving stored items to forward positions, distributing equipment, getting ready to move to emergency procedures. These are APAs •        In the initial response phase 72h – implementing emergency procedures for essential activities, maintaining essential programme and operational services and implementing planned emergency response activities. These are APAs."
+            },
+            "TT9" : {
+                "LEVEL1": "Advanced Preparedness Actions (APAs) are executed when a disaster is imminent in the early warning phase or immediately after a severe sudden onset disaster. APAs are associated with particular hazards or can apply in any hazard scenario. The corresponding APAs are activated when a Red Alert is raised for a particular hazard.",
+                "LEVEL2": "In order to articulate APAs and distinguish them from MPAs it is useful to consider when they will be actioned. •        Day to day – planning, preparing, reviewing & changing processes, training etc. These are MPAs •        In the early warning “getting ready to respond” phase – if warning communications allow moving to a state of readiness because the disaster is imminent. Moving stored items to forward positions, distributing equipment, getting ready to move to emergency procedures. These are APAs •        In the initial response phase 72h – implementing emergency procedures for essential activities, maintaining essential programme and operational services and implementing planned emergency response activities. These are APAs."
+            },
+            "TT10" : {
+                "LEVEL1": "If set to 'Yes', this Preparedness Action cannot be marked as completed unless a document is uploaded as supporting evidence."
+            },
+            "TT11" : {
+                "LEVEL1": "How soon an MPA expires is set at agency level, but you may set this MPA  to require updating more frequently."
+            },
+            "TT12" : {
+                "LEVEL1": "This APA will activate whenever a Red Alert is raised against any of the hazards you select below.",
+                "LEVEL2": "This list will only display hazards that are being monitored"
+            },
+            "TT13" : {
+                "LEVEL1": "A collection of sample preparedness actions that can be adopted and customised for your agency's use"
+            }
+        },
+        "RISK_MONITORING" : {
+            "TT1" : {
+                "LEVEL1": "You can only edit or delete log entries you have posted. In order to delete log entries posted by other users, please contact your administrator."
+            },
+            "TT2" : {
+                "LEVEL1": "Name or Title of the Indicator you want to create"
+            },
+            "TT3" : {
+                "LEVEL1": "Outlines the trigger point values for the indicator. Trigger points are essential to determine when the indicator suggests the situation is either deteriorating or improving.",
+                "LEVEL2": "The choice of trigger levels can be decided by considering your historical events, risk assessments and the disaster scenarios. For example your disaster scenarios will tell the story of disaster impacts and likely changes over time. Follow a process like the one given below for a cyclone to decide how to set trigger points for indicators and when the group of indicators might suggest moving to a heightened state of alert and response. o        consider the hazard process and based on historical events how quickly the situation can change or get worse – the lead time. o        Historical data shows that approximately 5 days of warning are possible from a storm forming out at sea to it making landfall. o        Choose to monitor storm tracks and storm strength indicator information o        consider the potential severity of impacts; these will affect the scale of response and access to those affected o        storm surge could extensively flood low lying coastal villages o        winds bring down power supplies across the area o        Now you can define “values” for indicators – points which indicate increasing risk (you may increase monitoring frequency, range of indicators monitored etc) or begin to take action"
+            },
+            "TT4" : {
+                "LEVEL1": "Determines how often the system will remind you through notifications to update the indicator at each trigger level",
+                "LEVEL2": "You should monitor your chosen indicators as frequently as necessary to keep up with the changing situation. When deciding how frequently to monitor you should consider: o        The rate at which the situation (indicator) has changed in the past – look at historical events - how quickly or slowly do changes tend to occur in your location. Drought and food insecurity indicators may only show a changing trend over weeks and months – monitoring weekly or fortnightly may be deemed appropriate. Conflict indicators may show sudden extreme variations. Periods of daily monitoring may be required for example during potential triggering events such as election periods. o        Does the risk have a seasonal driver – for example monitoring for cyclones or floods outside the season may be deemed unnecessary. However, agencies should choose an early date to begin seasonal monitoring in case there is an early occurrence. Since weather forecasts are updated several times a day, daily monitoring might be appropriate during high season for extreme events.  o        The availability of new information – if cyclone track information is updated every 6-12 hours, it would be appropriate to monitor this frequently once a storm has formed in the region. Global Public Health Intelligence Network’s disease surveillance data is updated daily. Regional food security information may only be updated every few months so monthly monitoring may be appropriate but supplemented with weekly or fortnightly data from local sources. "
+            },
+            "TT5" : {
+                "LEVEL1": "Only identified hazards being monitored are displayed here. If you need to raise an alert for a hazard that is not found below, you will need to add it here as a hazard to be monitored first."
+            },
+            "TT6" : {
+                "LEVEL1": "ERT Leads and Country Directors can raise an Amber Alert Level, but only a Country Director can raise a Red Alert. ERT members can request the Country Director to raise a Red Alert based on information provided below."
+            },
+            "TT7" : {
+                "LEVEL1": "Country Context is not a hazard per se, but a collection of macro-level indicators that when viewed together provides a holistic picture of the country's socioeconomic and political status"
+            },
+            "TT8" : {
+                "LEVEL1": "This list will only display the hazards that don’t appear in your risk monitoring list (you cannot add the same hazard twice)"
+            },
+            "TT9" : {
+                "LEVEL1": "Index for Risk Management (INFORM) is a global, open-source risk assessment for humanitarian crises and disasters.",
+                "LEVEL2": "The ALERT platform will display the top 5 hazards your country is most at risk of according to INFORM. It will only show the hazards that you have not selected for monitoring yet. If the hazard you wish to add does not appear in the options below, you can add your own hazard."
+            },
+            "TT10" : {
+                "LEVEL1": "A hazard that is cyclical in nature, or has a higher likelihood of occurence following specific climate patterns."
+            },
+            "TT11" : {
+                "LEVEL1": "Seasonal events can refer to both climate-related seasons (Typhoon season, Dry season) or even man-made events (elections, harvest season, cultural or religious events). These events are understood to have a certain degree of recurrence over a period of time."
+            }
+        },
+
+        "COUNTRY_OFFICE_PROFILE" : {
+            "TT1" : {
+                "LEVEL1": "Title of the Project"
+            },
+            "TT2" : {
+                "LEVEL1": "Location of the Project "
+            },
+            "TT3" : {
+                "LEVEL1": "Target beneficiaries"
+            },
+            "TT4" : {
+                "LEVEL1": "Project completion date"
+            },
+            "TT5" : {
+                "LEVEL1": "The total number of staff in your Country Office, including all emergency response staff and those not involved in emergency response."
+            },
+            "TT6" : {
+                "LEVEL1": "Is the organisation a regional office, partner, affiliate, network member, consultant etc? "
+            },
+            "TT7" : {
+                "LEVEL1": "Where the surge staff is based"
+            },
+            "TT8" : {
+                "LEVEL1": "General condition of the equipment"
+            },
+            "TT9" : {
+                "LEVEL1": "Is the source of the surge equipment a supplier, partner, regional office, etc? "
+            },
+            "TT10" : {
+                "LEVEL1": "Type of stock"
+            },
+            "TT11" : {
+                "LEVEL1": "Where the stock is currently stored"
+            }
         }
+
      }
+
 }
