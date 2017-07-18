@@ -8,6 +8,7 @@ import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
 import {MapService} from "../services/map.service";
+import {Observable} from "rxjs/Observable";
 declare var jQuery: any;
 
 @Component({
@@ -51,6 +52,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.department = new SDepHolder("Something");
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
@@ -87,7 +89,30 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initBlankMap("global-map");
-    this.doneWithEmbeddedStyles(this.clickedCountry);
+    this.initData();
+  }
+
+  private initData() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
+      .map(snap => {
+        let locations = [];
+        if (snap && snap.val()) {
+          let countryObjects = Object.keys(snap.val()).map(key => snap.val()[key]);
+          countryObjects.forEach(item => {
+            let countries = Object.keys(item).map(key => item[key]);
+            countries.forEach(country => {
+              locations.push(country.location);
+            });
+          });
+        }
+        return locations;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(allLocations => {
+        this.doneWithEmbeddedStyles(country => {
+          console.log(country);
+        }, allLocations);
+      })
   }
 
   ngOnDestroy() {
@@ -100,15 +125,16 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   /** Function for where **/
-  private doneWithEmbeddedStyles(countryClicked: (country: string) => void) {
+  private doneWithEmbeddedStyles(countryClicked: (country: string) => void, locations) {
 
     let blue: string[] = [];
     let red: string[] = [];
     let yellow: string[] = [];
     let green: string[] = [];
 
-    blue.push(Countries[0]);
-    blue.push(Countries[1]);
+    locations.forEach(location => {
+      blue.push(Countries[location]);
+    });
 
     // for (let x of this.listCountries) {
     //   if (x.overall() == -1) {
