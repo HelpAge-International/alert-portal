@@ -221,27 +221,37 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   
     for (let x of this.prepActionService[countryOffice.$key].actions) {
       if (x.level == ActionLevel.MPA) {
-        minTotal++;
-        if (this.isActionCompleted(x, countryID)) {
-          minGreen++;
+        if (!x.isArchived) {
+          minTotal++;
+          if (this.isActionCompleted(x, countryID)) {
+            minGreen++;
+          }
         }
       }
       else if (x.level == ActionLevel.APA) {
-        advTotal++;
-        if (this.isActionCompleted(x, countryID)) {
-          advGreen++;
+        if (!x.isArchived && x.isRedAlertActive(this.hazardRedAlert[countryID])) {
+          advTotal++;
+          if (this.isActionCompleted(x, countryID)) {
+            advGreen++;
+          }
         }
       }
       if (x.type == ActionType.chs) {
-        chsTotal++;
-        if (this.isActionCompleted(x, countryID)) {
-          chsGreen++;
+        if (!x.isArchived) {
+          chsTotal++;
+          if (this.isActionCompleted(x, countryID)) {
+            chsGreen++;
+          }
         }
       }
     }
     minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
     this.percentageCHS[countryID] = chsTotal == 0 ? 0 : (chsGreen * 100) / chsTotal;
+    
+    minPrepPercentage = Math.round(minPrepPercentage);
+    advPrepPercentage = Math.round(advPrepPercentage);
+    this.percentageCHS[countryID] = Math.round(this.percentageCHS[countryID]);
     
     if (minTotal == 0) {
       this.mpaStatusColors[countryID] = 'grey';
@@ -309,15 +319,13 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewCountry(countryId) {
-    if(this._userType == UserType.CountryAdmin)
-    {
       this.router.navigate(["/dashboard/dashboard-overview", {
         "countryId": countryId,
         "isViewing": true,
         "agencyId": this._agencyId,
         "systemId": this._systemId,
+        "isDirector": this._userType === UserType.RegionalDirector || this._userType === UserType.GlobalDirector,
         "canCopy": true
       }]);
-    }
   }
 }

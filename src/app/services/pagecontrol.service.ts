@@ -142,7 +142,8 @@ export class PageControlService {
     "response-plans*",
     "country-admin*",
     "dashboard/review-response-plan*",
-    "new-user-password"
+    "new-user-password",
+    "dashboard/dashboard-overview*"
   ]);
   public static RegionalDirector = PageUserType.create(UserType.RegionalDirector, "director", [
     "director*",
@@ -153,7 +154,8 @@ export class PageControlService {
     "response-plans*",
     "country-admin*",
     "dashboard/review-response-plan*",
-    "new-user-password"
+    "new-user-password",
+    "dashboard/dashboard-overview*"
   ]);
   public static CountryDirector = PageUserType.create(UserType.CountryDirector, "dashboard", [
     "dashboard*",
