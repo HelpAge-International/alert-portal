@@ -59,18 +59,18 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["countryId"]) {
-              this.countryIdReceived = params["countryId"];
-              this.agencyIdReceived = params["agencyId"];
-              this.loadData();
-            }
-          });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.systemAdminId = systemId;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["countryId"]) {
+            this.countryIdReceived = params["countryId"];
+            this.agencyIdReceived = params["agencyId"];
+            this.loadData();
+          }
+        });
     });
   }
 
@@ -173,11 +173,12 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
       this.agencyService.getAllCountryOffices()
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencies => {
-          agencies = agencies.filter(agency => agency.$key != this.agencyIdReceived);
+          // agencies = agencies.filter(agency => agency.$key != this.agencyIdReceived);
           agencies.forEach(agency => {
             let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
               let temp = agency[key];
               temp["countryId"] = key;
+              temp["agencyId"] = agency.$key;
               return temp;
             });
             countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
@@ -293,6 +294,16 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
       });
     });
     return promise;
+  }
+
+  overviewCountry(country) {
+    console.log(country)
+    // this.router.navigate(["/director/director-overview", {
+    //   "countryId": country.countryId,
+    //   "isViewing": true,
+    //   "agencyId": country.agencyId,
+    //   "systemId": this.systemAdminId
+    // }]);
   }
 
   private getPercenteActions(actions: any, countryId: string) {

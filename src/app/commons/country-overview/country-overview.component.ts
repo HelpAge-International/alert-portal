@@ -33,12 +33,12 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this._agencyId = agencyId;
     this._loadData();
   }
-  
+
   @Input() set agencies(agencies: any){
     this._agencies = agencies;
     this._loadData();
   }
-  
+
   @Input() set systemId(systemId: string){
     this._systemId = systemId;
     this._loadData();
@@ -114,11 +114,11 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     if(this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._countryOfficeData) {
         this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
           this.minTreshold = minTreshold;
-          
+
           this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
             this.advTreshold = advTreshold;
             this._countryOfficeData.forEach(countryOffice => {
-        
+
               if(countryOffice.agencyId) {
                 this._agencyId = countryOffice.agencyId;
               }
@@ -130,7 +130,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               this._getAlertLevel(countryOffice);
 
               this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
-              
+
               this.prepActionService[countryOffice.$key].addUpdater(() => {
                 this.recalculateAll(countryOffice);
               });
@@ -201,7 +201,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
     let minPrepPercentage: number;
     let advPrepPercentage: number;
-  
+
     for (let x of this.prepActionService[countryOffice.$key].actions) {
       if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
@@ -231,11 +231,11 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
     this.percentageCHS[countryID] = chsTotal == 0 ? 0 : (chsGreen * 100) / chsTotal;
-    
+
     minPrepPercentage = Math.round(minPrepPercentage);
     advPrepPercentage = Math.round(advPrepPercentage);
     this.percentageCHS[countryID] = Math.round(this.percentageCHS[countryID]);
-    
+
     if (minTotal == 0) {
       this.mpaStatusColors[countryID] = 'grey';
       this.mpaStatusIcons[countryID] = 'fa-times';
