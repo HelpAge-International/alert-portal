@@ -159,33 +159,14 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlans: any) => {
-        this.getCountApprovalStatus(responsePlans);
+        this.numOfApprovedResponsePlans = 0;
+        responsePlans.forEach(plan => {
+            if(plan.status == ApprovalStatus.Approved){
+              this.numOfApprovedResponsePlans = this.numOfApprovedResponsePlans + 1;
+            }
+        });
       });
   }
-
-  private getCountApprovalStatus(responsePlans: any) {
-    responsePlans.forEach((responsePlan: any) => {
-      var approvals = responsePlan.approval;
-      this.count = 0;
-      this.recursiveParseArray(approvals);
-    });
-  }
-
-  private recursiveParseArray(approvals: any) {
-    for (let A in approvals) {
-      if (typeof (approvals[A]) == 'object') {
-        this.recursiveParseArray(approvals[A]);
-      } else {
-        var approvalStatus = approvals[A];
-        if (approvalStatus == ApprovalStatus.Approved) {
-          this.count = this.count + 1;
-          this.numOfApprovedResponsePlans = this.count;
-        }
-      }
-    }
-  }
-
-
 
   /**
    * Initialisation method for the alerts. Builds the map HazardScenario -> boolean if they're active or not

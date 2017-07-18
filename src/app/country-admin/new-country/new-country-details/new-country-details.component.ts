@@ -58,11 +58,14 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
           this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + "/" + this.countryAdminCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(countryOffice => {
-              // Get the country office location to pre populate the country select
+              console.log(countryOffice);
               this.CountryOfficeAddressModel.location = countryOffice.location;
-
-              // Set the phone prefix
-              this.CountryOfficeAddressModel.phone = '+' + PhonePrefix[Countries[countryOffice.location]];
+              this.CountryOfficeAddressModel.addressLine1 = countryOffice.addressLine1 ? countryOffice.addressLine1 : '';
+              this.CountryOfficeAddressModel.addressLine2 = countryOffice.addressLine2 ? countryOffice.addressLine2 : '';
+              this.CountryOfficeAddressModel.addressLine3 = countryOffice.addressLine3 ? countryOffice.addressLine3 : '';
+              this.CountryOfficeAddressModel.city = countryOffice.city ? countryOffice.city : '';
+              this.CountryOfficeAddressModel.postCode = countryOffice.postCode ? countryOffice.postCode : '';
+              this.CountryOfficeAddressModel.phone = countryOffice.phone ? countryOffice.phone : '+' + PhonePrefix[Countries[countryOffice.location]];
             });
           // If there are any errors raised by firebase, the Country select will not be disabled and will allow user input
         });
