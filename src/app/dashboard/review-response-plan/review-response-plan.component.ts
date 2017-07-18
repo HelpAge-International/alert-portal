@@ -7,6 +7,7 @@ import {UserService} from "../../services/user.service";
 import {ResponsePlanService} from "../../services/response-plan.service";
 import {ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as moment from "moment";
 declare const jQuery: any;
 
 @Component({
@@ -29,6 +30,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private countryDirectorApproval = [];
   private regionalDirectorApproval = [];
   private globalDirectorApproval = [];
+  private accessToken: string;
+  private partnerOrganisationId: string;
   private countryId: string;
   private agencyId: string;
   private userType: number;
@@ -39,27 +42,83 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.auth.uid;
-      this.userType = userType;
-      this.agencyId = agencyId;
-      this.countryId = countryId;
-      // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["isDirector"]) {
-            this.isDirector = params["isDirector"];
-          }
-          if (params["countryId"]) {
-            this.countryId = params["countryId"];
-          }
-          if (params["id"]) {
-            this.responsePlanId = params["id"];
-            this.loadResponsePlan(this.responsePlanId);
-          }
-        });
+    this.route.params
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe((params: Params) => {
+      if (params["token"]) {
+        this.accessToken = params["token"];
+      }
+
+      if (params["countryId"]) {
+        this.countryId = params["countryId"];
+      }
+
+      // if (params["agencyId"]) {
+      //   this.agencyId = params["agencyId"];
+      // }
+
+      if (params["partnerOrganisationId"]) {
+        this.partnerOrganisationId = params["partnerOrganisationId"];
+      }
+
+      if (params["id"]) {
+        this.responsePlanId = params["id"];
+      }
     });
+
+    console.log(this.accessToken);
+    if (this.accessToken) {
+      let invalid = true;
+      //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+      this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((validationToken) => {
+        if (validationToken) {
+          if (this.accessToken === validationToken.token) {
+            let expiry = validationToken.expiry;
+            let currentTime = moment.utc();
+            let tokenExpiryTime = moment.utc(expiry)
+
+            if (currentTime.isBefore(tokenExpiryTime))
+              invalid = false;
+          }
+
+          if (!invalid){
+            this.userType = UserType.PartnerOrganisation;
+            this.uid = this.partnerOrganisationId;
+            this.isDirector = false;
+
+            this.loadResponsePlan(this.responsePlanId);
+          } else {
+            this.navigateToLogin();
+          }
+        } else {
+           this.navigateToLogin();
+        }
+      });
+    } else {
+      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.uid = user.auth.uid;
+        this.userType = userType;
+        this.agencyId = agencyId;
+        this.countryId = countryId;
+        // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["isDirector"]) {
+              this.isDirector = params["isDirector"];
+            }
+            if (params["countryId"]) {
+              this.countryId = params["countryId"];
+            }
+            if (params["id"]) {
+              this.responsePlanId = params["id"];
+              this.loadResponsePlan(this.responsePlanId);
+            }
+          });
+      });
+    }
   }
 
   private loadResponsePlan(responsePlanId: string) {

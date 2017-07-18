@@ -73,11 +73,13 @@ export class ResponsePlanService {
     //     });
     //     return Observable.from(partnerIds);
     //   })
+    let noPartnerUserOrg;
     Observable.from(partnerOrgIds)
       .flatMap(partnerOrgId => {
         return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId);
       })
       .do(partnerOrg => {
+        noPartnerUserOrg = partnerOrg;
         this.validPartnerMap.set(partnerOrg.$key, partnerOrg.isApproved);
       })
       // .flatMap(partnerOrg => {
@@ -126,6 +128,15 @@ export class ResponsePlanService {
           });
         } else {
           console.log("no partner user found!!!!!!!")
+          console.log(noPartnerUserOrg);
+          let updateData = {};
+          updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partnerOrganisation/" + noPartnerUserOrg.$key] = ApprovalStatus.WaitingApproval;
+          console.log(updateData);
+          this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+            console.log("update success")
+          }, error => {
+            console.log(error.message);
+          });
         }
       });
     // }
@@ -165,7 +176,7 @@ export class ResponsePlanService {
                 this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
               }
 
-              if (!isApproved) {
+              if (!isApproved && agencyId) {
                 // Send notification to users with Response plan rejected
                 const responsePlanRejectedNotificationSetting = 5;
 
@@ -271,6 +282,8 @@ export class ResponsePlanService {
       return "globalDirector";
     } else if (userType == UserType.PartnerUser) {
       return "partner"
+    } else if (userType == UserType.PartnerOrganisation) {
+      return "partnerOrganisation"
     } else {
       return "";
     }
