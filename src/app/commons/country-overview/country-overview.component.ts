@@ -22,6 +22,7 @@ declare var jQuery: any;
 })
 export class CountryOverviewComponent implements OnInit, OnDestroy {
   private _agencyId: string;
+  private _agencies: string;
   private _systemId: string;
   private _userId: string;
   private _countryOfficeData: any;
@@ -30,6 +31,11 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   @Input() set agencyId(agencyId: string){
     this._agencyId = agencyId;
+    this._loadData();
+  }
+  
+  @Input() set agencies(agencies: any){
+    this._agencies = agencies;
     this._loadData();
   }
   
@@ -80,6 +86,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private prepActionService: PrepActionService[] = [];
   private hazardRedAlert: Map<HazardScenario, boolean>[] = [];
 
+  private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
+
   constructor(private pageControl: PageControlService,
               private agencyService: AgencyService,
               private route: ActivatedRoute,
@@ -104,14 +112,18 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
   }
   _loadData() {
-    if(this._userId && this._userType && this._systemId && this._agencyId && this._countryOfficeData) {
+    if(this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._countryOfficeData) {
         this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
           this.minTreshold = minTreshold;
           
           this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
             this.advTreshold = advTreshold;
-
             this._countryOfficeData.forEach(countryOffice => {
+        
+              if(countryOffice.agencyId) {
+                this._agencyId = countryOffice.agencyId;
+              }
+
               this.prepActionService[countryOffice.$key]= new PrepActionService();
               this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
 

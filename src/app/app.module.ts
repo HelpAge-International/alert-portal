@@ -187,6 +187,7 @@ import {PrepActionService} from "./services/prepactions.service";
 import {SumPipe} from "./utils/pipes/sum.pipe";
 import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
 import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
+import { ActionsService } from "./services/actions.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -320,7 +321,6 @@ const firebaseAuthConfig = {
     ExportStartFundComponent,
     DashboardSeasonalCalendarComponent,
     DashboardUpdateAlertLevelComponent,
-    CountryAgenciesComponent,
     ReviewResponsePlanComponent,
     FacetofaceMeetingRequestComponent,
     CountryStatisticsRibbonComponent,
@@ -368,7 +368,8 @@ const firebaseAuthConfig = {
     DirectorNotificationsComponent,
     DashboardOverviewComponent,
     NewUserPasswordComponent,
-    CountryOverviewComponent
+    CountryOverviewComponent,
+    CountryAgenciesComponent
   ],
   imports: [
     BrowserModule,
@@ -409,7 +410,8 @@ const firebaseAuthConfig = {
     AgencyService,
     StockService,
     PageControlService,
-    ContactService],
+    ContactService,
+    ActionsService],
   bootstrap: [AppComponent]
 })
 

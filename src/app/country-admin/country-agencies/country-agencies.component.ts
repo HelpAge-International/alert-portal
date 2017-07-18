@@ -6,13 +6,12 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
-import {AgencyService} from "../../services/agency-service.service";
+import { AgencyService } from "../../services/agency-service.service";
 
 @Component({
   selector: 'app-country-account-settings',
   templateUrl: './country-agencies.component.html',
   styleUrls: ['./country-agencies.component.css'],
-  providers: [AgencyService]
 })
 
 export class CountryAgenciesComponent implements OnInit, OnDestroy {
@@ -20,40 +19,17 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyID: string;
   private systemAdminID: string;
+  private countryId: string;
+  
+  private countryToShow: any;
   private countryKey: string;
-  private countryOffices: any = [];
-  private countryIDs: string[] = [];
-
+  private countryOffices: any[] = [];
   private countries = Constants.COUNTRIES;
 
-  private alertLevels = Constants.ALERT_LEVELS;
-  private alertColors = Constants.ALERT_COLORS;
-  private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
-
-  private count: number = 0;
-  private countResponsePlans: any = [];
-  private percentageCHS: any = [];
-
-  private filter: any = 'all';
-  private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
-
-  private minTreshold: any = [];
-  private advTreshold: any = [];
-
-  private mpaStatusIcons: any = []
-  private mpaStatusColors: any = []
-  private advStatusIcons: any = [];
-  private advStatusColors: any = [];
-  private agencyLogoPaths: string[] = [];
+  private agencies = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private UserType: number;
-
-  private overallAlertLevels: any = [];
-  private agencyNames: string[] = [];
-  private countryToShow: any;
-  private countryId: string;
-  private alertLevelSelected = AlertLevels.All;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute,
               private af: AngularFire, private router: Router, private userService: UserService,
@@ -79,18 +55,17 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryId => {
         this.countryId = countryId;
-        this._getAgencyID().then(() => {
-          // this._getCountryOfficeByLocation().then(() => {
-          this.getCountry().then(() => {
-            this._getUserInfo().then(() => {
-              this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(() => {
-                
+        this._getSystemAdminID().then(() => {
+          this._getAgencyID().then(() => {
+            this.getCountry().then(() => {
+              this._getUserInfo().then(() => {
+                this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(() => {
+                  
+                });
               });
             });
           });
-        });
-
-
+        })
       });
 
 
@@ -112,7 +87,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-
   _getAgencyID() {
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
@@ -124,36 +98,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
     });
     return promise;
   }
-
-
-  // _getCountryOfficeByLocation() {
-  //   let promise = new Promise((res, rej) => {
-  //     this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
-  //       .takeUntil(this.ngUnsubscribe)
-  //       .subscribe((countryOffices: any) => {
-  //         this.countryOffices = [];
-  //         this.countryIDs = [];
-  //         countryOffices.forEach((countryOffice: any) => {
-  //
-  //           if (this.filter == 'all') {
-  //             if (countryOffice.location == this.countryKey) {
-  //               this.countryIDs.push(countryOffice.$key);
-  //               this.countryOffices.push(countryOffice);
-  //             }
-  //           } else {
-  //             if (countryOffice.location == this.countryKey && parseInt(countryOffice.alertLevel) == this.filter) {
-  //               this.countryOffices.push(countryOffice);
-  //               this.countryIDs.push(countryOffice.$key);
-  //             }
-  //           }
-  //
-  //         });
-  //
-  //         res(true);
-  //       });
-  //   });
-  //   return promise;
-  // }
 
   _getSystemAdminID() {
     let promise = new Promise((res, rej) => {
@@ -188,10 +132,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   // Getting all country offices with the same location in other agencies
   private getCountryOfficesWithSameLocationsInOtherAgencies(getAllAlertLevels: boolean, fromOnInit: boolean) {
     this.countryOffices = [];
-    this.countryIDs = [];
-    this.overallAlertLevels = [];
-    this.agencyNames = [];
-    this.agencyLogoPaths = [];
 
     let promise = new Promise((res, rej) => {
 
@@ -200,53 +140,29 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
         .subscribe(agencies => {
           agencies = agencies.filter(agency => agency.$key != this.agencyID);
           agencies.forEach(agency => {
+            
             let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
               let temp = agency[key];
+              temp["$key"] = key;
               temp["countryId"] = key;
               temp["agencyId"] = agency.$key;
               return temp;
             });
             countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
-            console.log(countries);
 
             if (countries.length > 0) {
-
-              if (getAllAlertLevels) {
-
                 // An agency should only have one country office per country
-                this.countryOffices.push(countries[0]);
-                this.countryIDs.push(countries[0].countryId);
-                this.overallAlertLevels[countries[0].countryId] = countries[0].alertLevel;
-
+                if(!this.countryOffices.find(x => x == countries[0]))
+                {
+                  this.countryOffices.push(countries[0]);
+                }
 
                 this.agencyService.getAgency(agency.$key)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(agency => {
-                    this.agencyNames[countries[0].countryId] = agency.name;
-                    if (agency.logoPath) {
-                      this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
-                    }
+                    this.agencies[countries[0].countryId] = agency;
                   });
 
-              } else {
-
-                if (countries[0].alertLevel == this.alertLevelSelected) {
-
-                  // An agency should only have one country office per country
-                  this.countryOffices.push(countries[0]);
-                  this.countryIDs.push(countries[0].countryId);
-                  this.overallAlertLevels[countries[0].countryId] = countries[0].alertLevel;
-
-                  this.agencyService.getAgency(agency.$key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(agency => {
-                      this.agencyNames[countries[0].countryId] = agency.name;
-                      if (agency.logoPath) {
-                        this.agencyLogoPaths[countries[0].countryId] = agency.logoPath;
-                      }
-                    });
-                }
-              }
             }
             res(true);
           });
