@@ -149,7 +149,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
           .subscribe((responsePlans: any) => {
               this.countResponsePlans[countryOffice.$key] = 0;
               responsePlans.forEach(plan => {
-                  if(plan.status == ApprovalStatus.Approved){
+                  if(plan.status == ApprovalStatus.Approved && plan.isActive == true){
                     this.countResponsePlans[countryOffice.$key] = this.countResponsePlans[countryOffice.$key] + 1;
                   }
               });
