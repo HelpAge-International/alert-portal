@@ -65,6 +65,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.countryId = countryId;
       this.userType = userType;
       this.isAnonym = user && !user.anonymous ? false : true;
+
       if (user) {
         if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
           this.af.auth.logout().then(() => {
@@ -73,19 +74,27 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         }
         if (!user.anonymous) {
           this.uid = user.uid;
+
+          this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryId => {
+              console.log("Printing");
+              console.log(countryId);
+              if (countryId.$value == null) {
+                console.log("came nav");
+                this.router.navigateByUrl(Constants.LOGIN_PATH);
+              }
+            });
+
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(user => {
               this.firstName = user.firstName;
               this.lastName = user.lastName;
             });
-          // this.userService.getUserType(this.uid)
-          //   .takeUntil(this.ngUnsubscribe)
-          //   .subscribe(userType => {
-          //     this.userType = userType;
+
           this.USER_TYPE = Constants.USER_PATHS[userType];
-          //after user type check, start to do the job
-          // if (this.USER_TYPE) {
+
           if (this.userType == UserType.PartnerUser) {
             this.initDataForPartnerUser(agencyId, countryId);
           } else {
@@ -101,8 +110,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               });
             });
           }
-          // }
-          // });
         }
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);

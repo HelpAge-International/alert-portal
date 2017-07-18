@@ -54,7 +54,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private partnersMap = new Map();
   private partnersApprovalMap = new Map<string, string>();
 
-
   private approvalsList: any[] = [];
 
 
@@ -87,18 +86,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         }
       }
     });
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   if (this.isViewing) {
-    //     this.countryId = this.countryIdForViewing;
-    //     this.agencyId = this.agencyIdForViewing;
-    //     this.getResponsePlans(this.countryId);
-    //   } else {
-    //     this.userType = userType;
-    //     let userPath = Constants.USER_PATHS[userType];
-    //     this.getSystemAgencyCountryIds(userPath);
-    //   }
-    // });
   }
 
   private getSystemAgencyCountryIds(userPath: string) {
@@ -344,14 +331,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private updatePartnerValidation(countryId: string, approvalData: {}) {
-    //TODO need double check for this
-    // if (this.planToApproval.partnerOrganisations) {
-    //   let partnerData = {};
-    //   this.planToApproval.partnerOrganisations.forEach(item => {
-    //     partnerData[item] = ApprovalStatus.InProgress;
-    //   });
-    //   approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/partner/"] = partnerData;
-    // }
     this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
       console.log("success");
     }, error => {
@@ -479,5 +458,4 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
     }
   }
-
 }
