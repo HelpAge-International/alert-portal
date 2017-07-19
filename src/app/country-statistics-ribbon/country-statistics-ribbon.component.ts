@@ -299,4 +299,10 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  goToCHS(){
+    if(this.userPermissions.minimumPreparedness){
+      this.router.navigate(["/preparedness/minimum", {"isCHS": true}]);
+    }
+  }
 }

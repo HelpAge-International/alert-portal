@@ -354,7 +354,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   getUsersForAssign() {
-    /* TODO if user ERT OR Partner, assign only me */
     if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -368,12 +367,19 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         });
     } else {
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+        let countryAdminId = data.$key;
         for (let userID in data) {
+          if(userID == "$key"){
+            userID = countryAdminId;
+          }else if(userID == "$exists"){
+            return;
+          }
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
             var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
             this.usersForAssign.push(userToPush);
           });
         }
+
       });
     }
   }

@@ -241,10 +241,13 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   selectedSectors(event: any, sectorID: any) {
-
-    // Checking for selected
     var stateElement: boolean = true;
-    var className = event.srcElement.className;
+    var className = "";
+    if(event.target){
+      className = event.target.className;
+    }else{
+      className = event.srcElement.className;
+    }
     const pattern = /.Selected/;
     if (!pattern.test(className)) {
       stateElement = false;

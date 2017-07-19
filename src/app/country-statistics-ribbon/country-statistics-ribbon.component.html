@@ -29,7 +29,7 @@
 
       <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/preparedness/minimum' : '#'}}">
+    <li class="list-inline-item" (click)="goToCHS()">
       <div class="Icon">
         <div class="Icon__circle Icon--{{userPermissions.chsPreparedness ? 'blue' : 'grey'}} Icon--lg">{{userPermissions.chsPreparedness ? chsPrepPercentage : 'N/A'}}%</div>
       </div>
