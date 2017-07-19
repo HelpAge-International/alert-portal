@@ -6,6 +6,7 @@ import {Router, Params, ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-donor-country-index',
@@ -37,7 +38,12 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private agencyService: AgencyService, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private agencyService: AgencyService,
+              private location: Location,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -160,5 +166,9 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  goBack() {
+    this.location.back();
   }
 }
