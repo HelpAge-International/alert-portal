@@ -203,7 +203,8 @@ export class PageControlService {
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*",
-    "dashboard/dashboard-overview*"
+    "dashboard/dashboard-overview*",
+    "new-user-password"
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
     "director*",
