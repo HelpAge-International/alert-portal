@@ -124,6 +124,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.agencyId = params['agencyId'];
         this.agencySelected = true;
       }
+
+      if(params['isCHS']){
+        this.filterType = 0;
+      }
     });
   }
 
@@ -145,7 +149,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          console.log("here******")
           this.uid = user.uid;
           this.assignActionAsignee = this.uid;
           this.userType = userType;
