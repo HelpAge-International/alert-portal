@@ -87,6 +87,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
 
+  private date: number = new Date().getTime();
+
   constructor(private pageControl: PageControlService,
               private agencyService: AgencyService,
               private route: ActivatedRoute,
@@ -275,18 +277,17 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   private isActionCompleted(action: PreparednessAction, countryID) {
-    let date = new Date().getTime();
     if (action.isArchived == true) {
       return false;
     }
     if (action.level == ActionLevel.APA) {
       if (action.isRedAlertActive(this.hazardRedAlert[countryID]) && action.isComplete != null) {
-        return action.isCompleteAt + action.computedClockSetting > date;
+        return action.isCompleteAt + action.computedClockSetting > this.date;
       }
     }
     else if (action.level == ActionLevel.MPA) {
       if (action.isComplete != null) {
-        return action.isCompleteAt + action.computedClockSetting > date;
+        return action.isCompleteAt + action.computedClockSetting > this.date;
       }
     }
     return false;
@@ -307,7 +308,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         "isViewing": true,
         "agencyId": this._agencyId,
         "systemId": this._systemId,
-        "isDirector": this._userType === UserType.RegionalDirector || this._userType === UserType.GlobalDirector,
+        "userType": this._userType,
         "canCopy": true
       }]);
   }

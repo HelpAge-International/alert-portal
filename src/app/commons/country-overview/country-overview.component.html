@@ -39,11 +39,8 @@
             </div>
             <div class="col-sm-2 col-6 Preparedness__agency-list__item">
                 <div class="Icon">
-                    <div *ngIf="countryData.alertLevel != 2" class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[countryData.$key]}} Icon--md">
+                    <div class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[countryData.$key]}} Icon--md">
                         <i class="fa {{advStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                    </div>
-                    <div *ngIf="countryData.alertLevel == 2" class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
-                        <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
                     </div>
                 </div>
                 <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
