@@ -1104,7 +1104,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   doublerCounting() {
     //reset count
-    if (!(this.forEditing)) {
+    if (true) {
       this.numberFemaleLessThan18 = 0;
       this.numberFemale18To50 = 0;
       this.numberFemalegreaterThan50 = 0;
@@ -1138,13 +1138,22 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (!this.isDoubleCountingDone) {
-      this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
-      this.adjustedFemale18To50 = this.numberFemale18To50;
-      this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
-      this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
-      this.adjustedMale18To50 = this.numberMale18To50;
-      this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+    if(this.forEditing && !this.isDoubleCountingDone){
+      this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
+      this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
+      this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
+      this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
+      this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
+      this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
+    }else{
+      if (!this.isDoubleCountingDone) {
+        this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
+        this.adjustedFemale18To50 = this.numberFemale18To50;
+        this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
+        this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
+        this.adjustedMale18To50 = this.numberMale18To50;
+        this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+      }
     }
   }
 
