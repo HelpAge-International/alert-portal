@@ -12,7 +12,7 @@
 
 <div class="Ribbon__section__wrap Spaced" *ngIf="filteredCountryOfficeData && filteredCountryOfficeData.length > 0">
     <div class="Accordion Preparedness__agency-list" *ngFor="let countryData of filteredCountryOfficeData">
-            <div class="row" (click)="overviewCountry(countryData.$key)">
+            <div class="row" (click)="overviewCountry(countryData.$key, countryData.agencyId)">
             <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right" *ngIf="!_agencies">
             <div class="Icon--md Icon--align-center Icon__country" [style.background-image]="getBackground(countryData.location)"></div>
                 <span>{{countries[countryData.location] | translate}}</span>

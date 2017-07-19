@@ -120,9 +120,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
           this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
             this.advTreshold = advTreshold;
             this._countryOfficeData.forEach(countryOffice => {
-
-              if(countryOffice.agencyId) {
-                this._agencyId = countryOffice.agencyId;
+              if(!countryOffice.agencyId) {
+                countryOffice.agencyId = this._agencyId;
               }
 
               this.prepActionService[countryOffice.$key]= new PrepActionService();
@@ -130,8 +129,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
               this._getResponsePlans(countryOffice);
               this._getAlertLevel(countryOffice);
-
-              this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, this._agencyId, this._systemId)
+              
+              this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, countryOffice.agencyId, this._systemId)
 
               this.prepActionService[countryOffice.$key].addUpdater(() => {
                 this.recalculateAll(countryOffice);
@@ -302,11 +301,11 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[location] + '.svg)');
   }
 
-  overviewCountry(countryId) {
+  overviewCountry(countryId, agencyId) {
       this.router.navigate(["/dashboard/dashboard-overview", {
         "countryId": countryId,
         "isViewing": true,
-        "agencyId": this._agencyId,
+        "agencyId": agencyId,
         "systemId": this._systemId,
         "userType": this._userType,
         "canCopy": true
