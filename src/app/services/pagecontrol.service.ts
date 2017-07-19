@@ -202,7 +202,8 @@ export class PageControlService {
     "new-user-password"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
-    "donor-module*"
+    "donor-module*",
+    "new-user-password"
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
     "director*",
