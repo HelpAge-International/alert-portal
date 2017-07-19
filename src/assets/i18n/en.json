@@ -961,6 +961,7 @@
         },
         "SETTINGS": {
             "TITLE_TEXT": "Country Office Settings",
+            "MODULE": "Module",
             "MENU": {
                 "PERMISSIONS": "Permissions",
                 "MODULES": "Modules",
