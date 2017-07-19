@@ -16,8 +16,9 @@ import {PageControlService} from "../../services/pagecontrol.service";
 })
 
 export class DonorListViewComponent implements OnInit, OnDestroy {
+  private displayCountries: any[];
 
-  private loaderInactive: boolean;
+  private loaderInactive: boolean = true;
 
   private uid: string;
   private agencyId: string;
@@ -61,20 +62,11 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-
-        this.userService.getAgencyId('donor', this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(agencyId => {
-            this.agencyId = agencyId;
-            this.userService.getSystemAdminId('donor', this.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(systemAdminId => {
-                this.systemAdminId = systemAdminId;
-                this.loadData();
-              });
-          });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.systemAdminId = systemId;
+      this.loadData();
     });
   }
 
@@ -112,20 +104,46 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
    */
 
   private loadData() {
+    // this.userService.getAllCountryIdsForAgency(this.agencyId)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(countryIds => {
+    //     this.countryIds = countryIds;
+    //
+    //     this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
+    //       .takeUntil(this.ngUnsubscribe)
+    //       .subscribe(countryAlertLevels => {
+    //         this.overallAlertLevels = countryAlertLevels;
+    //         this.initData();
+    //       });
+    //   });
 
-    console.log("Agency Admin ---- " + this.agencyId);
-    console.log("System Admin ---- " + this.systemAdminId);
-    this.userService.getAllCountryIdsForAgency(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(countryIds => {
-        this.countryIds = countryIds;
-
-        this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(countryAlertLevels => {
-            this.overallAlertLevels = countryAlertLevels;
-            this.initData();
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
+      .map(snap => {
+        let displayCountries = [];
+        if (snap && snap.val()) {
+          let countryObjects = Object.keys(snap.val()).map(key => {
+            let countryWithAgencyId = snap.val()[key];
+            countryWithAgencyId["agencyId"] = key;
+            return countryWithAgencyId;
           });
+          countryObjects.forEach(item => {
+            let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
+              let country = item[key];
+              country["countryId"] = key;
+              country["agencyId"] = item.agencyId;
+              return country;
+            });
+            countries.forEach(country => {
+              displayCountries.push(country);
+            });
+          });
+        }
+        return displayCountries;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countries => {
+        console.log(countries);
+        this.displayCountries = countries;
       });
 
   }

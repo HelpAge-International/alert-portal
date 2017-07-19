@@ -44,7 +44,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   @ViewChild("globalMap") globalMap: ElementRef;
   private hazardMap = new Map<number, Set<number>>();
   private countryLocationMap = new Map<string, number>();
-  private countryAgencyRefMap = new Map<number,any>();
+  private countryAgencyRefMap = new Map<number, any>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
@@ -65,31 +65,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.userTypePath = Constants.USER_PATHS[userType];
-
-      // this.mapHelper.initMapFrom("global-map", this.uid, Constants.USER_PATHS[userType],
-      //   (departments) => {
-      //     this.mDepartmentMap = departments;
-      //     this.departments = [];
-      //     this.minThreshYellow = this.mapHelper.minThreshYellow;
-      //     this.minThreshGreen = this.mapHelper.minThreshGreen;
-      //     this.mDepartmentMap.forEach((value, key) => {
-      //       this.departments.push(value);
-      //     });
-      //     this.loaderInactive = true;
-      //   },
-      //   (mapCountryClicked) => {
-      //     if (this.mDepartmentMap != null) {
-      //       let countryIdToSend: string = this.mDepartmentMap.get(mapCountryClicked).countryId;
-      //       this.router.navigate(["donor-module/donor-country-index", {
-      //         countryId: countryIdToSend,
-      //         agencyId: this.mapHelper.agencyAdminId
-      //       }]);
-      //     }
-      //     else {
-      //       // Map country behaviour broken. Do nothing.
-      //     }
-      //   }
-      // );
     });
   }
 
@@ -132,25 +107,12 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       .subscribe(allLocations => {
         this.doneWithEmbeddedStyles(country => {
           let navRef = this.countryAgencyRefMap.get(Countries[country]);
-          this.router.navigate(["donor-module/donor-country-index",{"countryId":navRef.countryId,"agencyId":navRef.agencyId}]);
+          this.router.navigate(["donor-module/donor-country-index", {
+            "countryId": navRef.countryId,
+            "agencyId": navRef.agencyId
+          }]);
         }, allLocations);
       });
-
-    // let position = 0;
-    // this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(0)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-    //   if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-    //     let pos = {
-    //       lng: geoResult[0].geometry.location.lng() + position,
-    //       lat: geoResult[0].geometry.location.lat()
-    //     };
-    //     let marker = new google.maps.Marker({
-    //       position: pos,
-    //       icon: HazardImages.init().get(1)
-    //     });
-    //     marker.setMap(this.map);
-    //     position += 1.2;
-    //   }
-    // });
   }
 
   private getHazardInfo(country: any) {
