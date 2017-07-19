@@ -8,6 +8,7 @@ import {Constants} from "../../utils/Constants";
 import {Countries, AlertLevels} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {HazardImages} from "../../utils/HazardImages";
 
 @Component({
   selector: 'app-donor-list-view',
@@ -16,9 +17,13 @@ import {PageControlService} from "../../services/pagecontrol.service";
 })
 
 export class DonorListViewComponent implements OnInit, OnDestroy {
-  private displayCountries: any[];
+  private displayCountries: number[] = [];
+  private hazardMap = new Map<number, Set<number>>();
+  private countryLocationMap = new Map<string, number>();
+  private countryAgencyRefMap = new Map<number, any>();
+  private HazardScenario = Constants.HAZARD_SCENARIOS;
 
-  private loaderInactive: boolean = true;
+  private loaderInactive: boolean;
 
   private uid: string;
   private agencyId: string;
@@ -104,22 +109,10 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
    */
 
   private loadData() {
-    // this.userService.getAllCountryIdsForAgency(this.agencyId)
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(countryIds => {
-    //     this.countryIds = countryIds;
-    //
-    //     this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe(countryAlertLevels => {
-    //         this.overallAlertLevels = countryAlertLevels;
-    //         this.initData();
-    //       });
-    //   });
 
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
       .map(snap => {
-        let displayCountries = [];
+        let locations = [];
         if (snap && snap.val()) {
           let countryObjects = Object.keys(snap.val()).map(key => {
             let countryWithAgencyId = snap.val()[key];
@@ -134,16 +127,26 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
               return country;
             });
             countries.forEach(country => {
-              displayCountries.push(country);
+              locations.push(country.location);
+              this.hazardMap.set(Number(country.location), new Set<number>());
+              this.countryAgencyRefMap.set(Number(country.location), country);
+            });
+            countries.forEach(country => {
+              this.getHazardInfo(country);
             });
           });
         }
-        return displayCountries;
+        return locations;
       })
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(countries => {
-        console.log(countries);
-        this.displayCountries = countries;
+      .subscribe(allLocations => {
+        this.loaderInactive = true;
+        this.displayCountries = [];
+        allLocations.forEach(location => {
+          if (!this.displayCountries.includes(location)) {
+            this.displayCountries.push(location);
+          }
+        });
       });
 
   }
@@ -156,6 +159,38 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
     this.getThresholds().then(_ => {
       this.loaderInactive = true;
     });
+  }
+
+  private getHazardInfo(country: any) {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(country => {
+        this.countryLocationMap.set(country.$key, Number(country.location));
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(hazards => {
+            hazards.forEach(hazard => {
+              let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
+              this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
+            });
+          });
+      });
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  getHazardsForCountry(location) {
+    return Array.from(this.hazardMap.get(location));
+  }
+
+  seeCountryIndex(location) {
+    let navRef = this.countryAgencyRefMap.get(location);
+    this.router.navigate(["donor-module/donor-country-index", {
+      "countryId": navRef.countryId,
+      "agencyId": navRef.agencyId
+    }]);
   }
 
   private getAllRegionsAndCountries() {
