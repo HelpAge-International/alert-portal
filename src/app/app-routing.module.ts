@@ -106,7 +106,6 @@ import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-pr
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import {DonorAccountSettingsComponent} from "./donor-module/donor-account-settings/donor-account-settings.component";
 import {DonorChangePasswordComponent} from "./donor-module/donor-account-settings/donor-change-password/donor-change-password.component";
-import {NewDonorPasswordComponent} from "./donor-module/new-donor-password/new-donor-password.component";
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import {CountryOfficeDocumentsComponent} from "./country-admin/country-office-profile/documents/documents.component";
 import {CountryNotificationsComponent} from "./country-admin/country-notifications/country-notifications.component";
@@ -337,7 +336,6 @@ const routes: Routes = [
   {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
   {path: 'donor-module/donor-account-settings', component: DonorAccountSettingsComponent},
   {path: 'donor-module/donor-account-settings/donor-change-password', component: DonorChangePasswordComponent},
-  {path: 'donor-module/donor-account-settings/new-donor-password', component: NewDonorPasswordComponent},
   {path: 'donor-module/donor-notifications', component: DonorNotificationsComponent},
 
   /**

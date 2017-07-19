@@ -161,7 +161,6 @@ import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-p
 import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
 import {DonorChangePasswordComponent} from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
-import {NewDonorPasswordComponent} from './donor-module/new-donor-password/new-donor-password.component';
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
 import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
@@ -348,7 +347,6 @@ const firebaseAuthConfig = {
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
-    NewDonorPasswordComponent,
     BudgetReportComponent,
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
