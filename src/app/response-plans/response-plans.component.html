@@ -71,9 +71,8 @@
                     <div
                       *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)])"
                       class="col-12 text-left text-warning">
-                      {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
-                      translate}}<i
-                      class="fa fa-exclamation-circle text-right" aria-hidden="true"></i></div>
+                      {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" | translate}}
+                      <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i></div>
 
                     <div
                       *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 1"
@@ -217,7 +216,7 @@
                   </div>
                   <div class="col-sm-9">
                     <div>{{note.content}}</div>
-                    <div><b>by {{getName(note.uploadBy)}}</b></div>
+                    <div><b>by {{note.uploadByName}}</b></div>
                   </div>
                 </div>
               </div>

@@ -29,6 +29,26 @@ export class PartnerOrganisationService {
       return partnerOrganisationSubscription;
   }
 
+  getApprovedCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
+    let partnerOrganisationsList: PartnerOrganisationModel[] = [];
+    const partnerOrganisationSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+        .flatMap(partnerOrganisations => {
+          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        })
+        .flatMap( organisationId => {
+          return this.getPartnerOrganisation(organisationId as string);
+        })
+        .map( organisation => {
+          if (organisation.isApproved) {
+            partnerOrganisationsList.push(organisation);
+          }
+          return partnerOrganisationsList;
+        })
+
+    return partnerOrganisationSubscription;
+  }
+
   getPartnerOrganisations(): Observable<PartnerOrganisationModel[]> {
 
     const partnerOrganisationsSubscription = this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation')

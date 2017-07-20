@@ -29,11 +29,6 @@ export class ResponsePlanService {
   submitForPartnerValidation(plan, countryId) {
     console.log("submitForPartnerValidation");
     this.updatePartnerValidation(plan, countryId);
-    // this.userService.getUserType(uid)
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(user => {
-    //     this.updatePartnerValidation(uid, user, plan, countryId);
-    //   });
   }
 
   needShowWaringBypassValidation(plan) {
@@ -49,77 +44,48 @@ export class ResponsePlanService {
 
   private updatePartnerValidation(plan: any, passedCountryId: string) {
     console.log(plan.$key);
+    const orgUserMap = new Map<string, string>();
     const needValidResponsePlanId = plan.$key;
-    // const paths: string[] = [, , Constants.APP_STATUS + "/directorRegion/",
-    //   Constants.APP_STATUS + "/directorCountry/", , , , , Constants.APP_STATUS + "/administratorCountry/",]
-    // if (user == UserType.CountryAdmin) {
-    // let countryId = "";
-    // this.userService.getCountryId(Constants.USER_PATHS[user], uid)
-    // // this.af.database.object(paths[user] + uid)
-    //   .flatMap(fetchedCountryId => {
-    //     countryId = fetchedCountryId;
-    //     return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key)
-    //   })
+
     let partnerOrgIds = [];
     plan.partnerOrganisations.forEach(partnerOrg => {
       partnerOrgIds.push(partnerOrg);
     });
-    // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key)
-    //   .flatMap(responsePlan => {
-    //     this.responsePlan = responsePlan;
-    //     let partnerIds = [];
-    //     responsePlan.partnerOrganisations.forEach(partner => {
-    //       partnerIds.push(partner);
-    //     });
-    //     return Observable.from(partnerIds);
-    //   })
+
     let noPartnerUserOrg;
+
     Observable.from(partnerOrgIds)
       .flatMap(partnerOrgId => {
-        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId);
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId, {preserveSnapshot: true});
       })
-      .do(partnerOrg => {
-        noPartnerUserOrg = partnerOrg;
-        this.validPartnerMap.set(partnerOrg.$key, partnerOrg.isApproved);
+      .do(snap => {
+        if (snap && snap.val()) {
+          noPartnerUserOrg = snap.val();
+          noPartnerUserOrg["key"] = snap.key;
+          this.validPartnerMap.set(snap.key, snap.val().isApproved);
+        }
       })
-      // .flatMap(partnerOrg => {
-      //   let partnerIds = [];
-      //   if (partnerOrg.partners) {
-      //     partnerIds = Object.keys(partnerOrg.partners);
-      //   }
-      //   return Observable.from(partnerIds);
-      // })
-      .flatMap(partnerOrg => {
-        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerOrg.validationPartnerUserId)
+      .flatMap(snap => {
+        if (snap && snap.val()) {
+          orgUserMap.set(snap.key, "");
+          return this.af.database.object(Constants.APP_STATUS + "/partner/" + snap.val().validationPartnerUserId, {preserveSnapshot: true})
+            .map(snap => {
+              if (snap && snap.val()) {
+                snap.val()["orgId"] = snap.key;
+                return snap;
+              }
+            });
+        }
       })
-      // .map(partner => {
-      //   if (partner.hasValidationPermission) {
-      //     return partner;
-      //   }
-      //   return null;
-      // })
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(partnerObject => {
-        if (partnerObject) {
-          console.log(partnerObject);
-          // console.log(this.validPartnerMap);
-          // console.log(this.responsePlan);
-          // let approvalData = {};
-          // if (this.responsePlan.approval) {
-          //   approvalData = this.responsePlan.approval;
-          // }
-          // let partnerData = {};
-          // this.responsePlan.partnerOrganisations.forEach(partnerId => {
-          //   if (this.validPartnerMap.get(partnerId)) {
-          //     partnerData[partnerId] = ApprovalStatus.WaitingApproval;
-          //   }
-          // });
-          // approvalData["partner"] = partnerData;
-          //
+      .subscribe(snap => {
+        console.log(snap);
+        if (snap && snap.val()) {
+          console.log(snap.val());
+          orgUserMap.set(snap.val().partnerOrganisationId, snap.key);
+
           let updateData = {};
-          // updateData["/responsePlan/" + passedCountryId + "/" + plan.$key + "/approval/"] = approvalData;
-          // updateData["/responsePlan/" + countryId + "/" + plan.$key + "/status/"] = ApprovalStatus.WaitingApproval;
-          updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + partnerObject.$key] = ApprovalStatus.WaitingApproval;
+          updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + snap.key] = ApprovalStatus.WaitingApproval;
           console.log(updateData);
           this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
             console.log("update success")
@@ -129,8 +95,13 @@ export class ResponsePlanService {
         } else {
           console.log("no partner user found!!!!!!!")
           console.log(noPartnerUserOrg);
+          console.log(orgUserMap);
           let updateData = {};
-          updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partnerOrganisation/" + noPartnerUserOrg.$key] = ApprovalStatus.WaitingApproval;
+          orgUserMap.forEach((v, k) => {
+            if (!v) {
+              updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval;
+            }
+          });
           console.log(updateData);
           this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
             console.log("update success")
@@ -146,7 +117,7 @@ export class ResponsePlanService {
     return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId);
   }
 
-  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector, responsePlanName, agencyId) {
+  updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector, responsePlanName, agencyId, hasToken) {
     let approvalName = this.getUserTypeName(userType);
     console.log("USER TYPE ---- " + Constants.USER_PATHS[userType]);
     if (approvalName) {
@@ -164,6 +135,7 @@ export class ResponsePlanService {
           .take(1)
           .subscribe(result => {
             if (result) {
+              let hasCountryDirector = Object.keys(result).includes("countryDirector");
               let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
               let waitingApprovalList = [];
               approvePair.forEach(item => {
@@ -171,7 +143,7 @@ export class ResponsePlanService {
                 waitingApprovalList = waitingApprovalList.concat(waiting);
               });
 
-              if (waitingApprovalList.length == 0) {
+              if (waitingApprovalList.length == 0 && hasCountryDirector) {
                 // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
                 this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
               }
@@ -189,85 +161,37 @@ export class ResponsePlanService {
               }
 
               if (rejectNoteContent) {
-                this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
+                this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector, hasToken);
               } else {
-                isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+                if (hasToken) {
+                  this.router.navigateByUrl(Constants.LOGIN_PATH);
+                } else {
+                  isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+                }
               }
             }
           });
-
-        // if (!isApproved) {
-        //   // Send notification to users with Response plan rejected
-        //   const responsePlanRejectedNotificationSetting = 5;
-        //
-        //   let notification = new MessageModel();
-        //   notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
-        //   notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
-        //   notification.time = new Date().getTime();
-        //
-        //   this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
-        // }
-        //
-        // if (rejectNoteContent) {
-        //   this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
-        // } else {
-        //   isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
-        // }
       }, error => {
         console.log(error.message);
       });
 
-      // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
-      //   .take(1)
-      //   .subscribe(result => {
-      //     if (result) {
-      //       let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
-      //       let waitingApprovalList = [];
-      //       approvePair.forEach(item => {
-      //         let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
-      //         waitingApprovalList = waitingApprovalList.concat(waiting);
-      //       });
-      //
-      //       if (waitingApprovalList.length == 0) {
-      //         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
-      //       }
-      //
-      //       // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-      //       //   if (!isApproved) {
-      //       //     // Send notification to users with Response plan rejected
-      //       //     const responsePlanRejectedNotificationSetting = 5;
-      //       //
-      //       //     let notification = new MessageModel();
-      //       //     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_TITLE", {responsePlan: responsePlanName});
-      //       //     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_REJECTED_CONTENT", {responsePlan: responsePlanName});
-      //       //     notification.time = new Date().getTime();
-      //       //
-      //       //     this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, responsePlanRejectedNotificationSetting, agencyId, countryId);
-      //       //   }
-      //       //
-      //       //   if (rejectNoteContent) {
-      //       //     this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector);
-      //       //   } else {
-      //       //     isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
-      //       //   }
-      //       // }, error => {
-      //       //   console.log(error.message);
-      //       // });
-      //     }
-      //   });
 
     } else {
       console.log("user type returned data is empty");
     }
   }
 
-  private addResponsePlanRejectNote(uid, responsePlanId, content, isDirector) {
+  private addResponsePlanRejectNote(uid, responsePlanId, content, isDirector, hasToken) {
     let note = {};
     note["content"] = content;
     note["time"] = Date.now();
     note["uploadBy"] = uid;
     this.af.database.list(Constants.APP_STATUS + "/note/" + responsePlanId).push(note).then(() => {
-      isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+      if (hasToken) {
+        this.router.navigateByUrl(Constants.LOGIN_PATH);
+      } else {
+        isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+      }
     }, error => {
       console.log(error.message)
     });

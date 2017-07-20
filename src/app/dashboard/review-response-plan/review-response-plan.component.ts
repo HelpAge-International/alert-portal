@@ -43,59 +43,59 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params
-    .takeUntil(this.ngUnsubscribe)
-    .subscribe((params: Params) => {
-      if (params["token"]) {
-        this.accessToken = params["token"];
-      }
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["token"]) {
+          this.accessToken = params["token"];
+        }
 
-      if (params["countryId"]) {
-        this.countryId = params["countryId"];
-      }
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
 
-      // if (params["agencyId"]) {
-      //   this.agencyId = params["agencyId"];
-      // }
+        // if (params["agencyId"]) {
+        //   this.agencyId = params["agencyId"];
+        // }
 
-      if (params["partnerOrganisationId"]) {
-        this.partnerOrganisationId = params["partnerOrganisationId"];
-      }
+        if (params["partnerOrganisationId"]) {
+          this.partnerOrganisationId = params["partnerOrganisationId"];
+        }
 
-      if (params["id"]) {
-        this.responsePlanId = params["id"];
-      }
-    });
+        if (params["id"]) {
+          this.responsePlanId = params["id"];
+        }
+      });
 
     console.log(this.accessToken);
     if (this.accessToken) {
       let invalid = true;
       //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
       this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((validationToken) => {
-        if (validationToken) {
-          if (this.accessToken === validationToken.token) {
-            let expiry = validationToken.expiry;
-            let currentTime = moment.utc();
-            let tokenExpiryTime = moment.utc(expiry)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((validationToken) => {
+          if (validationToken) {
+            if (this.accessToken === validationToken.token) {
+              let expiry = validationToken.expiry;
+              let currentTime = moment.utc();
+              let tokenExpiryTime = moment.utc(expiry)
 
-            if (currentTime.isBefore(tokenExpiryTime))
-              invalid = false;
-          }
+              if (currentTime.isBefore(tokenExpiryTime))
+                invalid = false;
+            }
 
-          if (!invalid){
-            this.userType = UserType.PartnerOrganisation;
-            this.uid = this.partnerOrganisationId;
-            this.isDirector = false;
+            if (!invalid) {
+              this.userType = UserType.PartnerOrganisation;
+              this.uid = this.partnerOrganisationId;
+              this.isDirector = false;
 
-            this.loadResponsePlan(this.responsePlanId);
+              this.loadResponsePlan(this.responsePlanId);
+            } else {
+              this.navigateToLogin();
+            }
           } else {
             this.navigateToLogin();
           }
-        } else {
-           this.navigateToLogin();
-        }
-      });
+        });
     } else {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.auth.uid;
@@ -122,8 +122,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlan(responsePlanId: string) {
-    // if (this.isDirector) {
-    // this.userType = UserType.GlobalDirector;
     console.log(this.countryId);
     this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
       .takeUntil(this.ngUnsubscribe)
@@ -131,25 +129,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         this.loadedResponseplan = responsePlan;
         this.handlePlanApproval(this.loadedResponseplan);
       });
-    // }
-    // else {
-    //   // this.userService.getUserType(this.uid)
-    //   //   .flatMap(userType => {
-    //   //     this.userType = userType;
-    //   //     return this.userService.getCountryId(Constants.USER_TYPE_PATH[userType], this.uid)
-    //   //   })
-    //   //   .takeUntil(this.ngUnsubscribe)
-    //   //   .subscribe(countryId => {
-    //   //     this.countryId = countryId;
-    //   this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe(responsePlan => {
-    //       this.loadedResponseplan = responsePlan;
-    //       this.handlePlanApproval(this.loadedResponseplan);
-    //     });
-    //   // })
-    // }
-
   }
 
   private handlePlanApproval(responsePlan) {
@@ -167,11 +146,25 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         });
         console.log(this.partnerApproveList);
         this.partnerApproveList.forEach(partner => {
-          this.userService.getUser(partner.id)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(user => {
-              partner.name = user.firstName + " " + user.lastName;
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + partner.id, {preserveSnapshot: true})
+            .take(1)
+            .subscribe(snap => {
+              if (snap.val()) {
+                this.userService.getUser(partner.id)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(user => {
+                    console.log(user)
+                    partner.name = user.firstName + " " + user.lastName;
+                  });
+              } else {
+                this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partner.id)
+                  .first()
+                  .subscribe(org => {
+                    partner.name = org.organisationName;
+                  });
+              }
             });
+
         })
       }
 
@@ -211,7 +204,11 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   approvePlan() {
-    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId);
+    if (this.accessToken) {
+      this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+    } else {
+      this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+    }
   }
 
   rejectPlan() {
@@ -230,7 +227,11 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   confirmReject() {
     jQuery("#rejectPlan").modal("hide");
-    this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId);
+    if (this.accessToken) {
+      this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+    } else {
+      this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+    }
   }
 
   ngOnDestroy() {

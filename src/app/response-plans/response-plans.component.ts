@@ -70,7 +70,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
+      this.uid = user.auth.uid;
       if (this.isViewing) {
         this.countryId = this.countryIdForViewing;
         this.agencyId = this.agencyIdForViewing;
@@ -106,14 +106,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private getResponsePlans(id: string) {
     /*Active Plans*/
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" +id).subscribe(plans => {
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id).subscribe(plans => {
       this.activePlans = [];
-       plans.forEach(plan => {
-         if(plan.isActive){
-           this.activePlans.push(plan);
-           this.getNotes(plan);
-           }
-       });
+      plans.forEach(plan => {
+        if (plan.isActive) {
+          this.activePlans.push(plan);
+          this.getNotes(plan);
+        }
+      });
       this.checkHaveApprovedPartners(this.activePlans);
       this.getNeedToApprovedPartners(this.activePlans);
     });
@@ -135,10 +135,19 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       if (plan.partnerOrganisations) {
         let partnerOrgIds = Object.keys(plan.partnerOrganisations).map(key => plan.partnerOrganisations[key]);
         partnerOrgIds.forEach(partnerOrgId => {
-          this.service.getPartnerBasedOnOrgId(partnerOrgId)
+          //check has user or not first
+          this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(partnerId => {
-              this.partnersApprovalMap.set(partnerOrgId, partnerId)
+            .subscribe(org => {
+              if (org.partners) {
+                this.service.getPartnerBasedOnOrgId(partnerOrgId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(partnerId => {
+                    this.partnersApprovalMap.set(partnerOrgId, partnerId);
+                  });
+              } else {
+                this.partnersApprovalMap.set(org.$key, org.$key);
+              }
             });
         })
       }
@@ -184,10 +193,19 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   getName(id) {
     let name = "";
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        name = user.firstName + " " + user.lastName;
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id, {preserveSnapshot: true})
+      .first()
+      .subscribe(snap => {
+        if (snap.val()) {
+          let user = snap.val();
+          name = user.firstName + " " + user.lastName;
+        } else {
+          this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
+            .first()
+            .subscribe(org => {
+              name = org.organisationName;
+            })
+        }
       });
 
     return name;
@@ -428,44 +446,63 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   activatePlan(plan) {
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
-      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
-        .map(list => {
-          let newList = [];
-          list.forEach(item => {
-            let data = {};
-            data[item.$key] = Object.keys(item)[0];
-            newList.push(data);
-          });
-          return newList;
-        })
-        .first()
-        .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
-        for (let approval of approvalList) {
-          if (approval["countryDirector"]) {
-            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
-              .set(ApprovalStatus.NeedsReviewing);
-          }
-          if (approval["regionDirector"]) {
-            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
-              .set(ApprovalStatus.NeedsReviewing);
-          }
-          if (approval["globalDirector"]) {
-            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
-              .set(ApprovalStatus.NeedsReviewing);
-          }
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
+      .map(list => {
+        let newList = [];
+        list.forEach(item => {
+          let data = {};
+          data[item.$key] = Object.keys(item)[0];
+          newList.push(data);
+        });
+        return newList;
+      })
+      .first()
+      .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
+      for (let approval of approvalList) {
+        if (approval["countryDirector"]) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
+            .set(ApprovalStatus.NeedsReviewing);
         }
-      });
+        if (approval["regionDirector"]) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
+            .set(ApprovalStatus.NeedsReviewing);
+        }
+        if (approval["globalDirector"]) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
+            .set(ApprovalStatus.NeedsReviewing);
+        }
+      }
+    });
   }
 
   getNotes(plan) {
     if (plan.status == ApprovalStatus.NeedsReviewing) {
       this.af.database.list(Constants.APP_STATUS + "/note/" + plan.$key)
-        .first()
-        .takeUntil(this.ngUnsubscribe).subscribe(list => {
-        this.notesMap.set(plan.$key, list);
-      });
+        .do(list => {
+          list.forEach(note => {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + note.uploadBy, {preserveSnapshot: true})
+              .first()
+              .subscribe(snap => {
+                if (snap.val()) {
+                  let user = snap.val();
+                  note["uploadByName"] = user.firstName + " " + user.lastName;
+                } else {
+                  this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + note.uploadBy)
+                    .first()
+                    .subscribe(org => {
+                      note["uploadByName"] = org.organisationName;
+                    })
+                }
+              });
+          })
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(list => {
+          console.log(list);
+          this.notesMap.set(plan.$key, list);
+        });
     }
   }
 
