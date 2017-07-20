@@ -276,7 +276,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
-      // TODO: FIGURE OUT HOW THIS IS GOING TO BE EDITING
       this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
       this.assignActionId = action.id;
@@ -290,13 +289,19 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
-        // Send notification to the assignee
-        let notification = new MessageModel();
-        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: this.assignActionTask});
-        notification.time = new Date().getTime();
-        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-        });
+
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId +"/task").takeUntil(this.ngUnsubscribe)
+          .subscribe(task => {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task? task.$value : ''});
+            console.log(notification.content);
+
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+            });
+          });
       });
     this.closeModal();
   }

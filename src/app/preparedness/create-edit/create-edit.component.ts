@@ -432,7 +432,10 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             let notification = new MessageModel();
             const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", { actionName: updateObj.task});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", { actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+            console.log("Updating:");
+            console.log(notification.content);
+
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
           }
@@ -455,6 +458,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
             notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: updateObj.task});
+            console.log("Updating:");
+            console.log(notification.content);
+
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
           }

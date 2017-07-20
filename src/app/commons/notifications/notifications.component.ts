@@ -28,6 +28,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   private messages: MessageModel[] = []
   private messageToDeleteID;
+  private deleteMessageContent: string;
+  private doDeleteAll: boolean = false;
 
   @Input() set USER_TYPE(USER_TYPE: string){
     this._USER_TYPE = USER_TYPE;
@@ -66,99 +68,141 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
+
+  deleteAllMessages(){
+    console.log("Delete all messages");
+    this.doDeleteAll = true;
+    jQuery("#delete-message").modal("show");
+    this.deleteMessageContent = 'DELETE_MESSAGE_DIALOG.ALL_MSG_CONTENT';
+  }
+
   deleteMessage(messageID: string) {
     if (!messageID) {
       console.log('messageId is required!');
       return;
     }
+    this.doDeleteAll = false;
     this.messageToDeleteID = messageID;
     jQuery("#delete-message").modal("show");
+    this.deleteMessageContent = 'DELETE_MESSAGE_DIALOG.SINGLE_MSG_CONTENT';
   }
 
   deleteAction() {
     this.closeModal();
 
+    if(this.doDeleteAll){
+      this.messages.forEach(message => {
+        this.messageToDeleteID = message.id;
+        this.messages = [];
+        this.deleteSingleMsg();
+      });
+    }else{
+      this.deleteSingleMsg();
+    }
+  }
+
+  private deleteSingleMsg(){
     switch(this._USER_TYPE){
-        case 'administratorAgency':
-          this._notificationService.deleteAgencyAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'administratorCountry':
-          this._notificationService.deleteCountryAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'countryUser':
-          this._notificationService.deleteCountryUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'countryDirector':
-          this._notificationService.deleteCountryDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'regionDirector':
-          this._notificationService.deleteRegionalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'globalDirector':
-          this._notificationService.deleteGlobalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'globalUser':
-          this._notificationService.deleteGlobalUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'ertLeader':
-          this._notificationService.deleteERTLeadsNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'ert':
-          this._notificationService.deleteERTNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
-        case 'donor':
-          this._notificationService.deleteDonorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
-                .then(() => {
-                  this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
-                  this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-                })
-                .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-          break;
+      case 'administratorAgency':
+        this._notificationService.deleteAgencyAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'administratorCountry':
+        this._notificationService.deleteCountryAdminNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'countryUser':
+        this._notificationService.deleteCountryUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'countryDirector':
+        this._notificationService.deleteCountryDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'regionDirector':
+        this._notificationService.deleteRegionalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'globalDirector':
+        this._notificationService.deleteGlobalDirectorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'globalUser':
+        this._notificationService.deleteGlobalUserNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'ertLeader':
+        this._notificationService.deleteERTLeadsNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'ert':
+        this._notificationService.deleteERTNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
+      case 'donor':
+        this._notificationService.deleteDonorNotification(this._userId, this._countryId, this._agencyId, this.messageToDeleteID)
+          .then(() => {
+            if(!this.doDeleteAll){
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
     }
   }
 
