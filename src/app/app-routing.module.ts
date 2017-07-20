@@ -274,6 +274,7 @@ const routes: Routes = [
   {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
   {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
   {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+  {path: 'dashboard/review-response-plan/:id/:token/:countryId/:partnerOrganisationId', component: ReviewResponsePlanComponent},
   {path: 'dashboard/dashboard-overview', component: DashboardOverviewComponent},
 
 

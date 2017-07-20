@@ -138,7 +138,8 @@ export enum UserType {
   CountryUser = 10,
   AgencyAdmin = 11,
   SystemAdmin = 12,
-  PartnerUser = 13
+  PartnerUser = 13,
+  PartnerOrganisation = 14
 }
 export enum OfficeType {
   All = 0,

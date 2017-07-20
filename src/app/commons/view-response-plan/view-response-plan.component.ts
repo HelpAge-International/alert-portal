@@ -11,6 +11,7 @@ import {
 } from "../../utils/Enums";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-view-response-plan',
@@ -92,6 +93,9 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private userPath: string;
 
+  private accessToken: string;
+  private partnerOrganisationId: string;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
@@ -112,25 +116,51 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
         }
+        if (params["token"]) {
+          this.accessToken = params["token"];
+        }
+        if (params["partnerOrganisationId"]) {
+          this.partnerOrganisationId = params["partnerOrganisationId"];
+        }
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.userPath = Constants.USER_PATHS[userType];
-          if (userType == UserType.PartnerUser) {
-            this.agencyId = agencyId;
-            this.countryId = countryId;
-            this.systemAdminUid = systemId;
-            this.handleLoadResponsePlan();
-          } else {
-            this.loadData(userType);
-          }
-        });
+        if (this.accessToken) {
+          let invalid = true;
+          //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+          this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((validationToken) => {
+              if (validationToken) {
+                if (this.accessToken === validationToken.token) {
+                  let expiry = validationToken.expiry;
+                  let currentTime = moment.utc();
+                  let tokenExpiryTime = moment.utc(expiry);
 
-        // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        //   this.uid = user.uid;
-        //   this.userPath = Constants.USER_PATHS[userType];
-        //   this.loadData(userType);
-        // });
+                  if (currentTime.isBefore(tokenExpiryTime))
+                    invalid = false;
+                }
+
+                if (invalid) {
+                  this.navigateToLogin();
+                }
+                this.handleLoadResponsePlan();
+              } else {
+                this.navigateToLogin();
+              }
+            });
+        } else {
+          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            this.uid = user.auth.uid;
+            this.userPath = Constants.USER_PATHS[userType];
+            if (userType == UserType.PartnerUser) {
+              this.agencyId = agencyId;
+              this.countryId = countryId;
+              this.systemAdminUid = systemId;
+              this.handleLoadResponsePlan();
+            } else {
+              this.loadData(userType);
+            }
+          });
+        }
 
       });
   }
@@ -259,7 +289,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
-        console.log(countryId)
+          console.log(countryId)
           this.countryId = countryId.$value;
           res(true);
         });

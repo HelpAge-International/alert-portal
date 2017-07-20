@@ -245,6 +245,109 @@ exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId
 //   return timeDifference;
 // }
 
+//firebase deploy --only functions:sendResponsePlanValidationEmail
+// exports.sendResponsePlanValidationEmail = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlanId}/approval/partnerOrganisation/{partnerOrganisationId}')
+//   .onWrite(event => {
+//
+//     let countryId = event.params['countryId'];
+//     let partnerOrganisationId = event.params['partnerOrganisationId'];
+//     let responsePlanId = event.params['responsePlanId'];
+//     console.log('partnerOrganisationId: ' + partnerOrganisationId);
+//
+//       admin.database().ref('sand/partnerOrganisation/' + partnerOrganisationId + '/email')
+//       .on('value', snapshot => {
+//         if (snapshot.val()) {
+//           let email = snapshot.val();
+//
+//           let expiry = moment.utc().add(1, 'weeks').valueOf();
+//           let validationToken = {'token': uuidv4(), 'expiry': expiry};
+//
+//           console.log("email: " + email);
+//
+//           admin.database().ref('sand/responsePlanValidation/' + responsePlanId + '/validationToken').set(validationToken).then(() => {
+//             console.log('send to email: ' + email);
+//             const mailOptions = {
+//               from: '"ALERT partner organisation" <noreply@firebase.com>',
+//               to: email
+//             };
+//
+//             // \n https://uat.portal.alertpreparedness.org
+//             mailOptions.subject = `Please validate a response plan!`;
+//             mailOptions.text = `Hello,
+//                               \n Please validate a response plan.
+//                               \n To review the response plan, please visit the link below:
+//                               \n http://localhost:4200/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
+//                               \n Thanks
+//                               \n Your ALERT team `;
+//             return mailTransport.sendMail(mailOptions).then(() => {
+//               console.log('Email sent to:', email);
+//             });
+//           });
+//         } else {
+//           console.log('Error occurred');
+//         }
+//       });
+//
+//   });
+exports.sendResponsePlanValidationEmail = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    //check if newly created only
+    if (!preData && currData) {
+
+      let countryId = event.params['countryId'];
+      let partnerOrganisationId = event.params['partnerOrganisationId'];
+      let responsePlanId = event.params['responsePlanId'];
+      console.log('partnerOrganisationId: ' + partnerOrganisationId);
+
+      //check if partner user already
+      admin.database().ref('sand/partnerUser/' + partnerOrganisationId)
+        .on('value', snapshot => {
+          console.log(snapshot.val());
+          if (!snapshot.val()) {
+            console.log("not partner user found");
+            //if not a partner user, send email to organisation email
+            admin.database().ref('sand/partnerOrganisation/' + partnerOrganisationId + '/email')
+              .on('value', snapshot => {
+                if (snapshot.val()) {
+                  let email = snapshot.val();
+
+                  let expiry = moment.utc().add(1, 'weeks').valueOf();
+                  let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+                  console.log("email: " + email);
+
+                  admin.database().ref('sand/responsePlanValidation/' + responsePlanId + '/validationToken').set(validationToken).then(() => {
+                    console.log('send to email: ' + email);
+                    const mailOptions = {
+                      from: '"ALERT partner organisation" <noreply@firebase.com>',
+                      to: email
+                    };
+
+                    // \n https://uat.portal.alertpreparedness.org
+                    mailOptions.subject = `Please validate a response plan!`;
+                    mailOptions.text = `Hello,
+                              \n Please validate a response plan.
+                              \n To review the response plan, please visit the link below:
+                              \n http://localhost:4200/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
+                              \n Thanks
+                              \n Your ALERT team `;
+                    return mailTransport.sendMail(mailOptions).then(() => {
+                      console.log('Email sent to:', email);
+                    });
+                  });
+                } else {
+                  console.log('Error occurred');
+                }
+              });
+          }
+        });
+    }
+  });
+
 //for sand
 //firebase deploy --only functions:sendPartnerOrganisationValidationEmail
 exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/partnerOrganisation/{partnerId}')
