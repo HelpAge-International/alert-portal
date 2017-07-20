@@ -6,7 +6,7 @@
             <h1>{{"GLOBAL.YOUR_NOTIFICATIONS" | translate}}</h1>
         </div>
         <div class="Data--ribbon" *ngFor="let message of messages">
-             <div class="row">
+             <div class="row msg_width_max">
                 <div class="Info--ribbon--wrap">
                     <div class="col-sm-5">{{"GLOBAL.RECEIVED" | translate}}: <b>{{message.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
                 </div>
