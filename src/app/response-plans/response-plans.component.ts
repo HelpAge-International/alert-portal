@@ -12,6 +12,7 @@ import {PageControlService} from "../services/pagecontrol.service";
 import {MessageModel} from "../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "../services/notification.service";
+import {ResponsePlan} from "../model/responsePlan";
 declare const jQuery: any;
 
 @Component({
@@ -53,10 +54,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private partnersMap = new Map();
   private partnersApprovalMap = new Map<string, string>();
-
+  private responsePlanToEdit: any;
 
   private approvalsList: any[] = [];
-
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -222,9 +222,26 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
-  editResponsePlan(responsePlan) {
-    if (responsePlan.isEditing && responsePlan.editingUserId != this.uid) {
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + responsePlan.editingUserId)
+  checkEditingAllowed(responsePlan){
+    this.responsePlanToEdit = responsePlan;
+    if(responsePlan.status == ApprovalStatus.Approved){
+      jQuery("#dialog-responseplan-editing").modal("show");
+      this.dialogTitle = "Warning!";
+      this.dialogContent = "This response plan is currently submitted for approval. Are you sure you want to edit this plan?";
+    }else if(responsePlan.status == ApprovalStatus.WaitingApproval){
+      jQuery("#dialog-responseplan-editing").modal("show");
+      this.dialogTitle = "Warning!";
+      this.dialogContent = "This response plan is currently waiting for approval. Are you sure you want to edit this plan?";
+    }else{
+      this.editResponsePlan()
+    }
+  }
+
+  editResponsePlan() {
+    jQuery("#dialog-responseplan-editing").modal("hide");
+
+    if (this.responsePlanToEdit.isEditing && this.responsePlanToEdit.editingUserId != this.uid) {
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.responsePlanToEdit.editingUserId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(editingUser => {
           jQuery("#dialog-acknowledge").modal("show");
@@ -234,7 +251,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.dialogEditingUserEmail = editingUser.email;
         });
     } else {
-      this.router.navigate(['response-plans/create-edit-response-plan', {id: responsePlan.$key}]);
+      this.router.navigate(['response-plans/create-edit-response-plan', {id: this.responsePlanToEdit.$key}]);
     }
   }
 
@@ -333,14 +350,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private updatePartnerValidation(countryId: string, approvalData: {}) {
-    //TODO need double check for this
-    // if (this.planToApproval.partnerOrganisations) {
-    //   let partnerData = {};
-    //   this.planToApproval.partnerOrganisations.forEach(item => {
-    //     partnerData[item] = ApprovalStatus.InProgress;
-    //   });
-    //   approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/partner/"] = partnerData;
-    // }
     this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
       console.log("success");
     }, error => {
@@ -393,12 +402,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
   }
 
-  closeModal(isAckModel: boolean) {
-    if (isAckModel) {
-      jQuery("#dialog-acknowledge").modal("hide");
-    } else {
-      jQuery("#dialog-action").modal("hide");
-    }
+  closeModal(model: string) {
+      jQuery(model).modal("hide");
   }
 
   private navigateToLogin() {

@@ -245,7 +245,7 @@
               <div class="dropdown-menu">
                 <a class="dropdown-item" (click)="viewResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.VIEW_PLAN" |
                   translate}}</a>
-                <a class="dropdown-item" (click)="editResponsePlan(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" |
+                <a class="dropdown-item" (click)="checkEditingAllowed(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" |
                   translate}}</a>
                 <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
@@ -340,7 +340,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal(false)">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#dialog-action')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>
@@ -357,15 +357,32 @@
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{dialogContent | translate}}</p></div>
-        <!--tooltip-->
-        <tooltip
-        [level1]="'TOOLTIPS.RESPONSE_PLANS.TT3.LEVEL1'">
-        </tooltip>
         <div class="text-center"><a href="mailto:{{dialogEditingUserEmail}}">{{dialogEditingUserName}}</a></div>
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="closeModal(true)">{{"GLOBAL.OK" | translate}}
+        <button type="button" class="btn btn-primary" (click)="closeModal('#dialog-acknowledge')">{{"GLOBAL.OK" | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--dialog modal-->
+<div class="modal fade" id="dialog-responseplan-editing" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{dialogTitle | translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{dialogContent | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="editResponsePlan()">{{"GLOBAL.YES" | translate}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#dialog-responseplan-editing')">{{"GLOBAL.NO"| translate}}
         </button>
       </div>
     </div>
