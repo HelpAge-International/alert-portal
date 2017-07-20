@@ -39,7 +39,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="form-group">
                     <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
-                    <select name="Country" [disabled] = "countryOfficeAddress && countryOfficeAddress.location >= 0" id="Country" class="form-control" 
+                    <select name="Country" [disabled] = "countryOfficeAddress && countryOfficeAddress.location >= 0" id="Country" class="form-control"
                         [(ngModel)]="countryOfficeAddress && countryOfficeAddress.location">
                         <option *ngFor="let country of COUNTRY_SELECTION" [ngValue]="country">{{COUNTRIES[country] | translate}}</option>
                     </select>
@@ -55,7 +55,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="form-group" >
                     <label for="Postcode">{{"GLOBAL.USER_INFO.POSTCODE" | translate}}</label>
-                    <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" name="postCode"
+                    <input type="text" class="form-control" id="Postcode" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" name="postCode"
                         [(ngModel)]="countryOfficeAddress && countryOfficeAddress.postCode">
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="form-group">
                     <label for="email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}</label>
-                    <input type="email" class="form-control" id="email" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" name="email"
+                    <input type="email" class="form-control" id="email" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" name="email"
                         [(ngModel)]="countryOfficeAddress && countryOfficeAddress.email">
                     </div>
                 </div>
