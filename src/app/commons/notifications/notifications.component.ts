@@ -20,7 +20,7 @@ declare var jQuery: any;
 export class NotificationsComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
-  
+
   private _USER_TYPE: string;
   private _countryId: string;
   private _agencyId: string;
@@ -181,6 +181,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -199,6 +202,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -217,6 +223,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -235,6 +244,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -253,6 +265,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -271,6 +286,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -289,6 +307,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -307,6 +328,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
@@ -325,13 +349,16 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });
               });
           }
           break;
-        case 'donor':      
+        case 'donor':
           let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
 
           for (let node of nodesDonor) {
@@ -343,6 +370,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
                       if(!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
                       {
                         this.messages.push(message);
+                        this.messages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
                       }
                     });
                 });

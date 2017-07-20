@@ -14,7 +14,7 @@ import {Router} from "@angular/router";
 })
 export class NotificationBadgeComponent implements OnInit {
   private unreadMessages: MessageModel[];
-  
+
   private _USER_TYPE: string;
   private _countryId: string;
   private _agencyId: string;
@@ -165,7 +165,7 @@ export class NotificationBadgeComponent implements OnInit {
         break;
       case 'ertLeader':
         let nodesErtLeader = this._notificationService.getErtLeaderNodes(this._agencyId, this._countryId, this._userId);
-        
+
         let c8 = 1;
         for (let node of nodesErtLeader) {
           this._notificationService.setNotificationsAsRead(node).subscribe(() => {
@@ -180,7 +180,7 @@ export class NotificationBadgeComponent implements OnInit {
         break;
       case 'ert':
         let nodesErt = this._notificationService.getErtNodes(this._agencyId, this._countryId, this._userId);
-        
+
         let c9 = 1;
         for (let node of nodesErt) {
           this._notificationService.setNotificationsAsRead(node).subscribe(() => {
@@ -195,7 +195,7 @@ export class NotificationBadgeComponent implements OnInit {
         break;
       case 'donor':
         let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
-        
+
         let c10 = 1;
         for (let node of nodesDonor) {
           this._notificationService.setNotificationsAsRead(node).subscribe(() => {
@@ -223,7 +223,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -238,7 +243,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -252,7 +262,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -266,7 +281,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -280,7 +300,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -294,7 +319,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -308,7 +338,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -322,7 +357,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -336,7 +376,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -350,7 +395,12 @@ export class NotificationBadgeComponent implements OnInit {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
