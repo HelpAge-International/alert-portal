@@ -181,6 +181,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private activityMap = new Map();
   private addActivityToggleMap = new Map();
   private activityInfoMap = new Map();
+  private activeActivity = [];
+  private activityError = [];
   private imgNames: string[] = ["water", "health", "shelter", "nutrition", "food", "protection", "education", "camp", "misc"];
 
   // Section 8/10
@@ -409,21 +411,40 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
 
     //section 7
-    this.activityMap.forEach((v, k) => {
+    this.sectorsRelatedTo.forEach(sector => {
       let sectorInfo = {};
-      if (this.activityInfoMap.get(k)) {
-        if (this.activityInfoMap.get(k)["sourcePlan"]) {
-          sectorInfo["sourcePlan"] = this.activityInfoMap.get(k)["sourcePlan"];
-        }
-        if (this.activityInfoMap.get(k)["bullet1"]) {
-          sectorInfo["bullet1"] = this.activityInfoMap.get(k)["bullet1"];
-        }
-        if (this.activityInfoMap.get(k)["bullet2"]) {
-          sectorInfo["bullet2"] = this.activityInfoMap.get(k)["bullet2"];
-        }
-        sectorInfo["activities"] = v;
-        newResponsePlan.sectors[k] = sectorInfo;
+      sectorInfo["sourcePlan"] = -1;
+      sectorInfo["bullet1"] = " "; 
+      sectorInfo["bullet2"] = " ";
+      sectorInfo["activities"] = false;
+
+      let activities = this.activityMap.get(sector);
+      if(activities){
+        activities.forEach(activity => {
+          if(activity.isEmpty())
+          {
+            activities = activities.filter(x => x != activity);
+          }
+        });
+
+        sectorInfo["activities"] = activities; 
       }
+
+      let activityInfo = this.activityInfoMap.get(sector);
+      if(activityInfo)
+      {
+        if (activityInfo["sourcePlan"]) {
+            sectorInfo["sourcePlan"] = activityInfo["sourcePlan"];
+        }
+        if (activityInfo["bullet1"]) {
+          sectorInfo["bullet1"] = activityInfo["bullet1"];
+        }
+        if (activityInfo["bullet2"]) {
+          sectorInfo["bullet2"] = activityInfo["bullet2"];
+        }
+      }
+
+      newResponsePlan.sectors[sector] = sectorInfo;
     });
 
     //section 8
@@ -936,68 +957,110 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   /**
    * Section 7/10
    */
-  saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
+  // saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
 
-    if (this.validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)) {
-      console.log("valid");
-      let beneficiaryList = [];
-      for (let i = 0; i < 6; i++) {
-        let beneData = {};
-        if (i < 3) {
-          beneData["age"] = i;
-          beneData["gender"] = Gender.feMale;
-        } else {
-          beneData["age"] = i - 3;
-          beneData["gender"] = Gender.male;
-        }
-        if (i == 0) {
-          beneData["value"] = femaleRange1.value;
-        } else if (i == 1) {
-          beneData["value"] = femaleRange2.value;
-        } else if (i == 2) {
-          beneData["value"] = femaleRange3.value;
-        } else if (i == 3) {
-          beneData["value"] = maleRange1.value;
-        } else if (i == 4) {
-          beneData["value"] = maleRange2.value;
-        } else if (i == 5) {
-          beneData["value"] = maleRange3.value;
-        }
-        beneficiaryList.push(beneData);
-      }
-      let activity = new ModelPlanActivity(name.value, output.value, indicator.value, beneficiaryList);
-      if (this.activityMap.get(sector)) {
-        this.activityMap.get(sector).push(activity);
-      } else {
-        let activityList = [activity];
-        this.activityMap.set(sector, activityList);
-      }
-      this.addActivityToggleMap.set(sector, true);
-      name.value = "";
-      output.value = "";
-      indicator.value = "";
-      femaleRange1.value = 0;
-      femaleRange2.value = 0;
-      femaleRange3.value = 0;
-      maleRange1.value = 0;
-      maleRange2.value = 0;
-      maleRange3.value = 0;
-    } else {
-      console.log("not valid");
+  //   if (this.validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)) {
+  //     console.log("valid");
+  //     let beneficiaryList = [];
+  //     for (let i = 0; i < 6; i++) {
+  //       let beneData = {};
+  //       if (i < 3) {
+  //         beneData["age"] = i;
+  //         beneData["gender"] = Gender.feMale;
+  //       } else {
+  //         beneData["age"] = i - 3;
+  //         beneData["gender"] = Gender.male;
+  //       }
+  //       if (i == 0) {
+  //         beneData["value"] = femaleRange1.value;
+  //       } else if (i == 1) {
+  //         beneData["value"] = femaleRange2.value;
+  //       } else if (i == 2) {
+  //         beneData["value"] = femaleRange3.value;
+  //       } else if (i == 3) {
+  //         beneData["value"] = maleRange1.value;
+  //       } else if (i == 4) {
+  //         beneData["value"] = maleRange2.value;
+  //       } else if (i == 5) {
+  //         beneData["value"] = maleRange3.value;
+  //       }
+  //       beneficiaryList.push(beneData);
+  //     }
+  //     let activity = new ModelPlanActivity(name.value, output.value, indicator.value, beneficiaryList);
+  //     if (this.activityMap.get(sector)) {
+  //       this.activityMap.get(sector).push(activity);
+  //     } else {
+  //       let activityList = [activity];
+  //       this.activityMap.set(sector, activityList);
+  //     }
+  //     this.addActivityToggleMap.set(sector, true);
+  //     name.value = "";
+  //     output.value = "";
+  //     indicator.value = "";
+  //     femaleRange1.value = 0;
+  //     femaleRange2.value = 0;
+  //     femaleRange3.value = 0;
+  //     maleRange1.value = 0;
+  //     maleRange2.value = 0;
+  //     maleRange3.value = 0;
+  //   } else {
+  //     console.log("not valid");
+  //   }
+  // }
+
+  // private validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
+  //   if (name.value == "" || output.value == "" || indicator.value == "" || femaleRange1.value < 0 || femaleRange2.value < 0 || femaleRange3 < 0 || maleRange1.value < 0 || maleRange2.value < 0 || maleRange3 < 0) {
+  //     return false;
+  //   } else {
+  //     return true;
+  //   }
+  // }
+
+  saveActivity(sector, activity: ModelPlanActivity, index) {
+    let error = activity.validate();
+    if(!error)
+    {
+      this.activeActivity[sector] = null;
+    }else{
+      this.activityError[sector] = [];
+      this.activityError[sector][index] = error.message;
     }
   }
 
-  private validateInput(name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3) {
-    if (name.value == "" || output.value == "" || indicator.value == "" || femaleRange1.value < 0 || femaleRange2.value < 0 || femaleRange3 < 0 || maleRange1.value < 0 || maleRange2.value < 0 || maleRange3 < 0) {
-      return false;
-    } else {
-      return true;
-    }
+  viewActivity(sector, activity)
+  {
+    this.activeActivity[sector] = activity;
+  }
+
+  removeActivity(sector, activity)
+  {
+    this.activityMap.set(sector, this.activityMap.get(sector).filter(x => x != activity));
+    this.activeActivity[sector] = null;
   }
 
   addActivity(sector) {
-    let isHidden = this.addActivityToggleMap.get(sector);
-    this.addActivityToggleMap.set(sector, !isHidden);
+    let activity = new ModelPlanActivity(null, null, null, null);
+    if(this.activityMap.get(sector))
+    {
+      this.activityMap.get(sector).push(activity);
+    }else{
+      this.activityMap.set(sector, [activity]);
+    }
+    this.activeActivity[sector] = activity;
+  }
+
+  getNumberOfActivities(sector){
+    let activitiesNumber = 0;
+    if(this.activityMap.get(sector))
+    {
+      let activities = this.activityMap.get(sector);
+      activities.forEach(activity => {
+        if(!activity.isEmpty()){
+          activitiesNumber++;
+        }
+      })
+    }
+    return activitiesNumber;
   }
 
   selectInternationa(sector, value) {
@@ -1111,7 +1174,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.numberMaleLessThan18 = 0;
       this.numberMale18To50 = 0;
       this.numberMalegreaterThan50 = 0;
-
 
       let modelPlanList: ModelPlanActivity [] = [];
       this.activityMap.forEach((v,) => {
@@ -1487,6 +1549,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection7(responsePlan: ResponsePlan) {
+    console.log(responsePlan.sectors);
     if (responsePlan.sectors) {
       let sectors: {} = responsePlan.sectors;
       Object.keys(sectors).forEach(sectorKey => {
@@ -1506,18 +1569,22 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         //activities list load back
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
         let moreData: {}[] = [];
-        Object.keys(activitiesData).forEach(key => {
-          let beneficiary = [];
-          activitiesData[key]["beneficiary"].forEach(item => {
-            beneficiary.push(item);
+        if(activitiesData){
+          Object.keys(activitiesData).forEach(key => {
+            let beneficiary = [];
+            activitiesData[key]["beneficiary"].forEach(item => {
+              beneficiary.push(item);
+            });
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            moreData.push(model);
+            if (!this.activityMap.get(Number(sectorKey))) {
+              this.activityMap.set(Number(sectorKey), moreData);
+              this.addActivityToggleMap.set(Number(sectorKey), true);
+            }
           });
-          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-          moreData.push(model);
-          if (!this.activityMap.get(Number(sectorKey))) {
-            this.activityMap.set(Number(sectorKey), moreData);
-            this.addActivityToggleMap.set(Number(sectorKey), true);
-          }
-        });
+        }else{
+          this.addActivity(Number(sectorKey)); // adds a new activity if the sector has none
+        }
       });
     }
   }
@@ -1697,6 +1764,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (sectorSelected) {
       if (!(this.sectorsRelatedTo.includes(sectorEnum))) {
         this.sectorsRelatedTo.push(sectorEnum);
+        this.addActivity(sectorEnum);
       }
     } else {
       if (this.sectorsRelatedTo.includes(sectorEnum)) {
@@ -1704,6 +1772,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         if (index > -1) {
           this.sectorsRelatedTo.splice(index, 1)
         }
+        this.activityMap.delete(sectorEnum);
       }
     }
   }

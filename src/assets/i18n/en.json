@@ -1494,7 +1494,11 @@
                 "INTERNATIONALLY": "Internationally",
                 "REGIONALLY_COUNTRY": "Regionally/neighbouring country",
                 "IN_COUNTRY_LOCALLY": "In country/locally",
-                "PLEASE_EXPLAIN": "Please explain in two bullet points"
+                "PLEASE_EXPLAIN": "Please explain in two bullet points",
+                "ADD_ACTIVITY": "Add activity",
+                "NO_NAME": "Please enter the planned activity",
+                "NO_OUTPUT": "Please enter the activity output",
+                "NO_INDICATOR": "Please enter the activity indicator"
             },
             "MON_ACC_LEA": {
                 "TITLE_TEXT": "Monitoring, Accountability and Learning",
