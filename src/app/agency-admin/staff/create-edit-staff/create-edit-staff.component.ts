@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {SkillType, UserType} from "../../../utils/Enums";
+import {OfficeType, SkillType, UserType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {ModelUserPublic} from "../../../model/user-public.model";
@@ -28,11 +28,9 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   PERSON_TITLE = Constants.PERSON_TITLE;
   PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
   USER_TYPE = Constants.USER_TYPE;
-  USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
   STAFF_POSITION = Constants.STAFF_POSITION;
   STAFF_POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
   OFFICE_TYPE = Constants.OFFICE_TYPE;
-  OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
   Countries = Constants.COUNTRIES;
@@ -63,6 +61,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private originalCountryList: any [];
   private countryList: any [];
   private directorCountries: any [];
+  private userTypeSelection: any [];
+  private officeTypes: any [];
 
   private regionList: Observable<any[]>;
   private departmentList: Observable<ModelDepartment[]>;
@@ -194,6 +194,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
+    this.officeTypes = [];
+    Constants.OFFICE_TYPE_SELECTION.forEach(officeType => {
+      if(officeType != OfficeType.All){
+        this.officeTypes.push(officeType);
+      }
+    });
 
     this.agencyService.getAgencyId(this.uid)
       .takeUntil(this.ngUnsubscribe)
@@ -208,6 +214,16 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe((snap) => {
                 this.isDonor = snap.val();
+                this.userTypeSelection = [];
+                Constants.USER_TYPE_SELECTION.forEach(userType => {
+                    if(userType != UserType.All && userType != UserType.CountryAdmin && userType != UserType.Donor){
+                        this.userTypeSelection.push(userType);
+                    }
+                });
+
+                if(this.isDonor){
+                  this.userTypeSelection.push(UserType.Donor);
+                }
               });
 
             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe( countries => {
