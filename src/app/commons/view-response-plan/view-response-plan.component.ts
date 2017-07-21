@@ -12,6 +12,7 @@ import {
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-view-response-plan',
@@ -56,7 +57,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private planLeadName: string = '';
 
-  // TODO -
   // Section 03
   private sectors: any[];
   private partnerList: string[] = [];
@@ -100,6 +100,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    jQuery('#header_section_1').trigger('click');
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -365,7 +366,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     this.vulnerableGroupsToShow = vulnerableGroups;
   }
 
-  // TODO -
   private loadSection7(responsePlan: ResponsePlan) {
     if (this.sectors) {
       // let sectors: {} = responsePlan.sectors;
