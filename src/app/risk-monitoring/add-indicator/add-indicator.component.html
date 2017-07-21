@@ -49,8 +49,13 @@
     </div>
 
     <!--Source of Information-->
-    <div class="row Spaced-above"><h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.SOURCE_INFORMATION" |
-      translate}}</b></h6><img src="assets/images/icons/info_source.svg"></div>
+    <div class="row Spaced-above">
+      <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.SOURCE_INFORMATION" | translate}}</b></h6>
+      <tooltip
+        [level1]= "'TOOLTIPS.RISK_MONITORING.TT12.LEVEL1'"
+        [level2]= "'TOOLTIPS.RISK_MONITORING.TT12.LEVEL2'"
+      ></tooltip>
+    </div>
 
     <div class="Spaced-above form-group col-sm-12 row indicator-source"
          *ngIf="indicatorData.source && indicatorData.source.length > 0">

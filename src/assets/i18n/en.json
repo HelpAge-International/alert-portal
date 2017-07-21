@@ -2110,6 +2110,10 @@
             },
             "TT11" : {
                 "LEVEL1": "Seasonal events can refer to both climate-related seasons (Typhoon season, Dry season) or even man-made events (elections, harvest season, cultural or religious events). These events are understood to have a certain degree of recurrence over a period of time."
+            },
+            "TT12" : {
+              "LEVEL1": "The source of data that determines the status of the indicator. Information obtained can be primary or secondary data. This can be from official sources, such as reports from academic, government, UN or other non-government organisations, or can also be from unofficial sources, such as direct observations noted by staff, partners and community leaders.",
+              "LEVEL2": "There are many organisations that provide web-based sources of indicator information and early warning updates for common and severe hazards. If you use forecasts and predictions from reputable organisations as the basis for your warning, they will have chosen the most appropriate indicators for the hazard. For example Regional Met Offices provide tropical cyclone forecasts that detail the estimated path a storm will take; the intensity of the cyclone (wind speed, pressure); associated storm surge and flood risk; and if, when, and where the storm is forecast to make landfall. It would be logical to monitor these indicators for cyclones and supplement it with relevant local information where possible. These agencies use forecast models that are subject to uncertainty so keeping this in mind and investigating the skills of these forecast models is important. Agencies with a longstanding presence in a region will have well-established links with local communities and other local partners and organisations. It is well documented that local people often have a sophisticated understanding of hazard processes, potential impacts and indicators. Agencies should consider choosing additional information sources and indicators that can be monitored in local areas to supplement those monitored nationally or regionally."
             }
         },
 
