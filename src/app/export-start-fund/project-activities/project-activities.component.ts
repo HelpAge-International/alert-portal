@@ -140,16 +140,19 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
 
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        let moreData: {}[] = [];
-        Object.keys(activitiesData).forEach(key => {
-          let beneficiary = [];
-          activitiesData[key]["beneficiary"].forEach(item => {
-            beneficiary.push(item);
+        if(activitiesData)
+        {
+          let moreData: {}[] = [];
+          Object.keys(activitiesData).forEach(key => {
+            let beneficiary = [];
+            activitiesData[key]["beneficiary"].forEach(item => {
+              beneficiary.push(item);
+            });
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            moreData.push(model);
+            this.activityMap.set(Number(sectorKey), moreData);
           });
-          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-          moreData.push(model);
-          this.activityMap.set(Number(sectorKey), moreData);
-        });
+        }
       });
 
       if (this.activityMap) {
@@ -191,9 +194,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getTotalFemaleUnder18(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -202,9 +208,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getTotalFemaleUnder18To50(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -213,9 +222,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getTotalFemaleOver50(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -224,9 +236,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getTotalMaleUnder18(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -235,9 +250,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getTotalMaleUnder18To50(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -246,9 +264,12 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getTotalMaleOver50(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -257,11 +278,14 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getOverallFemaleTotal(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
-          + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
-          + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+            + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+            + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -270,11 +294,14 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getOverallMaleTotal(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-          +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-          +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
-      });
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+            +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+            +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+        });
+      }
     });
 
     return total;
@@ -283,15 +310,18 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private getOverallPopulationTotal(activityMap){
     var total = 0;
     this.sectors.forEach(function (sector){
-      activityMap.get(sector.id).forEach(function(activity) {
-        total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
-          + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
-          + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0)
+      if(activityMap.get(sector.id))
+      {
+        activityMap.get(sector.id).forEach(function(activity) {
+          total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+            + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+            + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0)
 
-          + (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-          +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-          +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
-      });
+            + (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+            +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+            +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+        });
+      }
     });
 
     return total;

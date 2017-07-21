@@ -636,7 +636,7 @@
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
-                    {{activityMap.get(sector)?activityMap.get(sector)?.length:0}}
+                    {{getNumberOfActivities(sector)}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
                   </div>
                   <div class="col-sm-1 col-12 text-center" data-toggle="collapse" [attr.href]="'#Activity'+sector"
@@ -648,125 +648,135 @@
                 <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
                   <div *ngIf="activityMap.get(sector)?.length > 0">
-                    <div *ngFor="let activity of activityMap.get(sector); index as i"
-                         class="row Outlined Spaced align-items-center">
-                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
-                      <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
-                      <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
-                        | translate}}</a></div>
+                    <div *ngFor="let activity of activityMap.get(sector); index as i">
+                      <div class="row Outlined Spaced align-items-center" *ngIf="activeActivity && activeActivity[sector] != activity">
+                        <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
+                        <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
+                        <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" (click)="viewActivity(sector, activity)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
+                          | translate}}</a></div>
+                      </div>
+
+                      <div *ngIf="activeActivity && activeActivity[sector] == activity" class="row Outlined Spaced align-items-center">
+                        <div class="row Spaced col-lg-12 no-gutters">
+                          <div class="col-lg-12 text-right">
+                            <a href="javascript:void(0)" class="text-danger" (click)="removeActivity(sector, activity)" 
+                              *ngIf="activityMap.get(sector)?.length > 1 && !activity.isEmpty()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
+                              | translate}}</a>
+                          </div>
+                        </div>
+                        <div class="row col-lg-12">
+                          <div class="col-lg-12 form-group">
+                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
+                              | translate}}</label>
+                              <!-- TOOLTIP 2.17 -->
+                              <tooltip
+                              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL1'"
+                              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL2'">
+                              </tooltip>
+                            <input type="text" [(ngModel)]="activity.name" class="form-control" #name>
+                          </div>
+                        </div>
+
+                        <div class="row col-lg-12">
+                          <div class="col-lg-12 form-group">
+                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
+                              | translate}}</label>
+                            <input type="text" class="form-control" [(ngModel)]="activity.output" #output>
+                          </div>
+                        </div>
+
+                        <div class="row col-lg-12">
+                          <div class="col-lg-12 form-group">
+                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+                              translate}}</label>
+                            <input type="text" class="form-control" [(ngModel)]="activity.indicator" #indicator>
+                          </div>
+                        </div>
+                        <div class="row col-lg-12 Spaced form-group">
+                          <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
+                            | translate}}</label>
+                          <div class="row no-gutters Demographic__text">
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[0] && activity.beneficiary[0].value"></div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[1] && activity.beneficiary[1].value"></div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[2] && activity.beneficiary[2].value"></div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[3] && activity.beneficiary[3].value">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[4] && activity.beneficiary[4].value">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[5] && activity.beneficiary[5].value">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row col-lg-12">
+                            <div class="col-lg-10">
+                              <p class="text-danger" *ngIf="activityError && activityError[sector] && activityError[sector][i]">
+                                {{ activityError[sector][i] | translate }}
+                              </p>
+                            </div>
+                            <div class="col-lg-2">
+                              <button class="btn btn-secondary"
+                                      (click)="saveActivity(sector, activity, i)">
+                                {{"GLOBAL.SAVE" | translate}}
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div [hidden]="addActivityToggleMap.get(sector)" class="row Outlined Spaced align-items-center">
-                    <div class="row Spaced col-lg-12 no-gutters">
-                      <div class="col-lg-12 text-right">
-                        <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
-                          | translate}}</a>
-                      </div>
-                    </div>
-                    <div class="row col-lg-12">
-                      <div class="col-lg-12 form-group">
-                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
-                          | translate}}</label>
-                          <!-- TOOLTIP 2.17 -->
-                          <tooltip
-                          [level1]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL1'"
-                          [level2]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL2'">
-                          </tooltip>
-                        <input type="text" class="form-control" #name>
-                      </div>
-                    </div>
-
-                    <div class="row col-lg-12">
-                      <div class="col-lg-12 form-group">
-                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
-                          | translate}}</label>
-                        <input type="text" class="form-control" #output>
-                      </div>
-                    </div>
-
-                    <div class="row col-lg-12">
-                      <div class="col-lg-12 form-group">
-                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
-                          translate}}</label>
-                        <input type="text" class="form-control" #indicator>
-                      </div>
-                    </div>
-                    <div class="row col-lg-12 Spaced form-group">
-                      <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-                        | translate}}</label>
-                      <div class="row no-gutters Demographic__text">
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
-                                                       value="0"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
-                                                       value="0"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
-                                                       value="0"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0">
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row col-lg-12">
-                        <div class="col-lg-10"></div>
-                        <div class="col-lg-2">
-                          <button class="btn btn-secondary"
-                                  (click)="saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)">
-                            Save
-                          </button>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
                   <!--<a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"-->
                   <!--| translate}}</a>-->
                   <a href="javascript:void(0)" class="Add__row__cta" (click)="addActivity(sector)">
-                    Add another activity</a>
+                    {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.ADD_ACTIVITY" | translate}}</a>
 
                   <div class="Spaced">
                     <div class="Selection-row no-gutters Spaced">
@@ -1081,11 +1091,11 @@
                 </div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
-                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:0"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item']&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:0"
                          (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
                   <input type="text" class="form-control budget-narrative" #narrative
-                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item']&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
                          (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
             </div>

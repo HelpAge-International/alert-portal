@@ -125,16 +125,19 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
 
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        let moreData: {}[] = [];
-        Object.keys(activitiesData).forEach(key => {
-          let beneficiary = [];
-          activitiesData[key]["beneficiary"].forEach(item => {
-            beneficiary.push(item);
+        if(activitiesData)
+        {
+          let moreData: {}[] = [];
+          Object.keys(activitiesData).forEach(key => {
+            let beneficiary = [];
+            activitiesData[key]["beneficiary"].forEach(item => {
+              beneficiary.push(item);
+            });
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            moreData.push(model);
+            this.activityMap.set(Number(sectorKey), moreData);
           });
-          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-          moreData.push(model);
-          this.activityMap.set(Number(sectorKey), moreData);
-        });
+        }
       });
     }
   }
