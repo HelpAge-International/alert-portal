@@ -8,19 +8,19 @@ export enum ActionType {
   custom = 2
 }
 
-// TODO - Update when Ryan provides actual Category names
 export enum GenericActionCategory {
-  ALL = 0,
-  Category1 = 1,
-  Category2 = 2,
-  Category3 = 3,
-  Category4 = 4,
-  Category5 = 5,
-  Category6 = 6,
-  Category7 = 7,
-  Category8 = 8,
-  Category9 = 9,
-  Category10 = 10
+  All = 0,
+  OfficeAdministration = 1,
+  Finance = 2,
+  ITFieldCommunications = 3,
+  Logistics = 4,
+  CommunicationsMedia = 5,
+  HumanResources = 6,
+  DonorFundingReporting = 7,
+  Accountability = 8,
+  Security = 9,
+  Programmes = 10,
+  EmergencyResponseTeamManagement = 11
 }
 
 // TODO - Update when Ryan provides actual Hazard Scenario names

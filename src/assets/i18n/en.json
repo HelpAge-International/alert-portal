@@ -614,17 +614,19 @@
                 "CATEGORY": "Category",
                 "ACTION": "Action",
                 "CATEGORIES": {
-                    "ALL": "All categories",
-                    "CATEGORY0": "Category1",
-                    "CATEGORY1": "Category2",
-                    "CATEGORY2": "Category3",
-                    "CATEGORY3": "Category4",
-                    "CATEGORY4": "Category5",
-                    "CATEGORY5": "Category6",
-                    "CATEGORY6": "Category7",
-                    "CATEGORY7": "Category8",
-                    "CATEGORY8": "Category9",
-                    "CATEGORY9": "Category10"
+                    "All": "All",
+                    "OfficeAdministration": "Office Administration",
+                    "Finance": "Finance",
+                    "ITFieldCommunications": "IT and Field Communications",
+                    "Logistics": "Logistics",
+                    "CommunicationsMedia": "Communications and Media",
+                    "HumanResources": "Human Resources",
+                    "DonorFundingReporting": "Donor Funding and Reporting",
+                    "Accountability": "Accountability",
+                    "Security": "Security",
+                    "Programmes": "Programmes",
+                    "EmergencyResponseTeamManagement": "Emergency Response Team and Management"
+
                 }
             }
         },
