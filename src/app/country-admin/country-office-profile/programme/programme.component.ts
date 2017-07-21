@@ -7,6 +7,7 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+
 declare var jQuery: any;
 
 @Component({
@@ -243,9 +244,9 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   selectedSectors(event: any, sectorID: any) {
     var stateElement: boolean = true;
     var className = "";
-    if(event.target){
+    if (event.target) {
       className = event.target.className;
-    }else{
+    } else {
       className = event.srcElement.className;
     }
     const pattern = /.Selected/;

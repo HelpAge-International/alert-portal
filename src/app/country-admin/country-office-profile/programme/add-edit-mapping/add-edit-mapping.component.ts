@@ -8,6 +8,7 @@ import {ProgrammeMappingModel} from '../../../../model/programme-mapping.model';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
+import * as moment from "moment";
 declare var jQuery: any;
 
 @Component({
@@ -154,6 +155,9 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   setDate() {
     if (this.when['month'] && this.when['year']) {
+      console.log(this.when['month'])
+      console.log(this.when['year'])
+      moment
       var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
       this.programme.when = 0;
       this.programme.when = timeStamp;

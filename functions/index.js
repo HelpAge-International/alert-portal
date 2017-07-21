@@ -594,7 +594,7 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n https://us-central1-alert-190fa.cloudfunctions.net/sendPartnerOrganisationValidationEmailTest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n https://us-central1-alert-test-52b00.cloudfunctions.net/sendPartnerOrganisationValidationEmailTest?token=${validationToken.token}&partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {
@@ -685,7 +685,7 @@ exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n https://us-central1-alert-190fa.cloudfunctions.net/sendPartnerOrganisationValidationEmailUat?token=${validationToken.token}&partnerId=${partnerId}
+                          \n https://us-central1-alert-uat.cloudfunctions.net/sendPartnerOrganisationValidationEmailUat?token=${validationToken.token}&partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {
