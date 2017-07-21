@@ -115,6 +115,7 @@ import {DonorNotificationsComponent} from "./donor-module/donor-notifications/do
 import {DirectorNotificationsComponent} from "./director/director-notifications/director-notifications.component";
 import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
 import {NewUserPasswordComponent} from "./new-user-password/new-user-password.component";
+import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -274,7 +275,10 @@ const routes: Routes = [
   {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
   {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
   {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
-  {path: 'dashboard/review-response-plan/:id/:token/:countryId/:partnerOrganisationId', component: ReviewResponsePlanComponent},
+  {
+    path: 'dashboard/review-response-plan/:id/:token/:countryId/:partnerOrganisationId',
+    component: ReviewResponsePlanComponent
+  },
   {path: 'dashboard/dashboard-overview', component: DashboardOverviewComponent},
 
 
@@ -343,7 +347,12 @@ const routes: Routes = [
    * Response plan exporting
    * */
   {path: 'export-start-fund', component: ExportStartFundComponent},
-  {path: 'export-proposal', component: ExportProposalComponent}
+  {path: 'export-proposal', component: ExportProposalComponent},
+
+  /**
+   * Partner Vlidation
+   * */
+  {path: 'partner-validation', component: PartnerValidationComponent}
 
 ];
 
