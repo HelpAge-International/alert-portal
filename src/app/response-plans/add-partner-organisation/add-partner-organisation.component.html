@@ -79,10 +79,6 @@
             </div>
             <div class="col-lg-8 col-md-10 form-group">
               <label for="P-end-date">{{ "ADD_PARTNER.PROJECT_END_DATE" | translate }}</label>
-              <!--<input type="date" class="form-control" name="P-end-date"-->
-              <!--[ngModel]="project.endDate | date: 'y-MM-d'" id="P-end-date"-->
-              <!--(ngModelChange)="changeDate($event, project)"-->
-              <!--placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">-->
               <material-datepicker id="P-end-date"
                                    placeholder="{{project.endDate ? (project.endDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                    class="form-control col-sm-5"
@@ -104,9 +100,10 @@
                     </select>
                   </div>
                 </div>
-                <div class="col-sm-3" *ngIf="operationArea.country
-                                 && countryLevelsValues[operationArea.country]
-                                 && countryLevelsValues[operationArea.country].levelOneValues">
+                <!--<div class="col-sm-3" *ngIf="operationArea.country-->
+                                 <!--&& countryLevelsValues[operationArea.country]-->
+                                 <!--&& countryLevelsValues[operationArea.country].levelOneValues">-->
+                  <div class="col-sm-3" *ngIf="hasLevel1(operationArea.country)">
                   <div class="form-group">
                     <select class="form-control" name="CountryAreaLevelOne_{{opin}}"
                             [(ngModel)]="operationArea.level1">

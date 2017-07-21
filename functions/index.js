@@ -290,7 +290,7 @@ exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId
 //
 //   });
 
-//for sand
+//for sand response plan
 exports.sendResponsePlanValidationEmail = functions.database.ref('/sand/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
   .onWrite(event => {
 
@@ -350,7 +350,7 @@ exports.sendResponsePlanValidationEmail = functions.database.ref('/sand/response
     }
   });
 
-//for test
+//for test response plan
 exports.sendResponsePlanValidationEmailTest = functions.database.ref('/test/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
   .onWrite(event => {
 
@@ -410,7 +410,7 @@ exports.sendResponsePlanValidationEmailTest = functions.database.ref('/test/resp
     }
   });
 
-//for uat
+//for uat response plan
 exports.sendResponsePlanValidationEmailUat = functions.database.ref('/uat/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
   .onWrite(event => {
 
@@ -470,7 +470,7 @@ exports.sendResponsePlanValidationEmailUat = functions.database.ref('/uat/respon
     }
   });
 
-//for sand
+//for sand partner org validation
 //firebase deploy --only functions:sendPartnerOrganisationValidationEmail
 exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/partnerOrganisation/{partnerId}')
   .onWrite(event => {
@@ -500,10 +500,11 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
 
         // \n https://uat.portal.alertpreparedness.org
         mailOptions.subject = `Welcome to ${APP_NAME}!`;
+        // https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n http://localhost:4200/partner-validation?token=${validationToken.token}&partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {
@@ -561,7 +562,7 @@ exports.validatePartnerOrganisationRequest = functions.https.onRequest((req, res
   });
 });
 
-//for test
+//for test partner org validation
 //firebase deploy --only functions:sendPartnerOrganisationValidationEmail
 exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/test/partnerOrganisation/{partnerId}')
   .onWrite(event => {
@@ -594,7 +595,7 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n https://us-central1-alert-190fa.cloudfunctions.net/sendPartnerOrganisationValidationEmailTest?token=${validationToken.token}&partnerId=${partnerId}
+                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequestTest?token=${validationToken.token}&partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {
@@ -652,7 +653,7 @@ exports.validatePartnerOrganisationRequestTest = functions.https.onRequest((req,
   });
 });
 
-//for uat
+//for uat partner org validation
 //firebase deploy --only functions:sendPartnerOrganisationValidationEmail
 exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat/partnerOrganisation/{partnerId}')
   .onWrite(event => {
@@ -685,7 +686,7 @@ exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n https://us-central1-alert-190fa.cloudfunctions.net/sendPartnerOrganisationValidationEmailUat?token=${validationToken.token}&partnerId=${partnerId}
+                          \n https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequestUat?token=${validationToken.token}&partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {

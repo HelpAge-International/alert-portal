@@ -80,7 +80,7 @@
         <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
         <div class="col-sm-2"><p>{{m.where ? m.where : ''}}</p></div> <!--Where-->
         <div class="col-sm-2"><p>{{m.toWho ? m.toWho : ''}}</p></div> <!--To Who-->
-        <div class="col-sm-2"><p>{{m.when | date:"dd/MM/yyyy"}}</p></div> <!--When-->
+        <div class="col-sm-2"><p>{{m.when | date:"MM/yyyy"}}</p></div> <!--When-->
 
         <div *ngIf="canEdit && isEdit" class="col-sm-1">
           <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]"

@@ -187,6 +187,7 @@ import {SumPipe} from "./utils/pipes/sum.pipe";
 import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
 import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
 import { ActionsService } from "./services/actions.service";
+import { PartnerValidationComponent } from './commons/partner-validation/partner-validation.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -367,7 +368,8 @@ const firebaseAuthConfig = {
     DashboardOverviewComponent,
     NewUserPasswordComponent,
     CountryOverviewComponent,
-    CountryAgenciesComponent
+    CountryAgenciesComponent,
+    PartnerValidationComponent
   ],
   imports: [
     BrowserModule,

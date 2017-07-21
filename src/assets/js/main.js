@@ -1629,26 +1629,21 @@ $(".collapse").on("shown.bs.collapse", function(e) {
 "use strict";
 
 $(document).click(function(e) {
-    var target = e.target;
-    if (!$(target).is(".Info__icon") && !$(target).parents().is(".Info__icon")) {
-        $(".Info__bubble").fadeOut();
-    }
+  var target = e.target;
+
+  if (!$(target).is('.Info__icon') && !$(target).parents().is('.Info__icon')) {
+    $('.Info__bubble').fadeOut();
+  }
 });
 
-
-
-$(document).ready(function(){
-  $('[data-toggle="popover"]').popover();
-});
-console.log("Hi")
 $(".Info__icon").click(function() {
-    $(".Info__bubble").fadeIn();
+  $(this).children(".Info__bubble").fadeToggle();
 });
 
 $(".Extend__span").click(function() {
-    $(this).toggleClass("Active");
-    $(".Extended__content").slideToggle();
-    $(".Info__bubble").toggleClass("Active");
+  $(this).toggleClass('Active');
+  $(this).prev(".Extended__content").slideToggle()
+  $(".Info__bubble").toggleClass('Active');
 });
 
 "use strict";
