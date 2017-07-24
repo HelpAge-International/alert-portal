@@ -68,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
+  private isRedAlert: boolean;
   private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
@@ -281,6 +282,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
+        
+        // Display APA only if there is a red alert
+        actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
+
         this.actionsOverdue = [];
         this.actionsToday = [];
         this.actionsThisWeek = [];
@@ -410,6 +415,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
     }
+    this.actionService.getRedAlerts(this.countryId)
+    .subscribe(alerts => 
+    {
+      alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+      this.isRedAlert =  alerts.length > 0;
+    });
   }
 
   showAffectedAreasForAlert(affectedAreas) {
