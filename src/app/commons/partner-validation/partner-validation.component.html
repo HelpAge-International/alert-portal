@@ -23,12 +23,12 @@
 
         <div class="Partnership__seperator">
           <p><b>Your organisation</b></p>
-          <p>COSE</p>
+          <p>{{modelPartnerOrg.organisationName}}</p>
         </div>
 
         <div class="Partnership__seperator">
           <p><b>Relationship with agency</b></p>
-          <p>Supporting partner</p>
+          <p>{{modelPartnerOrg.relationship}}</p>
         </div>
 
         <div class="Partnership__seperator">
@@ -37,19 +37,19 @@
         </div>
         <div class="Partnership__seperator">
           <p><b>Contact’s Name</b></p>
-          <p>Christopher Rodriguez</p>
+          <p>{{modelPartnerOrg.firstName +" "+modelPartnerOrg.lastName}}</p>
         </div>
         <div class="Partnership__seperator">
           <p><b>Contact’s Position</b></p>
-          <p>Head of human resouces</p>
+          <p>{{modelPartnerOrg.position}}</p>
         </div>
         <div class="Partnership__seperator">
           <p><b>Contact’s Email</b></p>
-          <p>c.rodriguez@charity.org</p>
+          <p>{{modelPartnerOrg.email}}</p>
         </div>
         <div class="Partnership__seperator">
           <p><b>Contact’s Telephone</b></p>
-          <p>+692138858881</p>
+          <p>{{modelPartnerOrg.phone}}</p>
         </div>
       </div>
 
@@ -59,31 +59,31 @@
           <h3>Projects</h3>
         </div>
 
-        <div>
-          <h6>Food security. School lunch programme</h6>
+        <div *ngFor="let project of modelPartnerOrg.projects">
+          <h6>{{project.title}}</h6>
           <p><b>Sectors</b></p>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
-              <div class="water"></div>
-              <label>WaSH</label></div>
+              <div class="{{sectorIcons[project.sector[0]]}}"></div>
+              <label>{{sectorLabels[project.sector[0]]}}</label></div>
           </div>
           <p><b>Project End date</b></p>
-          <p>03/18</p>
+          <p>{{project.endDate | date:"MM/yy"}}</p>
           <hr>
         </div>
 
-        <div>
-          <h6>Food security. School lunch programme</h6>
-          <p><b>Sectors</b></p>
-          <div class="Selection-row">
-            <div class="Item__selectable Icon__selectable">
-              <div class="water"></div>
-              <label>WaSH</label></div>
-          </div>
-          <p><b>Project End date</b></p>
-          <p>03/18</p>
-          <hr>
-        </div>
+        <!--<div>-->
+        <!--<h6>Food security. School lunch programme</h6>-->
+        <!--<p><b>Sectors</b></p>-->
+        <!--<div class="Selection-row">-->
+        <!--<div class="Item__selectable Icon__selectable">-->
+        <!--<div class="water"></div>-->
+        <!--<label>WaSH</label></div>-->
+        <!--</div>-->
+        <!--<p><b>Project End date</b></p>-->
+        <!--<p>03/18</p>-->
+        <!--<hr>-->
+        <!--</div>-->
 
         <div class="Form-submit__wrapper margin-top-eight">
           <button class="btn btn-success">Validate partnership</button>
