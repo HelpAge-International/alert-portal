@@ -29,40 +29,46 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
           this.accessToken = params["token"];
           this.partnerOrgId = params["partnerId"];
 
-          // let invalid = true;
-          // //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
-          // this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
-          //   .takeUntil(this.ngUnsubscribe)
-          //   .subscribe((validationToken) => {
-          //     if (validationToken) {
-          //       if (this.accessToken === validationToken.token) {
-          //         let expiry = validationToken.expiry;
-          //         let currentTime = moment.utc();
-          //         let tokenExpiryTime = moment.utc(expiry)
-          //
-          //         if (currentTime.isBefore(tokenExpiryTime))
-          //           invalid = false;
-          //       }
-          //
-          //       if (!invalid) {
-          //         this.userType = UserType.PartnerOrganisation;
-          //         this.uid = this.partnerOrganisationId;
-          //         this.isDirector = false;
-          //
-          //         this.loadResponsePlan(this.responsePlanId);
-          //       } else {
-          //         this.navigateToLogin();
-          //       }
-          //     } else {
-          //       this.navigateToLogin();
-          //     }
-          //   });
+          //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+          this.af.database.object(Constants.APP_STATUS + "/partnerOrganisationValidation/" + this.partnerOrgId + "/validationToken")
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((validationToken) => {
+              if (validationToken) {
+                if (this.accessToken === validationToken.token) {
+                  let expiry = validationToken.expiry;
+                  let currentTime = moment.utc();
+                  let tokenExpiryTime = moment.utc(expiry);
 
+                  if (currentTime.isAfter(tokenExpiryTime)) {
+                    this.navigateToLogin();
+                  }
+
+                  this.loadPartnerOrgInfo(this.partnerOrgId);
+
+                } else {
+                  this.navigateToLogin();
+                }
+              } else {
+                this.navigateToLogin();
+              }
+            });
+        } else {
+          this.navigateToLogin();
         }
       });
   }
 
   ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  private loadPartnerOrgInfo(partnerOrgId: string) {
+
+  }
+
+  private navigateToLogin() {
+    this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
 }
