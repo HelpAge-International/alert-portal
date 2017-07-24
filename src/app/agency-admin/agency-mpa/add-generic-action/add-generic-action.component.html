@@ -28,6 +28,7 @@
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
         <select class="form-control" [(ngModel)]="categorySelected">
+          <option value="0" selected>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.ALL_CATEGORIES" | translate}}</option>
           <option *ngFor="let category of categoriesList" [value]="category">{{Category[category] | translate}}</option>
         </select>
       </div>
