@@ -4,62 +4,74 @@ import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../utils/Constants";
 import * as moment from "moment";
-import {UserType} from "../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../utils/Enums";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
+import {CommonService} from "../../services/common.service";
+import {AlertMessageModel} from "../../model/alert-message.model";
+
+declare var jQuery: any;
 
 @Component({
   selector: 'app-partner-validation',
   templateUrl: './partner-validation.component.html',
-  styleUrls: ['./partner-validation.component.css']
+  styleUrls: ['./partner-validation.component.css'],
+  providers: [PartnerOrganisationService, CommonService]
 })
 export class PartnerValidationComponent implements OnInit, OnDestroy {
 
-  private sectorIcons = Constants.RESPONSE_PLANS_SECTORS_ICONS;
+
+  private sectorIcons = ResponsePlanSectors;
   private sectorLabels = Constants.RESPONSE_PLANS_SECTORS;
+  private COUNTRIES = Constants.COUNTRIES;
+  private alertMessageType = AlertMessageType;
 
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private accessToken: string;
   private partnerOrgId: string;
+  private areaJson: {};
+  private alertMessage: AlertMessageModel = null;
   private modelPartnerOrg: PartnerOrganisationModel = new PartnerOrganisationModel();
 
   constructor(private af: AngularFire,
               private router: Router,
               private orgService: PartnerOrganisationService,
+              private commonService: CommonService,
               private route: ActivatedRoute) {
   }
 
   ngOnInit() {
     this.route.params
-      .take(1)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["token"] && params["partnerId"]) {
           this.accessToken = params["token"];
           this.partnerOrgId = params["partnerId"];
-          console.log(this.accessToken);
 
           //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
           this.af.database.object(Constants.APP_STATUS + "/partnerOrganisationValidation/" + this.partnerOrgId + "/validationToken")
             .takeUntil(this.ngUnsubscribe)
             .subscribe((validationToken) => {
               if (validationToken) {
-                console.log("has valdiation token");
                 if (this.accessToken === validationToken.token) {
-                  console.log("token is right one")
                   let expiry = validationToken.expiry;
                   let currentTime = moment.utc();
                   let tokenExpiryTime = moment.utc(expiry);
 
                   if (currentTime.isAfter(tokenExpiryTime)) {
-                    console.log("time expired")
                     this.navigateToLogin();
                     return;
                   }
 
-                  console.log("load pratner org info")
-                  this.loadPartnerOrgInfo(this.partnerOrgId);
+                  this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(areaJson => {
+                      this.areaJson = areaJson;
+                      this.loadPartnerOrgInfo(this.partnerOrgId);
+                    });
+
 
                 } else {
                   this.navigateToLogin();
@@ -74,6 +86,21 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
       });
   }
 
+  showAffectedAreasForPartner() {
+    jQuery("#view-areas").modal("show");
+  }
+
+  validatePartnership() {
+    this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + this.partnerOrgId + "/isApproved").set(true).then(() => {
+      this.alertMessage = new AlertMessageModel("Successfully validate partnership!", AlertMessageType.Success);
+      setTimeout(() => {
+        this.router.navigateByUrl(Constants.LOGIN_PATH)
+      }, Constants.ALERT_REDIRECT_DURATION)
+    }, error => {
+      this.alertMessage = new AlertMessageModel(error.message);
+    })
+  }
+
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -82,9 +109,11 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
   private loadPartnerOrgInfo(partnerOrgId: string) {
     this.orgService.getPartnerOrganisation(partnerOrgId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(org =>{
-        console.log(org);
+      .subscribe(org => {
         this.modelPartnerOrg = org;
+        this.modelPartnerOrg.projects.forEach(project => {
+          project.sector = Object.keys(project.sector);
+        });
       });
   }
 

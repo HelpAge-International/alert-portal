@@ -1,11 +1,13 @@
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 <div id="wrap"><!-- start #wrap -->
-
   <div class="Header_bar">
 
     <div class="Header_bar__wrap--inner">
       <div class="logo"></div>
     </div>
   </div>
+
 
   <!--Start Put page data-->
   <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -33,7 +35,10 @@
 
         <div class="Partnership__seperator">
           <p><b>Areas of operation</b></p>
-          <p>Leyte, Cebu, Lloilo</p>
+          <a href="javascript:void(0)" class="text-primary" (click)="showAffectedAreasForPartner()">
+            {{'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW_FOR_PROJECTS' | translate}} {{modelPartnerOrg.projects.length}}
+            {{'COUNTRY_ADMIN.PROFILE.PARTNERS.PROJECTS_LOWERCASE' | translate}}
+          </a>
         </div>
         <div class="Partnership__seperator">
           <p><b>Contact’s Name</b></p>
@@ -63,9 +68,9 @@
           <h6>{{project.title}}</h6>
           <p><b>Sectors</b></p>
           <div class="Selection-row">
-            <div class="Item__selectable Icon__selectable">
-              <div class="{{sectorIcons[project.sector[0]]}}"></div>
-              <label>{{sectorLabels[project.sector[0]]}}</label></div>
+            <div *ngFor="let sector of project.sector" class="Item__selectable Icon__selectable">
+              <div class="{{sectorIcons[sector]}}"></div>
+              <label>{{sectorLabels[sector] | translate}}</label></div>
           </div>
           <p><b>Project End date</b></p>
           <p>{{project.endDate | date:"MM/yy"}}</p>
@@ -86,7 +91,10 @@
         <!--</div>-->
 
         <div class="Form-submit__wrapper margin-top-eight">
-          <button class="btn btn-success">Validate partnership</button>
+          <button *ngIf="!modelPartnerOrg.isApproved" class="btn btn-success" (click)="validatePartnership()">Validate
+            partnership
+          </button>
+          <button *ngIf="modelPartnerOrg.isApproved" class="btn btn-ghost" disabled>Approved already</button>
         </div>
       </div>
     </div>
@@ -94,5 +102,31 @@
 
 
 </div><!-- end #wrap -->
+
+<!-- Areas of operation popup-->
+<div class="modal fade" id="view-areas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' |
+          translate }}</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-left" *ngIf="modelPartnerOrg.projects">
+          <div *ngFor="let project of modelPartnerOrg.projects">
+            <p><strong>{{project.title}}</strong></p>
+            <p *ngFor="let affectedArea of project.operationAreas">{{COUNTRIES[affectedArea.country] | translate}}
+              {{affectedArea.level1?areaJson[affectedArea.country]["levelOneValues"][affectedArea.level1].value:""}}
+              {{affectedArea.level2?areaJson[affectedArea.country]["levelOneValues"][affectedArea.level1]["levelTwoValues"][affectedArea.level2].value:""}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
