@@ -41,6 +41,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private isCountryAdmin: boolean = false;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  private didOpenInitialSection: boolean = false;
 
   private pageTitle: string = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TITLE_TEXT";
 
@@ -414,7 +415,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.sectorsRelatedTo.forEach(sector => {
       let sectorInfo = {};
       sectorInfo["sourcePlan"] = -1;
-      sectorInfo["bullet1"] = " "; 
+      sectorInfo["bullet1"] = " ";
       sectorInfo["bullet2"] = " ";
       sectorInfo["activities"] = false;
 
@@ -427,7 +428,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           }
         });
 
-        sectorInfo["activities"] = activities; 
+        sectorInfo["activities"] = activities;
       }
 
       let activityInfo = this.activityInfoMap.get(sector);
@@ -1353,6 +1354,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.totalSections = 0;
           list.forEach(item => {
             this.responsePlanSettings[item.$key] = item.$value;
+
             if (item.$value) {
               this.totalSections++;
             }
@@ -1549,7 +1551,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection7(responsePlan: ResponsePlan) {
-    console.log(responsePlan.sectors);
     if (responsePlan.sectors) {
       let sectors: {} = responsePlan.sectors;
       Object.keys(sectors).forEach(sectorKey => {
@@ -1892,5 +1893,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  openInitialSection(id){
+    if(!this.didOpenInitialSection){
+      jQuery(id).trigger('click');
+      this.didOpenInitialSection = true;
+    }
   }
 }
