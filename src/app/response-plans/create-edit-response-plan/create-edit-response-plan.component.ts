@@ -20,6 +20,7 @@ import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+
 declare var jQuery: any;
 
 @Component({
@@ -420,10 +421,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       sectorInfo["activities"] = false;
 
       let activities = this.activityMap.get(sector);
-      if(activities){
+      if (activities) {
         activities.forEach(activity => {
-          if(activity.isEmpty())
-          {
+          if (activity.isEmpty()) {
             activities = activities.filter(x => x != activity);
           }
         });
@@ -432,10 +432,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       }
 
       let activityInfo = this.activityInfoMap.get(sector);
-      if(activityInfo)
-      {
+      if (activityInfo) {
         if (activityInfo["sourcePlan"]) {
-            sectorInfo["sourcePlan"] = activityInfo["sourcePlan"];
+          sectorInfo["sourcePlan"] = activityInfo["sourcePlan"];
         }
         if (activityInfo["bullet1"]) {
           sectorInfo["bullet1"] = activityInfo["bullet1"];
@@ -1019,44 +1018,39 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   saveActivity(sector, activity: ModelPlanActivity, index) {
     let error = activity.validate();
-    if(!error)
-    {
+    if (!error) {
       this.activeActivity[sector] = null;
-    }else{
+    } else {
       this.activityError[sector] = [];
       this.activityError[sector][index] = error.message;
     }
   }
 
-  viewActivity(sector, activity)
-  {
+  viewActivity(sector, activity) {
     this.activeActivity[sector] = activity;
   }
 
-  removeActivity(sector, activity)
-  {
+  removeActivity(sector, activity) {
     this.activityMap.set(sector, this.activityMap.get(sector).filter(x => x != activity));
     this.activeActivity[sector] = null;
   }
 
   addActivity(sector) {
     let activity = new ModelPlanActivity(null, null, null, null);
-    if(this.activityMap.get(sector))
-    {
+    if (this.activityMap.get(sector)) {
       this.activityMap.get(sector).push(activity);
-    }else{
+    } else {
       this.activityMap.set(sector, [activity]);
     }
     this.activeActivity[sector] = activity;
   }
 
-  getNumberOfActivities(sector){
+  getNumberOfActivities(sector) {
     let activitiesNumber = 0;
-    if(this.activityMap.get(sector))
-    {
+    if (this.activityMap.get(sector)) {
       let activities = this.activityMap.get(sector);
       activities.forEach(activity => {
-        if(!activity.isEmpty()){
+        if (!activity.isEmpty()) {
           activitiesNumber++;
         }
       })
@@ -1201,14 +1195,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
     }
 
-    if(this.forEditing && !this.isDoubleCountingDone){
+    if (this.forEditing && !this.isDoubleCountingDone) {
       this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
       this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
       this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
       this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
       this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
       this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
-    }else{
+    } else {
       if (!this.isDoubleCountingDone) {
         this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
         this.adjustedFemale18To50 = this.numberFemale18To50;
@@ -1570,7 +1564,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         //activities list load back
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
         let moreData: {}[] = [];
-        if(activitiesData){
+        if (activitiesData) {
           Object.keys(activitiesData).forEach(key => {
             let beneficiary = [];
             activitiesData[key]["beneficiary"].forEach(item => {
@@ -1583,7 +1577,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
               this.addActivityToggleMap.set(Number(sectorKey), true);
             }
           });
-        }else{
+        } else {
           this.addActivity(Number(sectorKey)); // adds a new activity if the sector has none
         }
       });
@@ -1794,7 +1788,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         newResponsePlan.editingUserId = null;
         this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
           console.log("Response plan successfully updated");
-          this.router.navigateByUrl('response-plans');
+          //if edit, delete approval data and any validation token
+          let resetData = {};
+          resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+          resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+          this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+            this.router.navigateByUrl('response-plans');
+          }, error => {
+            console.log(error.message);
+          });
         }).catch(error => {
           console.log("Response plan creation unsuccessful with error --> " + error.message);
         });
@@ -1895,8 +1897,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
-  openInitialSection(id){
-    if(!this.didOpenInitialSection){
+  openInitialSection(id) {
+    if (!this.didOpenInitialSection) {
       jQuery(id).trigger('click');
       this.didOpenInitialSection = true;
     }

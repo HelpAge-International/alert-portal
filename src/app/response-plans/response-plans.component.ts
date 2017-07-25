@@ -13,6 +13,7 @@ import {MessageModel} from "../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "../services/notification.service";
 import {ResponsePlan} from "../model/responsePlan";
+
 declare const jQuery: any;
 
 @Component({
@@ -240,17 +241,17 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkEditingAllowed(responsePlan){
+  checkEditingAllowed(responsePlan) {
     this.responsePlanToEdit = responsePlan;
-    if(responsePlan.status == ApprovalStatus.Approved){
+    if (responsePlan.status == ApprovalStatus.Approved) {
       jQuery("#dialog-responseplan-editing").modal("show");
       this.dialogTitle = "Warning!";
       this.dialogContent = "This response plan is currently submitted for approval. Are you sure you want to edit this plan?";
-    }else if(responsePlan.status == ApprovalStatus.WaitingApproval){
+    } else if (responsePlan.status == ApprovalStatus.WaitingApproval) {
       jQuery("#dialog-responseplan-editing").modal("show");
       this.dialogTitle = "Warning!";
       this.dialogContent = "This response plan is currently waiting for approval. Are you sure you want to edit this plan?";
-    }else{
+    } else {
       this.editResponsePlan()
     }
   }
@@ -299,7 +300,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   archivePlan(plan) {
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
+    //same as edit, need to reset approval status and validation process
+    let updateData = {};
+    updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/approval"] = null;
+    updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = false;
+    updateData["/responsePlanValidation/" + plan.$key] = null;
+    this.af.database.object(Constants.APP_STATUS).update(updateData);
+    // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
   }
 
   confirmDialog() {
@@ -421,7 +428,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   closeModal(model: string) {
-      jQuery(model).modal("hide");
+    jQuery(model).modal("hide");
   }
 
   private navigateToLogin() {
@@ -505,10 +512,17 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {
-          console.log(list);
           this.notesMap.set(plan.$key, list);
         });
     }
+  }
+
+  checkStatus(plan): boolean {
+    let showSubmit = true;
+    if (plan.approval) {
+      showSubmit = !Object.keys(plan.approval).includes("countryDirector");
+    }
+    return showSubmit;
   }
 
 }

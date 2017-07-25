@@ -76,14 +76,13 @@
 
                     <div
                       *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 1"
-                      class="col-12 text-left text-warning">
-                      {{"RESPONSE_PLANS.HOME.REQUIRE_APPROVAL" |
-                      translate}}<i
-                      class="fa fa-exclamation-circle Right-aligned" aria-hidden="true"></i></div>
+                      class="col-12 text-left text-muted">
+                      {{"RESPONSE_PLANS.HOME.WAITING_APPROVAL" |
+                      translate}}<i class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
                     <div
                       *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 2"
                       class="col-12 text-left text-success text-right">
-                      {{"RESPONSE_PLANS.HOME.APPROVAL" |
+                      {{"RESPONSE_PLANS.HOME.APPROVED" |
                       translate}}<i
                       class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
                     </div>
@@ -246,7 +245,8 @@
                   translate}}</a>
                 <a class="dropdown-item" (click)="checkEditingAllowed(plan)">{{"RESPONSE_PLANS.HOME.EDIT_PLAN" |
                   translate}}</a>
-                <a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"
+                <!--<a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"-->
+                <a class="dropdown-item" *ngIf="checkStatus(plan)"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
                 <a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner && partnersMap.get(plan.$key)"
                    class="dropdown-item"

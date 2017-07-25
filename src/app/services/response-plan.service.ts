@@ -109,8 +109,13 @@ export class ResponsePlanService {
             console.log(error.message);
           });
         }
+
+        //update response plan status
+        if (orgUserMap.size === partnerOrgIds.length) {
+          this.af.database.object(Constants.APP_STATUS+"/responsePlan/"+passedCountryId+"/"+plan.$key+"/status").set(ApprovalStatus.WaitingApproval);
+        }
+
       });
-    // }
   }
 
   getResponsePlan(countryId, responsePlanId) {
@@ -130,6 +135,7 @@ export class ResponsePlanService {
       }
 
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+
 
         this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
           .take(1)
