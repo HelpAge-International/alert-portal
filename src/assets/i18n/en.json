@@ -1830,7 +1830,7 @@
             "ADD_LOG_ENTRY": "ADD LOG ENTRY",
             "EXPORT_LOG": "EXPORT LOG",
             "MY_SOURCES_INFORMATION": "My Sources of Information",
-            "NO_INDICATORS": "You have not added any indicators year.",
+            "NO_INDICATORS": "You have not added any indicators yet.",
             "SEASONAL_HAZARD": "Seasonal hazard",
             "PLACEHOLDER_ADD_LOG": "Add a log entry",
             "ARCHIVED_HAZARDS": "Archived Hazards",
