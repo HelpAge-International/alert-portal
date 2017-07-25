@@ -40,7 +40,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   public minThreshGreen: number;
 
   // Maps location -> [hazards]
-  private countryToHazardScenarioList: Map<number, number[]> = new Map<number, number[]>();
+  private countryToHazardScenarioList: Map<number, Set<number>> = new Map<number, Set<number>>();
 
   private userTypePath: string;
 
@@ -144,23 +144,25 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
             }
           }
         });
-        let listOfActiveHazards: number[] = [];
+        let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.countryToHazardScenarioList.get(country.location) != null) {
+          listOfActiveHazards = this.countryToHazardScenarioList.get(country.location);
+        }
         hazardRedAlert.forEach((value, key) => {
           if (value) {
-            listOfActiveHazards.push(key);
+            listOfActiveHazards.add(key);
           }
         });
-        if (listOfActiveHazards.length != 0) {
+        if (listOfActiveHazards.size != 0) {
           this.countryToHazardScenarioList.set(country.location, listOfActiveHazards);
         }
-        console.log(this.countryToHazardScenarioList);
         this.drawHazardMarkers();
       });
   }
 
   private drawHazardMarkers() {
     this.countryToHazardScenarioList.forEach((v, k) => {
-      if (v.length > 0) {
+      if (v.size > 0) {
         let position = 0;
         let scenarios = Array.from(v);
         scenarios.forEach(item => {

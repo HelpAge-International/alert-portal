@@ -205,6 +205,9 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
           }
         });
         let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.hazardMap.get(country.location) != null) {
+          listOfActiveHazards = this.hazardMap.get(country.location);
+        }
         hazardRedAlert.forEach((value, key) => {
           if (value) {
             listOfActiveHazards.add(key);
