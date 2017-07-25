@@ -552,7 +552,7 @@ export class CountriesMapsSearchInterface {
   static listOfCountries() {
     let countriesSearchList: Map<Countries, string> = new Map<Countries, string>();
     countriesSearchList.set(Countries.AF, "Afghanistan");
-    countriesSearchList.set(Countries.AX, "Åland Islands");
+    countriesSearchList.set(Countries.AX, "Aland Islands");
     countriesSearchList.set(Countries.AL, "Albania");
     countriesSearchList.set(Countries.DZ, "Algeria");
     countriesSearchList.set(Countries.AS, "American Samoa");

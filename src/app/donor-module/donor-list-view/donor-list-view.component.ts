@@ -5,7 +5,7 @@ import {SuperMapComponents, SDepHolder} from "../../utils/MapHelper";
 import {RegionHolder} from "../../map/map-countries-list/map-countries-list.component";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Countries, AlertLevels} from "../../utils/Enums";
+import {Countries, AlertLevels, HazardScenario} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {HazardImages} from "../../utils/HazardImages";
@@ -161,19 +161,59 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
     });
   }
 
+  // private getHazardInfo(country: any) {
+  //   this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+  //     .takeUntil(this.ngUnsubscribe)
+  //     .subscribe(country => {
+  //       this.countryLocationMap.set(country.$key, Number(country.location));
+  //       this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
+  //         .takeUntil(this.ngUnsubscribe)
+  //         .subscribe(hazards => {
+  //           hazards.forEach(hazard => {
+  //             let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
+  //             this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
+  //           });
+  //         });
+  //     });
+  // }
+
+
   private getHazardInfo(country: any) {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+    console.log(country);
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + country.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(country => {
-        this.countryLocationMap.set(country.$key, Number(country.location));
-        this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(hazards => {
-            hazards.forEach(hazard => {
-              let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
-              this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
-            });
-          });
+      .subscribe(snap => {
+        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+        let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.hazardMap.get(country.location) != null) {
+          listOfActiveHazards = this.hazardMap.get(country.location);
+        }
+        hazardRedAlert.forEach((value, key) => {
+          if (value) {
+            listOfActiveHazards.add(key);
+          }
+        });
+        this.hazardMap.set(country.location, listOfActiveHazards);
       });
   }
 
