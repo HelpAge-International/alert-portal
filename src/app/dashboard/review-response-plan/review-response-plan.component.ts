@@ -234,6 +234,18 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  hideApproveButton():boolean {
+    let hiddenButton = false;
+    if (this.accessToken && this.partnerOrganisationId) {
+      this.partnerApproveList.forEach(item =>{
+        if (item.id === this.partnerOrganisationId && item.status === ApprovalStatus.Approved) {
+          hiddenButton = true;
+        }
+      });
+    }
+    return hiddenButton;
+  }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
