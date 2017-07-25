@@ -12,6 +12,7 @@ import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import _date = moment.unitOfTime._date;
+import { HazardImages } from "../utils/HazardImages";
 
 
 declare var jQuery: any;
@@ -612,4 +613,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
+    
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
 }
