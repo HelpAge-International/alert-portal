@@ -1610,6 +1610,14 @@ function continueToNextRibbon(element) {
     $(element).parent().parent().next().find(".Ribbon__header__wrap, .Ribbon__header__chevron").addClass("Active");
 }
 
+function continueToNextRibbonCreateEditResPlans(element) {
+  $(".Ribbon__header__wrap, .Ribbon__response, .Ribbon__header__chevron").removeClass("Active");
+  $(".Response__content").slideUp();
+  $(element).parent().parent().parent().next().find(".Response__content").slideDown();
+  $(element).parent().parent().parent().next().find(".Ribbon__response").addClass("Active");
+  $(element).parent().parent().parent().next().find(".Ribbon__header__wrap, .Ribbon__header__chevron").addClass("Active");
+}
+
 $(".collapse").on("shown.bs.collapse", function(e) {
     if (!$(e.target).hasClass("prevent_parent_collapse")) {
         $(this).prev().find(".fa-caret-down").removeClass("fa-caret-down").addClass("fa-caret-up");
