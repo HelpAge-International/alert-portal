@@ -273,7 +273,9 @@
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog">
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
+                        [disabled]="!indicatorC.logs || indicatorC.logs.length < 1"
+                        (click)="setExportLog(indicatorC.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                       </button>
                     </div>
@@ -539,7 +541,9 @@
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog">
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
+                        [disabled]="!indicator.logs || indicator.logs.length < 1"
+                        (click)="setExportLog(indicator.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                       </button>
                     </div>
@@ -573,69 +577,6 @@
                 <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
               </div>
             </div>
-
-            <!--Export Log Modal-->
-            <div class="modal fade" id="exportLog" tabindex="-1" role="dialog" aria-labelledby="exportLogModalLabel"
-                 aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h6 class="modal-title" id="exportLogModalLabel">Export Log</h6>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body text-center">
-                    <p class="text-left col-sm-12">Please select the date range you would to export</p>
-                    <div class="row col-sm-12">
-                      <div class="col-sm-6">
-                        <label>From</label>
-                        <!--Dropdown menu From-->
-                        <div class="form-group">
-                          <select class="form-control" id="select1">
-                            <option>15/02/2016</option>
-                            <option>15/03/2016</option>
-                            <option>15/04/2016</option>
-                            <option>15/05/2016</option>
-                            <option>15/06/2016</option>
-                          </select>
-                        </div>
-                      </div>
-                      <!--Dropdown menu to-->
-                      <div class="col-sm-6">
-                        <label>To</label>
-                        <div class="form-group">
-                          <select class="form-control" id="select1">
-                            <option>15/02/2017</option>
-                            <option>15/03/2017</option>
-                            <option>15/04/2017</option>
-                            <option>15/05/2017</option>
-                            <option>15/06/2017</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="container">
-                      <div class="row">
-                        <div class='col-sm-6'>
-                        </div>
-                      </div>
-                      <p class="text-left">Please Enter the email address where export will be sent</p>
-                      <div class="text-left col-sm-0"><strong>Email Address</strong></div>
-                      <div class="row col-sm-12">
-                        <input type="email" class="form-control form-control-sm" id="smFormGroupInput"
-                               placeholder="you@example.com">
-                      </div>
-                      <div class="row Right-aligned Spaced col-sm-12">
-                        <a href="#" class="px-1 col-sm-8">Cancel</a>
-                        <button href="#" class="btn-primary col-sm-4">EXPORT</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--Export Log Modal-->
 
           </div><!--Card-block Div End-->
         </div><!--Card Div End-->
@@ -891,7 +832,9 @@
                         </div>
                         <!--export log button-->
                         <div class="export_log mt-auto p-2">
-                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog">
+                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
+                            [disabled]="!indicator.logs || indicator.logs.length < 1"
+                            (click)="setExportLog(indicator.logs)">
                             {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                           </button>
                         </div>
@@ -1089,3 +1032,51 @@
   </div>
 </div>
 
+<!--Export Log Modal-->
+<div class="modal fade" id="exportLog" tabindex="-1" role="dialog" aria-labelledby="exportLogModalLabel"
+      aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exportLogModalLabel">Export Log</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="text-left col-sm-12">Please select the date range you would to export</p>
+        <div class="row col-sm-12">
+          <div class="col-sm-6">
+            <label>From</label>
+            <!--Dropdown menu From-->
+            <div class="form-group">
+              <material-datepicker id="fromDate"
+                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(fromDate, 'fromDate')"
+                  [(date)]="fromDate"></material-datepicker>
+            </div>
+          </div>
+          <!--Dropdown menu to-->
+          <div class="col-sm-6">
+            <label>To</label>
+            <div class="form-group">
+              <material-datepicker id="toDate"
+                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(toDate, 'toDate')"
+                  [(date)]="toDate"></material-datepicker>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class='col-sm-6'>
+            </div>
+          </div>
+          <div class="row Right-aligned Spaced col-sm-12">
+            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">Cancel</a>
+            <button href="javascript:void(0)" class="btn btn-primary col-sm-4" (click)="exportLog(logsToExport)">EXPORT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Export Log Modal-->

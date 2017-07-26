@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../utils/Enums";
+import { AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType, ThresholdName } from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -14,8 +14,9 @@ import * as moment from "moment";
 import _date = moment.unitOfTime._date;
 import { HazardImages } from "../utils/HazardImages";
 
-
 declare var jQuery: any;
+import * as jsPDF from 'jspdf'
+
 @Component({
   selector: 'app-risk-monitoring',
   templateUrl: './risk-monitoring.component.html',
@@ -95,6 +96,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
+  private logsToExport: any;
+  private fromDate: string;
+  private fromDateTimeStamp: number;
+  private toDate: string;
+  private toDateTimeStamp: number;
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
     this.tmpLogData['content'] = '';
@@ -619,5 +626,69 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
+  }
+
+  setExportLog(logs: any[]){
+    this.logsToExport = logs;
+    console.log(this.logsToExport);
+  }
+
+  selectDate(value, dateType)
+  {
+    if(dateType === 'fromDate')
+    {
+      this.fromDateTimeStamp = moment(value).startOf("day").valueOf();
+    }else{
+      this.toDateTimeStamp = moment(value).endOf("day").valueOf();
+    }
+  }
+
+  exportLog(logs: any[]){
+    var doc = new jsPDF();
+    doc.setFontType("normal");
+    doc.setFontSize("12");
+
+    var totalPageHeight = doc.internal.pageSize.height;
+    var pageHeight = totalPageHeight - 20;
+
+    let x = 10;
+    let y = 10;
+
+    logs.forEach(log => {
+      if((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp ))
+      {    
+        if (y > pageHeight) {
+            y = 10;
+            doc.addPage();
+        }
+        doc.text(x, y+=10, 'Date: ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
+        
+        if (y > pageHeight) {
+            y = 10;
+            doc.addPage();
+        }
+        doc.text(x, y+=10, 'Indicator Status: ' + ThresholdName[log.triggerAtCreation]);
+        
+        if (y > pageHeight) {
+            y = 10;
+            doc.addPage();
+        }
+        doc.text(x, y+=10, 'Author: ' + log.addedByFullName);
+        
+        let message = doc.splitTextToSize(log['content'], 180);
+        message.forEach((m, index) => {
+          if (y > pageHeight) {
+            y = 10;
+            doc.addPage();
+          }
+          doc.text(x, y+=10, index === 0 ? 'Message: '+m : m);
+        })
+
+        doc.text(x, y+=10, ' '); 
+      }
+    });
+
+    // Save the PDF
+    doc.save('logs.pdf');
   }
 }
