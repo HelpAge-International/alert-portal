@@ -8,8 +8,8 @@
     <div class="Header-title__wrap">
       <h1>{{"RESPONSE_PLANS.HOME.TITLE" | translate}}</h1>
       <tooltip
-      [level1]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL1'"
-      [level2]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL2'">
+        [level1]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL1'"
+        [level2]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL2'">
       </tooltip>
       <button *ngIf="!isViewing" class="btn btn-primary" (click)="goToCreateNewResponsePlan()">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
@@ -67,31 +67,56 @@
                   <div *ngFor="let partnerOrg of plan?.partnerOrganisations; index as i"
                        class="row no-gutters Small-spaced">
                     <div>
-                    <div class="col-12 text-left">Partner {{i+1}}</div>
-                    <div
-                      *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)])"
-                      class="col-12 text-left text-warning">
-                      {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" | translate}}
-                      <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i></div>
+                      <div class="col-12 text-left">Partner {{i+1}}</div>
+                      <div
+                        *ngIf="!(plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)])"
+                        class="col-12 text-left text-warning">
+                        {{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" | translate}}
+                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i></div>
 
-                    <div
-                      *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 1"
-                      class="col-12 text-left text-muted">
-                      {{"RESPONSE_PLANS.HOME.WAITING_APPROVAL" |
-                      translate}}<i class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
-                    <div
-                      *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 2"
-                      class="col-12 text-left text-success text-right">
-                      {{"RESPONSE_PLANS.HOME.APPROVED" |
-                      translate}}<i
-                      class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
+                      <div
+                        *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 1"
+                        class="col-12 text-left text-muted">
+                        {{"RESPONSE_PLANS.HOME.WAITING_APPROVAL" |
+                        translate}}<i class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
+                      <div
+                        *ngIf="plan?.approval?.partner && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] && plan?.approval?.partner[partnersApprovalMap.get(partnerOrg)] == 2"
+                        class="col-12 text-left text-success text-right">
+                        {{"RESPONSE_PLANS.HOME.APPROVED" |
+                        translate}}<i
+                        class="fa fa-check-circle margin-left-one" aria-hidden="true"></i></div>
                     </div>
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
+                  <!--not submit yet-->
+                  <div *ngIf="plan?.approval && plan?.approval['partner'] && !plan?.approval['countryDirector']">
+                    <div *ngIf="directorSubmissionRequireMap.get(1)" class="row no-gutters Small-spaced">
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" | translate}}</div>
+                      <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                        translate}}
+                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                    <div *ngIf="directorSubmissionRequireMap.get(2)" class="row no-gutters Small-spaced">
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" | translate}}</div>
+                      <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                        translate}}
+                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                    <div *ngIf="directorSubmissionRequireMap.get(3)" class="row no-gutters Small-spaced">
+                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}</div>
+                      <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
+                        translate}}
+                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
 
+                  <!--after submit for approval-->
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
 
                     <div *ngIf="idx==0">
@@ -99,36 +124,46 @@
                         translate}}
                       </div>
 
-                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[0])" [class.text-muted]="!getApproveStatus(getApproves(plan)[0])">
-                          {{getApproveStatus(getApproves(plan)[0]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
-                          <i class="fa fa-check-circle" aria-hidden="true"></i>
+                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[0])"
+                           [class.text-muted]="!getApproveStatus(getApproves(plan)[0])">
+                        {{getApproveStatus(getApproves(plan)[0]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
+                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                        <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                     </div>
 
-                    <div  *ngIf="idx==1">
+                    <div *ngIf="idx==1">
                       <div class="col-12 text-left">
-                        {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key) ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                        {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key)
+                        ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                         translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                         translate)}}
                       </div>
-                      <div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)" class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[2])" [class.text-muted]="!getApproveStatus(getApproves(plan)[2])">
-                        {{getApproveStatus(getApproves(plan)[2]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                      <div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)"
+                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[2])"
+                           [class.text-muted]="!getApproveStatus(getApproves(plan)[2])">
+                        {{getApproveStatus(getApproves(plan)[2]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
+                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                       <div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))
                            || (!isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key))"
-                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
-                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])"
+                           [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
+                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
+                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                     </div>
 
-                    <div  *ngIf="idx==2">
+                    <div *ngIf="idx==2">
                       <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                         translate}}
                       </div>
-                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])" [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
-                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) : ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
+                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])"
+                           [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
+                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
+                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
                       </div>
                     </div>
@@ -255,9 +290,11 @@
                 <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
                   translate}} <br/> Start Fund
                   (.doc, 78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Excel (.xls,
+                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                  translate}} <br/> Excel (.xls,
                   78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" | translate}} <br/> Word (.doc,
+                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                  translate}} <br/> Word (.doc,
                   78Kb)</a>
                 <a class="dropdown-item"
                    (click)="archivePlan(plan)">{{"RESPONSE_PLANS.HOME.ARCHIVE_PLAN" | translate}}</a>
@@ -276,7 +313,7 @@
           <div class="col-sm-12">
             <h2>{{"RESPONSE_PLANS.HOME.ARCHIVED_PLANS" | translate}}</h2>
             <tooltip
-            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT4.LEVEL1'">
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT4.LEVEL1'">
             </tooltip>
             <a data-toggle="collapse" href="#collapseThree" aria-expanded="false" class="Hide-all">{{"GLOBAL.HIDE_ALL" |
               translate}}</a>
@@ -289,7 +326,9 @@
 
         <div *ngFor="let plan of archivedPlans" class="Accordion Plans-list">
           <div class="row align-items-center Plans-list__item">
-            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan?.hazardScenario] | translate}}</div>
+            <div class="col-md-2 col-sm-2 Plans-list__item--type">{{HazardScenariosList[plan?.hazardScenario] |
+              translate}}
+            </div>
             <div class="col-md-3 col-sm-3">{{plan?.name}}</div>
             <div class="col-md-3 col-sm-2 Plans-list__item--status">
               <a href="#" class=" text-muted" data-toggle="collapse" data-target="#ribbon6" aria-expanded="false"
@@ -333,13 +372,14 @@
         <div class="text-center"><p>{{dialogContent | translate}}</p></div>
         <!--tooltip-->
         <tooltip
-        [level1]="'TOOLTIPS.RESPONSE_PLANS.TT2.LEVEL1'">
+          [level1]="'TOOLTIPS.RESPONSE_PLANS.TT2.LEVEL1'">
         </tooltip>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="confirmDialog()">{{"GLOBAL.CONFIRM" | translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#dialog-action')">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#dialog-action')">
+          {{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>
@@ -360,7 +400,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="closeModal('#dialog-acknowledge')">{{"GLOBAL.OK" | translate}}
+        <button type="button" class="btn btn-primary" (click)="closeModal('#dialog-acknowledge')">{{"GLOBAL.OK" |
+          translate}}
         </button>
       </div>
     </div>
@@ -381,7 +422,8 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="editResponsePlan()">{{"GLOBAL.YES" | translate}}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#dialog-responseplan-editing')">{{"GLOBAL.NO"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#dialog-responseplan-editing')">
+          {{"GLOBAL.NO"| translate}}
         </button>
       </div>
     </div>

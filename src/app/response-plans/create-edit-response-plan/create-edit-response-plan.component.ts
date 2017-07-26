@@ -283,18 +283,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.getSystemAgencyCountryIds(userpath);
       }
     });
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
-    //   let userpath = Constants.USER_PATHS[userType];
-    //   this.getSystemAgencyCountryIds(userpath);
-    //   PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
-    //     this.moduleAccess = isEnabled;
-    //     if (!this.moduleAccess.countryOffice) {
-    //       this.methodOfImplementationSelectedDirect();
-    //     }
-    //   });
-    // });
   }
 
   private prepareData() {
@@ -374,9 +362,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
     newResponsePlan.otherRelatedSector = this.otherRelatedSector;
     newResponsePlan.presenceInTheCountry = this.presenceInTheCountry ? this.presenceInTheCountry : -1;
-
-    // newResponsePlan.methodOfImplementation = this.isDirectlyThroughFieldStaff == true ? MethodOfImplementation.fieldStaff : MethodOfImplementation.withPartner;
-    // newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
 
     if (this.isDirectlyThroughFieldStaff) {
       newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;

@@ -58,6 +58,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private responsePlanToEdit: any;
 
   private approvalsList: any[] = [];
+  private directorSubmissionRequireMap = new Map<number, boolean>();
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -297,6 +298,28 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   submitForPartnerValidation(plan) {
     this.service.submitForPartnerValidation(plan, this.countryId);
+
+    //sort out require submission tag
+    this.directorSubmissionRequireMap.set(1, false);
+    this.directorSubmissionRequireMap.set(2, false);
+    this.directorSubmissionRequireMap.set(3, false);
+    let counter = 0;
+    this.service.getDirectors(this.countryId, this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(result => {
+        counter++;
+        console.log(counter);
+        console.log(result);
+        if (counter === 1 && result.$value && result.$value != null) {
+          this.directorSubmissionRequireMap.set(1, true);
+        }
+        if (counter === 2 && result.$value && result.$value != null) {
+          this.directorSubmissionRequireMap.set(2, true);
+        }
+        if (counter === 3 && result.length > 0) {
+          this.directorSubmissionRequireMap.set(3, true);
+        }
+      });
   }
 
   archivePlan(plan) {
