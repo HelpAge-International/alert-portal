@@ -243,7 +243,7 @@ export class ResponsePlanService {
       });
   }
 
-  getDirectors(countryId, agencyId):Observable<any> {
+  getDirectors(countryId, agencyId): Observable<any> {
     console.log(countryId + "/" + agencyId);
     let directorCountry = this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
     let directorRegion = this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId);
@@ -253,7 +253,7 @@ export class ResponsePlanService {
         equalTo: true
       }
     });
-    return directorCountry.merge(directorRegion).merge(directorGlobal);
+    return Observable.merge(directorCountry, directorRegion, directorGlobal);
   }
 
   serviceDestroy() {

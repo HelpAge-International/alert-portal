@@ -83,6 +83,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (this.userType == UserType.PartnerUser) {
           this.agencyId = agencyId;
           this.countryId = countryId;
+          this.handleRequireSubmissionTagForDirectors();
           this.getResponsePlans(this.countryId);
         } else {
           this.getSystemAgencyCountryIds(userPath);
@@ -100,6 +101,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe((countryId) => {
             this.countryId = countryId.$value;
+            this.handleRequireSubmissionTagForDirectors();
             this.getResponsePlans(this.countryId);
           });
       });
@@ -300,6 +302,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.service.submitForPartnerValidation(plan, this.countryId);
 
     //sort out require submission tag
+    this.handleRequireSubmissionTagForDirectors();
+  }
+
+  private handleRequireSubmissionTagForDirectors() {
     this.directorSubmissionRequireMap.set(1, false);
     this.directorSubmissionRequireMap.set(2, false);
     this.directorSubmissionRequireMap.set(3, false);
@@ -546,6 +552,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       showSubmit = !Object.keys(plan.approval).includes("countryDirector");
     }
     return showSubmit;
+  }
+
+  convertToInt(value):number {
+    return parseInt(value);
   }
 
 }
