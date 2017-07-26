@@ -305,7 +305,9 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     // updateAdminData["/group/agency/" + this.agencyId + "/countryadmins/" + this.tempAdminId] = null;
 
     this.af.database.object(Constants.APP_STATUS).update(updateAdminData).then(() => {
-      this.unassignIndicators(countryId);
+      this.unassignIndicators();
+      this.unassignActions();
+
     }, error => {
       this.hideWarning = false;
       this.waringMessage = error.message;
@@ -313,11 +315,10 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     });
   }
 
-  private unassignIndicators(countryId : string) {
+  private unassignIndicators() {
     console.log(Constants.APP_STATUS + "/indicator/"+this.countryOfficeId);
     this.af.database.list(Constants.APP_STATUS + "/indicator/"+this.countryOfficeId).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {indicators.forEach((indicator, index) => {
         this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.countryOfficeId + "/" + indicator.$key + "/assignee").set(null).then(() => {
-          this.backHome();
         }, error => {
           this.hideWarning = false;
           this.waringMessage = error.message;
@@ -327,6 +328,21 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     });
   }
 
+  private unassignActions() {
+    //TODO From Here
+    console.log(Constants.APP_STATUS + "/actions/"+this.countryOfficeId);
+    this.af.database.list(Constants.APP_STATUS + "/actions/"+this.countryOfficeId).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {actions.forEach((action, index) => {
+      console.log(Constants.APP_STATUS + "/actions/" + this.countryOfficeId + "/" + action.$key);
+      this.af.database.object(Constants.APP_STATUS + "/actions/" + this.countryOfficeId + "/" + action.$key + "/assignee").set(null).then(() => {
+        this.backHome();
+      }, error => {
+        this.hideWarning = false;
+        this.waringMessage = error.message;
+        console.log(error.message);
+      });
+    });
+    });
+  }
 
   private updateData(countryId: string) {
     this.countryData = {};
