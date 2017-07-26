@@ -265,7 +265,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
+      this.uid = user.auth.uid;
       this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
       let userpath = Constants.USER_PATHS[userType];
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
@@ -603,6 +603,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection1() {
 
+    this.checkSection1();
+
+    this.handleContinueSave();
+  }
+
+
+  private checkSection1() {
     if (this.planName != '' && this.geographicalLocation != '' && this.hazardScenarioSelected != null && this.staffMemberSelected != '') {
       this.section1Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[0], true);
@@ -699,6 +706,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection2() {
 
+    this.checkSection2();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection2() {
     let numOfScenarioCrisisPoints: number = Object.keys(this.scenarioCrisisObject).length;
     let numOfImpactOfCrisisPoints: number = Object.keys(this.impactOfCrisisObject).length;
     let numOfAvailabilityOfFundsBulletPoints: number = Object.keys(this.availabilityOfFundsObject).length;
@@ -828,6 +841,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection3() {
 
+    this.checkSection3();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection3() {
     let sectionsSelected: boolean = (this.sectorsRelatedTo.length != 0) || (this.otherRelatedSector != '');
     let presenceSelected: boolean = this.presenceInTheCountry != null;
     let methodOfImplementationSelected: boolean = this.isDirectlyThroughFieldStaff || this.isWorkingWithPartners || this.isWorkingWithStaffAndPartners;
@@ -848,6 +867,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection4() {
 
+    this.checkSection4();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection4() {
     if (this.proposedResponseText != '' && this.progressOfActivitiesPlanText != '' && this.coordinationPlanText != '') {
       this.section4Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[3], true);
@@ -927,6 +952,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection5() {
 
+    this.checkSection5();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection5() {
     let numOfTargetPopulationInvolvementPoints: number = Object.keys(this.targetPopulationInvolvementObject).length;
     let numOfSelectedVulnerableGroups: number = Object.keys(this.selectedVulnerableGroups).length;
 
@@ -945,6 +976,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection6() {
 
+    this.checkSection6();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection6() {
     if (this.riskManagementPlanText != '') {
       this.section6Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[5], true);
@@ -1109,6 +1146,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   continueButtonPressedOnSection7() {
+    this.checkSection7();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection7() {
     let numOfActivities: number = this.activityMap.size;
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
@@ -1139,6 +1182,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection8() {
 
+    this.checkSection8();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection8() {
     if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument && this.mediaFormat != null ||
       this.mALSystemsDescriptionText != '' && !this.intentToVisuallyDocument) {
       this.section8Status = "GLOBAL.COMPLETE";
@@ -1153,6 +1202,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Section 9/10
    */
   continueButtonPressedOnSection9() {
+    this.checkSection9();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection9() {
     if (!this.isDoubleCountingDone) {
       this.section9Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[8], true);
@@ -1287,6 +1342,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   checkSection10Status() {
+    this.checkSection10();
+
+    this.handleContinueSave();
+  }
+
+  private checkSection10() {
     if (this.transportBudget && this.securityBudget && this.logisticsAndOverheadsBudget &&
       this.staffingAndSupportBudget && this.monitoringAndEvolutionBudget &&
       this.capitalItemsBudget && this.managementSupportPercentage && this.checkInputsBudget()) {
@@ -1303,18 +1364,18 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   checkAllSections() {
-    this.continueButtonPressedOnSection1();
-    this.continueButtonPressedOnSection2();
-    this.continueButtonPressedOnSection3();
-    this.continueButtonPressedOnSection4();
-    this.continueButtonPressedOnSection5();
-    this.continueButtonPressedOnSection6();
-    this.continueButtonPressedOnSection7();
-    this.continueButtonPressedOnSection8();
+    this.checkSection1();
+    this.checkSection2();
+    this.checkSection3();
+    this.checkSection4();
+    this.checkSection5();
+    this.checkSection6();
+    this.checkSection7();
+    this.checkSection8();
     // if (this.forEditing) {
     //   this.continueButtonPressedOnSection9();
     // }
-    this.checkSection10Status();
+    this.checkSection10();
   }
 
   goBack() {
@@ -1901,6 +1962,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (!this.didOpenInitialSection) {
       jQuery(id).trigger('click');
       this.didOpenInitialSection = true;
+    }
+  }
+
+  private handleContinueSave() {
+    if (this.forEditing && this.idOfResponsePlanToEdit) {
+      console.log("editing mode");
+    } else {
+      console.log("create new mode");
     }
   }
 }

@@ -595,7 +595,7 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n http://test.portal.alertpreparedness.org;token=${validationToken.token};partnerId=${partnerId}
+                          \n http://test.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {
@@ -686,7 +686,7 @@ exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
-                          \n http://uat.portal.alertpreparedness.org;token=${validationToken.token};partnerId=${partnerId}
+                          \n http://uat.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
         return mailTransport.sendMail(mailOptions).then(() => {
