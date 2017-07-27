@@ -913,6 +913,8 @@ export class Constants {
 
   //firebase error
   static EMAIL_DUPLICATE_ERROR = "auth/email-already-in-use";
+
+  static INDICATOR_STATUS = ["RISK_MONITORING.INDICATOR_STATUS.GREEN","RISK_MONITORING.INDICATOR_STATUS.AMBER","RISK_MONITORING.INDICATOR_STATUS.RED"];
 }
 
 export enum FILE_SETTING {

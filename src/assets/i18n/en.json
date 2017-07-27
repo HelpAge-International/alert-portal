@@ -1758,6 +1758,11 @@
             "SAVE_NEW_INDICATOR": "Save new indicator",
             "TITLE_EDIT_INDICATOR": "Edit Indicator"
         },
+        "INDICATOR_STATUS":{
+            "GREEN": "Green",
+            "AMBER": "Amber",
+            "RED": "Red"
+        },
         "ADD_ALERT": {
             "NO_HAZARD": "Please select hazard",
             "NO_ALERT_LEVEL": "Please select alert level",
@@ -1802,6 +1807,17 @@
             "START_DATE": "Start Date",
             "END_DATE": "End Date",
             "NEXT": "Next"
+        },
+        "EXPORT_LOG": {
+            "TITLE": "Export Log",
+            "SELECT_DATE_RANGE": "Please select the date range you would to export",
+            "FROM": "From",
+            "TO": "To",
+            "EXPORT_BUTTON": "Export",
+            "DATE": "Date:",
+            "INDICATOR_STATUS": "Indicator Status:",
+            "AUTHOR": "Author:",
+            "MESSAGE": "Message:"
         },
         "MAIN_PAGE": {
             "LOGS_NO_CONTENT": "Please enter text for you log.",

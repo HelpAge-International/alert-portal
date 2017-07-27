@@ -103,7 +103,13 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private toDate: string;
   private toDateTimeStamp: number;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private storage: LocalStorageService,
+              private translate: TranslateService,
+              private userService: UserService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -661,19 +667,19 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             y = 10;
             doc.addPage();
         }
-        doc.text(x, y+=10, 'Date: ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
+        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE')  + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
         
         if (y > pageHeight) {
             y = 10;
             doc.addPage();
         }
-        doc.text(x, y+=10, 'Indicator Status: ' + ThresholdName[log.triggerAtCreation]);
+        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));
         
         if (y > pageHeight) {
             y = 10;
             doc.addPage();
         }
-        doc.text(x, y+=10, 'Author: ' + log.addedByFullName);
+        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.AUTHOR') + ' ' + log.addedByFullName);
         
         let message = doc.splitTextToSize(log['content'], 180);
         message.forEach((m, index) => {
@@ -681,7 +687,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             y = 10;
             doc.addPage();
           }
-          doc.text(x, y+=10, index === 0 ? 'Message: '+m : m);
+          doc.text(x, y+=10, index === 0 ? this.translate.instant('RISK_MONITORING.EXPORT_LOG.MESSAGE') + ' ' + m : m);
         })
 
         doc.text(x, y+=10, ' '); 
