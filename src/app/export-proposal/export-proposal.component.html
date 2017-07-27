@@ -554,21 +554,21 @@
 
             <tr>
               <td colspan="3"><p>Female <18</p></td>
-              <td colspan="2"><p>15,000</p></td>
+              <td colspan="2"><p *ngIf="responsePlan.doubleCounting[0]">{{responsePlan.doubleCounting[0].value}}</p></td>
               <td colspan="2"><p>Male <18</p></td>
-              <td colspan="2"><p>11,000</p></td>
+              <td colspan="2"><p *ngIf="responsePlan.doubleCounting[3]">{{responsePlan.doubleCounting[3].value}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p>Female 18-50</p></td>
-              <td colspan="2"><p>30,000</p></td>
+              <td colspan="2"><p *ngIf="responsePlan.doubleCounting[1]">{{responsePlan.doubleCounting[1].value}}</p></td>
               <td colspan="2"><p>Male 18-50</p></td>
-              <td colspan="2"><p>11,000</p></td>
+              <td colspan="2" *ngIf="responsePlan.doubleCounting[4]"><p>{{responsePlan.doubleCounting[4].value}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p>Female >50</p></td>
-              <td colspan="2"><p>9,000</p></td>
+              <td colspan="2"><p *ngIf="responsePlan.doubleCounting[2]">{{responsePlan.doubleCounting[2].value}}</p></td>
               <td colspan="2"><p>Male >50</p></td>
-              <td colspan="2"><p>12,000</p></td>
+              <td colspan="2"><p *ngIf="responsePlan.doubleCounting[5]">{{responsePlan.doubleCounting[5].value}}</p></td>
             </tr>
 
             <!--10 of 10 Budget-->
@@ -580,58 +580,63 @@
 
             <tr>
               <td colspan="3"><p><strong>A:Inputs</strong></p></td>
-              <td colspan="3"><p></p></td>
-              <td colspan="3"><p></p></td>
+              <td colspan="3"><p>{{totalInputs}}</p></td>
+              <td colspan="3"></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>A-2:WaSH</p></td>
+              <td colspan="3"></td>
+              <td colspan="3"></td>
             </tr>
             <tr>
               <td colspan="3"><p>A-2:Health</p></td>
-              <td colspan="3"><p>£5,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"></td>
+              <td colspan="3"></td>
             </tr>
             <tr>
               <td colspan="3"><p>A-3: Shelter</p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"></td>
+              <td colspan="3"></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>B:Transport</strong></p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{transportBudget}}</p></td>
+              <td colspan="3"><p>{{transportNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>C:Security</strong></p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{securityBudget}}</p></td>
+              <td colspan="3"><p>{{securityNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>D:Logistics & overheads</strong></p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{logisticsAndOverheadsBudget}}</p></td>
+              <td colspan="3"><p>{{logisticsAndOverheadsNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>E:Staffing & support</strong></p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{staffingAndSupportBudget}}</p></td>
+              <td colspan="3"><p>{{staffingAndSupportNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>F:Monitoring & evaluation</strong></p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{monitoringAndEvolutionBudget}}</p></td>
+              <td colspan="3"><p>{{monitoringAndEvolutionNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>G:Capital Items</strong></p></td>
-              <td colspan="3"><p>£10,000</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{capitalItemsBudget}}</p></td>
+              <td colspan="3"><p>{{capitalItemsNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>H:Management support</strong></p></td>
-              <td colspan="3"><p>£5,000 (10%)</p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p>{{totalOfAllCosts}}</p></td>
+              <td colspan="3"><p>{{managementSupportNarrative}}</p></td>
             </tr>
             <tr>
               <td colspan="3"><p><strong>TOTAL</strong></p></td>
-              <td colspan="3"><p><strong>£80,000</strong></p></td>
-              <td colspan="3"><p>Budget narrative goes here</p></td>
+              <td colspan="3"><p><strong>{{total}}</strong></p></td>
+              <td colspan="3"></td>
             </tr>
           </table>
         </div>
