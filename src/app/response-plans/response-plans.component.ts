@@ -282,8 +282,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   exportProposal(responsePlan) {
-    //TODO - Export for proposal
-    //this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
+    this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
   }
 
   submitForApproval(plan) {
