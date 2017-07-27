@@ -232,7 +232,7 @@
                       </div>
                       <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                        <div class="col-12 form-group">
+                        <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                         </div>
@@ -266,7 +266,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-3 btn-block">
+                    <div class="col-md-3 btn-block" *ngIf="!isViewing">
                       <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
@@ -524,7 +524,7 @@
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                            <div class="col-12 form-group">
+                            <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                             </div>
@@ -558,7 +558,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-3 btn-block">
+                        <div class="col-md-3 btn-block" *ngIf="!isViewing">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
@@ -777,7 +777,7 @@
                         </div>
                         <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                          <div class="col-12 form-group">
+                          <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                           </div>
@@ -811,7 +811,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-3 btn-block">
+                      <div class="col-md-3 btn-block" *ngIf="!isViewing">
                         <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
@@ -979,7 +979,7 @@
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                            <div class="col-12 form-group">
+                            <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                             </div>
@@ -1013,7 +1013,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-3 btn-block">
+                        <div class="col-md-3 btn-block" *ngIf="!isViewing">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
