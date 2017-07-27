@@ -456,10 +456,10 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           if(updateObj.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: updateObj.task});
-            console.log("Updating:");
-            console.log(notification.content);
+            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                                                                        : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: updateObj.task})
+                                                                          : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: updateObj.task});
 
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
