@@ -47,6 +47,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private actionSelected: any = {};
   private copyActionData: any = {};
+  public dueDate: Date;
 
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
@@ -220,6 +221,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     }
     else {
       console.log("INVALID DATE!");
+      this.action.dueDate = null;
+      this.dueDate = null;
     }
     this.removeFilterLockDueDate();
     return true;
