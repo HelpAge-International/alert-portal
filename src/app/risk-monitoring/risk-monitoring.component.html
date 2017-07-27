@@ -128,7 +128,7 @@
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
                       {{durationType[indicatorC.trigger[2].durationType] | translate | lowercase}}</p>
                   </div>
-                  
+
                   <!--Info sources & log-->
                   <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
                     <div class="row">
@@ -210,7 +210,7 @@
 
                 </div>
 
-                
+
                 <div class="card">
                   <div class="Tooltip__bubble container-fluid collapse Blue log"
                        id="{{'tooltipLogCC_'+indicatorKey}}">
@@ -219,7 +219,7 @@
                         <tooltip
                           [level1]= "'TOOLTIPS.RISK_MONITORING.TT1.LEVEL1'"
                         ></tooltip>
-                        </h3>      
+                        </h3>
                       <hr class="d-inline-flex">
                       <form>
                         <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
@@ -293,7 +293,7 @@
                     </div>
                     <div class="row col-sm-10">
                       <ul>
-                        <li *ngFor="let source of indicatorC.source"><a target="_blank" attr.href="{{source.link}}">{{source.name}}</a>
+                        <li *ngFor="let source of indicatorC.source"><a target="_blank" [attr.href]="source.link">{{source.name}}</a>
                         </li>
                       </ul>
                     </div>
@@ -485,7 +485,7 @@
                         <tooltip
                           [level1]= "'TOOLTIPS.RISK_MONITORING.TT1.LEVEL1'"
                         ></tooltip>
-                        </h3>      
+                        </h3>
                       <hr class="d-inline-flex">
                       <form>
                         <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
@@ -698,7 +698,7 @@
               </div>
               <!----------------------------Trends in malnutrition---------------------------->
               <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
-                <div class="indicators-to-hazards" 
+                <div class="indicators-to-hazards"
                      *ngFor="let indicator of hazard.indicators; let indicatorKey = index;" id="archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}">
                     <div class="edit__wrap--risk row Small-spaced align-items-center Header">
                       <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
@@ -769,7 +769,7 @@
                         </div>
                       </div>
                       -->
-                      
+
                       <!--Info sources & log-->
                       <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
                         <div class="row">
@@ -808,7 +808,7 @@
                         <div class="Line-row--risk"></div>
 
                       </div>
-                      
+
                       <div class="end-col__wrap--risk col-md-3 col-sm-6"
                           *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
