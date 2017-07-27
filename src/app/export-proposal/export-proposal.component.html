@@ -7,10 +7,12 @@
       <div class="Back--button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</div>
 
       <div align="center">
-        <h1>Start Fund</h1>
+        <h1>Export for Proposal ({{docType}})</h1>
         <a id="downloadLink" style="display:none;"></a>
 
-        <input type="button" value="Download All"/>
+        <input *ngIf="isExcel == 1" type="button" onclick="exportToExcelFile(['tableExportProposal'], ['Response Plan for Proposal'])" value="Download"/>
+        <input *ngIf="isExcel == 0" type="button" onclick="exportToWordFile(['tableExportProposal'], ['Response Plan for Proposal'])" value="Download"/>
+
       </div>
 
       <br>
@@ -19,10 +21,605 @@
 
         <!--Proposal Table-->
         <div class="scrollingDiv">
+          <table class="tg" style="width: auto;" align="center" id="tableExportProposal">
+
+            <tr>
+              <td class="tg" colspan="9" style="width: 40%; text-align: center;"><br><h1 style="color: maroon;">Response Plan</h1><br></td>
+            </tr>
+
+            <!--1 out of 10 Plan Details-->
+            <tr>
+              <td class="tg" colspan="9"style="text-align: center; color: white; border: 1px solid #222; background: darkred;">
+                <h2 style="margin: 0; padding: 0; font-weight: normal;">1 of 10 Plan Details</h2>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg" colspan="9"></td>
+            </tr>
+            <tr>
+              <td class="tg" colspan="4" style="background: lightgrey;">Plan Name</td>
+              <td class="tg" colspan="5">{{responsePlan.name}}</td>
+            </tr>
+            <tr>
+              <td class="tg" colspan="4" style="background: lightgrey;">Geographical location</td>
+              <td class="tg" colspan="5">{{responsePlan.location}}</td>
+            </tr>
+
+            <tr>
+              <td class="tg" colspan="4" style="background: lightgrey;">Hazard scenario</td>
+              <td class="tg" colspan="5">{{responsePlan.hazardScenario ? (HazardScenariosList[responsePlan.hazardScenario] | translate) : ''}}</td>
+            </tr>
+
+            <tr>
+              <td class="tg" colspan="4" style="background: lightgrey;">Plan Lead</td>
+              <td class="tg" colspan="5">{{planLeadName}}</td>
+            </tr>
+
+            <tr>
+              <td class="tg" colspan="9"></td>
+            </tr>
+
+            <!--2 out of 10 Plan Context-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">2 of 10 Plan Context</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Summarize the crisis event and how it is likely to develop over the next month (maximum 5 points)</strong></p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9">
+                <ol type="1" *ngIf="responsePlan.scenarioCrisisList">
+                  <li *ngFor="let crisis of responsePlan.scenarioCrisisList">{{crisis}}</li>
+                </ol>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Explain the impact of the crisis on people you want to help (maximum 5 points)</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <ol type="1" *ngIf="responsePlan.impactOfCrisisList">
+                  <li *ngFor="let impact of responsePlan.impactOfCrisisList">{{impact}}</li>
+                </ol>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p>
+                  <strong>Explain the availability of funding your agency can access for this crisis (maximum 3 points)</strong>
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9">
+                <ol type="1" *ngIf="responsePlan.availabilityOfFundsList">
+                  <li *ngFor="let availability of responsePlan.availabilityOfFundsList">{{availability}}</li>
+                </ol>
+              </td>
+            </tr>
 
 
+            <!--3 out of 10 Basic Information-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">3 out of 10 Basic Information</h2></td>
+            </tr>
+
+            <tr>
+              <td class="tg" colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>What sectors will the intervention’s activities most relate to?</strong></p></td>
+            </tr>
+
+            <tr>
+              <td class="1"><p>WaSH</p></td>
+              <td class="1"><p>Health</p></td>
+              <td class="1"><p>Shelter</p></td>
+              <td class="1"><p>Nutrition</p></td>
+              <td class="1"><p>Food security & livelihoods</p></td>
+              <td class="1"><p>Protection</p></td>
+              <td class="1"><p>Education</p></td>
+              <td class="1"><p>Camp Management</p></td>
+              <td class="1"><p>Other (specify)</p></td>
+            </tr>
+
+            <tr>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.wash)">X</p></td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.health)">X</p></td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.shelter)">X</p></td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.nutrition)">X</p>
+              </td>
+              <td class="1" style="width: 10%;"><p
+                *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.foodSecurityAndLivelihoods)">X</p></td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.protection)">X</p>
+              </td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.education)">X</p>
+              </td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.campManagement)">
+                X</p></td>
+              <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.other)">X</p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Presence in the country before project</strong></p>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="9" style="text-align: left;">
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">Current programmes</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">Pre-existing partner</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">No pre-existing presence</p>
+              </td>
+            </tr>
+
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Method of Implementation</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">Directly through field staff</p>
+                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">Working through partners</p>
+              </td>
+            </tr>
+
+            <!--4 out of 10 Activity Summary-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">4 out of 10 Activity Summary</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Explain your proposed project and why you have selected this particular response to the crisis</strong></p>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p *ngIf="responsePlan.activitySummary && responsePlan.activitySummary['q1']">{{responsePlan.activitySummary['q1']}}</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Explain how you will start your activities in 7 days and finish within 45 days.</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p *ngIf="responsePlan.activitySummary && responsePlan.activitySummary['q2']">{{responsePlan.activitySummary['q2']}}</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>How are you co-ordinating and with whom?</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p *ngIf="responsePlan.activitySummary && responsePlan.activitySummary['q3']">{{responsePlan.activitySummary['q3']}}</p>
+              </td>
+            </tr>
+
+            <!--5 out of 10 Target Population-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">5 out of 10 Target Population</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong><span>How many beneficiaries are you targeting?</span>
+                  <span style="font-style: italic;">(Beneficiaries = People Per Household * Number Of Households)</span></strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p style="text-align: left;" *ngIf="responsePlan.peoplePerHousehold && responsePlan.numOfHouseholds &&
+              isNumber(responsePlan.peoplePerHousehold) && isNumber(responsePlan.numOfHouseholds)">{{responsePlan.peoplePerHousehold * responsePlan.numOfHouseholds}}
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Which vulnerable groups are you specifically targeting?</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <ol *ngIf="vulnerableGroupsToShow">
+                  <li *ngFor="let group of vulnerableGroupsToShow">{{group.name}}</li>
+                </ol>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Explain how the target population is/will be involved in your proposed intervention.</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <ol *ngIf="responsePlan.targetPopulationInvolvementList">
+                  <li *ngFor="let involvement of responsePlan.targetPopulationInvolvementList">{{involvement}}</li>
+                </ol>
+              </td>
+            </tr>
+
+            <!--6 out of 10 Risk Management-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">5 out of 10 Target Population</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Describe the risks to a successful response and how you are managing them.</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>{{responsePlan.riskManagementPlan ? responsePlan.riskManagementPlan : ''}}</p>
+              </td>
+            </tr>
+
+            <!--7 out of 10 Activities-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">7 out of 10 Activties</h2></td>
+            </tr>
+
+            <tr rowspan="9">
+              <td colspan="1" style="text-align: center;">
+                <p><strong>Health activities</strong></p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
+                <p style="text-transform: uppercase;">ACTIVITY 1</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>What is the planned activity?</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Planned outputs for this activity</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Sed blandit tempus ex in dignissim. Fusce quis elit sed lacus faucibus aliquam vel vel sapien. Vivamus vehicula auctor iaculis. Suspendisse eget lectus vel libero consequat ultricies. Duis sollicitudin consequat.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Aenean elit est, lobortis non gravida eu, volutpat eget mi. Ut dictum viverra rutrum. Mauris in tristique elit, quis cursus nunc. Donec id rhoncus mi. Phasellus faucibus tortor ligula, non.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female <18</p></td>
+              <td colspan="2"><p>15,000</p></td>
+              <td colspan="2"><p>Male <18</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female 18-50</p></td>
+              <td colspan="2"><p>30,000</p></td>
+              <td colspan="2"><p>Male 18-50</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female >50</p></td>
+              <td colspan="2"><p>9,000</p></td>
+              <td colspan="2"><p>Male >50</p></td>
+              <td colspan="2"><p>12,000</p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
+                <p style="text-transform: uppercase;">ACTIVITY 2</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>What is the planned activity?</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Planned outputs for this activity</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Sed blandit tempus ex in dignissim. Fusce quis elit sed lacus faucibus aliquam vel vel sapien. Vivamus vehicula auctor iaculis. Suspendisse eget lectus vel libero consequat ultricies. Duis sollicitudin consequat.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Aenean elit est, lobortis non gravida eu, volutpat eget mi. Ut dictum viverra rutrum. Mauris in tristique elit, quis cursus nunc. Donec id rhoncus mi. Phasellus faucibus tortor ligula, non.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female <18</p></td>
+              <td colspan="2"><p>15,000</p></td>
+              <td colspan="2"><p>Male <18</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female 18-50</p></td>
+              <td colspan="2"><p>30,000</p></td>
+              <td colspan="2"><p>Male 18-50</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female >50</p></td>
+              <td colspan="2"><p>9,000</p></td>
+              <td colspan="2"><p>Male >50</p></td>
+              <td colspan="2"><p>12,000</p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>How are you planning to source your goods?</strong></p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9"><p>Internationally</p></td>
+            </tr>
+            <tr>
+              <td colspan="9"><ol>
+                <li>Nullam et eros porttitor, semper metus ut, egestas magna. Maecenas consequat ullamcorper ex sed imperdiet.</li>
+                <li>Maecenas dignissim nunc ut imperdiet imperdiet. Vivamus fermentum purus sagittis, volutpat enim vitae, viverra mauris. Sed 	dignissim nisi nisi, eu lacinia lectus rhoncus sed. Nam.</li>
+              </ol></td>
+            </tr>
+
+            <tr>
+              <td colspan="9"><p><strong>Shelter activities</strong></p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
+                <p style="text-transform: uppercase;">ACTIVITY 1</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>What is the planned activity?</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Planned outputs for this activity</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Sed blandit tempus ex in dignissim. Fusce quis elit sed lacus faucibus aliquam vel vel sapien. Vivamus vehicula auctor iaculis. Suspendisse eget lectus vel libero consequat ultricies. Duis sollicitudin consequat.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Aenean elit est, lobortis non gravida eu, volutpat eget mi. Ut dictum viverra rutrum. Mauris in tristique elit, quis cursus nunc. Donec id rhoncus mi. Phasellus faucibus tortor ligula, non.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female <18</p></td>
+              <td colspan="2"><p>15,000</p></td>
+              <td colspan="2"><p>Male <18</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female 18-50</p></td>
+              <td colspan="2"><p>30,000</p></td>
+              <td colspan="2"><p>Male 18-50</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female >50</p></td>
+              <td colspan="2"><p>9,000</p></td>
+              <td colspan="2"><p>Male >50</p></td>
+              <td colspan="2"><p>12,000</p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>How are you planning to source your goods?</strong></p></td>
+            </tr>
+
+            <tr>
+              <td colspan="9"><p>Internationally</p></td>
+            </tr>
+            <tr>
+              <td colspan="9"><ol>
+                <li>Nullam et eros porttitor, semper metus ut, egestas magna. Maecenas consequat ullamcorper ex sed imperdiet.</li>
+                <li>Maecenas dignissim nunc ut imperdiet imperdiet. Vivamus fermentum purus sagittis, volutpat enim vitae, viverra mauris. Sed 	dignissim nisi nisi, eu lacinia lectus rhoncus sed. Nam.</li>
+              </ol></td>
+            </tr>
+
+            <!--8 of 10 Monitoring, Accountability and Learning-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">8 of 10 Monitoring, Accountability and Learning</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability.</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Do you intend to visually document your response?</strong></p></td>
+            </tr>
+            <tr>
+              <td colspan="9">
+                <p>No</p>
+              </td>
+            </tr>
+
+            <!--9 of 10 Adjust Beneficiaries for Double Counting-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">9 of 10 Adjust Beneficiaries for Double Counting</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                <p><strong>Total beneficiaries after adjustment</strong></p></td>
+            </tr>
+
+            <tr>
+              <td colspan="3"><p>Female <18</p></td>
+              <td colspan="2"><p>15,000</p></td>
+              <td colspan="2"><p>Male <18</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female 18-50</p></td>
+              <td colspan="2"><p>30,000</p></td>
+              <td colspan="2"><p>Male 18-50</p></td>
+              <td colspan="2"><p>11,000</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>Female >50</p></td>
+              <td colspan="2"><p>9,000</p></td>
+              <td colspan="2"><p>Male >50</p></td>
+              <td colspan="2"><p>12,000</p></td>
+            </tr>
+
+            <!--10 of 10 Budget-->
+            <tr>
+              <td class="tg" colspan="9"
+                  style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
+                style="margin: 0; padding: 0; font-weight: normal;">10 of 10 Budget</h2></td>
+            </tr>
+
+            <tr>
+              <td colspan="3"><p><strong>A:Inputs</strong></p></td>
+              <td colspan="3"><p></p></td>
+              <td colspan="3"><p></p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>A-2:Health</p></td>
+              <td colspan="3"><p>£5,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p>A-3: Shelter</p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>B:Transport</strong></p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>C:Security</strong></p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>D:Logistics & overheads</strong></p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>E:Staffing & support</strong></p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>F:Monitoring & evaluation</strong></p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>G:Capital Items</strong></p></td>
+              <td colspan="3"><p>£10,000</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>H:Management support</strong></p></td>
+              <td colspan="3"><p>£5,000 (10%)</p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+            <tr>
+              <td colspan="3"><p><strong>TOTAL</strong></p></td>
+              <td colspan="3"><p><strong>£80,000</strong></p></td>
+              <td colspan="3"><p>Budget narrative goes here</p></td>
+            </tr>
+          </table>
         </div>
-
       </div>
 
     </div>

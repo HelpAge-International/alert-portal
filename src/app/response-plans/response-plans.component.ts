@@ -281,8 +281,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
   }
 
-  exportProposal(responsePlan) {
-    this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
+  exportProposal(responsePlan, isExcel : boolean) {
+    if(isExcel){
+      this.router.navigate(['/export-proposal', {id: responsePlan.$key, excel: 1}]);
+    }else{
+      this.router.navigate(['/export-proposal', {id: responsePlan.$key, excel: 0}]);
+    }
   }
 
   submitForApproval(plan) {

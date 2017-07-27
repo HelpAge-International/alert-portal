@@ -144,7 +144,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
       this.userService.getUser(responsePlan.planLead)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
+          this.planLeadName = user.firstName + " " + user.lastName;
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
 

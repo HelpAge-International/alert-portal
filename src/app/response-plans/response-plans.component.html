@@ -289,13 +289,12 @@
                    class="dropdown-item"
                    (click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |
                   translate}}</a>
-                <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
-                  translate}} <br/> Start Fund
-                  (.doc, 78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_START_FUND" |
+                  translate}}<br/>(.xls, 78Kb)</a>
+                <a class="dropdown-item" (click)="exportProposal(plan, true)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
                   translate}} <br/> Excel (.xls,
                   78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                <a class="dropdown-item" (click)="exportProposal(plan, false)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
                   translate}} <br/> Word (.doc,
                   78Kb)</a>
                 <a class="dropdown-item"
