@@ -13,6 +13,7 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
+import { HazardImages } from "../../utils/HazardImages";
 
 @Component({
   selector: 'app-create-alert',
@@ -275,5 +276,11 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
 
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
 }
