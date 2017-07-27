@@ -17,19 +17,24 @@ export class TooltipComponent implements OnInit, OnDestroy {
   @Input() public linkUrl: string;
 
   ngOnInit() {
+
   }
 
   ngOnDestroy() {
   }
 
+  genUniqueId(value: string) {
+    return value.replace(/\./g, '_');
+  }
+
   fadeIn() {
-    jQuery(".Info__bubble").fadeIn();
+    jQuery("#info_bubble_" + this.genUniqueId(this.level1)).fadeIn();
   }
 
   toggleMore() {
-    jQuery(".Extend__span").toggleClass('Active');
-    jQuery(".Extended__content").slideToggle();
-    jQuery(".Info__bubble").toggleClass('Active');
+    jQuery("#extend_span_" + this.genUniqueId(this.level1)).toggleClass('Active');
+    jQuery("#extended_content_" + this.genUniqueId(this.level1)).slideToggle();
+    jQuery("#info_bubble_" + this.genUniqueId(this.level1)).toggleClass('Active');
   }
 }
 
