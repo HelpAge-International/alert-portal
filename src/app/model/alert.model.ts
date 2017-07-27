@@ -12,6 +12,7 @@ export class ModelAlert extends BaseModel {
     public affectedAreas: any[] = [];
     public affectedAreasDisplay: string[];
     public approvalDirectorId: string;
+    public approvalCountryId: string;
     public approvalStatus: AlertStatus;
     public approval: any[] = [];
     public createdBy: string;
