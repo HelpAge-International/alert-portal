@@ -12,10 +12,12 @@ import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import _date = moment.unitOfTime._date;
-import { HazardImages } from "../utils/HazardImages";
+import {HazardImages} from "../utils/HazardImages";
+import {WindowRefService} from "../services/window-ref.service";
 
 
 declare var jQuery: any;
+
 @Component({
   selector: 'app-risk-monitoring',
   templateUrl: './risk-monitoring.component.html',
@@ -95,7 +97,14 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private storage: LocalStorageService,
+              private translate: TranslateService,
+              private windowService: WindowRefService,
+              private userService: UserService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -216,6 +225,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
 
       this.indicatorsCC = indicators;
+      console.log(this.indicatorsCC);
     });
   }
 
@@ -550,5 +560,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
+  }
+
+  sourceClick(source) {
+    console.log(source.link);
+    let url = source.link;
+    let pattern = /^(http|https)/;
+    if (!pattern.test(url)) {
+      url = "http://" + url;
+    }
+    this.windowService.getNativeWindow().open(url);
   }
 }
