@@ -468,6 +468,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             isCompleteAt: new Date().getTime()
           });
           this.addNote(action);
+          this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
