@@ -1,6 +1,6 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {HazardScenario, AlertMessageType, Countries} from "../../utils/Enums";
+import {AlertMessageType, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -102,7 +102,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyID = agencyId;
@@ -278,6 +278,12 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
         /* TODO RISK PARAM */
         this.hazardData.risk = 10;
         this.hazardData.isActive = true;
+        console.log(this.hazardData);
+        //fill out info for other type
+        if (this.otherHazard) {
+          this.hazardData.hazardScenario = -1;
+          this.hazardData["otherName"] = this.hazardName;
+        }
         this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
           .push(this.hazardData)
           .then(() => {
@@ -381,8 +387,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this.submitNewCalendar = false;
     let dataToSave = form.value;
     if (this.addSeasonStart == null || this.addSeasonEnd == null || this.addSeasonColour == null) {
-       this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_DATE");
-       return;
+      this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_DATE");
+      return;
     }
     dataToSave.startTime = this.addSeasonStart;
     dataToSave.endTime = this.addSeasonEnd;
