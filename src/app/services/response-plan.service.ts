@@ -109,8 +109,13 @@ export class ResponsePlanService {
             console.log(error.message);
           });
         }
+
+        //update response plan status
+        if (orgUserMap.size === partnerOrgIds.length) {
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key + "/status").set(ApprovalStatus.WaitingApproval);
+        }
+
       });
-    // }
   }
 
   getResponsePlan(countryId, responsePlanId) {
@@ -130,6 +135,7 @@ export class ResponsePlanService {
       }
 
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+
 
         this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
           .take(1)
@@ -235,6 +241,19 @@ export class ResponsePlanService {
         }
         return "";
       });
+  }
+
+  getDirectors(countryId, agencyId): Observable<any> {
+    console.log(countryId + "/" + agencyId);
+    let directorCountry = this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
+    let directorRegion = this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId);
+    let directorGlobal = this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
+      query: {
+        orderByChild: "agencyAdmin/" + agencyId,
+        equalTo: true
+      }
+    });
+    return Observable.merge(directorCountry, directorRegion, directorGlobal);
   }
 
   serviceDestroy() {

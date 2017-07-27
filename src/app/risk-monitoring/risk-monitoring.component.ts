@@ -12,10 +12,12 @@ import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import _date = moment.unitOfTime._date;
-import { HazardImages } from "../utils/HazardImages";
+import {HazardImages} from "../utils/HazardImages";
+import {WindowRefService} from "../services/window-ref.service";
 
 declare var jQuery: any;
 import * as jsPDF from 'jspdf'
+
 
 @Component({
   selector: 'app-risk-monitoring',
@@ -41,7 +43,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private canCopy: boolean;
   private agencyOverview: boolean;
 
-  private agencyAdminId: string;
   private countryLocation: any;
   private Countries = Countries;
 
@@ -109,7 +110,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private storage: LocalStorageService,
               private translate: TranslateService,
-              private userService: UserService) {
+              private userService: UserService,
+              private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -150,71 +152,25 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
 
         if (this.agencyId && this.countryID) {
-          this._getHazards()
+          this._getHazards();
           this.getCountryLocation();
           this._getCountryContextIndicators();
         } else {
           this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             this.uid = user.uid;
             this.UserType = userType;
-
-            // if (this.agencyId && this.countryID) {
-            //   this._getHazards()
-            //   this._getCountryContextIndicators();
-            // } else {
             this.agencyId = agencyId;
             this.countryID = countryId;
             this.systemId = systemId;
             this._getHazards();
             this.getCountryLocation();
             this._getCountryContextIndicators();
-            // this._getCountryID().then(() => {
-            //   this.getAgencyID().then(() => {
-            //     this.getCountryLocation();
-            //   });
-            //   this._getHazards().then(() => {
-            //
-            //   });
-            //   this._getCountryContextIndicators();
-            // });
-            // }
-
             PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
               this.countryPermissionsMatrix = isEnabled;
             }));
           });
         }
-
-
-        // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        //   this.uid = user.uid;
-        //   this.UserType = userType;
-        //
-        //   if (this.agencyId && this.countryID) {
-        //     this._getHazards().then(() => {
-        //
-        //     });
-        //     this._getCountryContextIndicators();
-        //   } else {
-        //     this._getCountryID().then(() => {
-        //       this.getAgencyID().then(() => {
-        //         this.getCountryLocation();
-        //       });
-        //       this._getHazards().then(() => {
-        //
-        //       });
-        //       this._getCountryContextIndicators();
-        //     });
-        //   }
-        //
-        //   PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-        //     this.countryPermissionsMatrix = isEnabled;
-        //   }));
-        //
-        // });
       })
-
-
   }
 
   ngOnDestroy(): void {
@@ -222,31 +178,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
-        res(true);
-      });
-    });
-    return promise;
-  }
-
-  private getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIds: any) => {
-          this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
   private getCountryLocation() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryID + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryID + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
           this.countryLocation = location.$value ? location.$value : 0;
@@ -298,6 +232,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
 
       this.indicatorsCC = indicators;
+      console.log(this.indicatorsCC);
     });
   }
 
@@ -629,7 +564,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   isNumber(n) {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
-    
+
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
   }
@@ -697,4 +632,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     // Save the PDF
     doc.save('logs.pdf');
   }
+
+  sourceClick(source) {
+    console.log(source.link);
+    let url = source.link;
+    let pattern = /^(http|https)/;
+    if (!pattern.test(url)) {
+      url = "http://" + url;
+    }
+    this.windowService.getNativeWindow().open(url);
+  }
+
 }

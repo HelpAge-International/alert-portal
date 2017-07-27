@@ -12,6 +12,8 @@ import {
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
+
 declare var jQuery: any;
 
 @Component({
@@ -21,6 +23,7 @@ declare var jQuery: any;
 })
 
 export class ViewResponsePlanComponent implements OnInit, OnDestroy {
+
 
   private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private PresenceInTheCountry = PresenceInTheCountry;
@@ -96,6 +99,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private accessToken: string;
   private partnerOrganisationId: string;
 
+  private showingSections: number[] = [];
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
@@ -143,6 +148,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
                 if (invalid) {
                   this.navigateToLogin();
                 }
+                this.showingSections = [0,1,2,3,4,5,6,7,8,9];
                 this.handleLoadResponsePlan();
               } else {
                 this.navigateToLogin();
@@ -150,6 +156,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             });
         } else {
           this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+            //get response plan settings from agency
+            this.userService.getAgencyDetail(agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                let sections = agency.responsePlanSettings.sections;
+                this.showingSections = Object.keys(sections).filter(key => sections[key]).map(key => Number(key));
+                console.log(this.showingSections)
+              });
+
             this.uid = user.auth.uid;
             this.userPath = Constants.USER_PATHS[userType];
             if (userType == UserType.PartnerUser) {
@@ -216,14 +232,9 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     console.log("loadData");
 
     if (this.isViewing) {
-      console.log("is viewing")
+      console.log("is viewing");
       this.handleLoadResponsePlan();
     } else {
-      // this.userService.getUserType(this.uid)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(usertype => {
-      // this.USER_TYPE = Constants.USER_PATHS[usertype];
-      console.log("check here")
       if (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) {
         this.route.params
           .takeUntil(this.ngUnsubscribe)
@@ -234,7 +245,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             }
           })
       } else {
-        console.log("here")
         this.getCountryId().then(() => {
           this.handleLoadResponsePlan();
         });
@@ -290,7 +300,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
-          console.log(countryId)
           this.countryId = countryId.$value;
           res(true);
         });
@@ -301,7 +310,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
-    console.log(responsePlansPath);
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
@@ -331,7 +339,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection3(responsePlan: ResponsePlan) {
-    console.log(responsePlan);
     if (responsePlan.sectors) {
       this.sectors = Object.keys(responsePlan.sectors).map(key => {
         let sector = responsePlan.sectors[key];
@@ -383,8 +390,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
         //activities list load back
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        if(activitiesData)
-        {
+        if (activitiesData) {
           let moreData: {}[] = [];
           Object.keys(activitiesData).forEach(key => {
             let beneficiary = [];

@@ -2,7 +2,7 @@ import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Countries, CountriesMapsSearchInterface} from "../utils/Enums";
+import {AlertLevels, Countries, CountriesMapsSearchInterface, HazardScenario} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
@@ -38,6 +38,9 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   public minThreshYellow: number;
   public minThreshGreen: number;
+
+  // Maps location -> [hazards]
+  private countryToHazardScenarioList: Map<number, Set<number>> = new Map<number, Set<number>>();
 
   private userTypePath: string;
 
@@ -116,24 +119,49 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   private getHazardInfo(country: any) {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+    console.log(country);
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + country.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(country => {
-        this.countryLocationMap.set(country.$key, Number(country.location));
-        this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(hazards => {
-            hazards.forEach(hazard => {
-              let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
-              this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
-              this.drawHazardMarkers();
-            });
-          });
+      .subscribe(snap => {
+        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+        let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.countryToHazardScenarioList.get(country.location) != null) {
+          listOfActiveHazards = this.countryToHazardScenarioList.get(country.location);
+        }
+        hazardRedAlert.forEach((value, key) => {
+          if (value) {
+            listOfActiveHazards.add(key);
+          }
+        });
+        if (listOfActiveHazards.size != 0) {
+          this.countryToHazardScenarioList.set(country.location, listOfActiveHazards);
+        }
+        this.drawHazardMarkers();
       });
   }
 
   private drawHazardMarkers() {
-    this.hazardMap.forEach((v, k) => {
+    this.countryToHazardScenarioList.forEach((v, k) => {
       if (v.size > 0) {
         let position = 0;
         let scenarios = Array.from(v);

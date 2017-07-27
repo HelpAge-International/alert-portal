@@ -13,6 +13,7 @@ import {MessageModel} from "../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "../services/notification.service";
 import {ResponsePlan} from "../model/responsePlan";
+
 declare const jQuery: any;
 
 @Component({
@@ -57,6 +58,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private responsePlanToEdit: any;
 
   private approvalsList: any[] = [];
+  private directorSubmissionRequireMap = new Map<number, boolean>();
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -81,6 +83,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (this.userType == UserType.PartnerUser) {
           this.agencyId = agencyId;
           this.countryId = countryId;
+          this.handleRequireSubmissionTagForDirectors();
           this.getResponsePlans(this.countryId);
         } else {
           this.getSystemAgencyCountryIds(userPath);
@@ -98,6 +101,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe((countryId) => {
             this.countryId = countryId.$value;
+            this.handleRequireSubmissionTagForDirectors();
             this.getResponsePlans(this.countryId);
           });
       });
@@ -240,17 +244,17 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkEditingAllowed(responsePlan){
+  checkEditingAllowed(responsePlan) {
     this.responsePlanToEdit = responsePlan;
-    if(responsePlan.status == ApprovalStatus.Approved){
+    if (responsePlan.status == ApprovalStatus.Approved) {
       jQuery("#dialog-responseplan-editing").modal("show");
       this.dialogTitle = "Warning!";
       this.dialogContent = "This response plan is currently submitted for approval. Are you sure you want to edit this plan?";
-    }else if(responsePlan.status == ApprovalStatus.WaitingApproval){
+    } else if (responsePlan.status == ApprovalStatus.WaitingApproval) {
       jQuery("#dialog-responseplan-editing").modal("show");
       this.dialogTitle = "Warning!";
       this.dialogContent = "This response plan is currently waiting for approval. Are you sure you want to edit this plan?";
-    }else{
+    } else {
       this.editResponsePlan()
     }
   }
@@ -277,9 +281,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
   }
 
-  exportProposal(responsePlan) {
-    //TODO - Export for proposal
-    //this.router.navigate(['/export-proposal', {id: responsePlan.$key}]);
+  exportProposal(responsePlan, isExcel : boolean) {
+    if(isExcel){
+      this.router.navigate(['/export-proposal', {id: responsePlan.$key, excel: 1}]);
+    }else{
+      this.router.navigate(['/export-proposal', {id: responsePlan.$key, excel: 0}]);
+    }
   }
 
   submitForApproval(plan) {
@@ -296,10 +303,42 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   submitForPartnerValidation(plan) {
     this.service.submitForPartnerValidation(plan, this.countryId);
+
+    //sort out require submission tag
+    this.handleRequireSubmissionTagForDirectors();
+  }
+
+  private handleRequireSubmissionTagForDirectors() {
+    this.directorSubmissionRequireMap.set(1, false);
+    this.directorSubmissionRequireMap.set(2, false);
+    this.directorSubmissionRequireMap.set(3, false);
+    let counter = 0;
+    this.service.getDirectors(this.countryId, this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(result => {
+        counter++;
+        console.log(counter);
+        console.log(result);
+        if (counter === 1 && result.$value && result.$value != null) {
+          this.directorSubmissionRequireMap.set(1, true);
+        }
+        if (counter === 2 && result.$value && result.$value != null) {
+          this.directorSubmissionRequireMap.set(2, true);
+        }
+        if (counter === 3 && result.length > 0) {
+          this.directorSubmissionRequireMap.set(3, true);
+        }
+      });
   }
 
   archivePlan(plan) {
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
+    //same as edit, need to reset approval status and validation process
+    let updateData = {};
+    updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/approval"] = null;
+    updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = false;
+    updateData["/responsePlanValidation/" + plan.$key] = null;
+    this.af.database.object(Constants.APP_STATUS).update(updateData);
+    // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
   }
 
   confirmDialog() {
@@ -421,7 +460,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   closeModal(model: string) {
-      jQuery(model).modal("hide");
+    jQuery(model).modal("hide");
   }
 
   private navigateToLogin() {
@@ -505,10 +544,21 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {
-          console.log(list);
           this.notesMap.set(plan.$key, list);
         });
     }
+  }
+
+  checkStatus(plan): boolean {
+    let showSubmit = true;
+    if (plan.approval) {
+      showSubmit = !Object.keys(plan.approval).includes("countryDirector");
+    }
+    return showSubmit;
+  }
+
+  convertToInt(value):number {
+    return parseInt(value);
   }
 
 }

@@ -101,7 +101,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private url: string;
   private hazards: Array<any> = [];
   private hazardsObject: any = {};
-
+  private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private copyCountryId: string;
@@ -166,6 +166,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.uid = user.uid;
           this.UserType = userType;
           this.countryID = countryId;
+          this.agencyId = agencyId;
 
           //check if partner
           // this.af.database.object(Constants.APP_STATUS+"/partner/"+this.uid, {preserveSnapshot:true})
@@ -366,20 +367,23 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
             });
         });
     } else {
+      //Obtaining the country admin data
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId+"/"+this.countryID).subscribe((data: any) => {
+        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+          console.log(user);
+          var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+          this.usersForAssign.push(userToPush);
+        });
+      });
+
+      //Obtaining other staff data
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
-        let countryAdminId = data.$key;
         for (let userID in data) {
-          if(userID == "$key"){
-            userID = countryAdminId;
-          }else if(userID == "$exists"){
-            return;
-          }
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
             var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
             this.usersForAssign.push(userToPush);
           });
         }
-
       });
     }
   }

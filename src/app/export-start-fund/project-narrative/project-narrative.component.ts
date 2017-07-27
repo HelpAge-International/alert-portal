@@ -143,7 +143,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           console.log(user);
-          this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
+          this.planLeadName = user.firstName + " " + user.lastName;
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
 

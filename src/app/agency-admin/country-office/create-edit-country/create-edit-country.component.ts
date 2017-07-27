@@ -58,33 +58,22 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.secondApp = firebase.initializeApp(firebaseConfig, "second");
+      this.systemId = systemId;
+      this.agencyId = agencyId;
+      this.handleClockSettings(this.agencyId);
+      this.handleModuleSettings(this.agencyId);
 
-
-      this.agencyService.getSystemId(this.uid)
+      this.route.params
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(systemId => {
-          this.systemId = systemId;
-
-          this.agencyService.getAgencyId(this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(agencyId => {
-              this.agencyId = agencyId;
-              this.handleClockSettings(this.agencyId);
-              this.handleModuleSettings(this.agencyId);
-
-              this.route.params
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe((param: Params) => {
-                  if (param["id"]) {
-                    this.countryOfficeId = param["id"];
-                    this.isEdit = true;
-                    this.loadCountryInfo(this.countryOfficeId);
-                  }
-                });
-            });
+        .subscribe((param: Params) => {
+          if (param["id"]) {
+            this.countryOfficeId = param["id"];
+            this.isEdit = true;
+            this.loadCountryInfo(this.countryOfficeId);
+          }
         });
     });
   }
@@ -284,6 +273,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   }
 
   private changeAdminAndUpdate(countryId: string) {
+    console.log("change admin and update");
+
     let updateAdminData = {};
     let countryAdmin = new ModelUserPublic(this.countryAdminFirstName, this.countryAdminLastName,
       this.countryAdminTitle, this.countryAdminEmail);
@@ -299,6 +290,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     updateAdminData["/administratorCountry/" + countryId + "/firstLogin"] = true;
     updateAdminData["/administratorCountry/" + countryId + "/agencyAdmin/" + this.agencyId] = true;
     updateAdminData["/administratorCountry/" + countryId + "/countryId"] = this.countryOfficeId;
+    updateAdminData["/administratorCountry/" + countryId + "/systemAdmin/" + this.systemId] = true;
 
     // updateAdminData["/group/systemadmin/allcountryadminsgroup/" + countryId] = true;
     // updateAdminData["/group/agency/" + this.agencyId + "/countryadmins/" + countryId] = true;
@@ -313,11 +305,85 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     // updateAdminData["/group/agency/" + this.agencyId + "/countryadmins/" + this.tempAdminId] = null;
 
     this.af.database.object(Constants.APP_STATUS).update(updateAdminData).then(() => {
-      this.backHome();
+      this.unassignIndicators();
     }, error => {
       this.hideWarning = false;
       this.waringMessage = error.message;
       console.log(error.message);
+    });
+  }
+
+  private unassignIndicators() {
+    console.log("Un-assigning indicators");
+
+    this.af.database.list(Constants.APP_STATUS + "/indicator/"+this.countryOfficeId).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
+      if(indicators == null || indicators.length == 0){
+        console.log("Finished un-assigning indicators");
+        this.unassignActions();
+      }else{
+        indicators.forEach((indicator, index) => {
+          this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.countryOfficeId + "/" + indicator.$key + "/assignee").set(null).then(() => {
+            if(index == indicators.length - 1){
+              console.log("Finished un-assigning indicators");
+              this.unassignActions();
+            }
+          }, error => {
+            this.hideWarning = false;
+            this.waringMessage = error.message;
+            console.log(error.message);
+          });
+        });
+      }
+    });
+  }
+
+  private unassignActions() {
+    console.log("Un-assigning actions");
+    console.log(Constants.APP_STATUS + "/action/"+this.countryOfficeId);
+    this.af.database.list(Constants.APP_STATUS + "/action/"+this.countryOfficeId).takeUntil(this.ngUnsubscribe).subscribe((actions: any) => {
+      if(actions == null || actions.length == 0){
+        console.log("Finished un-assigning actions");
+        this.unassignResponsePlans();
+      }else{
+        actions.forEach((action, index) => {
+          console.log(Constants.APP_STATUS + "/action/" + this.countryOfficeId + "/" + action.$key);
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryOfficeId + "/" + action.$key + "/asignee").set(null).then(() => {
+            if(index == actions.length - 1){
+              console.log("Finished un-assigning actions");
+              this.unassignResponsePlans();
+            }
+          }, error => {
+            this.hideWarning = false;
+            this.waringMessage = error.message;
+            console.log(error.message);
+          });
+        });
+      }
+    });
+  }
+
+  private unassignResponsePlans(){
+    console.log("Un-assigning response plans");
+    console.log(Constants.APP_STATUS + "/responsePlan/"+this.countryOfficeId);
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/"+this.countryOfficeId).takeUntil(this.ngUnsubscribe).subscribe((plans: any) => {
+      if(plans == null || plans.length == 0){
+        console.log("Finished un-assigning response plans");
+        this.backHome();
+      }else{
+        plans.forEach((plan, index) => {
+          console.log(Constants.APP_STATUS + "/responsePlan/" + this.countryOfficeId + "/" + plan.$key);
+          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryOfficeId + "/" + plan.$key + "/planLead").set(null).then(() => {
+            if(index == plans.length - 1){
+              console.log("Finished un-assigning response plans");
+              this.backHome();
+            }
+          }, error => {
+            this.hideWarning = false;
+            this.waringMessage = error.message;
+            console.log(error.message);
+          });
+        });
+      }
     });
   }
 
