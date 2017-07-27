@@ -271,7 +271,7 @@
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                           <a href="javascript:void(0)" (click)="copyAction(action)"
                              class="btn btn-outline-primary btn-block ">Copy action</a>
                         </div>
@@ -537,7 +537,7 @@
                              class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                         <a href="javascript:void(0)" (click)="copyAction(action)"
                         class="btn btn-outline-primary btn-block ">Copy action</a>
                         </div>
@@ -749,7 +749,7 @@
                              class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                           <a href="javascript:void(0)" (click)="copyAction(action)"
                              class="btn btn-outline-primary btn-block ">Copy action</a>
                         </div>

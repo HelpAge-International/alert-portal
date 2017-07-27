@@ -47,6 +47,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private systemAdminId: string;
   private isViewing: boolean;
+  private isSameAgency: boolean = false;
   public myFirstName: string;
   public myLastName: string;
 
@@ -143,6 +144,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.userType = userType;
           this.filterAssigned = "0";
@@ -657,6 +659,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
+  }
+
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 

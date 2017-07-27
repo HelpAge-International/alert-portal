@@ -131,7 +131,8 @@
 
     The sections here are very messy when it comes to the IF statements filtering out the which action should appear where.
     They were done like this this so that the actions can live update along with any filters that are applied without having
-    some horrible logic inside the .ts file to handle the firebase filtering and which section it's assigned too. It's not
+    some horrible logic inside the .ts file to handle the firebase filtering and which section it's assigned too. Maintaining
+    a map of Action -> showInSection(value) didn't work and made updating weird, It's not
     pretty but it seems to be right in terms of things appearing in the sections that they should - If something ends up
     being wrong with them then I would recommend whiteboarding the desired functionality so you get it 100% and then code it
     I tried it the other way round ... didn't work out too well
@@ -202,7 +203,7 @@
                          [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                         action</a>
                     </div>
-                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                       <a href="javascript:void(0)" (click)="copyAction(action)"
                          class="btn btn-outline-primary btn-block ">Copy action</a>
                     </div>
@@ -494,7 +495,7 @@
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                         <a href="javascript:void(0)" (click)="copyAction(action)"
                         class="btn btn-outline-primary btn-block ">Copy action</a>
                         </div>
@@ -746,7 +747,7 @@
                              class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                         <a href="javascript:void(0)" (click)="copyAction(action)"
                         class="btn btn-outline-primary btn-block ">Copy action</a>
                         </div>
@@ -948,7 +949,7 @@
                              class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (false))">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                         <a href="javascript:void(0)" (click)="copyAction(action)"
                         class="btn btn-outline-primary btn-block ">Copy action</a>
                         </div>
