@@ -201,8 +201,6 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   }
 
   private configGroups(responsePlan: ResponsePlan) {
-    console.log("CameCame here here");
-
     this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
       .takeUntil(this.ngUnsubscribe)
       .subscribe((systemAdminIds) => {

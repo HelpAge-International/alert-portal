@@ -121,7 +121,7 @@
                 <p><strong>What sectors will the intervention’s activities most relate to?</strong></p></td>
             </tr>
 
-            <tr>
+            <tr style="text-align: center;">
               <td class="1"><p>WaSH</p></td>
               <td class="1"><p>Health</p></td>
               <td class="1"><p>Shelter</p></td>
@@ -133,7 +133,7 @@
               <td class="1"><p>Other (specify)</p></td>
             </tr>
 
-            <tr>
+            <tr style="text-align: center;">
               <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.wash)">X</p></td>
               <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.health)">X</p></td>
               <td class="1" style="width: 10%;"><p *ngIf="sectorsRelatedToMap.get(ResponsePlanSectors.shelter)">X</p></td>
@@ -511,7 +511,8 @@
             </tr>
             <tr>
               <td colspan="9">
-                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
+                <p>{{responsePlan.monAccLearning && responsePlan.monAccLearning['mALSystemsDescription'] ?
+                  (responsePlan.monAccLearning['mALSystemsDescription']) : ''}}</p>
               </td>
             </tr>
 
@@ -520,9 +521,23 @@
                 <p><strong>Do you intend to visually document your response?</strong></p></td>
             </tr>
             <tr>
-              <td colspan="9">
-                <p>No</p>
-              </td>
+              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>Yes</p></td>
+              <td colspan="2" style="text-align: center;"><p>{{responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p></td>
+              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>No</p></td>
+              <td colspan="1" style="text-align: center;"><p>{{!responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p></td>
+            </tr>
+            <tr>
+              <td colspan="9" style="background: lightgrey;"><p><strong>If so, will this be photographic, video, or both?<span
+                style="font-style: italic;">(please mark)</span></strong>
+              </p></td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Photographic</p></td>
+              <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Video</p></td>
+              <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Both</p></td>
+              <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
             </tr>
 
             <!--9 of 10 Adjust Beneficiaries for Double Counting-->
