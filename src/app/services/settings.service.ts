@@ -142,4 +142,8 @@ export class SettingsService {
 
     return this.af.database.object(Constants.APP_STATUS).update(notificationsSettingsData);
   }
+
+  getAgencyClockSettings(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS+"/agency/"+agencyId+"/clockSettings");
+  }
 }

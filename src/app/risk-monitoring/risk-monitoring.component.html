@@ -329,12 +329,12 @@
             <div class="col-sm-4">
               <div class="Icon">
                 <div
-                  class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"
+                  class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) && hazard.hazardScenario!=-1 ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"
                   style="float:left"></div>
               </div>
               <!--<div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg">
               </div>-->
-              <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
+              <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) : hazard.otherName}}</h4></div>
             <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
               <div *ngIf="hazard.isSeasonal">
                 <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}

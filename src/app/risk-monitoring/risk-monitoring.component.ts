@@ -149,7 +149,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           this.getCountryLocation();
           this._getCountryContextIndicators();
         } else {
-          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             this.uid = user.uid;
             this.UserType = userType;
             this.agencyId = agencyId;
@@ -236,7 +236,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         this.archivedHazards = [];
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
-          hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+          if (hazard.hazardScenario != -1) {
+            hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+          }
 
           this.getIndicators(hazard.id).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
@@ -254,12 +256,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
           if (hazard.isActive) {
             this.activeHazards.push(hazard);
+            console.log(this.activeHazards);
           } else {
             this.archivedHazards.push(hazard);
           }
 
         });
-
         res(true);
       });
     });
