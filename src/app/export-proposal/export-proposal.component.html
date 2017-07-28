@@ -281,222 +281,89 @@
                 style="margin: 0; padding: 0; font-weight: normal;">7 out of 10 Activties</h2></td>
             </tr>
 
-            <tr rowspan="9">
-              <td colspan="1" style="text-align: center;">
-                <p><strong>Health activities</strong></p>
-              </td>
-            </tr>
+            <ng-container *ngFor="let sector of sectors">
+                <tr rowspan="9">
+                  <td colspan="9" style="text-align: center;">
+                    <p><strong>{{SECTORS[sector.id] | translate}}</strong></p>
+                  </td>
+                </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
-                <p style="text-transform: uppercase;">ACTIVITY 1</p>
-              </td>
-            </tr>
+              <ng-container *ngFor="let activity of activityMap.get(sector.id)">
+                  <tr>
+                    <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
+                      <p style="text-transform: uppercase;">ACTIVITY 1</p>
+                    </td>
+                  </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>What is the planned activity?</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
-              </td>
-            </tr>
+                  <tr>
+                    <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                      <p><strong>What is the planned activity?</strong></p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="9">
+                      <p>{{activity.name}}</p>
+                    </td>
+                  </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Planned outputs for this activity</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Sed blandit tempus ex in dignissim. Fusce quis elit sed lacus faucibus aliquam vel vel sapien. Vivamus vehicula auctor iaculis. Suspendisse eget lectus vel libero consequat ultricies. Duis sollicitudin consequat.</p>
-              </td>
-            </tr>
+                  <tr>
+                    <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                      <p><strong>Planned outputs for this activity</strong></p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="9">
+                      <p>{{activity.output}}</p>
+                    </td>
+                  </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Aenean elit est, lobortis non gravida eu, volutpat eget mi. Ut dictum viverra rutrum. Mauris in tristique elit, quis cursus nunc. Donec id rhoncus mi. Phasellus faucibus tortor ligula, non.</p>
-              </td>
-            </tr>
+                  <tr>
+                    <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                      <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="9">
+                      <p>{{activity.indicator}}</p>
+                    </td>
+                  </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female <18</p></td>
-              <td colspan="2"><p>15,000</p></td>
-              <td colspan="2"><p>Male <18</p></td>
-              <td colspan="2"><p>11,000</p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female 18-50</p></td>
-              <td colspan="2"><p>30,000</p></td>
-              <td colspan="2"><p>Male 18-50</p></td>
-              <td colspan="2"><p>11,000</p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female >50</p></td>
-              <td colspan="2"><p>9,000</p></td>
-              <td colspan="2"><p>Male >50</p></td>
-              <td colspan="2"><p>12,000</p></td>
-            </tr>
+                  <tr>
+                    <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                      <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><p>Female <18</p></td>
+                    <td colspan="2"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
+                    <td colspan="2"><p>Male <18</p></td>
+                    <td colspan="2"><p>{{activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><p>Female 18-50</p></td>
+                    <td colspan="2"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
+                    <td colspan="2"><p>Male 18-50</p></td>
+                    <td colspan="2"><p>{{activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><p>Female >50</p></td>
+                    <td colspan="2"><p>{{activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
+                    <td colspan="2"><p>Male >50</p></td>
+                    <td colspan="2"><p>{{activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
+                  </tr>
+              </ng-container>
 
-            <tr>
-              <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
-                <p style="text-transform: uppercase;">ACTIVITY 2</p>
-              </td>
-            </tr>
+              <tr>
+                  <td colspan="9" style="background-color: lightgrey; text-align: left;">
+                    <p><strong>How are you planning to source your goods?</strong></p></td>
+                </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>What is the planned activity?</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
-              </td>
-            </tr>
+              <tr>
+                <td colspan="2" style="background: lightgrey;"><p>Internationally</p></td>
+                <td colspan="1" style="text-align: center;"><p *ngIf="sourcePlanId == SourcePlan.Internationally">X</p></td>
+                <td colspan="2" style="background: lightgrey;"><p>Regionally/ neighbouring country</p></td>
+                <td colspan="1" style="text-align: center;"><p *ngIf="sourcePlanId == SourcePlan.Regionally">X</p></td>
+                <td colspan="2" style="background: lightgrey;"><p>In country/ locally</p></td>
+                <td colspan="1" style="text-align: center;"><p *ngIf="sourcePlanId == SourcePlan.Locally">X</p></td>
+              </tr>
 
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Planned outputs for this activity</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Sed blandit tempus ex in dignissim. Fusce quis elit sed lacus faucibus aliquam vel vel sapien. Vivamus vehicula auctor iaculis. Suspendisse eget lectus vel libero consequat ultricies. Duis sollicitudin consequat.</p>
-              </td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Aenean elit est, lobortis non gravida eu, volutpat eget mi. Ut dictum viverra rutrum. Mauris in tristique elit, quis cursus nunc. Donec id rhoncus mi. Phasellus faucibus tortor ligula, non.</p>
-              </td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female <18</p></td>
-              <td colspan="2"><p>15,000</p></td>
-              <td colspan="2"><p>Male <18</p></td>
-              <td colspan="2"><p>11,000</p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female 18-50</p></td>
-              <td colspan="2"><p>30,000</p></td>
-              <td colspan="2"><p>Male 18-50</p></td>
-              <td colspan="2"><p>11,000</p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female >50</p></td>
-              <td colspan="2"><p>9,000</p></td>
-              <td colspan="2"><p>Male >50</p></td>
-              <td colspan="2"><p>12,000</p></td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>How are you planning to source your goods?</strong></p></td>
-            </tr>
-
-            <tr>
-              <td colspan="9"><p>Internationally</p></td>
-            </tr>
-            <tr>
-              <td colspan="9"><ol>
-                <li>Nullam et eros porttitor, semper metus ut, egestas magna. Maecenas consequat ullamcorper ex sed imperdiet.</li>
-                <li>Maecenas dignissim nunc ut imperdiet imperdiet. Vivamus fermentum purus sagittis, volutpat enim vitae, viverra mauris. Sed 	dignissim nisi nisi, eu lacinia lectus rhoncus sed. Nam.</li>
-              </ol></td>
-            </tr>
-
-            <tr>
-              <td colspan="9"><p><strong>Shelter activities</strong></p></td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
-                <p style="text-transform: uppercase;">ACTIVITY 1</p>
-              </td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>What is the planned activity?</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Fusce porttitor dui quis leo molestie lobortis. Aliquam pellentesque quam nibh, sit amet interdum enim blandit nec. Nam vulputate, tellus at sagittis tempus, dolor felis lobortis justo, eu tempor nunc lectus eget eros. Duis eget neque vitae orci eleifend porttitor. Phasellus vehicula malesuada metus, et convallis eros egestas quis. Etiam.</p>
-              </td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Planned outputs for this activity</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Sed blandit tempus ex in dignissim. Fusce quis elit sed lacus faucibus aliquam vel vel sapien. Vivamus vehicula auctor iaculis. Suspendisse eget lectus vel libero consequat ultricies. Duis sollicitudin consequat.</p>
-              </td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="9">
-                <p>Aenean elit est, lobortis non gravida eu, volutpat eget mi. Ut dictum viverra rutrum. Mauris in tristique elit, quis cursus nunc. Donec id rhoncus mi. Phasellus faucibus tortor ligula, non.</p>
-              </td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female <18</p></td>
-              <td colspan="2"><p>15,000</p></td>
-              <td colspan="2"><p>Male <18</p></td>
-              <td colspan="2"><p>11,000</p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female 18-50</p></td>
-              <td colspan="2"><p>30,000</p></td>
-              <td colspan="2"><p>Male 18-50</p></td>
-              <td colspan="2"><p>11,000</p></td>
-            </tr>
-            <tr>
-              <td colspan="3"><p>Female >50</p></td>
-              <td colspan="2"><p>9,000</p></td>
-              <td colspan="2"><p>Male >50</p></td>
-              <td colspan="2"><p>12,000</p></td>
-            </tr>
-
-            <tr>
-              <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>How are you planning to source your goods?</strong></p></td>
-            </tr>
-
-            <tr>
-              <td colspan="9"><p>Internationally</p></td>
-            </tr>
-            <tr>
-              <td colspan="9"><ol>
-                <li>Nullam et eros porttitor, semper metus ut, egestas magna. Maecenas consequat ullamcorper ex sed imperdiet.</li>
-                <li>Maecenas dignissim nunc ut imperdiet imperdiet. Vivamus fermentum purus sagittis, volutpat enim vitae, viverra mauris. Sed 	dignissim nisi nisi, eu lacinia lectus rhoncus sed. Nam.</li>
-              </ol></td>
-            </tr>
+            </ng-container>
 
             <!--8 of 10 Monitoring, Accountability and Learning-->
             <tr>

@@ -6,6 +6,7 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../model/responsePlan";
 import {UserService} from "../services/user.service";
 import {Constants} from "../utils/Constants";
+import {ModelPlanActivity} from "../model/plan-activity.model";
 import {
   HazardScenario, BudgetCategory,
   MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
@@ -65,6 +66,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   private capitalItemsBudget: number;
   private capitalItemsNarrative: string;
   private managementSupportNarrative: string;
+  private activityMap = new Map();
+  private sectors: any[];
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -153,9 +156,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
         this.bindProjectLeadData(responsePlan);
         this.bindPartnersData(responsePlan);
-        this.bindSourcePlanData(responsePlan);
+        this.bindProjectActivitiesData(responsePlan);
         this.bindProjectBudgetData(responsePlan);
-
       });
   }
 
@@ -207,16 +209,6 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     }
   }
 
-  private bindSourcePlanData(responsePlan: ResponsePlan) {
-    if (responsePlan.sectors) {
-      Object.keys(responsePlan.sectors).forEach(sectorKey => {
-        this.sourcePlanId = responsePlan.sectors[sectorKey]["sourcePlan"];
-        this.sourcePlanInfo1 = responsePlan.sectors[sectorKey]["bullet1"];
-        this.sourcePlanInfo2 = responsePlan.sectors[sectorKey]["bullet2"];
-      });
-    }
-  }
-
   private configGroups(responsePlan: ResponsePlan) {
     this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
       .takeUntil(this.ngUnsubscribe)
@@ -224,6 +216,36 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
         this.systemAdminUid = systemAdminIds[0].$key;
         this.downloadGroups(responsePlan);
       });
+  }
+
+  private bindProjectActivitiesData(responsePlan: ResponsePlan){
+    if (responsePlan.sectors) {
+      this.sectors = Object.keys(responsePlan.sectors).map(key => {
+        let sector = responsePlan.sectors[key];
+        sector["id"] = Number(key);
+        return sector;
+      });
+    }
+
+    if (this.sectors) {
+      Object.keys(responsePlan.sectors).forEach(sectorKey => {
+
+        let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
+        if(activitiesData)
+        {
+          let moreData: {}[] = [];
+          Object.keys(activitiesData).forEach(key => {
+            let beneficiary = [];
+            activitiesData[key]["beneficiary"].forEach(item => {
+              beneficiary.push(item);
+            });
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            moreData.push(model);
+            this.activityMap.set(Number(sectorKey), moreData);
+          });
+        }
+      });
+    }
   }
 
   private bindProjectBudgetData(responsePlan: ResponsePlan) {
