@@ -1,4 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
+import {Md5} from "ts-md5/dist/md5";
 /**
  * Created by jordan on 21/06/2017.
  */
@@ -15,6 +16,7 @@ export class TooltipComponent implements OnInit, OnDestroy {
   @Input() public level1: string;
   @Input() public level2: string;
   @Input() public linkUrl: string;
+  private randomNumber = Math.floor(Math.random() * 100000) + 1;
 
   ngOnInit() {
 
@@ -23,8 +25,9 @@ export class TooltipComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
   }
 
-  genUniqueId(value: string) {
-    return value.replace(/\./g, '_');
+  genUniqueId(value: string): string {
+    console.log(Md5.hashStr(value) + this.randomNumber.toString());
+    return Md5.hashStr(value) + this.randomNumber.toString();
   }
 
   fadeIn() {
