@@ -501,7 +501,6 @@ export class ActionsService {
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
-        // orderByChild: "approval/countryDirector/" + uid,
         orderByChild: "approval/countryDirector/" + countryId,
         equalTo: AlertStatus.WaitingResponse
       }
@@ -578,12 +577,12 @@ export class ActionsService {
   }
 
   approveRedAlert(countryId, alertId, uid) {
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid).set(AlertStatus.Approved);
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
   }
 
   rejectRedAlert(countryId, alertId, uid) {
     let update = {};
-    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
     update["/alert/" + countryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
@@ -591,7 +590,7 @@ export class ActionsService {
   getResponsePlanForCountryDirectorToApproval(countryId, uid, isPartnerUser) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: isPartnerUser ? "/approval/partner/" + uid : "/approval/countryDirector/" + uid,
+        orderByChild: isPartnerUser ? "/approval/partner/" + uid : "/approval/countryDirector/" + countryId,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))
@@ -608,10 +607,10 @@ export class ActionsService {
       });
   }
 
-  getResponsePlanFoGlobalDirectorToApproval(countryId, uid) {
+  getResponsePlanFoGlobalDirectorToApproval(countryId, uid, agencyId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: "/approval/globalDirector/" + uid,
+        orderByChild: "/approval/globalDirector/" + agencyId,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))
@@ -629,10 +628,10 @@ export class ActionsService {
       });
   }
 
-  getResponsePlanFoRegionalDirectorToApproval(countryId, uid) {
+  getResponsePlanFoRegionalDirectorToApproval(countryId, uid, regionId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: "/approval/regionDirector/" + uid,
+        orderByChild: "/approval/regionDirector/" + regionId,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))

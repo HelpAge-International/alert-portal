@@ -8,6 +8,7 @@ import {ResponsePlanService} from "../../services/response-plan.service";
 import {ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+
 declare const jQuery: any;
 
 @Component({
@@ -18,6 +19,7 @@ declare const jQuery: any;
 })
 
 export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
+
   private isDirector: boolean;
 
   private uid: string;
@@ -25,6 +27,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private responsePlanId: string;
+  private regionId: string;
   private loadedResponseplan: any;
   private partnerApproveList = [];
   private countryDirectorApproval = [];
@@ -102,7 +105,13 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         this.userType = userType;
         this.agencyId = agencyId;
         this.countryId = countryId;
-        // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
+        if (this.userType === UserType.RegionalDirector) {
+          this.userService.getRegionId(Constants.USER_PATHS[this.userType], this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(regionId => {
+              this.regionId = regionId;
+            });
+        }
         this.route.params
           .takeUntil(this.ngUnsubscribe)
           .subscribe((params: Params) => {
@@ -207,8 +216,21 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     if (this.accessToken) {
       this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
     } else {
-      this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let approvalUid = this.getRightUidForApproval();
+      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
+  }
+
+  private getRightUidForApproval() {
+    let approvalUid = "";
+    if (this.userType === UserType.GlobalDirector) {
+      approvalUid = this.agencyId;
+    } else if (this.userType === UserType.RegionalDirector) {
+      approvalUid = this.regionId;
+    } else if (this.userType === UserType.CountryDirector) {
+      approvalUid = this.countryId;
+    }
+    return approvalUid;
   }
 
   rejectPlan() {
@@ -230,14 +252,15 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     if (this.accessToken) {
       this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
     } else {
-      this.responsePlanService.updateResponsePlanApproval(this.userType, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let approvalUid = this.getRightUidForApproval();
+      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
   }
 
-  hideApproveButton():boolean {
+  hideApproveButton(): boolean {
     let hiddenButton = false;
     if (this.accessToken && this.partnerOrganisationId) {
-      this.partnerApproveList.forEach(item =>{
+      this.partnerApproveList.forEach(item => {
         if (item.id === this.partnerOrganisationId && item.status === ApprovalStatus.Approved) {
           hiddenButton = true;
         }

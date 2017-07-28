@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, AlertMessageType, Countries, DurationType} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, DurationType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -78,7 +78,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
@@ -137,7 +137,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
         this.alertData.approval['countryDirector'] = [];
-        this.alertData.approval['countryDirector'][this.directorCountryID] = (this.alertData.alertLevel == AlertLevels.Red ? 0 : 1);
+        this.alertData.approval['countryDirector'][this.countryID] = (this.alertData.alertLevel == AlertLevels.Red ? 0 : 1);
         this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
 
         var dataToSave = this.alertData;

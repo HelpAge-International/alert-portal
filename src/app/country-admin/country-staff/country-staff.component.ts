@@ -12,7 +12,9 @@ import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
+
 declare var jQuery: any;
+
 @Component({
   selector: 'app-country-staff',
   templateUrl: './country-staff.component.html',
@@ -112,10 +114,10 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(partners => {
         this.partnersList = [];
-        partners.forEach(partnerId =>{
+        partners.forEach(partnerId => {
           this._userService.getPartnerUserById(partnerId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(partner =>{
+            .subscribe(partner => {
               this.partnersList.push(partner);
 
               this._userService.getUser(partner.id)
