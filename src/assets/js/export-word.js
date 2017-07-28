@@ -21,7 +21,7 @@ var exportToWordFile = (function () {
       if (!table.nodeType) table = document.getElementById(table);
       var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML};
       document.getElementById("downloadLink").href = uri + base64(format(template, ctx));
-      document.getElementById("downloadLink").download = name+".doc";
+      document.getElementById("downloadLink").download = "Start Fund Project Application Form-"+name+".doc";
       document.getElementById("downloadLink").click();
     });
   }
