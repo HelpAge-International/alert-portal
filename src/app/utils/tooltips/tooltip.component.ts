@@ -26,7 +26,6 @@ export class TooltipComponent implements OnInit, OnDestroy {
   }
 
   genUniqueId(value: string): string {
-    console.log(Md5.hashStr(value) + this.randomNumber.toString());
     return Md5.hashStr(value) + this.randomNumber.toString();
   }
 
