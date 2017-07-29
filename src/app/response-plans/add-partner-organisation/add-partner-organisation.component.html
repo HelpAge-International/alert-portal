@@ -84,7 +84,8 @@
                                    class="form-control col-sm-5"
                                    dateFormat="DD-MM-YYYY" 
                                    (onSelect)="selectDate(project, pin)"
-                                   [(date)]="projectEndDate[pin]"></material-datepicker>
+                                   [(date)]="projectEndDate[pin]"
+                                   [rangeStart]="todayDayMonth"></material-datepicker>
             </div>
           </div>
           <div class="row Spaced">
