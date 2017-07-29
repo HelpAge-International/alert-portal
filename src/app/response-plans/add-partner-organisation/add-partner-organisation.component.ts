@@ -50,6 +50,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   // Other
   private activeProject: PartnerOrganisationProjectModel;
   private fromResponsePlans: boolean = false;
+  private projectEndDate: any[] = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -201,8 +202,8 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     project.endDate = date;
   }
 
-  selectDate(date, project: PartnerOrganisationProjectModel) {
-    let newEndDate = moment(date).valueOf();
+  selectDate(project: PartnerOrganisationProjectModel, pin: number) {
+    let newEndDate = moment(this.projectEndDate[pin]).valueOf();
     project.endDate = newEndDate;
   }
 
@@ -296,4 +297,15 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     }
     return hasLevel1;
   }
+
+  // getProjectEndDate(project): Date {
+  //   let date = new Date(moment().startOf("day").valueOf());
+  //   console.log(date);
+  //   if(project && project.endDate){
+  //     date = new Date(moment(project.endDate).valueOf());
+  //     console.log(date);
+  //   }
+  //   return date;
+  // }
+
 }
