@@ -168,7 +168,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private initData() {
 
     this.getAgencyName();
-    
+
     if (this.userType != UserType.RegionalDirector) {
         //for each country do following
         // this.actionService.getActionsDueInWeek(countryId, this.uid)
@@ -209,10 +209,10 @@ export class DirectorComponent implements OnInit, OnDestroy {
         //     }
         //   });
 
-      
+
       this.getAllRegionsAndCountries().then(() => {
         this.countryOffices.forEach(countryOffice => {
-          this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryOffice.$key, this.uid)
+          this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryOffice.$key, this.uid, this.agencyId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(plans => {
               this.approvalPlans = this.approvalPlans.concat(plans);
@@ -230,7 +230,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.getCountryIdsForRegion().then(() => {
           this.idsOfCountriesInRegion.forEach(countryId => {
 
-            this.actionService.getResponsePlanFoRegionalDirectorToApproval(countryId, this.uid)
+            this.actionService.getResponsePlanFoRegionalDirectorToApproval(countryId, this.uid, this.regionId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(plans => {
                 this.approvalPlans = this.approvalPlans.concat(plans);
@@ -238,12 +238,12 @@ export class DirectorComponent implements OnInit, OnDestroy {
           });
 
           this.regionCountryOffice = this.countryOffices.filter(x => this.idsOfCountriesInRegion.includes(x.$key));
-        
+
         }, error => {
           console.log(error.message);
         })
     }
-    
+
     this.loaderInactive = true;
   }
 

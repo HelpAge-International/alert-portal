@@ -589,11 +589,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       });
     console.log(this.userType);
     this.checkUserType();
-
-    //get all info object which need approve
-    if (this.isEdit && this.editInitialUserType === UserType.CountryDirector) {
-
-    }
   }
 
   private checkUserType() {

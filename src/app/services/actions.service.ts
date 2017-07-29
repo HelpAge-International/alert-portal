@@ -34,7 +34,7 @@ export class ActionsService {
   getActionsDueInWeek(countryId, uid: string): Observable<any> {
     // Only retrieve a 7 days period actions
     let today = new Date();
-    let limitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+    let limitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
 
     return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {
       query: {
@@ -60,7 +60,7 @@ export class ActionsService {
 
     // Only retrieve a 7 days period indicator
     let today = new Date();
-    let limitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+    let limitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
 
     let countryContextIndicators = this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId, {
       query: {
@@ -141,11 +141,10 @@ export class ActionsService {
       title = "An advanced preparedness action"
     }
 
-    if(action.dueDate && today > action.dueDate)
-    {
-      title+= "  was due on";
+    if (action.dueDate && today > action.dueDate) {
+      title += "  was due on";
     } else {
-      title+= "  needs to be completed";
+      title += "  needs to be completed";
     }
 
     return title;
@@ -163,11 +162,10 @@ export class ActionsService {
       title = "A red level indicator"
     }
 
-    if(indicator.dueDate && today > indicator.dueDate)
-    {
-      title+= "  was due on";
+    if (indicator.dueDate && today > indicator.dueDate) {
+      title += "  was due on";
     } else {
-      title+= "  needs to be completed";
+      title += "  needs to be completed";
     }
 
     return title;
@@ -458,7 +456,8 @@ export class ActionsService {
     updateData["affectedAreas"] = areaData;
     updateData["alertLevel"] = alert.alertLevel;
     let countryDirectorData = {};
-    countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
+    // countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
+    countryDirectorData[alert.approvalCountryId] = alert.approvalStatus;
     let countryDirector = {};
     countryDirector["countryDirector"] = countryDirectorData;
     updateData["approval"] = countryDirector;
@@ -502,7 +501,7 @@ export class ActionsService {
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
-        orderByChild: "approval/countryDirector/" + uid,
+        orderByChild: "approval/countryDirector/" + countryId,
         equalTo: AlertStatus.WaitingResponse
       }
     })
@@ -578,12 +577,12 @@ export class ActionsService {
   }
 
   approveRedAlert(countryId, alertId, uid) {
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid).set(AlertStatus.Approved);
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
   }
 
   rejectRedAlert(countryId, alertId, uid) {
     let update = {};
-    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
     update["/alert/" + countryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
@@ -591,7 +590,7 @@ export class ActionsService {
   getResponsePlanForCountryDirectorToApproval(countryId, uid, isPartnerUser) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: isPartnerUser ? "/approval/partner/" + uid : "/approval/countryDirector/" + uid,
+        orderByChild: isPartnerUser ? "/approval/partner/" + uid : "/approval/countryDirector/" + countryId,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))
@@ -608,10 +607,10 @@ export class ActionsService {
       });
   }
 
-  getResponsePlanFoGlobalDirectorToApproval(countryId, uid) {
+  getResponsePlanFoGlobalDirectorToApproval(countryId, uid, agencyId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: "/approval/globalDirector/" + uid,
+        orderByChild: "/approval/globalDirector/" + agencyId,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))
@@ -629,10 +628,10 @@ export class ActionsService {
       });
   }
 
-  getResponsePlanFoRegionalDirectorToApproval(countryId, uid) {
+  getResponsePlanFoRegionalDirectorToApproval(countryId, uid, regionId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
-        orderByChild: "/approval/regionDirector/" + uid,
+        orderByChild: "/approval/regionDirector/" + regionId,
         equalTo: ApprovalStatus.WaitingApproval
       }
     }))
