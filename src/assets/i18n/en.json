@@ -1574,6 +1574,7 @@
         "NO_PROJECT_TITLE": "Please enter the project title",
         "NO_POSITION": "Please enter the position",
         "NO_PROJECT_END_DATE": "Please enter the project end date",
+        "PROJECT_END_DATE_IN_PAST": "Project end date cannot be in the past",
         "NO_PROJECT_SECTOR": "Please select the project sector(s)",
         "NO_OPERATION_AREA_COUNTRY": "Please select the country operation area",
         "NO_OPERATION_AREA_LEVEL1": "Please select the first level of the country operation area",

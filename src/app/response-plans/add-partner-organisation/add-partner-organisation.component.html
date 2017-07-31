@@ -78,12 +78,14 @@
                      [(ngModel)]="project.title" id="P-title" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
             </div>
             <div class="col-lg-8 col-md-10 form-group">
-              <label for="P-end-date">{{ "ADD_PARTNER.PROJECT_END_DATE" | translate }}</label>
-              <material-datepicker id="P-end-date"
+              <label for="P-end-date_{{pin}}">{{ "ADD_PARTNER.PROJECT_END_DATE" | translate }}</label>
+              <material-datepicker id="P-end-date_{{pin}}"
                                    placeholder="{{project.endDate ? (project.endDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                    class="form-control col-sm-5"
-                                   dateFormat="DD-MM-YYYY" (onSelect)="selectDate(endDate, project)"
-                                   [(date)]="endDate"></material-datepicker>
+                                   dateFormat="DD-MM-YYYY" 
+                                   (onSelect)="selectDate(project, pin)"
+                                   [(date)]="projectEndDate[pin]"
+                                   [rangeStart]="todayDayMonth"></material-datepicker>
             </div>
           </div>
           <div class="row Spaced">

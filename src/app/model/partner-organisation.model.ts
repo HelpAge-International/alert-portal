@@ -87,6 +87,9 @@ export class PartnerOrganisationProjectModel extends BaseModel {
     if (!this.endDate && !this.isExcluded('endDate', excludedFields)) {
       return new AlertMessageModel('ADD_PARTNER.NO_PROJECT_END_DATE');
     }
+    if (this.endDate && this.endDate < new Date().getTime() && !this.isExcluded('endDate', excludedFields)) {
+      return new AlertMessageModel('ADD_PARTNER.PROJECT_END_DATE_IN_PAST');
+    }
     return null;
   }
 }

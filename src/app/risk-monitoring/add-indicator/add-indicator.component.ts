@@ -329,6 +329,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   stateGeoLocation(event: any) {
     var geoLocation = parseInt(event.target.value);
     this.indicatorData.geoLocation = geoLocation;
+    if(geoLocation == GeoLocation.subnational)
+    {
+      this.addAnotherLocation();
+    }
   }
 
 
@@ -369,20 +373,24 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       //Obtaining the country admin data
       this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId+"/"+this.countryID).subscribe((data: any) => {
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
-          console.log(user);
-          var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-          this.usersForAssign.push(userToPush);
-        });
+        if(data.adminId) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
       });
 
       //Obtaining other staff data
-      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
         for (let userID in data) {
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-            var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-            this.usersForAssign.push(userToPush);
-          });
+          if(!userID.startsWith('$'))
+          {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+          }
         }
       });
     }
