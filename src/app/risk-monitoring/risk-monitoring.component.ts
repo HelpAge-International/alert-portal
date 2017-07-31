@@ -1,12 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {
-  AlertMessageType,
-  Countries,
-  DetailedDurationType,
-  HazardScenario,
-  UserType,
-  ThresholdName
-} from "../utils/Enums";
+import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -18,12 +11,12 @@ import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
-import _date = moment.unitOfTime._date;
 import {HazardImages} from "../utils/HazardImages";
 import {WindowRefService} from "../services/window-ref.service";
+import * as jsPDF from 'jspdf'
+import {ModelUserPublic} from "../model/user-public.model";
 
 declare var jQuery: any;
-import * as jsPDF from 'jspdf'
 
 
 @Component({
@@ -111,6 +104,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private toDate: string;
   private toDateTimeStamp: number;
 
+  private usersForAssign: any;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -135,6 +130,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.usersForAssign = [];
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -172,6 +169,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             this._getHazards();
             this.getCountryLocation();
             this._getCountryContextIndicators();
+            this.getUsersForAssign();
             PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
               this.countryPermissionsMatrix = isEnabled;
             }));
@@ -659,6 +657,43 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   redSelected(key) {
     this.indicatorTrigger[key] = 2;
+  }
+
+  getUsersForAssign() {
+    if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+        });
+    } else {
+      //Obtaining the country admin data
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+        if (data.adminId) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
+
+      //Obtaining other staff data
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+        for (let userID in data) {
+          if (!userID.startsWith('$')) {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+          }
+        }
+      });
+    }
   }
 
 }

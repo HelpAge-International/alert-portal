@@ -28,6 +28,7 @@ import {
 import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {ModelDepartment} from "../../model/department.model";
+
 declare var jQuery: any;
 
 
@@ -125,7 +126,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.agencySelected = true;
       }
 
-      if(params['isCHS']){
+      if (params['isCHS']) {
         this.filterType = 0;
       }
     });
@@ -290,12 +291,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
 
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId +"/task").takeUntil(this.ngUnsubscribe)
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
           .subscribe(task => {
             // Send notification to the assignee
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task? task.$value : ''});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
             console.log(notification.content);
 
             notification.time = new Date().getTime();
