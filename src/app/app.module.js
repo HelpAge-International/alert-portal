@@ -139,15 +139,25 @@ function HttpLoaderFactory(http) {
     return new http_loader_1.TranslateHttpLoader(http);
 }
 exports.HttpLoaderFactory = HttpLoaderFactory;
-// Must export the config
+
+/*SAND/ TEST/ UAT*/
+// exports.firebaseConfig = {
+//     apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+//     authDomain: "alert-190fa.firebaseapp.com",
+//     databaseURL: "https://alert-190fa.firebaseio.com",
+//     storageBucket: "alert-190fa.appspot.com",
+//     messagingSenderId: "305491871378"
+// };
+
+/*LIVE*/
 exports.firebaseConfig = {
-    apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-    authDomain: "alert-190fa.firebaseapp.com",
-    // authDomain: "test.alertplatform.co.uk",
-    databaseURL: "https://alert-190fa.firebaseio.com",
-    storageBucket: "alert-190fa.appspot.com",
-    messagingSenderId: "305491871378"
+  apiKey: "AIzaSyC3HmARInyyYi6B8IGRkEZV_gQR0SoGgjU",
+  authDomain: "alert-live.firebaseapp.com",
+  databaseURL: "https://alert-live.firebaseio.com",
+  storageBucket: "alert-live.appspot.com",
+  messagingSenderId: "44847393433"
 };
+
 var firebaseAuthConfig = {
     provider: angularfire2_1.AuthProviders.Google,
     method: angularfire2_1.AuthMethods.Redirect
