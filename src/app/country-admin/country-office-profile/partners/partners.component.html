@@ -79,8 +79,8 @@
       <p class="col-sm-2">{{ partnerOrganisation.organisationName }}</p> <!--Organisation-->
       <p class="col-sm-2">{{ partnerOrganisation.relationship }}</p> <!--Relationship-->
       <!--Areas of operation-->
-      <p class="col-sm-2" *ngIf="partnerOrganisation.projectsToDisplay">
-        <a href="javascript:void(0)" class="text-primary" (click)="showAffectedAreasForPartner(partnerOrganisation.projectsToDisplay)">
+      <p class="col-sm-2">
+        <a *ngIf="partnerOrganisation.projectsToDisplay" href="javascript:void(0)" class="text-primary" (click)="showAffectedAreasForPartner(partnerOrganisation.projectsToDisplay)">
           {{'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW_FOR_PROJECTS' | translate}} {{partnerOrganisation.projectsToDisplay.length}} {{'COUNTRY_ADMIN.PROFILE.PARTNERS.PROJECTS_LOWERCASE' | translate}}
         </a>
       </p>
