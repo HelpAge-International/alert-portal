@@ -392,7 +392,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     }
     dataToSave.startTime = this.addSeasonStart;
     dataToSave.endTime = this.addSeasonEnd;
-    dataToSave.colour = this.addSeasonColour;
+    dataToSave.colorCode = this.addSeasonColour;
     console.log(dataToSave);
     this.closeModal();
     this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
