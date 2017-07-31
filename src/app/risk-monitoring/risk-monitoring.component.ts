@@ -15,6 +15,8 @@ import {HazardImages} from "../utils/HazardImages";
 import {WindowRefService} from "../services/window-ref.service";
 import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../model/user-public.model";
+import * as firebase from "firebase/app";
+import App = firebase.app.App;
 
 declare var jQuery: any;
 
@@ -105,6 +107,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private toDateTimeStamp: number;
 
   private usersForAssign: any;
+  private assignedIndicator: any;
+  private assignedHazard: any;
+  private assignedUser: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -659,6 +664,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.indicatorTrigger[key] = 2;
   }
 
+  assignIndicatorTo(hazard, indicator) {
+    console.log(indicator);
+    this.assignedHazard = hazard;
+    this.assignedIndicator = indicator;
+  }
+
   getUsersForAssign() {
     if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
@@ -694,6 +705,20 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  saveAssignedUser() {
+    jQuery("#assignIndicator").modal("hide");
+    if (this.assignedHazard === "countryContext") {
+      this.assignedHazard = this.countryID;
+    }
+    let data = {};
+    data["/indicator/" + this.assignedHazard + "/" + this.assignedIndicator.$key + "/assignee"] = this.assignedUser;
+    this.af.database.object(Constants.APP_STATUS).update(data).then(() => {
+      this.assignedHazard = null;
+      this.assignedIndicator = null;
+      this.assignedUser = "undefined";
+    });
   }
 
 }

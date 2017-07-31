@@ -199,7 +199,7 @@
                       </div>
                       <div *ngIf="!isViewing && !indicatorC?.assignee">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
-                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary">
+                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
                           Assign to</a>
                       </div>
                       <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
@@ -485,9 +485,14 @@
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="!isViewing && indicator?.assignee" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                    </div>
+                    <div *ngIf="!isViewing && !indicator?.assignee">
+                      <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
+                         aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
+                        Assign to</a>
                     </div>
                     <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
                          (click)="copyIndicator(indicator, false, hazard)">
@@ -1148,17 +1153,12 @@
       <div class="modal-body">
         <p class="col-sm-12"><strong>Assign to</strong></p>
         <div class="col-sm-12">
-          <select class="form-control">
-            <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let user of usersForAssign; let i = index" [attr.data-index]="i" value="{{user.id}}">
-              {{x.firstName + ' ' + x.lastName}}
+          <select class="form-control" [(ngModel)]="assignedUser">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let user of usersForAssign; let i = index" [attr.data-index]="i" value="{{user.userID}}">
+              {{user.name}}
             </option>
           </select>
-
-          <!-- TODO: ADD PARTNER USER INTO THE IF STATEMENT HERE! -->
-          <!--<select class="form-control" [(ngModel)]="assignActionAsignee" *ngIf="userType == UserType.Ert">-->
-          <!--<option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>-->
-          <!--</select>-->
         </div>
       </div>
       <div class="modal-footer">
