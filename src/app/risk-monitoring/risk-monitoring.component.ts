@@ -305,9 +305,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   collapseAll(mode: string) {
     if (mode == 'expand') {
-      jQuery('.collapse').collapse('show');
+      jQuery('.Accordion__Content').collapse('show');
     } else {
-      jQuery('.collapse').collapse('hide');
+      jQuery('.Accordion__Content').collapse('hide');
     }
   }
 
