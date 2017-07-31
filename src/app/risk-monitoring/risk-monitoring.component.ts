@@ -1,5 +1,12 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import { AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType, ThresholdName } from "../utils/Enums";
+import {
+  AlertMessageType,
+  Countries,
+  DetailedDurationType,
+  HazardScenario,
+  UserType,
+  ThresholdName
+} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -571,22 +578,20 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     return HazardImages.init().getCSS(hazard);
   }
 
-  setExportLog(logs: any[]){
+  setExportLog(logs: any[]) {
     this.logsToExport = logs;
     console.log(this.logsToExport);
   }
 
-  selectDate(value, dateType)
-  {
-    if(dateType === 'fromDate')
-    {
+  selectDate(value, dateType) {
+    if (dateType === 'fromDate') {
       this.fromDateTimeStamp = moment(value).startOf("day").valueOf();
-    }else{
+    } else {
       this.toDateTimeStamp = moment(value).endOf("day").valueOf();
     }
   }
 
-  exportLog(logs: any[]){
+  exportLog(logs: any[]) {
     var doc = new jsPDF();
     doc.setFontType("normal");
     doc.setFontSize("12");
@@ -598,36 +603,35 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     let y = 10;
 
     logs.forEach(log => {
-      if((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp ))
-      {    
+      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp )) {
         if (y > pageHeight) {
-            y = 10;
-            doc.addPage();
+          y = 10;
+          doc.addPage();
         }
-        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE')  + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
-        
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE') + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
+
         if (y > pageHeight) {
-            y = 10;
-            doc.addPage();
+          y = 10;
+          doc.addPage();
         }
-        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));
-        
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));
+
         if (y > pageHeight) {
-            y = 10;
-            doc.addPage();
+          y = 10;
+          doc.addPage();
         }
-        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.AUTHOR') + ' ' + log.addedByFullName);
-        
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.AUTHOR') + ' ' + log.addedByFullName);
+
         let message = doc.splitTextToSize(log['content'], 180);
         message.forEach((m, index) => {
           if (y > pageHeight) {
             y = 10;
             doc.addPage();
           }
-          doc.text(x, y+=10, index === 0 ? this.translate.instant('RISK_MONITORING.EXPORT_LOG.MESSAGE') + ' ' + m : m);
+          doc.text(x, y += 10, index === 0 ? this.translate.instant('RISK_MONITORING.EXPORT_LOG.MESSAGE') + ' ' + m : m);
         })
 
-        doc.text(x, y+=10, ' '); 
+        doc.text(x, y += 10, ' ');
       }
     });
 
@@ -643,6 +647,18 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       url = "http://" + url;
     }
     this.windowService.getNativeWindow().open(url);
+  }
+
+  greenSelected(key) {
+    this.indicatorTrigger[key] = 0;
+  }
+
+  amberSelected(key) {
+    this.indicatorTrigger[key] = 1;
+  }
+
+  redSelected(key) {
+    this.indicatorTrigger[key] = 2;
   }
 
 }

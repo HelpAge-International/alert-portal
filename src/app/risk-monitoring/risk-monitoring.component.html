@@ -111,19 +111,19 @@
                   <div class="" *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
-                    <div class="btn btn-primary">{{indicatorC.trigger[0].triggerValue}}</div>
+                    <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">{{indicatorC.trigger[0].triggerValue}}</div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                       {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
-                    <div class="btn btn-amber">{{indicatorC.trigger[1].triggerValue}}</div>
+                    <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">{{indicatorC.trigger[1].triggerValue}}</div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                       {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
-                    <div class="btn btn-red">{{indicatorC.trigger[2].triggerValue}}
+                    <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">{{indicatorC.trigger[2].triggerValue}}
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -279,7 +279,7 @@
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
                         [disabled]="!indicatorC.logs || indicatorC.logs.length < 1"
                         (click)="setExportLog(indicatorC.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
@@ -404,19 +404,19 @@
                   <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
-                    <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
+                    <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">{{indicator.trigger[0].triggerValue}}</div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                       {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
-                    <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
+                    <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">{{indicator.trigger[1].triggerValue}}</div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                       {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
-                    <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
+                    <div class="btn btn-red" (click)="redSelected(indicator.$key)">{{indicator.trigger[2].triggerValue}}</div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                       {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
@@ -560,7 +560,7 @@
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
                         [disabled]="!indicator.logs || indicator.logs.length < 1"
                         (click)="setExportLog(indicator.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
@@ -699,19 +699,19 @@
                     <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
-                      <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
+                      <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">{{indicator.trigger[0].triggerValue}}</div>
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
-                      <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
+                      <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">{{indicator.trigger[1].triggerValue}}</div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                         {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
-                      <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
+                      <div class="btn btn-red" (click)="redSelected(indicator.$key)">{{indicator.trigger[2].triggerValue}}</div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                         {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
@@ -855,7 +855,7 @@
                         </div>
                         <!--export log button-->
                         <div class="export_log mt-auto p-2">
-                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
+                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
                             [disabled]="!indicator.logs || indicator.logs.length < 1"
                             (click)="setExportLog(indicator.logs)">
                             {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
