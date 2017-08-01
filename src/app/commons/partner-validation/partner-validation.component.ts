@@ -4,11 +4,12 @@ import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../utils/Constants";
 import * as moment from "moment";
-import {AlertMessageType, ResponsePlanSectors, UserType} from "../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors} from "../../utils/Enums";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {CommonService} from "../../services/common.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import * as firebase from "firebase";
 
 declare var jQuery: any;
 
@@ -50,37 +51,58 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
           this.accessToken = params["token"];
           this.partnerOrgId = params["partnerId"];
 
-          //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
-          this.af.database.object(Constants.APP_STATUS + "/partnerOrganisationValidation/" + this.partnerOrgId + "/validationToken")
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((validationToken) => {
-              if (validationToken) {
-                if (this.accessToken === validationToken.token) {
-                  let expiry = validationToken.expiry;
-                  let currentTime = moment.utc();
-                  let tokenExpiryTime = moment.utc(expiry);
+          firebase.auth().signInAnonymously().catch(error => {
+            console.log(error.message);
+          });
 
-                  if (currentTime.isAfter(tokenExpiryTime)) {
-                    this.navigateToLogin();
-                    return;
-                  }
+          firebase.auth().onAuthStateChanged(user => {
+            console.log("onAuthStateChanged");
+            console.log(user.isAnonymous);
+            if (user) {
+              if (user.isAnonymous) {
+                //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+                this.af.database.object(Constants.APP_STATUS + "/partnerOrganisationValidation/" + this.partnerOrgId + "/validationToken")
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((validationToken) => {
+                    if (validationToken) {
+                      if (this.accessToken === validationToken.token) {
+                        let expiry = validationToken.expiry;
+                        let currentTime = moment.utc();
+                        let tokenExpiryTime = moment.utc(expiry);
 
-                  this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(areaJson => {
-                      this.areaJson = areaJson;
-                      this.loadPartnerOrgInfo(this.partnerOrgId);
-                    });
+                        if (currentTime.isAfter(tokenExpiryTime)) {
+                          this.navigateToLogin();
+                          return;
+                        }
+
+                        this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(areaJson => {
+                            this.areaJson = areaJson;
+                            this.loadPartnerOrgInfo(this.partnerOrgId);
+                          });
 
 
-                } else {
-                  this.navigateToLogin();
-                }
+                      } else {
+                        this.navigateToLogin();
+                      }
+                    } else {
+                      this.navigateToLogin();
+                    }
+                  });
               } else {
+                console.log("not anonymous login");
                 this.navigateToLogin();
               }
-            });
+
+            } else {
+              console.log("user not logged in");
+              this.navigateToLogin();
+            }
+          });
+
         } else {
+          console.log("not from email click");
           this.navigateToLogin();
         }
       });
