@@ -10,6 +10,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "./notification.service";
 import {MessageModel} from "../model/message.model";
 import {User} from "firebase/app";
+import * as moment from "moment";
 
 @Injectable()
 export class ResponsePlanService {
@@ -151,7 +152,11 @@ export class ResponsePlanService {
 
               if (waitingApprovalList.length == 0 && hasCountryDirector) {
                 // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
-                this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
+                let approveUpdateData = {};
+                approveUpdateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
+                approveUpdateData["/responsePlan/" + countryId + "/" + responsePlanId + "/timeUpdated"] = moment().utc().valueOf();
+                this.af.database.object(Constants.APP_STATUS).update(approveUpdateData);
+                // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
               }
 
               if (!isApproved && agencyId) {
