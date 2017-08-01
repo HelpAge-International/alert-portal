@@ -74,6 +74,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   // Page admin
   private isViewing: boolean;
+  private isSameAgency: boolean = false;
   protected countrySelected = false;
   protected agencySelected = false;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -149,6 +150,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.assignActionAsignee = this.uid;
           this.userType = userType;
@@ -468,6 +470,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             isCompleteAt: new Date().getTime()
           });
           this.addNote(action);
+          this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
@@ -633,6 +636,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
+  }
+
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 

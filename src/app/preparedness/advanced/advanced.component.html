@@ -123,6 +123,25 @@
       </div>
     </div>
 
+
+
+
+
+    <!-- Disclaimer!!
+
+    The sections here are very messy when it comes to the IF statements filtering out the which action should appear where.
+    They were done like this this so that the actions can live update along with any filters that are applied without having
+    some horrible logic inside the .ts file to handle the firebase filtering and which section it's assigned too. Maintaining
+    a map of Action -> showInSection(value) didn't work and made updating weird, It's not
+    pretty but it seems to be right in terms of things appearing in the sections that they should - If something ends up
+    being wrong with them then I would recommend whiteboarding the desired functionality so you get it 100% and then code it
+    I tried it the other way round ... didn't work out too well
+
+    -->
+
+
+
+
     <!--
              START :: INACTIVE
     -->
@@ -184,10 +203,10 @@
                          [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                         action</a>
                     </div>
-                    <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
-                    <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                    <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
-                    <!--</div>-->
+                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                      <a href="javascript:void(0)" (click)="copyAction(action)"
+                         class="btn btn-outline-primary btn-block ">Copy action</a>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -207,13 +226,18 @@
                     <div class="col-md-2"></div>
                     <div class="col-md-7">
                       <div class="row">
-                        <div class="col-12">
+                        <div class="col-3">
                           <h4>Notes</h4>
+                        </div>
+                        <div class="col-9">
+                          <p><tooltip
+                            [level1]="'TOOLTIPS.PREPAREDNESS.TT5.LEVEL1'">
+                          </tooltip></p>
                         </div>
                       </div>
                       <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                        <div class="col-12 form-group">
+                        <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                         </div>
@@ -247,7 +271,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-3 btn-block">
+                    <div class="col-md-3 btn-block" *ngIf="!isViewing">
                       <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
@@ -464,7 +488,7 @@
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block"
                              *ngIf="!countrySelected">
-                          <div *ngIf="!action.isComplete && action.dueDate > getNow() && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
+                          <div *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
                             <a href="javascript:void(0)" data-toggle="collapse"
                                [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
                                aria-controls="popover_content"
@@ -476,10 +500,10 @@
                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
-                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                        <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
-                        <!--</div>-->
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                        <a href="javascript:void(0)" (click)="copyAction(action)"
+                        class="btn btn-outline-primary btn-block ">Copy action</a>
+                        </div>
                       </div>
                       <div class="row">
                         <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -499,13 +523,18 @@
                         <div class="col-md-2"></div>
                         <div class="col-md-7">
                           <div class="row">
-                            <div class="col-12">
+                            <div class="col-3">
                               <h4>Notes</h4>
+                            </div>
+                            <div class="col-9">
+                              <p><tooltip
+                                [level1]="'TOOLTIPS.PREPAREDNESS.TT5.LEVEL1'">
+                              </tooltip></p>
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                            <div class="col-12 form-group">
+                            <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                             </div>
@@ -539,7 +568,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-3 btn-block">
+                        <div class="col-md-3 btn-block" *ngIf="!isViewing">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
@@ -728,10 +757,10 @@
                              class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
-                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                        <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
-                        <!--</div>-->
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                        <a href="javascript:void(0)" (click)="copyAction(action)"
+                        class="btn btn-outline-primary btn-block ">Copy action</a>
+                        </div>
                       </div>
                       <div class="row">
                         <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -752,13 +781,18 @@
                       <div class="col-md-2"></div>
                       <div class="col-md-7">
                         <div class="row">
-                          <div class="col-12">
+                          <div class="col-3">
                             <h4>Notes</h4>
+                          </div>
+                          <div class="col-9">
+                            <p><tooltip
+                              [level1]="'TOOLTIPS.PREPAREDNESS.TT5.LEVEL1'">
+                            </tooltip></p>
                           </div>
                         </div>
                         <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                          <div class="col-12 form-group">
+                          <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                           </div>
@@ -792,7 +826,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-3 btn-block">
+                      <div class="col-md-3 btn-block" *ngIf="!isViewing">
                         <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :
@@ -930,10 +964,10 @@
                              class="btn btn-block">Edit
                             action</a>
                         </div>
-                        <!--<div class="col-md-3 col-sm-4 btn-block" *ngIf="action.type == actionType.custom">-->
-                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                        <!--class="btn btn-outline-primary btn-block ">Copy action</a>-->
-                        <!--</div>-->
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                        <a href="javascript:void(0)" (click)="copyAction(action)"
+                        class="btn btn-outline-primary btn-block ">Copy action</a>
+                        </div>
                       </div>
                       <div class="row">
                         <div class="subrow-line">Budget: <strong>&pound;{{action.budget}}</strong></div>
@@ -954,13 +988,18 @@
                         <div class="col-md-2"></div>
                         <div class="col-md-7">
                           <div class="row">
-                            <div class="col-12">
+                            <div class="col-3">
                               <h4>Notes</h4>
+                            </div>
+                            <div class="col-9">
+                              <p><tooltip
+                                [level1]="'TOOLTIPS.PREPAREDNESS.TT5.LEVEL1'">
+                              </tooltip></p>
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" >
-                            <div class="col-12 form-group">
+                            <div class="col-12 form-group" *ngIf="!isViewing">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                             </div>
@@ -994,7 +1033,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-3 btn-block">
+                        <div class="col-md-3 btn-block" *ngIf="!isViewing">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')" href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? 'SAVE NOTE' :

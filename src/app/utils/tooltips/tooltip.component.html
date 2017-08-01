@@ -1,9 +1,9 @@
 <span class="Info__icon" (click)="fadeIn()">
-	<div class="Info__bubble">{{level1 | translate}}
-		<div class="Extended__content" [hidden]="level2 == ''">
+	<div class="Info__bubble" id="info_bubble_{{genUniqueId(level1)}}">{{level1 | translate}}
+		<div class="Extended__content" id="extended_content_{{genUniqueId(level1)}}" [hidden]="level2 == ''">
 			<p>{{level2 | translate}}</p>
 			<p *ngIf="linkUrl != null"><b>{{"GLOBAL.TOOLTIP.NEED_MORE_INFORMATION" | translate}} <a href="{{linkUrl}}">{{"GLOBAL.TOOLTIP.CLICK_HERE" | translate}}</a>.</b></p>
 		</div>
-		<div [hidden]="level2 == null" class="Extend__span" (click)="toggleMore()">{{"GLOBAL.TOOLTIP.MORE_INFO" | translate}}</div>
+		<div [hidden]="level2 == null" class="Extend__span" id="extend_span_{{genUniqueId(level1)}}"(click)="toggleMore()">{{"GLOBAL.TOOLTIP.MORE_INFO" | translate}}</div>
 	</div>
 </span>
