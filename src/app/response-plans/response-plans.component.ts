@@ -14,6 +14,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "../services/notification.service";
 import {ResponsePlan} from "../model/responsePlan";
 import {observable} from "rxjs/symbol/observable";
+import {AgencyService} from "../services/agency-service.service";
+import * as moment from "moment";
 
 declare const jQuery: any;
 
@@ -21,7 +23,7 @@ declare const jQuery: any;
   selector: 'app-response-plans',
   templateUrl: './response-plans.component.html',
   styleUrls: ['./response-plans.component.css'],
-  providers: [ResponsePlanService]
+  providers: [ResponsePlanService, AgencyService]
 })
 
 export class ResponsePlansComponent implements OnInit, OnDestroy {
@@ -60,6 +62,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private approvalsList: any[] = [];
   private directorSubmissionRequireMap = new Map<number, boolean>();
+  private agencyPlanExpireDuration: number;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -68,6 +71,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               private service: ResponsePlanService,
               private userService: UserService,
               private notificationService: NotificationService,
+              private agencyService: AgencyService,
               private translate: TranslateService) {
   }
 
@@ -81,14 +85,24 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       } else {
         this.userType = userType;
         let userPath = Constants.USER_PATHS[userType];
-        if (this.userType == UserType.PartnerUser) {
-          this.agencyId = agencyId;
-          this.countryId = countryId;
-          this.handleRequireSubmissionTagForDirectors();
-          this.getResponsePlans(this.countryId);
-        } else {
-          this.getSystemAgencyCountryIds(userPath);
-        }
+
+        this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(duration => {
+            console.log(duration);
+            this.agencyPlanExpireDuration = duration;
+
+            if (this.userType == UserType.PartnerUser) {
+              this.agencyId = agencyId;
+              this.countryId = countryId;
+              this.handleRequireSubmissionTagForDirectors();
+              this.getResponsePlans(this.countryId);
+            } else {
+              this.getSystemAgencyCountryIds(userPath);
+            }
+
+          });
+
       }
     });
   }
@@ -117,6 +131,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (plan.isActive) {
           this.activePlans.push(plan);
           this.getNotes(plan);
+
+          if (!this.isViewing && this.agencyPlanExpireDuration && plan.timeUpdated && plan.status === ApprovalStatus.Approved) {
+            this.expirePlanIfNeed(plan, id, this.agencyPlanExpireDuration);
+          }
         }
       });
       this.checkHaveApprovedPartners(this.activePlans);
@@ -133,6 +151,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(plans => {
         this.archivedPlans = plans;
       });
+  }
+
+  private expirePlanIfNeed(plan: any, countryId: string, agencyPlanExpireDuration: number) {
+    let timeNow = moment().utc().valueOf();
+    if ((timeNow - plan.timeUpdated) > agencyPlanExpireDuration) {
+      console.log("expire this plan");
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key + "/isActive").set(false);
+    }
   }
 
   private getNeedToApprovedPartners(activePlans: any[]) {
@@ -519,6 +545,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   activatePlan(plan) {
+    // let activateData = {};
+    // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = true;
+    // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/status"] = ApprovalStatus.NeedsReviewing;
+    // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/timeUpdated"] = moment().utc().valueOf();
+    // this.af.database.object(Constants.APP_STATUS).update(activateData);
     this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
     this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")

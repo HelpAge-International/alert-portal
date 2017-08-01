@@ -5,6 +5,7 @@ import {Subject} from "rxjs/Subject";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
 import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
 import {Observable} from "rxjs/Observable";
+import {DurationType} from "../utils/Enums";
 
 @Injectable()
 export class AgencyService {
@@ -25,6 +26,25 @@ export class AgencyService {
 
   getAgency(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
+  getAgencyResponsePlanClockSettingsDuration(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/responsePlans")
+      .map(settings => {
+        console.log(settings);
+        let duration = 0;
+        let oneDay = 24 * 60 * 60 * 1000;
+        let durationType = Number(settings.durationType);
+        let value = Number(settings.value);
+        if (durationType === DurationType.Week) {
+          duration = value * 7 * oneDay;
+        } else if (durationType === DurationType.Month) {
+          duration = value * 30 * oneDay;
+        } else if (durationType === DurationType.Year) {
+          duration = value * 365 * oneDay;
+        }
+        return duration;
+      });
   }
 
   getSystemId(agencyAdminId): Observable<any> {
@@ -87,9 +107,8 @@ export class AgencyService {
     return displayList;
   }
 
-  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any>{
-    if(!agencyId || !countryId || !countryOfficeAddress)
-    {
+  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
+    if (!agencyId || !countryId || !countryOfficeAddress) {
       return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');
     }
 

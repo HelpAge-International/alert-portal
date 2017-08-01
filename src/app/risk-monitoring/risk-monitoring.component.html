@@ -111,19 +111,24 @@
                   <div class="" *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
-                    <div class="btn btn-primary">{{indicatorC.trigger[0].triggerValue}}</div>
+                    <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">
+                      {{indicatorC.trigger[0].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                       {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
-                    <div class="btn btn-amber">{{indicatorC.trigger[1].triggerValue}}</div>
+                    <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">
+                      {{indicatorC.trigger[1].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                       {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
-                    <div class="btn btn-red">{{indicatorC.trigger[2].triggerValue}}
+                    <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">
+                      {{indicatorC.trigger[2].triggerValue}}
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -188,9 +193,14 @@
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing && indicatorC?.assignee" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                      </div>
+                      <div *ngIf="!isViewing && !indicatorC?.assignee">
+                        <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
+                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
+                          Assign to</a>
                       </div>
                       <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicatorC, true)">
@@ -279,9 +289,9 @@
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
-                        [disabled]="!indicatorC.logs || indicatorC.logs.length < 1"
-                        (click)="setExportLog(indicatorC.logs)">
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
+                              [disabled]="!indicatorC.logs || indicatorC.logs.length < 1"
+                              (click)="setExportLog(indicatorC.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                       </button>
                     </div>
@@ -336,7 +346,8 @@
               </div>
               <!--<div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg">
               </div>-->
-              <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) : hazard.otherName}}</h4></div>
+              <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
+                hazard.otherName}}</h4></div>
             <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
               <div *ngIf="hazard.isSeasonal">
                 <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}
@@ -404,19 +415,25 @@
                   <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
-                    <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
+                    <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
+                      {{indicator.trigger[0].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                       {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
-                    <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
+                    <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
+                      {{indicator.trigger[1].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                       {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
-                    <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
+                    <div class="btn btn-red" (click)="redSelected(indicator.$key)">
+                      {{indicator.trigger[2].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                       {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
@@ -468,9 +485,14 @@
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="!isViewing && indicator?.assignee" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                    </div>
+                    <div *ngIf="!isViewing && !indicator?.assignee">
+                      <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
+                         aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
+                        Assign to</a>
                     </div>
                     <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
                          (click)="copyIndicator(indicator, false, hazard)">
@@ -560,9 +582,9 @@
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
-                        [disabled]="!indicator.logs || indicator.logs.length < 1"
-                        (click)="setExportLog(indicator.logs)">
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
+                              [disabled]="!indicator.logs || indicator.logs.length < 1"
+                              (click)="setExportLog(indicator.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                       </button>
                     </div>
@@ -699,19 +721,25 @@
                     <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
-                      <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
+                      <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
+                        {{indicator.trigger[0].triggerValue}}
+                      </div>
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
-                      <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
+                      <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
+                        {{indicator.trigger[1].triggerValue}}
+                      </div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                         {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
-                      <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
+                      <div class="btn btn-red" (click)="redSelected(indicator.$key)">
+                        {{indicator.trigger[2].triggerValue}}
+                      </div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                         {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
@@ -855,52 +883,53 @@
                         </div>
                         <!--export log button-->
                         <div class="export_log mt-auto p-2">
-                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog" 
-                            [disabled]="!indicator.logs || indicator.logs.length < 1"
-                            (click)="setExportLog(indicator.logs)">
+                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
+                                  [disabled]="!indicator.logs || indicator.logs.length < 1"
+                                  (click)="setExportLog(indicator.logs)">
                             {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                           </button>
                         </div>
 
-                    </div>
-                  </div>
-                  <div class="card">
-                    <div class="Tooltip__bubble container-fluid Blue info log collapse"
-                         id="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
-                      <div class="log_left p-3 row col-sm-12">
-                        <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                        <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
-                           aria-expanded="true"
-                           attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
-                           class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
-                          translate}}</a>
                       </div>
-                      <div class="row col-sm-10">
-                        <ul>
-                          <li *ngFor="let source of indicator.source">
-                            <a *ngIf="source?.link" href="javascript:void(0)" (click)="sourceClick(source)">{{source.name}}</a>
-                            <a *ngIf="!source?.link">{{source.name}}</a>
-                          </li>
-                        </ul>
+                    </div>
+                    <div class="card">
+                      <div class="Tooltip__bubble container-fluid Blue info log collapse"
+                           id="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
+                        <div class="log_left p-3 row col-sm-12">
+                          <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
+                          <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                             aria-expanded="true"
+                             attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                             class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                            translate}}</a>
+                        </div>
+                        <div class="row col-sm-10">
+                          <ul>
+                            <li *ngFor="let source of indicator.source">
+                              <a *ngIf="source?.link" href="javascript:void(0)" (click)="sourceClick(source)">{{source.name}}</a>
+                              <a *ngIf="!source?.link">{{source.name}}</a>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div *ngIf="!hazard.indicators || !hazard.indicators.length">
-                <div
-                  class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-                  <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
+                <div *ngIf="!hazard.indicators || !hazard.indicators.length">
+                  <div
+                    class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                    <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
+                  </div>
                 </div>
-              </div>
 
+              </div>
             </div>
           </div>
         </div>
+
+
       </div>
-
-
     </div>
   </div>
 </div>
@@ -1059,7 +1088,7 @@
 
 <!--Export Log Modal-->
 <div class="modal fade" id="exportLog" tabindex="-1" role="dialog" aria-labelledby="exportLogModalLabel"
-      aria-hidden="true">
+     aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -1076,8 +1105,8 @@
             <!--Dropdown menu From-->
             <div class="form-group">
               <material-datepicker id="fromDate"
-                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(fromDate, 'fromDate')"
-                  [(date)]="fromDate"></material-datepicker>
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectDate(fromDate, 'fromDate')"
+                                   [(date)]="fromDate"></material-datepicker>
             </div>
           </div>
           <!--Dropdown menu to-->
@@ -1085,8 +1114,8 @@
             <label>{{ 'RISK_MONITORING.EXPORT_LOG.TO' | translate }}</label>
             <div class="form-group">
               <material-datepicker id="toDate"
-                  dateFormat="DD-MM-YYYY" (onSelect)="selectDate(toDate, 'toDate')"
-                  [(date)]="toDate"></material-datepicker>
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectDate(toDate, 'toDate')"
+                                   [(date)]="toDate"></material-datepicker>
             </div>
           </div>
         </div>
@@ -1096,8 +1125,11 @@
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
-            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate }}</a>
-            <button href="javascript:void(0)" class="btn btn-primary col-sm-4" (click)="exportLog(logsToExport)">{{ 'RISK_MONITORING.EXPORT_LOG.EXPORT_BUTTON' | translate }}</button>
+            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            <button href="javascript:void(0)" class="btn btn-primary col-sm-4" (click)="exportLog(logsToExport)">{{
+              'RISK_MONITORING.EXPORT_LOG.EXPORT_BUTTON' | translate }}
+            </button>
           </div>
         </div>
       </div>
@@ -1105,3 +1137,38 @@
   </div>
 </div>
 <!--Export Log Modal-->
+
+<!--assign to staff dialog-->
+<div class="modal fade" id="assignIndicator" tabindex="-1" role="dialog"
+     aria-labelledby="assignIndicator"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">Assign this indicator</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <div class="col-sm-12">
+          <select class="form-control" [(ngModel)]="assignedUser">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let user of usersForAssign; let i = index" [attr.data-index]="i" value="{{user.userID}}">
+              {{user.name}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row Right-aligned Spaced col-sm-12">
+          <a class="col-sm-9 margin-top-one" data-dismiss="modal">Cancel</a>
+          <button
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

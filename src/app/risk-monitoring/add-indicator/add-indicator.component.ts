@@ -2,7 +2,11 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
 import {
-  AlertLevels, GeoLocation, Countries, DetailedDurationType, HazardScenario, AlertMessageType,
+  AlertLevels,
+  AlertMessageType,
+  DetailedDurationType,
+  GeoLocation,
+  HazardScenario,
   UserType
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -329,8 +333,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   stateGeoLocation(event: any) {
     var geoLocation = parseInt(event.target.value);
     this.indicatorData.geoLocation = geoLocation;
-    if(geoLocation == GeoLocation.subnational)
-    {
+    if (geoLocation == GeoLocation.subnational) {
       this.addAnotherLocation();
     }
   }
@@ -372,8 +375,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         });
     } else {
       //Obtaining the country admin data
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId+"/"+this.countryID).subscribe((data: any) => {
-        if(data.adminId) {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+        if (data.adminId) {
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
             var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
             this.usersForAssign.push(userToPush);
@@ -384,8 +387,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       //Obtaining other staff data
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
         for (let userID in data) {
-          if(!userID.startsWith('$'))
-          {
+          if (!userID.startsWith('$')) {
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
               var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
               this.usersForAssign.push(userToPush);
@@ -663,7 +665,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       excludeFields.push("level1", "level2");
     } else if (countryLevel1Exists && operationArea.level1
       && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
-      || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+        || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
       excludeFields.push("level2");
     }
     this.alertMessage = operationArea.validate(excludeFields);

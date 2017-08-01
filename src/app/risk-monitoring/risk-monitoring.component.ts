@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import { AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType, ThresholdName } from "../utils/Enums";
+import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -11,12 +11,14 @@ import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
-import _date = moment.unitOfTime._date;
 import {HazardImages} from "../utils/HazardImages";
 import {WindowRefService} from "../services/window-ref.service";
+import * as jsPDF from 'jspdf'
+import {ModelUserPublic} from "../model/user-public.model";
+import * as firebase from "firebase/app";
+import App = firebase.app.App;
 
 declare var jQuery: any;
-import * as jsPDF from 'jspdf'
 
 
 @Component({
@@ -104,6 +106,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private toDate: string;
   private toDateTimeStamp: number;
 
+  private usersForAssign: any;
+  private assignedIndicator: any;
+  private assignedHazard: any;
+  private assignedUser: string;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -128,6 +135,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.usersForAssign = [];
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -165,6 +174,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             this._getHazards();
             this.getCountryLocation();
             this._getCountryContextIndicators();
+            this.getUsersForAssign();
             PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
               this.countryPermissionsMatrix = isEnabled;
             }));
@@ -571,22 +581,20 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     return HazardImages.init().getCSS(hazard);
   }
 
-  setExportLog(logs: any[]){
+  setExportLog(logs: any[]) {
     this.logsToExport = logs;
     console.log(this.logsToExport);
   }
 
-  selectDate(value, dateType)
-  {
-    if(dateType === 'fromDate')
-    {
+  selectDate(value, dateType) {
+    if (dateType === 'fromDate') {
       this.fromDateTimeStamp = moment(value).startOf("day").valueOf();
-    }else{
+    } else {
       this.toDateTimeStamp = moment(value).endOf("day").valueOf();
     }
   }
 
-  exportLog(logs: any[]){
+  exportLog(logs: any[]) {
     var doc = new jsPDF();
     doc.setFontType("normal");
     doc.setFontSize("12");
@@ -598,36 +606,35 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     let y = 10;
 
     logs.forEach(log => {
-      if((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp ))
-      {    
+      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp )) {
         if (y > pageHeight) {
-            y = 10;
-            doc.addPage();
+          y = 10;
+          doc.addPage();
         }
-        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE')  + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
-        
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE') + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
+
         if (y > pageHeight) {
-            y = 10;
-            doc.addPage();
+          y = 10;
+          doc.addPage();
         }
-        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));
-        
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));
+
         if (y > pageHeight) {
-            y = 10;
-            doc.addPage();
+          y = 10;
+          doc.addPage();
         }
-        doc.text(x, y+=10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.AUTHOR') + ' ' + log.addedByFullName);
-        
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.AUTHOR') + ' ' + log.addedByFullName);
+
         let message = doc.splitTextToSize(log['content'], 180);
         message.forEach((m, index) => {
           if (y > pageHeight) {
             y = 10;
             doc.addPage();
           }
-          doc.text(x, y+=10, index === 0 ? this.translate.instant('RISK_MONITORING.EXPORT_LOG.MESSAGE') + ' ' + m : m);
+          doc.text(x, y += 10, index === 0 ? this.translate.instant('RISK_MONITORING.EXPORT_LOG.MESSAGE') + ' ' + m : m);
         })
 
-        doc.text(x, y+=10, ' '); 
+        doc.text(x, y += 10, ' ');
       }
     });
 
@@ -643,6 +650,75 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       url = "http://" + url;
     }
     this.windowService.getNativeWindow().open(url);
+  }
+
+  greenSelected(key) {
+    this.indicatorTrigger[key] = 0;
+  }
+
+  amberSelected(key) {
+    this.indicatorTrigger[key] = 1;
+  }
+
+  redSelected(key) {
+    this.indicatorTrigger[key] = 2;
+  }
+
+  assignIndicatorTo(hazard, indicator) {
+    console.log(indicator);
+    this.assignedHazard = hazard;
+    this.assignedIndicator = indicator;
+  }
+
+  getUsersForAssign() {
+    if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+        });
+    } else {
+      //Obtaining the country admin data
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+        if (data.adminId) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
+
+      //Obtaining other staff data
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+        for (let userID in data) {
+          if (!userID.startsWith('$')) {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+          }
+        }
+      });
+    }
+  }
+
+  saveAssignedUser() {
+    jQuery("#assignIndicator").modal("hide");
+    if (this.assignedHazard === "countryContext") {
+      this.assignedHazard = this.countryID;
+    }
+    let data = {};
+    data["/indicator/" + this.assignedHazard + "/" + this.assignedIndicator.$key + "/assignee"] = this.assignedUser;
+    this.af.database.object(Constants.APP_STATUS).update(data).then(() => {
+      this.assignedHazard = null;
+      this.assignedIndicator = null;
+      this.assignedUser = "undefined";
+    });
   }
 
 }
