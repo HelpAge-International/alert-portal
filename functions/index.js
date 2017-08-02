@@ -980,43 +980,45 @@ exports.sendPartnerOrganisationValidationEmailUat2 = functions.database.ref('/ua
 
 //UNCOMMENT BELOW 3 ONLY FOR SAND, TEST, UAT, UAT-2
 
-exports.sendSystemAdminNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
-  .onWrite(event => {
+//Only enable SAND for testing during development
 
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-
-    let userId = event.params['userId'];
-    let msgId = event.params['messageId'];
-
-    if (!preData && currData) {
-      admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
-
-        let email = snapshot.val();
-
-        if(email){
-          admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
-            let title = snapshot.val().title;
-            let content = snapshot.val().content;
-
-            const mailOptions = {
-              from: '"ALERT Preparedness" <noreply@firebase.com>',
-              to: email
-            };
-            mailOptions.subject = title;
-            mailOptions.text = content;
-            return mailTransport.sendMail(mailOptions).then(() => {
-              console.log('Notification email sent to :', email);
-            });
-          }, error => {
-            console.log(error.message);
-          });
-        }
-      }, error => {
-         console.log(error.message);
-      });
-    }
-  });
+// exports.sendSystemAdminNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
+//   .onWrite(event => {
+//
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//
+//     let userId = event.params['userId'];
+//     let msgId = event.params['messageId'];
+//
+//     if (!preData && currData) {
+//       admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
+//
+//         let email = snapshot.val();
+//
+//         if(email){
+//           admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
+//             let title = snapshot.val().title;
+//             let content = snapshot.val().content;
+//
+//             const mailOptions = {
+//               from: '"ALERT Preparedness" <noreply@firebase.com>',
+//               to: email
+//             };
+//             mailOptions.subject = title;
+//             mailOptions.text = content;
+//             return mailTransport.sendMail(mailOptions).then(() => {
+//               console.log('Notification email sent to :', email);
+//             });
+//           }, error => {
+//             console.log(error.message);
+//           });
+//         }
+//       }, error => {
+//          console.log(error.message);
+//       });
+//     }
+//   });
 
 exports.sendSystemAdminNotificationsEmail_TEST = functions.database.ref('/test/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
   .onWrite(event => {
@@ -1181,43 +1183,45 @@ exports.sendSystemAdminNotificationsEmail_UAT_2 = functions.database.ref('/uat-2
 
 //UNCOMMENT BELOW 3 ONLY FOR SAND, TEST, UAT, UAT-2
 
-exports.sendAgencyNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
-  .onWrite(event => {
+//Only enable SAND for testing during development
 
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-
-    let userId = event.params['userId'];
-    let msgId = event.params['messageId'];
-
-    if (!preData && currData) {
-      admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
-
-        let email = snapshot.val();
-
-        if(email){
-          admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
-            let title = snapshot.val().title;
-            let content = snapshot.val().content;
-
-            const mailOptions = {
-              from: '"ALERT Preparedness" <noreply@firebase.com>',
-              to: email
-            };
-            mailOptions.subject = title;
-            mailOptions.text = content;
-            return mailTransport.sendMail(mailOptions).then(() => {
-              console.log('Notification email sent to :', email);
-            });
-          }, error => {
-            console.log(error.message);
-          });
-        }
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
+// exports.sendAgencyNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
+//   .onWrite(event => {
+//
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//
+//     let userId = event.params['userId'];
+//     let msgId = event.params['messageId'];
+//
+//     if (!preData && currData) {
+//       admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
+//
+//         let email = snapshot.val();
+//
+//         if(email){
+//           admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
+//             let title = snapshot.val().title;
+//             let content = snapshot.val().content;
+//
+//             const mailOptions = {
+//               from: '"ALERT Preparedness" <noreply@firebase.com>',
+//               to: email
+//             };
+//             mailOptions.subject = title;
+//             mailOptions.text = content;
+//             return mailTransport.sendMail(mailOptions).then(() => {
+//               console.log('Notification email sent to :', email);
+//             });
+//           }, error => {
+//             console.log(error.message);
+//           });
+//         }
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
 
 exports.sendAgencyNotificationsEmail_TEST = functions.database.ref('/test/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
   .onWrite(event => {
