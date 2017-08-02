@@ -117,6 +117,7 @@ import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboa
 import {NewUserPasswordComponent} from "./new-user-password/new-user-password.component";
 import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
 import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
+import {DirectorAccountSettingsComponent} from "./director/director-account-settings/director-account-settings.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -333,6 +334,7 @@ const routes: Routes = [
   {path: 'director/director-overview', component: DirectorOverviewComponent},
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
   {path: 'director/director-notifications', component: DirectorNotificationsComponent},
+  {path: 'director/director-account-settings', component: DirectorAccountSettingsComponent},
 
   /**
    * Donor
