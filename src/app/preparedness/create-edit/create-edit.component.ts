@@ -422,6 +422,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
       if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
         console.log("Removing complete status!");
+        updateObj.isComplete = null;
         updateObj.isCompleteAt = null;
         updateObj.calculatedIsComplete = null;
       }

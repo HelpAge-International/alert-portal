@@ -441,7 +441,7 @@
                                          {
                                          'text-warning': action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()),
                                          'text-success': action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()),
-                                         'text-danger': (action.asignee == '' || action.asignee == null) && !((!action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && (action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())))
+                                         'text-danger': !(action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && !(action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()))
                                          }
                                          ">
                                          <span class="fa-stack">
@@ -451,7 +451,7 @@
                                                {
                                                'fa-ellipsis-h': action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow()),
                                                'fa-check': action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()),
-                                               'fa-times': (action.asignee == '' || action.asignee == null) && !((!action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && (action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())))
+                                               'fa-times': !(action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && !(action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()))
                                                }
                                                "></i>
                                         </span>
