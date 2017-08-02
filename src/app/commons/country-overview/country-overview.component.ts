@@ -1,20 +1,27 @@
-import { Component, OnDestroy, OnInit, Input } from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Message} from "../../model/message";
-import {MessageModel} from "../../model/message.model";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
-import { AlertLevels, Countries, HazardScenario, ActionLevel, ActionType, AlertStatus, UserType, ApprovalStatus } from "../../utils/Enums";
+import {
+  ActionLevel,
+  ActionType,
+  AlertLevels,
+  AlertStatus,
+  ApprovalStatus,
+  Countries,
+  HazardScenario
+} from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
-import { AgencyService } from "../../services/agency-service.service";
-import { PageControlService } from "../../services/pagecontrol.service";
+import {AgencyService} from "../../services/agency-service.service";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
+
 @Component({
   selector: 'app-country-overview',
   templateUrl: './country-overview.component.html',
@@ -29,35 +36,44 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private _userType: number;
 
 
-  @Input() set agencyId(agencyId: string){
+  @Input()
+  set agencyId(agencyId: string) {
     this._agencyId = agencyId;
     this._loadData();
   }
 
-  @Input() set agencies(agencies: any){
+  @Input()
+  set agencies(agencies: any) {
     this._agencies = agencies;
     this._loadData();
   }
 
-  @Input() set systemId(systemId: string){
+  @Input()
+  set systemId(systemId: string) {
     this._systemId = systemId;
     this._loadData();
   }
 
-  @Input() set userId(userId: string){
+  @Input()
+  set userId(userId: string) {
     this._userId = userId;
     this._loadData();
   }
 
-  @Input() set userType(userType: number){
+  @Input()
+  set userType(userType: number) {
     this._userType = userType;
     this._loadData();
   }
 
-  @Input() set countryOfficeData(countryOfficeData: any){
+  @Input()
+  set countryOfficeData(countryOfficeData: any) {
     this._countryOfficeData = countryOfficeData;
     this._loadData();
   }
+
+  @Input() isDirector: boolean;
+  @Input() agencyOverview: boolean = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -112,51 +128,52 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this.filter = event.target.value;
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
   }
+
   _loadData() {
-    if(this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._countryOfficeData) {
-        this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
-          this.minTreshold = minTreshold;
+    if (this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._countryOfficeData) {
+      this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
+        this.minTreshold = minTreshold;
 
-          this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
-            this.advTreshold = advTreshold;
-            this._countryOfficeData.forEach(countryOffice => {
-              if(!countryOffice.agencyId) {
-                countryOffice.agencyId = this._agencyId;
-              }
+        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+          this.advTreshold = advTreshold;
+          this._countryOfficeData.forEach(countryOffice => {
+            if (!countryOffice.agencyId) {
+              countryOffice.agencyId = this._agencyId;
+            }
 
-              this.prepActionService[countryOffice.$key]= new PrepActionService();
-              this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
+            this.prepActionService[countryOffice.$key] = new PrepActionService();
+            this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
 
-              this._getResponsePlans(countryOffice);
-              this._getAlertLevel(countryOffice);
-              
-              this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, countryOffice.agencyId, this._systemId)
+            this._getResponsePlans(countryOffice);
+            this._getAlertLevel(countryOffice);
 
-              this.prepActionService[countryOffice.$key].addUpdater(() => {
-                this.recalculateAll(countryOffice);
-              });
+            this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, countryOffice.agencyId, this._systemId)
+
+            this.prepActionService[countryOffice.$key].addUpdater(() => {
+              this.recalculateAll(countryOffice);
             });
-
-            this.filteredCountryOfficeData = this._countryOfficeData;
           });
+
+          this.filteredCountryOfficeData = this._countryOfficeData;
         });
+      });
     }
   }
 
   _getResponsePlans(countryOffice) {
     let promise = new Promise((res, rej) => {
-        this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryOffice.$key)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((responsePlans: any) => {
-              this.countResponsePlans[countryOffice.$key] = 0;
-              responsePlans.forEach(plan => {
-                  if(plan.status == ApprovalStatus.Approved && plan.isActive == true){
-                    this.countResponsePlans[countryOffice.$key] = this.countResponsePlans[countryOffice.$key] + 1;
-                  }
-              });
-
-            res(true);
+      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryOffice.$key)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((responsePlans: any) => {
+          this.countResponsePlans[countryOffice.$key] = 0;
+          responsePlans.forEach(plan => {
+            if (plan.status == ApprovalStatus.Approved && plan.isActive == true) {
+              this.countResponsePlans[countryOffice.$key] = this.countResponsePlans[countryOffice.$key] + 1;
+            }
           });
+
+          res(true);
+        });
     });
     return promise;
   }
@@ -302,13 +319,35 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewCountry(countryId, agencyId) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
+    if (this.isDirector) {
+      this.router.navigate(["/director/director-overview", {
         "countryId": countryId,
         "isViewing": true,
         "agencyId": agencyId,
         "systemId": this._systemId,
-        "userType": this._userType,
-        "canCopy": true
+        "userType": this._userType
       }]);
+    } else {
+      if (this.agencyOverview) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": countryId,
+          "isViewing": true,
+          "agencyId": agencyId,
+          "systemId": this._systemId,
+          "userType": this._userType,
+          "agencyOverview": this.agencyOverview,
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": countryId,
+          "isViewing": true,
+          "agencyId": agencyId,
+          "systemId": this._systemId,
+          "userType": this._userType,
+          "canCopy": true
+        }]);
+      }
+    }
   }
 }

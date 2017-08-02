@@ -8,8 +8,8 @@
       <h1>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.AGENCIES_IN" | translate}} {{countries[countryKey] | translate}}
         {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
     </div>
-    
-    <app-country-overview [systemId]="systemAdminID" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices"></app-country-overview>
+
+    <app-country-overview [systemId]="systemAdminID" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices" [agencyOverview]="true"></app-country-overview>
 
   </div>
 

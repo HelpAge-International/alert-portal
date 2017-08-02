@@ -282,7 +282,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
-        
+
         // Display APA only if there is a red alert
         actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 
@@ -299,6 +299,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             x.level = action.level;
           });
         }
+
         for (let x of this.actionsToday) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
             x.task = action.task;
@@ -416,7 +417,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
     }
     this.actionService.getRedAlerts(this.countryId)
-    .subscribe(alerts => 
+    .subscribe(alerts =>
     {
       alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
       this.isRedAlert =  alerts.length > 0;
