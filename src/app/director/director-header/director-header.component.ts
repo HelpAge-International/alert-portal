@@ -1,13 +1,12 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";
-import {UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
-import { NotificationService } from "../../services/notification.service";
-import { MessageModel } from "../../model/message.model";
+import {NotificationService} from "../../services/notification.service";
+import {MessageModel} from "../../model/message.model";
 
 @Component({
   selector: 'app-director-header',
@@ -27,7 +26,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
   private lastName: string = "";
 
   private userPaths = Constants.USER_PATHS;
-  
+
   private unreadMessages: MessageModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -41,7 +40,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.USER_TYPE = this.userPaths[userType];
       if (this.USER_TYPE) {
@@ -49,7 +48,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
       }
 
       this.userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
-            this.agencyId = agencyId;
+        this.agencyId = agencyId;
       });
 
       this.userService.getUser(this.uid)

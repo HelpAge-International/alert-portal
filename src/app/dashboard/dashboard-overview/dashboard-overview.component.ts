@@ -102,6 +102,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         }
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+          console.log(this.agencyOverview);
         }
         if (params["userType"]) {
           this.userType = params["userType"];
