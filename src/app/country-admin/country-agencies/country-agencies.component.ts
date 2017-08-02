@@ -1,12 +1,11 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
-import { AgencyService } from "../../services/agency-service.service";
+import {AgencyService} from "../../services/agency-service.service";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -20,7 +19,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   private agencyID: string;
   private systemAdminID: string;
   private countryId: string;
-  
+
   private countryToShow: any;
   private countryKey: string;
   private countryOffices: any[] = [];
@@ -60,7 +59,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             this.getCountry().then(() => {
               this._getUserInfo().then(() => {
                 this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(() => {
-                  
+
                 });
               });
             });
@@ -140,7 +139,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
         .subscribe(agencies => {
           agencies = agencies.filter(agency => agency.$key != this.agencyID);
           agencies.forEach(agency => {
-            
+
             let countries = Object.keys(agency).filter(key => !(key.indexOf("$") > -1)).map(key => {
               let temp = agency[key];
               temp["$key"] = key;
@@ -151,17 +150,16 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
 
             if (countries.length > 0) {
-                // An agency should only have one country office per country
-                if(!this.countryOffices.find(x => x == countries[0]))
-                {
-                  this.countryOffices.push(countries[0]);
-                }
+              // An agency should only have one country office per country
+              if (!this.countryOffices.find(x => x == countries[0])) {
+                this.countryOffices.push(countries[0]);
+              }
 
-                this.agencyService.getAgency(agency.$key)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies[countries[0].countryId] = agency;
-                  });
+              this.agencyService.getAgency(agency.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => {
+                  this.agencies[countries[0].countryId] = agency;
+                });
 
             }
             res(true);

@@ -189,6 +189,10 @@ import { CountryOverviewComponent } from "./commons/country-overview/country-ove
 import { ActionsService } from "./services/actions.service";
 import { PartnerValidationComponent } from './commons/partner-validation/partner-validation.component';
 import {WindowRefService} from "./services/window-ref.service";
+import { AfterValidationComponent } from './commons/partner-validation/after-validation/after-validation.component';
+import { AccountSettingProfileComponent } from './commons/account-setting-profile/account-setting-profile.component';
+import { AccountSettingPasswordComponent } from './commons/account-setting-password/account-setting-password.component';
+import { DirectorAccountSettingsComponent } from './director/director-account-settings/director-account-settings.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -370,7 +374,11 @@ const firebaseAuthConfig = {
     NewUserPasswordComponent,
     CountryOverviewComponent,
     CountryAgenciesComponent,
-    PartnerValidationComponent
+    PartnerValidationComponent,
+    AfterValidationComponent,
+    AccountSettingProfileComponent,
+    AccountSettingPasswordComponent,
+    DirectorAccountSettingsComponent
   ],
   imports: [
     BrowserModule,
