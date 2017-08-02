@@ -14,8 +14,8 @@
         | translate}}</a></li>
     </ul>
 
-    <app-account-setting-profile *ngIf="showProfile"></app-account-setting-profile>
-    <app-account-setting-password *ngIf="!showProfile"></app-account-setting-password>
+    <app-account-setting-profile *ngIf="showProfile" [isDirector]="true"></app-account-setting-profile>
+    <app-account-setting-password *ngIf="!showProfile" [isDirector]="true"></app-account-setting-password>
 
   </div>
 </div>

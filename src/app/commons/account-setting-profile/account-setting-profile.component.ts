@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
@@ -32,6 +32,7 @@ export class AccountSettingProfileComponent implements OnInit, OnDestroy {
   authState: FirebaseAuthState;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  @Input() isDirector:boolean = false;
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private router: Router,
@@ -84,7 +85,11 @@ export class AccountSettingProfileComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('/dashboard');
+    if (this.isDirector) {
+      this.router.navigateByUrl('/director');
+    } else {
+      this.router.navigateByUrl('/dashboard');
+    }
   }
 
 }
