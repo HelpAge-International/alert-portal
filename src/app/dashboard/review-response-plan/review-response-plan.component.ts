@@ -8,6 +8,7 @@ import {ResponsePlanService} from "../../services/response-plan.service";
 import {ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+import * as firebase from "firebase";
 
 declare const jQuery: any;
 
@@ -67,67 +68,89 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         if (params["id"]) {
           this.responsePlanId = params["id"];
         }
-      });
 
-    console.log(this.accessToken);
-    if (this.accessToken) {
-      let invalid = true;
-      //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
-      this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((validationToken) => {
-          if (validationToken) {
-            if (this.accessToken === validationToken.token) {
-              let expiry = validationToken.expiry;
-              let currentTime = moment.utc();
-              let tokenExpiryTime = moment.utc(expiry)
+        console.log(this.accessToken);
+        if (this.accessToken) {
+          let invalid = true;
 
-              if (currentTime.isBefore(tokenExpiryTime))
-                invalid = false;
-            }
+          firebase.auth().signInAnonymously().catch(error => {
+            console.log(error.message);
+          });
 
-            if (!invalid) {
-              this.userType = UserType.PartnerOrganisation;
-              this.uid = this.partnerOrganisationId;
-              this.isDirector = false;
+          firebase.auth().onAuthStateChanged(user => {
+            console.log("onAuthStateChanged");
+            console.log(user.isAnonymous);
+            if (user) {
+              if (user.isAnonymous) {
+                //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+                this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((validationToken) => {
+                    if (validationToken) {
+                      if (this.accessToken === validationToken.token) {
+                        let expiry = validationToken.expiry;
+                        let currentTime = moment.utc();
+                        let tokenExpiryTime = moment.utc(expiry)
 
-              this.loadResponsePlan(this.responsePlanId);
+                        if (currentTime.isBefore(tokenExpiryTime))
+                          invalid = false;
+                      }
+
+                      if (!invalid) {
+                        this.userType = UserType.PartnerOrganisation;
+                        this.uid = this.partnerOrganisationId;
+                        this.isDirector = false;
+
+                        this.loadResponsePlan(this.responsePlanId);
+                      } else {
+                        this.navigateToLogin();
+                      }
+                    } else {
+                      this.navigateToLogin();
+                    }
+                  });
+              } else {
+                console.log("not anonymous login");
+                this.navigateToLogin();
+              }
+
             } else {
+              console.log("user not logged in");
               this.navigateToLogin();
             }
-          } else {
-            this.navigateToLogin();
-          }
-        });
-    } else {
-      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-        this.uid = user.auth.uid;
-        this.userType = userType;
-        this.agencyId = agencyId;
-        this.countryId = countryId;
-        if (this.userType === UserType.RegionalDirector) {
-          this.userService.getRegionId(Constants.USER_PATHS[this.userType], this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(regionId => {
-              this.regionId = regionId;
-            });
-        }
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["isDirector"]) {
-              this.isDirector = params["isDirector"];
-            }
-            if (params["countryId"]) {
-              this.countryId = params["countryId"];
-            }
-            if (params["id"]) {
-              this.responsePlanId = params["id"];
-              this.loadResponsePlan(this.responsePlanId);
-            }
           });
+
+        } else {
+          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            this.uid = user.auth.uid;
+            this.userType = userType;
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+            if (this.userType === UserType.RegionalDirector) {
+              this.userService.getRegionId(Constants.USER_PATHS[this.userType], this.uid)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(regionId => {
+                  this.regionId = regionId;
+                });
+            }
+            this.route.params
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((params: Params) => {
+                if (params["isDirector"]) {
+                  this.isDirector = params["isDirector"];
+                }
+                if (params["countryId"]) {
+                  this.countryId = params["countryId"];
+                }
+                if (params["id"]) {
+                  this.responsePlanId = params["id"];
+                  this.loadResponsePlan(this.responsePlanId);
+                }
+              });
+          });
+        }
+
       });
-    }
   }
 
   private loadResponsePlan(responsePlanId: string) {
