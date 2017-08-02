@@ -6,13 +6,18 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-  AgeRange, BudgetCategory, Gender, MethodOfImplementation, PresenceInTheCountry,
-  SourcePlan, UserType
+  AgeRange,
+  BudgetCategory,
+  Gender,
+  MethodOfImplementation,
+  PresenceInTheCountry,
+  SourcePlan,
+  UserType
 } from "../../utils/Enums";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
+import * as firebase from "firebase";
 
 declare var jQuery: any;
 
@@ -131,29 +136,41 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
         if (this.accessToken) {
           let invalid = true;
-          //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
-          this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((validationToken) => {
-              if (validationToken) {
-                if (this.accessToken === validationToken.token) {
-                  let expiry = validationToken.expiry;
-                  let currentTime = moment.utc();
-                  let tokenExpiryTime = moment.utc(expiry);
 
-                  if (currentTime.isBefore(tokenExpiryTime))
-                    invalid = false;
-                }
+          firebase.auth().signInAnonymously().catch(error => {
+            console.log(error.message);
+          });
 
-                if (invalid) {
-                  this.navigateToLogin();
-                }
-                this.showingSections = [0,1,2,3,4,5,6,7,8,9];
-                this.handleLoadResponsePlan();
-              } else {
-                this.navigateToLogin();
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              if (user.isAnonymous) {
+                //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+                this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((validationToken) => {
+                    if (validationToken) {
+                      if (this.accessToken === validationToken.token) {
+                        let expiry = validationToken.expiry;
+                        let currentTime = moment.utc();
+                        let tokenExpiryTime = moment.utc(expiry);
+
+                        if (currentTime.isBefore(tokenExpiryTime))
+                          invalid = false;
+                      }
+
+                      if (invalid) {
+                        this.navigateToLogin();
+                      }
+                      this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                      this.handleLoadResponsePlan();
+                    } else {
+                      this.navigateToLogin();
+                    }
+                  });
               }
-            });
+            }
+          });
+
         } else {
           this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
@@ -315,7 +332,9 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlanToShow = responsePlan;
-        this.configGroups(responsePlan);
+        if (!this.accessToken) {
+          this.configGroups(responsePlan);
+        }
 
         this.loadSection1PlanLead(responsePlan);
         this.loadSection3(responsePlan);

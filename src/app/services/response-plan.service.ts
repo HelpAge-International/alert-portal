@@ -175,7 +175,7 @@ export class ResponsePlanService {
                 this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector, hasToken);
               } else {
                 if (hasToken) {
-                  this.router.navigateByUrl(Constants.LOGIN_PATH);
+                  this.router.navigate(["/after-validation", {"plan":true}], {skipLocationChange:true});
                 } else {
                   isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
                 }

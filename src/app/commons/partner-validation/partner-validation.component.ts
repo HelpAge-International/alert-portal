@@ -116,7 +116,7 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + this.partnerOrgId + "/isApproved").set(true).then(() => {
       this.alertMessage = new AlertMessageModel("Successfully validate partnership!", AlertMessageType.Success);
       setTimeout(() => {
-        this.router.navigateByUrl(Constants.LOGIN_PATH)
+        this.router.navigate(["/after-validation", {"partner":true}], {skipLocationChange:true});
       }, Constants.ALERT_REDIRECT_DURATION)
     }, error => {
       this.alertMessage = new AlertMessageModel(error.message);

@@ -116,6 +116,7 @@ import {DirectorNotificationsComponent} from "./director/director-notifications/
 import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
 import {NewUserPasswordComponent} from "./new-user-password/new-user-password.component";
 import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
+import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -352,7 +353,8 @@ const routes: Routes = [
   /**
    * Partner Vlidation
    * */
-  {path: 'partner-validation', component: PartnerValidationComponent}
+  {path: 'partner-validation', component: PartnerValidationComponent},
+  {path: 'after-validation', component: AfterValidationComponent}
 
 ];
 
