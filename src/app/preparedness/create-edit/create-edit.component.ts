@@ -77,6 +77,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   private filterLockDocument: boolean = true;
   private showDueDate: boolean = true;
 
+  private copyDepartmentId: string;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private prepActionService: PrepActionService = new PrepActionService();
 
@@ -96,6 +98,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
       this.action.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) : 0;
       this.action.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      this.action.budget = (typeof (this.actionSelected.budget) != 'undefined') ? this.actionSelected.budget : 0;
+      this.copyDepartmentId = (typeof (this.actionSelected.department) != 'undefined') ? this.actionSelected.department : 0;
+      console.log(this.actionSelected);
       // TODO: Check if this is being used anywhere else and potentially remove it?
       // TODO: This causes a bug with going back and forth on the page
       this.storage.remove('selectedAction');
@@ -281,6 +286,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           x.name = snapshot.val().name;
           this.departments.push(x);
         });
+        if (this.copyDepartmentId != null) {
+          this.departments.forEach((value, key) => {
+            if (this.copyDepartmentId == value.id) {
+              // Copied Department exists in Action - Set current selection to it!
+              this.action.department = this.copyDepartmentId;
+            }
+          })
+        }
       });
   }
 
@@ -444,12 +457,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
           }
 
-          if (this.action.level == ActionLevel.MPA) {
-            this.router.navigateByUrl("/preparedness/minimum");
-          }
-          else {
-            this.router.navigateByUrl("/preparedness/advanced");
-          }
+          this._location.back();
         })
       }
       else {
@@ -469,12 +477,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
           }
 
-          if (this.action.level == ActionLevel.MPA) {
-            this.router.navigateByUrl("/preparedness/minimum");
-          }
-          else {
-            this.router.navigateByUrl("/preparedness/advanced");
-          }
+          this._location.back();
         });
       }
     }

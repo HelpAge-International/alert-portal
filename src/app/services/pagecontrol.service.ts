@@ -208,12 +208,13 @@ export class PageControlService {
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
     "director*",
+    "dashboard/dashboard-overview*",
     "map;isDirector=true",
     "map/map-countries-list;isDirector=true",
-    "risk-monitoring*",
-    "preparedness*",
-    "response-plans*",
-    "country-admin*",
+    // "risk-monitoring*",
+    // "preparedness*",
+    // "response-plans*",
+    // "country-admin*",
     "new-user-password"
   ]);
   public static CountryAdmin = PageUserType.create(UserType.CountryAdmin, "dashboard", [
