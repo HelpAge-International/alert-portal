@@ -186,7 +186,7 @@
                 countryLevels[location.country]?.levels[1].value | translate }}
               </option>
               <option
-                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1].levelTwoValues"
+                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1]?.levelTwoValues"
                 [ngValue]="countryLevel2Value.id">{{countryLevel2Value.value}}
               </option>
             </select>

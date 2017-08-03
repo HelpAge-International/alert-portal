@@ -1,14 +1,15 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {PermissionSettingsModel} from "../../../model/permission-settings.model";
 import {UserService} from "../../../services/user.service";
 import {Constants} from '../../../utils/Constants';
-import {UserType, AlertMessageType} from '../../../utils/Enums';
+import {AlertMessageType, UserType} from '../../../utils/Enums';
 import {SettingsService} from "../../../services/settings.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {DisplayError} from "../../../errors/display.error";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+
 
 declare var jQuery: any;
 
@@ -27,7 +28,7 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
   private userTypeConstant = Constants.USER_TYPE;
   private userTypeSelection =
     Constants.USER_TYPE_SELECTION.filter(x => x != UserType.All && x != UserType.NonAlert && x != UserType.GlobalUser
-        && x != UserType.CountryAdmin && x != UserType.RegionalDirector && x != UserType.GlobalDirector);
+      && x != UserType.CountryAdmin && x != UserType.RegionalDirector && x != UserType.GlobalDirector);
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -49,23 +50,24 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryAdminUser => {
-        if (countryAdminUser) {
-          this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-          this.countryId = countryAdminUser.countryId;
+          if (countryAdminUser) {
+            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
+            this.countryId = countryAdminUser.countryId;
 
-          this._settingsService.getCountryPermissionSettings(this.agencyId, this.countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(permissions => {
-            this.permissionSettings = permissions;
-          })
-        }
-      });
+            this._settingsService.getCountryPermissionSettings(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(permissions => {
+                this.permissionSettings = permissions;
+              })
+          }
+        });
     });
   }
 
@@ -81,17 +83,19 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    this._settingsService.saveCountryPermissionSettings(this.agencyId, this.countryId, this.permissionSettings)
-      .then(() => {
-        this.alertMessage = new AlertMessageModel('PERMISSIONS.SAVED_PERMISSIONS', AlertMessageType.Success);
-      })
-      .catch(err => {
-        if (err instanceof DisplayError) {
-          this.alertMessage = new AlertMessageModel(err.message);
-        } else {
-          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-        }
-      });
+    if (this.validateForm()) {
+      this._settingsService.saveCountryPermissionSettings(this.agencyId, this.countryId, this.permissionSettings)
+        .then(() => {
+          this.alertMessage = new AlertMessageModel('PERMISSIONS.SAVED_PERMISSIONS', AlertMessageType.Success);
+        })
+        .catch(err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
+    }
   }
 
   selectUserType(activePermission: any, action, permissionName, settingName) {
@@ -112,6 +116,8 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
     } else if (firstIndex) {
       this.permissionSettings[firstIndex] = this.activePermissionSetting;
     }
+
+    this.submit();
 
     this.closeModal();
   }

@@ -259,11 +259,11 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       this.mpaStatusIcons[countryID] = 'fa-times';
     }
     else {
-      if (minPrepPercentage >= this.advTreshold[0].$value) {
+      if (minPrepPercentage >= this.minTreshold[0].$value) {
         this.mpaStatusColors[countryID] = 'green';
         this.mpaStatusIcons[countryID] = 'fa-check';
       }
-      else if (minPrepPercentage >= this.advTreshold[1].$value) {
+      else if (minPrepPercentage >= this.minTreshold[1].$value) {
         this.mpaStatusColors[countryID] = 'orange';
         this.mpaStatusIcons[countryID] = 'fa-ellipsis-h';
       }

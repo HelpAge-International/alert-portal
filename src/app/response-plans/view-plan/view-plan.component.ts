@@ -60,32 +60,21 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   }
 
   backToViewingPlan() {
+    let headers = {
+      "countryId": this.countryId,
+      "isViewing": this.isViewing,
+      "agencyId": this.agencyId,
+      "from": "plan"
+    };
+
     if (this.canCopy) {
+      headers["canCopy"] = this.canCopy;
       if (this.agencyOverview) {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": this.countryId,
-          "isViewing": this.isViewing,
-          "agencyId": this.agencyId,
-          "from": "plan",
-          "canCopy": this.canCopy,
-          "agencyOverview": this.agencyOverview
-        }]);
-      } else {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": this.countryId,
-          "isViewing": this.isViewing,
-          "agencyId": this.agencyId,
-          "from": "plan",
-          "canCopy": this.canCopy
-        }]);
+        headers["agencyOverview"] = this.agencyOverview;
       }
+      this.router.navigate(["/dashboard/dashboard-overview", headers]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryId,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "plan"
-      }]);
+      this.router.navigate(["/director/director-overview", headers]);
     }
   }
 

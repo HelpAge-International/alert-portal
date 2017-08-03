@@ -31,7 +31,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   @Input() isViewing: boolean;
   @Input() countryIdForViewing: string;
   @Input() agencyIdForViewing: string;
-  @Input() canCopy: boolean;
+  @Input() canCopy: boolean = false;
   @Input() agencyOverview: boolean;
 
   private isGlobalDirectorMap = new Map<string, boolean>();
@@ -248,24 +248,31 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   viewResponsePlan(plan, isViewing) {
     if (isViewing) {
+      let headers = {"id": plan.$key, "isViewing": isViewing, "countryId": this.countryIdForViewing, "agencyId": this.agencyId};
       if (this.agencyOverview) {
-        this.router.navigate(["/response-plans/view-plan", {
-          "id": plan.$key,
-          "isViewing": isViewing,
-          "countryId": this.countryIdForViewing,
-          "agencyId": this.agencyId,
-          "canCopy": this.canCopy,
-          "agencyOverview": this.agencyOverview
-        }]);
-      } else {
-        this.router.navigate(["/response-plans/view-plan", {
-          "id": plan.$key,
-          "isViewing": isViewing,
-          "countryId": this.countryIdForViewing,
-          "agencyId": this.agencyId,
-          "canCopy": this.canCopy
-        }]);
+        headers["agencyOverview"] = this.agencyOverview;
+        // this.router.navigate(["/response-plans/view-plan", {
+        //   "id": plan.$key,
+        //   "isViewing": isViewing,
+        //   "countryId": this.countryIdForViewing,
+        //   "agencyId": this.agencyId,
+        //   "canCopy": this.canCopy,
+        //   "agencyOverview": this.agencyOverview
+        // }]);
       }
+      if (this.canCopy) {
+        headers["canCopy"] = this.canCopy;
+      }
+      // else {
+      //   this.router.navigate(["/response-plans/view-plan", {
+      //     "id": plan.$key,
+      //     "isViewing": isViewing,
+      //     "countryId": this.countryIdForViewing,
+      //     "agencyId": this.agencyId,
+      //     "canCopy": this.canCopy
+      //   }]);
+      // }
+      this.router.navigate(["/response-plans/view-plan", headers]);
     } else {
       this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
     }
