@@ -21,26 +21,64 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
   const user = event.data; // The Firebase user.
   const email = user.email; // The email of the user.
 
-  return sendWelcomeEmail(email);
+  const userPassword = generateRandomPassword();
+  const userUid = user.uid;
+
+  admin.auth().updateUser(userUid, {
+    password: userPassword
+  })
+    .then(function(userRecord){
+      console.log("Successfully updated user password", userRecord.toJSON());
+      return sendWelcomeEmail(email, userPassword);
+  })
+    .catch(function(error){
+      console.log("Error updating user password:", error);
+    });
 });
 
 // Sends a welcome email to the given user.
-function sendWelcomeEmail(email) {
+function sendWelcomeEmail(email, userPassword) {
   const mailOptions = {
     from: '"ALERT" <noreply@firebase.com>',
     to: email
   };
-
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-                      \n Your temporary password is "BXQQLBJK", please login with your email address to update your credentials.
-                      \n https://uat.portal.alertpreparedness.org
+                      \n Your temporary password is "`+userPassword+`", please login with your email address to update your credentials.
+                      \n https://platform.alertpreparedness.org
                       \n Thanks
                       \n Your ALERT team `;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
   });
+}
+
+function generateRandomPassword(){
+  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXTZ0123456789";
+  var string_length = getRandomInt(8,10);
+  var randomstring = '';
+  var charCount = 0;
+  var numCount = 0;
+
+  for (var i=0; i<string_length; i++) {
+    if((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
+      var rnum = Math.floor(Math.random() * 10);
+      randomstring += rnum;
+      numCount += 1;
+    } else {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum,rnum+1);
+      charCount += 1;
+    }
+  }
+  console.log("random password:");
+  console.log(randomstring);
+  return randomstring;
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /**
