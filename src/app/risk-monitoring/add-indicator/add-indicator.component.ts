@@ -562,7 +562,13 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _deleteIndicator() {
     jQuery("#delete-indicator").modal("hide");
-    this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.hazardID + "/" + this.indicatorID).set(null)
+    let path = "";
+    if (this.hazardID == "countryContext") {
+      path = Constants.APP_STATUS + "/indicator/" + this.countryID + "/" + this.indicatorID;
+    } else {
+      path = Constants.APP_STATUS + "/indicator/" + this.hazardID + "/" + this.indicatorID;
+    }
+    this.af.database.object(path).set(null)
       .then(() => {
         this.router.navigateByUrl("/risk-monitoring");
       })
