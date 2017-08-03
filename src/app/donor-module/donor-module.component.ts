@@ -221,7 +221,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
         {
           where: this.arrayToQuote(blue),
           polygonOptions: {
-            fillColor: MapService.COLOUR_BLUE,
+            fillColor: '#66A8C6',
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
             strokeColor: "#FFFFFF"

@@ -1731,6 +1731,7 @@
         "NO_OTHER_AGENCIES": "No other agencies have a country office with your location"
     },
     "RISK_MONITORING": {
+        "INFORM_API_UNAVAILABLE": "The INFORM service is unavailable to provide information for your country",
         "ADD_INDICATOR": {
             "NO_NAME": "Please enter indicator name",
             "NO_SOURCE_NAME": "Please enter indicator source name",
@@ -2125,7 +2126,7 @@
             },
             "TT9" : {
                 "LEVEL1": "Index for Risk Management (INFORM) is a global, open-source risk assessment for humanitarian crises and disasters.",
-                "LEVEL2": "The ALERT platform will display the top 5 hazards your country is most at risk of according to INFORM. It will only show the hazards that you have not selected for monitoring yet. If the hazard you wish to add does not appear in the options below, you can add your own hazard."
+                "LEVEL2": "The ALERT platform will display the top 3 hazards your country is most at risk of according to INFORM. It will only show the hazards that you have not selected for monitoring yet. If the hazard you wish to add does not appear in the options below, you can add your own hazard."
             },
             "TT10" : {
                 "LEVEL1": "A hazard that is cyclical in nature, or has a higher likelihood of occurence following specific climate patterns."

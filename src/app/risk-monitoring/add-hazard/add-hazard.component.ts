@@ -90,6 +90,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   // INFORM information
   private informHandler: InformService;
   private loaderInactive: boolean;
+  private showInformUnavailable: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -127,6 +128,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getTopResults() {
     this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
+      this.showInformUnavailable = (list.length == 0);
       this.hazardScenariosListTop = list;
       this.loaderInactive = true;
     });
@@ -134,6 +136,11 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getHazardImage(key) {
     return HazardImages.init().getCSS((+key));
+  }
+
+  _getHazardImageImg(key) {
+    console.log(key);
+    return HazardImages.init().get((+key));
   }
 
   _getCountryLocation() {
