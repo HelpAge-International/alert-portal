@@ -1099,7 +1099,7 @@
                 </div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
-                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item']&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:0"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item']&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:''"
                          (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
                   <input type="text" class="form-control budget-narrative" #narrative
