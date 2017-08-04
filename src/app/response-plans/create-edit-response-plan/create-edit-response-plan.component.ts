@@ -223,13 +223,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private totalOfAllCosts: number = 0;
   private totalBudget: number = 0;
 
-  private transportBudget: number;
-  private securityBudget: number;
-  private logisticsAndOverheadsBudget: number;
-  private staffingAndSupportBudget: number;
-  private monitoringAndEvolutionBudget: number;
-  private capitalItemsBudget: number;
-  private managementSupportPercentage: number;
+  private transportBudget: number = 0;
+  private securityBudget: number = 0;
+  private logisticsAndOverheadsBudget: number = 0;
+  private staffingAndSupportBudget: number = 0;
+  private monitoringAndEvolutionBudget: number = 0;
+  private capitalItemsBudget: number = 0;
+  private managementSupportPercentage: number = 0;
 
   private transportNarrative: string = '';
   private securityNarrative: string = '';
@@ -1274,24 +1274,44 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.sectorBudget.forEach((v,) => {
         this.totalInputs += Number(v);
       });
-    } else {
+    }
+    // else {
+      console.log(this.managementSupportPercentage)
+
       if (this.managementSupportPercentage == null) {
         this.totalOfAllCosts = 0;
-        this.totalBudget = 0;
-      } else {
-
-        let totalOfSectionsBToG: number =
-          this.transportBudget +
-          this.securityBudget +
-          this.logisticsAndOverheadsBudget +
-          this.staffingAndSupportBudget +
-          this.monitoringAndEvolutionBudget +
-          this.capitalItemsBudget;
-
-        this.totalOfAllCosts = ((this.totalInputs + totalOfSectionsBToG) * this.managementSupportPercentage) / 100;
-        this.totalBudget = this.totalInputs + totalOfSectionsBToG + this.totalOfAllCosts;
       }
-    }
+
+      let totalOfSectionsBToG: number =
+        this.transportBudget +
+        this.securityBudget +
+        this.logisticsAndOverheadsBudget +
+        this.staffingAndSupportBudget +
+        this.monitoringAndEvolutionBudget +
+        this.capitalItemsBudget;
+
+      this.totalOfAllCosts = ((this.totalInputs + totalOfSectionsBToG) * this.managementSupportPercentage) / 100;
+      console.log(this.totalInputs)
+      console.log(totalOfSectionsBToG)
+      console.log(this.totalOfAllCosts)
+      this.totalBudget = this.totalInputs + totalOfSectionsBToG + this.totalOfAllCosts;
+      // if (this.managementSupportPercentage == null) {
+      //   this.totalOfAllCosts = 0;
+      //   this.totalBudget = 0;
+      // } else {
+      //
+      //   let totalOfSectionsBToG: number =
+      //     this.transportBudget +
+      //     this.securityBudget +
+      //     this.logisticsAndOverheadsBudget +
+      //     this.staffingAndSupportBudget +
+      //     this.monitoringAndEvolutionBudget +
+      //     this.capitalItemsBudget;
+      //
+      //   this.totalOfAllCosts = ((this.totalInputs + totalOfSectionsBToG) * this.managementSupportPercentage) / 100;
+      //   this.totalBudget = this.totalInputs + totalOfSectionsBToG + this.totalOfAllCosts;
+      // }
+    // }
   }
 
   recordNarrative(sector, narrative) {
@@ -1654,7 +1674,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Inputs]) {
       let inputs: {} = responsePlan.budget["item"][BudgetCategory.Inputs];
       Object.keys(inputs).map(key => inputs[key]).forEach((item: ModelBudgetItem) => {
-        this.totalInputs += item.budget;
+        this.totalInputs += Number(item.budget);
       });
       Object.keys(inputs).forEach(key => {
         this.sectorBudget.set(Number(key), inputs[key]["budget"]);
