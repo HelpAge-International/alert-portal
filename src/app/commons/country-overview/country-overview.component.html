@@ -27,12 +27,13 @@
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div
-          class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertColors[countryData.alertLevel] ? alertColors[countryData.alertLevel] : 'red'}}"></div>
+          class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertColors[countryData.alertLevel] ? alertColors[countryData.alertLevel] : 'green'}}"></div>
         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
-          <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{countResponsePlans[countryData.$key] ?
+          <div class="Icon__circle Icon--align-center Icon--{{getIcon('plan', countryData.agencyId)}} Icon--md">
+            {{countResponsePlans[countryData.$key] ?
             countResponsePlans[countryData.$key] : 0}}
           </div>
         </div>
@@ -40,14 +41,17 @@
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
-          <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[countryData.$key]}} Icon--md"><i
-            class="fa {{mpaStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i></div>
+          <div
+            class="Icon__circle Icon--align-center Icon--b-{{getActionIcon(true, countryData.agencyId, mpaStatusColors[countryData.$key])}} Icon--md">
+            <i
+              class="fa {{mpaStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i></div>
         </div>
         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
-          <div class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[countryData.$key]}} Icon--md">
+          <div
+            class="Icon__circle Icon--align-center Icon--b-{{getActionIcon(false, countryData.agencyId, advStatusColors[countryData.$key])}} Icon--md">
             <i class="fa {{advStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i>
           </div>
         </div>
@@ -55,7 +59,7 @@
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
-          <div class="Icon__circle Icon--align-center Icon--blue Icon--md">{{percentageCHS[countryData.$key]}}%</div>
+          <div class="Icon__circle Icon--align-center Icon--{{getIcon('chs', countryData.agencyId)}} Icon--md">{{percentageCHS[countryData.$key]}}%</div>
         </div>
         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
       </div>

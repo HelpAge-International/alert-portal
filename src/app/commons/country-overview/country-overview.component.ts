@@ -12,13 +12,14 @@ import {
   AlertStatus,
   ApprovalStatus,
   Countries,
-  HazardScenario
+  HazardScenario, Privacy
 } from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 
 declare var jQuery: any;
 
@@ -28,12 +29,16 @@ declare var jQuery: any;
   styleUrls: ['./country-overview.component.css']
 })
 export class CountryOverviewComponent implements OnInit, OnDestroy {
+
+  private Privacy = Privacy;
+
   private _agencyId: string;
   private _agencies: string;
   private _systemId: string;
   private _userId: string;
   private _countryOfficeData: any;
   private _userType: number;
+  private privacyMap = new Map<string, ModelAgencyPrivacy>();
 
 
   @Input()
@@ -152,6 +157,12 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
             this.prepActionService[countryOffice.$key].addUpdater(() => {
               this.recalculateAll(countryOffice);
             });
+
+            this.agencyService.getPrivacySettingForAgency(countryOffice.agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((privacy: ModelAgencyPrivacy) => {
+                this.privacyMap.set(countryOffice.agencyId, privacy);
+              });
           });
 
           this.filteredCountryOfficeData = this._countryOfficeData;
@@ -350,4 +361,32 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  getIcon(type, agencyId) {
+    let label = "";
+    let privacy = this.privacyMap.get(agencyId);
+    if (privacy) {
+      if (type == "plan" && privacy.responsePlan == this.Privacy.Public || type == "chs" && privacy.chs == this.Privacy.Public) {
+        label = "blue";
+      } else if (type == "plan" && privacy.responsePlan == this.Privacy.Private || type == "chs" && privacy.chs == this.Privacy.Private) {
+        label = "grey";
+      }
+    }
+    return label;
+  }
+
+  getActionIcon(isMpa, agencyId, stdColor) {
+    let label = "";
+    let privacy = this.privacyMap.get(agencyId);
+    if (privacy) {
+      if (isMpa && privacy.mpa == this.Privacy.Public || !isMpa && privacy.apa == this.Privacy.Public) {
+        label = stdColor;
+      } else if (isMpa && privacy.mpa == this.Privacy.Private || !isMpa && privacy.apa == this.Privacy.Private) {
+        label = "grey";
+      }
+    }
+    return label;
+  }
+
+
 }

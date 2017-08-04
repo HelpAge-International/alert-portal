@@ -6,6 +6,7 @@ import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface
 import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
 import {Observable} from "rxjs/Observable";
 import {DurationType} from "../utils/Enums";
+import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 
 @Injectable()
 export class AgencyService {
@@ -113,6 +114,22 @@ export class AgencyService {
     }
 
     return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
+  }
+
+  public getPrivacySettingForAgency(agencyId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + agencyId, {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          let privacy = new ModelAgencyPrivacy();
+          privacy.mpa = snap.val()[0].privacy;
+          privacy.apa = snap.val()[1].privacy;
+          privacy.chs = snap.val()[2].privacy;
+          privacy.riskMonitoring = snap.val()[3].privacy;
+          privacy.officeProfile = snap.val()[4].privacy;
+          privacy.responsePlan = snap.val()[5].privacy;
+          return privacy;
+        }
+      });
   }
 
   unSubscribeNow() {
