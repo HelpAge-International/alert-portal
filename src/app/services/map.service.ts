@@ -18,7 +18,7 @@ import GeocoderResult = google.maps.GeocoderResult;
 
 export class MapService {
 
-  public static COLOUR_BLUE = "#2F3270";
+  public static COLOUR_BLUE = "#66A8C6";
   public static COLOUR_RED = "#CD2811";
   public static COLOUR_YELLOW = "#E3A700";
   public static COLOUR_GREEN = "#5BA920";
