@@ -1356,9 +1356,9 @@ export class InformCodes {
     informCodes.map.set("HA.NAT.EQ", HazardScenario.HazardScenario4); // Earthquake
     informCodes.map.set("HA.NAT.TS", HazardScenario.HazardScenario24); // Tsunami
     informCodes.map.set("HA.NAT.DR", HazardScenario.HazardScenario3); // Drought
-    informCodes.map.set("HA.HUM.CON.GCRI", HazardScenario.HazardScenario2); // Conflict
+    informCodes.map.set("HA.HUM.CON.GCRI", HazardScenario.HazardScenario1); // Conflict
     informCodes.map.set("VU.SEV.AD.FTS-POP", HazardScenario.HazardScenario11); // Humanitarian Access
-    informCodes.map.set("HA.NAT.TC.CS", HazardScenario.HazardScenario11); // Storm Surge
+    informCodes.map.set("HA.NAT.TC.CS", HazardScenario.HazardScenario21); // Storm Surge
     informCodes.list = [];
     informCodes.map.forEach((val, key) => {
       informCodes.list.push(key);
