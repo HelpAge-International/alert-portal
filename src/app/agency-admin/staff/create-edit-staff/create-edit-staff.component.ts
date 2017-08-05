@@ -663,10 +663,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     let delData = {};
     delData["/userPublic/" + this.selectedStaffId + "/"] = null;
     delData["/staff/" + this.selectedOfficeId + "/" + this.selectedStaffId + "/"] = null;
+    delData["/staff/globalUser/" + this.agencyId + "/" + this.selectedStaffId + "/"] = null;
+    delData["/donor/" + this.selectedStaffId + "/"] = null;
 
     delData["/group/systemadmin/allusersgroup/" + this.selectedStaffId + "/"] = null;
-    delData["/group/agency/" + this.uid + "/agencyallusersgroup/" + this.selectedStaffId + "/"] = null;
-    delData["/group/agency/" + this.uid + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + this.selectedStaffId + "/"] = null;
+    delData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + this.selectedStaffId + "/"] = null;
+    delData["/group/agency/" + this.agencyId + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + this.selectedStaffId + "/"] = null;
+
 
     this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
       this.router.navigateByUrl(Constants.AGENCY_ADMIN_STARFF);
