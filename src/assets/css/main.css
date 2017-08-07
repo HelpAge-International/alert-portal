@@ -7400,10 +7400,6 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   display: -moz-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-flex: initial;
-  -moz-box-flex: initial;
-  -ms-flex: initial;
-  flex: initial;
   -webkit-align-items: flex-end;
   -moz-box-align: end;
   -ms-flex-align: end;
@@ -8304,6 +8300,7 @@ h3, h4 {
 .Header_bar {
   width: 100%;
   min-height: 60px;
+  height: 0; /*Flex align on IE needs height set explicitly*/
   background: #131D50;
   display: -webkit-flex;
   display: -moz-box;
