@@ -33,8 +33,8 @@
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
           <div class="Icon__circle Icon--align-center Icon--{{getIcon('plan', countryData.agencyId)}} Icon--md">
-            {{countResponsePlans[countryData.$key] ?
-            countResponsePlans[countryData.$key] : 0}}
+            {{privacyMap.get(countryData.agencyId)?.responsePlan == Privacy.Public ? (countResponsePlans[countryData.$key] ?
+            countResponsePlans[countryData.$key] : 0) : 'N/A'}}
           </div>
         </div>
         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.RESPONSE_PLANS" | translate}}</span>
@@ -59,7 +59,10 @@
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
-          <div class="Icon__circle Icon--align-center Icon--{{getIcon('chs', countryData.agencyId)}} Icon--md">{{percentageCHS[countryData.$key]}}%</div>
+          <div class="Icon__circle Icon--align-center Icon--{{getIcon('chs', countryData.agencyId)}} Icon--md">
+            {{privacyMap.get(countryData.agencyId)?.chs == Privacy.Public ? percentageCHS[countryData.$key] + '%' :
+            'N/A'}}
+          </div>
         </div>
         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
       </div>

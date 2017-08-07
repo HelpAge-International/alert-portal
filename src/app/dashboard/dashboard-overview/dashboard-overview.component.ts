@@ -1,13 +1,16 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
-import {AlertLevels, AlertMessageType, AlertStatus, UserType} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, AlertStatus, Privacy, UserType} from "../../utils/Enums";
 import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
 import {HazardImages} from "../../utils/HazardImages";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {AgencyService} from "../../services/agency-service.service";
+import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -45,8 +48,13 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private canCopy: boolean;
   private userType: number;
   private affectedAreasToShow: any [];
+  private privacy: ModelAgencyPrivacy;
 
-  constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private router: Router) {
+  constructor(private route: ActivatedRoute,
+              private userService: UserService,
+              private alertService: ActionsService,
+              private agencyService: AgencyService,
+              private router: Router) {
     this.initMainMenu();
     this.initOfficeSubMenu();
   }
@@ -116,9 +124,45 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           });
         }
 
+        this.agencyService.getPrivacySettingForAgency(this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(privacy => {
+            console.log(privacy)
+            this.privacy = privacy;
+            this.updateMainMenu(this.privacy);
+          });
+
         this.getAlerts();
 
       });
+  }
+
+  private updateMainMenu(privacy: ModelAgencyPrivacy) {
+    if (privacy.officeProfile != Privacy.Public) {
+      if (privacy.riskMonitoring == Privacy.Public) {
+        this.handleMainMenu("risk");
+      } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public) {
+        if (privacy.mpa == Privacy.Public) {
+          this.handleMainMenu("preparedness-min");
+        } else {
+          this.handleMainMenu("preparedness-adv");
+        }
+      } else if (privacy.responsePlan == Privacy.Public) {
+        this.handleMainMenu("plan");
+      } else {
+        this.tabMap.forEach((v, k) => {
+          this.tabMap.set(k, false);
+        });
+      }
+    } else {
+      this.handleMainMenu("officeProfile");
+    }
+  }
+
+  private handleMainMenu(key) {
+    this.tabMap.forEach((v, k) => {
+      this.tabMap.set(k, key == k);
+    });
   }
 
   showAffectedAreasForAlert(affectedAreas) {

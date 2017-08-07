@@ -2,9 +2,10 @@ import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core'
 import {Subject} from "rxjs/Subject";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
-import {Countries} from "../../utils/Enums";
+import {Countries, Privacy} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AgencyService} from "../../services/agency-service.service";
+import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 
 @Component({
   selector: 'app-view-country-menu',
@@ -15,6 +16,7 @@ import {AgencyService} from "../../services/agency-service.service";
 export class ViewCountryMenuComponent implements OnInit, OnDestroy {
 
   private CountryNames = Constants.COUNTRIES;
+  private Privacy = Privacy;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -25,6 +27,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private countryId: string;
   private countryLocation: number = -1;
+  private privacy: ModelAgencyPrivacy;
 
   constructor(private route: ActivatedRoute, private userService: UserService, private agencyService: AgencyService) {
     this.menuMap.set("officeProfile", false);
@@ -50,11 +53,32 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
         }
         if (this.agencyId && this.countryId) {
           this.loadCountry(this.agencyId, this.countryId);
-          //TODO NEED CONTINUE ON MONDAY
-          // this.agencyService.getPrivacySettingForAgency(this.agencyId)
+
+          this.agencyService.getPrivacySettingForAgency(this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(privacy =>{
+              this.privacy = privacy;
+              this.updateMainMenu(this.privacy);
+            });
         }
       });
 
+  }
+
+  private updateMainMenu(privacy: ModelAgencyPrivacy) {
+    if (privacy.officeProfile != Privacy.Public) {
+      if (privacy.riskMonitoring == Privacy.Public) {
+        this.handleActiveClass("risk");
+      } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public) {
+        this.handleActiveClass("preparedness");
+      } else if (privacy.responsePlan == Privacy.Public) {
+        this.handleActiveClass("plan");
+      } else {
+        this.handleActiveClass("");
+      }
+    } else {
+      this.handleActiveClass("officeProfile");
+    }
   }
 
   private loadCountry(agencyId: string, countryId: string) {
