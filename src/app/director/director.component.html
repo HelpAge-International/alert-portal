@@ -35,6 +35,8 @@
              *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
           <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
           <br>
+
+          <!--response plans-->
           <div class="row" *ngFor="let plan of approvalPlans">
             <div class="col-sm-9">
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
@@ -100,20 +102,6 @@
         </div>
       </div>
 
-      <div class="row align-items-center Filter-form Spaced">
-        <div class="col-lg-1 col-md-2 col-sm-6">
-          {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.SORT_BY" | translate}}:
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <select class="form-control" [(ngModel)]="alertLevelSelected" (change)="filter()">
-            <!--<option value="all">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>-->
-            <option *ngFor="let alertLevelKey of alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] |
-              translate}}
-            </option>
-          </select>
-        </div>
-      </div>
-
       <div *ngIf="userType != UserType.RegionalDirector" class="Ribbon__section__wrap Spaced">
 
         <div *ngFor="let x of regions">
@@ -136,72 +124,9 @@
           </div>
 
           <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
-            <div *ngFor="let y of countries">
 
-              <div *ngIf="x.countries.has(y.countryId)" (click)="countryOverview(y.countryId)">
-                <div class="Accordion Map-list" data-toggle="collapse" [attr.href]="x.getDepartmentIdHash(y.countryId)"
-                     aria-expanded="true" id="{{x.getCountryId(y.countryId)}}">
-                  <div class="row align-items-center">
+            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionalCountryOffices[x.regionId]" [isDirector]="true"></app-country-overview>
 
-                    <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
-                      <i
-                        class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
-                      <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() |
-                        translate}}</strong></p>
-                    </div>
-
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div
-                        class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertLevelColours[y.countryId]}}"></div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
-                    </div>
-
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                          {{countResponsePlans[y.countryId] ? countResponsePlans[y.countryId] : 0}}
-                        </div>
-                      </div>
-                      <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
-                    </div>
-
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[y.countryId]}} Icon--md">
-                          <i class="fa {{mpaStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                        </div>
-                      </div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
-                    </div>
-
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div *ngIf="overallAlertLevels[y.countryId] == AlertLevels.Red"
-                             class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[y.countryId]}} Icon--md">
-                          <i class="fa {{advStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                        </div>
-                        <div *ngIf="overallAlertLevels[y.countryId] != AlertLevels.Red"
-                             class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
-                          <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
-                        </div>
-                      </div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
-                    </div>
-
-                    <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                      <div class="Icon">
-                        <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                          {{percentageCHS[y.countryId]}}%
-                        </div>
-                      </div>
-                      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-            </div>
           </div>
         </div>
 
@@ -216,85 +141,7 @@
             </div>
           </div>
           <div id="{{otherRegion.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
-
-            <div *ngIf="otherRegion.countries.size == 0">
-              <div class="Accordion Map-list" data-toggle="collapse" aria-expanded="true">
-                <div class="Empty--ribbon">{{"DIRECTORS.NO_COUNTRIES_TO_SHOW" | translate}}</div>
-              </div>
-            </div>
-
-            <div *ngIf="otherRegion.countries.size > 0">
-              <div *ngFor="let y of countries">
-                <div *ngIf="otherRegion.countries.has(y.countryId)" (click)="countryOverview(y.countryId)">
-                  <div class="Accordion Map-list" data-toggle="collapse"
-                       [attr.href]="otherRegion.getDepartmentIdHash(y.countryId)"
-                       aria-expanded="true" id="{{otherRegion.getCountryId(y.countryId)}}">
-
-                    <div class="row align-items-center">
-
-                      <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
-                        <i
-                          class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(y.location).toUpperCase()}} Icon--lg"></i>
-                        <p><strong>{{"GLOBAL.COUNTRIES." + getCountryCodeFromLocation(y.location).toUpperCase() |
-                          translate}}</strong></p>
-                      </div>
-
-                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                        <div
-                          class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertLevelColours[y.countryId]}}"></div>
-                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
-                      </div>
-
-                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                        <div class="Icon">
-
-                          <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                            {{countResponsePlans[y.countryId] ? countResponsePlans[y.countryId] : 0}}
-                          </div>
-                        </div>
-                        <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
-                      </div>
-
-                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                        <div class="Icon">
-                          <div
-                            class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[y.countryId]}} Icon--md">
-                            <i class="fa {{mpaStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                          </div>
-                        </div>
-                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
-                      </div>
-
-                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                        <div class="Icon">
-                          <div *ngIf="overallAlertLevels[y.countryId] == AlertLevels.Red"
-                               class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[y.countryId]}} Icon--md">
-                            <i class="fa {{advStatusIcons[y.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                          </div>
-                          <div *ngIf="overallAlertLevels[y.countryId] != AlertLevels.Red"
-                               class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
-                            <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
-                          </div>
-                        </div>
-                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
-                      </div>
-
-                      <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                        <div class="Icon">
-                          <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                            {{percentageCHS[y.countryId]}}%
-                          </div>
-                        </div>
-                        <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
+            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionalCountryOffices[otherRegion.regionId]" [isDirector]="true"></app-country-overview>
           </div>
         </div>
       </div>
@@ -302,76 +149,8 @@
 
       <div *ngIf="userType == UserType.RegionalDirector">
 
-        <div *ngIf="countriesInRegion.length == 0" class="My-Tasks container-fluid">
-            <div class="Empty--ribbon">{{"DIRECTORS.NO_COUNTRIES_TO_SHOW" | translate}}</div>
-        </div>
+        <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionCountryOffice" [isDirector]="true"></app-country-overview>
 
-        <div *ngIf="countriesInRegion.length > 0">
-          <div *ngFor="let country of countriesInRegion">
-
-            <div class="Accordion Map-list" data-toggle="collapse" (click)="countryOverview(country.countryId)">
-
-              <div class="row align-items-center">
-
-                <div class="col-md-2 col-lg-2 col-sm-2 text-center Subtle-border-right">
-                  <i
-                    class="Icon__square--transparent Icon__country--{{locationsOfCountriesInRegion[country.countryId].toUpperCase()}} Icon--lg"></i>
-                  <p><strong>{{"GLOBAL.COUNTRIES." + locationsOfCountriesInRegion[country.countryId].toUpperCase() |
-                    translate}}</strong></p>
-                </div>
-
-                <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                  <div
-                    class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertLevelColours[country.countryId]}}"></div>
-                  <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
-                </div>
-
-                <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                  <div class="Icon">
-                    <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                      {{countResponsePlans[country.countryId] ? countResponsePlans[country.countryId] : 0}}
-                    </div>
-                  </div>
-                  <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
-                </div>
-
-                <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                  <div class="Icon">
-                    <div class="Icon__circle Icon--align-center Icon--b-{{mpaStatusColors[country.countryId]}} Icon--md">
-                      <i class="fa {{mpaStatusIcons[country.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                    </div>
-                  </div>
-                  <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.MPA" | translate}}</span>
-                </div>
-
-                <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                  <div class="Icon">
-                    <div *ngIf="overallAlertLevels[country.countryId] == AlertLevels.Red"
-                         class="Icon__circle Icon--align-center Icon--b-{{advStatusColors[country.countryId]}} Icon--md">
-                      <i class="fa {{advStatusIcons[country.countryId]}} fa-inverse fa-2x" aria-hidden="true"></i>
-                    </div>
-                    <div *ngIf="overallAlertLevels[country.countryId] != AlertLevels.Red"
-                         class="Icon__circle Icon--align-center Icon--b-grey Icon--md">
-                      <i class="fa fa-times fa-inverse fa-2x" aria-hidden="true"></i>
-                    </div>
-                  </div>
-                  <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.APA" | translate}}</span>
-                </div>
-
-                <div class="col-sm-2 col-6 Preparedness__agency-list__item">
-                  <div class="Icon">
-                    <div class="Icon__circle Icon--align-center Icon--blue Icon--md">
-                      {{percentageCHS[country.countryId]}}%
-                    </div>
-                  </div>
-                  <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-        </div>
       </div>
 
 

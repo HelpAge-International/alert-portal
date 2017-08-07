@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="20px" height="15px" viewBox="0 0 20 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
-    <title>Fill 1</title>
+    <title>tsunami</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="♠️-04-Risk-Monitoring" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Add-new-hazard" transform="translate(-60.000000, -353.000000)" fill="#000000">
-            <path d="M83.9502317,375.485056 L66.0497683,375.485056 L66.0497683,368.096338 C67.5152919,363.076737 71.1489342,359.894375 76.8572753,359.894375 C79.2208526,359.894375 80.5762743,361.197236 81.086747,362.24959 C81.5788693,363.265243 81.5196478,365.196736 80.1464319,365.547057 C79.5695088,365.694414 78.5758109,365.299052 78.2671918,364.605082 C77.9802595,363.958657 78.2785913,362.996108 78.7373494,362.721133 C74.3199259,361.590653 70.8,373.149582 83.9502317,373.689521 L83.9502317,375.485056 Z M75,353 C66.7156627,353 60,359.715878 60,368.000139 C60,376.284122 66.7156627,383 75,383 C83.2843373,383 90,376.284122 90,368.000139 C90,359.715878 83.2843373,353 75,353 L75,353 Z" id="Fill-1"></path>
+    <g id="Hazard-icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-448.000000, -483.000000)" fill="#FFFFFF">
+            <g id="Group-6" transform="translate(397.000000, 466.000000)">
+                <g id="Layer_1" transform="translate(46.000000, 10.000000)">
+                    <path d="M25,20.2266 C8.616,21.1546 13.197,8.6256 17.444,9.7096 C17.003,9.9736 16.717,10.8966 16.992,11.5156 C17.289,12.1816 18.243,12.5606 18.799,12.4186 C20.118,12.0826 20.176,10.2316 19.702,9.2576 C19.212,8.2486 17.909,6.9996 15.638,6.9996 C10.149,6.9996 6.408,9.8026 5,14.6156 L5,21.6986 L25,21.6986 L25,20.2266 Z" id="tsunami"></path>
+                </g>
+            </g>
         </g>
     </g>
 </svg>

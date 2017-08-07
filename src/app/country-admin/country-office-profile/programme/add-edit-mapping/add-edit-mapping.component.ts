@@ -8,6 +8,8 @@ import {ProgrammeMappingModel} from '../../../../model/programme-mapping.model';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
+import * as moment from "moment";
+
 declare var jQuery: any;
 
 @Component({
@@ -22,6 +24,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   private uid: string;
   private countryID: string;
+  private userType;
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectorsList: number[] = [
     ResponsePlanSectors.wash,
@@ -59,32 +62,26 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.programme = new ProgrammeMappingModel();
   }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
+  ngOnInit() {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.countryID = countryId;
+      this.initData();
+    });
   }
-
 
   initData() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        this._getCountryID().then(() => {
-          if (params && params['programmeId']) {
-            this.programmeId = params['programmeId'];
-            this._getProgramme(params['programmeId']);
-          }
-        });
+        // this._getCountryID().then(() => {
+        if (params && params['programmeId']) {
+          this.programmeId = params['programmeId'];
+          this._getProgramme(params['programmeId']);
+        }
+        // });
       });
   }
-
-  ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.initData();
-    });
-  }
-
 
   _getProgramme(programmeID: string) {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + programmeID)
@@ -96,20 +93,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this._convertTimestampToDate(programme.when);
       });
   }
-
-
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-          this.countryID = countryID.$value ? countryID.$value : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
 
   setSelectorClass(sectorID: any) {
     var selected = '';
@@ -134,16 +117,20 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       var dataToSave = this.programme;
 
       if (!this.programmeId) {
-        this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
-          .push(dataToSave)
-          .then(() => {
-            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
-            this.programme = new ProgrammeMappingModel();
-            this.when = [];
-            this.router.navigate(['/country-admin/country-office-profile/programme/']);
-          }).catch((error: any) => {
-          console.log(error, 'You do not have access!')
-        });
+        if (this.countryID) {
+          this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
+            .push(dataToSave)
+            .then(() => {
+              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
+              this.programme = new ProgrammeMappingModel();
+              this.when = [];
+              this.router.navigate(['/country-admin/country-office-profile/programme/']);
+            }).catch((error: any) => {
+            console.log(error, 'You do not have access!')
+          });
+        } else {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
+        }
       } else {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
@@ -169,7 +156,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   setDate() {
     if (this.when['month'] && this.when['year']) {
-      var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
+      let year = this.when['year'];
+      let month = Number(this.when['month'] - 1);
+      let timeStamp = moment({'year': year, 'month': month, 'day': 15}).valueOf();
+      // var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
       this.programme.when = 0;
       this.programme.when = timeStamp;
     }
@@ -185,9 +175,14 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   _convertTimestampToDate(timestamp: number) {
     this.when = [];
-    var date = new Date(timestamp);
-    this.when['month'] = date.getMonth();
-    this.when['year'] = date.getFullYear();
+    let date = moment(timestamp);
+    this.when['month'] = date.month() + 1;
+    this.when['year'] = date.year();
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

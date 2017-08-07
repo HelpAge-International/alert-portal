@@ -1,6 +1,6 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {HazardScenario, AlertMessageType, Countries} from "../../utils/Enums";
+import {AlertMessageType, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -13,6 +13,7 @@ import {UserService} from "../../services/user.service";
 import {Http} from "@angular/http";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {HazardImages} from "../../utils/HazardImages";
+import {ColourSelector} from "../../utils/ColourSelector";
 
 declare var jQuery: any;
 
@@ -41,15 +42,19 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private checkedSeasons = [];
   private modalID: string;
   private otherHazard: boolean = false;
-  private saveSelectSeasonsBtn: boolean = true;
   private selectHazard: boolean = false;
   private season: boolean = false;
   private addHazardSeason: string;
+  public addSeasonStart: number;
+  public addSeasonEnd: number;
+  public addSeasonColour: string;
   private isCustomDisabled: boolean = true;
   private HazardScenario = Constants.HAZARD_SCENARIOS;
   private scenarioColors = Constants.SCENARIO_COLORS;
   private hazardImages: HazardImages = new HazardImages();
   private hazardScenariosListTop: InformHolder[] = [];
+  private colours: ColourSelector[] = ColourSelector.list();
+  private submitNewCalendar: boolean = true;
 
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
@@ -85,6 +90,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   // INFORM information
   private informHandler: InformService;
   private loaderInactive: boolean;
+  private showInformUnavailable: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -97,11 +103,18 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
+      this.agencyID = agencyId;
+      this.countryID = countryId;
       this._loadData();
     });
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   this.UserType = userType;
+    //   this._loadData();
+    // });
   }
 
   ngOnDestroy() {
@@ -115,6 +128,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getTopResults() {
     this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
+      this.showInformUnavailable = (list.length == 0);
       this.hazardScenariosListTop = list;
       this.loaderInactive = true;
     });
@@ -122,6 +136,11 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getHazardImage(key) {
     return HazardImages.init().getCSS((+key));
+  }
+
+  _getHazardImageImg(key) {
+    console.log(key);
+    return HazardImages.init().get((+key));
   }
 
   _getCountryLocation() {
@@ -155,10 +174,10 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _loadData() {
-    this._getCountryID().then(() => {
-      this._getCustomHazards();
-      this._getCountryLocation();
-    });
+    // this._getCountryID().then(() => {
+    this._getCustomHazards();
+    this._getCountryLocation();
+    // });
   }
 
   _getCustomHazards() {
@@ -252,7 +271,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     this.hazardData.hazardScenario = event.target.value;
 
     this.otherHazard = false;
-    if (this.hazardData.hazardScenario == 'Other') {
+    if (this.hazardData.hazardScenario == 'otherSelected') {
       this.otherHazard = true;
     }
   }
@@ -266,6 +285,12 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
         /* TODO RISK PARAM */
         this.hazardData.risk = 10;
         this.hazardData.isActive = true;
+        console.log(this.hazardData);
+        //fill out info for other type
+        if (this.otherHazard) {
+          this.hazardData.hazardScenario = -1;
+          this.hazardData["otherName"] = this.hazardName;
+        }
         this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
           .push(this.hazardData)
           .then(() => {
@@ -329,12 +354,6 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       delete this.hazardData.seasons[seasonKey];
     }
-    if (Object.keys(this.hazardData.seasons).length == 0) {
-      this.saveSelectSeasonsBtn = true;
-    }
-    else {
-      this.saveSelectSeasonsBtn = false;
-    }
   }
 
   detected(i) {
@@ -359,11 +378,29 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     jQuery("#" + this.modalID).modal("show");
   }
 
+  public selectStartDate(date) {
+    this.addSeasonStart = +date;
+  }
+
+  public selectEndDate(date) {
+    this.addSeasonEnd = +date;
+  }
+
+  public setCurrentColour(colourCode: string) {
+    this.addSeasonColour = colourCode;
+  }
+
   createSeasonToCalendar(form: NgForm) {
-    this.saveSelectSeasonsBtn = true;
+    this.submitNewCalendar = false;
     let dataToSave = form.value;
-    dataToSave.startTime = new Date(dataToSave.startTime).getTime();
-    dataToSave.endTime = new Date(dataToSave.endTime).getTime();
+    if (this.addSeasonStart == null || this.addSeasonEnd == null || this.addSeasonColour == null) {
+      this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_DATE");
+      return;
+    }
+    dataToSave.startTime = this.addSeasonStart;
+    dataToSave.endTime = this.addSeasonEnd;
+    dataToSave.colorCode = this.addSeasonColour;
+    console.log(dataToSave);
     this.closeModal();
     this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
       .push(dataToSave)

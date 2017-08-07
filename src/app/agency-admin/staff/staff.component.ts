@@ -7,6 +7,7 @@ import {Observable, Scheduler, Subject} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ModelDepartment} from "../../model/department.model";
 declare var jQuery: any;
 
 @Component({
@@ -47,7 +48,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private userTypesList = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
   private OfficeType = Constants.OFFICE_TYPE;
-  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
   private staffMap = new Map();
   private dealedStaff: string[] = [];
   private showCountryStaff = new Map();
@@ -56,8 +57,9 @@ export class StaffComponent implements OnInit, OnDestroy {
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
   private globalUsers: any[] = [];
-  private departments: any[] = [];
-
+  private departments: ModelDepartment[] = [];
+  private departmentMap: Map<string, string> = new Map<string, string>();
+  private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
@@ -77,26 +79,32 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.getStaffData();
-    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.uid + "/departments")
-      .map(departmentList => {
-        let departments = [];
-        departmentList.forEach(x => {
-          departments.push(x.$key);
-        });
-        return departments;
-      })
+    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
       .takeUntil(this.ngUnsubscribe)
-      .subscribeOn(Scheduler.async)
-      .subscribe(x => {
-        this.departments = x;
+      .subscribe(id => {
+        this.agencyId = id.$value;
+        this.getStaffData();
+
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(snap => {
+            this.departmentMap.clear();
+            this.departments = [];
+            snap.forEach((snapshot) => {
+              let x: ModelDepartment = new ModelDepartment();
+              x.id = snapshot.key;
+              x.name = snapshot.val().name;
+              this.departments.push(x);
+              this.departmentMap.set(x.id, x.name);
+            });
+          });
       });
   }
 
   private getStaffData() {
     this.staffs = [];
     this.dealedStaff = [];
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
       .do(list => {
         list.forEach(item => {
           this.staffDisplay = new ModelStaffDisplay();
@@ -308,7 +316,7 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private filterGlobalUsers() {
     this.globalUsers = [];
-    this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.uid)
+    this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(users => {
         if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {

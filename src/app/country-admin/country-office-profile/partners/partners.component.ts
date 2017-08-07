@@ -1,23 +1,21 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, ResponsePlanSectors} from '../../../utils/Enums';
-import {RxHelper} from '../../../utils/RxHelper';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-
-import {AlertMessageModel} from '../../../model/alert-message.model';
-import {PartnerOrganisationService} from '../../../services/partner-organisation.service';
-import {PartnerOrganisationModel} from '../../../model/partner-organisation.model';
-import {PartnerModel} from '../../../model/partner.model';
-import {ModelUserPublic} from '../../../model/user-public.model';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Constants} from "../../../utils/Constants";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {PartnerOrganisationService} from "../../../services/partner-organisation.service";
+import {PartnerOrganisationModel} from "../../../model/partner-organisation.model";
+import {PartnerModel} from "../../../model/partner.model";
 import {UserService} from "../../../services/user.service";
 import {CountryAdminModel} from "../../../model/country-admin.model";
-import {DisplayError} from "../../../errors/display.error";
 import {SessionService} from "../../../services/session.service";
 import {CommonService} from "../../../services/common.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {AngularFire} from "angularfire2";
+import {OperationAreaModel} from "../../../model/operation-area.model";
 declare var jQuery: any;
 
 @Component({
@@ -28,13 +26,15 @@ declare var jQuery: any;
 })
 
 export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
+  private USER_TYPE = UserType;
+  private userType: UserType;
   private isEdit = false;
   private canEdit = true; // TODO check the user type and see if he has editing permission
   private uid: string;
   private agencyId: string;
   private countryId: string;
   private isViewing: boolean;
-
+  private currProjectsToDisplay: any[];
   // Constants and enums
   private alertMessageType = AlertMessageType;
   filterOrganisation = null;
@@ -59,12 +59,14 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private activePartnerOrganisation: PartnerOrganisationModel;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _noteService: NoteService,
               private _sessionService: SessionService,
+              private af: AngularFire,
               private router: Router) {
     this.areasOfOperation = [];
     this.partnerOrganisations = [];
@@ -93,14 +95,17 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
           this.uid = user.uid;
+          this.userType = userType;
 
-          if (this.agencyId && this.countryId) {
+          if (this.agencyId && this.countryId && this.isViewing) {
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
+
+                this.assignProjectsToDisplayPerPartnerOrg();
 
                 // Get the partner organisation notes
                 this.partnerOrganisations.forEach(partnerOrganisation => {
@@ -122,64 +127,118 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 err => console.log(err);
               });
           } else {
-            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
 
-              this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-              this.countryId = countryAdminUser.countryId;
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(agencyId => {
+            //     this.agencyId = agencyId;
 
-              this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
-                .subscribe(partnerOrganisations => {
-                  this.partnerOrganisations = partnerOrganisations;
+            // this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(countryId => {
+            //     this.countryId = countryId;
 
-                  // Get the partner organisation notes
-                  this.partnerOrganisations.forEach(partnerOrganisation => {
-                    const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                    this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                      partnerOrganisation.notes = notes;
-                    });
+            this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+              .subscribe(partnerOrganisations => {
+                this.partnerOrganisations = partnerOrganisations;
 
-                    // Create the new note model for partner organisation
-                    this.newNote[partnerOrganisation.id] = new NoteModel();
-                    this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                this.assignProjectsToDisplayPerPartnerOrg();
+
+                // Get the partner organisation notes
+                this.partnerOrganisations.forEach(partnerOrganisation => {
+                  const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                  this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                    partnerOrganisation.notes = notes;
                   });
-                });
 
-              // get the country levels values
-              this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                .subscribe(content => {
-                  this.countryLevelsValues = content;
-                  err => console.log(err);
+                  // Create the new note model for partner organisation
+                  this.newNote[partnerOrganisation.id] = new NoteModel();
+                  this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
                 });
-            });
+              });
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .subscribe(content => {
+                this.countryLevelsValues = content;
+                err => console.log(err);
+              });
+            // });
+            // });
           }
 
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+            this.countryPermissionsMatrix = isEnabled;
+          }));
 
         });
-
       });
-
-
   }
 
   goBack() {
     this.router.navigateByUrl('/country-admin/country-staff');
   }
 
-  getAreasOfOperation(partnerOrganisation: PartnerOrganisationModel) {
-    let areasOfOperation: string[] = [];
-    if (partnerOrganisation && partnerOrganisation.projects && this.countryLevelsValues) {
-      partnerOrganisation.projects.forEach(project => {
-        project.operationAreas.forEach(location => {
-          const locationName =
-            this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
-          areasOfOperation.push(locationName);
-          if (!this.areasOfOperation.find(x => x == locationName)) {
-            this.areasOfOperation.push(locationName);
-            this.areasOfOperation.sort();
-          }
-        });
-      })
-      return areasOfOperation.join(',');
+  private assignProjectsToDisplayPerPartnerOrg() {
+    this.partnerOrganisations.forEach(partnerOrganisation => {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+        let projects = [];
+        if (partnerOrganisation && partnerOrganisation.projects) {
+          partnerOrganisation.projects.forEach(project => {
+
+            let affectedAreaObj = {country: "", areas: ""};
+            let projectObj = {title: "", affectedAreas: []};
+
+            projectObj.title = project.title;
+            project.operationAreas.forEach(affectedArea => {
+              affectedAreaObj = {country: "", areas: ""};
+              if (affectedArea.country != null && affectedArea.country > -1) {
+                affectedAreaObj.country = this.getCountryNameById(affectedArea.country);
+                this.addLocationForFilter(affectedAreaObj.country);
+              }
+              if (affectedArea.level1 != null && affectedArea.level1 > -1) {
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level1].value;
+                this.addLocationForFilter(affectedAreaObj.areas);
+              }
+              if (affectedArea.level2 != null && affectedArea.level2 > -1) {
+                affectedAreaObj.areas = ", " + value[affectedArea.country].levelOneValues[affectedArea.level2].value;
+                this.addLocationForFilter(affectedAreaObj.areas);
+              }
+              projectObj.affectedAreas.push(affectedAreaObj);
+            });
+            projects.push(projectObj);
+          });
+        }
+        partnerOrganisation.projectsToDisplay = projects;
+      });
+    });
+  }
+
+  private addLocationForFilter(location: string) {
+    let parsedLocation = location.replace(/,/g, '');
+    if (!this.areasOfOperation.includes(parsedLocation)) {
+      this.areasOfOperation.push(parsedLocation);
+    }
+  }
+
+  showAffectedAreasForPartner(projectsToDisplay: any[]) {
+    this.currProjectsToDisplay = projectsToDisplay;
+    jQuery("#view-areas").modal("show");
+  }
+
+  private getCountryNameById(countryId: number) {
+    return Constants.COUNTRIES[countryId];
+  }
+
+  private getLocationName(location: OperationAreaModel): string {
+    if (location.level2) {
+      return this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+    } else if (location.level1) {
+      return this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+    } else {
+      return Constants.COUNTRIES[location.country];
     }
   }
 
@@ -304,15 +363,30 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     return exists;
   }
 
-  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: string): boolean {
+  private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: any): boolean {
     let exists = false;
 
-    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation);
+    let areasOfOperation = this.getAreasOfOperation(partnerOrganisation.projectsToDisplay);
 
-    if (areasOfOperation.search(locationName) !== -1) {
+    if (areasOfOperation.join(",").search(locationName) !== -1) {
       exists = true;
     }
 
     return exists;
   }
+
+  private getAreasOfOperation(projects): string[] {
+    let areas = [];
+    projects.forEach(project => {
+      project.affectedAreas.forEach(area => {
+        areas.push(area.country);
+        if (area.areas) {
+          areas.push(area.areas);
+        }
+      });
+
+    });
+    return areas;
+  }
+
 }

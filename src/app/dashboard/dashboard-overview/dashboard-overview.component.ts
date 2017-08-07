@@ -1,15 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
-import {AlertLevels, AlertMessageType, AlertStatus} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, AlertStatus, UserType} from "../../utils/Enums";
 import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
-import {CommonService} from "../../services/common.service";
 import {HazardImages} from "../../utils/HazardImages";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {Location} from "@angular/common";
+
+declare var jQuery: any;
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -20,9 +20,11 @@ import {Location} from "@angular/common";
 export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
+  private AlertStatus = AlertStatus;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  private UserType = UserType;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -41,8 +43,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private alerts: Observable<any>;
   private areaContent: any;
   private canCopy: boolean;
+  private userType: number;
+  private affectedAreasToShow: any [];
 
-  constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private commonService: CommonService, private router: Router) {
+  constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private router: Router) {
     this.initMainMenu();
     this.initOfficeSubMenu();
   }
@@ -98,6 +102,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         }
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+          console.log(this.agencyOverview);
+        }
+        if (params["userType"]) {
+          this.userType = params["userType"];
         }
 
         if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
@@ -109,18 +117,13 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         }
 
         this.getAlerts();
-        this.getAreaValues();
 
       });
   }
 
-  private getAreaValues() {
-    // get the country levels values
-    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(content => {
-        this.areaContent = content;
-      });
+  showAffectedAreasForAlert(affectedAreas) {
+    this.affectedAreasToShow = affectedAreas;
+    jQuery("#view-areas").modal("show");
   }
 
   private getAlerts() {
@@ -168,10 +171,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
-  }
-
-  getAreaNames(areas): string[] {
-    return this.commonService.getAreaNameList(this.areaContent, areas);
   }
 
 }

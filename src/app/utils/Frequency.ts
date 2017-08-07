@@ -9,7 +9,7 @@ import {DurationType} from "./Enums";
  */
 export class Frequency{
 	public value: number = 0;
-	public type: DurationType = DurationType.Week;
+	public type: number = DurationType.Week;
 
 	constructor(obj: Object){
 		this.value = obj['value'];

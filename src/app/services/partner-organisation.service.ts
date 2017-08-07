@@ -9,7 +9,7 @@ import { PartnerOrganisationModel } from "../model/partner-organisation.model";
 @Injectable()
 export class PartnerOrganisationService {
 
-  constructor(private af: AngularFire, private subscriptions: RxHelper) {}
+  constructor(private af: AngularFire) {}
 
   getCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
      let partnerOrganisationsList: PartnerOrganisationModel[] = [];
@@ -27,6 +27,26 @@ export class PartnerOrganisationService {
       })
 
       return partnerOrganisationSubscription;
+  }
+
+  getApprovedCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
+    let partnerOrganisationsList: PartnerOrganisationModel[] = [];
+    const partnerOrganisationSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+        .flatMap(partnerOrganisations => {
+          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        })
+        .flatMap( organisationId => {
+          return this.getPartnerOrganisation(organisationId as string);
+        })
+        .map( organisation => {
+          if (organisation.isApproved) {
+            partnerOrganisationsList.push(organisation);
+          }
+          return partnerOrganisationsList;
+        })
+
+    return partnerOrganisationSubscription;
   }
 
   getPartnerOrganisations(): Observable<PartnerOrganisationModel[]> {

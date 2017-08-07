@@ -7,7 +7,7 @@ import {Observable} from "rxjs/Observable";
 import {AlertLevels, AlertStatus} from "../../utils/Enums";
 import {HazardImages} from "../../utils/HazardImages";
 import {Constants} from "../../utils/Constants";
-import {CommonService} from "../../services/common.service";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-director-overview',
@@ -19,7 +19,7 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
   private AlertLevels = AlertLevels;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
-
+  private AlertStatus = AlertStatus;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private menuTab = "officeProfile";
@@ -34,9 +34,9 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
   private officeTarget: string;
   private alerts: Observable<any>;
-  private areaContent: any;
+  private affectedAreasToShow : any [];
 
-  constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private commonService: CommonService, private router: Router) {
+  constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private router: Router) {
     this.initMainMenu();
     this.initOfficeSubMenu();
   }
@@ -90,18 +90,14 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
         }
 
         this.getAlerts();
-        this.getAreaValues();
 
       });
   }
 
-  private getAreaValues() {
-    // get the country levels values
-    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(content => {
-        this.areaContent = content;
-      });
+  showAffectedAreasForAlert(affectedAreas){
+    this.affectedAreasToShow = affectedAreas;
+    jQuery("#view-areas").modal("show");
+
   }
 
   private getAlerts() {
@@ -149,10 +145,6 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
-  }
-
-  getAreaNames(areas): string[] {
-    return this.commonService.getAreaNameList(this.areaContent, areas);
   }
 
 }

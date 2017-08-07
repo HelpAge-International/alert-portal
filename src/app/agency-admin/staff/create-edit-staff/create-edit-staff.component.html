@@ -43,7 +43,7 @@
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0 || idx==8" [value]="type">
+            <option *ngFor="let type of userTypeSelection;" [value]="type">
               {{USER_TYPE[type] | translate}}
             </option>
           </select>
@@ -60,7 +60,7 @@
           <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
                   [required]="!hideCountry">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let country of countryList | async" [ngValue]="country"
+            <option *ngFor="let country of countryList" [ngValue]="country"
                     [selected]="country.location == countryOffice?.location">{{Countries[country.location] | translate}}
             </option>
           </select>
@@ -69,7 +69,7 @@
           <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let department of departmentList | async" [ngValue]="department">{{department}}</option>
+            <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
           </select>
         </div>
         <!--</div>-->
@@ -94,14 +94,14 @@
           <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of OFFICE_TYPE_SELECTION; let idx = index" [hidden]="idx==0" [value]="type">
+            <option *ngFor="let type of officeTypes;" [value]="type">
               {{OFFICE_TYPE[type] | translate}}
             </option>
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
           <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
-          <input type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
+          <input [disabled]="isEdit" type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email"
                  name="email" required>
         </div>

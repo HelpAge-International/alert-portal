@@ -32,14 +32,10 @@
   </tr>
 
   <tr style="text-align: right;" colspan="17">
-    <td colspan="3" class="tg" style="width: 15%; background-color: lightgrey;padding: 0; margin: 0;"><p
-      style="margin-top: 4%; padding: 0 0.25em;">Project Name </p></td>
-    <td colspan="2" class="tg" style="width: 25%; text-align: center; padding: 0;"></td>
-    <td colspan="3" class="tg" style="width: 30%; background-color: lightgrey;padding: 0; margin: 0;"><p
-      style="margin-top: 4%; padding: 0 0.25em;">Member Agency Name </p>
-    </td>
-    <td colspan="11" class="tg" style="width: 30%; padding: 0; margin: 0; text-align: center;padding-top: 1em;"><p></p>
-    </td>
+    <td colspan="3" class="tg" style="width: 15%; background-color: lightgrey;padding: 0; margin: 0;"><p style="margin-top: 4%; padding: 0 0.25em;">Project Name </p></td>
+    <td colspan="2" class="tg" style="width: 25%; text-align: center; padding: 0;">{{responsePlan.name}}</td>
+    <td colspan="3" class="tg" style="width: 30%; background-color: lightgrey;padding: 0; margin: 0;"><p style="margin-top: 4%; padding: 0 0.25em;">Member Agency Name </p></td>
+    <td colspan="11" class="tg" style="width: 30%; padding: 0; margin: 0; text-align: center;padding-top: 1em;"><p>{{memberAgencyName}}</p></td>
   </tr>
 
   <tr>
@@ -145,15 +141,15 @@
     <td colspan="1"
         style="background-color: #f8f8f8; text-align: center; background-color: lightgrey; font-weight: bold;"><p>Total
       adjusted for double counting</p></td>
-    <td colspan="2" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
-    <td colspan="4" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p></p></td>
+    <td colspan="2" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p *ngIf="responsePlan.doubleCounting[0]">{{responsePlan.doubleCounting[0].value}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p *ngIf="responsePlan.doubleCounting[1]">{{responsePlan.doubleCounting[1].value}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p *ngIf="responsePlan.doubleCounting[2]">{{responsePlan.doubleCounting[2].value}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p *ngIf="responsePlan.doubleCounting[3]">{{responsePlan.doubleCounting[3].value}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p *ngIf="responsePlan.doubleCounting[4]">{{responsePlan.doubleCounting[4].value}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p *ngIf="responsePlan.doubleCounting[5]">{{responsePlan.doubleCounting[5].value}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p>{{dcTotalFemale ? dcTotalFemale : 0}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p>{{dcTotalMale ? dcTotalMale : 0}}</p></td>
+    <td colspan="1" style="background-color: #f8f8f8; text-align: center; font-weight: bold;"><p>{{dcTotal ? dcTotal : 0}}</p></td>
   </tr>
 
 </table>

@@ -17,9 +17,17 @@ import {
 import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as firebase from "firebase";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {
+  PrepActionService, PreparednessAction, PreparednessNotes,
+  PreparednessUser
+} from "../../services/prepactions.service";
+import {ModelDepartment} from "../../model/department.model";
+import {MessageModel} from "../../model/message.model";
+import {NotificationService} from "../../services/notification.service";
+import {TranslateService} from "@ngx-translate/core";
 declare var jQuery: any;
 
 @Component({
@@ -34,29 +42,33 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private uid: string;
   private userType: UserType;
   private UserType = UserType;
+  private userTypes = UserType;
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
   private isViewing: boolean;
+  private isSameAgency: boolean = false;
+  public myFirstName: string;
+  public myLastName: string;
 
   // Filters
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
-  private filterAssigned: string = this.uid;
+  private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
 
   // Data for the actions
   private ACTION_STATUS = Constants.ACTION_STATUS;
-  private actions: Actions[] = [];
-  private DEPARTMENTS: string[] = [];
+  private DEPARTMENTS: ModelDepartment[] = [];
+  private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
   private hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
 
-  private allUnassigned: boolean = false;
+  private allUnassigned: boolean = true;
   private allArchived: boolean = false;
   private ActionStatus = ActionStatus;
   private ActionType = ActionType;
@@ -71,6 +83,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private documentActionId: string = "";
   private fileSize: number; // Always in Bytes
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
+  private actionLevelEnum = ActionLevel;
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -80,12 +93,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private assignActionId: string = "0";
   private assignActionCategoryUid: string = "0";
   private assignActionAsignee: string = "0";
+  private assignActionTask: string = "";
 
   // Loader Inactive
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  protected prepActionService: PrepActionService = new PrepActionService();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
-  constructor(protected pageControl: PageControlService, @Inject(FirebaseApp) firebaseApp: any, protected af: AngularFire, protected router: Router, protected route: ActivatedRoute, protected storage: LocalStorageService, protected userService: UserService) {
+  constructor(protected pageControl: PageControlService,
+              @Inject(FirebaseApp) firebaseApp: any,
+              protected af: AngularFire,
+              protected router: Router,
+              protected route: ActivatedRoute,
+              protected storage: LocalStorageService,
+              protected userService: UserService,
+              protected notificationService: NotificationService,
+              protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
     this.route.params.subscribe((params: Params) => {
@@ -119,147 +143,45 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           this.systemAdminId = params["systemId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.userType = userType;
-          this.filterAssigned = this.uid;
+          this.filterAssigned = "0";
           this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-          this.getStaffDetails(this.uid);
+          this.getStaffDetails(this.uid, true);
 
-          if (this.agencyId && this.countryId && this.systemAdminId) {
-            this.init(this.countryId, true);
-            this.init(this.agencyId, false);
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+            this.permissionsAreEnabled = isEnabled;
+          });
+
+          if (this.agencyId && this.countryId && this.systemAdminId && this.isViewing) {
+            // Initialise everything here! We already have the above
+            this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
+              this.countryId, this.agencyId, this.systemAdminId);
             this.initStaff();
             this.initDepartments();
             this.initDocumentTypes();
+            this.initAlerts();
           } else {
-            // Get the country ID and load actions for country
-            this.userService.getCountryId(Constants.USER_PATHS[this.userType], user.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(countryId => {
-                this.countryId = countryId;
-                this.init(this.countryId, true);
-                this.initStaff();
-              });
-            // Get the agency ID and load actions for agency
-            this.userService.getAgencyId(Constants.USER_PATHS[this.userType], user.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((agencyId) => {
-                this.agencyId = agencyId;
-                this.init(this.agencyId, false);
-                this.initDepartments();
-              });
-            // Get the system admin ID and load actions for system admin. We need it for document type
-            this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((system) => {
-                this.systemAdminId = system;
-                this.initDocumentTypes();
-                // System Admin always has Minimum Prep actions
-                // this.init(this.systemAdminId, false);
-              });
+            this.countryId = countryId;
+            this.agencyId = agencyId;
+            this.systemAdminId = systemId;
+            // Initialise everything here but we need to get countryId, agencyId, systemId
+            this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
+              this.countryId, this.agencyId, this.systemAdminId);
+            this.initStaff();
+            this.initDepartments();
+            this.initDocumentTypes();
+            this.initAlerts();
           }
         });
-
       });
-
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.userType = userType;
-      this.filterAssigned = this.uid;
-      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
-      this.getStaffDetails(this.uid);
-      // Get the country ID and load actions for country
-      this.userService.getCountryId(Constants.USER_PATHS[this.userType], user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
-          this.init(this.countryId, true);
-          this.initStaff();
-        });
-      // Get the agency ID and load actions for agency
-      this.userService.getAgencyId(Constants.USER_PATHS[this.userType], user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyId) => {
-          this.agencyId = agencyId;
-          this.init(this.agencyId, false);
-          this.initDepartments();
-        });
-      // Get the system admin ID and load actions for system admin. We need it for document type
-      this.userService.getSystemAdminId(Constants.USER_PATHS[this.userType], user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((system) => {
-          this.systemAdminId = system;
-          this.initDocumentTypes();
-          // System Admin always has Minimum Prep actions
-          // this.init(this.systemAdminId, false);
-        });
-    });
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
-
-  /**
-   * Initialisation method for the action node. Takes the ID and pushes it to the list
-   * @param id
-   */
-  private init(id: string, isCountry: boolean) {
-    this.af.database.list(Constants.APP_STATUS + "/action/" + id, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        snap.forEach((snapshot) => {
-          if (snapshot.val().level !== ActionLevel.MPA) {
-            let act: Actions = new Actions();
-            let obj = snapshot.val();
-            act.id = snapshot.key;
-            act.actionUid = id;
-            act.asignee = (obj.asignee ? obj.asignee : "");
-            act.dueDate = (obj.dueDate ? obj.dueDate : new Date().getTime());
-            act.assignedHazards = [];
-
-            if (obj.assignHazard) {
-              for (const x of obj.assignHazard) {
-                act.assignedHazards.push(x);
-              }
-            }
-
-            /** WORKAROUND LOGIC FOR APA'S ON MANDATED PREP ACTIONS
-             * - All Hazards are underneath it **/
-            if (obj.type == ActionType.mandated && obj.level == ActionLevel.APA) {
-              // Add all of them
-              act.assignedHazards = [];
-              for (const x in HazardScenario) {
-                act.assignedHazards.push(+HazardScenario[x]);
-              }
-            }
-
-            act.isArchived = !obj.isActive;
-            act.budget = (obj.budget ? obj.budget : 0);
-            act.department = (obj.department ? obj.department : "");
-            act.isComplete = (obj.isComplete ? obj.isComplete : false);
-            act.requireDoc = (obj.requireDoc ? obj.requireDoc : '');
-            act.task = (obj.task ? obj.task : '');
-            act.type = (obj.type ? obj.type : '');
-            act.frequencyBase = (obj.frequencyBase ? +obj.frequencyBase : 0);
-            act.frequencyValue = (obj.frequencyValue ? +obj.frequencyValue : 0);
-            this.updateAction(act);
-            this.initNotes(act.id);
-
-
-            if (snapshot.val().documents != null) {
-              for (let doc in snapshot.val().documents) {
-                this.initDoc(id, doc, act.id);
-              }
-            }
-          }
-        });
-        if (isCountry) {
-          this.initAlerts();
-        }
-      });
   }
 
   /**
@@ -271,18 +193,22 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
-            let res: boolean = true;
+            let res: boolean = false;
             for (const userTypes in snapshot.val().approval) {
               for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] == 0) {
-                  res = false;
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
                 }
               }
             }
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
           }
           else {
-            this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
           }
         });
       });
@@ -294,12 +220,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        for (const x in snap.val().departments) {
-          this.DEPARTMENTS.push(x);
-        }
+        this.DEPARTMENTS = [];
+        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
+          let mD: ModelDepartment = new ModelDepartment();
+          mD.id = snapshot.key;
+          mD.name = snapshot.val().name;
+          this.DEPARTMENTS.push(mD);
+          this.DEPARTMENT_MAP.set(mD.id, mD.name);
+        });
       });
   }
 
@@ -321,31 +253,25 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the documents associated with an Action
+   * Initialisation method for the staff under the country office
    */
-  private initDoc(heirachyId: string, docId: string, actionId: string) {
-    this.af.database.object(Constants.APP_STATUS + "/document/" + heirachyId + "/" + docId, {preserveSnapshot: true})
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if (this.getAction(actionId) != null) {
-          let doc = snap.val();
-          if (doc != null && doc != undefined) {
-            doc.documentId = snap.key;
-            this.getAction(actionId).addDoc(doc);
-          }
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
         }
       });
   }
 
-  /**
-   * Initialisation method for the staff under the country office
-   */
   private initStaff() {
+    this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key);
+          this.getStaffDetails(snapshot.key, false);
         });
       });
   }
@@ -353,7 +279,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Get staff member public user data (names, etc.)
    */
-  public getStaffDetails(uid: string) {
+  public getStaffDetails(uid: string, isMe: boolean) {
     if (!this.CURRENT_USERS.get(uid)) {
       this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
@@ -364,63 +290,55 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
           this.updateUser(prepUser);
+
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
         });
     }
   }
 
   /**
-   * Assigning an action to someone
+   * Get the actions
    */
-  public assignActionDialogAdv(action: Actions) {
-    this.assignActionId = action.id;
-    this.assignActionCategoryUid = action.actionUid;
+  public getAction(id: string) {
+    return this.prepActionService.findAction(id);
   }
 
-  public selectedAssignToo(uid: string) {
-    if (uid == "0" || uid == null) {
-      return;
+  /**
+   * Assigning an action to someone
+   */
+  public assignActionDialogAdv(action: PreparednessAction) {
+    if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
+      // TODO: FIGURE OUT HOW THIS IS GOING TO BE EDITING
+      this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
+    } else {
+      this.assignActionId = action.id;
     }
-    this.assignActionAsignee = uid;
   }
 
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
-      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined ||
-      this.assignActionCategoryUid == null || this.assignActionCategoryUid === "0" || this.assignActionCategoryUid === undefined) {
+      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.assignActionCategoryUid + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee);
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+      .then(() => {
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId +"/task").takeUntil(this.ngUnsubscribe)
+          .subscribe(task => {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task? task.$value : ''});
+            console.log(notification.content);
+
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+            });
+          });
+      });
     this.closeModal();
-  }
-
-
-  /**
-   * Update method for the action. This will check if one already exists in the system beforehand, and only
-   *   add it if it's new. If not, then it's updated.
-   */
-  public updateAction(action: Actions) {
-    // Wrapper method to update the actions
-    let ran: boolean = false;
-    let index = 0;
-    for (let x of this.actions) {
-      if (x.id == action.id) {
-        this.actions[index] = action;
-        ran = true;
-      }
-      index++;
-    }
-    if (!ran) {
-      this.actions.push(action);
-    }
-  }
-
-  public getAction(actionId: string): Actions {
-    for (let x of this.actions) {
-      if (x.id == actionId) {
-        return x;
-      }
-    }
-    return null;
   }
 
   /**
@@ -466,45 +384,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Methods for the notes alongside an action
    */
-  // Listen for changes on the notes
-  public initNotes(actionId: string) {
-    if (this.getAction(actionId) != null) {
-      this.af.database.list(Constants.APP_STATUS + "/note/" + actionId, {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          let action: Actions = this.getAction(actionId);
-          if (action != null) {
-            this.getAction(actionId).notes = [];
-            snap.forEach((noteSnap) => {
-              let prepNote: PreparednessNotes = new PreparednessNotes(noteSnap.key, actionId);
-              prepNote.content = noteSnap.val().content;
-              prepNote.time = noteSnap.val().time;
-              prepNote.uploadedBy = noteSnap.val().uploadBy;
-              this.addNoteToAction(prepNote, action);
-            });
-          }
-        });
-    }
-  }
-
-  // Adding a note to action
-  protected addNoteToAction(note: PreparednessNotes, n: Actions) {
-    let ran = false;
-    let index = 0;
-    for (let x of n.notes) {
-      if (x.id == note.id) {
-        n.notes[index] = note;
-        ran = true;
-        index++;
-      }
-    }
-    if (!ran) {
-      n.notes.push(note);
-    }
-  }
-
   // Adding a note to firebase
-  public addNote(action: Actions) {
+  public addNote(action: PreparednessAction) {
     if (action.note == undefined) {
       return;
     }
@@ -516,32 +397,30 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     };
     const noteId = action.noteId;
 
-    console.log(note);
-
     action.note = '';
     action.noteId = '';
 
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + action.id + '/' + noteId).set(note);
+      this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + action.id).push(note);
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
     }
   }
 
   // Edit mode
-  protected editNote(note: PreparednessNotes, action: Actions) {
+  protected editNote(note: PreparednessNotes, action: PreparednessAction) {
     action.noteId = note.id;
     action.note = note.content;
   }
 
   // Delete note
-  protected deleteNote(note: PreparednessUser, action: Actions) {
-    this.af.database.list(Constants.APP_STATUS + '/note/' + action.id + '/' + note.id).remove();
+  protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
+    this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
   }
 
   // Disable editing a note
-  protected disableEditNote(action: Actions) {
+  protected disableEditNote(action: PreparednessAction) {
     action.noteId = '';
     action.note = '';
   }
@@ -550,7 +429,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * File uploading
    */
-  public fileChange(event, action: Actions, actionId: string) {
+  public fileChange(event, action: PreparednessAction, actionId: string) {
     if (event.target.files.length > 0) {
       let file = event.target.files[0];
 
@@ -565,11 +444,9 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       action.attachments.map(attachment => {
         if (attachment.name == file.name && attachment.actionId == file.actionId) {
           exists = true;
-          console.log("exists");
         }
       });
 
-      console.log(file);
       let fileTypeAllowed = false;
       for (let x of this.fileExtensions) {
         for (let ext of x.extensions) {
@@ -595,7 +472,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
       if (!exists) {
         action.attachments.push(file);
-        this.updateAction(action);
       }
     }
   }
@@ -604,8 +480,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Completing an action
    */
-  protected completeAction(action: Actions) {
-    console.log("Completing action!");
+  protected completeAction(action: PreparednessAction) {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -614,8 +489,12 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id).update({isComplete: true});
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
+            isComplete: true,
+            isCompleteAt: new Date().getTime()
+          });
           this.addNote(action);
+          this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
@@ -628,21 +507,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id).update({isComplete: true});
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
+          isComplete: true,
+          isCompleteAt: new Date().getTime()
+        });
         this.addNote(action);
         this.closePopover(action);
       }
-      this.updateAction(action);
     }
   }
 
   // Close documents popover
-  protected closePopover(action: Actions) {
+  protected closePopover(action: PreparednessAction) {
     jQuery("#popover_content_" + action.id).toggle("collapse");
   }
 
   // Uploading a file to Firebase
-  protected uploadFile(action: Actions, file) {
+  protected uploadFile(action: PreparednessAction, file) {
     let document = {
       fileName: file.name,
       filePath: "", //this needs to be updated once the file is uploaded
@@ -654,13 +535,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    this.af.database.list(Constants.APP_STATUS + '/document/' + action.actionUid).push(document)
+    this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
       .then(_ => {
         let docKey = _.key;
         let doc = {};
         doc[docKey] = true;
 
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents').update(doc)
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents').update(doc)
           .then(_ => {
             new Promise((res, rej) => {
               var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
@@ -676,7 +557,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               .then(result => {
                 document.filePath = "" + result;
 
-                this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + docKey).set(document);
+                this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + docKey).set(document);
               })
               .catch(err => {
                 console.log(err, 'You do not have access!');
@@ -694,9 +575,9 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   // Remove document
-  protected purgeDocumentReference(action: Actions, docKey) {
-    this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents/' + docKey).set(null);
-    this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + docKey).set(null);
+  protected purgeDocumentReference(action: PreparednessAction, docKey) {
+    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents/' + docKey).set(null);
+    this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + docKey).set(null);
   }
 
   protected removeAttachment(action, file) {
@@ -709,20 +590,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   // Delete document from firebase
-  protected deleteDocument(action: Actions, docId: string) {
-    let documentId = action.documents[docId].documentId;
-    this.af.database.object(Constants.APP_STATUS + '/action/' + action.actionUid + '/' + action.id + '/documents/' + documentId).set(null);
-    this.af.database.object(Constants.APP_STATUS + '/document/' + action.actionUid + '/' + documentId).set(null);
-    this.firebase.storage().ref().child('documents/' + action.actionUid + "/" + documentId).delete();
+  protected deleteDocument(action: PreparednessAction, docId: string) {
+    for (let x of action.documents) {
+      if (x.documentId == docId) {
+        // Deleting this one!
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents/' + x.documentId).set(null);
+        this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + x.documentId).set(null);
+        this.firebase.storage().ref().child('documents/' + this.countryId + "/" + x.documentId + "/" + x.fileName).delete();
+      }
+    }
   }
 
   // Exporting all the documents
-  protected exportAllDocuments(action: Actions) {
+  protected exportAllDocuments(action: PreparednessAction) {
     this.documents = action.documents;
     this.docsSize = 0;
     this.documentActionId = action.id;
     for (let x of action.documents) {
-      console.log(x);
       this.docsSize += x.size;
     }
     this.docsSize = this.docsSize / 1000;
@@ -750,8 +634,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   // Export a single document
-  protected exportDocument(action: Actions, docId: string) {
-    console.log(docId);
+  protected exportDocument(action: PreparednessAction, docId: string) {
     let doc = action.documents[docId];
 
     let self = this;
@@ -778,17 +661,20 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     jQuery("#" + elementId).collapse('hide');
   }
 
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
+
 
   /**
    * Reactivating an Action from Archived -> Non-Archived
    */
-  public reactivate(action: Actions) {
-    console.log("Re-activate");
+  public reactivate(action: PreparednessAction) {
     let update = {
-      isActive: true
+      isArchived: false
     };
-    console.log(Constants.APP_STATUS + "/action/" + action.actionUid + "/" + action.id);
-    this.af.database.object(Constants.APP_STATUS + "/action/" + action.actionUid + "/" + action.id).update(update);
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id).update(update);
   }
 
   /**
@@ -797,102 +683,5 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   public closeModal() {
     jQuery("#leadAgencySelection").modal('hide');
-  }
-
-}
-
-
-/**
- * Holder class for the Actions
- */
-export class Actions {
-  public id: string;
-  public actionUid: string;
-  public actionStatus: number;
-  public asignee: string;
-  public attachments: any[];
-  public assignedHazards: HazardScenario[];
-  public budget: number;
-  public department: string;
-  public dueDate: number;
-  public isArchived: boolean;
-  public frequencyBase: number;
-  public frequencyValue: number;
-  public isComplete: boolean;
-  public level: number;
-  public requireDoc: boolean;
-  public task: string;
-  public type: number;
-  public note: string;
-  public noteId: string;
-  public notes: PreparednessNotes[];
-  public documents: any[];
-
-  constructor() {
-    this.assignedHazards = [];
-    this.notes = [];
-    this.attachments = [];
-    this.documents = [];
-  }
-
-  public isRedAlertActive(map: Map<HazardScenario, boolean>): boolean {
-    for (let x of this.assignedHazards) {
-      if (map.get(x)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public addDoc(doc) {
-    let skip = false;
-    for (let x of this.documents) {
-      if (x.documentId == doc.documentId) {
-        skip = true;
-      }
-    }
-    if (!skip) {
-      this.documents.push(doc);
-    }
-    console.log(this.documents);
-  }
-}
-
-/**
- * Holder for a note
- */
-export class PreparednessNotes {
-
-  constructor(uid: string, actionid: string) {
-    this.id = uid;
-    this.actionid = actionid;
-  }
-
-  public actionid: string;
-  public id: string;
-  public uploadedBy: string;
-  public content: string;
-  public time: number;
-}
-
-/**
- * Holder class for the Users
- */
-export class PreparednessUser {
-  public id: string;
-  public isMe: boolean;
-  public firstName: string;
-  public lastName: string;
-
-  constructor(uid: string, isMe: boolean) {
-    this.id = uid;
-    this.isMe = isMe;
-  }
-
-  static placeholder(uid: string): PreparednessUser {
-    let p = new PreparednessUser(uid, false);
-    p.firstName = "Loading";
-    p.lastName = "...";
-    return p;
   }
 }

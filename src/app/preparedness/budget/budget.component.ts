@@ -2,12 +2,13 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {AlertMessageType} from "../../utils/Enums";
+import {ActionLevel, AlertMessageType} from "../../utils/Enums";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {ModelDepartment} from "../../model/department.model";
 
 
 declare var jQuery: any;
@@ -25,21 +26,20 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
 
   private uid: string;
-  private countryID: string;
-  private agencyID: string;
-  private minimumPreparednessBudget: any;
-  private minBudget: any = [];
-  private advBudget: any = [];
-  private advancedPreparednessBudget: any = [];
-  private minimumBudgetTotal: number;
-  private advancedBudgetTotal: number;
-  private grandTotal: number;
-  private departments: Array<string> = [];
+  private countryId: string;
+  private agencyId: string;
+  private departments: ModelDepartment[] = [];
+  private advPrepNarrative: any = {};
+  private minPrepNarrative: any = {};
+  private minBudget: Map<string, number> = new Map<string, number>();
+  private advBudget: Map<string, number> = new Map<string, number>();
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private isViewing: boolean;
 
+  public minTotal: number;
+  public advTotal: number;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
-    this.generateArray();
   }
 
   ngOnInit() {
@@ -48,20 +48,44 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["countryId"]) {
-          this.countryID = params["countryId"];
+          this.countryId = params["countryId"];
         }
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
         }
         if (params["agencyId"]) {
-          this.agencyID = params["agencyId"];
+          this.agencyId = params["agencyId"];
         }
       });
 
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
-      this._loadData();
+      if (this.countryId != null && this.agencyId != null && this.isViewing) {
+        this.populateDepartments();
+        this.populateNarratives();
+        this.populateBudgets();
+      }
+      else {
+        this.agencyId = agencyId;
+        this.countryId = countryId;
+        this.populateDepartments();
+        this.populateNarratives();
+        this.populateBudgets();
+        // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe((agencyId) => {
+        //     this.agencyId = agencyId;
+        //     this.populateDepartments();
+        //     this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
+        //       .takeUntil(this.ngUnsubscribe)
+        //       .subscribe((countryId) => {
+        //         this.countryId = countryId;
+        //         this.populateNarratives();
+        //         this.populateBudgets();
+        //       });
+        //   });
+      }
     });
   }
 
@@ -70,182 +94,98 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  savePreparednessBudget() {
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyID + '/' + this.countryID + '/minPreparednessBudget')
-      .set(this.minBudget)
-      .then(() => {
-        console.log('success save MPA budget settings');
-      }).catch((error: any) => {
-      console.log(error, 'You do not have access!')
-    });
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyID + '/' + this.countryID + '/advPreparednessBudget')
-      .set(this.advBudget)
-      .then(() => {
-        console.log('success save APA budget settings');
-      }).catch((error: any) => {
-      console.log(error, 'You do not have access!')
-    });
-    this.alertMessage = new AlertMessageModel('SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT', AlertMessageType.Success);
-  }
-
-  generateArray() {
-    this.departments.forEach((val, key) => {
-      this.minBudget[val] = [];
-      this.minBudget[val]['value'] = '';
-      this.minBudget[val]['narrative'] = '';
-      this.advBudget[val] = [];
-      this.advBudget[val]['value'] = '';
-      this.advBudget[val]['narrative'] = '';
-    });
-  }
-
-  setTotal(level: string) {
-    if (level == 'MPA') {
-      this.minimumBudgetTotal = 0;
-      for (let x in this.minBudget) {
-        var value = !this.minBudget[x].value ? 0 : parseFloat(this.minBudget[x].value);
-        if (value && value > 0) {
-          this.minimumBudgetTotal = this.minimumBudgetTotal + value;
-        }
-      }
-    }
-    if (level == 'APA') {
-      this.advancedBudgetTotal = 0;
-      for (let x in this.advBudget) {
-        var value = !this.advBudget[x].value ? 0 : parseFloat(this.advBudget[x].value);
-        if (value && value > 0) {
-          this.advancedBudgetTotal = this.advancedBudgetTotal + value;
-        }
-      }
-    }
-    this.setTotalAll();
-  }
-
-  setTotalAll() {
-    var minimumTotal = this.minimumBudgetTotal && this.minimumBudgetTotal > 0 ? this.minimumBudgetTotal : 0;
-    var advancedTotal = this.advancedBudgetTotal && this.advancedBudgetTotal > 0 ? this.advancedBudgetTotal : 0;
-    var grandTotal = minimumTotal + advancedTotal;
-    this.grandTotal = grandTotal;
-  }
-
-  _getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIDs: any) => {
-          this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-          this.countryID = countryID.$value ? countryID.$value : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-
-  _getBudgetSettings() {
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyID + '/' + this.countryID)
+  /**
+   * Generate an array of departments
+   */
+  public populateDepartments() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((budgetSettings: any) => {
-        if (budgetSettings && budgetSettings.minPreparednessBudget) {
-          this.minimumPreparednessBudget = budgetSettings.minPreparednessBudget;
-          this.setTotal('MPA');
-        }
-        if (budgetSettings && budgetSettings.advPreparednessBudget) {
-          this.advancedPreparednessBudget = budgetSettings.advPreparednessBudget;
-          this.setTotal('APA');
-        }
-      });
-  }
-
-  _loadData() {
-
-    if (this.countryID && this.agencyID) {
-      this._getDepartments().then(() => {
-        this._getMinBudget();
-        this._getAdvBudget();
-        this._getBudgetSettings();
-      });
-    } else {
-      this._getAgencyID().then(() => {
-        this._getCountryID().then(() => {
-          this._getDepartments().then(() => {
-            this._getMinBudget();
-            this._getAdvBudget();
-            this._getBudgetSettings();
-          })
+      .subscribe((snap) => {
+        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
         });
       });
-    }
   }
 
-  _getDepartments() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyID + '/departments/')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((departments: any) => {
-          for (let department in departments) {
-            if (department != '$key' && department != '$exists') {
-              this.departments.push(department);
+  /**
+   * Generate a map of string -> string for departmentId -> narrative
+   */
+  public populateNarratives() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.advPrepNarrative = {};
+        for (let x in snap.val().advPreparednessBudget) {
+          this.advPrepNarrative[x] = snap.val().advPreparednessBudget[x].narrative;
+        }
+        this.minPrepNarrative = {};
+        for (let x in snap.val().minPreparednessBudget) {
+          this.minPrepNarrative[x] = snap.val().minPreparednessBudget[x].narrative;
+        }
+      });
+  }
+
+  /**
+   * Process the actions under my countryid and sum the budgets
+   */
+  public populateBudgets() {
+    this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.minBudget.clear();
+        this.advBudget.clear();
+        this.minTotal = 0;
+        this.advTotal = 0;
+        snap.forEach((snapshot) => {
+          if (snapshot.val() != null && snapshot.val().hasOwnProperty('budget') && snapshot.val().hasOwnProperty('department') && snapshot.val().hasOwnProperty('type')) {
+            if (snapshot.val().level == ActionLevel.APA) {
+              let x: number = this.advBudget.get(snapshot.val().department) ? this.advBudget.get(snapshot.val().department) : 0;
+              x += snapshot.val().budget;
+              this.advTotal += snapshot.val().budget;
+              this.advBudget.set(snapshot.val().department, x);
+            }
+            else {
+              let x: number = this.minBudget.get(snapshot.val().department) ? this.minBudget.get(snapshot.val().department) : 0;
+              x += snapshot.val().budget;
+              this.minTotal += snapshot.val().budget;
+              this.minBudget.set(snapshot.val().department, x);
             }
           }
-          this.generateArray();
-          res(true);
         });
-    });
-    return promise;
-  }
-
-  _getMinBudget() {
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyID + '/' + this.countryID + '/minPreparednessBudget')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((minBudget: any) => {
-        for (let val in this.minBudget) {
-          for (let obj in minBudget) {
-            if (val == obj) {
-              this.minBudget[val].value = minBudget[obj].value
-              this.minBudget[val].narrative = minBudget[obj].narrative
-            }
-          }
-        }
       });
   }
 
-  _getAdvBudget() {
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyID + '/' + this.countryID + '/advPreparednessBudget')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((advBudget: any) => {
-        for (let val in this.advBudget) {
-          for (let obj in advBudget) {
-            if (val == obj) {
-              this.advBudget[val].value = advBudget[obj].value
-              this.advBudget[val].narrative = advBudget[obj].narrative
-            }
-          }
-        }
-      });
-  }
-
-  _keyPress(event: any) {
-    const pattern = /[0-9\.\+\-\ ]/;
-    let inputChar = String.fromCharCode(event.charCode);
-    if (!pattern.test(inputChar) && event.charCode) {
-      // invalid character, prevent input
-      event.preventDefault();
+  /**
+   * Method to save the narratives of the budgets
+   */
+  public saveNarratives() {
+    console.log(this.advPrepNarrative);
+    console.log(this.minPrepNarrative);
+    let minPrepUpdate = {};
+    for (let x in this.minPrepNarrative) {
+      minPrepUpdate[x] = {};
+      minPrepUpdate[x].narrative = this.minPrepNarrative[x];
     }
-  }
-
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
+    let advPrepUpdate = {};
+    for (let x in this.advPrepNarrative) {
+      advPrepUpdate[x] = {};
+      advPrepUpdate[x].narrative = this.advPrepNarrative[x];
+    }
+    let totalUpdateObj = {
+      minPreparednessBudget: minPrepUpdate,
+      advPreparednessBudget: advPrepUpdate
+    };
+    console.log(totalUpdateObj);
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId).update(totalUpdateObj)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('SYSTEM_ADMIN.ACTIONS.EDIT_CONFIRM_SAVE_CHANGES', AlertMessageType.Success);
+      })
+      .catch(() => {
+        this.alertMessage = new AlertMessageModel('PREPAREDNESS.BUDGET_NARRATIVE_ERROR', AlertMessageType.Error);
+      });
   }
 }

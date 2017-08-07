@@ -20,6 +20,8 @@
       </div>
     </div>
 
+    <div *ngIf="!totalSections && totalSections == 0" class="Empty--ribbon">{{"RESPONSE_PLANS.NO_SECTIONS_ENABLED" | translate}}</div>
+
     <div class="Ribbon__section__wrap Spaced">
 
 
@@ -33,7 +35,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section1Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -76,12 +78,13 @@
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection1()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_1')}}
       </div>
 
 
@@ -95,14 +98,21 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_2" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
-              | translate}}</label>
+              | translate}}
+              <!--tooltip-->
+              <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
+              </tooltip>
+
+            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
@@ -126,7 +136,12 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
-              | translate}}</label>
+              | translate}}
+              <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
+              </tooltip>
+            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
@@ -149,7 +164,11 @@
 
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
-              | translate}}</label>
+              | translate}}
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
+              </tooltip>
+            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
@@ -172,12 +191,13 @@
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_1}})</a>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection2()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_2')}}
       </div>
 
 
@@ -191,12 +211,17 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_3" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
-            <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WHAT_SECTORS?" | translate}}</label>
+            <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WHAT_SECTORS?" | translate}}
+              <tooltip
+            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
+            </tooltip>
+            </label>
+
           </div>
           <div class="Selection-row">
             <div class="Item__selectable Icon__selectable">
@@ -252,7 +277,12 @@
 
           <div class="form-group">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRESENCE_IN_THE_COUNTRY" |
-              translate}}</label>
+              translate}}
+            <tooltip
+            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
+            [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
+            </tooltip>
+            </label>
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
@@ -288,29 +318,42 @@
                      [checked]="isWorkingWithPartners"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
+            <label for="imp-both" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-both" [hidden]="!moduleAccess.countryOffice"
+                     [checked]="isWorkingWithStaffAndPartners"
+                     (click)="methodOfImplementationSelectedBoth()">
+              {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_BOTH" | translate}}</label>
           </div>
 
-          <div class="row Spaced subitem" *ngIf="isWorkingWithPartners">
+          <div class="row Spaced subitem" *ngIf="isWorkingWithPartners || isWorkingWithStaffAndPartners">
             <div class="col-lg-8 col-md-8">
-              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
-              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns">
+              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}
+                <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
+              </tooltip>
+              </label>
+              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
+
                     <option value="null" hidden disabled selected>
                       {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
-                    <option *ngFor="let partnerOrganisation of partnerOrganisations" [value]="partnerOrganisation.$key">
+
+                    <option *ngFor="let partnerOrganisation of partnerOrganisations"
+                      [value]="partnerOrganisation.$key"
+                      [selected]="partnerOrganisation.$key == partnerOrganisationsSelected[i]">
                       {{partnerOrganisation.organisationName}}
                     </option>
-                    <option value="addNewPartnerOrganisation" class="text-primary">+
-                      {{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}
-                    </option>
+                    <!--<option value="addNewPartnerOrganisation" class="text-primary">+-->
+                      <!--{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}-->
+                    <!--</option>-->
                   </select>
                 </div>
                 <div class="col-sm-6">
-                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(dropDown)"
-                     [hidden]="dropDown == 1">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
+                  <a href="javascript:void(0)" class="text-danger" (click)="removePartnersDropDown(i)"
+                     [hidden]="i == 0">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.REMOVE_FROM_THIS_PLAN"
                     | translate}}</a>
                 </div>
               </div>
@@ -321,13 +364,13 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection3()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
-
+        {{openInitialSection('#header_section_3')}}
       </div>
 
 
@@ -341,7 +384,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_4" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -349,7 +392,11 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-response">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
-                  | translate}}</label>
+                  | translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
+                </tooltip>
+                </label>
                 <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
                           [(ngModel)]="proposedResponseText"></textarea>
               </div>
@@ -359,7 +406,11 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-act">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
-                  | translate}}</label>
+                  | translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
+                </tooltip>
+                </label>
                 <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
                           [(ngModel)]="progressOfActivitiesPlanText"></textarea>
               </div>
@@ -369,19 +420,24 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-coo">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_COORDINATION_TEXT?"
-                  | translate}}</label>
+                  | translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
+                </tooltip>
+                </label>
                 <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
                           [(ngModel)]="coordinationPlanText"></textarea>
               </div>
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection4()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_4')}}
       </div>
 
 
@@ -395,13 +451,18 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section5Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_5" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
           <div class="form-group">
             <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_MANY_BENEFICIARIES?" |
-              translate}}</label>
+              translate}}
+              <tooltip
+            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
+            [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
+            </tooltip>
+            </label>
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-1 col-md-1 col-sm-2 col-4">
@@ -439,19 +500,26 @@
             <div class="col-lg-8 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-Done">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
-                  translate}}</label>
-                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns">
+                  translate}}
+                <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
+                </tooltip>
+                </label>
+                <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
-                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
-                      <option hidden disabled selected>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                      <option *ngFor="let group of groups">{{group.name | translate}}
+                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)" >
+                      <option hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                      <option *ngFor="let group of groups"
+                        [value]="group.$key"
+                        [selected] = "group.$key == selectedVulnerableGroups[i]">{{group.name | translate}}
                       </option>
                     </select>
                   </div>
                   <a href="javascript:void(0)" class="Remove__row__cta"
-                     (click)="removeVulnerableGroupDropDown(vulnerableGroupsDropDown)"
-                     [hidden]="vulnerableGroupsDropDown == 1">{{"GLOBAL.REMOVE"
+                     (click)="removeVulnerableGroupDropDown(i)"
+                     [hidden]="i == 0">{{"GLOBAL.REMOVE"
                     | translate}}</a>
                 </div>
                 <div class="form-group">
@@ -469,7 +537,12 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
-              | translate}}</label>
+              | translate}}
+              <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
+                </tooltip>
+            </label>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
@@ -490,12 +563,13 @@
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection5()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_5')}}
       </div>
 
 
@@ -509,7 +583,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section6Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_6" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -518,18 +592,25 @@
               <div class="form-group">
                 <label for="R-success">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.DESCRIBE_THE_RISKS_TEXT"
                   | translate}}</label>
+                  <!-- TOOLTIP 2.16 -->
+                  <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL2'">
+                </tooltip>
+
                 <textarea id="R-success" cols="30" rows="5" class="form-control"
                           [(ngModel)]="riskManagementPlanText"></textarea>
               </div>
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection6()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_6')}}
       </div>
 
 
@@ -543,7 +624,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_7" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content">
@@ -560,7 +641,7 @@
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
-                    {{activityMap.get(sector)?activityMap.get(sector)?.length:0}}
+                    {{getNumberOfActivities(sector)}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}
                   </div>
                   <div class="col-sm-1 col-12 text-center" data-toggle="collapse" [attr.href]="'#Activity'+sector"
@@ -572,120 +653,135 @@
                 <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
                   <div *ngIf="activityMap.get(sector)?.length > 0">
-                    <div *ngFor="let activity of activityMap.get(sector); index as i"
-                         class="row Outlined Spaced align-items-center">
-                      <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
-                      <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
-                      <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
-                        | translate}}</a></div>
+                    <div *ngFor="let activity of activityMap.get(sector); index as i">
+                      <div class="row Outlined Spaced align-items-center" *ngIf="activeActivity && activeActivity[sector] != activity">
+                        <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
+                        <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
+                        <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" (click)="viewActivity(sector, activity)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
+                          | translate}}</a></div>
+                      </div>
+
+                      <div *ngIf="activeActivity && activeActivity[sector] == activity" class="row Outlined Spaced align-items-center">
+                        <div class="row Spaced col-lg-12 no-gutters">
+                          <div class="col-lg-12 text-right">
+                            <a href="javascript:void(0)" class="text-danger" (click)="removeActivity(sector, activity)"
+                              *ngIf="activityMap.get(sector)?.length > 1 && !activity.isEmpty()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
+                              | translate}}</a>
+                          </div>
+                        </div>
+                        <div class="row col-lg-12">
+                          <div class="col-lg-12 form-group">
+                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
+                              | translate}}</label>
+                              <!-- TOOLTIP 2.17 -->
+                              <tooltip
+                              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL1'"
+                              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL2'">
+                              </tooltip>
+                            <input type="text" [(ngModel)]="activity.name" class="form-control" #name>
+                          </div>
+                        </div>
+
+                        <div class="row col-lg-12">
+                          <div class="col-lg-12 form-group">
+                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
+                              | translate}}</label>
+                            <input type="text" class="form-control" [(ngModel)]="activity.output" #output>
+                          </div>
+                        </div>
+
+                        <div class="row col-lg-12">
+                          <div class="col-lg-12 form-group">
+                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+                              translate}}</label>
+                            <input type="text" class="form-control" [(ngModel)]="activity.indicator" #indicator>
+                          </div>
+                        </div>
+                        <div class="row col-lg-12 Spaced form-group">
+                          <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
+                            | translate}}</label>
+                          <div class="row no-gutters Demographic__text">
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[0] && activity.beneficiary[0].value"></div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[1] && activity.beneficiary[1].value"></div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[2] && activity.beneficiary[2].value"></div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[3] && activity.beneficiary[3].value">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[4] && activity.beneficiary[4].value">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 tier">
+                              <div class="row align-items-center">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
+                              </div>
+                              <div class="row align-items-center">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0"
+                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[5] && activity.beneficiary[5].value">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row col-lg-12">
+                            <div class="col-lg-10">
+                              <p class="text-danger" *ngIf="activityError && activityError[sector] && activityError[sector][i]">
+                                {{ activityError[sector][i] | translate }}
+                              </p>
+                            </div>
+                            <div class="col-lg-2">
+                              <button class="btn btn-secondary"
+                                      (click)="saveActivity(sector, activity, i)">
+                                {{"GLOBAL.SAVE" | translate}}
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div [hidden]="addActivityToggleMap.get(sector)" class="row Outlined Spaced align-items-center">
-                    <div class="row Spaced col-lg-12 no-gutters">
-                      <div class="col-lg-12 text-right">
-                        <a href="javascript:void(0)" class="text-danger">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
-                          | translate}}</a>
-                      </div>
-                    </div>
-                    <div class="row col-lg-12">
-                      <div class="col-lg-12 form-group">
-                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"
-                          | translate}}</label>
-                        <input type="text" class="form-control" #name>
-                      </div>
-                    </div>
-
-                    <div class="row col-lg-12">
-                      <div class="col-lg-12 form-group">
-                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
-                          | translate}}</label>
-                        <input type="text" class="form-control" #output>
-                      </div>
-                    </div>
-
-                    <div class="row col-lg-12">
-                      <div class="col-lg-12 form-group">
-                        <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
-                          translate}}</label>
-                        <input type="text" class="form-control" #indicator>
-                      </div>
-                    </div>
-                    <div class="row col-lg-12 Spaced form-group">
-                      <label class="col-lg-12">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"
-                        | translate}}</label>
-                      <div class="row no-gutters Demographic__text">
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
-                                                       value="0"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> 18-50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
-                                                       value="0"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> >50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
-                                                       value="0"></div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2 tier">
-                          <div class="row align-items-center">
-                            <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
-                          </div>
-                          <div class="row align-items-center">
-                            <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0">
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row col-lg-12">
-                        <div class="col-lg-10"></div>
-                        <div class="col-lg-2">
-                          <button class="btn btn-secondary"
-                                  (click)="saveActivity(sector, name, output, indicator, femaleRange1, femaleRange2, femaleRange3, maleRange1, maleRange2, maleRange3)">
-                            Save
-                          </button>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
                   <!--<a href="javascript:void(0)" class="Add__row__cta">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES_OF_ACTIVITIES"-->
                   <!--| translate}}</a>-->
                   <a href="javascript:void(0)" class="Add__row__cta" (click)="addActivity(sector)">
-                    Add another activity</a>
+                    {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.ADD_ACTIVITY" | translate}}</a>
 
                   <div class="Spaced">
                     <div class="Selection-row no-gutters Spaced">
@@ -745,12 +841,13 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection7()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_7')}}
       </div>
 
 
@@ -764,7 +861,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_8" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -818,12 +915,13 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection8()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_8')}}
       </div>
 
 
@@ -837,7 +935,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()"
+            <div id="header_section_9" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="doublerCounting()"
                  (click)="checkAllSections()"></div>
           </div>
         </div>
@@ -850,10 +948,18 @@
           <div class="row">
             <div class="col-lg-12">
               <div class="row Demographic__text">
+                  <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
+              </tooltip>
                 <div class="col-lg-3">
                   <div class="row  align-items-center"></div>
                   <div class="row  align-items-center">
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES" | translate}}
+                    <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL1'"
+                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL2'">
+                  </tooltip>
                   </div>
                   <div class="row  align-items-center">
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES_ADJUSTED" | translate}}
@@ -946,12 +1052,13 @@
             </div>
           </div>
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection9()">{{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_9')}}
       </div>
 
 
@@ -965,7 +1072,7 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
-            <div class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_10" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Response__content--budget Spaced">
@@ -992,11 +1099,11 @@
                 </div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
-                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:0"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item']&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]&&loadResponsePlan.budget['item'][0][sector]['budget']?loadResponsePlan.budget['item'][0][sector]['budget']:''"
                          (change)="calculateBudget(sector, budget.value, true)"></div>
                 <div class="col-lg-4 col-5">
                   <input type="text" class="form-control budget-narrative" #narrative
-                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
+                         [value]="loadResponsePlan&&loadResponsePlan.budget&&loadResponsePlan.budget['item']&&loadResponsePlan.budget['item'][0]&&loadResponsePlan.budget['item'][0][sector]&&loadResponsePlan.budget['item'][0][sector]['narrative']?loadResponsePlan.budget['item'][0][sector]['narrative']:''"
                          (change)="recordNarrative(sector, narrative.value)"></div>
               </div>
             </div>
@@ -1128,15 +1235,37 @@
           </div>
 
           <div class="Form-submit__wrapper">
-            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)"
+            <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="checkSection10Status()">
               {{"GLOBAL.CONTINUE" |
               translate}}
             </div>
           </div>
         </div>
+        {{openInitialSection('#header_section_10')}}
       </div>
+    </div>
+  </div>
+</div>
 
+<!--Navigate back confirmation modal-->
+<div class="modal fade" id="navigate-back" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.YES" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"| translate}}</button>
+      </div>
     </div>
   </div>
 </div>

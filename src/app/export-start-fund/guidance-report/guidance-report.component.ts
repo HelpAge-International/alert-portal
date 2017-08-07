@@ -108,11 +108,12 @@ export class GuidanceReportComponent implements OnInit, OnDestroy {
           responsePlan.sectorsRelatedTo.forEach(sector => {
             this.sectorsRelatedToMap.set(sector, true);
           });
-
-          this.bindProjectLeadData(responsePlan);
-          this.bindPartnersData(responsePlan);
-          this.bindSourcePlanData(responsePlan);
         }
+
+        this.bindProjectLeadData(responsePlan);
+        this.bindPartnersData(responsePlan);
+        this.bindSourcePlanData(responsePlan);
+
       });
   }
 
@@ -123,7 +124,7 @@ export class GuidanceReportComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           console.log(user);
-          this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
+          this.planLeadName = user.firstName + " " + user.lastName;
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
         });

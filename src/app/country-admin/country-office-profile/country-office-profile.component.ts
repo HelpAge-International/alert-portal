@@ -31,7 +31,6 @@ export class CountryOfficeProfileComponent implements OnInit {
 
   constructor(private pageControl: PageControlService,  protected router: Router, protected route: ActivatedRoute) {
     this.route.params.subscribe((params: Params) => {
-        console.log(params);
       if (params['countryId']) {
         this.countryId = params['countryId'];
         this.obsCountryId.next(this.countryId);

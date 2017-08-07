@@ -16,25 +16,22 @@
     <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/preparedness/minimum' : '#'}}">
       <div class="Icon">
         <div class="Icon__circle Icon--b-{{userPermissions.minimumPreparedness ? mpaStatusColor : 'grey'}} Icon--lg">
-          <i class="fa {{mpaStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i></div>
+          <i class="fa {{userPermissions.minimumPreparedness ? mpaStatusIcon : 'fa-times'}} fa-2x fa-inverse" aria-hidden="true"></i></div>
       </div>
       <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
     </li>
     <li class="list-inline-item" routerLink="{{userPermissions.advancedPreparedness ? '/preparedness/advanced' : '#'}}">
       <div class="Icon">
-        <div *ngIf="overallAlertLevel == AlertLevels.Red" class="Icon__circle Icon--b-{{advStatusColor}} Icon--lg">
-          <i class="fa {{advStatusIcon}} fa-2x fa-inverse" aria-hidden="true"></i>
-        </div>
-        <div *ngIf="overallAlertLevel != AlertLevels.Red" class="Icon__circle Icon--b-grey Icon--lg">
-          <i class="fa fa-times fa-2x fa-inverse" aria-hidden="true"></i>
+        <div class="Icon__circle Icon--b-{{userPermissions.advancedPreparedness ? apaStatusColor : 'grey'}} Icon--lg">
+          <i class="fa {{userPermissions.advancedPreparedness ? apaStatusIcon : 'fa-times'}} fa-2x fa-inverse" aria-hidden="true"></i>
         </div>
       </div>
 
       <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/preparedness/minimum' : '#'}}">
+    <li class="list-inline-item" (click)="goToCHS()">
       <div class="Icon">
-        <div class="Icon__circle Icon--{{userPermissions.chsPreparedness ? 'green' : 'grey'}} Icon--lg">{{userPermissions.chsPreparedness ? percentageCHS : 'N/A'}}%</div>
+        <div class="Icon__circle Icon--{{userPermissions.chsPreparedness ? 'blue' : 'grey'}} Icon--lg">{{userPermissions.chsPreparedness ? chsPrepPercentage : 'N/A'}}%</div>
       </div>
       <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
     </li>

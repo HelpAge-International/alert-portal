@@ -1,16 +1,16 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
     <div class="logo" (click)="goToHome()"></div>
-    <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0" [class.badge-warning]="alertLevel==1"
+    <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
+          [class.badge-warning]="alertLevel==1"
           [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
     </span>
     <ul *ngIf="!isAnonym">
       <li>
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">My
-          agency</a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Category 1</a>
-          <a class="dropdown-item" href="#">Category 2</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{agencyDetail?.name}}</a>
+        <div *ngIf="partnerAgencies.length>1" class="dropdown-menu">
+          <a *ngFor="let agency of partnerAgencies" class="dropdown-item"
+             (click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>
         </div>
       </li>
 
@@ -19,17 +19,21 @@
       </li>
 
       <li class="Header_bar__country dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[countryLocation] | translate}}</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[countryLocation]
+          | translate}}</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" routerLink="/country-admin/country-account-settings">Account Settings</a>
           <a class="dropdown-item" routerLink="/country-admin/country-my-agency">View My Agency</a>
-          <a class="dropdown-item" routerLink="/country-admin/country-agencies">View agencies in my country</a>
+          <a
+            *ngIf="userType == UserType.CountryAdmin || userType == UserType.CountryDirector || userType==UserType.ErtLeader"
+            class="dropdown-item" routerLink="/country-admin/country-agencies">View agencies in my country</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
         </div>
       </li>
-      <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="agencyAdminId"></app-notification-badge>
+      <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId"
+                              [agencyId]="agencyId"></app-notification-badge>
     </ul>
 
   </div>

@@ -27,6 +27,9 @@ export class Constants {
   static SYSTEM_ADMIN_NETWORK_HOME = "/system-admin/network";
   static SYSTEM_ADMIN_ADD_NETWORK = "/system-admin/network/create";
 
+  // Default system notification sender
+  static DEFAULT_NOTIFICATION_SENDER = "ALERT System";
+
   //agency admin
   static AGENCY_ADMIN_HOME = "/agency-admin/country-office";
   static AGENCY_ADMIN_ADD_STARFF = "/agency-admin/staff/create-edit-staff";
@@ -43,7 +46,7 @@ export class Constants {
     UserType.ErtLeader, UserType.Ert];
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
-    static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
+  static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
 
 
   // Global director / Regional director
@@ -74,17 +77,18 @@ export class Constants {
   ];
 
   static CATEGORY: string[] = [
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ALL",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY0",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY1",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY2",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY3",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY4",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY5",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY6",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY7",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY8",
-    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CATEGORY9"];
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.All",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.OfficeAdministration",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Finance",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.ITFieldCommunications",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Logistics",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.CommunicationsMedia",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.HumanResources",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.DonorFundingReporting",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Accountability",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Security",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes",
+    "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.EmergencyResponseTeamManagement"];
 
   static ACTION_LEVEL: string[] = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
   static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.INACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED"];
@@ -121,13 +125,27 @@ export class Constants {
   static USER_TYPE_SELECTION = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert, UserType.CountryUser];
 
-  static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins","non-alert","countryuser"];
+  static GROUP_PATH_AGENCY = ["globaldirector", "regionaldirector", "countrydirectors", "ertleads", "erts", "donor", "globaluser", "countryadmins", "non-alert", "countryuser"];
 
   static STAFF_POSITION = ["AGENCY_ADMIN.STAFF.ALL_POSITIONS", "AGENCY_ADMIN.STAFF.OFFICE_DIRECTOR", "AGENCY_ADMIN.STAFF.OFFICE_STAFF"];
   static STAFF_POSITION_SELECTION = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
 
-  static OFFICE_TYPE = ["AGENCY_ADMIN.STAFF.ALL_OFFICES", "AGENCY_ADMIN.STAFF.FIELD_OFFICE", "AGENCY_ADMIN.STAFF.LAB_OFFICE"];
-  static OFFICE_TYPE_SELECTION = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  static OFFICE_TYPE = ["AGENCY_ADMIN.STAFF.ALL_OFFICES", "AGENCY_ADMIN.STAFF.FIELD_OFFICE", "AGENCY_ADMIN.STAFF.MAIN_OFFICE"];
+  static OFFICE_TYPE_SELECTION = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
+
+  // Clock settings
+  static MONTH_MAX_NUMBER: number = 11;
+  static YEAR_MAX_NUMBER: number = 10;
+  static DURATION_LIST_WEEK = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+    31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+    41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+    51];
+  static DURATION_LIST_MONTH = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  static DURATION_LIST_YEAR = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
 
   static MODULE_NAME = [
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MINIMUM_PREP_ACTIONS",
@@ -136,6 +154,14 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RISK_MONITORING",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.COUNTRY_OFFICE_PROFILE",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING"
+  ];
+
+  static DETAILED_DURATION_TYPE = [
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.HOURS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.DAYS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.WEEKS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.MONTHS",
+    "AGENCY_ADMIN.SETTINGS.DURATION_TYPE.YEARS"
   ];
 
   static DURATION_TYPE = [
@@ -836,7 +862,6 @@ export class Constants {
     '#9012FE'
   ];
 
-  // TODO - Check when new users are added to the database, Make sure the path is correct
   static USER_PATHS = [
     ,
     'globalDirector',
@@ -851,6 +876,7 @@ export class Constants {
     'countryUser',
     'administratorAgency',
     ,
+    'partnerUser'
   ];
 
   // Nodes List, used for saving Notes
@@ -883,6 +909,12 @@ export class Constants {
   ];
 
   static UTC_ONE_DAY = 60 * 60 * 24;
+  static UTC_ONE_HOUR = 60 * 60;
+
+  //firebase error
+  static EMAIL_DUPLICATE_ERROR = "auth/email-already-in-use";
+
+  static INDICATOR_STATUS = ["RISK_MONITORING.INDICATOR_STATUS.GREEN","RISK_MONITORING.INDICATOR_STATUS.AMBER","RISK_MONITORING.INDICATOR_STATUS.RED"];
 }
 
 export enum FILE_SETTING {

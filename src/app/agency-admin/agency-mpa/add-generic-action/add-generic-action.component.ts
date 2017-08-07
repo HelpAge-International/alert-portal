@@ -6,6 +6,8 @@ import {ActionLevel, ActionType, GenericActionCategory} from "../../../utils/Enu
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {ModelDepartment} from "../../../model/department.model";
+import {UserService} from "../../../services/user.service";
 declare var jQuery: any;
 
 @Component({
@@ -17,7 +19,13 @@ declare var jQuery: any;
 export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private agencyId: string;
   private systemAdminUid: string;
+
+  private departments: ModelDepartment[] = [];
+  private departmentSelected: string = "0";
+
+  private actions: GenericToMandatedListModel[] = [];
 
   private errorInactive: boolean = true;
   private successInactive: boolean = true;
@@ -28,7 +36,6 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private alerts = {};
 
   private genericActions: Observable<any>;
-  private departments: Observable<any>;
 
   private ActionLevel = ActionLevel;
   private GenericActionCategory = GenericActionCategory;
@@ -47,41 +54,28 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private Category = Constants.CATEGORY;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
-  private categoriesList = [
-    GenericActionCategory.ALL,
-    GenericActionCategory.Category1,
-    GenericActionCategory.Category2,
-    GenericActionCategory.Category3,
-    GenericActionCategory.Category4,
-    GenericActionCategory.Category5,
-    GenericActionCategory.Category6,
-    GenericActionCategory.Category7,
-    GenericActionCategory.Category8,
-    GenericActionCategory.Category9,
-    GenericActionCategory.Category10
-  ];
+  private categoriesList = [GenericActionCategory.OfficeAdministration, GenericActionCategory.Finance, GenericActionCategory.ITFieldCommunications,
+    GenericActionCategory.Logistics, GenericActionCategory.CommunicationsMedia, GenericActionCategory.HumanResources, GenericActionCategory.DonorFundingReporting,
+    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes,  GenericActionCategory.EmergencyResponseTeamManagement];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this.departmentsPath = Constants.APP_STATUS + "/agency/" + this.uid + "/departments";
-        this.af.database.list(Constants.APP_STATUS + "/administratorAgency/" + this.uid + '/systemAdmin')
+        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
           .takeUntil(this.ngUnsubscribe)
-          .subscribe((systemAdminIds) => {
-          this.systemAdminUid = systemAdminIds[0].$key;
-          this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-            query: {
-              orderByChild: "type",
-              equalTo: ActionType.mandated
+          .subscribe((snap) => {
+            this.agencyId = snap.val().agencyId;
+            for (let x in snap.val().systemAdmin) {
+              this.systemAdminUid = x;
+              this.getDepartments();
+              this.getGenericActions();
             }
           });
-          this.getDepartments();
-        });
     });
   }
 
@@ -91,149 +85,72 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     this.actionsSelected = {};
   }
 
-  updateSelectedActions(genericAction) {
-
-    let notIntheList: boolean = this.actionsSelected[genericAction.$key] == null;
-
-    if (notIntheList) {
-      let newMandatePA: MandatedPreparednessAction = new MandatedPreparednessAction();
-      newMandatePA.task = genericAction.task;
-      newMandatePA.type = ActionType.mandated;
-      newMandatePA.level = genericAction.level;
-      newMandatePA.isActive = true;
-      newMandatePA.createdAt = genericAction.createdAt;
-      this.actionsSelected[genericAction.$key] = newMandatePA;
-    } else {
-      console.log("Remove from the list");
-      delete this.actionsSelected[genericAction.$key];
-    }
-  }
-
-  setDepartment(department, genericAction) {
-
-    if (department != "addNewDepartment") {
-      this.actionsSelected[genericAction.$key].department = department;
-    } else {
-      console.log("Add a department selected");
-    }
-  }
-
-  addSelectedActionsToAgency() {
-
+  protected addSelectedActionsToAgency() {
     if (this.validate()) {
-      let agencyActionsPath: string = Constants.APP_STATUS + '/action/' + this.uid;
-
-      for (var action in this.actionsSelected) {
-        this.af.database.list(agencyActionsPath).push(this.actionsSelected[action])
-          .then(_ => {
-            console.log('New mandated action added');
+      // Push them here! All Departments are valid
+      for (let x of this.actions) {
+        if (x.addNew) {
+          let newMandated = {
+            category: x.category,
+            level: x.level,
+            task: x.task,
+            type: x.type,
+            department: x.department,
+            createdAt: new Date().getTime()
+          };
+          this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId).push(newMandated).then(_ => {
             this.router.navigateByUrl("/agency-admin/agency-mpa");
           });
+        }
       }
     } else {
       this.showError();
     }
   }
 
-  addNewDepartment() {
-
+  public addNewDepartment() {
     if (this.validateNewDepartment()) {
-      this.af.database.object(this.departmentsPath + '/' + this.newDepartment).set(false).then(_ => {
-        console.log('New department added');
+      let dep = {
+        name: this.newDepartment
+      };
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").push(dep).then(_ => {
         jQuery("#add_department").modal("hide");
-        this.showDepartmentAlert(false);
-      })
+        this.departmentSelected = this.newDepartment;
+        this.newDepartment = '';
+      });
     } else {
-      this.showDepartmentAlert(true);
+      this.showAlert(true);
     }
   }
 
-  filter() {
 
-    if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
-      //no filter. show all
-      this.isFiltered = false;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
+  private getGenericActions() {
+    this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + this.systemAdminUid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          let x: GenericToMandatedListModel = new GenericToMandatedListModel();
+          x.id = snapshot.key;
+          x.level = snapshot.val().level;
+          x.category = snapshot.val().category;
+          x.task = snapshot.val().task;
+          x.type = snapshot.val().type;
+          this.actions.push(x);
+        });
       });
-    } else if (this.actionLevelSelected != GenericActionCategory.ALL && this.categorySelected == GenericActionCategory.ALL) {
-      //filter only with mpa
-      this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.level == this.actionLevelSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    } else if (this.actionLevelSelected == GenericActionCategory.ALL && this.categorySelected != GenericActionCategory.ALL) {
-      //filter only with apa
-      this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.category == this.categorySelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    } else {
-      // filter both action level and category
-      this.isFiltered = true;
-      this.genericActions = this.af.database.list(Constants.APP_STATUS + "/action/" + this.systemAdminUid, {
-        query: {
-          orderByChild: "type",
-          equalTo: ActionType.mandated
-        }
-      })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.level == this.actionLevelSelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        })
-        .map(list => {
-          let tempList = [];
-          for (let item of list) {
-            if (item.category == this.categorySelected) {
-              tempList.push(item);
-            }
-          }
-          return tempList;
-        });
-    }
   }
 
   private getDepartments() {
-
-    this.departments = this.af.database.list(this.departmentsPath)
-      .map(list => {
-        let tempList = [];
-        for (let item of list) {
-          tempList.push(item.$key);
-        }
-        return tempList;
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+        });
       });
   }
 
@@ -247,7 +164,6 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   }
 
   private showDepartmentAlert(error: boolean) {
-
     if (error) {
       this.newDepartmentErrorInactive = false;
       Observable.timer(Constants.ALERT_DURATION)
@@ -263,13 +179,20 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getNumOfSelectedActions() {
-
-    var num: number = 0;
-    for (var action in this.actionsSelected) {
-      num++;
+  private showAlert(error: boolean) {
+    if (error) {
+      this.newDepartmentErrorInactive = false;
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+        this.newDepartmentErrorInactive = true;
+      });
+    } else {
+      this.successInactive = false;
+      Observable.timer(Constants.ALERT_DURATION)
+        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+        this.successInactive = true;
+      });
     }
-    return num;
   }
 
   /**
@@ -277,14 +200,19 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
    * @returns {boolean}
    */
   private validate() {
-
     this.alerts = {};
-    if (this.getNumOfSelectedActions() == 0) {
+    let atLeastOneActionEnabled: boolean = false;
+    for (let x of this.actions) {
+      if (x.addNew) {
+        atLeastOneActionEnabled = true;
+      }
+    }
+    if (!atLeastOneActionEnabled) {
       this.errorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_ACTION_SELECTED";
       return false;
     }
-    for (let action in this.actionsSelected) {
-      if (this.actionsSelected[action].department == null) {
+    for (let x of this.actions) {
+      if (x.addNew && x.department == null) {
         this.errorMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR";
         return false;
       }
@@ -305,5 +233,20 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+}
+
+
+export class GenericToMandatedListModel {
+  public category: GenericActionCategory;
+  public level: number;
+  public task: string;
+  public type: number;
+  public id: string;
+  public department: string;
+  public addNew: boolean;
+
+  constructor() {
+    this.addNew = false;
   }
 }

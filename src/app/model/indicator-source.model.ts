@@ -18,7 +18,9 @@ export class IndicatorSourceModel extends BaseModel {
     }
 
     setData(source) {
-        this.link = source.link;
+        if (source.link != undefined)
+            this.link = source.link;
+
         this.name = source.name;
     }
 }

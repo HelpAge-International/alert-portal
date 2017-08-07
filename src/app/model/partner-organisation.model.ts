@@ -1,8 +1,8 @@
-import { BaseModel } from "./base.model";
-import { OperationAreaModel } from "./operation-area.model";
-import { AlertMessageModel } from "./alert-message.model";
-import { CustomerValidator } from "../utils/CustomValidator";
-import { NoteModel } from "./note.model";
+import {BaseModel} from "./base.model";
+import {OperationAreaModel} from "./operation-area.model";
+import {AlertMessageModel} from "./alert-message.model";
+import {CustomerValidator} from "../utils/CustomValidator";
+import {NoteModel} from "./note.model";
 
 export class PartnerOrganisationModel extends BaseModel {
   public id: string;
@@ -15,17 +15,19 @@ export class PartnerOrganisationModel extends BaseModel {
   public email: string;
   public position: string;
   public projects: PartnerOrganisationProjectModel[];
+  public projectsToDisplay: any[];
   public notes: Array<NoteModel>;
   public partners: any[];
   public isApproved: boolean;
   public externalPartner: boolean;
   public modifiedAt: number;
 
-  constructor(){
+  constructor() {
     super();
     this.projects = [new PartnerOrganisationProjectModel()];
     this.notes = [];
     this.partners = [];
+    //TODO need to update based on requirements
     this.isApproved = false;
     this.externalPartner = true;
   }
@@ -59,17 +61,17 @@ export class PartnerOrganisationModel extends BaseModel {
     if (!this.phone && !this.isExcluded('phone', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_PHONE');
     }
-    
+
     return null;
   }
-} 
+}
 export class PartnerOrganisationProjectModel extends BaseModel {
   public title: string;
   public endDate: number;
   public sector: any[];
   public operationAreas: OperationAreaModel[];
 
-  constructor(){
+  constructor() {
     super();
     this.operationAreas = [new OperationAreaModel()];
     this.sector = [];
@@ -84,6 +86,9 @@ export class PartnerOrganisationProjectModel extends BaseModel {
     }
     if (!this.endDate && !this.isExcluded('endDate', excludedFields)) {
       return new AlertMessageModel('ADD_PARTNER.NO_PROJECT_END_DATE');
+    }
+    if (this.endDate && this.endDate < new Date().getTime() && !this.isExcluded('endDate', excludedFields)) {
+      return new AlertMessageModel('ADD_PARTNER.PROJECT_END_DATE_IN_PAST');
     }
     return null;
   }

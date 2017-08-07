@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
-import {RxHelper} from '../../utils/RxHelper';
+import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
-import { MessageModel } from "../../model/message.model";
+import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {Router} from "@angular/router";
 
@@ -11,9 +11,9 @@ import {Router} from "@angular/router";
   templateUrl: './notification-badge.component.html',
   styleUrls: ['./notification-badge.component.css']
 })
-export class NotificationBadgeComponent implements OnInit {
+export class NotificationBadgeComponent implements OnInit, OnDestroy {
   private unreadMessages: MessageModel[];
-  
+
   private _USER_TYPE: string;
   private _countryId: string;
   private _agencyId: string;
@@ -42,7 +42,9 @@ export class NotificationBadgeComponent implements OnInit {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private _notificationService: NotificationService,
+              private af: AngularFire,
               private router: Router) {
+                this.unreadMessages = [];
   }
 
   ngOnInit() {
@@ -56,74 +58,154 @@ export class NotificationBadgeComponent implements OnInit {
   goToNotifications() {
     switch(this._USER_TYPE){
       case 'administratorAgency':
-        this._notificationService.setAgencyNotificationsAsRead(this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
-              });
+        let nodesAdministratorAgency = this._notificationService.getAgencyAdministratorNodes(this._agencyId);
+
+        let c1 = 1;
+        for (let node of nodesAdministratorAgency) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c1 == nodesAdministratorAgency.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
+            }else{
+              c1++;
+            }
+          });
+        }
         break;
       case 'administratorCountry':
-        this._notificationService.setCountryAdminNotificationsAsRead(this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
+        let nodesAdministratorCountry = this._notificationService.getCountryAdministratorNodes(this._agencyId, this._countryId, this._userId);
+
+        let c2 = 1;
+        for (let node of nodesAdministratorCountry) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c2 == nodesAdministratorCountry.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("country-admin/country-notifications");
+            }else{
+              c2++;
+            }
+          });
+        }
         break;
       case 'countryUser':
-        this._notificationService.setCountryUserNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("director/director-notifications");
-              });
+        let nodesCountryUser = this._notificationService.getCountryUserNodes(this._agencyId, this._countryId, this._userId);
+
+        let c3 = 1;
+        for (let node of nodesCountryUser) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c3 == nodesCountryUser.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("director/director-notifications");
+            }else{
+              c3++;
+            }
+          });
+        }
         break;
       case 'countryDirector':
-        this._notificationService.setCountryDirectorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
+        let nodesCountryDirector = this._notificationService.getCountryDirectorNodes(this._agencyId, this._countryId, this._userId);
+
+        let c4 = 1;
+        for (let node of nodesCountryDirector) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c4 == nodesCountryDirector.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("country-admin/country-notifications");
+            }else{
+              c4++;
+            }
+          });
+        }
         break;
       case 'regionDirector':
-        this._notificationService.setRegionalDirectorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("director/director-notifications");
-              });
+        let nodesRegionDirector = this._notificationService.getRegionDirectorNodes(this._agencyId, this._countryId, this._userId);
+
+        let c5 = 1;
+        for (let node of nodesRegionDirector) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c5 == nodesRegionDirector.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("director/director-notifications");
+            }else{
+              c5++;
+            }
+          });
+        }
         break;
       case 'globalDirector':
-        this._notificationService.setGlobalDirectorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("director/director-notifications");
-              });
+        let nodesGlobalDirector = this._notificationService.getGlobalDirectorNodes(this._agencyId, this._countryId, this._userId);
+
+        let c6 = 1;
+        for (let node of nodesGlobalDirector) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c6 == nodesGlobalDirector.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("director/director-notifications");
+            }else{
+              c6++;
+            }
+          });
+        }
         break;
       case 'globalUser':
-        this._notificationService.setGlobalUserNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("director/director-notifications");
-              });
+         let nodesGlobalUser = this._notificationService.getGlobalUserNodes(this._agencyId, this._countryId, this._userId);
+
+        let c7 = 1;
+        for (let node of nodesGlobalUser) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c7 == nodesGlobalUser.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("director/director-notifications");
+            }else{
+              c7++;
+            }
+          });
+        }
         break;
       case 'ertLeader':
-        this._notificationService.setERTLeadsNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
+        let nodesErtLeader = this._notificationService.getErtLeaderNodes(this._agencyId, this._countryId, this._userId);
+
+        let c8 = 1;
+        for (let node of nodesErtLeader) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c8 == nodesErtLeader.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("country-admin/country-notifications");
+            }else{
+              c8++;
+            }
+          });
+        }
         break;
       case 'ert':
-        this._notificationService.setERTNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("country-admin/country-notifications");
-              });
+        let nodesErt = this._notificationService.getErtNodes(this._agencyId, this._countryId, this._userId);
+
+        let c9 = 1;
+        for (let node of nodesErt) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c9 == nodesErt.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("country-admin/country-notifications");
+            }else{
+              c9++;
+            }
+          });
+        }
         break;
       case 'donor':
-        this._notificationService.setDonorNotificationsAsRead(this._userId, this._countryId, this._agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(() => {
-                this.router.navigateByUrl("donor-module/donor-notifications");
-              });
+        let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
+
+        let c10 = 1;
+        for (let node of nodesDonor) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(c10 == nodesDonor.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("donor-module/donor-notifications");
+            }else{
+              c10++;
+            }
+          });
+        }
         break;
     }
   }
@@ -132,73 +214,196 @@ export class NotificationBadgeComponent implements OnInit {
     if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
       switch(this._USER_TYPE){
         case 'administratorAgency':
-          this._notificationService.getAgencyNotifications(this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesAdministratorAgency = this._notificationService.getAgencyAdministratorNodes(this._agencyId);
+
+          for (let node of nodesAdministratorAgency) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'administratorCountry':
-          this._notificationService.getCountryAdminNotifications(this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesAdministratorCountry = this._notificationService.getCountryAdministratorNodes(this._agencyId, this._countryId, this._userId);
+
+          for (let node of nodesAdministratorCountry) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'countryUser':
-          this._notificationService.getCountryUserNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesCountryUser = this._notificationService.getCountryUserNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesCountryUser) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'countryDirector':
-          this._notificationService.getCountryDirectorNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesCountryDirector = this._notificationService.getCountryDirectorNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesCountryDirector) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'regionDirector':
-          this._notificationService.getRegionalDirectorNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesRegionDirector = this._notificationService.getRegionDirectorNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesRegionDirector) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'globalDirector':
-          this._notificationService.getGlobalDirectorNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesGlobalDirector = this._notificationService.getGlobalDirectorNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesGlobalDirector) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'globalUser':
-          this._notificationService.getGlobalUserNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesGlobalUser = this._notificationService.getGlobalUserNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesGlobalUser) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'ertLeader':
-          this._notificationService.getERTLeadsNotifications(this._userId, this._countryId, this._agencyId, true)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesErtLeader = this._notificationService.getErtLeaderNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesErtLeader) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'ert':
-          this._notificationService.getERTNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesErt = this._notificationService.getErtNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesErt) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
         case 'donor':
-          this._notificationService.getDonorNotifications(this._userId, this._countryId, this._agencyId, true)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(unreadMessages => {
-                  this.unreadMessages = unreadMessages;
+          let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
+          for (let node of nodesDonor) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+                list.forEach((x) => {
+                  if(x.$value === true) { // only unread messages
+                    this._notificationService.getNotificationMessage(x.$key)
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
+                  }
                 });
+              });
+          }
           break;
       }
     }

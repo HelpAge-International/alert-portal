@@ -22,19 +22,13 @@ export class CountryOfficeAddressModel extends BaseModel {
     if (!this.city && !this.isExcluded('city', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_CITY');
     }
-    if (!this.postCode && !this.isExcluded('postCode', excludedFields)) {
-      return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_POSTCODE');
-    }
     if (!this.phone && !this.isExcluded('phone', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_PHONE');
-    }
-    if (!this.email && !this.isExcluded('email', excludedFields)) {
-      return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_EMAIL');
     }
     if (this.location < 0 && !this.isExcluded('location', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_COUNTRY');
     }
-    if (!CustomerValidator.EmailValidator(this.email) && !this.isExcluded('email', excludedFields)) {
+    if (this.email && !CustomerValidator.EmailValidator(this.email) && !this.isExcluded('email', excludedFields)) {
       return new AlertMessageModel('GLOBAL.EMAIL_NOT_VALID');
     }
     return null;

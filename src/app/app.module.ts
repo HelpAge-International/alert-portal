@@ -161,7 +161,6 @@ import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-p
 import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
 import {DonorChangePasswordComponent} from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
-import {NewDonorPasswordComponent} from './donor-module/new-donor-password/new-donor-password.component';
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
 import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
@@ -169,39 +168,49 @@ import {TechnicalGuidanceComponent} from "./export-start-fund/technical-guidance
 import {GuidanceReportComponent} from "./export-start-fund/guidance-report/guidance-report.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TooltipComponent} from "./utils/tooltips/tooltip.component";
-import { TimeAgoPipe } from "./utils/pipes/time-ago.pipe";
-import { CountryNotificationsComponent } from "./country-admin/country-notifications/country-notifications.component";
+import {TimeAgoPipe} from "./utils/pipes/time-ago.pipe";
+import {CountryNotificationsComponent} from "./country-admin/country-notifications/country-notifications.component";
 import {ProjectActivityReportComponent} from "./export-start-fund/project-activity-report/project-activity-report.component";
 import {ReportingDatasheetComponent} from "./export-start-fund/reporting-datasheet/reporting-datasheet.component";
 import {ApplicationDatasheet} from "./export-start-fund/application-datasheet/application-datasheet.component";
 import {ExportProposalComponent} from "./export-proposal/export-proposal.component";
-import { AddEditSurgeCapacityComponent } from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
+import {AddEditSurgeCapacityComponent} from './country-admin/country-office-profile/office-capacity/add-edit-surge-capacity/add-edit-surge-capacity.component';
 import {OrderByPipe} from "./utils/pipes/orderby.pipe";
-import {PreparednessFilter} from "./utils/pipes/filter.pipe";
 import {NotificationBadgeComponent} from './commons/notification-badge/notification-badge.component';
 import {NotificationsComponent} from './commons/notifications/notifications.component';
 import {DonorNotificationsComponent} from './donor-module/donor-notifications/donor-notifications.component';
 import {DirectorNotificationsComponent} from './director/director-notifications/director-notifications.component';
 
-import { DashboardOverviewComponent } from './dashboard/dashboard-overview/dashboard-overview.component';
+import {DashboardOverviewComponent} from './dashboard/dashboard-overview/dashboard-overview.component';
+import {PrepActionService} from "./services/prepactions.service";
+import {SumPipe} from "./utils/pipes/sum.pipe";
+import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
+import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
+import { ActionsService } from "./services/actions.service";
+import { PartnerValidationComponent } from './commons/partner-validation/partner-validation.component';
+import {WindowRefService} from "./services/window-ref.service";
+import { AfterValidationComponent } from './commons/partner-validation/after-validation/after-validation.component';
+import { AccountSettingProfileComponent } from './commons/account-setting-profile/account-setting-profile.component';
+import { AccountSettingPasswordComponent } from './commons/account-setting-password/account-setting-password.component';
+import { DirectorAccountSettingsComponent } from './director/director-account-settings/director-account-settings.component';
 
 export function HttpLoaderFactory(http: Http) {
-    return new TranslateHttpLoader(http);
+  return new TranslateHttpLoader(http);
 }
 
 // Must export the config
 export const firebaseConfig = {
-    apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
-    authDomain: "alert-190fa.firebaseapp.com",
-    // authDomain: "test.alertplatform.co.uk",
-    databaseURL: "https://alert-190fa.firebaseio.com",
-    storageBucket: "alert-190fa.appspot.com",
-    messagingSenderId: "305491871378"
+  apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+  authDomain: "alert-190fa.firebaseapp.com",
+  // authDomain: "test.alertplatform.co.uk",
+  databaseURL: "https://alert-190fa.firebaseio.com",
+  storageBucket: "alert-190fa.appspot.com",
+  messagingSenderId: "305491871378"
 };
 
 const firebaseAuthConfig = {
-    provider: AuthProviders.Google,
-    method: AuthMethods.Redirect
+  provider: AuthProviders.Google,
+  method: AuthMethods.Redirect
 };
 
 @NgModule({
@@ -299,7 +308,6 @@ const firebaseAuthConfig = {
     AddPartnerOrganisationComponent,
     OrdinalPipe,
     OrderByPipe,
-    PreparednessFilter,
     StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,
@@ -318,7 +326,6 @@ const firebaseAuthConfig = {
     ExportStartFundComponent,
     DashboardSeasonalCalendarComponent,
     DashboardUpdateAlertLevelComponent,
-    CountryAgenciesComponent,
     ReviewResponsePlanComponent,
     FacetofaceMeetingRequestComponent,
     CountryStatisticsRibbonComponent,
@@ -339,13 +346,13 @@ const firebaseAuthConfig = {
     CountryOfficeProgrammeComponent,
     DonorListViewComponent,
     ReplacePipe,
+    SumPipe,
     ProjectNarrativeComponent,
     ProjectBudgetComponent,
     ProjectReportComponent,
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
-    NewDonorPasswordComponent,
     BudgetReportComponent,
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
@@ -363,7 +370,15 @@ const firebaseAuthConfig = {
     NotificationsComponent,
     DonorNotificationsComponent,
     DirectorNotificationsComponent,
-    DashboardOverviewComponent
+    DashboardOverviewComponent,
+    NewUserPasswordComponent,
+    CountryOverviewComponent,
+    CountryAgenciesComponent,
+    PartnerValidationComponent,
+    AfterValidationComponent,
+    AccountSettingProfileComponent,
+    AccountSettingPasswordComponent,
+    DirectorAccountSettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -389,21 +404,24 @@ const firebaseAuthConfig = {
     })
   ],
   providers: [
-              RxHelper,
-              Modal,
-              UserService,
-              SessionService,
-              CommonService,
-              SettingsService,
-              MessageService,
-              NotificationService,
-              NoteService,
-              EquipmentService,
-              CoordinationArrangementService,
-              AgencyService,
-              StockService,
-              PageControlService,
-              ContactService],
+    RxHelper,
+    Modal,
+    UserService,
+    SessionService,
+    CommonService,
+    SettingsService,
+    MessageService,
+    NotificationService,
+    PrepActionService,
+    NoteService,
+    EquipmentService,
+    CoordinationArrangementService,
+    AgencyService,
+    StockService,
+    PageControlService,
+    ContactService,
+    WindowRefService,
+    ActionsService],
   bootstrap: [AppComponent]
 })
 

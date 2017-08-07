@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType} from "../../../utils/Enums";
+import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
@@ -24,6 +24,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private tSkillsFilter: any = 0;
   private sSkillsFilter: any = 0;
   private officeFilter: any = 0;
+  private USER_TYPE = UserType;
 
   private responseStaffs: any[];
   private responseStaffsOrigin: any[];
@@ -62,7 +63,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
   private skillTypeList: number[] = [SkillType.Support, SkillType.Tech];
   private skillType = Constants.SKILL_TYPE;
-  private officeTypeList: number[] = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private officeTypeList: number[] = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
   private officeType = Constants.OFFICE_TYPE;
 
   private suportedSkills: any[] = [];
@@ -112,7 +113,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.agencyID = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
 
@@ -124,24 +125,22 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
             });
           } else {
-            this._getAgencyID().then(() => {
-              this._getCountryID().then(() => {
-                this._getTotalStaff();
-                this.getStaff();
-                this.getSurgeCapacity();
-                this._getCountryOfficeCapacity().then(() => {
-
-                });
-              });
-            });
+            this.agencyID = agencyId;
+            this.countryID = countryId;
+            // this._getAgencyID().then(() => {
+            //   this._getCountryID().then(() => {
+            this._getTotalStaff();
+            this.getStaff();
+            this.getSurgeCapacity();
+            this._getCountryOfficeCapacity();
+            // });
+            // });
           }
 
           this._getSkills();
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
-            console.log("permission matrix");
-            console.log(this.countryPermissionsMatrix);
           }));
         });
 
@@ -450,8 +449,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             }
           }
         }
-        console.log(this.suportedSkills);
-        console.log(this.techSkills);
       });
   }
 

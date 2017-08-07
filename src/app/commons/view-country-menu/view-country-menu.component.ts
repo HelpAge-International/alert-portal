@@ -4,11 +4,13 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {Countries} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
+import {AgencyService} from "../../services/agency-service.service";
 
 @Component({
   selector: 'app-view-country-menu',
   templateUrl: './view-country-menu.component.html',
-  styleUrls: ['./view-country-menu.component.css']
+  styleUrls: ['./view-country-menu.component.css'],
+  providers: [AgencyService]
 })
 export class ViewCountryMenuComponent implements OnInit, OnDestroy {
 
@@ -24,7 +26,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
   private countryId: string;
   private countryLocation: number = -1;
 
-  constructor(private route: ActivatedRoute, private userService: UserService, private router: Router) {
+  constructor(private route: ActivatedRoute, private userService: UserService, private agencyService: AgencyService) {
     this.menuMap.set("officeProfile", false);
     this.menuMap.set("risk", false);
     this.menuMap.set("preparedness", false);
@@ -48,6 +50,8 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
         }
         if (this.agencyId && this.countryId) {
           this.loadCountry(this.agencyId, this.countryId);
+          //TODO NEED CONTINUE ON MONDAY
+          // this.agencyService.getPrivacySettingForAgency(this.agencyId)
         }
       });
 
@@ -79,35 +83,35 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
     this.handleActiveClass(menu);
   }
 
-  viewMinAction() {
-    this.router.navigate(["/director/director-overview", {
-      "countryId": this.countryId,
-      "agencyId": this.agencyId,
-      "isViewing": true,
-      "from": "preparedness",
-      "preparednessType": "min"
-    }]);
-  }
-
-  viewAdvAction() {
-    this.router.navigate(["/director/director-overview", {
-      "countryId": this.countryId,
-      "agencyId": this.agencyId,
-      "isViewing": true,
-      "from": "preparedness",
-      "preparednessType": "adv"
-    }]);
-  }
-
-  viewActionBudget() {
-    this.router.navigate(["/director/director-overview", {
-      "countryId": this.countryId,
-      "agencyId": this.agencyId,
-      "isViewing": true,
-      "from": "preparedness",
-      "preparednessType": "budget"
-    }]);
-  }
+  // viewMinAction() {
+  //   this.router.navigate(["/director/director-overview", {
+  //     "countryId": this.countryId,
+  //     "agencyId": this.agencyId,
+  //     "isViewing": true,
+  //     "from": "preparedness",
+  //     "preparednessType": "min"
+  //   }]);
+  // }
+  //
+  // viewAdvAction() {
+  //   this.router.navigate(["/director/director-overview", {
+  //     "countryId": this.countryId,
+  //     "agencyId": this.agencyId,
+  //     "isViewing": true,
+  //     "from": "preparedness",
+  //     "preparednessType": "adv"
+  //   }]);
+  // }
+  //
+  // viewActionBudget() {
+  //   this.router.navigate(["/director/director-overview", {
+  //     "countryId": this.countryId,
+  //     "agencyId": this.agencyId,
+  //     "isViewing": true,
+  //     "from": "preparedness",
+  //     "preparednessType": "budget"
+  //   }]);
+  // }
 
 
   getCountryCodeFromLocation(location: number) {

@@ -30,6 +30,7 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
   private responsePlan: ResponsePlan = new ResponsePlan;
   private activityMap = new Map();
   private sectors: any[];
+  private memberAgencyName: string = '';
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -66,13 +67,27 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
               if (params["countryId"]) {
                 this.countryId = params["countryId"];
                 this.downloadResponsePlanData();
+                this.downloadAgencyData(usertype);
               }
             })
         } else {
           this.getCountryId().then(() => {
             this.downloadResponsePlanData();
+            this.downloadAgencyData(usertype);
           });
         }
+      });
+  }
+
+  private downloadAgencyData(userType){
+    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((agencyId) => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+          if(name != null){
+            this.memberAgencyName = name.$value;
+          }
+        });
       });
   }
 
@@ -110,16 +125,19 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
 
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        let moreData: {}[] = [];
-        Object.keys(activitiesData).forEach(key => {
-          let beneficiary = [];
-          activitiesData[key]["beneficiary"].forEach(item => {
-            beneficiary.push(item);
+        if(activitiesData)
+        {
+          let moreData: {}[] = [];
+          Object.keys(activitiesData).forEach(key => {
+            let beneficiary = [];
+            activitiesData[key]["beneficiary"].forEach(item => {
+              beneficiary.push(item);
+            });
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            moreData.push(model);
+            this.activityMap.set(Number(sectorKey), moreData);
           });
-          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-          moreData.push(model);
-          this.activityMap.set(Number(sectorKey), moreData);
-        });
+        }
       });
     }
   }

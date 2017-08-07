@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors} from "../../../utils/Enums";
+import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {UserService} from "../../../services/user.service";
@@ -38,6 +38,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   private coordinationArrangements: CoordinationArrangementModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private userType: UserType;
 
   // Helpers
   constructor(private pageControl: PageControlService, private _userService: UserService,
@@ -67,10 +68,11 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
+          this.userType = userType;
 
-          if (this.countryId && this.agencyId) {
+          if (this.countryId && this.agencyId && this.isViewing) {
             this._agencyService.getAgency(this.agencyId)
               .map(agency => {
                 return agency as ModelAgency;
@@ -84,29 +86,36 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
                   });
               });
           } else {
-            this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-              this.countryId = countryAdminUser.countryId;
-              this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
+            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(agencyId => {
+            //     this.agencyId = agencyId;
+            //
+            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
+            //       .takeUntil(this.ngUnsubscribe)
+            //       .subscribe(countryId => {
+            //         this.countryId = countryId;
+            this.countryId = countryId;
+            this.agencyId = agencyId;
+            this._agencyService.getAgency(this.agencyId)
+              .map(agency => {
+                return agency as ModelAgency;
+              })
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                this.agency = agency;
 
-              this._agencyService.getAgency(this.agencyId)
-                .map(agency => {
-                  return agency as ModelAgency;
-                })
-                .subscribe(agency => {
-                  this.agency = agency;
-
-                  this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                    .subscribe(coordinationArrangements => {
-                      this.coordinationArrangements = coordinationArrangements;
-                    });
-                });
-            });
+                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(coordinationArrangements => {
+                    this.coordinationArrangements = coordinationArrangements;
+                  });
+              });
+            //     });
+            // });
           }
         });
-
       });
-
-
   }
 
   goBack() {

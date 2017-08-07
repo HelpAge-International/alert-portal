@@ -16,6 +16,7 @@ import {
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -36,9 +37,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
-  private agencyAdminUid: string;
+  private agencyId: string;
+  private systemId: string;
+  private actionsOverdue = [];
   private actionsToday = [];
   private actionsThisWeek = [];
+  private indicatorsOverdue = [];
   private indicatorsToday = [];
   private indicatorsThisWeek = [];
 
@@ -63,7 +67,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private responsePlansForApproval: Observable<any[]>;
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
-
+  private redAlerts: Observable<any[]>;
+  private isRedAlert: boolean;
+  private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
   // TODO - New Subscriptions - Remove RxHelper and add Subject
@@ -79,35 +85,76 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      console.log(user);
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-      this.NODE_TO_CHECK = this.userPaths[userType];
-      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
-        this.moduleSettings = isEnabled;
-      }));
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      this.systemId = systemId;
+      this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+
       if (userType == UserType.CountryDirector) {
         this.DashboardTypeUsed = DashboardType.director;
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
-      this.loadData();
+      if (this.userType == UserType.PartnerUser) {
+        this.agencyId = agencyId;
+        this.countryId = countryId;
+        this.loadDataForPartnerUser(agencyId, countryId);
+      } else {
+        this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+        this.loadData();
+      }
+
+      PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
+        this.moduleSettings = isEnabled;
+        console.log(this.moduleSettings);
+      }));
 
       // Load in the country permissions
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
         this.countryPermissionMatrix = isEnabled;
-        console.log(this.countryPermissionMatrix);
       }));
     });
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   console.log(userType);
+    //   this.uid = user.uid;
+    //   this.userType = userType;
+    //   console.log(this.userType)
+    //   this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+    //   console.log(this.NODE_TO_CHECK);
+    //   PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[this.userType], (isEnabled => {
+    //     this.moduleSettings = isEnabled;
+    //   }));
+    //   if (userType == UserType.CountryDirector) {
+    //     this.DashboardTypeUsed = DashboardType.director;
+    //   } else {
+    //     this.DashboardTypeUsed = DashboardType.default;
+    //   }
+    //   if (this.userType == UserType.PartnerUser) {
+    //     this.loadDataForPartnerUser(null, null);
+    //     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (auth, userType, countryId, agencyId, systemId) => {
+    //       console.log("******")
+    //       console.log(agencyId)
+    //       console.log(countryId)
+    //       console.log("******")
+    //     });
+    //   } else {
+    //     this.loadData();
+    //   }
+    //
+    //   // Load in the country permissions
+    //   PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
+    //     this.countryPermissionMatrix = isEnabled;
+    //   }));
+    // });
   }
 
   // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
   }
 
   getCSSHazard(hazard: number) {
@@ -136,6 +183,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getAgencyID().then(() => {
       this.getCountryData();
     });
+    this.userService.getSystemAdminId(this.NODE_TO_CHECK, this.uid)
+      .subscribe(systemId => { this.systemId = systemId;})
+  }
+
+  private loadDataForPartnerUser(agencyId, countryId) {
+    if (agencyId != null && countryId != null) {
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      this.prepareData();
+    } else {
+      this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountries => {
+          this.agencyId = agencyCountries[0].$key;
+          this.countryId = agencyCountries[0].$value;
+          this.prepareData();
+        });
+    }
+  }
+
+  private prepareData() {
+    if (this.DashboardTypeUsed == DashboardType.default) {
+      this.getAllSeasonsForCountryId(this.countryId);
+    }
+    this.getAlerts();
+    this.getCountryContextIndicators();
+    this.getHazards();
+    this.initData();
+    this.getCountryData();
   }
 
   public getAllSeasonsForCountryId(countryId: string) {
@@ -192,7 +268,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.af.database.list(Constants.APP_STATUS + "/" + this.NODE_TO_CHECK + "/" + this.uid + '/agencyAdmin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agencyIds: any) => {
-          this.agencyAdminUid = agencyIds[0].$key ? agencyIds[0].$key : "";
+          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
           res(true);
         });
     });
@@ -206,17 +282,56 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
+
+        // Display APA only if there is a red alert
+        actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
+
+        this.actionsOverdue = [];
         this.actionsToday = [];
         this.actionsThisWeek = [];
+        this.actionsOverdue = actions.filter(action => action.dueDate < startOfToday);
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
+
+        for (let x of this.actionsOverdue) {
+          this.updateTaskDataForActions(x.$key, x, (action) => {
+            x.task = action.task;
+            x.level = action.level;
+          });
+        }
+
+        for (let x of this.actionsToday) {
+          this.updateTaskDataForActions(x.$key, x, (action) => {
+            x.task = action.task;
+            x.level = action.level;
+          });
+        }
+        for (let x of this.actionsThisWeek) {
+          this.updateTaskDataForActions(x.$key, x, (action) => {
+            x.task = action.task;
+            x.level = action.level;
+          });
+        }
       });
 
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
+        let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
+        if (overdueIndicators.length > 0) {
+          overdueIndicators.forEach(indicator => {
+            if (this.actionService.isExist(indicator.$key, this.indicatorsOverdue)) {
+              let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsOverdue);
+              if (index != -1) {
+                this.indicatorsOverdue[index] = indicator;
+              }
+            } else {
+              this.indicatorsOverdue.push(indicator);
+            }
+          });
+        }
         if (dayIndicators.length > 0) {
           dayIndicators.forEach(indicator => {
             if (this.actionService.isExist(indicator.$key, this.indicatorsToday)) {
@@ -245,15 +360,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     //TODO change temp id to actual uid
-    this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid);
+    if (this.userType == UserType.PartnerUser) {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+    } else if (this.userType == UserType.CountryDirector) {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
+    }
     this.responsePlansForApproval.takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.approvalPlans = plans
     });
   }
 
+  private updateTaskDataForActions(actionId: string, action: any, fun: (action) => void) {
+    let node: string = "";
+    let typeId: string = "";
+    if (action.type == ActionType.mandated) {
+      node = "actionMandated";
+      typeId = this.agencyId;
+    }
+    if (action.type == ActionType.chs) {
+      node = "actionCHS";
+      typeId = this.systemId;
+    }
+    this.af.database.object(Constants.APP_STATUS + "/" + node + "/" + typeId + "/" + actionId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        fun(snap.val());
+      });
+  }
+
   private getCountryData() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminUid + '/' + this.countryId + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
           this.countryLocation = location.$value;
@@ -267,13 +404,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.DashboardTypeUsed == DashboardType.default) {
       console.log(this.countryId);
       this.alerts = this.actionService.getAlerts(this.countryId);
+
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
       this.amberAlerts = this.actionService.getAlerts(this.countryId)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
         });
+      this.redAlerts = this.actionService.getRedAlerts(this.countryId)
+        .map(alerts => {
+          return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+        });
     }
+    this.actionService.getRedAlerts(this.countryId)
+    .subscribe(alerts =>
+    {
+      alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+      this.isRedAlert =  alerts.length > 0;
+    });
+  }
+
+  showAffectedAreasForAlert(affectedAreas) {
+    this.affectedAreasToShow = affectedAreas;
+    jQuery("#view-areas").modal("show");
   }
 
   shouldShow(level: number, action: number) {
@@ -330,6 +483,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.actionService.getActionTitle(action);
   }
 
+  getCHSActionTask(action) {
+    if (action.type == ActionType.chs) {
+      this.actionService.getCHSActionTask(action, this.systemId)
+        .subscribe(task => { action.task = task; })
+    }
+  }
+
   getIndicatorName(indicator): string {
     return this.actionService.getIndicatorTitle(indicator);
   }
@@ -350,7 +510,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlert(alertId) {
-    //TODO need to change back to uid!!
     this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
   }
 
@@ -370,8 +529,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // this.router.navigateByUrl("/dashboard/facetoface-meeting-request");
     this.router.navigate(["/dashboard/facetoface-meeting-request", {
       countryId: this.countryId,
-      agencyId: this.agencyAdminUid
+      agencyId: this.agencyId
     }]);
+  }
+
+  requestAgencyPartner(agency) {
+    console.log("called from dashboard");
+    console.log(agency);
+    this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
   private navigateToLogin() {

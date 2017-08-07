@@ -24,7 +24,7 @@
       <div class="col-lg-3 col-md-4">
         <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
           <option value="allDepartments">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
-          <option *ngFor="let department of departments" [value]="department">{{department}}
+          <option *ngFor="let department of departments" [value]="department.id">{{department.name}}
           </option>
         </select>
       </div>
@@ -69,7 +69,7 @@
         <div *ngFor="let staff of office?.staffs" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
           <div class="col-lg-2">{{getStaffName(staff.id)}}</div>
-          <div class="col-lg-2">{{staff.department}}</div>
+          <div class="col-lg-2">{{departmentMap.get(staff.department)}}</div>
           <div class="col-lg-2">{{USER_TYPE[staff.userType] | translate}}</div>
           <div class="col-lg-2">{{OFFICE_TYPE[staff.officeType] | translate}}</div>
           <div class="col-lg-2 col-md-2 additional-info">
@@ -154,7 +154,7 @@
         <div *ngFor="let globalUser of globalUsers" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
           <div class="col-lg-2">{{getStaffName(globalUser.$key)}}</div>
-          <div class="col-lg-2">{{globalUser.department}}</div>
+          <div class="col-lg-2">{{departmentMap.get(globalUser.department)}}</div>
           <div class="col-lg-2">{{USER_TYPE[globalUser.userType] | translate}}</div>
           <div class="col-lg-2">{{OFFICE_TYPE[globalUser.officeType] | translate}}</div>
           <div class="col-lg-2 col-md-2 additional-info">

@@ -35,6 +35,8 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
   private planLeadName: string = '';
   private planLeadEmail: string = '';
   private planLeadPhone: string = '';
+  private planLeadPosition: string = '';
+  private memberAgencyName: string = '';
   private partnersList: string[] = [];
   private sourcePlanId: number;
   private SourcePlan = SourcePlan;
@@ -83,13 +85,27 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
               if (params["countryId"]) {
                 this.countryId = params["countryId"];
                 this.downloadResponsePlanData();
+                this.downloadAgencyData(usertype);
               }
             })
         } else {
           this.getCountryId().then(() => {
             this.downloadResponsePlanData();
+            this.downloadAgencyData(usertype);
           });
         }
+      });
+  }
+
+  private downloadAgencyData(userType){
+    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((agencyId) => {
+        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+          if(name != null){
+            this.memberAgencyName = name.$value;
+          }
+        });
       });
   }
 
@@ -115,11 +131,11 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
           responsePlan.sectorsRelatedTo.forEach(sector => {
             this.sectorsRelatedToMap.set(sector, true);
           });
-
-          this.bindProjectLeadData(responsePlan);
-          this.bindPartnersData(responsePlan);
-          this.bindSourcePlanData(responsePlan);
         }
+
+        this.bindProjectLeadData(responsePlan);
+        this.bindPartnersData(responsePlan);
+        this.bindSourcePlanData(responsePlan);
       });
   }
 
@@ -128,10 +144,15 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
       this.userService.getUser(responsePlan.planLead)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          console.log(user);
-          this.planLeadName = user.title + " " + user.firstName + " " + user.lastName;
+          this.planLeadName = user.firstName + " " + user.lastName;
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
+
+          this.af.database.object(Constants.APP_STATUS+ "/staff/"+this.countryId+"/"+user.id+"/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if(position != null){
+              this.planLeadPosition = position.$value;
+            }
+          });
         });
     }
   }

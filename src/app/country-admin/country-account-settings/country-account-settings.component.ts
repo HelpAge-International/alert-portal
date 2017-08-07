@@ -1,5 +1,5 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
@@ -8,6 +8,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {DisplayError} from "../../errors/display.error";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {FirebaseAuthState} from "angularfire2";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -28,6 +29,7 @@ export class CountryAccountSettingsComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
   private userPublic: ModelUserPublic;
+  authState: FirebaseAuthState;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -37,8 +39,9 @@ export class CountryAccountSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+      this.uid = auth.auth.uid;
+      this.authState = auth;
 
       this._userService.getUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(userPublic => {
         if (userPublic.id) {
@@ -56,24 +59,28 @@ export class CountryAccountSettingsComponent implements OnInit, OnDestroy {
   }
 
   validateForm(): boolean {
-    const excludedFields = ["phone", "city"];
+    console.log("validateForm");
+    const excludedFields = ["phone", "city", "title"];
     this.alertMessage = this.userPublic.validate(excludedFields);
 
     return !this.alertMessage;
   }
 
   submit() {
-    this._userService.saveUserPublic(this.userPublic)
-      .then(() => {
-        this.alertMessage = new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE', AlertMessageType.Success);
-      })
-      .catch(err => {
-        if (err instanceof DisplayError) {
-          this.alertMessage = new AlertMessageModel(err.message);
-        } else {
-          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-        }
-      });
+    console.log("submit");
+    if (this.validateForm()) {
+      this._userService.saveUserPublic(this.userPublic, this.authState)
+        .then(() => {
+          this.alertMessage = new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE', AlertMessageType.Success);
+        })
+        .catch(err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
+    }
   }
 
   goBack() {

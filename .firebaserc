@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "alert-190fa"
+    "default": "alert-190fa",
+    "uat-2": "alert-uat-2"
   }
 }

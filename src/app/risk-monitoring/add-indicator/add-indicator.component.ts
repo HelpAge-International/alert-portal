@@ -1,7 +1,14 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
-import {AlertLevels, GeoLocation, Countries, DurationType, HazardScenario, AlertMessageType} from "../../utils/Enums";
+import {
+  AlertLevels,
+  AlertMessageType,
+  DetailedDurationType,
+  GeoLocation,
+  HazardScenario,
+  UserType
+} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -15,6 +22,10 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {MessageModel} from "../../model/message.model";
+import {NotificationService} from "../../services/notification.service";
+import {TranslateService} from "@ngx-translate/core";
+
 declare var jQuery: any;
 
 @Component({
@@ -35,14 +46,15 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   public countryID: string;
 
   public indicatorData: any;
+  public oldIndicatorData;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
   private alertImages = Constants.ALERT_IMAGES;
   private alertLevelsList: number[] = [AlertLevels.Green, AlertLevels.Amber, AlertLevels.Red];
 
-  private durationType = Constants.DURATION_TYPE;
-  private durationTypeList: number[] = [DurationType.Week, DurationType.Month, DurationType.Year];
+  private durationType = Constants.DETAILED_DURATION_TYPE;
+  private durationTypeList: number[] = [DetailedDurationType.Hour, DetailedDurationType.Day, DetailedDurationType.Week, DetailedDurationType.Month, DetailedDurationType.Year];
 
   private geoLocation = Constants.GEO_LOCATION;
   private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
@@ -93,7 +105,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private url: string;
   private hazards: Array<any> = [];
   private hazardsObject: any = {};
-
+  private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private copyCountryId: string;
@@ -110,7 +122,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private storage: LocalStorageService,
               private userService: UserService,
-              private _location: Location) {
+              private _location: Location,
+              private _translate: TranslateService,
+              private _notificationService: NotificationService) {
     this.initIndicatorData();
   }
 
@@ -152,25 +166,25 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 
-      });
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          this.countryID = countryId;
+          this.agencyId = agencyId;
 
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.UserType = userType;
+          this._getHazards();
+          this.getUsersForAssign();
+          this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
 
-      this.getCountryID().then(() => {
-        this._getHazards();
-        this.getUsersForAssign();
-      });
-
-      // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(content => {
-          this.countryLevelsValues = content;
-          err => console.log(err);
+          // get the country levels values
+          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
         });
-    });
+      });
   }
 
   private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string, copyHazardId: string) {
@@ -212,42 +226,38 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         }
 
         this.hazardID = params['hazardID'];
+        console.log(this.hazardID);
 
         if (params['indicatorID']) {
           this.isEdit = true;
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
 
-          this.af.auth.takeUntil(this.ngUnsubscribe).subscribe(auth => {
-            if (auth) {
-              this.uid = auth.uid;
-              this.userService.getUserType(this.uid)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(userType => {
-                  this.UserType = userType;
-
-                  this.getCountryID().then(() => {
-                    this._getIndicator(this.hazardID, this.indicatorID);
-                  });
-                });
-
+          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            if (user) {
+              this.uid = user.uid;
+              this.UserType = userType;
+              this.countryID = countryId;
+              console.log(this.countryID)
+              this._getIndicator(this.hazardID, this.indicatorID);
             } else {
               this.navigateToLogin();
             }
           });
-
         } else {
           this.addAnotherSource();
           this.addAnotherLocation();
           this.addIndicatorTrigger();
         }
-
       });
   }
 
   stateGeoLocation(event: any) {
     var geoLocation = parseInt(event.target.value);
     this.indicatorData.geoLocation = geoLocation;
+    if (geoLocation == GeoLocation.subnational && this.indicatorData.affectedLocation.length == 0) {
+      this.addAnotherLocation();
+    }
   }
 
 
@@ -274,15 +284,40 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   getUsersForAssign() {
-    /* TODO if user ERT OR Partner, assign only me */
-    this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: any) => {
-      for (let userID in data) {
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-          var userToPush = {userID: userID, firstName: user.firstName};
-          this.usersForAssign.push(userToPush);
+    if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
         });
-      }
-    });
+    } else {
+      //Obtaining the country admin data
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+        if (data.adminId) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
+
+      //Obtaining other staff data
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+        for (let userID in data) {
+          if (!userID.startsWith('$')) {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+          }
+        }
+      });
+    }
   }
 
   showDeleteDialog(modalId) {
@@ -315,6 +350,20 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         if (!this.indicatorData.assignee) {
           this.indicatorData.assignee = null;
         }
+
+        //clean up locations
+        this.indicatorData.affectedLocation.forEach(location => {
+          if (!location.level1) {
+            location.level1 = null;
+          }
+          if (!location.level2) {
+            location.level2 = null;
+          }
+        });
+        if (this.indicatorData.geoLocation == GeoLocation.national && this.indicatorData.affectedLocation) {
+          this.indicatorData.affectedLocation = null;
+        }
+
         var dataToSave = this.indicatorData;
 
         var urlToPush;
@@ -322,18 +371,26 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
         if (this.hazardID == 'countryContext') {
           urlToPush = Constants.APP_STATUS + '/indicator/' + this.countryID;
-          ;
           urlToEdit = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + this.indicatorID;
-          ;
         } else {
           urlToPush = Constants.APP_STATUS + '/indicator/' + this.hazardID;
           urlToEdit = Constants.APP_STATUS + '/indicator/' + this.hazardID + '/' + this.indicatorID;
         }
-        console.log(dataToSave);
+
         if (!this.isEdit) {
           this.af.database.list(urlToPush)
             .push(dataToSave)
             .then(() => {
+              if (dataToSave.assignee) {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
+                notification.time = new Date().getTime();
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                });
+              }
+
               if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
                 this.router.navigate(["/dashboard/dashboard-overview", {
                   "countryId": this.copyCountryId,
@@ -356,9 +413,19 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           });
         } else {
           delete dataToSave.id;
+          console.log(dataToSave);
           this.af.database.object(urlToEdit)
-            .set(dataToSave)
+            .update(dataToSave)
             .then(() => {
+              if (dataToSave.assignee && dataToSave.assignee != this.oldIndicatorData.assignee) {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
+                notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
+                notification.time = new Date().getTime();
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                });
+              }
               this.backToRiskHome();
               // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_UPDATE_INDICATOR', AlertMessageType.Success);
               // return true;
@@ -382,7 +449,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           "systemId": this.copySystemId,
           "from": "risk",
           "canCopy": true,
-          "agencyOverview":this.agencyOverview
+          "agencyOverview": this.agencyOverview
         }]);
       } else {
         this.router.navigate(["/dashboard/dashboard-overview", {
@@ -430,7 +497,13 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _deleteIndicator() {
     jQuery("#delete-indicator").modal("hide");
-    this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.hazardID + "/" + this.indicatorID).set(null)
+    let path = "";
+    if (this.hazardID == "countryContext") {
+      path = Constants.APP_STATUS + "/indicator/" + this.countryID + "/" + this.indicatorID;
+    } else {
+      path = Constants.APP_STATUS + "/indicator/" + this.hazardID + "/" + this.indicatorID;
+    }
+    this.af.database.object(path).set(null)
       .then(() => {
         this.router.navigateByUrl("/risk-monitoring");
       })
@@ -450,8 +523,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       this.url = Constants.APP_STATUS + "/indicator/" + hazardID + "/" + indicatorID;
     }
 
-    this.af.database.object(this.url).subscribe((indicator: any) => {
+    console.log(this.url);
+
+    this.af.database.object(this.url).takeUntil(this.ngUnsubscribe).subscribe((indicator: any) => {
       if (indicator.$value === null) {
+        console.log(indicator)
         this.router.navigate(['/risk-monitoring']);
         return false;
       }
@@ -530,7 +606,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       excludeFields.push("level1", "level2");
     } else if (countryLevel1Exists && operationArea.level1
       && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
-      || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+        || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
       excludeFields.push("level2");
     }
     this.alertMessage = operationArea.validate(excludeFields);
@@ -544,17 +620,24 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     var CurrentDate = new Date();
     var currentYear = new Date().getFullYear();
 
+    var hour = 3600;
     var day = 86400;
     var week = 604800;
 
-    if (durationType == 0) {
+    if (durationType == DetailedDurationType.Hour) {
+      var differenceTime = frequencyValue * hour;
+    } else if (durationType == DetailedDurationType.Day) {
+      var differenceTime = frequencyValue * day;
+    } else if (durationType == DetailedDurationType.Week) {
       var differenceTime = frequencyValue * week;
-    } else if (durationType == 1) {
+    } else if (durationType == DetailedDurationType.Month) {
       var resultDate = CurrentDate.setMonth(CurrentDate.getMonth() + frequencyValue);
       var differenceTime = resultDate - currentUnixTime;
-    } else if (durationType == 2) {
+    } else if (durationType == DetailedDurationType.Year) {
       differenceTime = this._getDifferenceTimeByYear(frequencyValue);
     }
+
+    console.log(currentUnixTime + differenceTime);
 
     var dueDate = currentUnixTime + differenceTime;
     return dueDate;
@@ -608,26 +691,18 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   back() {
     if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
+      let headers = {
+        "countryId": this.copyCountryId,
+        "isViewing": true,
+        "agencyId": this.copyAgencyId,
+        "systemId": this.copySystemId,
+        "from": "risk",
+        "canCopy": true
+      };
       if (this.agencyOverview) {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": this.copyCountryId,
-          "isViewing": true,
-          "agencyId": this.copyAgencyId,
-          "systemId": this.copySystemId,
-          "from": "risk",
-          "canCopy": true,
-          "agencyOverview":this.agencyOverview
-        }]);
-      } else {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": this.copyCountryId,
-          "isViewing": true,
-          "agencyId": this.copyAgencyId,
-          "systemId": this.copySystemId,
-          "from": "risk",
-          "canCopy": true
-        }]);
+        headers["agencyOverview"] = this.agencyOverview;
       }
+      this.router.navigate(["/dashboard/dashboard-overview", headers]);
     } else {
       this.backToRiskHome();
     }

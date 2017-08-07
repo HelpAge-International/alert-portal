@@ -28,29 +28,44 @@
       </div>
     </div>
 
-
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHAT" |
-      translate}}</h6></div>
+      translate}}</h6>
+      <tooltip 
+      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT1.LEVEL1'"
+      ></tooltip>
+      </div>
     <div class="row">
-      <textarea class="col-sm-7" rows="5" type="text" placeholder="Please enter"
+      <textarea class="col-sm-7" rows="5" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                 [(ngModel)]="programme.what"></textarea>
     </div>
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
-      translate}}</h6></div>
+      translate}}</h6>
+       <tooltip 
+      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT2.LEVEL1'"
+      ></tooltip>
+      </div>
     <div class="row">
-      <input class="col-sm-4" type="text" placeholder="Please enter" [(ngModel)]="programme.where">
+      <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.where">
     </div>
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
-      translate}}</h6></div>
+      translate}}</h6>
+       <tooltip 
+      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT3.LEVEL1'"
+      ></tooltip>
+      </div>
     <div class="row">
-      <input class="col-sm-4" type="text" placeholder="Please enter" [(ngModel)]="programme.toWho">
+      <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.toWho">
     </div>
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" |
-      translate}}</h6></div>
+      translate}}</h6>
+       <tooltip 
+      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"
+      ></tooltip>
+      </div>
     <div class="row">
       <div class="col-sm-3 padding-left-none">
         <select class="form-control" id="select1" (change)="setMonth($event)" [(ngModel)]="when['month']">

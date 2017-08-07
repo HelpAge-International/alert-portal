@@ -38,10 +38,10 @@
              aria-controls="collapseOne">
           <div class="row">
             <div class="col-lg-4 col-sm-4">
-              <div class="risk-icon__components">
+              <div class="Icon">
                 <div
-                  class="Icon--md Icon__circle Icon__country--{{Countries[countryLocation]}}">
-                </div>
+                  class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{Countries[countryLocation]}}"
+                  style="float:left"></div>
               </div>
 
               <h4>{{"RISK_MONITORING.MAIN_PAGE.COUNTRY_CONTEXT" | translate}}</h4></div>
@@ -56,12 +56,12 @@
           </div>
         </div>
 
-        <!-------------collapsible content Country Context Start------------->
+        <!-- collapsible content Country Context Start -->
         <div class="Accordion__Content collapse" id="collapseOne" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a *ngIf="indicatorsCC.length > 0" href="javascript:void(0)" data-toggle="modal"
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard">
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
@@ -72,7 +72,8 @@
             </div>
 
             <div *ngIf="indicatorsCC && indicatorsCC.length > 0">
-              <div class="indicators-to-hazards" *ngFor="let indicatorC of indicatorsCC; let indicatorKey = index;">
+              <div class="indicators-to-hazards" *ngFor="let indicatorC of indicatorsCC; let indicatorKey = index;"
+                   id="indicators-to-hazards_CC_{{indicatorKey}}">
                 <div class="edit__wrap--risk row Small-spaced align-items-center Header">
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
@@ -110,27 +111,74 @@
                   <div class="" *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
-                    <div class="btn btn-primary">{{indicatorC.trigger[0].triggerValue}}</div>
+                    <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">
+                      {{indicatorC.trigger[0].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                       {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
-                    <div class="btn btn-amber">{{indicatorC.trigger[1].triggerValue}}</div>
+                    <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">
+                      {{indicatorC.trigger[1].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                       {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
-                    <div class="btn btn-red">{{indicatorC.trigger[2].triggerValue}}
+                    <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">
+                      {{indicatorC.trigger[2].triggerValue}}
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
                       {{durationType[indicatorC.trigger[2].durationType] | translate | lowercase}}</p>
                   </div>
+
+                  <!--Info sources & log-->
+                  <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
+                    <div class="row">
+
+                      <div class="col-sm-5"></div>
+                      <div class="col-sm-4"><img data-toggle="collapse"
+                                                 attr.data-parent="#indicators-to-hazards_CC_{{indicatorKey}}"
+                                                 style="cursor:pointer;"
+                                                 attr.href="#{{'infoTooltipCC_'+indicatorKey}}"
+                                                 aria-expanded="true"
+                                                 attr.aria-controls="#{{'infoTooltipCC_'+indicatorKey}}"
+                                                 src="assets/images/icons/info_source.svg"></div>
+                      <div class="col-sm-2">
+                        <div data-toggle="collapse" style="cursor:pointer;"
+                             attr.data-parent="#indicators-to-hazards_CC_{{indicatorKey}}"
+                             attr.href="#{{'tooltipLogCC_'+indicatorKey}}"
+                             aria-expanded="true"
+                             attr.aria-controls="{{'tooltipLogCC_'+indicatorKey}}" class="log_bubble"><img
+                          src="assets/images/icons/log_bubble.svg">
+                          <p>{{indicatorC.logs && indicatorC.logs.length ? indicatorC.logs.length : 0}}</p></div>
+                      </div>
+
+                      <div class="info-log__wrap--risk row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-5 panel"><p style="cursor:pointer;" data-toggle="collapse"
+                                                       attr.data-parent="#indicators-to-hazards_CC_{{indicatorKey}}"
+                                                       attr.href="#{{'infoTooltipCC_'+indicatorKey}}"
+                                                       aria-expanded="true"
+                                                       attr.aria-controls="#{{'infoTooltipCC_'+indicatorKey}}">
+                          {{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p></div>
+                        <div class="col-sm-2 panel"><p style="cursor:pointer;" data-toggle="collapse"
+                                                       attr.data-parent="#indicators-to-hazards_CC_{{indicatorKey}}"
+                                                       attr.href="#{{'tooltipLogCC_'+indicatorKey}}"
+                                                       aria-expanded="true"
+                                                       attr.aria-controls="{{'tooltipLogCC_'+indicatorKey}}"
+                                                       class="Flex-right">
+                          {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</p></div>
+                      </div>
+                    </div>
+                  </div><!--Info sources & log End-->
+                  <!--
                   <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned"><img
                     src="assets/images/icons/info_source.svg">
-                    <div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
+                    <div class="log_bubble"><p>wutwut</p><img src="assets/images/icons/log_bubble.svg">
                       <p>{{indicatorC.logs && indicatorC.logs.length > 0 ? indicatorC.logs.length : 0}}</p></div>
                     <div class="info-log-text__wrap--risk" data-toggle="collapse"
                          attr.href="#{{'infoTooltip' + indicatorC.$key}}" aria-expanded="true"
@@ -141,13 +189,18 @@
                         {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
                       </p>
                     </div>
-                  </div>
+                  </div>-->
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing && indicatorC?.assignee" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                      </div>
+                      <div *ngIf="!isViewing && !indicatorC?.assignee">
+                        <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
+                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
+                          Assign to</a>
                       </div>
                       <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicatorC, true)">
@@ -155,12 +208,13 @@
                       </div>
                       <!--TODO-->
                       <p>Last update: <strong>{{indicatorC.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
-                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM yyyy'}}</strong></p></div>
+                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM
+                        yyyy'}}</strong></p></div>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
-                         (click)="updateIndicatorStatus('countryContext', indicatorC.$key, indicatorKey)">
+                         (click)="updateIndicatorStatus('countryContext', indicatorC, indicatorKey)">
                       {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
                     </div>
                     <br>
@@ -169,83 +223,104 @@
                          (click)="changeIndicatorState(false, 'countryContext', indicatorKey)">Cancel</a>
                     </p>
                   </div>
+
                 </div>
 
-                <!-------Tooltip bubble One------->
 
-                <div class="Tooltip__bubble container-fluid Blue log collapse" id="{{'tooltipLog' + indicatorC.$key}}"
-                     attr.data-parent="#{{'collapse' + indicatorC.$key}}" style="" aria-expanded="true">
-                  <div class="log_left p-3">
-                    <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
-                    <hr class="d-inline-flex">
-                    <form>
-                      <input type="text" placeholder="Add a log entry" name="log_{{indicatorC.$key}}"
-                             [(ngModel)]="logContent[indicatorC.$key]">
-                    </form>
-
-                    <div *ngIf="indicatorC.logs && indicatorC.logs.length > 0">
-                      <div *ngFor="let log of indicatorC.logs">
-                        <div class="row Spaced log-post__wrap--risk">
-                          <div class="log-date__wrap--risk col-lg-1">
-                            <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                            <p>{{"RISK_MONITORING.MAIN_PAGE.LOG_STATUS" | translate}} <img
-                              src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
-                            </p>
-                          </div>
-                          <div class="col-lg-6">
-                            <p>{{log.content}}</p>
-                            <br>
-                            <p><strong>{{"RISK_MONITORING.MAIN_PAGE.BY_USER" | translate}}
-                              {{log.addedByFullName}}</strong></p>
-                            <div *ngIf="uid == log.addedBy" class="edit_delete_log_tooltip__wrap--risk">
-                              <a href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                 (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"GLOBAL.EDIT" |
-                                translate}} </a>
-                              <a>|</a>
-                              <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                 (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"GLOBAL.DELETE" |
-                                translate}}</a>
+                <div class="card">
+                  <div class="Tooltip__bubble container-fluid collapse Blue log"
+                       id="{{'tooltipLogCC_'+indicatorKey}}">
+                    <div class="log_left p-3">
+                      <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
+                        <tooltip
+                          [level1]="'TOOLTIPS.RISK_MONITORING.TT1.LEVEL1'"
+                        ></tooltip>
+                      </h3>
+                      <hr class="d-inline-flex">
+                      <form>
+                        <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
+                               type="text" placeholder="Add a log entry" name="log_{{indicatorC.$key}}"
+                               [(ngModel)]="logContent[indicatorC.$key]">
+                      </form>
+                      <div *ngIf="indicatorC.logs && indicatorC.logs.length > 0">
+                        <div *ngFor="let log of indicatorC.logs">
+                          <div class="row Spaced log-post__wrap--risk">
+                            <div class="log-date__wrap--risk col-lg-1">
+                              <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                              <p>{{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}} <img
+                                src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
+                              </p>
+                            </div>
+                            <div class="col-lg-6">
+                              <p>{{log.content}}</p>
+                              <br>
+                              <p><strong>{{"RISK_MONITORING.MAIN_PAGE.BY_USER" | translate}}
+                                {{log.addedByFullName}}</strong></p>
+                              <div class="edit_delete_log_tooltip__wrap--risk">
+                                <a
+                                  *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
+                                  href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"GLOBAL.EDIT" |
+                                  translate}} </a>
+                                <a
+                                  *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
+                                <a
+                                  *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
+                                  href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"GLOBAL.DELETE" |
+                                  translate}}</a>
+                              </div>
                             </div>
                           </div>
+                          <hr>
                         </div>
-                        <hr>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="add_log mt-auto p-2 text-right float-right">
-                    <div class="btn btn-primary" (click)="saveLog(indicatorC.$key, indicatorC.triggerSelected)">
-                      {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
-                    </div>
-                    <br>
-                    <br><a data-toggle="collapse" attr.href="#{{'tooltipLog' + indicatorC.$key}}" aria-expanded="true"
-                           attr.aria-controls="{{'tooltipLog' + indicatorC.$key}}">{{"GLOBAL.CANCEL" | translate}}</a>
-                  </div>
-
-                  <div class="export_log mt-auto p-2">
-                    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog">
-                      {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
-                    </button>
-                  </div>
-                </div>
-
-                <div class="Tooltip__bubble container-fluid Blue info log collapse"
-                     id="{{'infoTooltip' + indicatorC.$key}}" attr.data-parent="#{{'infoTooltip' + indicatorC.$key}}"
-                     attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}">
-                  <div class="log_left p-3 row col-sm-12">
-                    <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + indicatorC.$key}}" aria-expanded="true"
-                       attr.aria-controls="{{'infoTooltip' + indicatorC.$key}}"
-                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                    <div class="add_log mt-auto p-2 text-right float-right">
+                      <div *ngIf="countryPermissionsMatrix.notes.New || UserType == USER_TYPE.CountryAdmin"
+                           class="btn btn-primary" (click)="saveLog(indicatorC.$key, indicatorC.triggerSelected)">
+                        {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
+                      </div>
+                      <br>
+                      <br><a data-toggle="collapse" attr.href="#{{'tooltipLogCC_'+indicatorKey}}"
+                             aria-expanded="true"
+                             attr.aria-controls="{{'tooltipLogCC_'+indicatorKey}}">{{"GLOBAL.CANCEL" |
                       translate}}</a>
-                  </div>
-                  <div class="row col-sm-10">
-                    <ul>
-                      <li *ngFor="let source of indicatorC.source"><a target="_blank" attr.href="{{source.link}}">{{source.name}}</a>
-                      </li>
-                    </ul>
+                    </div>
+                    <div class="export_log mt-auto p-2">
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
+                              [disabled]="!indicatorC.logs || indicatorC.logs.length < 1"
+                              (click)="setExportLog(indicatorC.logs)">
+                        {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
+                      </button>
+                    </div>
+
                   </div>
                 </div>
+                <div class="card">
+                  <div class="Tooltip__bubble container-fluid Blue info log collapse"
+                       id="{{'infoTooltipCC_'+indicatorKey}}">
+                    <div class="log_left p-3 row col-sm-12">
+                      <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
+                      <a data-toggle="collapse" attr.href="#{{'infoTooltipCC_'+indicatorKey}}"
+                         aria-expanded="true"
+                         attr.aria-controls="{{'infoTooltipCC_'+indicatorKey}}"
+                         class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                        translate}}</a>
+                    </div>
+                    <div class="row col-sm-10">
+                      <ul>
+                        <!--<li *ngFor="let source of indicatorC.source"><a target="_blank" [attr.href]="source.link">{{source.name}}</a>-->
+                        <li *ngFor="let source of indicatorC.source">
+                          <a *ngIf="source?.link" href="javascript:void(0)" (click)="sourceClick(source)">{{source.name}}</a>
+                          <a *ngIf="!source?.link">{{source.name}}</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -258,14 +333,21 @@
         </div>
       </div>
 
-      <div class="Ribbon__section__wrap--risk align-items-right" *ngFor="let hazard of activeHazards">
+      <div class="Ribbon__section__wrap--risk align-items-right"
+           *ngFor="let hazard of activeHazards; let hazardIndex = index;">
         <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + hazard.hazardScenario}}"
              aria-expanded="true" attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
           <div class="row">
             <div class="col-sm-4">
-              <div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg">
+              <div class="Icon">
+                <div
+                  class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) && hazard.hazardScenario!=-1 ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"
+                  style="float:left"></div>
               </div>
-              <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
+              <!--<div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg">
+              </div>-->
+              <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
+                hazard.otherName}}</h4></div>
             <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
               <div *ngIf="hazard.isSeasonal">
                 <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}
@@ -284,11 +366,11 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE"
                   | translate}}</a>
-                <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#deleteHazardModal"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                 <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
@@ -296,7 +378,8 @@
               </div>
             </div>
             <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
-              <div class="indicators-to-hazards" *ngFor="let indicator of hazard.indicators; let indicatorKey = index;">
+              <div class="indicators-to-hazards" *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
+                   id="indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}">
                 <div class="edit__wrap--risk row Small-spaced align-items-center Header">
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
@@ -332,43 +415,84 @@
                   <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
-                    <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
+                    <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
+                      {{indicator.trigger[0].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                       {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
-                    <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
+                    <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
+                      {{indicator.trigger[1].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                       {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                     <input type="radio" name="indicator_{{indicator.$key}}"
                            [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
-                    <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
+                    <div class="btn btn-red" (click)="redSelected(indicator.$key)">
+                      {{indicator.trigger[2].triggerValue}}
+                    </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                       {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                   </div>
-                  <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned">
-                    <img src="assets/images/icons/info_source.svg">
-                    <div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
-                      <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
-                    <div class="info-log-text__wrap--risk" data-toggle="collapse"
-                         attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
-                         attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}">
-                      <p>{{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p>
-                      <p data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
-                         aria-expanded="true"
-                         attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
-                        {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
-                      </p>
+
+                  <!--Info sources & log-->
+                  <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
+                    <div class="row">
+
+                      <div class="col-sm-5"></div>
+                      <div class="col-sm-4"><img data-toggle="collapse"
+                                                 attr.data-parent="#indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}"
+                                                 style="cursor:pointer;"
+                                                 attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 aria-expanded="true"
+                                                 attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                 src="assets/images/icons/info_source.svg"></div>
+                      <div class="col-sm-2">
+                        <div data-toggle="collapse" style="cursor:pointer;"
+                             attr.data-parent="#indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}"
+                             attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                             aria-expanded="true"
+                             attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                             class="log_bubble"><img
+                          src="assets/images/icons/log_bubble.svg">
+                          <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
+                      </div>
+
+                      <div class="info-log__wrap--risk row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-5 panel"><p style="cursor:pointer;" data-toggle="collapse"
+                                                       attr.data-parent="#indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}"
+                                                       attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                       aria-expanded="true"
+                                                       attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
+                          {{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p></div>
+                        <div class="col-sm-2 panel"><p style="cursor:pointer;" data-toggle="collapse"
+                                                       attr.data-parent="#indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}"
+                                                       attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                       aria-expanded="true"
+                                                       attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                       class="Flex-right">
+                          {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</p></div>
+                      </div><!--Info sources & log End-->
+
                     </div>
+                    <div class="Line-row--risk"></div>
+
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="!isViewing && indicator?.assignee" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                    </div>
+                    <div *ngIf="!isViewing && !indicator?.assignee">
+                      <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
+                         aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
+                        Assign to</a>
                     </div>
                     <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
                          (click)="copyIndicator(indicator, false, hazard)">
@@ -383,7 +507,7 @@
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
-                         (click)="updateIndicatorStatus(hazard.id, indicator.$key, indicatorKey)">
+                         (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
                       {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
                     </div>
                     <br>
@@ -396,13 +520,17 @@
 
                 <div class="card">
                   <div class="Tooltip__bubble container-fluid collapse Blue log"
-                       id="{{'tooltipLog' + hazard.hazardScenario}}"
-                       attr.data-parent="#{{'collapse' + hazard.hazardScenario}}">
+                       id="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}">
                     <div class="log_left p-3">
-                      <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
+                      <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
+                        <tooltip
+                          [level1]="'TOOLTIPS.RISK_MONITORING.TT1.LEVEL1'"
+                        ></tooltip>
+                      </h3>
                       <hr class="d-inline-flex">
                       <form>
-                        <input type="text" placeholder="Add a log entry" name="log_{{indicator.$key}}"
+                        <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
+                               type="text" placeholder="Add a log entry" name="log_{{indicator.$key}}"
                                [(ngModel)]="logContent[indicator.$key]">
                       </form>
                       <div *ngIf="indicator.logs && indicator.logs.length > 0">
@@ -419,13 +547,18 @@
                               <br>
                               <p><strong>{{"RISK_MONITORING.MAIN_PAGE.BY_USER" | translate}}
                                 {{log.addedByFullName}}</strong></p>
-                              <div *ngIf="uid == log.addedBy" class="edit_delete_log_tooltip__wrap--risk">
-                                <a href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                   (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
+                              <div class="edit_delete_log_tooltip__wrap--risk">
+                                <a
+                                  *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
+                                  href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
                                   translate}} </a>
-                                <a>|</a>
-                                <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                   (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
+                                <a
+                                  *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
+                                <a
+                                  *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
+                                  href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
                                   translate}}</a>
                               </div>
                             </div>
@@ -436,40 +569,47 @@
                     </div>
 
                     <div class="add_log mt-auto p-2 text-right float-right">
-                      <div class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
+                      <div *ngIf="countryPermissionsMatrix.notes.New || UserType == USER_TYPE.CountryAdmin"
+                           class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
                       </div>
                       <br>
-                      <br><a data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
+                      <br><a data-toggle="collapse"
+                             attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
                              aria-expanded="true"
-                             attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}">{{"GLOBAL.CANCEL" |
+                             attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}">{{"GLOBAL.CANCEL"
+                      |
                       translate}}</a>
                     </div>
                     <div class="export_log mt-auto p-2">
-                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog">
+                      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
+                              [disabled]="!indicator.logs || indicator.logs.length < 1"
+                              (click)="setExportLog(indicator.logs)">
                         {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
                       </button>
                     </div>
 
                   </div>
                 </div>
-                <div class="Tooltip__bubble container-fluid Blue info log collapse"
-                     id="{{'infoTooltip' + hazard.hazardScenario}}"
-                     attr.data-parent="#{{'infoTooltip' + hazard.hazardScenario}}"
-                     attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
-                  <div class="log_left p-3 row col-sm-12">
-                    <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                    <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
-                       aria-expanded="true"
-                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
-                       class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
-                      translate}}</a>
-                  </div>
-                  <div class="row col-sm-10">
-                    <ul>
-                      <li *ngFor="let source of indicator.source"><a target="_blank" attr.href="{{source.link}}">{{source.name}}</a>
-                      </li>
-                    </ul>
+                <div class="card">
+                  <div class="Tooltip__bubble container-fluid Blue info log collapse"
+                       id="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
+                    <div class="log_left p-3 row col-sm-12">
+                      <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
+                      <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                         aria-expanded="true"
+                         attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                         class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                        translate}}</a>
+                    </div>
+                    <div class="row col-sm-10">
+                      <ul>
+                        <li *ngFor="let source of indicator.source">
+                          <a *ngIf="source?.link" href="javascript:void(0)" (click)="sourceClick(source)">{{source.name}}</a>
+                          <a *ngIf="!source?.link">{{source.name}}</a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -480,69 +620,6 @@
                 <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
               </div>
             </div>
-
-            <!--Export Log Modal-->
-            <div class="modal fade" id="exportLog" tabindex="-1" role="dialog" aria-labelledby="exportLogModalLabel"
-                 aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h6 class="modal-title" id="exportLogModalLabel">Export Log</h6>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body text-center">
-                    <p class="text-left col-sm-12">Please select the date range you would to export</p>
-                    <div class="row col-sm-12">
-                      <div class="col-sm-6">
-                        <label>From</label>
-                        <!--Dropdown menu From-->
-                        <div class="form-group">
-                          <select class="form-control" id="select1">
-                            <option>15/02/2016</option>
-                            <option>15/03/2016</option>
-                            <option>15/04/2016</option>
-                            <option>15/05/2016</option>
-                            <option>15/06/2016</option>
-                          </select>
-                        </div>
-                      </div>
-                      <!--Dropdown menu to-->
-                      <div class="col-sm-6">
-                        <label>To</label>
-                        <div class="form-group">
-                          <select class="form-control" id="select1">
-                            <option>15/02/2017</option>
-                            <option>15/03/2017</option>
-                            <option>15/04/2017</option>
-                            <option>15/05/2017</option>
-                            <option>15/06/2017</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="container">
-                      <div class="row">
-                        <div class='col-sm-6'>
-                        </div>
-                      </div>
-                      <p class="text-left">Please Enter the email address where export will be sent</p>
-                      <div class="text-left col-sm-0"><strong>Email Address</strong></div>
-                      <div class="row col-sm-12">
-                        <input type="email" class="form-control form-control-sm" id="smFormGroupInput"
-                               placeholder="you@example.com">
-                      </div>
-                      <div class="row Right-aligned Spaced col-sm-12">
-                        <a href="#" class="px-1 col-sm-8">Cancel</a>
-                        <button href="#" class="btn-primary col-sm-4">EXPORT</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--Export Log Modal-->
 
           </div><!--Card-block Div End-->
         </div><!--Card Div End-->
@@ -558,14 +635,20 @@
       </div>
 
       <div class="collapse" id="archiveCollapse">
-        <div class="Ribbon__section__wrap--risk align-items-right" *ngFor="let hazard of archivedHazards">
+        <div class="Ribbon__section__wrap--risk align-items-right"
+             *ngFor="let hazard of archivedHazards; let archivedHazardIndex = index">
           <div class="Accordion--risk Map-list" data-toggle="collapse"
                attr.href="#{{'collapse' + hazard.hazardScenario}}" aria-expanded="true"
                attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
             <div class="row">
               <div class="col-sm-4">
-                <div class="risk-icon__components"><img
-                  src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>
+                <div class="Icon">
+                  <div
+                    class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"
+                    style="float:left"></div>
+                </div>
+                <!--<div class="risk-icon__components"><img
+                  src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>-->
                 <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
               <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
                 <div *ngIf="hazard.isSeasonal">
@@ -587,11 +670,11 @@
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                  <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#archiveHazard"
                      (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE"
                     | translate}}</a>
-                  <a *ngIf="hazard?.indicators?.length > 0" href="javascript:void(0)" data-toggle="modal"
+                  <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
                   <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
@@ -601,7 +684,8 @@
               <!----------------------------Trends in malnutrition---------------------------->
               <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
                 <div class="indicators-to-hazards"
-                     *ngFor="let indicator of hazard.indicators; let indicatorKey = index;">
+                     *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
+                     id="archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}">
                   <div class="edit__wrap--risk row Small-spaced align-items-center Header">
                     <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
@@ -637,51 +721,105 @@
                     <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
-                      <div class="btn btn-primary">{{indicator.trigger[0].triggerValue}}</div>
+                      <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
+                        {{indicator.trigger[0].triggerValue}}
+                      </div>
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
-                      <div class="btn btn-amber">{{indicator.trigger[1].triggerValue}}</div>
+                      <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
+                        {{indicator.trigger[1].triggerValue}}
+                      </div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                         {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
-                      <div class="btn btn-red">{{indicator.trigger[2].triggerValue}}</div>
+                      <div class="btn btn-red" (click)="redSelected(indicator.$key)">
+                        {{indicator.trigger[2].triggerValue}}
+                      </div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                         {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                     </div>
+                    <!--
                     <div class="mid-col__wrap--risk col-lg-3 col-md-5 col-sm-7 Right-aligned"><img
                       src="assets/images/icons/info_source.svg">
                       <div class="log_bubble"><img src="assets/images/icons/log_bubble.svg">
                         <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
                       <div class="info-log-text__wrap--risk" data-toggle="collapse"
-                           attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
-                           attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}">
+                          attr.href="#{{'infoTooltip' + hazard.hazardScenario}}" aria-expanded="true"
+                          attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario}}">
                         <p>{{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p>
                         <p data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
-                           aria-expanded="true"
-                           attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
+                          aria-expanded="true"
+                          attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}" class="Flex-right">
                           {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}
                         </p>
                       </div>
                     </div>
+                    -->
+
+                    <!--Info sources & log-->
+                    <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
+                      <div class="row">
+
+                        <div class="col-sm-5"></div>
+                        <div class="col-sm-4"><img data-toggle="collapse"
+                                                   attr.data-parent="#archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}"
+                                                   style="cursor:pointer;"
+                                                   attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                   aria-expanded="true"
+                                                   attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                   src="assets/images/icons/info_source.svg"></div>
+                        <div class="col-sm-2">
+                          <div data-toggle="collapse" style="cursor:pointer;"
+                               attr.data-parent="#archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}"
+                               attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                               aria-expanded="true"
+                               attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                               class="log_bubble"><img
+                            src="assets/images/icons/log_bubble.svg">
+                            <p>{{indicator.logs && indicator.logs.length ? indicator.logs.length : 0}}</p></div>
+                        </div>
+
+                        <div class="info-log__wrap--risk row">
+                          <div class="col-sm-4"></div>
+                          <div class="col-sm-5 panel"><p style="cursor:pointer;" data-toggle="collapse"
+                                                         attr.data-parent="#archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}"
+                                                         attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                         aria-expanded="true"
+                                                         attr.aria-controls="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
+                            {{"RISK_MONITORING.MAIN_PAGE.INFO_SOURCES" | translate}}</p></div>
+                          <div class="col-sm-2 panel"><p style="cursor:pointer;" data-toggle="collapse"
+                                                         attr.data-parent="#archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}"
+                                                         attr.href="#{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                         aria-expanded="true"
+                                                         attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}"
+                                                         class="Flex-right">
+                            {{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</p></div>
+                        </div><!--Info sources & log End-->
+
+                      </div>
+                      <div class="Line-row--risk"></div>
+
+                    </div>
+
                     <div class="end-col__wrap--risk col-md-3 col-sm-6"
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
                       </div>
-                      <p>Last update: <strong>01 March 2016</strong></p>
-                      <p>Next update: <strong>16 June 2016</strong></p>
+                      <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
+                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
                     </div>
                     <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
-                           (click)="updateIndicatorStatus(hazard.id, indicator.$key, indicatorKey)">
+                           (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
                         {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
                       </div>
                       <br>
@@ -692,17 +830,15 @@
                     </div>
                   </div>
 
-
-                  <!-------Tooltip bubble One------->
                   <div class="card">
                     <div class="Tooltip__bubble container-fluid collapse Blue log"
-                         id="{{'tooltipLog' + hazard.hazardScenario}}"
-                         attr.data-parent="#{{'collapse' + hazard.hazardScenario}}">
+                         id="{{'tooltipLog' + hazard.hazardScenario+'_'+indicatorKey}}">
                       <div class="log_left p-3">
                         <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
                         <hr class="d-inline-flex">
                         <form>
-                          <input type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
+                          <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
+                                 type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
                                  [(ngModel)]="logContent[indicator.$key]">
                         </form>
                         <div *ngIf="indicator.logs && indicator.logs.length > 0">
@@ -718,13 +854,18 @@
                                 <p>{{log.content}}</p>
                                 <br>
                                 <p><strong>by {{log.addedByFullName}}</strong></p>
-                                <div *ngIf="uid == log.addedBy" class="edit_delete_log_tooltip__wrap--risk">
-                                  <a href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                     (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
+                                <div class="edit_delete_log_tooltip__wrap--risk">
+                                  <a
+                                    *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
+                                    href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
                                     translate}} </a>
-                                  <a>|</a>
-                                  <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                     (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
+                                  <a
+                                    *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
+                                  <a
+                                    *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
+                                    href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
                                     translate}}</a>
                                 </div>
                               </div>
@@ -736,122 +877,59 @@
 
                       <!--add log button-->
                       <div class="add_log mt-auto p-2 text-right float-right">
-                        <div class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
+                        <div *ngIf="countryPermissionsMatrix.notes.New || UserType == USER_TYPE.CountryAdmin"
+                             class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
                           {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
                         </div>
-                        <br>
-                        <br><a data-toggle="collapse" attr.href="#{{'tooltipLog' + hazard.hazardScenario}}"
-                               aria-expanded="true"
-                               attr.aria-controls="{{'tooltipLog' + hazard.hazardScenario}}">{{"GLOBAL.CANCEL" |
-                        translate}}</a>
+                        <!--export log button-->
+                        <div class="export_log mt-auto p-2">
+                          <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog"
+                                  [disabled]="!indicator.logs || indicator.logs.length < 1"
+                                  (click)="setExportLog(indicator.logs)">
+                            {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
+                          </button>
+                        </div>
+
                       </div>
-                      <!--export log button-->
-                      <div class="export_log mt-auto p-2">
-                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#exportLog">
-                          {{"RISK_MONITORING.MAIN_PAGE.EXPORT_LOG" | translate}}
-                        </button>
-                      </div>
-
                     </div>
-                  </div>
-
-                  <div class="Tooltip__bubble container-fluid Blue info log collapse"
-                       id="{{'infoTooltip' + hazard.hazardScenario}}"
-                       attr.data-parent="#{{'infoTooltip' + hazard.hazardScenario}}"
-                       attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}">
-                    <div class="log_left p-3 row col-sm-12">
-                      <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                      <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
-                         aria-expanded="true"
-                         attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
-                         class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
-                        translate}}</a>
-                    </div>
-                    <div class="row col-sm-10">
-                      <ul>
-                        <li *ngFor="let source of indicator.source"><a target="_blank" attr.href="{{source.link}}">{{source.name}}</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div *ngIf="!hazard.indicators || !hazard.indicators.length">
-                <div
-                  class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-                  <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
-                </div>
-              </div>
-
-              <!--Export Log Modal-->
-              <div class="modal fade" id="exportLog" tabindex="-1" role="dialog" aria-labelledby="exportLogModalLabel"
-                   aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h6 class="modal-title" id="exportLogModalLabel">Export Log</h6>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body text-center">
-                      <p class="text-left col-sm-12">Please select the date range you would to export</p>
-                      <div class="row col-sm-12">
-                        <div class="col-sm-6">
-                          <label>From</label>
-                          <!--Dropdown menu From-->
-                          <div class="form-group">
-                            <select class="form-control" id="select1">
-                              <option>15/02/2016</option>
-                              <option>15/03/2016</option>
-                              <option>15/04/2016</option>
-                              <option>15/05/2016</option>
-                              <option>15/06/2016</option>
-                            </select>
-                          </div>
+                    <div class="card">
+                      <div class="Tooltip__bubble container-fluid Blue info log collapse"
+                           id="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
+                        <div class="log_left p-3 row col-sm-12">
+                          <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
+                          <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario}}"
+                             aria-expanded="true"
+                             attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario}}"
+                             class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
+                            translate}}</a>
                         </div>
-                        <!--Dropdown menu to-->
-                        <div class="col-sm-6">
-                          <label>To</label>
-                          <div class="form-group">
-                            <select class="form-control" id="select1">
-                              <option>15/02/2017</option>
-                              <option>15/03/2017</option>
-                              <option>15/04/2017</option>
-                              <option>15/05/2017</option>
-                              <option>15/06/2017</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="container">
-                        <div class="row">
-                          <div class='col-sm-6'>
-                          </div>
-                        </div>
-                        <p class="text-left">Please Enter the email address where export will be sent</p>
-                        <div class="text-left col-sm-0"><strong>Email Address</strong></div>
-                        <div class="row col-sm-12">
-                          <input type="email" class="form-control form-control-sm" id="smFormGroupInput"
-                                 placeholder="you@example.com">
-                        </div>
-                        <div class="row Right-aligned Spaced col-sm-12">
-                          <a href="#" class="px-1 col-sm-8">Cancel</a>
-                          <button href="#" class="btn-primary col-sm-4">EXPORT</button>
+                        <div class="row col-sm-10">
+                          <ul>
+                            <li *ngFor="let source of indicator.source">
+                              <a *ngIf="source?.link" href="javascript:void(0)" (click)="sourceClick(source)">{{source.name}}</a>
+                              <a *ngIf="!source?.link">{{source.name}}</a>
+                            </li>
+                          </ul>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
+                <div *ngIf="!hazard.indicators || !hazard.indicators.length">
+                  <div
+                    class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                    <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
+
+
       </div>
-
-
     </div>
   </div>
 </div>
@@ -899,8 +977,6 @@
             <button class="btn btn-primary col-sm-3 text-uppercase" (click)="updateHazardActiveStatus('archiveHazard')">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
-            <a href="javascript:void(0)" class="px-1 col-sm-3 align-self-center" data-dismiss="modal"
-            (click)="removeTmpHazardID()">{{"GLOBAL.CANCEL" | translate}}</a>
           </div>
         </div>
       </div>
@@ -923,10 +999,11 @@
         <textarea type="text" rows="6" class="form-text form-control" [(ngModel)]="tmpLogData['content']"></textarea>
       </div>
       <div class="row Right-aligned Spaced col-sm-12">
-        <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="removeTmpLog()">{{"GLOBAL.CANCEL" |
+        <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="removeTmpLog()">{{"GLOBAL.CANCEL"
+          |
           translate}}</a>
         <button href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-        (click)="editLog('editNote')">{{"GLOBAL.SAVE" | translate}}
+                (click)="editLog('editNote')">{{"GLOBAL.SAVE" | translate}}
         </button>
       </div>
     </div>
@@ -1009,3 +1086,89 @@
   </div>
 </div>
 
+<!--Export Log Modal-->
+<div class="modal fade" id="exportLog" tabindex="-1" role="dialog" aria-labelledby="exportLogModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exportLogModalLabel">{{ 'RISK_MONITORING.EXPORT_LOG.TITLE' | translate }}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="text-left col-sm-12">{{ 'RISK_MONITORING.EXPORT_LOG.SELECT_DATE_RANGE' | translate }}</p>
+        <div class="row col-sm-12">
+          <div class="col-sm-6">
+            <label>{{ 'RISK_MONITORING.EXPORT_LOG.FROM' | translate }}</label>
+            <!--Dropdown menu From-->
+            <div class="form-group">
+              <material-datepicker id="fromDate"
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectDate(fromDate, 'fromDate')"
+                                   [(date)]="fromDate"></material-datepicker>
+            </div>
+          </div>
+          <!--Dropdown menu to-->
+          <div class="col-sm-6">
+            <label>{{ 'RISK_MONITORING.EXPORT_LOG.TO' | translate }}</label>
+            <div class="form-group">
+              <material-datepicker id="toDate"
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectDate(toDate, 'toDate')"
+                                   [(date)]="toDate"></material-datepicker>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class='col-sm-6'>
+            </div>
+          </div>
+          <div class="row Right-aligned Spaced col-sm-12">
+            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            <button href="javascript:void(0)" class="btn btn-primary col-sm-4" (click)="exportLog(logsToExport)">{{
+              'RISK_MONITORING.EXPORT_LOG.EXPORT_BUTTON' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Export Log Modal-->
+
+<!--assign to staff dialog-->
+<div class="modal fade" id="assignIndicator" tabindex="-1" role="dialog"
+     aria-labelledby="assignIndicator"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">Assign this indicator</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <div class="col-sm-12">
+          <select class="form-control" [(ngModel)]="assignedUser">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let user of usersForAssign; let i = index" [attr.data-index]="i" value="{{user.userID}}">
+              {{user.name}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row Right-aligned Spaced col-sm-12">
+          <a class="col-sm-9 margin-top-one" data-dismiss="modal">Cancel</a>
+          <button
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

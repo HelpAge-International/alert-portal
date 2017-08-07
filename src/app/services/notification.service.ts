@@ -3,11 +3,14 @@ import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';
 import {Observable} from 'rxjs';
 import {MessageModel} from "../model/message.model";
+import { UserType } from "../utils/Enums";
+import { UserService } from "./user.service";
 
 @Injectable()
 export class NotificationService {
 
-  constructor(private af: AngularFire) {
+  constructor(private _userService: UserService,
+              private af: AngularFire) {
   }
 
   getNotificationSettings(agencyId: string): Observable<any> {
@@ -21,224 +24,114 @@ export class NotificationService {
       });
 
     return notificationSettingsSubscription;
-  }
-
-  
-  getAgencyNotifications(agencyId, unreadOnly = false): Observable<MessageModel[]>{
-    return this.getNotifications("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId, unreadOnly);
- }
-
- getCountryAdminNotifications(countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-  let messagesList = [];
-
-   let nodes = ["/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
-                "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
-                "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
-                "/messageRef/systemadmin/allusersgroup/" + countryId];
-
-  
-  //  return this.getNotifications(nodes[0], unreadOnly).map(messagesNode0 => {
-  //       messagesList = messagesNode0;
-  //       return this.getCountryAdminNotifications(nodes[1], unreadOnly).map(messagesNode1 => {
-  //         messagesList = [...messagesList, messagesNode1];
-  //         return this.getCountryAdminNotifications(nodes[2], unreadOnly).map(messagesNode2 => {
-  //           messagesList = [...messagesList, messagesNode2];
-  //           this.getCountryAdminNotifications(nodes[3], unreadOnly).map(messagesNode3 => {
-  //             messagesList = [...messagesList, messagesNode3];
-  //             return Observable.from(messagesList);
-  //           });
-  //       });
-  //    });
-  //     //return messagesList;
-  //  });
-
-  //return this.getNotifications(nodes, unreadOnly);
-
-  // nodes.forEach(node => {
-  //  return this.getNotifications(node, unreadOnly).subscribe(messages => {
-  //     //console.log(messages);
-  //     messagesList = messages;
-  //     console.log(messagesList);
-  //     return messagesList;
-  //   });
-  // });
-
-
-  // let i = 1;
-  // for(let key in nodes) {
-  //   if( i === nodes.length)
-  //   {
-  //     console.log('return');
-  //     return this.getNotifications(nodes[key], unreadOnly).flatMap(messages => {
-  //       messagesList = [...messagesList, messages];
-  //       return Observable.from(messagesList);
-  //     });
-  //   }else{
-  //     console.log('dont return!');
-  //     this.getNotifications(nodes[key], unreadOnly).flatMap(messages => {
-  //       messagesList = [...messagesList, messages];
-  //       i++;
-  //       return Observable.from(messagesList);
-  //     });
-  //   }
-  // }
-
-  
-
-  // return Observable.from(messagesList);
-  
-  // let nodesObservable = Observable.from(nodes);  
-  // let observables = [];
-  
-  // return nodesObservable.flatMap( node => { return this.getNotifications(node, unreadOnly)})
-  //                       // .flatMap(messageArray => {
-  //                       //   console.log(messageArray);
-  //                       //   messageArray.forEach(message => { messagesList.push(message); })
-  //                       //   //messagesList = messagesList.concat(messageArray);
-  //                       //   return messagesList;
-  //                       // })
-  //                       .map(messages => { 
-  //                         messages.forEach(message => { messagesList.push(message); })
-  //                         console.log(messages); 
-                          
-  //                         return messagesList; 
-  //                       });
-                        
-  
-  // nodes.forEach(node => observables.push(this.getNotifications(node, unreadOnly)));
-  
-  
-  // return Observable.combineLatest(observables).flatMap(messages => {
-    // messages.forEach(message => { msg.push(message); });
-    // messagesArray.forEach(messageArray => {
-    //   messageArray.forEach(message => {
-    //     msg.push(message);
-    //   });
-    // console.log(msg);
-    // });
-    // return msg;
-  //   return messages;
-  // })
-//   .map(messages => {  return messages; });
-//   //.flatMap(messages => { console.log(messages); return messages; });
-// return this.getNotifications(nodes[0], unreadOnly) && this.getNotifications(nodes[1], unreadOnly) && this.getNotifications(nodes[2], unreadOnly) && this.getNotifications(nodes[3], unreadOnly);
-  return this.getNotifications("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId, unreadOnly);
- }
-
- getCountryDirectorNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId, unreadOnly);
- }
-
- getRegionalDirectorNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/agency/" + agencyId + "/regionaldirector/" + userId, unreadOnly);
- }
-
- getGlobalDirectorNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/agency/" + agencyId + "/globaldirector/" + userId, unreadOnly);
- }
- 
- getGlobalUserNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/agency/" + agencyId + "/globaluser/" + userId, unreadOnly);
- }
-
- getDonorNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/country/" + countryId + "/donor/" + userId, unreadOnly);
- }
-
- getERTLeadsNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/country/" + countryId + "/ertleads/" + userId, unreadOnly);
- }
-
- getERTNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/country/" + countryId + "/erts/" + userId, unreadOnly);
- }
-
- getPartnerNotifications(countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/country/" + countryId + "/partner/" + countryId, unreadOnly);
- }
-
- getCountryUserNotifications(userId, countryId, agencyId, unreadOnly = false): Observable<MessageModel[]>{
-   return this.getNotifications("/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId, unreadOnly);
- }
-
-setAgencyNotificationsAsRead(agencyId): Observable<any>{
-  return this.setNotificationsAsRead("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId);
-}
-
-setCountryAdminNotificationsAsRead(countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId);
- }
-
- setCountryDirectorNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId);
- }
-
- setRegionalDirectorNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/regionaldirector/" + userId);
- }
-
- setGlobalDirectorNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/globaldirector/" + userId);
- }
- 
- setGlobalUserNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/globaluser/" + userId);
- }
- 
- setDonorNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/donor/" + userId);
- }
- 
- setERTLeadsNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/ertleads/" + userId);
- }
-
- setERTNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/erts/" + userId);
- }
-
- setPartnerNotificationsAsRead(countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/country/" + countryId + "/partner/" + countryId);
- }
- 
- setCountryUserNotificationsAsRead(userId, countryId, agencyId){
-   return this.setNotificationsAsRead("/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId);
- }
+  } 
  
  deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/systemadmin/allagencyadminsgroup/" + agencyId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesAdministratorAgency = this.getAgencyAdministratorNodes(agencyId);
+
+  for (let node of nodesAdministratorAgency) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
  deleteCountryAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countryadmins/" + countryId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesAdministratorCountry = this.getCountryAdministratorNodes(agencyId, countryId, userId);
+
+  for (let node of nodesAdministratorCountry) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
  deleteCountryDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesCountryDirector = this.getCountryDirectorNodes(agencyId, countryId, userId);
+
+  for (let node of nodesCountryDirector) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
 deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/regionaldirector/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesRegionDirector = this.getRegionDirectorNodes(agencyId, countryId, userId);
+
+  for (let node of nodesRegionDirector) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
 }
 
  deleteGlobalDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/globaldirector/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesGlobalDirector = this.getGlobalDirectorNodes(agencyId, countryId, userId);
+
+  for (let node of nodesGlobalDirector) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
  deleteGlobalUserNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/globaluser/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesGlobalUser = this.getGlobalUserNodes(agencyId, countryId, userId);
+
+  for (let node of nodesGlobalUser) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
  deleteDonorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/country/" + countryId + "/donor/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesDonor = this.getDonorNodes(agencyId, countryId, userId);
+
+  for (let node of nodesDonor) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
  
  deleteERTLeadsNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/country/" + countryId + "/ertleads/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesErtLeader = this.getErtLeaderNodes(agencyId, countryId, userId);
+
+  for (let node of nodesErtLeader) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
  deleteERTNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/country/" + countryId + "/erts/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesErt = this.getErtNodes(agencyId, countryId, userId);
+
+  for (let node of nodesErt) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
 
  deletePartnerNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
@@ -246,19 +139,140 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
  }
 
 deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
-   return this.deleteNotification("/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/" + messageId);
+   let deleteData = {};
+
+   let nodesCountryUser = this.getCountryUserNodes(agencyId, countryId, userId);
+
+  for (let node of nodesCountryUser) {
+    deleteData[node + '/' + messageId] = null;
+  }
+  
+  return this.deleteNotification(deleteData);
  }
-  deleteNotification(node): firebase.Promise<any>{
-    if (!node) {
-      Promise.reject('Missing node!');
+  deleteNotification(deleteData): firebase.Promise<any>{
+    if (!deleteData) {
+      Promise.reject('Missing data!');
     }
-    return this.af.database.object(Constants.APP_STATUS + node).remove();
+    return this.af.database.object(Constants.APP_STATUS).update(deleteData);
   }
 
-  private getNotifications(node: string, unreadOnly): Observable<MessageModel[]>  {
+  saveUserNotificationBasedOnNotificationSetting(message: MessageModel, notificationSetting: number, agencyId: string, countryId: string)
+  {
+    // Regular staff
+    this._userService.getStaffList(countryId).subscribe(staffs => {
+      staffs.forEach(staff => {
+        if(staff.notification && staff.notification.indexOf(notificationSetting) !== -1)
+        {
+          this.saveUserNotification(staff.id, message, staff.userType, agencyId, countryId).then(() => {});
+        }
+      });
+    });
+
+    // Global staff
+    this._userService.getGlobalStaffList(agencyId).subscribe(staffs => {
+      staffs.forEach(staff => {
+        if(staff.notification && (staff.userType === UserType.RegionalDirector || staff.userType === UserType.GlobalDirector) 
+            && staff.notification.indexOf(notificationSetting) !== -1)
+        {
+          this.saveUserNotification(staff.id, message, staff.userType, agencyId, countryId).then(() => {});
+        }
+      });
+    });
+  }
+
+  saveUserNotificationWithoutDetails(userId: string, message: MessageModel): Observable<any>{
+    if(!userId || !message)
+    {
+      throw new Error('userId or message missing.');
+    }
+
+    return this._userService.getUserType(userId)
+        .map(x => {
+          let userType = x;
+
+          const userTypePath = Constants.USER_PATHS[userType];
+          console.log(userTypePath);
+          return this._userService.getAgencyId(userTypePath, userId)
+            .subscribe(agency => {
+              let agencyId = agency;
+              return this._userService.getCountryId(userTypePath, userId)
+                .subscribe(country => {
+                  let countryId = country;
+                  return this.saveUserNotification(userId, message, userType, agencyId, countryId);
+                });
+            });
+          });
+  }
+  saveUserNotification(userId: string, message: MessageModel, userType: number, agencyId: string, countryId: string): firebase.Promise<any>{
+    let node = '';
+
+    if(!userId || !message || !userType || !agencyId || !countryId)
+    {
+      throw new Error('Missing required fields.')
+    }
+
+    switch(userType){
+      case UserType.AgencyAdmin:
+        node = "/messageRef/systemadmin/allagencyadminsgroup/" + agencyId +  "/{messageId}";
+        break;
+      case UserType.CountryAdmin:
+        node = "/messageRef/agency/" + agencyId + "/countryadmins/" + userId + "/{messageId}";
+        break;
+      case UserType.CountryDirector:
+        node = "/messageRef/agency/" + agencyId + "/countrydirectors/" + userId + "/{messageId}";
+        break;
+      case UserType.RegionalDirector:
+        node = "/messageRef/agency/" + agencyId + "/regionaldirector/" + userId + "/{messageId}";
+        break;
+      case UserType.GlobalDirector:
+        node = "/messageRef/agency/" + agencyId + "/globaldirector/" + userId + "/{messageId}";
+        break;
+      case UserType.GlobalUser:
+        node = "/messageRef/agency/" + agencyId + "/globaluser/" + userId + "/{messageId}";
+        break;
+      case UserType.Donor:
+        node = "/messageRef/country/" + countryId + "/donor/" + userId + "/{messageId}";
+        break;
+      case UserType.ErtLeader:
+        node = "/messageRef/country/" + countryId + "/ertleads/" + userId + "/{messageId}";
+        break;
+      case UserType.Ert:
+        node = "/messageRef/country/" + countryId + "/erts/" + userId + "/{messageId}";
+        break;
+      case UserType.NonAlert:
+        node = "/messageRef/country/" + countryId + "/partner/" + userId + "/{messageId}";
+        break;
+      case UserType.CountryUser:
+        node = "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/{messageId}";
+        break;
+      
+    }
+
+    return this.saveNotification(node, message);
+  }
+
+private saveNotification(node: string, message: MessageModel): firebase.Promise<any>{
+  if(!node || !message) {
+    console.log('no node or message')
+    return;
+  }
+
+  return this.af.database.list(Constants.APP_STATUS + '/message').push(message)
+    .then(
+      (msg) => {
+          let messageRefData = {};
+          node = node.replace("{messageId}", msg.key);
+          messageRefData[node] = true;
+          this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+      }
+    );
+}
+
+   getNotifications(node: string, unreadOnly): Observable<MessageModel[]>  {
     if(!node) {
       return;
     }
+    
     return this.af.database.list(Constants.APP_STATUS + node)
       .map(list => {
         let messages = [];
@@ -272,7 +286,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
   }
 
   
-  private setNotificationsAsRead(node: string): Observable<any>  {
+  setNotificationsAsRead(node: string): Observable<any>  {
     if(!node) {
       return;
     }
@@ -289,7 +303,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
       });
   }
 
-  private getNotificationMessage(messageId: string): Observable<MessageModel>{
+   getNotificationMessage(messageId: string): Observable<MessageModel>{
     return this.af.database.object(Constants.APP_STATUS + "/message/" + messageId)
       .map(item => {
         let message = new MessageModel();
@@ -297,6 +311,100 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
         message.id = item.$key;
         return message;
       });
+  }
+
+  getAgencyAdministratorNodes(agencyId: string)
+  {
+    return [
+          "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + agencyId,
+          "/messageRef/systemadmin/allusersgroup/" + agencyId,
+          "/messageRef/systemadmin/allagencyadminsgroup/" + agencyId];
+  }
+
+  getCountryAdministratorNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/agency/" + agencyId + "/countryadmins/" + countryId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + countryId,
+            "/messageRef/systemadmin/allcountryadminsgroup/" + countryId,
+            "/messageRef/systemadmin/allusersgroup/" + countryId];
+  }
+
+  getCountryUserNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId]
+  }
+
+  getCountryDirectorNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/countrydirectors/" + userId,
+            "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId]
+  }
+
+  getRegionDirectorNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/regionaldirector/" + userId]
+  }
+
+  getGlobalDirectorNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/globaldirector/" + userId]
+  }
+
+  getGlobalUserNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/globaluser/" + userId]
+  }
+
+  getErtLeaderNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/ertleads/" + userId]
+  }
+
+  getErtNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/erts/" + userId]
+  }
+
+  getDonorNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/donor/" + userId]
+  }
+  
+  getPartnerNodes(agencyId: string, countryId: string, userId: string)
+  {
+    return [
+            "/messageRef/systemadmin/allusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
+            "/messageRef/country/" + countryId + "/partner/" + userId]
   }
 
 }

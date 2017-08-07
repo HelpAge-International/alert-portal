@@ -1,13 +1,13 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AngularFire, AuthProviders, AuthMethods} from 'angularfire2';
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
-import {NetworkComponent} from "../agency-admin/settings/network/network.component";
 import {until} from "selenium-webdriver";
 import elementIsNotSelected = until.elementIsNotSelected;
+import {UserType} from "../utils/Enums";
 
 @Component({
   selector: 'app-login',
@@ -157,36 +157,53 @@ export class LoginComponent implements OnInit, OnDestroy {
   private regularLogin(successUid: string) {
     // Fire off list of calls to check if the user id exists under any one of the nodes
     // - If all of these fail, the results are aggregated in loginAllCallsFinished();
+    // loginCheckingDeactivate params
+    // => my id,
+    // => user type path,
+    // => go to if success,
+    // => go to if first login,
+    // => actions if the account is disabled()
+    // loginChecking params
+    // => my id,
+    // => user type path,
+    // => go to if success
+    // loginCheckingAgency params
+    // => my id,
+    // => user type path,
+    // => go to if success
+    // => go to if first login
+    this.loginCheckingFirstLoginValue(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME, 'new-user-password');
+    this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
     this.loginCheckingDeactivated(successUid, "administratorCountry",
       Constants.COUNTRY_ADMIN_HOME, 'country-admin/new-country/new-country-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
-    this.loginChecking(successUid, "system", Constants.SYSTEM_ADMIN_HOME);
     this.loginCheckingDeactivated(successUid, "countryDirector",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
-    this.loginChecking(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-    this.loginChecking(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-    this.loginChecking(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
-    this.loginChecking(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD);
     this.loginCheckingDeactivated(successUid, "ertLeader",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
     this.loginCheckingDeactivated(successUid, "ert",
-      Constants.COUNTRY_ADMIN_HOME, Constants.COUNTRY_ADMIN_HOME,
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
-    this.loginCheckingDeactivated(successUid, "donor",
-      Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
-      () => {
-        this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
-      });
+    // this.loginCheckingDeactivated(successUid, "donor",
+    //   Constants.DONOR_HOME, 'donor-module/donor-account-settings/new-donor-password',
+    //   () => {
+    //     this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
+    //   });
+    this.loginCheckingFirstLoginValue(successUid, "donor", Constants.DONOR_HOME, 'new-user-password');
     this.loginCheckingAgency(successUid, "administratorAgency",
       Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
   }
@@ -303,13 +320,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
+
   /**
    * Method ran when the login calls are finished for the system
    */
   private loginAllCallsFinished() {
     this.userChecks--;
     if (this.userChecks <= 0) {
-      // Run this logic
+      // Run this logic. This happens when it's none of the detected user types!
       this.showAlert(true, "LOGIN.USERTYPE_UNASSIGNED");
     }
   }

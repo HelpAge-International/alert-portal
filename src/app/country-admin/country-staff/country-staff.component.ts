@@ -1,18 +1,20 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AngularFire} from 'angularfire2';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Constants} from '../../utils/Constants';
-import {ModelStaffDisplay} from '../../model/staff-display.model';
-import {Observable, Subject} from 'rxjs';
-import {ModelStaff} from '../../model/staff.model';
-import {ModelUserPublic} from '../../model/user-public.model';
-import {OfficeType, SkillType, StaffPosition, UserType} from '../../utils/Enums';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AngularFire} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../utils/Constants";
+import {Observable, Subject} from "rxjs";
+import {ModelStaff} from "../../model/staff.model";
+import {ModelUserPublic} from "../../model/user-public.model";
+import {OfficeType, SkillType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {PartnerModel} from "../../model/partner.model";
 import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {ModelDepartment} from "../../model/department.model";
+
 declare var jQuery: any;
+
 @Component({
   selector: 'app-country-staff',
   templateUrl: './country-staff.component.html',
@@ -30,7 +32,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private UserType = Constants.COUNTRY_ADMIN_USER_TYPE;
   private userTypesList = Constants.COUNTRY_ADMIN_USER_TYPE_SELECTION;
   private OfficeType = Constants.OFFICE_TYPE;
-  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.LabOffice];
+  private officeTypesList = [OfficeType.All, OfficeType.FieldOffice, OfficeType.MainOffice];
   private notificationSettings = Constants.NOTIFICATION_SETTINGS;
 
   All_Department = 'All departments';
@@ -48,7 +50,8 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private partnerOrganisations: PartnerOrganisationModel[] = [];
   private supportSkills: string[] = [];
   private techSkills: string[] = [];
-  private departments: any[] = [];
+  private departments: ModelDepartment[] = [];
+  private departmentMap: Map<string, string> = new Map<string, string>();
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -79,22 +82,23 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private initData() {
     this.getStaffData();
     this.getPartnerData();
-    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
-      .map(departmentList => {
-        let departments = [this.All_Department];
-        departmentList.forEach(x => {
-          departments.push(x.$key);
-        });
-        return departments;
-      })
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
-        this.departments = x;
+      .subscribe(snap => {
+        this.departments = [];
+        this.departmentMap.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        })
       });
   }
 
   private getStaffData() {
-    const staffSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
       .do(list => {
         list.forEach(item => {
           this.staffList.push(this.addStaff(item));
@@ -106,22 +110,42 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   private getPartnerData() {
-    this._userService.getPartnerUsers()
+    this._userService.getPartnerUserIds(this.agencyAdminId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(partners => {
-        this.partnersList = partners;
-        this.partnersList.forEach(partner => {
-          this._userService.getUser(partner.id)
+        this.partnersList = [];
+        partners.forEach(partnerId => {
+          this._userService.getPartnerUserById(partnerId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(partnerPublicUser => {
-              this.partnerPublicUser[partner.id] = partnerPublicUser;
-            });
-          this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(partnerOrganisation => {
-              this.partnerOrganisations[partner.id] = partnerOrganisation
+            .subscribe(partner => {
+              this.partnersList.push(partner);
+
+              this._userService.getUser(partner.id)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(partnerPublicUser => {
+                  this.partnerPublicUser[partner.id] = partnerPublicUser;
+                });
+
+              this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(partnerOrganisation => {
+                  this.partnerOrganisations[partner.id] = partnerOrganisation
+                });
             });
         });
+        // this.partnersList = partners;
+        // this.partnersList.forEach(partner => {
+        //   this._userService.getUser(partner.id)
+        //     .takeUntil(this.ngUnsubscribe)
+        //     .subscribe(partnerPublicUser => {
+        //       this.partnerPublicUser[partner.id] = partnerPublicUser;
+        //     });
+        //   this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+        //     .takeUntil(this.ngUnsubscribe)
+        //     .subscribe(partnerOrganisation => {
+        //       this.partnerOrganisations[partner.id] = partnerOrganisation
+        //     });
+        // });
       });
   }
 

@@ -8,6 +8,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {DisplayError} from "../../errors/display.error";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {FirebaseAuthState} from "angularfire2";
 
 @Component({
   selector: 'app-donor-account-settings',
@@ -29,6 +30,7 @@ export class DonorAccountSettingsComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
   private userPublic: ModelUserPublic;
+  authState: FirebaseAuthState;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -37,8 +39,9 @@ export class DonorAccountSettingsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+      this.uid = auth.auth.uid;
+      this.authState = auth;
       this._userService.getUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(userPublic => {
         if (userPublic.id) {
           this.userPublic = userPublic;
@@ -62,7 +65,7 @@ export class DonorAccountSettingsComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    this._userService.saveUserPublic(this.userPublic)
+    this._userService.saveUserPublic(this.userPublic, this.authState)
       .then(() => {
         this.alertMessage = new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE', AlertMessageType.Success);
       })

@@ -24,7 +24,14 @@
             </div><br>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP' | translate }}</strong></h6>
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP' | translate }}</strong>
+                <!-- TOOLTIP 5.9 -->
+            <tooltip
+                [level1]= "'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT9.LEVEL1'"
+            ></tooltip>
+                </h6>
+                
+
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="relationship"
                         [(ngModel)]="surgeEquipment.relationship">
