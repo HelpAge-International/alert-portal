@@ -112,6 +112,7 @@ export class MapService {
       this.listCountries.push(value);
       let position = 0;
       if (this.clickedCountry != null) {
+        let count: number = 0;
         value.hazards.forEach((_, hazardScenario) => {
           console.log("For " + value.countryId + " -> " + Countries[value.location]);
           this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
@@ -125,7 +126,13 @@ export class MapService {
                 icon: HazardImages.init().get(hazardScenario)
               });
               marker.setMap(this.map);
-              position += 1.2;
+              count++;
+              if (count % 2 == 0) {
+                position *= -1;
+              }
+              else {
+                position += 1.2;
+              }
             }
           });
         });
@@ -303,7 +310,7 @@ export class MapService {
     this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        let hazardRedAlert: Map<any, boolean> = new Map<any, boolean>();
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
             let res: boolean = false;
@@ -845,8 +852,8 @@ export class MapCountry {
 
   public actionMap: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
   public departments: MapDepartment[] = [];
-  public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
-  public hazardScenarioList: HazardScenario[] = [];
+  public hazards: Map<any, boolean> = new Map<any, boolean>();
+  public hazardScenarioList: any[] = [];
 
   constructor(countryId: string, location: number) {
     this.location = location;
