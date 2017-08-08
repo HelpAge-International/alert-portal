@@ -6,6 +6,8 @@ import {PermissionSettingsModel} from "../model/permission-settings.model";
 import {ModuleSettingsModel} from "../model/module-settings.model";
 import {ClockSettingsModel} from "../model/clock-settings.model";
 import {NotificationSettingsModel} from "../model/notification-settings.model";
+import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
+import {Privacy} from "../utils/Enums";
 
 @Injectable()
 export class SettingsService {
@@ -81,6 +83,23 @@ export class SettingsService {
     return this.af.database.object(Constants.APP_STATUS).update(moduleSettingsData);
   }
 
+  public getPrivacySettingForCountry(countryId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + countryId, {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          let privacy = new ModelAgencyPrivacy();
+          privacy.mpa = snap.val()[0].privacy;
+          privacy.apa = snap.val()[1].privacy;
+          privacy.chs = snap.val()[2].privacy;
+          privacy.riskMonitoring = snap.val()[3].privacy;
+          privacy.officeProfile = snap.val()[4].privacy;
+          privacy.responsePlan = snap.val()[5].privacy;
+          privacy.id = snap.key;
+          return privacy;
+        }
+      });
+  }
+
 
   // COUNTRY CLOCK SETTINGS
 
@@ -144,6 +163,6 @@ export class SettingsService {
   }
 
   getAgencyClockSettings(agencyId) {
-    return this.af.database.object(Constants.APP_STATUS+"/agency/"+agencyId+"/clockSettings");
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings");
   }
 }

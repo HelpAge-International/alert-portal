@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../../services/user.service";
 import {Constants} from '../../../utils/Constants';
@@ -39,22 +39,22 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
 
       this._userService.getCountryAdminUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryAdminUser => {
-        if (countryAdminUser) {
-          this.countryId = countryAdminUser.countryId;
+          if (countryAdminUser) {
+            this.countryId = countryAdminUser.countryId;
 
-          this._settingsService.getCountryModulesSettings(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(modules => {
-            this.moduleSettings = modules;
-          })
-        }
-      });
+            this._settingsService.getCountryModulesSettings(this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(modules => {
+                this.moduleSettings = modules;
+              })
+          }
+        });
     });
   }
 
