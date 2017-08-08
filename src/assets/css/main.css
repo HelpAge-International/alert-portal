@@ -8882,6 +8882,12 @@ h3, h4 {
   align-items: center;
 }
 
+@media all and (-ms-high-contrast:none) {
+  .Login__logo-container, .Page-top__wrap {
+    -ms-flex-direction: column;
+  }
+}
+
 .Help-age__logo {
   position: absolute;
   left: 1em;
