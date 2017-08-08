@@ -3,16 +3,16 @@
   </div>
 </div>
 
-<div [hidden]="inactive" class="Alert-error">
+<div [class.hide]="inactive" class="Alert-error">
   {{errorMessage | translate}}
 </div>
 
 
-<div [hidden]="successInactive" class="Alert-success">
+<div [class.hide]="successInactive" class="Alert-success">
   {{successMessage | translate}} {{emailEntered}}
 </div>
 
-<app-alert-loader [hidden]="loaderInactive"></app-alert-loader>
+<app-alert-loader [class.hide]="loaderInactive"></app-alert-loader>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap">
