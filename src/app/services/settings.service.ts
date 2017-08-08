@@ -94,10 +94,52 @@ export class SettingsService {
           privacy.riskMonitoring = snap.val()[3].privacy;
           privacy.officeProfile = snap.val()[4].privacy;
           privacy.responsePlan = snap.val()[5].privacy;
-          privacy.id = snap.key;
           return privacy;
         }
       });
+  }
+
+  public updateCountryPrivacy(countryId, module, countryPrivacy) {
+    if (module.mpa == Privacy.Private) {
+      countryPrivacy.mpa = Privacy.Private;
+    } else if (module.mpa == Privacy.Network && countryPrivacy.mpa == Privacy.Public) {
+      countryPrivacy.mpa = Privacy.Network;
+    }
+    if (module.apa == Privacy.Private) {
+      countryPrivacy.apa = Privacy.Private;
+    } else if (module.apa == Privacy.Network && countryPrivacy.apa == Privacy.Public) {
+      countryPrivacy.apa = Privacy.Network;
+    }
+    if (module.chs == Privacy.Private) {
+      countryPrivacy.chs = Privacy.Private;
+    } else if (module.chs == Privacy.Network && countryPrivacy.chs == Privacy.Public) {
+      countryPrivacy.chs = Privacy.Network;
+    }
+    if (module.riskMonitoring == Privacy.Private) {
+      countryPrivacy.riskMonitoring = Privacy.Private;
+    } else if (module.riskMonitoring == Privacy.Network && countryPrivacy.riskMonitoring == Privacy.Public) {
+      countryPrivacy.riskMonitoring = Privacy.Network;
+    }
+    if (module.responsePlan == Privacy.Private) {
+      countryPrivacy.responsePlan = Privacy.Private;
+    } else if (module.responsePlan == Privacy.Network && countryPrivacy.responsePlan == Privacy.Public) {
+      countryPrivacy.responsePlan = Privacy.Network;
+    }
+    if (module.officeProfile == Privacy.Private) {
+      countryPrivacy.officeProfile = Privacy.Private;
+    } else if (module.officeProfile == Privacy.Network && countryPrivacy.officeProfile == Privacy.Public) {
+      countryPrivacy.officeProfile = Privacy.Network;
+    }
+
+    let update = {};
+    update["/module/" + countryId +"/0/privacy"] = countryPrivacy.mpa;
+    update["/module/" + countryId +"/1/privacy"] = countryPrivacy.apa;
+    update["/module/" + countryId +"/2/privacy"] = countryPrivacy.chs;
+    update["/module/" + countryId +"/3/privacy"] = countryPrivacy.riskMonitoring;
+    update["/module/" + countryId +"/4/privacy"] = countryPrivacy.officeProfile;
+    update["/module/" + countryId +"/5/privacy"] = countryPrivacy.responsePlan;
+
+    this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
 

@@ -40,8 +40,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
-              private userService:UserService,
-              private settingService:SettingsService,
+              private userService: UserService,
+              private settingService: SettingsService,
               private router: Router) {
     this.disableMap = PageControlService.agencyDisableMap();
     this.listOfEnabledEnableButtons = new Map<PermissionsAgency, boolean>();
@@ -64,7 +64,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(_ => {
               this.ModuleName.map(moduleName => {
-                this.modules[moduleName] = {$key: moduleName, privacy:-1, status:false};
+                this.modules[moduleName] = {$key: moduleName, privacy: -1, status: false};
               });
 
               _.map(module => {
@@ -78,12 +78,12 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-	try{
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  	} catch(e){
-  		console.log('Unable to releaseAll');
-  	}
+    try {
+      this.ngUnsubscribe.next();
+      this.ngUnsubscribe.complete();
+    } catch (e) {
+      console.log('Unable to releaseAll');
+    }
   }
 
   private navigateToLogin() {
@@ -91,7 +91,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   private changePrivacy(moduleId, privacy) {
-  	this.modules[moduleId].privacy = privacy;
+    this.modules[moduleId].privacy = privacy;
   }
 
   private changeStatus(moduleId, status) {
@@ -108,33 +108,33 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   private cancelChanges() {
-	  this.ngOnInit();
+    this.ngOnInit();
   }
 
-  private saveChanges(){
-  	var moduleItems = {};
-  	var modules = this.modules.map((module, index) => {
+  private saveChanges() {
+    var moduleItems = {};
+    var modules = this.modules.map((module, index) => {
 
-  		moduleItems[index] = this.modules[index];
+      moduleItems[index] = this.modules[index];
 
       delete moduleItems[index].$key;
       delete moduleItems[index].$exists;
 
-  		return this.modules[index];
-  	});
+      return this.modules[index];
+    });
 
-  	this.af.database.object(Constants.APP_STATUS + '/module/' + this.agencyId)
-  	.set(moduleItems)
-  	.then(_ => {
-      if (!this.alertShow){
-        this.saved = true;
-        this.alertSuccess = true;
-        this.alertShow = true;
-        this.alertMessage = "AGENCY_ADMIN.SETTINGS.MODULE_NAME.SAVE_SUCCESS";
-        this.updateCountryPrivacySettings(moduleItems);
-      }
-    })
-  	.catch(err => console.log(err, 'You do not have access!'));
+    this.af.database.object(Constants.APP_STATUS + '/module/' + this.agencyId)
+      .set(moduleItems)
+      .then(_ => {
+        if (!this.alertShow) {
+          this.saved = true;
+          this.alertSuccess = true;
+          this.alertShow = true;
+          this.alertMessage = "AGENCY_ADMIN.SETTINGS.MODULE_NAME.SAVE_SUCCESS";
+          this.updateCountryPrivacySettings(moduleItems);
+        }
+      })
+      .catch(err => console.log(err, 'You do not have access!'));
   }
 
   private updateCountryPrivacySettings(moduleItems) {
@@ -142,53 +142,14 @@ export class ModulesComponent implements OnInit, OnDestroy {
     module.mapObject(moduleItems);
     console.log(module);
     this.userService.getAllCountryIdsForAgency(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(countryIds =>{
-        countryIds.forEach(countryId =>{
+      .first()
+      .subscribe(countryIds => {
+        countryIds.forEach(countryId => {
           this.settingService.getPrivacySettingForCountry(countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((countryPrivacy:ModelAgencyPrivacy) =>{
+            .first()
+            .subscribe((countryPrivacy: ModelAgencyPrivacy) => {
 
-              if (module.mpa == Privacy.Private) {
-                countryPrivacy.mpa = Privacy.Private;
-              } else if (module.mpa == Privacy.Network && countryPrivacy.mpa == Privacy.Public) {
-                countryPrivacy.mpa = Privacy.Network;
-              }
-              if (module.apa == Privacy.Private) {
-                countryPrivacy.apa = Privacy.Private;
-              } else if (module.apa == Privacy.Network && countryPrivacy.apa == Privacy.Public) {
-                countryPrivacy.apa = Privacy.Network;
-              }
-              if (module.chs == Privacy.Private) {
-                countryPrivacy.chs = Privacy.Private;
-              } else if (module.chs == Privacy.Network && countryPrivacy.chs == Privacy.Public) {
-                countryPrivacy.chs = Privacy.Network;
-              }
-              if (module.riskMonitoring == Privacy.Private) {
-                countryPrivacy.riskMonitoring = Privacy.Private;
-              } else if (module.riskMonitoring == Privacy.Network && countryPrivacy.riskMonitoring == Privacy.Public) {
-                countryPrivacy.riskMonitoring = Privacy.Network;
-              }
-              if (module.responsePlan == Privacy.Private) {
-                countryPrivacy.responsePlan = Privacy.Private;
-              } else if (module.responsePlan == Privacy.Network && countryPrivacy.responsePlan == Privacy.Public) {
-                countryPrivacy.responsePlan = Privacy.Network;
-              }
-              if (module.officeProfile == Privacy.Private) {
-                countryPrivacy.officeProfile = Privacy.Private;
-              } else if (module.officeProfile == Privacy.Network && countryPrivacy.officeProfile == Privacy.Public) {
-                countryPrivacy.officeProfile = Privacy.Network;
-              }
-
-              let update = {};
-              update["/module/" + countryId +"/0/privacy"] = countryPrivacy.mpa;
-              update["/module/" + countryId +"/1/privacy"] = countryPrivacy.apa;
-              update["/module/" + countryId +"/2/privacy"] = countryPrivacy.chs;
-              update["/module/" + countryId +"/3/privacy"] = countryPrivacy.riskMonitoring;
-              update["/module/" + countryId +"/4/privacy"] = countryPrivacy.officeProfile;
-              update["/module/" + countryId +"/5/privacy"] = countryPrivacy.responsePlan;
-
-              this.af.database.object(Constants.APP_STATUS).update(update);
+              this.settingService.updateCountryPrivacy(countryId, module, countryPrivacy);
 
             });
         });
@@ -206,6 +167,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
     this.alertShow = true;
     this.alertMessage = "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MODULE_NAME";
   }
+
   /**
    * Permissions propagation
    */
