@@ -481,7 +481,7 @@
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired) ||
-                    (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) &&
+                    (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || agencyId == userAgencyId) &&
                     (!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
@@ -1035,7 +1035,7 @@
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired) ||
-                    (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) &&
+                    (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || agencyId == userAgencyId) &&
                     (!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&

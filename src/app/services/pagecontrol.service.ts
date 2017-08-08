@@ -832,7 +832,7 @@ export class PageControlService {
         })
         .takeUntil(ngUnsubscribe)
         .subscribe((snap) => {
-          if (snap.val().hasOwnProperty('permissionSettings')) {
+          if (snap.val() && snap.val().hasOwnProperty('permissionSettings')) {
             let s = snap.val().permissionSettings;
             // Build the matrix
             let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();

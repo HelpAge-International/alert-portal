@@ -119,7 +119,7 @@
 <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
 <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
 
-<div *ngIf="!tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') " class="Page-top__wrap--w_sub_header--no-paddng">
+<div *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') " class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Empty--ribbon">
       No permission to view country details for this agency!

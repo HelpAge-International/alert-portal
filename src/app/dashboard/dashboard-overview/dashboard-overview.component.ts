@@ -10,7 +10,7 @@ import {HazardImages} from "../../utils/HazardImages";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {PageControlService} from "../../services/pagecontrol.service";
 
 declare var jQuery: any;
 
@@ -49,9 +49,11 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private userType: number;
   private affectedAreasToShow: any [];
   private privacy: ModelAgencyPrivacy;
+  private userAgencyId: string;
 
   constructor(private route: ActivatedRoute,
               private userService: UserService,
+              private pageControl: PageControlService,
               private alertService: ActionsService,
               private agencyService: AgencyService,
               private router: Router) {
@@ -60,7 +62,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   }
 
   private initMainMenu() {
-    this.tabMap.set("officeProfile", true);
+    this.tabMap.set("officeProfile", false);
     this.tabMap.set("risk", false);
     this.tabMap.set("preparedness-min", false);
     this.tabMap.set("preparedness-adv", false);
@@ -81,81 +83,92 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["countryId"]) {
-          this.countryId = params["countryId"];
-        }
-        if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
-          this.getAgencyInfo(this.agencyId);
-        }
-        if (params["systemId"]) {
-          this.systemId = params["systemId"];
-        }
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"];
-        }
-        if (params["from"]) {
-          this.from = params["from"];
-          this.menuSelection(this.from);
-        }
-        if (params["officeTarget"]) {
-          this.officeTarget = params["officeTarget"];
-          this.handleOfficeSubMenu();
-        }
-        if (params["canCopy"]) {
-          this.canCopy = params["canCopy"];
-        }
-        if (params["agencyOverview"]) {
-          this.agencyOverview = params["agencyOverview"];
-          console.log(this.agencyOverview);
-        }
-        if (params["userType"]) {
-          this.userType = params["userType"];
-        }
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.userAgencyId = agencyId;
 
-        if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
-          this.router.navigateByUrl("/dashboard").then(() => {
-            console.log("Invalid url parameters!!");
-          }, error => {
-            console.log(error.message);
-          });
-        }
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
+          }
+          if (params["agencyId"]) {
+            this.agencyId = params["agencyId"];
+            this.getAgencyInfo(this.agencyId);
+          }
+          if (params["systemId"]) {
+            this.systemId = params["systemId"];
+          }
+          if (params["isViewing"]) {
+            this.isViewing = params["isViewing"];
+          }
+          if (params["from"]) {
+            this.from = params["from"];
+            this.menuSelection(this.from);
+          }
+          if (params["officeTarget"]) {
+            this.officeTarget = params["officeTarget"];
+            this.handleOfficeSubMenu();
+          }
+          if (params["canCopy"]) {
+            this.canCopy = params["canCopy"];
+          }
+          if (params["agencyOverview"]) {
+            this.agencyOverview = params["agencyOverview"];
+            console.log(this.agencyOverview);
+          }
+          if (params["userType"]) {
+            this.userType = params["userType"];
+          }
 
-        this.agencyService.getPrivacySettingForAgency(this.agencyId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(privacy => {
-            console.log(privacy)
-            this.privacy = privacy;
-            this.updateMainMenu(this.privacy);
-          });
+          if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
+            this.router.navigateByUrl("/dashboard").then(() => {
+              console.log("Invalid url parameters!!");
+            }, error => {
+              console.log(error.message);
+            });
+          }
 
-        this.getAlerts();
+          this.agencyService.getPrivacySettingForAgency(this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(privacy => {
+              console.log(privacy)
+              this.privacy = privacy;
+              this.updateMainMenu(this.privacy);
+            });
 
-      });
+          this.getAlerts();
+
+        });
+
+    });
+
+
   }
 
   private updateMainMenu(privacy: ModelAgencyPrivacy) {
-    if (privacy.officeProfile != Privacy.Public) {
-      if (privacy.riskMonitoring == Privacy.Public) {
-        this.handleMainMenu("risk");
-      } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public) {
-        if (privacy.mpa == Privacy.Public) {
-          this.handleMainMenu("preparedness-min");
-        } else {
-          this.handleMainMenu("preparedness-adv");
-        }
-      } else if (privacy.responsePlan == Privacy.Public) {
-        this.handleMainMenu("plan");
-      } else {
-        this.tabMap.forEach((v, k) => {
-          this.tabMap.set(k, false);
-        });
-      }
-    } else {
+    if (this.agencyId == this.userAgencyId) {
       this.handleMainMenu("officeProfile");
+    } else {
+      if (privacy.officeProfile != Privacy.Public) {
+        if (privacy.riskMonitoring == Privacy.Public) {
+          this.handleMainMenu("risk");
+        } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public) {
+          if (privacy.mpa == Privacy.Public) {
+            this.handleMainMenu("preparedness-min");
+          } else {
+            this.handleMainMenu("preparedness-adv");
+          }
+        } else if (privacy.responsePlan == Privacy.Public) {
+          this.handleMainMenu("plan");
+        } else {
+          this.tabMap.forEach((v, k) => {
+            this.tabMap.set(k, false);
+          });
+        }
+      } else {
+        this.handleMainMenu("officeProfile");
+      }
     }
   }
 

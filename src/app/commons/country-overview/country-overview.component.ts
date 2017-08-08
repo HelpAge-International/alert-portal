@@ -109,6 +109,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
 
   private date: number = new Date().getTime();
+  private userAgencyId: string;
 
   constructor(private pageControl: PageControlService,
               private agencyService: AgencyService,
@@ -121,7 +122,11 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._loadData();
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.userAgencyId = agencyId;
+      this._loadData();
+    });
+
   }
 
   ngOnDestroy() {

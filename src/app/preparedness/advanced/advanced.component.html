@@ -709,7 +709,7 @@
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired) ||
-                    (filterType == -1 || action.type == filterType) && (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) &&
+                    (filterType == -1 || action.type == filterType) && (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || isSameAgency) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
@@ -1245,7 +1245,7 @@
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired) ||
                     (filterType == -1 || action.type == filterType) &&
-                    (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) &&
+                    (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || isSameAgency) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->

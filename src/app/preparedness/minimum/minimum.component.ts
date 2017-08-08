@@ -111,6 +111,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected prepActionService: PrepActionService = new PrepActionService();
 
   private privacy: ModelAgencyPrivacy;
+  private userAgencyId: string;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -159,6 +160,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.userAgencyId = agencyId;
           this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.assignActionAsignee = this.uid;
