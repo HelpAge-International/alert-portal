@@ -161,7 +161,6 @@ import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-p
 import {PageControlService} from "./services/pagecontrol.service";
 import {DonorAccountSettingsComponent} from './donor-module/donor-account-settings/donor-account-settings.component';
 import {DonorChangePasswordComponent} from './donor-module/donor-account-settings/donor-change-password/donor-change-password.component';
-import {NewDonorPasswordComponent} from './donor-module/new-donor-password/new-donor-password.component';
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import {BudgetReportComponent} from "./export-start-fund/budget-report/budget-report.component";
 import {ProjectActivitiesComponent} from "./export-start-fund/project-activities/project-activities.component";
@@ -188,6 +187,12 @@ import {SumPipe} from "./utils/pipes/sum.pipe";
 import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
 import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
 import { ActionsService } from "./services/actions.service";
+import { PartnerValidationComponent } from './commons/partner-validation/partner-validation.component';
+import {WindowRefService} from "./services/window-ref.service";
+import { AfterValidationComponent } from './commons/partner-validation/after-validation/after-validation.component';
+import { AccountSettingProfileComponent } from './commons/account-setting-profile/account-setting-profile.component';
+import { AccountSettingPasswordComponent } from './commons/account-setting-password/account-setting-password.component';
+import { DirectorAccountSettingsComponent } from './director/director-account-settings/director-account-settings.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -355,7 +360,6 @@ const firebaseAuthConfig = {
     AddEditMappingProgrammeComponent,
     DonorAccountSettingsComponent,
     DonorChangePasswordComponent,
-    NewDonorPasswordComponent,
     BudgetReportComponent,
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
@@ -376,7 +380,12 @@ const firebaseAuthConfig = {
     DashboardOverviewComponent,
     NewUserPasswordComponent,
     CountryOverviewComponent,
-    CountryAgenciesComponent
+    CountryAgenciesComponent,
+    PartnerValidationComponent,
+    AfterValidationComponent,
+    AccountSettingProfileComponent,
+    AccountSettingPasswordComponent,
+    DirectorAccountSettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -418,6 +427,7 @@ const firebaseAuthConfig = {
     StockService,
     PageControlService,
     ContactService,
+    WindowRefService,
     ActionsService],
   bootstrap: [AppComponent]
 })

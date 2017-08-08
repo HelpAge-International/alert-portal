@@ -159,7 +159,7 @@
           <div class="form-group">
             <label for="n-DueDate">{{"PREPAREDNESS.DUE_DATE" | translate}}:</label>
             <material-datepicker id="n-DueDate" placeholder="{{action.dueDate ? (action.dueDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control col-sm-5"
-                                 dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)"
+                                 dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)" [rangeStart]="getNowDate()"
                                  [(date)]="dueDate"></material-datepicker>
           </div>
           <div [hidden]="(dueDate != undefined || filterLockDueDate) || !showDueDate" class="alert alert-danger">

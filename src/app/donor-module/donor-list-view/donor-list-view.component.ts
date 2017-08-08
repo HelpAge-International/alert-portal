@@ -5,9 +5,10 @@ import {SuperMapComponents, SDepHolder} from "../../utils/MapHelper";
 import {RegionHolder} from "../../map/map-countries-list/map-countries-list.component";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Countries, AlertLevels} from "../../utils/Enums";
+import {Countries, AlertLevels, HazardScenario} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {HazardImages} from "../../utils/HazardImages";
 
 @Component({
   selector: 'app-donor-list-view',
@@ -16,6 +17,11 @@ import {PageControlService} from "../../services/pagecontrol.service";
 })
 
 export class DonorListViewComponent implements OnInit, OnDestroy {
+  private displayCountries: number[] = [];
+  private hazardMap = new Map<number, Set<number>>();
+  private countryLocationMap = new Map<string, number>();
+  private countryAgencyRefMap = new Map<number, any>();
+  private HazardScenario = Constants.HAZARD_SCENARIOS;
 
   private loaderInactive: boolean;
 
@@ -61,20 +67,11 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-
-        this.userService.getAgencyId('donor', this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(agencyId => {
-            this.agencyId = agencyId;
-            this.userService.getSystemAdminId('donor', this.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(systemAdminId => {
-                this.systemAdminId = systemAdminId;
-                this.loadData();
-              });
-          });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.systemAdminId = systemId;
+      this.loadData();
     });
   }
 
@@ -113,19 +110,43 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
 
   private loadData() {
 
-    console.log("Agency Admin ---- " + this.agencyId);
-    console.log("System Admin ---- " + this.systemAdminId);
-    this.userService.getAllCountryIdsForAgency(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(countryIds => {
-        this.countryIds = countryIds;
-
-        this.userService.getAllCountryAlertLevelsForAgency(this.agencyId)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(countryAlertLevels => {
-            this.overallAlertLevels = countryAlertLevels;
-            this.initData();
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
+      .map(snap => {
+        let locations = [];
+        if (snap && snap.val()) {
+          let countryObjects = Object.keys(snap.val()).map(key => {
+            let countryWithAgencyId = snap.val()[key];
+            countryWithAgencyId["agencyId"] = key;
+            return countryWithAgencyId;
           });
+          countryObjects.forEach(item => {
+            let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
+              let country = item[key];
+              country["countryId"] = key;
+              country["agencyId"] = item.agencyId;
+              return country;
+            });
+            countries.forEach(country => {
+              locations.push(country.location);
+              this.hazardMap.set(Number(country.location), new Set<number>());
+              this.countryAgencyRefMap.set(Number(country.location), country);
+            });
+            countries.forEach(country => {
+              this.getHazardInfo(country);
+            });
+          });
+        }
+        return locations;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(allLocations => {
+        this.loaderInactive = true;
+        this.displayCountries = [];
+        allLocations.forEach(location => {
+          if (!this.displayCountries.includes(location)) {
+            this.displayCountries.push(location);
+          }
+        });
       });
 
   }
@@ -138,6 +159,78 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
     this.getThresholds().then(_ => {
       this.loaderInactive = true;
     });
+  }
+
+  // private getHazardInfo(country: any) {
+  //   this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+  //     .takeUntil(this.ngUnsubscribe)
+  //     .subscribe(country => {
+  //       this.countryLocationMap.set(country.$key, Number(country.location));
+  //       this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
+  //         .takeUntil(this.ngUnsubscribe)
+  //         .subscribe(hazards => {
+  //           hazards.forEach(hazard => {
+  //             let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
+  //             this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
+  //           });
+  //         });
+  //     });
+  // }
+
+
+  private getHazardInfo(country: any) {
+    console.log(country);
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + country.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+        let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.hazardMap.get(country.location) != null) {
+          listOfActiveHazards = this.hazardMap.get(country.location);
+        }
+        hazardRedAlert.forEach((value, key) => {
+          if (value) {
+            listOfActiveHazards.add(key);
+          }
+        });
+        this.hazardMap.set(country.location, listOfActiveHazards);
+      });
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  getHazardsForCountry(location) {
+    return Array.from(this.hazardMap.get(location));
+  }
+
+  seeCountryIndex(location) {
+    let navRef = this.countryAgencyRefMap.get(location);
+    this.router.navigate(["donor-module/donor-country-index", {
+      "countryId": navRef.countryId,
+      "agencyId": navRef.agencyId
+    }]);
   }
 
   private getAllRegionsAndCountries() {

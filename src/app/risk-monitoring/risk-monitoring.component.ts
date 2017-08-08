@@ -11,10 +11,16 @@ import {UserService} from "../services/user.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
-import _date = moment.unitOfTime._date;
-
+import {HazardImages} from "../utils/HazardImages";
+import {WindowRefService} from "../services/window-ref.service";
+import * as jsPDF from 'jspdf'
+import {ModelUserPublic} from "../model/user-public.model";
+import * as firebase from "firebase/app";
+import App = firebase.app.App;
 
 declare var jQuery: any;
+
+
 @Component({
   selector: 'app-risk-monitoring',
   templateUrl: './risk-monitoring.component.html',
@@ -39,7 +45,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private canCopy: boolean;
   private agencyOverview: boolean;
 
-  private agencyAdminId: string;
   private countryLocation: any;
   private Countries = Countries;
 
@@ -95,7 +100,25 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private storage: LocalStorageService, private translate: TranslateService, private userService: UserService) {
+  private logsToExport: any;
+  private fromDate: string;
+  private fromDateTimeStamp: number;
+  private toDate: string;
+  private toDateTimeStamp: number;
+
+  private usersForAssign: any;
+  private assignedIndicator: any;
+  private assignedHazard: any;
+  private assignedUser: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private storage: LocalStorageService,
+              private translate: TranslateService,
+              private userService: UserService,
+              private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -112,6 +135,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.usersForAssign = [];
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -136,71 +161,26 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
 
         if (this.agencyId && this.countryID) {
-          this._getHazards()
+          this._getHazards();
           this.getCountryLocation();
           this._getCountryContextIndicators();
         } else {
-          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             this.uid = user.uid;
             this.UserType = userType;
-
-            // if (this.agencyId && this.countryID) {
-            //   this._getHazards()
-            //   this._getCountryContextIndicators();
-            // } else {
             this.agencyId = agencyId;
             this.countryID = countryId;
             this.systemId = systemId;
             this._getHazards();
             this.getCountryLocation();
             this._getCountryContextIndicators();
-            // this._getCountryID().then(() => {
-            //   this.getAgencyID().then(() => {
-            //     this.getCountryLocation();
-            //   });
-            //   this._getHazards().then(() => {
-            //
-            //   });
-            //   this._getCountryContextIndicators();
-            // });
-            // }
-
+            this.getUsersForAssign();
             PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
               this.countryPermissionsMatrix = isEnabled;
             }));
           });
         }
-
-
-        // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        //   this.uid = user.uid;
-        //   this.UserType = userType;
-        //
-        //   if (this.agencyId && this.countryID) {
-        //     this._getHazards().then(() => {
-        //
-        //     });
-        //     this._getCountryContextIndicators();
-        //   } else {
-        //     this._getCountryID().then(() => {
-        //       this.getAgencyID().then(() => {
-        //         this.getCountryLocation();
-        //       });
-        //       this._getHazards().then(() => {
-        //
-        //       });
-        //       this._getCountryContextIndicators();
-        //     });
-        //   }
-        //
-        //   PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-        //     this.countryPermissionsMatrix = isEnabled;
-        //   }));
-        //
-        // });
       })
-
-
   }
 
   ngOnDestroy(): void {
@@ -208,31 +188,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
-        this.countryID = countryID.$value ? countryID.$value : "";
-        res(true);
-      });
-    });
-    return promise;
-  }
-
-  private getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIds: any) => {
-          this.agencyAdminId = agencyIds[0].$key ? agencyIds[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
   private getCountryLocation() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyAdminId + '/' + this.countryID + "/location")
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryID + "/location")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((location: any) => {
           this.countryLocation = location.$value ? location.$value : 0;
@@ -284,6 +242,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
 
       this.indicatorsCC = indicators;
+      console.log(this.indicatorsCC);
     });
   }
 
@@ -294,7 +253,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         this.archivedHazards = [];
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
-          hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+          if (hazard.hazardScenario != -1) {
+            hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+          }
 
           this.getIndicators(hazard.id).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
@@ -312,12 +273,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
           if (hazard.isActive) {
             this.activeHazards.push(hazard);
+            console.log(this.activeHazards);
           } else {
             this.archivedHazards.push(hazard);
           }
 
         });
-
         res(true);
       });
     });
@@ -354,9 +315,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   collapseAll(mode: string) {
     if (mode == 'expand') {
-      jQuery('.collapse').collapse('show');
+      jQuery('.Accordion__Content').collapse('show');
     } else {
-      jQuery('.collapse').collapse('hide');
+      jQuery('.Accordion__Content').collapse('hide');
     }
   }
 
@@ -610,6 +571,154 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             });
         });
     }
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  setExportLog(logs: any[]) {
+    this.logsToExport = logs;
+    console.log(this.logsToExport);
+  }
+
+  selectDate(value, dateType) {
+    if (dateType === 'fromDate') {
+      this.fromDateTimeStamp = moment(value).startOf("day").valueOf();
+    } else {
+      this.toDateTimeStamp = moment(value).endOf("day").valueOf();
+    }
+  }
+
+  exportLog(logs: any[]) {
+    var doc = new jsPDF();
+    doc.setFontType("normal");
+    doc.setFontSize("12");
+
+    var totalPageHeight = doc.internal.pageSize.height;
+    var pageHeight = totalPageHeight - 20;
+
+    let x = 10;
+    let y = 10;
+
+    logs.forEach(log => {
+      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp )) {
+        if (y > pageHeight) {
+          y = 10;
+          doc.addPage();
+        }
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE') + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
+
+        if (y > pageHeight) {
+          y = 10;
+          doc.addPage();
+        }
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));
+
+        if (y > pageHeight) {
+          y = 10;
+          doc.addPage();
+        }
+        doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.AUTHOR') + ' ' + log.addedByFullName);
+
+        let message = doc.splitTextToSize(log['content'], 180);
+        message.forEach((m, index) => {
+          if (y > pageHeight) {
+            y = 10;
+            doc.addPage();
+          }
+          doc.text(x, y += 10, index === 0 ? this.translate.instant('RISK_MONITORING.EXPORT_LOG.MESSAGE') + ' ' + m : m);
+        })
+
+        doc.text(x, y += 10, ' ');
+      }
+    });
+
+    // Save the PDF
+    doc.save('logs.pdf');
+  }
+
+  sourceClick(source) {
+    console.log(source.link);
+    let url = source.link;
+    let pattern = /^(http|https)/;
+    if (!pattern.test(url)) {
+      url = "http://" + url;
+    }
+    this.windowService.getNativeWindow().open(url);
+  }
+
+  greenSelected(key) {
+    this.indicatorTrigger[key] = 0;
+  }
+
+  amberSelected(key) {
+    this.indicatorTrigger[key] = 1;
+  }
+
+  redSelected(key) {
+    this.indicatorTrigger[key] = 2;
+  }
+
+  assignIndicatorTo(hazard, indicator) {
+    console.log(indicator);
+    this.assignedHazard = hazard;
+    this.assignedIndicator = indicator;
+  }
+
+  getUsersForAssign() {
+    if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(staff => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((user: ModelUserPublic) => {
+              let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+        });
+    } else {
+      //Obtaining the country admin data
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+        if (data.adminId) {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          });
+        }
+      });
+
+      //Obtaining other staff data
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+        for (let userID in data) {
+          if (!userID.startsWith('$')) {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+              this.usersForAssign.push(userToPush);
+            });
+          }
+        }
+      });
+    }
+  }
+
+  saveAssignedUser() {
+    jQuery("#assignIndicator").modal("hide");
+    if (this.assignedHazard === "countryContext") {
+      this.assignedHazard = this.countryID;
+    }
+    let data = {};
+    data["/indicator/" + this.assignedHazard + "/" + this.assignedIndicator.$key + "/assignee"] = this.assignedUser;
+    this.af.database.object(Constants.APP_STATUS).update(data).then(() => {
+      this.assignedHazard = null;
+      this.assignedIndicator = null;
+      this.assignedUser = "undefined";
+    });
   }
 
 }

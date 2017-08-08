@@ -81,6 +81,8 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
                 (this.userType == UserType.Ert) ||
                 (this.userType == UserType.PartnerUser)) {
                 this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+              } else if (this.userType == UserType.Donor) {
+                this.router.navigateByUrl(Constants.DONOR_HOME);
               }
 
             });

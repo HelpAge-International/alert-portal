@@ -68,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approvalPlans = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
+  private isRedAlert: boolean;
   private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
@@ -152,10 +153,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
   }
 
   getCSSHazard(hazard: number) {
@@ -283,6 +282,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
+
+        // Display APA only if there is a red alert
+        actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
+
         this.actionsOverdue = [];
         this.actionsToday = [];
         this.actionsThisWeek = [];
@@ -296,6 +299,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             x.level = action.level;
           });
         }
+
         for (let x of this.actionsToday) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
             x.task = action.task;
@@ -412,6 +416,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
     }
+    this.actionService.getRedAlerts(this.countryId)
+    .subscribe(alerts =>
+    {
+      alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+      this.isRedAlert =  alerts.length > 0;
+    });
   }
 
   showAffectedAreasForAlert(affectedAreas) {

@@ -43,7 +43,7 @@
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
                   (change)="selectedUserType(userType)" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of USER_TYPE_SELECTION;let idx = index" [hidden]="idx==0 || idx==8 || (idx==6 && !isDonor)" [value]="type">
+            <option *ngFor="let type of userTypeSelection;" [value]="type">
               {{USER_TYPE[type] | translate}}
             </option>
           </select>
@@ -94,7 +94,7 @@
           <label for="o-Type">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</label>
           <select class="form-control" id="o-Type" [(ngModel)]="officeType" name="officeType" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of OFFICE_TYPE_SELECTION; let idx = index" [hidden]="idx==0" [value]="type">
+            <option *ngFor="let type of officeTypes;" [value]="type">
               {{OFFICE_TYPE[type] | translate}}
             </option>
           </select>

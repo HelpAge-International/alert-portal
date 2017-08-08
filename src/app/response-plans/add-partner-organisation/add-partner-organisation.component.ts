@@ -1,9 +1,7 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors, Countries} from "../../utils/Enums";
-declare var jQuery: any;
-
+import {AlertMessageType, ResponsePlanSectors} from "../../utils/Enums";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from '../../model/alert-message.model';
@@ -17,6 +15,10 @@ import {CommonService} from "../../services/common.service";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+import {AngularFire} from "angularfire2";
+import has = Reflect.has;
+
+declare var jQuery: any;
 
 @Component({
   selector: 'app-add-partner-organisation',
@@ -26,6 +28,7 @@ import * as moment from "moment";
 })
 
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
+  private defaultCountry: any;
   private isEdit = false;
   private uid: string;
   private agencyId: string;
@@ -47,6 +50,8 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   // Other
   private activeProject: PartnerOrganisationProjectModel;
   private fromResponsePlans: boolean = false;
+  private projectEndDate: any[] = [];
+  private todayDayMonth = new Date(new Date().getFullYear(), new Date().getMonth());
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -54,77 +59,51 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _sessionService: SessionService,
+              private af: AngularFire,
               private router: Router, private route: ActivatedRoute) {
     this.partnerOrganisation = new PartnerOrganisationModel();
     this.activeProject = this.partnerOrganisation.projects[0];
   }
 
   ngOnInit() {
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
       this.countryId = countryId;
-
-      // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-
-      // this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-      // this.countryId = countryAdminUser.countryId;
-
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["fromResponsePlans"]) {
-            this.fromResponsePlans = true;
-          }
-          if (params['id']) {
-            this.isEdit = true;
-            this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
-              this.partnerOrganisation = partnerOrganisation;
-            })
-          }
-        });
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
-          err => console.log(err);
-        });
-      // })
 
+          this._userService.getCountryDetail(this.countryId, this.agencyId)
+            .first()
+            .subscribe(country => {
+              this.defaultCountry = country;
+
+              this.route.params
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((params: Params) => {
+                  if (params["fromResponsePlans"]) {
+                    this.fromResponsePlans = true;
+                  }
+                  if (params['id']) {
+                    this.isEdit = true;
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
+                      this.partnerOrganisation = partnerOrganisation;
+                    })
+                  }
+                  if (!this.isEdit) {
+                    this.activeProject.operationAreas.forEach(area => {
+                      area.country = this.defaultCountry.location;
+                    });
+                  }
+                });
+
+            });
+        });
     });
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //
-    //   this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-    //
-    //     this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-    //     this.countryId = countryAdminUser.countryId;
-    //
-    //     this.route.params
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe((params: Params) => {
-    //         if (params["fromResponsePlans"]) {
-    //           this.fromResponsePlans = true;
-    //         }
-    //         if(params['id']) {
-    //           this.isEdit = true;
-    //           this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
-    //             this.partnerOrganisation = partnerOrganisation;
-    //           })
-    //         }
-    //       });
-    //
-    //     // get the country levels values
-    //     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe(content => {
-    //         this.countryLevelsValues = content;
-    //         err => console.log(err);
-    //       });
-    //   })
-    // });
   }
 
   ngOnDestroy() {
@@ -195,8 +174,10 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   addProject() {
     let newProject = new PartnerOrganisationProjectModel();
+    newProject.operationAreas[0].country = this.defaultCountry.location;
     this.partnerOrganisation.projects.push(newProject);
     this.setActiveProject(newProject);
+
   }
 
   removeProject(pin: number) {
@@ -209,19 +190,17 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   addProjectLocation(pin: number) {
-    this.partnerOrganisation.projects[pin].operationAreas.push(new OperationAreaModel());
+    let operationAreaModel = new OperationAreaModel();
+    operationAreaModel.country = this.defaultCountry.location;
+    this.partnerOrganisation.projects[pin].operationAreas.push(operationAreaModel);
   }
 
   removeProjectLocation(pin: number, opin: number) {
     this.partnerOrganisation.projects[pin].operationAreas.splice(opin, 1);
   }
 
-  changeDate(date, project: PartnerOrganisationProjectModel) {
-    project.endDate = date;
-  }
-
-  selectDate(date, project: PartnerOrganisationProjectModel) {
-    let newEndDate = moment(date).valueOf();
+  selectDate(project: PartnerOrganisationProjectModel, pin: number) {
+    let newEndDate = moment(this.projectEndDate[pin]).valueOf();
     project.endDate = newEndDate;
   }
 
@@ -281,7 +260,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
       excludeFields.push("level1", "level2");
     } else if (countryLevel1Exists && operationArea.level1
       && (!this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].levelTwoValues
-      || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
+        || this.countryLevelsValues[operationArea.country].levelOneValues[operationArea.level1].length < 1)) {
       excludeFields.push("level2");
     }
 
@@ -306,5 +285,13 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   closeModal() {
     jQuery('#delete-action').modal('hide');
+  }
+
+  hasLevel1(country): boolean {
+    let hasLevel1 = false;
+    if (this.countryLevelsValues[country] && this.countryLevelsValues[country]["levelOneValues"] && this.countryLevelsValues[country]["levelOneValues"].length > 0) {
+      hasLevel1 = true;
+    }
+    return hasLevel1;
   }
 }

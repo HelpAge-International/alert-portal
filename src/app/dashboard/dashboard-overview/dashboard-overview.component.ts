@@ -1,14 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
-import {AlertLevels, AlertMessageType, AlertStatus} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, AlertStatus, UserType} from "../../utils/Enums";
 import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
 import {HazardImages} from "../../utils/HazardImages";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {Location} from "@angular/common";
+
 declare var jQuery: any;
 
 @Component({
@@ -24,6 +24,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
+  private UserType = UserType;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -42,8 +43,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private alerts: Observable<any>;
   private areaContent: any;
   private canCopy: boolean;
-  private isDirector: boolean = false;
-  private affectedAreasToShow : any [];
+  private userType: number;
+  private affectedAreasToShow: any [];
 
   constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private router: Router) {
     this.initMainMenu();
@@ -99,13 +100,12 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         if (params["canCopy"]) {
           this.canCopy = params["canCopy"];
         }
-
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+          console.log(this.agencyOverview);
         }
-        
-        if (params["isDirector"]) {
-          this.isDirector = params["isDirector"];
+        if (params["userType"]) {
+          this.userType = params["userType"];
         }
 
         if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
@@ -121,7 +121,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
       });
   }
 
-  showAffectedAreasForAlert(affectedAreas){
+  showAffectedAreasForAlert(affectedAreas) {
     this.affectedAreasToShow = affectedAreas;
     jQuery("#view-areas").modal("show");
   }

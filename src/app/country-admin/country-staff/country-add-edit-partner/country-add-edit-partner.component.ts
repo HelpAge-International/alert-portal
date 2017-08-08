@@ -84,7 +84,7 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
               this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
               this.countryId = countryAdminUser.countryId;
 
-              this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+              this._partnerOrganisationService.getApprovedCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(partnerOrganisations => {
                   this.partnerOrganisations = partnerOrganisations;

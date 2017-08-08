@@ -1,7 +1,7 @@
-<app-country-admin-header *ngIf="!isViewing"></app-country-admin-header>
-<app-country-admin-menu *ngIf="!isViewing"></app-country-admin-menu>
-<app-director-header *ngIf="isViewing"></app-director-header>
-<app-director-menu *ngIf="isViewing"></app-director-menu>
+<app-country-admin-header *ngIf="!isViewing || canCopy"></app-country-admin-header>
+<app-country-admin-menu *ngIf="!isViewing || canCopy"></app-country-admin-menu>
+<app-director-header *ngIf="isViewing && !canCopy"></app-director-header>
+<app-director-menu *ngIf="isViewing && !canCopy"></app-director-menu>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">

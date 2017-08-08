@@ -6,11 +6,20 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-  AgeRange, BudgetCategory, Gender, MethodOfImplementation, PresenceInTheCountry,
-  SourcePlan, UserType
+  AgeRange,
+  BudgetCategory,
+  Gender,
+  MethodOfImplementation,
+  PresenceInTheCountry,
+  SourcePlan,
+  UserType
 } from "../../utils/Enums";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import * as moment from "moment";
+import * as firebase from "firebase";
+
+declare var jQuery: any;
 
 @Component({
   selector: 'app-view-response-plan',
@@ -19,6 +28,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 })
 
 export class ViewResponsePlanComponent implements OnInit, OnDestroy {
+
 
   private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private PresenceInTheCountry = PresenceInTheCountry;
@@ -55,7 +65,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private planLeadName: string = '';
 
-  // TODO -
   // Section 03
   private sectors: any[];
   private partnerList: string[] = [];
@@ -92,10 +101,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private userPath: string;
 
+  private accessToken: string;
+  private partnerOrganisationId: string;
+
+  private showingSections: number[] = [];
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    jQuery('#header_section_1').trigger('click');
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -112,25 +127,74 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
         }
+        if (params["token"]) {
+          this.accessToken = params["token"];
+        }
+        if (params["partnerOrganisationId"]) {
+          this.partnerOrganisationId = params["partnerOrganisationId"];
+        }
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.userPath = Constants.USER_PATHS[userType];
-          if (userType == UserType.PartnerUser) {
-            this.agencyId = agencyId;
-            this.countryId = countryId;
-            this.systemAdminUid = systemId;
-            this.handleLoadResponsePlan();
-          } else {
-            this.loadData(userType);
-          }
-        });
+        if (this.accessToken) {
+          let invalid = true;
 
-        // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        //   this.uid = user.uid;
-        //   this.userPath = Constants.USER_PATHS[userType];
-        //   this.loadData(userType);
-        // });
+          firebase.auth().signInAnonymously().catch(error => {
+            console.log(error.message);
+          });
+
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              if (user.isAnonymous) {
+                //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+                this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((validationToken) => {
+                    if (validationToken) {
+                      if (this.accessToken === validationToken.token) {
+                        let expiry = validationToken.expiry;
+                        let currentTime = moment.utc();
+                        let tokenExpiryTime = moment.utc(expiry);
+
+                        if (currentTime.isBefore(tokenExpiryTime))
+                          invalid = false;
+                      }
+
+                      if (invalid) {
+                        this.navigateToLogin();
+                      }
+                      this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                      this.handleLoadResponsePlan();
+                    } else {
+                      this.navigateToLogin();
+                    }
+                  });
+              }
+            }
+          });
+
+        } else {
+          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+            //get response plan settings from agency
+            this.userService.getAgencyDetail(agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                let sections = agency.responsePlanSettings.sections;
+                this.showingSections = Object.keys(sections).filter(key => sections[key]).map(key => Number(key));
+                console.log(this.showingSections)
+              });
+
+            this.uid = user.auth.uid;
+            this.userPath = Constants.USER_PATHS[userType];
+            if (userType == UserType.PartnerUser) {
+              this.agencyId = agencyId;
+              this.countryId = countryId;
+              this.systemAdminUid = systemId;
+              this.handleLoadResponsePlan();
+            } else {
+              this.loadData(userType);
+            }
+          });
+        }
 
       });
   }
@@ -185,14 +249,9 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     console.log("loadData");
 
     if (this.isViewing) {
-      console.log("is viewing")
+      console.log("is viewing");
       this.handleLoadResponsePlan();
     } else {
-      // this.userService.getUserType(this.uid)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(usertype => {
-      // this.USER_TYPE = Constants.USER_PATHS[usertype];
-      console.log("check here")
       if (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) {
         this.route.params
           .takeUntil(this.ngUnsubscribe)
@@ -203,7 +262,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             }
           })
       } else {
-        console.log("here")
         this.getCountryId().then(() => {
           this.handleLoadResponsePlan();
         });
@@ -259,7 +317,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
-        console.log(countryId)
           this.countryId = countryId.$value;
           res(true);
         });
@@ -270,13 +327,14 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
-    console.log(responsePlansPath);
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlanToShow = responsePlan;
-        this.configGroups(responsePlan);
+        if (!this.accessToken) {
+          this.configGroups(responsePlan);
+        }
 
         this.loadSection1PlanLead(responsePlan);
         this.loadSection3(responsePlan);
@@ -300,7 +358,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection3(responsePlan: ResponsePlan) {
-    console.log(responsePlan);
     if (responsePlan.sectors) {
       this.sectors = Object.keys(responsePlan.sectors).map(key => {
         let sector = responsePlan.sectors[key];
@@ -335,7 +392,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     this.vulnerableGroupsToShow = vulnerableGroups;
   }
 
-  // TODO -
   private loadSection7(responsePlan: ResponsePlan) {
     if (this.sectors) {
       // let sectors: {} = responsePlan.sectors;
@@ -353,16 +409,18 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
         //activities list load back
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        let moreData: {}[] = [];
-        Object.keys(activitiesData).forEach(key => {
-          let beneficiary = [];
-          activitiesData[key]["beneficiary"].forEach(item => {
-            beneficiary.push(item);
+        if (activitiesData) {
+          let moreData: {}[] = [];
+          Object.keys(activitiesData).forEach(key => {
+            let beneficiary = [];
+            activitiesData[key]["beneficiary"].forEach(item => {
+              beneficiary.push(item);
+            });
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            moreData.push(model);
+            this.activityMap.set(Number(sectorKey), moreData);
           });
-          let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
-          moreData.push(model);
-          this.activityMap.set(Number(sectorKey), moreData);
-        });
+        }
       });
     }
 

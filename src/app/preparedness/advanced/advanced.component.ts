@@ -47,6 +47,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private systemAdminId: string;
   private isViewing: boolean;
+  private isSameAgency: boolean = false;
   public myFirstName: string;
   public myLastName: string;
 
@@ -143,6 +144,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.userType = userType;
           this.filterAssigned = "0";
@@ -323,13 +325,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     }
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
-        // Send notification to the assignee
-        let notification = new MessageModel();
-        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: this.assignActionTask});
-        notification.time = new Date().getTime();
-        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-        });
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId +"/task").takeUntil(this.ngUnsubscribe)
+          .subscribe(task => {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task? task.$value : ''});
+            console.log(notification.content);
+
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+            });
+          });
       });
     this.closeModal();
   }
@@ -652,6 +659,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
+  }
+
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 

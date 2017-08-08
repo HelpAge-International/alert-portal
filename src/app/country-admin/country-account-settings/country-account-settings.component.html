@@ -83,7 +83,7 @@
         <div class="form-group">
           <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
 
-          <select id="Country" class="form-control"
+          <select id="Country" class="form-control" name="country"
             [(ngModel)]="userPublic && userPublic.country">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.OPTIONAL'| translate}}</option>
             <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}</option>
@@ -107,7 +107,7 @@
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <button type="submit" class="btn btn-primary" (click)="validateForm()">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</button>
+      <button type="submit" class="btn btn-primary">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</button>
       <button class="btn btn-outline-secondary" (click) = "goBack()">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
     </form>

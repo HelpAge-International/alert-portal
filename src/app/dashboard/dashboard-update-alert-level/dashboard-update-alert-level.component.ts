@@ -5,9 +5,7 @@ import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
-import {ModelAffectedArea} from "../../model/affectedArea.model";
-import {AlertLevels, AlertStatus, ApprovalStatus} from "../../utils/Enums";
-import {isNumber} from "util";
+import {AlertLevels, AlertStatus} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {UserService} from "../../services/user.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
@@ -72,7 +70,9 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => {
+        this.agencyId = agencyId
+      });
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
@@ -175,10 +175,11 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.loadedAlert.infoNotes = this.infoNotes;
     this.loadedAlert.timeUpdated = Date.now();
     this.loadedAlert.updatedBy = this.uid;
+    this.loadedAlert.approvalCountryId = this.countryId;
 
-    if(this.preAlertLevel == AlertLevels.Red && this.loadedAlert.alertLevel == AlertLevels.Amber){
+    if (this.preAlertLevel == AlertLevels.Red && this.loadedAlert.alertLevel == AlertLevels.Amber) {
       this.loadedAlert.reasonForRedAlert = null;
-    }else{
+    } else {
       this.loadedAlert.reasonForRedAlert = this.reasonForRedAlert;
     }
 

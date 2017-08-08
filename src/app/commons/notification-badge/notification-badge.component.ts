@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {RxHelper} from '../../utils/RxHelper';
 import {Subject} from "rxjs/Subject";
-import { MessageModel } from "../../model/message.model";
+import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {Router} from "@angular/router";
 
@@ -12,9 +11,9 @@ import {Router} from "@angular/router";
   templateUrl: './notification-badge.component.html',
   styleUrls: ['./notification-badge.component.css']
 })
-export class NotificationBadgeComponent implements OnInit {
+export class NotificationBadgeComponent implements OnInit, OnDestroy {
   private unreadMessages: MessageModel[];
-  
+
   private _USER_TYPE: string;
   private _countryId: string;
   private _agencyId: string;
@@ -63,7 +62,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c1 = 1;
         for (let node of nodesAdministratorAgency) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c1 == nodesAdministratorAgency.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("agency-admin/agency-notifications/agency-notifications");
@@ -78,7 +77,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c2 = 1;
         for (let node of nodesAdministratorCountry) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c2 == nodesAdministratorCountry.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("country-admin/country-notifications");
@@ -93,7 +92,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c3 = 1;
         for (let node of nodesCountryUser) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c3 == nodesCountryUser.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("director/director-notifications");
@@ -108,7 +107,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c4 = 1;
         for (let node of nodesCountryDirector) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c4 == nodesCountryDirector.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("country-admin/country-notifications");
@@ -123,7 +122,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c5 = 1;
         for (let node of nodesRegionDirector) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c5 == nodesRegionDirector.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("director/director-notifications");
@@ -138,7 +137,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c6 = 1;
         for (let node of nodesGlobalDirector) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c6 == nodesGlobalDirector.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("director/director-notifications");
@@ -153,7 +152,7 @@ export class NotificationBadgeComponent implements OnInit {
 
         let c7 = 1;
         for (let node of nodesGlobalUser) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c7 == nodesGlobalUser.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("director/director-notifications");
@@ -165,10 +164,10 @@ export class NotificationBadgeComponent implements OnInit {
         break;
       case 'ertLeader':
         let nodesErtLeader = this._notificationService.getErtLeaderNodes(this._agencyId, this._countryId, this._userId);
-        
+
         let c8 = 1;
         for (let node of nodesErtLeader) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c8 == nodesErtLeader.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("country-admin/country-notifications");
@@ -180,10 +179,10 @@ export class NotificationBadgeComponent implements OnInit {
         break;
       case 'ert':
         let nodesErt = this._notificationService.getErtNodes(this._agencyId, this._countryId, this._userId);
-        
+
         let c9 = 1;
         for (let node of nodesErt) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c9 == nodesErt.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("country-admin/country-notifications");
@@ -195,10 +194,10 @@ export class NotificationBadgeComponent implements OnInit {
         break;
       case 'donor':
         let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
-        
+
         let c10 = 1;
         for (let node of nodesDonor) {
-          this._notificationService.setNotificationsAsRead(node).subscribe(() => {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(c10 == nodesDonor.length){
               this.unreadMessages = [];
               this.router.navigateByUrl("donor-module/donor-notifications");
@@ -219,11 +218,16 @@ export class NotificationBadgeComponent implements OnInit {
 
           for (let node of nodesAdministratorAgency) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -234,11 +238,16 @@ export class NotificationBadgeComponent implements OnInit {
 
           for (let node of nodesAdministratorCountry) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -248,11 +257,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesCountryUser = this._notificationService.getCountryUserNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesCountryUser) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -262,11 +276,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesCountryDirector = this._notificationService.getCountryDirectorNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesCountryDirector) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -276,11 +295,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesRegionDirector = this._notificationService.getRegionDirectorNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesRegionDirector) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -290,11 +314,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesGlobalDirector = this._notificationService.getGlobalDirectorNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesGlobalDirector) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -304,11 +333,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesGlobalUser = this._notificationService.getGlobalUserNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesGlobalUser) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -318,11 +352,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesErtLeader = this._notificationService.getErtLeaderNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesErtLeader) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -332,11 +371,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesErt = this._notificationService.getErtNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesErt) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });
@@ -346,11 +390,16 @@ export class NotificationBadgeComponent implements OnInit {
           let nodesDonor = this._notificationService.getDonorNodes(this._agencyId, this._countryId, this._userId);
           for (let node of nodesDonor) {
             this.af.database.list(Constants.APP_STATUS + node)
-              .subscribe(list => {
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
                 list.forEach((x) => {
                   if(x.$value === true) { // only unread messages
                     this._notificationService.getNotificationMessage(x.$key)
-                      .subscribe(message => this.unreadMessages.push(message));
+                      .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                        this.unreadMessages.push(message);
+                        this.unreadMessages.sort(function (a, b){
+                          return b.time - a.time;
+                        });
+                      });
                   }
                 });
               });

@@ -28,6 +28,7 @@ import {
 import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {ModelDepartment} from "../../model/department.model";
+
 declare var jQuery: any;
 
 
@@ -74,6 +75,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   // Page admin
   private isViewing: boolean;
+  private isSameAgency: boolean = false;
   protected countrySelected = false;
   protected agencySelected = false;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -124,6 +126,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.agencyId = params['agencyId'];
         this.agencySelected = true;
       }
+
+      if (params['isCHS']) {
+        this.filterType = 0;
+      }
     });
   }
 
@@ -145,7 +151,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          console.log("here******")
+          this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.assignActionAsignee = this.uid;
           this.userType = userType;
@@ -273,7 +279,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
-      // TODO: FIGURE OUT HOW THIS IS GOING TO BE EDITING
       this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
       this.assignActionId = action.id;
@@ -287,13 +292,19 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
-        // Send notification to the assignee
-        let notification = new MessageModel();
-        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: this.assignActionTask});
-        notification.time = new Date().getTime();
-        this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-        });
+
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+          .subscribe(task => {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+            console.log(notification.content);
+
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+            });
+          });
       });
     this.closeModal();
   }
@@ -460,6 +471,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             isCompleteAt: new Date().getTime()
           });
           this.addNote(action);
+          this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
@@ -625,6 +637,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
+  }
+
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 

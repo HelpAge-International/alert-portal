@@ -2,11 +2,19 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
-        <div class="Header-title__wrap">
+      <div class="row">
+        <div class="col-sm-9">
+          <div class="Header-title__wrap">
             <h1>{{"GLOBAL.YOUR_NOTIFICATIONS" | translate}}</h1>
+          </div>
         </div>
+        <div class="col-sm-3">
+          <span class="pull-right Spaced"><div class="btn btn-danger" (click)="deleteAllMessages()">{{"GLOBAL.DELETE_ALL" | translate}}</div></span>
+        </div>
+      </div>
+
         <div class="Data--ribbon" *ngFor="let message of messages">
-             <div class="row">
+             <div class="row msg_width_max msg_width_min">
                 <div class="Info--ribbon--wrap">
                     <div class="col-sm-5">{{"GLOBAL.RECEIVED" | translate}}: <b>{{message.time | date:"HH:mm dd/MM/yyyy"}}</b></div>
                 </div>
@@ -15,7 +23,7 @@
                     <p>{{message.content}}</p>
                 </div>
             </div>
-            <div class="col-sm-3 Right-aligned">
+            <div class="col-sm-5 Right-aligned">
                 <div class="btn btn-danger" (click)="deleteMessage(message.id)">{{"GLOBAL.DELETE" | translate}}</div>
             </div>
         </div>
@@ -34,7 +42,7 @@
                 <h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>
             </div>
             <div class="modal-body">
-                <div class="text-center"><p>{{"DELETE_MESSAGE_DIALOG.CONTENT" | translate}}</p></div>
+                <div class="text-center"><p>{{deleteMessageContent | translate}}</p></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>

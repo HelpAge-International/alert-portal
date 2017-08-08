@@ -5,6 +5,8 @@ import {Subject} from "rxjs/Subject";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
 import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
 import {Observable} from "rxjs/Observable";
+import {DurationType} from "../utils/Enums";
+import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 
 @Injectable()
 export class AgencyService {
@@ -25,6 +27,25 @@ export class AgencyService {
 
   getAgency(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
+  getAgencyResponsePlanClockSettingsDuration(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/responsePlans")
+      .map(settings => {
+        console.log(settings);
+        let duration = 0;
+        let oneDay = 24 * 60 * 60 * 1000;
+        let durationType = Number(settings.durationType);
+        let value = Number(settings.value);
+        if (durationType === DurationType.Week) {
+          duration = value * 7 * oneDay;
+        } else if (durationType === DurationType.Month) {
+          duration = value * 30 * oneDay;
+        } else if (durationType === DurationType.Year) {
+          duration = value * 365 * oneDay;
+        }
+        return duration;
+      });
   }
 
   getSystemId(agencyAdminId): Observable<any> {
@@ -87,13 +108,28 @@ export class AgencyService {
     return displayList;
   }
 
-  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any>{
-    if(!agencyId || !countryId || !countryOfficeAddress)
-    {
+  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
+    if (!agencyId || !countryId || !countryOfficeAddress) {
       return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');
     }
 
     return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
+  }
+
+  public getPrivacySettingForAgency(agencyId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + agencyId, {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          let privacy = new ModelAgencyPrivacy();
+          privacy.mpa = snap.val()[0].privacy;
+          privacy.apa = snap.val()[1].privacy;
+          privacy.chs = snap.val()[2].privacy;
+          privacy.riskMonitoring = snap.val()[3].privacy;
+          privacy.officeProfile = snap.val()[4].privacy;
+          privacy.responsePlan = snap.val()[5].privacy;
+          return privacy;
+        }
+      });
   }
 
   unSubscribeNow() {

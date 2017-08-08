@@ -8,6 +8,8 @@ import {ProgrammeMappingModel} from '../../../../model/programme-mapping.model';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
+import * as moment from "moment";
+
 declare var jQuery: any;
 
 @Component({
@@ -115,7 +117,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       var dataToSave = this.programme;
 
       if (!this.programmeId) {
-        if (this.countryID){
+        if (this.countryID) {
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
             .push(dataToSave)
             .then(() => {
@@ -154,7 +156,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   setDate() {
     if (this.when['month'] && this.when['year']) {
-      var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
+      let year = this.when['year'];
+      let month = Number(this.when['month'] - 1);
+      let timeStamp = moment({'year': year, 'month': month, 'day': 15}).valueOf();
+      // var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
       this.programme.when = 0;
       this.programme.when = timeStamp;
     }
@@ -170,9 +175,9 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   _convertTimestampToDate(timestamp: number) {
     this.when = [];
-    var date = new Date(timestamp);
-    this.when['month'] = date.getMonth();
-    this.when['year'] = date.getFullYear();
+    let date = moment(timestamp);
+    this.when['month'] = date.month() + 1;
+    this.when['year'] = date.year();
   }
 
   ngOnDestroy() {

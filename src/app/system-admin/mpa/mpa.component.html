@@ -29,8 +29,8 @@
       <div class="col-lg-3 col-md-4 col-sm-5 ">
         <select class="form-control" [(ngModel)]="categorySelected">
           <!--<option value="" disabled selected hidden>All categories</option>-->
-          <!--<option value="allCategories" selected>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.ALL_CATEGORIES" | translate}}</option>-->
-          <option *ngFor="let category of categoriesList" [value]="category">{{Category[category] | translate}}</option>
+          <option value="0" selected>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.ALL_CATEGORIES" | translate}}</option>
+          <option *ngFor="let category of categoriesList" [value]="category">{{CATEGORY[category] | translate}}</option>
         </select>
       </div>
     </div>
@@ -42,7 +42,7 @@
                                    (levelSelected == 0 || action.level == levelSelected)">
         <div class="col-sm-9">
           <p>{{action.task}}</p>
-          <p>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORY" | translate}}: <b>{{GenericActionCategory[action.category]}}</b>
+          <p>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORY" | translate}}: <b>{{CATEGORY[action.category] | translate}}</b>
           </p>
           <div class="col-sm-5">{{"GLOBAL.ACTION_LEVEL"| translate}}: <b>{{ActionLevel[action.level] | translate}}</b>
         </div>

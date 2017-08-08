@@ -32,9 +32,17 @@
           <label for="country">{{"AGENCY_ADMIN.COUNTRY_OFFICES.COUNTRIES" | translate}}*</label>
           <div *ngFor="let selectCountry of countries; let i = index" class="row no-gutters align-items-center">
             <div class="col-10 form-group">
-              <select class="form-control"
+              <select *ngIf="!isEdit" class="form-control"
+                               #country (change)="countryChange(selectCountry, country.value)">
+              <option *ngFor="let country of countrySelectionsNumbers | async" [value]="country"
+                      [selected]="country == selectedCountries[i]">
+                {{COUNTRY_NAMES[country]
+                | translate}}
+              </option>
+            </select>
+              <select *ngIf="isEdit" class="form-control"
                       #country (change)="countryChange(selectCountry, country.value)">
-                <option *ngFor="let country of countrySelectionsNumbers | async" [value]="country"
+                <option *ngFor="let country of countrySelectionsNumbersEdit | async" [value]="country"
                         [selected]="country == selectedCountries[i]">
                   {{COUNTRY_NAMES[country]
                   | translate}}

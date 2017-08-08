@@ -106,7 +106,6 @@ import {CountryOfficeProgrammeComponent} from "./country-admin/country-office-pr
 import {AddEditMappingProgrammeComponent} from "./country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 import {DonorAccountSettingsComponent} from "./donor-module/donor-account-settings/donor-account-settings.component";
 import {DonorChangePasswordComponent} from "./donor-module/donor-account-settings/donor-change-password/donor-change-password.component";
-import {NewDonorPasswordComponent} from "./donor-module/new-donor-password/new-donor-password.component";
 import {CountryOfficeCapacityComponent} from "./country-admin/country-office-profile/office-capacity/office-capacity.component";
 import {CountryOfficeDocumentsComponent} from "./country-admin/country-office-profile/documents/documents.component";
 import {CountryNotificationsComponent} from "./country-admin/country-notifications/country-notifications.component";
@@ -116,6 +115,9 @@ import {DonorNotificationsComponent} from "./donor-module/donor-notifications/do
 import {DirectorNotificationsComponent} from "./director/director-notifications/director-notifications.component";
 import {DashboardOverviewComponent} from "./dashboard/dashboard-overview/dashboard-overview.component";
 import {NewUserPasswordComponent} from "./new-user-password/new-user-password.component";
+import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
+import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
+import {DirectorAccountSettingsComponent} from "./director/director-account-settings/director-account-settings.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -275,6 +277,10 @@ const routes: Routes = [
   {path: 'dashboard/facetoface-meeting-request', component: FacetofaceMeetingRequestComponent},
   {path: 'dashboard/review-response-plan', component: ReviewResponsePlanComponent},
   {path: 'dashboard/review-response-plan/:id', component: ReviewResponsePlanComponent},
+  {
+    path: 'dashboard/review-response-plan/:id/:token/:countryId/:partnerOrganisationId',
+    component: ReviewResponsePlanComponent
+  },
   {path: 'dashboard/dashboard-overview', component: DashboardOverviewComponent},
 
 
@@ -328,6 +334,7 @@ const routes: Routes = [
   {path: 'director/director-overview', component: DirectorOverviewComponent},
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
   {path: 'director/director-notifications', component: DirectorNotificationsComponent},
+  {path: 'director/director-account-settings', component: DirectorAccountSettingsComponent},
 
   /**
    * Donor
@@ -337,14 +344,19 @@ const routes: Routes = [
   {path: 'donor-module/donor-country-index', component: DonorCountryIndexComponent},
   {path: 'donor-module/donor-account-settings', component: DonorAccountSettingsComponent},
   {path: 'donor-module/donor-account-settings/donor-change-password', component: DonorChangePasswordComponent},
-  {path: 'donor-module/donor-account-settings/new-donor-password', component: NewDonorPasswordComponent},
   {path: 'donor-module/donor-notifications', component: DonorNotificationsComponent},
 
   /**
    * Response plan exporting
    * */
   {path: 'export-start-fund', component: ExportStartFundComponent},
-  {path: 'export-proposal', component: ExportProposalComponent}
+  {path: 'export-proposal', component: ExportProposalComponent},
+
+  /**
+   * Partner Vlidation
+   * */
+  {path: 'partner-validation', component: PartnerValidationComponent},
+  {path: 'after-validation', component: AfterValidationComponent}
 
 ];
 

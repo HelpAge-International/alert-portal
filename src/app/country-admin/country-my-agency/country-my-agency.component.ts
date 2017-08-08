@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import { AlertLevels, Countries, AlertStatus, ActionLevel, ActionType, HazardScenario } from "../../utils/Enums";
+import {AlertLevels, Countries, HazardScenario} from "../../utils/Enums";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -9,8 +9,7 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {AgencyService} from "../../services/agency-service.service";
 import {ActionsService} from "../../services/actions.service";
-import {ModelAlert} from "../../model/alert.model";
-import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
+import {PrepActionService} from "../../services/prepactions.service";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -88,7 +87,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
     this._getAgencyID().then(() => {
       this._getCountryList().then(() => {
         this._getSystemAdminID().then(() => {
-          
+
         })
       });
     });
@@ -125,7 +124,7 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
         .subscribe((countries: any) => {
           this.countryOfficeData = [];
           this.countryOfficeData = countries.filter(country => country.$key != this.countryId);
-          
+
           res(true);
         });
     });

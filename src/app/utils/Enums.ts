@@ -8,19 +8,19 @@ export enum ActionType {
   custom = 2
 }
 
-// TODO - Update when Ryan provides actual Category names
 export enum GenericActionCategory {
-  ALL = 0,
-  Category1 = 1,
-  Category2 = 2,
-  Category3 = 3,
-  Category4 = 4,
-  Category5 = 5,
-  Category6 = 6,
-  Category7 = 7,
-  Category8 = 8,
-  Category9 = 9,
-  Category10 = 10
+  All = 0,
+  OfficeAdministration = 1,
+  Finance = 2,
+  ITFieldCommunications = 3,
+  Logistics = 4,
+  CommunicationsMedia = 5,
+  HumanResources = 6,
+  DonorFundingReporting = 7,
+  Accountability = 8,
+  Security = 9,
+  Programmes = 10,
+  EmergencyResponseTeamManagement = 11
 }
 
 // TODO - Update when Ryan provides actual Hazard Scenario names
@@ -138,7 +138,8 @@ export enum UserType {
   CountryUser = 10,
   AgencyAdmin = 11,
   SystemAdmin = 12,
-  PartnerUser = 13
+  PartnerUser = 13,
+  PartnerOrganisation = 14
 }
 export enum OfficeType {
   All = 0,
@@ -551,7 +552,7 @@ export class CountriesMapsSearchInterface {
   static listOfCountries() {
     let countriesSearchList: Map<Countries, string> = new Map<Countries, string>();
     countriesSearchList.set(Countries.AF, "Afghanistan");
-    countriesSearchList.set(Countries.AX, "Åland Islands");
+    countriesSearchList.set(Countries.AX, "Aland Islands");
     countriesSearchList.set(Countries.AL, "Albania");
     countriesSearchList.set(Countries.DZ, "Algeria");
     countriesSearchList.set(Countries.AS, "American Samoa");
@@ -1355,9 +1356,9 @@ export class InformCodes {
     informCodes.map.set("HA.NAT.EQ", HazardScenario.HazardScenario4); // Earthquake
     informCodes.map.set("HA.NAT.TS", HazardScenario.HazardScenario24); // Tsunami
     informCodes.map.set("HA.NAT.DR", HazardScenario.HazardScenario3); // Drought
-    informCodes.map.set("HA.HUM.CON.GCRI", HazardScenario.HazardScenario2); // Conflict
+    informCodes.map.set("HA.HUM.CON.GCRI", HazardScenario.HazardScenario1); // Conflict
     informCodes.map.set("VU.SEV.AD.FTS-POP", HazardScenario.HazardScenario11); // Humanitarian Access
-    informCodes.map.set("HA.NAT.TC.CS", HazardScenario.HazardScenario11); // Storm Surge
+    informCodes.map.set("HA.NAT.TC.CS", HazardScenario.HazardScenario21); // Storm Surge
     informCodes.list = [];
     informCodes.map.forEach((val, key) => {
       informCodes.list.push(key);

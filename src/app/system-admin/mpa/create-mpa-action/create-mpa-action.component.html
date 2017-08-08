@@ -33,7 +33,7 @@
             <input type="radio" name="Prep-level-apa" id="Adv-prep"  [disabled]="editInitialDisable" [checked]="!isMpa" (change)="apaSelected()">
             <label for="Adv-prep"> {{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}} </label>
           </div>
-        
+
 
           <div class="row System-admin--form-wrap">
             <div class="col-md-6" [ngClass]="{'has-danger': alerts[categorySelected]}">
@@ -41,7 +41,7 @@
                 <label for="Category">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORY" | translate}}</label>
                 <select class="form-control" id="Category" [(ngModel)]="categorySelected"  [disabled]="editInitialDisable">
                   <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                  <option *ngFor="let category of categoriesList">{{Category[category] | translate}}</option>
+                  <option *ngFor="let category of categoriesList" [value]="category">{{Category[category] | translate}}</option>
                 </select>
               </div>
             </div>

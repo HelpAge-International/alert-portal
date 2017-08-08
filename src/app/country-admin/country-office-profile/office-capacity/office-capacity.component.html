@@ -46,14 +46,11 @@
 
     <!--Staff count-->
     <div class="row Spaced">
-      <div class="col-sm-0 padding-left-two"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_STAFF" |
-        translate}}: {{totalStaff}}</strong></div>
-      <div class="col-sm-0 padding-left-two"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_STAFF" | translate}}: {{totalStaff}}</strong>
-       <tooltip 
-      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT5.LEVEL1'"
-      ></tooltip>
+      <div class="col-sm-0 padding-left-two"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_STAFF" | translate}}: {{totalStaff}}</strong></div>
+      <div class="col-sm-0">
+        <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT5.LEVEL1'"></tooltip>
       </div>
-      <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-two">
+      <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-three">
         <button href="#edit-total-staff" data-toggle="modal"
                 class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}
         </button>

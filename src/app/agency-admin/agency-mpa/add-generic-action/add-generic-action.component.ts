@@ -54,19 +54,9 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private Category = Constants.CATEGORY;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
-  private categoriesList = [
-    GenericActionCategory.ALL,
-    GenericActionCategory.Category1,
-    GenericActionCategory.Category2,
-    GenericActionCategory.Category3,
-    GenericActionCategory.Category4,
-    GenericActionCategory.Category5,
-    GenericActionCategory.Category6,
-    GenericActionCategory.Category7,
-    GenericActionCategory.Category8,
-    GenericActionCategory.Category9,
-    GenericActionCategory.Category10
-  ];
+  private categoriesList = [GenericActionCategory.OfficeAdministration, GenericActionCategory.Finance, GenericActionCategory.ITFieldCommunications,
+    GenericActionCategory.Logistics, GenericActionCategory.CommunicationsMedia, GenericActionCategory.HumanResources, GenericActionCategory.DonorFundingReporting,
+    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes,  GenericActionCategory.EmergencyResponseTeamManagement];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 

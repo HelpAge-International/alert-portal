@@ -2,7 +2,7 @@ import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Countries, CountriesMapsSearchInterface} from "../utils/Enums";
+import {AlertLevels, Countries, CountriesMapsSearchInterface, HazardScenario} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
@@ -39,12 +39,15 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   public minThreshYellow: number;
   public minThreshGreen: number;
 
+  // Maps location -> [hazards]
+  private countryToHazardScenarioList: Map<number, Set<number>> = new Map<number, Set<number>>();
+
   private userTypePath: string;
 
   @ViewChild("globalMap") globalMap: ElementRef;
   private hazardMap = new Map<number, Set<number>>();
   private countryLocationMap = new Map<string, number>();
-  private countryAgencyRefMap = new Map<number,any>();
+  private countryAgencyRefMap = new Map<number, any>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
@@ -65,31 +68,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.userTypePath = Constants.USER_PATHS[userType];
-
-      // this.mapHelper.initMapFrom("global-map", this.uid, Constants.USER_PATHS[userType],
-      //   (departments) => {
-      //     this.mDepartmentMap = departments;
-      //     this.departments = [];
-      //     this.minThreshYellow = this.mapHelper.minThreshYellow;
-      //     this.minThreshGreen = this.mapHelper.minThreshGreen;
-      //     this.mDepartmentMap.forEach((value, key) => {
-      //       this.departments.push(value);
-      //     });
-      //     this.loaderInactive = true;
-      //   },
-      //   (mapCountryClicked) => {
-      //     if (this.mDepartmentMap != null) {
-      //       let countryIdToSend: string = this.mDepartmentMap.get(mapCountryClicked).countryId;
-      //       this.router.navigate(["donor-module/donor-country-index", {
-      //         countryId: countryIdToSend,
-      //         agencyId: this.mapHelper.agencyAdminId
-      //       }]);
-      //     }
-      //     else {
-      //       // Map country behaviour broken. Do nothing.
-      //     }
-      //   }
-      // );
     });
   }
 
@@ -132,46 +110,58 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       .subscribe(allLocations => {
         this.doneWithEmbeddedStyles(country => {
           let navRef = this.countryAgencyRefMap.get(Countries[country]);
-          this.router.navigate(["donor-module/donor-country-index",{"countryId":navRef.countryId,"agencyId":navRef.agencyId}]);
+          this.router.navigate(["donor-module/donor-country-index", {
+            "countryId": navRef.countryId,
+            "agencyId": navRef.agencyId
+          }]);
         }, allLocations);
       });
-
-    // let position = 0;
-    // this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(0)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-    //   if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-    //     let pos = {
-    //       lng: geoResult[0].geometry.location.lng() + position,
-    //       lat: geoResult[0].geometry.location.lat()
-    //     };
-    //     let marker = new google.maps.Marker({
-    //       position: pos,
-    //       icon: HazardImages.init().get(1)
-    //     });
-    //     marker.setMap(this.map);
-    //     position += 1.2;
-    //   }
-    // });
   }
 
   private getHazardInfo(country: any) {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + country.agencyId + "/" + country.countryId)
+    console.log(country);
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + country.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(country => {
-        this.countryLocationMap.set(country.$key, Number(country.location));
-        this.af.database.list(Constants.APP_STATUS + "/hazard/" + country.$key)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(hazards => {
-            hazards.forEach(hazard => {
-              let newSet = this.hazardMap.get(this.countryLocationMap.get(country.$key)).add(Number(hazard.hazardScenario));
-              this.hazardMap.set(this.countryLocationMap.get(country.$key), newSet);
-              this.drawHazardMarkers();
-            });
-          });
+      .subscribe(snap => {
+        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+        let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.countryToHazardScenarioList.get(country.location) != null) {
+          listOfActiveHazards = this.countryToHazardScenarioList.get(country.location);
+        }
+        hazardRedAlert.forEach((value, key) => {
+          if (value) {
+            listOfActiveHazards.add(key);
+          }
+        });
+        if (listOfActiveHazards.size != 0) {
+          this.countryToHazardScenarioList.set(country.location, listOfActiveHazards);
+        }
+        this.drawHazardMarkers();
       });
   }
 
   private drawHazardMarkers() {
-    this.hazardMap.forEach((v, k) => {
+    this.countryToHazardScenarioList.forEach((v, k) => {
       if (v.size > 0) {
         let position = 0;
         let scenarios = Array.from(v);
@@ -231,7 +221,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
         {
           where: this.arrayToQuote(blue),
           polygonOptions: {
-            fillColor: MapService.COLOUR_BLUE,
+            fillColor: '#66A8C6',
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
             strokeColor: "#FFFFFF"

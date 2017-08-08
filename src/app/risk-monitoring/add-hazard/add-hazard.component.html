@@ -15,11 +15,12 @@
         [level1]="'TOOLTIPS.RISK_MONITORING.TT8.LEVEL1'"
       ></tooltip>
     </div>
-    <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="https://www.inform-index.org/">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX" | translate}}.</a>
+    <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="http://www.inform-index.org/" target="_blank">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX" | translate}}.</a>.
       <tooltip
         [level1]="'TOOLTIPS.RISK_MONITORING.TT9.LEVEL1'"
         [level2]="'TOOLTIPS.RISK_MONITORING.TT9.LEVEL2'"
       ></tooltip>
+      <b *ngIf="showInformUnavailable">{{'RISK_MONITORING.INFORM_API_UNAVAILABLE' | translate}}</b>
     </p>
     <div class="Ribbon__section__wrap--risk Spaced"></div>
     <div class="row Spaced-above"> <!-- Alert selection section start -->
@@ -35,8 +36,11 @@
           <input type="radio" name="RT" (change)="stateIsCustom(true, $event,hazard.hazardScenario)"
                  id="{{HazardScenario[hazard.hazardScenario] | translate}}" [value]="HazardScenario[hazard.hazardScenario] | translate"
                  required>
-          <div class="risk-icon__components no-bg"><img class="Black-Background-Hazard-Icon"
-            src="{{_getHazardImage(hazardData.hazardScenario)}}"></div>
+          <div class="Icon">
+            <div
+              class="Icon--md Icon__circle Icon--b-dark-blue {{hazard.hazardScenario != -1 ? _getHazardImage(hazard.hazardScenario) : 'Icon--alert'}}"
+              style="float:left"></div>
+          </div>
           <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>{{"ALERT.RISK" | translate}} {{hazard.value}}</p>
         </label>
       </div>

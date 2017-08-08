@@ -30,10 +30,10 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
   private forEditing: Boolean = false;
   private categorySelected: string;
-  private Category = GenericActionCategory;
-  private categoriesList = [GenericActionCategory.Category1, GenericActionCategory.Category2, GenericActionCategory.Category3,
-    GenericActionCategory.Category4, GenericActionCategory.Category5, GenericActionCategory.Category6, GenericActionCategory.Category7,
-    GenericActionCategory.Category8, GenericActionCategory.Category9, GenericActionCategory.Category10];
+  private Category = Constants.CATEGORY;
+  private categoriesList = [GenericActionCategory.OfficeAdministration, GenericActionCategory.Finance, GenericActionCategory.ITFieldCommunications,
+    GenericActionCategory.Logistics, GenericActionCategory.CommunicationsMedia, GenericActionCategory.HumanResources, GenericActionCategory.DonorFundingReporting,
+    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes,  GenericActionCategory.EmergencyResponseTeamManagement];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -82,7 +82,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
         if (snap.val() != null) {
           this.textArea = snap.val().task;
           this.isMpa = snap.val().level == ActionLevel.MPA;
-          this.categorySelected = GenericActionCategory[snap.val().category];
+          this.categorySelected = snap.val().category;
         }
         this.editInitialDisable = false;
       })
@@ -104,7 +104,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
         task: this.textArea,
         type: ActionType.mandated,
         level: level,
-        category: GenericActionCategory[this.categorySelected],
+        category: this.categorySelected,
         createdAt: new Date().getTime()
       };
       this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + this.systemUid).push(valueToPush).then(_ => {
@@ -117,7 +117,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
         task: this.textArea,
         type: ActionType.mandated,
         level: level,
-        category: GenericActionCategory[this.categorySelected],
+        category: this.categorySelected,
         createdAt: new Date().getTime()
       };
       this.af.database.object(Constants.APP_STATUS + "/actionGeneric/" + this.systemUid + "/" + this.editActionId).update(valueToUpdate).then(_ => {
@@ -141,6 +141,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
    * @returns {boolean}
    */
   private validate() {
+    console.log(this.categorySelected);
 
     if (!(this.textArea)) {
       this.alerts[this.textArea] = true;
@@ -151,6 +152,8 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
       this.errorMessage = "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.NO_CATEGORY_ERROR";
       return false;
     }
+    console.log("Validated");
+
     return true;
   }
 
