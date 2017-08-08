@@ -10,7 +10,7 @@ import {
   AlertMessageType,
   DocumentType,
   FileExtensionsEnding,
-  HazardScenario,
+  HazardScenario, Privacy,
   SizeType,
   UserType
 } from "../../utils/Enums";
@@ -21,26 +21,32 @@ import {CountryPermissionsMatrix, PageControlService} from "../../services/pagec
 import * as firebase from "firebase";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
-  PrepActionService, PreparednessAction, PreparednessNotes,
+  PrepActionService,
+  PreparednessAction,
+  PreparednessNotes,
   PreparednessUser
 } from "../../services/prepactions.service";
 import {ModelDepartment} from "../../model/department.model";
 import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
+import {AgencyService} from "../../services/agency-service.service";
+import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
+
 declare var jQuery: any;
 
 @Component({
   selector: 'app-advanced',
   templateUrl: './advanced.component.html',
-  styleUrls: ['./advanced.component.css']
+  styleUrls: ['./advanced.component.css'],
+  providers: [AgencyService]
 })
 export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
-
 
   // IDs
   private uid: string;
   private userType: UserType;
+  private Privacy = Privacy;
   private UserType = UserType;
   private userTypes = UserType;
   private countryId: string;
@@ -101,6 +107,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   protected prepActionService: PrepActionService = new PrepActionService();
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
+  private privacy: ModelAgencyPrivacy;
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,
@@ -108,6 +116,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               protected route: ActivatedRoute,
               protected storage: LocalStorageService,
               protected userService: UserService,
+              protected agencyService: AgencyService,
               protected notificationService: NotificationService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
@@ -143,7 +152,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           this.systemAdminId = params["systemId"];
         }
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.userType = userType;
@@ -163,6 +172,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.initDepartments();
             this.initDocumentTypes();
             this.initAlerts();
+
+            this.agencyService.getPrivacySettingForAgency(this.agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((privacy:ModelAgencyPrivacy) =>{
+                this.privacy = privacy;
+              });
+
           } else {
             this.countryId = countryId;
             this.agencyId = agencyId;
@@ -325,12 +341,12 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     }
     this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId +"/task").takeUntil(this.ngUnsubscribe)
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
           .subscribe(task => {
             // Send notification to the assignee
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task? task.$value : ''});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
             console.log(notification.content);
 
             notification.time = new Date().getTime();

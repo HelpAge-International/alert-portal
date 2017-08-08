@@ -8,7 +8,7 @@ import {
   ActionType,
   AlertMessageType,
   DocumentType,
-  FileExtensionsEnding,
+  FileExtensionsEnding, Privacy,
   SizeType,
   UserType
 } from "../../utils/Enums";
@@ -28,6 +28,8 @@ import {
 import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {ModelDepartment} from "../../model/department.model";
+import {AgencyService} from "../../services/agency-service.service";
+import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 
 declare var jQuery: any;
 
@@ -35,7 +37,8 @@ declare var jQuery: any;
 @Component({
   selector: 'app-minimum',
   templateUrl: './minimum.component.html',
-  styleUrls: ['./minimum.component.css']
+  styleUrls: ['./minimum.component.css'],
+  providers: [AgencyService]
 })
 export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
@@ -86,6 +89,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private fileSize: number; // Always in Bytes
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
   public userTypes = UserType;
+  private Privacy = Privacy;
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -101,9 +105,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   // Module permissions settings
+
   private modulesAreEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   protected prepActionService: PrepActionService = new PrepActionService();
+
+  private privacy: ModelAgencyPrivacy;
+  private userAgencyId: string;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -112,6 +120,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               protected route: ActivatedRoute,
               protected storage: LocalStorageService,
               protected userService: UserService,
+              protected agencyService: AgencyService,
               protected notificationService: NotificationService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
@@ -150,7 +159,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.systemAdminId = params["systemId"];
         }
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.userAgencyId = agencyId;
           this.isSameAgency = this.agencyId == agencyId;
           this.uid = user.uid;
           this.assignActionAsignee = this.uid;
@@ -181,6 +191,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
             this.modulesAreEnabled = isEnabled;
           });
+
+          this.agencyService.getPrivacySettingForAgency(this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(privacy => {
+              this.privacy = privacy;
+            });
         });
 
       });
