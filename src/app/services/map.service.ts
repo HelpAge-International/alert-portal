@@ -45,6 +45,9 @@ export class MapService {
   private departments: ModelDepartment[] = [];
   private date: number = (new Date()).getTime();
 
+  // Other hazards text translator service
+  public otherHazardMap: Map<string, string> = new Map<string, string>();
+
   private mapCountries: Map<string, MapCountry> = new Map<string, MapCountry>();
   public listCountries: MapCountry[] = [];
   private holderCHSActions: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
@@ -321,14 +324,27 @@ export class MapService {
                 }
               }
             }
-            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
-              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            console.log(snapshot.val());
+            if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, res);
             }
           }
           else {
-            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
-              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, false);
             }
+          }
+          if (snapshot.val().hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                console.log(snap.key);
+                console.log(snap.val());
+                if (snap.val() != null) {
+                  this.otherHazardMap.set(snap.key, snap.val().name);
+                  console.log(this.otherHazardMap);
+                }
+              });
           }
         });
         if (hazardRedAlert.size > 0) {
@@ -879,6 +895,8 @@ export class MapCountry {
   public calculateHazardsList() {
     this.hazardScenarioList = [];
     this.hazards.forEach((value, key) => {
+      console.log(key);
+      console.log(value);
       if (value) {
         this.hazardScenarioList.push(key);
       }

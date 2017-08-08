@@ -54,12 +54,12 @@
                   <div *ngFor="let z of y.hazardScenarioList">
                     <div class="col-sm- col-md-2 text-center pull-right">
                       <p class="text-center"><i
-                        class="Icon__circle Icon--b-black {{(isNumber(z) || z != -1 ? getCSSHazard(z) : 'Icon--alert')}} Icon--sm text-center"></i>
+                        class="Icon__circle Icon--b-black {{(isNumber(z) && z != -1 ? getCSSHazard(z) : 'Icon--alert')}} Icon--sm text-center"></i>
                       </p>
                       <p *ngIf="isNumber(z)"><span><b>{{("GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO" + z | translate)}}</b></span>
                       </p>
                       <p class="MapList__HazardOverflow" *ngIf="!isNumber(z)">
-                        <b>{{z}}</b></p>
+                        <b>{{mapService.otherHazardMap.get(z)}}</b></p>
                     </div>
                   </div>
                 </div>

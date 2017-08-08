@@ -167,13 +167,11 @@
           <div *ngIf="!action.isArchived && (action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
             <!-- FILTERING BASED ON THE "COMPLETE/INPROGRESS/EXPIRED" filter -->
+            <!-- Use the logic from the status block to determine this -->
             <div *ngIf="filterStatus == -1 ||
-            (!action.isComplete && action.dueDate > getNow() && !((!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
-                      || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow()))) && filterStatus == ActionStatus.InProgress) ||
-            (action.isComplete && action.dueDate > getNow() && filterStatus == ActionStatus.Completed) ||
-            ((action.dueDate <= getNow()
-                      || (!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))
-                      || (action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow()))) && filterStatus == ActionStatus.Expired)">
+            ((action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow())) && filterStatus == ActionStatus.Completed) ||
+            ((action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && filterStatus == ActionStatus.InProgress) ||
+            ((!(action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt + action.computedClockSetting > getNow())) && !(action.asignee != '' && action.asignee != null && action.isComplete && (action.isCompleteAt + action.computedClockSetting > getNow()))) && filterStatus == ActionStatus.Expired)">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
