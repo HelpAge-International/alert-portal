@@ -33,9 +33,9 @@
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
           <div
-            class="Icon__circle Icon--align-center Icon--{{userAgencyId==countryData.agencyId ? 'blue' : getIcon('plan', countryData.agencyId)}} Icon--md">
+            class="Icon__circle Icon--align-center Icon--{{userAgencyId==countryData.agencyId ? 'blue' : getIcon('plan', countryData.agencyId, countryData.countryId)}} Icon--md">
             {{userAgencyId==countryData.agencyId ? (countResponsePlans[countryData.$key] ?
-            countResponsePlans[countryData.$key] : 0) : (privacyMap.get(countryData.agencyId)?.responsePlan ==
+            countResponsePlans[countryData.$key] : 0) : (privacyMapCountry.get(countryData.countryId)?.responsePlan ==
             Privacy.Public ? (countResponsePlans[countryData.$key] ? countResponsePlans[countryData.$key] : 0) :
             'N/A')}}
           </div>
@@ -45,7 +45,7 @@
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
           <div
-            class="Icon__circle Icon--align-center Icon--b-{{userAgencyId==countryData.agencyId ? mpaStatusColors[countryData.$key] : getActionIcon(true, countryData.agencyId, mpaStatusColors[countryData.$key])}} Icon--md">
+            class="Icon__circle Icon--align-center Icon--b-{{userAgencyId==countryData.agencyId ? mpaStatusColors[countryData.$key] : getActionIcon(true, countryData.agencyId, countryData.countryId, mpaStatusColors[countryData.$key])}} Icon--md">
             <i
               class="fa {{mpaStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i></div>
         </div>
@@ -54,7 +54,7 @@
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
           <div
-            class="Icon__circle Icon--align-center Icon--b-{{userAgencyId==countryData.agencyId ? advStatusColors[countryData.$key] : getActionIcon(false, countryData.agencyId, advStatusColors[countryData.$key])}} Icon--md">
+            class="Icon__circle Icon--align-center Icon--b-{{userAgencyId==countryData.agencyId ? advStatusColors[countryData.$key] : getActionIcon(false, countryData.agencyId, countryData.countryId, advStatusColors[countryData.$key])}} Icon--md">
             <i class="fa {{advStatusIcons[countryData.$key]}} fa-inverse fa-2x" aria-hidden="true"></i>
           </div>
         </div>
@@ -62,8 +62,8 @@
       </div>
       <div class="col-sm-2 col-6 Preparedness__agency-list__item">
         <div class="Icon">
-          <div class="Icon__circle Icon--align-center Icon--{{userAgencyId==countryData.agencyId ? 'blue' : getIcon('chs', countryData.agencyId)}} Icon--md">
-            {{userAgencyId==countryData.agencyId ? (percentageCHS[countryData.$key] ? percentageCHS[countryData.$key] + '%' : '0%') : (privacyMap.get(countryData.agencyId)?.chs == Privacy.Public ? percentageCHS[countryData.$key] + '%' : 'N/A')}}
+          <div class="Icon__circle Icon--align-center Icon--{{userAgencyId==countryData.agencyId ? 'blue' : getIcon('chs', countryData.agencyId, countryData.countryId)}} Icon--md">
+            {{userAgencyId==countryData.agencyId ? (percentageCHS[countryData.$key] ? percentageCHS[countryData.$key] + '%' : '0%') : (privacyMapCountry.get(countryData.countryId)?.chs == Privacy.Public ? percentageCHS[countryData.$key] + '%' : 'N/A')}}
           </div>
         </div>
         <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>

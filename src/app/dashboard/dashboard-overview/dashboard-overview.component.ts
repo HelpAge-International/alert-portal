@@ -11,6 +11,7 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {SettingsService} from "../../services/settings.service";
 
 declare var jQuery: any;
 
@@ -18,7 +19,7 @@ declare var jQuery: any;
   selector: 'app-dashboard-overview',
   templateUrl: './dashboard-overview.component.html',
   styleUrls: ['./dashboard-overview.component.css'],
-  providers: [ActionsService]
+  providers: [ActionsService, SettingsService]
 })
 export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
@@ -56,6 +57,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
               private pageControl: PageControlService,
               private alertService: ActionsService,
               private agencyService: AgencyService,
+              private countryService:SettingsService,
               private router: Router) {
     this.initMainMenu();
     this.initOfficeSubMenu();
@@ -129,10 +131,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             });
           }
 
-          this.agencyService.getPrivacySettingForAgency(this.agencyId)
+          this.countryService.getPrivacySettingForCountry(this.countryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(privacy => {
-              console.log(privacy)
               this.privacy = privacy;
               this.updateMainMenu(this.privacy);
             });
@@ -142,8 +143,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         });
 
     });
-
-
   }
 
   private updateMainMenu(privacy: ModelAgencyPrivacy) {

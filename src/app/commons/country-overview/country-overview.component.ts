@@ -20,13 +20,15 @@ import {PrepActionService, PreparednessAction} from "../../services/prepactions.
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
+import {SettingsService} from "../../services/settings.service";
 
 declare var jQuery: any;
 
 @Component({
   selector: 'app-country-overview',
   templateUrl: './country-overview.component.html',
-  styleUrls: ['./country-overview.component.css']
+  styleUrls: ['./country-overview.component.css'],
+  providers: [SettingsService]
 })
 export class CountryOverviewComponent implements OnInit, OnDestroy {
 
@@ -38,7 +40,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private _userId: string;
   private _countryOfficeData: any;
   private _userType: number;
-  private privacyMap = new Map<string, ModelAgencyPrivacy>();
+  // private privacyMap = new Map<string, ModelAgencyPrivacy>();
+  private privacyMapCountry = new Map<string, ModelAgencyPrivacy>();
 
 
   @Input()
@@ -113,6 +116,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   constructor(private pageControl: PageControlService,
               private agencyService: AgencyService,
+              private countryService: SettingsService,
               private route: ActivatedRoute,
               private af: AngularFire,
               private router: Router,
@@ -163,10 +167,16 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               this.recalculateAll(countryOffice);
             });
 
-            this.agencyService.getPrivacySettingForAgency(countryOffice.agencyId)
+            // this.agencyService.getPrivacySettingForAgency(countryOffice.agencyId)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe((privacy: ModelAgencyPrivacy) => {
+            //     this.privacyMap.set(countryOffice.agencyId, privacy);
+            //   });
+
+            this.countryService.getPrivacySettingForCountry(countryOffice.countryId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe((privacy: ModelAgencyPrivacy) => {
-                this.privacyMap.set(countryOffice.agencyId, privacy);
+                this.privacyMapCountry.set(countryOffice.countryId, privacy);
               });
           });
 
@@ -335,58 +345,44 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewCountry(countryId, agencyId) {
+    let data = {
+      "countryId": countryId,
+      "isViewing": true,
+      "agencyId": agencyId,
+      "systemId": this._systemId,
+      "userType": this._userType
+    };
     if (this.isDirector) {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": countryId,
-        "isViewing": true,
-        "agencyId": agencyId,
-        "systemId": this._systemId,
-        "userType": this._userType
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     } else {
+      data["canCopy"] = true;
       if (this.agencyOverview) {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": countryId,
-          "isViewing": true,
-          "agencyId": agencyId,
-          "systemId": this._systemId,
-          "userType": this._userType,
-          "agencyOverview": this.agencyOverview,
-          "canCopy": true
-        }]);
-      } else {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": countryId,
-          "isViewing": true,
-          "agencyId": agencyId,
-          "systemId": this._systemId,
-          "userType": this._userType,
-          "canCopy": true
-        }]);
+        data["agencyOverview"] = this.agencyOverview;
       }
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     }
   }
 
-  getIcon(type, agencyId) {
+  getIcon(type, agencyId, countryId) {
     let label = "";
-    let privacy = this.privacyMap.get(agencyId);
-    if (privacy) {
-      if (type == "plan" && privacy.responsePlan == this.Privacy.Public || type == "chs" && privacy.chs == this.Privacy.Public) {
+    let privacyCountry = this.privacyMapCountry.get(countryId);
+    if (privacyCountry) {
+      if (type == "plan" && privacyCountry.responsePlan == this.Privacy.Public || type == "chs" && privacyCountry.chs == this.Privacy.Public) {
         label = "blue";
-      } else if (type == "plan" && privacy.responsePlan == this.Privacy.Private || type == "chs" && privacy.chs == this.Privacy.Private) {
+      } else if (type == "plan" && privacyCountry.responsePlan == this.Privacy.Private || type == "chs" && privacyCountry.chs == this.Privacy.Private) {
         label = "grey";
       }
     }
     return label;
   }
 
-  getActionIcon(isMpa, agencyId, stdColor) {
+  getActionIcon(isMpa, agencyId, countryId, stdColor) {
     let label = "";
-    let privacy = this.privacyMap.get(agencyId);
-    if (privacy) {
-      if (isMpa && privacy.mpa == this.Privacy.Public || !isMpa && privacy.apa == this.Privacy.Public) {
+    let privacyCountry = this.privacyMapCountry.get(countryId);
+    if (privacyCountry) {
+      if (isMpa && privacyCountry.mpa == this.Privacy.Public || !isMpa && privacyCountry.apa == this.Privacy.Public) {
         label = stdColor;
-      } else if (isMpa && privacy.mpa == this.Privacy.Private || !isMpa && privacy.apa == this.Privacy.Private) {
+      } else if (isMpa && privacyCountry.mpa == this.Privacy.Private || !isMpa && privacyCountry.apa == this.Privacy.Private) {
         label = "grey";
       }
     }

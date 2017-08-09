@@ -92,7 +92,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.uid = user.uid;
 

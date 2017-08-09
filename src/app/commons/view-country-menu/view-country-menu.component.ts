@@ -7,12 +7,13 @@ import {Constants} from "../../utils/Constants";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {SettingsService} from "../../services/settings.service";
 
 @Component({
   selector: 'app-view-country-menu',
   templateUrl: './view-country-menu.component.html',
   styleUrls: ['./view-country-menu.component.css'],
-  providers: [AgencyService]
+  providers: [AgencyService, SettingsService]
 })
 export class ViewCountryMenuComponent implements OnInit, OnDestroy {
 
@@ -35,6 +36,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
               private router: Router,
               private userService: UserService,
               private pageControl: PageControlService,
+              private countryService:SettingsService,
               private agencyService: AgencyService) {
     this.menuMap.set("officeProfile", false);
     this.menuMap.set("risk", false);
@@ -63,7 +65,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
           if (this.agencyId && this.countryId) {
             this.loadCountry(this.agencyId, this.countryId);
 
-            this.agencyService.getPrivacySettingForAgency(this.agencyId)
+            this.countryService.getPrivacySettingForCountry(this.countryId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(privacy => {
                 this.privacy = privacy;

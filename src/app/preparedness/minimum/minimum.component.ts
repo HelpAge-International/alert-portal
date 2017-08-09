@@ -30,6 +30,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {ModelDepartment} from "../../model/department.model";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
+import {SettingsService} from "../../services/settings.service";
 
 declare var jQuery: any;
 
@@ -38,7 +39,7 @@ declare var jQuery: any;
   selector: 'app-minimum',
   templateUrl: './minimum.component.html',
   styleUrls: ['./minimum.component.css'],
-  providers: [AgencyService]
+  providers: [AgencyService, SettingsService]
 })
 export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
@@ -121,6 +122,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               protected storage: LocalStorageService,
               protected userService: UserService,
               protected agencyService: AgencyService,
+              protected countryService: SettingsService,
               protected notificationService: NotificationService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
@@ -192,7 +194,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.modulesAreEnabled = isEnabled;
           });
 
-          this.agencyService.getPrivacySettingForAgency(this.agencyId)
+          this.countryService.getPrivacySettingForCountry(this.countryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(privacy => {
               this.privacy = privacy;

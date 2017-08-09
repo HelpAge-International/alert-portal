@@ -32,6 +32,7 @@ import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
+import {SettingsService} from "../../services/settings.service";
 
 declare var jQuery: any;
 
@@ -39,7 +40,7 @@ declare var jQuery: any;
   selector: 'app-advanced',
   templateUrl: './advanced.component.html',
   styleUrls: ['./advanced.component.css'],
-  providers: [AgencyService]
+  providers: [AgencyService, SettingsService]
 })
 export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
@@ -117,6 +118,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               protected storage: LocalStorageService,
               protected userService: UserService,
               protected agencyService: AgencyService,
+              protected countryService: SettingsService,
               protected notificationService: NotificationService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
@@ -173,7 +175,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.initDocumentTypes();
             this.initAlerts();
 
-            this.agencyService.getPrivacySettingForAgency(this.agencyId)
+            this.countryService.getPrivacySettingForCountry(this.countryId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe((privacy:ModelAgencyPrivacy) =>{
                 this.privacy = privacy;

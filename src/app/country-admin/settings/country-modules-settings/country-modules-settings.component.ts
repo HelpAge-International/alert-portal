@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../../services/user.service";
 import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, Privacy, UserType} from '../../../utils/Enums';
+import {AlertMessageType, ModuleName, Privacy, UserType} from '../../../utils/Enums';
 import {SettingsService} from "../../../services/settings.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {DisplayError} from "../../../errors/display.error";
@@ -105,5 +105,29 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigateByUrl('/dashboard');
+  }
+
+  checkDisable(moduleIndex, btnIndex) {
+    let isDisable = false;
+    let privacyToCheck = -1;
+    if (moduleIndex == ModuleName.MinimumPreparednessActions) {
+      privacyToCheck = this.agencyPrivacy.mpa;
+    } else if (moduleIndex == ModuleName.AdvancedPreparednessActions) {
+      privacyToCheck = this.agencyPrivacy.apa;
+    } else if (moduleIndex == ModuleName.CHSPreparednessActions) {
+      privacyToCheck = this.agencyPrivacy.chs;
+    } else if (moduleIndex == ModuleName.RiskMonitoring) {
+      privacyToCheck = this.agencyPrivacy.riskMonitoring;
+    } else if (moduleIndex == ModuleName.CountryOfficeProfile) {
+      privacyToCheck = this.agencyPrivacy.officeProfile;
+    } else if (moduleIndex == ModuleName.ResponsePlanning) {
+      privacyToCheck = this.agencyPrivacy.responsePlan;
+    }
+    if (privacyToCheck == Privacy.Network && btnIndex == 0) {
+      isDisable = true;
+    } else if (privacyToCheck == Privacy.Private && btnIndex == 0 || privacyToCheck == Privacy.Private && btnIndex == 2) {
+      isDisable = true;
+    }
+    return isDisable;
   }
 }

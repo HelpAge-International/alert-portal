@@ -39,7 +39,8 @@
           <div class="col-sm-6">
             <div class="Radio__button--js Alt-hover">
               <button class="btn" type="button" name="privacy_module_{{module.key}}"
-                      *ngFor="let privacy of privacyOptions | enumKeys"
+                      *ngFor="let privacy of privacyOptions | enumKeys; index as j"
+                      [disabled]="checkDisable(i,j)"
                       [class.btn-primary]="privacy == privacyOptions[module.value.privacy]"
                       [class.btn-outline-primary]="privacy != privacyOptions[module.value.privacy]"
                       (click)="setModulePrivacy(module.value, privacyOptions[privacy])">{{ privacy }}
