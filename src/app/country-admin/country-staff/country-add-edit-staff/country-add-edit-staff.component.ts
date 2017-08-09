@@ -521,6 +521,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   selectedUserType(userType) {
     // userType-1 to ignore f all option
+    console.log(UserType[userType]);
 
     this.notificationSettings = [];
     this.notificationList

@@ -2,22 +2,27 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../../services/user.service";
 import {Constants} from '../../../utils/Constants';
-import {AlertMessageType, Privacy} from '../../../utils/Enums';
+import {AlertMessageType, Privacy, UserType} from '../../../utils/Enums';
 import {SettingsService} from "../../../services/settings.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {DisplayError} from "../../../errors/display.error";
 import {ModuleSettingsModel} from "../../../model/module-settings.model";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {AgencyService} from "../../../services/agency-service.service";
+import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 
 
 @Component({
   selector: 'app-country-modules-settings',
   templateUrl: './country-modules-settings.component.html',
-  styleUrls: ['./country-modules-settings.component.css']
+  styleUrls: ['./country-modules-settings.component.css'],
+  providers: [AgencyService]
 })
 
 export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
+  private agencyPrivacy: ModelAgencyPrivacy;
+  private agencyId: string;
   private uid: string;
   private countryId: string;
 
@@ -28,12 +33,14 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
   // Models
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
-  private moduleSettings: ModuleSettingsModel[];
+  private moduleSettings: ModuleSettingsModel[] = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private _userService: UserService,
+  constructor(private pageControl: PageControlService,
+              private _userService: UserService,
               private _settingsService: SettingsService,
+              private agencyService: AgencyService,
               private router: Router,
               private route: ActivatedRoute) {
   }
@@ -41,20 +48,25 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
 
-      this._userService.getCountryAdminUser(this.uid)
+      this.agencyService.getPrivacySettingForAgency(agencyId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdminUser => {
-          if (countryAdminUser) {
-            this.countryId = countryAdminUser.countryId;
-
-            this._settingsService.getCountryModulesSettings(this.countryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(modules => {
-                this.moduleSettings = modules;
-              })
-          }
+        .subscribe((privacy: ModelAgencyPrivacy) => {
+          this.agencyPrivacy = privacy;
         });
+
+      if (userType == UserType.CountryAdmin) {
+
+        this._settingsService.getCountryModulesSettings(this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((modules: ModuleSettingsModel[]) => {
+            console.log(modules);
+            this.moduleSettings = modules;
+          })
+      }
+
     });
   }
 
@@ -67,15 +79,16 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
     module.privacy = value;
   }
 
-  validateForm(): boolean {
-    this.moduleSettings.forEach(module => {
-      this.alertMessage = module.validate();
-    })
-
-    return !this.alertMessage;
-  }
+  // validateForm(): boolean {
+  //   this.moduleSettings.forEach(module => {
+  //     this.alertMessage = module.validate();
+  //   });
+  //
+  //   return !this.alertMessage;
+  // }
 
   submit() {
+
     this._settingsService.saveCountryModuleSettings(this.countryId, this.moduleSettings)
       .then(() => {
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.MODULES.SAVED_SUCCESS', AlertMessageType.Success);
@@ -87,6 +100,7 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
           this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
         }
       });
+
   }
 
   goBack() {
