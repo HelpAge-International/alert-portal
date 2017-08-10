@@ -143,6 +143,13 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
         var dataToSave = this.alertData;
 
+        if (Number.isNaN(+dataToSave.hazardScenario)) {
+          // It's a other hazard
+          dataToSave.otherName = this.alertData.hazardScenario;
+          dataToSave.hazardScenario = -1;
+        }
+        console.log(dataToSave);
+
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
           .then(() => {
@@ -150,7 +157,13 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
               const redAlertNotificationSetting = 1;
-              const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[dataToSave.hazardScenario]);
+              let riskNameTranslated;
+              if (dataToSave.hazardScenario != -1) {
+                riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[dataToSave.hazardScenario]);
+              }
+              else {
+                riskNameTranslated = dataToSave.otherName;
+              }
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
@@ -228,12 +241,19 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getHazards() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
-        this.hazards = [];
-        for (let hazard in hazards) {
-          hazards[hazard].imgName = this.translate.instant(this.hazardScenario[hazards[hazard].hazardScenario]).replace(" ", "_");
-          this.hazards.push(hazards[hazard]);
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID, {preserveSnapshot: true}).takeUntil(this.ngUnsubscribe).subscribe((snapshot) => {
+        for (let x of snapshot) {
+          let value = x.val();
+          if (value.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + value.otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                value.hazardName = snap.val().name;
+              });
+          }
+          this.hazards.push(value);
         }
+        console.log(this.hazards);
       });
     });
   }

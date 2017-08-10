@@ -272,7 +272,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           });
 
           if (hazard.isActive) {
+            console.log(hazard);
             this.activeHazards.push(hazard);
+            if (hazard.hazardScenario == -1) {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((snap) => {
+                  hazard.hazardName = snap.val().name;
+                });
+            }
             console.log(this.activeHazards);
           } else {
             this.archivedHazards.push(hazard);

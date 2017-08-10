@@ -70,14 +70,29 @@ export class HazardImages {
   }
 
   public get(int: number) {
-    return HazardImages.info + this.getMapOfSVG().get(int) + HazardImages.ending;
+    if (int != -1) {
+      return HazardImages.info + this.getMapOfSVG().get(int) + HazardImages.ending;
+    }
+    else {
+      return HazardImages.info + "alert" + HazardImages.ending;
+    }
   }
 
   public getHazard(key: number) {
-    return "/assets/images/hazards/" + this.getMapOfCSS().get(key)  + ".svg";
+    if (key != -1) {
+      return "/assets/images/hazards/" + this.getMapOfCSS().get(key)  + ".svg";
+    }
+    else {
+      return "/assets/images/hazards/alert.svg";
+    }
   }
 
   public getCSS(int: number) {
-    return this.getMapOfCSS().get(int);
+    if (int != -1) {
+      return this.getMapOfCSS().get(int);
+    }
+    else {
+      return "Icon--alert";
+    }
   }
 }

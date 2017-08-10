@@ -73,11 +73,15 @@ export class InformService {
 export class InformHolder {
   public hazardScenario: number;
   public value: number;
+  public otherHazard: string;
 
-  public static create(scenario: HazardScenario, value: number): InformHolder {
+  public static create(scenario: HazardScenario, value: number, otherHazard?: string): InformHolder {
     let holder = new InformHolder();
     holder.hazardScenario = scenario;
     holder.value = value;
+    if (otherHazard != null) {
+      holder.otherHazard = otherHazard;
+    }
     return holder;
   }
 }

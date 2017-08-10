@@ -20,24 +20,24 @@
         </div>
 
         <div class="row" style="width:100%" *ngFor="let hazard of hazards; let key = index">
-             <label for="hazard_{{hazard.hazardScenario}}" class="Checkbox--ribbon__alert Left col-sm-5">
-                <input type="radio" name="hazard" id="hazard_{{hazard.hazardScenario}}" [(ngModel)]="alertData.hazardScenario" [value]="hazard.hazardScenario">
+             <label for="hazard_{{hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName}}" class="Checkbox--ribbon__alert Left col-sm-5">
+                <input type="radio" name="hazard" id="hazard_{{hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName}}" [(ngModel)]="alertData.hazardScenario" [value]="hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName">
                 <div class="Icon" style="padding-left: 5px">
                     <div
                     class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
                 </div>
-                <p><b>{{hazardScenario[hazard.hazardScenario] | translate}}</b>Risk {{hazard.risk}}</p>
+                <p><b>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) : hazard.hazardName}}</b></p>
             </label>
         </div>
 
         <!--Select Alert level-->
         <br>
-        <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.SELECT_ALERT" | translate}}</b> 
+        <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.SELECT_ALERT" | translate}}</b>
             <tooltip
                 [level1]= "'TOOLTIPS.RISK_MONITORING.TT6.LEVEL1'"
             ></tooltip>
         </h6>
-        
+
 
         <div class="Radio__button--warning--js row Spaced-above">
             <!--amber alert-->

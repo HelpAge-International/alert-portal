@@ -45,6 +45,9 @@ export class MapService {
   private departments: ModelDepartment[] = [];
   private date: number = (new Date()).getTime();
 
+  // Other hazards text translator service
+  public otherHazardMap: Map<string, string> = new Map<string, string>();
+
   private mapCountries: Map<string, MapCountry> = new Map<string, MapCountry>();
   public listCountries: MapCountry[] = [];
   private holderCHSActions: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
@@ -112,6 +115,7 @@ export class MapService {
       this.listCountries.push(value);
       let position = 0;
       if (this.clickedCountry != null) {
+        let count: number = 0;
         value.hazards.forEach((_, hazardScenario) => {
           console.log("For " + value.countryId + " -> " + Countries[value.location]);
           this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
@@ -125,7 +129,13 @@ export class MapService {
                 icon: HazardImages.init().get(hazardScenario)
               });
               marker.setMap(this.map);
-              position += 1.2;
+              count++;
+              if (count % 2 == 0) {
+                position *= -1;
+              }
+              else {
+                position += 1.2;
+              }
             }
           });
         });
@@ -303,7 +313,7 @@ export class MapService {
     this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        let hazardRedAlert: Map<any, boolean> = new Map<any, boolean>();
         snap.forEach((snapshot) => {
           if (snapshot.val().alertLevel == AlertLevels.Red) {
             let res: boolean = false;
@@ -314,14 +324,27 @@ export class MapService {
                 }
               }
             }
-            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
-              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            console.log(snapshot.val());
+            if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, res);
             }
           }
           else {
-            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
-              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, false);
             }
+          }
+          if (snapshot.val().hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                console.log(snap.key);
+                console.log(snap.val());
+                if (snap.val() != null) {
+                  this.otherHazardMap.set(snap.key, snap.val().name);
+                  console.log(this.otherHazardMap);
+                }
+              });
           }
         });
         if (hazardRedAlert.size > 0) {
@@ -845,8 +868,8 @@ export class MapCountry {
 
   public actionMap: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
   public departments: MapDepartment[] = [];
-  public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
-  public hazardScenarioList: HazardScenario[] = [];
+  public hazards: Map<any, boolean> = new Map<any, boolean>();
+  public hazardScenarioList: any[] = [];
 
   constructor(countryId: string, location: number) {
     this.location = location;
@@ -872,6 +895,8 @@ export class MapCountry {
   public calculateHazardsList() {
     this.hazardScenarioList = [];
     this.hazards.forEach((value, key) => {
+      console.log(key);
+      console.log(value);
       if (value) {
         this.hazardScenarioList.push(key);
       }

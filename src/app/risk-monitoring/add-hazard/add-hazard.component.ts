@@ -285,17 +285,32 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
         /* TODO RISK PARAM */
         this.hazardData.risk = 10;
         this.hazardData.isActive = true;
-        console.log(this.hazardData);
-        //fill out info for other type
         if (this.otherHazard) {
           this.hazardData.hazardScenario = -1;
-          this.hazardData["otherName"] = this.hazardName;
         }
+        //fill out info for other type
         this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
           .push(this.hazardData)
-          .then(() => {
+          .then((hazardKey) => {
+            // PUSHED ALL DATA TO /hazard/
             this.storage.set('successAddHazard', this.hazardData.hazardScenario);
-            this.router.navigate(['/risk-monitoring/']);
+            if (this.otherHazard) {
+              let objName = {name: this.hazardName};
+              this.af.database.list(Constants.APP_STATUS + "/hazardOther/").push(objName).then(key => {
+                let updateHazardObj = {
+                  hazardScenario: -1,
+                  otherName: key.key
+                }
+                this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + hazardKey.key).update(updateHazardObj).then(_ => {
+                  this.router.navigate(['/risk-monitoring/']);
+                }).catch(err => {
+                  this.alertMessage = new AlertMessageModel("Error updating other hazard reference");
+                });
+              }).catch(err => {
+                console.log(err);
+                this.alertMessage = new AlertMessageModel("Error updating the other hazard data");
+              });
+            }
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });

@@ -335,8 +335,8 @@
 
       <div class="Ribbon__section__wrap--risk align-items-right"
            *ngFor="let hazard of activeHazards; let hazardIndex = index;">
-        <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + hazard.hazardScenario}}"
-             aria-expanded="true" attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
+        <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}"
+             aria-expanded="true" attr.aria-controls="{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}">
           <div class="row">
             <div class="col-sm-4">
               <div class="Icon">
@@ -347,7 +347,7 @@
               <!--<div class="risk-icon__components"><img src="assets/images/hazards/{{hazard.imgName | lowercase}}.svg">
               </div>-->
               <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
-                hazard.otherName}}</h4></div>
+                hazard.hazardName}}</h4></div>
             <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
               <div *ngIf="hazard.isSeasonal">
                 <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}
@@ -362,7 +362,7 @@
           </div>
         </div>
 
-        <div class="Accordion__Content collapse" id="collapse{{hazard.hazardScenario}}" role="tab">
+        <div class="Accordion__Content collapse" id="collapse{{(hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">

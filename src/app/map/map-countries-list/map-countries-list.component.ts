@@ -37,6 +37,8 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
   public minThreshGreen: number = -1;
   public minThreshYellow: number = -1;
 
+  private Number = Number;
+
   private isDirector: boolean;
 
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
