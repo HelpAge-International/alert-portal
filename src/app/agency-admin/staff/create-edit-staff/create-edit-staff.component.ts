@@ -14,6 +14,7 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ModelDepartment} from "../../../model/department.model";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -34,7 +35,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   STAFF_POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
   OFFICE_TYPE = Constants.OFFICE_TYPE;
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
-
+  UserType = UserType;
   Countries = Constants.COUNTRIES;
 
   title: number;
@@ -229,13 +230,18 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(countries => {
-      this.countryList = countries;
-      this.originalCountryList = countries;
-      this.af.database.list(Constants.APP_STATUS + "/directorCountry").takeUntil(this.ngUnsubscribe).subscribe(directorCountries => {
-        this.directorCountries = directorCountries;
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countries => {
+        this.countryList = countries;
+        this.originalCountryList = countries;
+
+        this.af.database.list(Constants.APP_STATUS + "/directorCountry")
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(directorCountries => {
+            this.directorCountries = directorCountries;
+          });
       });
-    });
 
     this.regionList = this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId)
       .map(region => {
@@ -247,6 +253,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
         return filteredRegions;
       });
+
     this.departmentList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .map(departments => {
         let names: ModelDepartment[] = [];
@@ -544,6 +551,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       } else if (this.editInitialUserType === UserType.RegionalDirector) {
         staffData["/directorRegion/" + this.region.$key] = null;
         staffData["/regionDirector/" + uid] = null;
+        // staffData["/globalUser/" + this.agencyId + "/" + uid] = null;
       } else if (this.editInitialUserType == UserType.ErtLeader) {
         staffData["/ertLeader/" + uid] = null;
       } else if (this.editInitialUserType == UserType.Ert) {
@@ -559,6 +567,15 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       } else if (this.editInitialUserType == UserType.CountryUser) {
         staffData["/countryUser/" + uid] = null;
       }
+
+      if ((this.editInitialUserType == UserType.GlobalDirector || this.editInitialUserType == UserType.RegionalDirector || this.editInitialUserType == UserType.GlobalUser || this.editInitialUserType == UserType.Donor) &&
+        (this.userType == UserType.CountryDirector || this.userType == UserType.Ert || this.userType == UserType.ErtLeader || this.userType == UserType.CountryUser)) {
+        staffData["/staff/globalUser/" + this.agencyId + "/" + uid] = null;
+      } else if ((this.editInitialUserType == UserType.CountryDirector || this.editInitialUserType == UserType.Ert || this.editInitialUserType == UserType.ErtLeader || this.editInitialUserType == UserType.CountryUser) &&
+        (this.userType == UserType.GlobalDirector || this.userType == UserType.RegionalDirector || this.userType == UserType.GlobalUser || this.userType == UserType.Donor)) {
+        staffData["/staff/"+ this.selectedOfficeId + "/" + uid] = null;
+      }
+
     }
 
     console.log(staff);

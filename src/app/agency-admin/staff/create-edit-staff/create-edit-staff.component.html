@@ -40,7 +40,7 @@
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
           <label for="User-Type">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</label>
-          <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType"
+          <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType" [disabled]="isEdit && (userType==UserType.NonAlert || userType == UserType.PartnerUser)"
                   (change)="selectedUserType(userType)" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let type of userTypeSelection;" [value]="type">

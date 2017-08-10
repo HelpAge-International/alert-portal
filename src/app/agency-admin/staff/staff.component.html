@@ -5,6 +5,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
+
     <div class="Header-title__wrap">
       <h1>{{"AGENCY_ADMIN.STAFF.TITLE_TEXT"| translate}}</h1>
       <button type="button" class="btn btn-primary" (click)="addNewStaff()">{{"AGENCY_ADMIN.STAFF.ADD_NEW_STAFF"|
@@ -16,11 +17,6 @@
       <div class="col-lg-1 col-md-1">
         {{"GLOBAL.FILTER"| translate}}
       </div>
-      <!--<div class="col-lg-3 col-md-4">-->
-      <!--<select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">-->
-      <!--<option *ngFor="let position of positionsList" [value]="position">{{Position[position] | translate}}</option>-->
-      <!--</select>-->
-      <!--</div>-->
       <div class="col-lg-3 col-md-4">
         <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
           <option value="allDepartments">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
