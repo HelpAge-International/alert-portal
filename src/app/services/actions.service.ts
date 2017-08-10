@@ -186,6 +186,7 @@ export class ActionsService {
           modelAlert.id = alert.$key;
           modelAlert.alertLevel = alert.alertLevel;
           modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.otherName = alert.otherName;
           modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
           modelAlert.infoNotes = alert.infoNotes;
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
@@ -215,6 +216,17 @@ export class ActionsService {
           alertList.push(modelAlert);
         });
         return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+              .first()
+              .subscribe(nameObj => {
+                alert.otherName = nameObj.name;
+              });
+          }
+        });
       })
       .do(alertList => {
         alertList.forEach(alert => {
@@ -281,6 +293,7 @@ export class ActionsService {
           modelAlert.id = alert.$key;
           modelAlert.alertLevel = alert.alertLevel;
           modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.otherName = alert.otherName;
           modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
           modelAlert.infoNotes = alert.infoNotes;
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
@@ -310,6 +323,17 @@ export class ActionsService {
           alertList.push(modelAlert);
         });
         return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+              .first()
+              .subscribe(nameObj => {
+                alert.otherName = nameObj.name;
+              });
+          }
+        });
       })
       .do(alertList => {
         alertList.forEach(alert => {
@@ -373,6 +397,7 @@ export class ActionsService {
         modelAlert.id = alert.$key;
         modelAlert.alertLevel = alert.alertLevel;
         modelAlert.hazardScenario = alert.hazardScenario;
+        modelAlert.otherName = alert.otherName;
         modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
         modelAlert.infoNotes = alert.infoNotes;
         modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
@@ -400,6 +425,15 @@ export class ActionsService {
         modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
 
         return modelAlert;
+      })
+      .do(modelAlert => {
+        if (modelAlert.hazardScenario == -1) {
+          this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + modelAlert.otherName)
+            .first()
+            .subscribe(nameObj =>{
+              modelAlert.otherName = nameObj.name;
+            })
+        }
       })
       .do(modelAlert => {
         this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy)
@@ -512,6 +546,8 @@ export class ActionsService {
           modelAlert.id = alert.$key;
           modelAlert.alertLevel = alert.alertLevel;
           modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.otherName = alert.otherName;
           modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
           modelAlert.infoNotes = alert.infoNotes;
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
@@ -540,6 +576,17 @@ export class ActionsService {
           alertList.push(modelAlert);
         });
         return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+              .first()
+              .subscribe(nameObj => {
+                alert.otherName = nameObj.name;
+              });
+          }
+        });
       })
       .do(alertList => {
         alertList.forEach(alert => {

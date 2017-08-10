@@ -10,6 +10,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {UserService} from "../../services/user.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {CommonService} from "../../services/common.service";
+import {HazardImages} from "../../utils/HazardImages";
 
 
 @Component({
@@ -68,11 +69,9 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).subscribe(agencyId => {
-        this.agencyId = agencyId
-      });
+      this.agencyId = agencyId;
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
@@ -200,6 +199,14 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
     this.alertService.unSubscribeNow();
+  }
+
+  getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
 }

@@ -25,7 +25,7 @@
                  class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
               <div>
                 <span>{{"ALERT.RISK" | translate}}:</span>
-                {{HazardScenariosList[alert.hazardScenario] | translate}}
+                {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
               </div>
             </div>
             <div class="col-md-2 Alert-Widget__item">
@@ -126,7 +126,7 @@
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
-                  {{HazardScenariosList[alert.hazardScenario] | translate}}
+                  {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
@@ -248,7 +248,7 @@
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
-                  {{HazardScenariosList[alert.hazardScenario] | translate}}
+                  {{alert.hazardScenario!=-1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
@@ -310,7 +310,7 @@
                   class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
-                  {{HazardScenariosList[alert.hazardScenario] | translate}}
+                  {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
@@ -633,7 +633,7 @@
                 class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
             </div>
 
-            <span>{{HazardScenariosList[hazard.hazardScenario] | translate}}</span>
+            <span>{{hazard.hazardScenario != -1 ? (HazardScenariosList[hazard.hazardScenario] | translate) : hazard.otherName}}</span>
             {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}
           </li>
         </ul>

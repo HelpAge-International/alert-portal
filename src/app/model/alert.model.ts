@@ -25,6 +25,7 @@ export class ModelAlert extends BaseModel {
     public timeUpdated: number;
     public updatedBy: string;
     public updatedByName: string;
+    public otherName: string;
 
     constructor() {
       super();

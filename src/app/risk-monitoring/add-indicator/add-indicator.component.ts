@@ -478,21 +478,34 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
-    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
-      this.hazards = [];
-      this.hazardsObject = {};
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((hazards: any) => {
+        this.hazards = [];
+        this.hazardsObject = {};
 
-      hazards["countryContext"] = {key: "countryContext"};
-      this.hazards.push(hazards["countryContext"]);
-      this.hazardsObject["countryContext"] = hazards["countryContext"];
-      for (let hazard in hazards) {
-        if (!hazard.includes("$") && hazard != "countryContext") {
-          hazards[hazard].key = hazard;
-          this.hazards.push(hazards[hazard]);
-          this.hazardsObject[hazard] = hazards[hazard];
+        hazards["countryContext"] = {key: "countryContext"};
+        this.hazards.push(hazards["countryContext"]);
+        this.hazardsObject["countryContext"] = hazards["countryContext"];
+        for (let hazard in hazards) {
+          if (!hazard.includes("$") && hazard != "countryContext") {
+            hazards[hazard].key = hazard;
+
+            if (hazards[hazard].hazardScenario != -1) {
+              this.hazards.push(hazards[hazard]);
+              this.hazardsObject[hazard] = hazards[hazard];
+            } else {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                .first()
+                .subscribe(nameObj => {
+                  hazards[hazard].displayName = nameObj.name;
+                  this.hazards.push(hazards[hazard]);
+                  this.hazardsObject[hazard] = hazards[hazard];
+                });
+            }
+          }
         }
-      }
-    });
+      });
   }
 
   _deleteIndicator() {

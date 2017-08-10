@@ -13,7 +13,7 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
-import { HazardImages } from "../../utils/HazardImages";
+import {HazardImages} from "../../utils/HazardImages";
 
 @Component({
   selector: 'app-create-alert',
@@ -240,8 +240,9 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID, {preserveSnapshot: true}).takeUntil(this.ngUnsubscribe).subscribe((snapshot) => {
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
         for (let x of snapshot) {
           let value = x.val();
           if (value.hazardScenario == -1) {
@@ -255,7 +256,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         }
         console.log(this.hazards);
       });
-    });
   }
 
   _getDirectorCountryID() {

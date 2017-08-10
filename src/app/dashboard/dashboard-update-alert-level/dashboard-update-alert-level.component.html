@@ -11,8 +11,8 @@
       <div class="col-lg-6 col-md-8 bg-grey">
         <div class="row align-items-center Small-spaced no-gutters">
           <div class="col-6">
-            <span class="Icon Icon__circle Icon--sm Icon--b-dark-blue Icon--cyclone"></span>
-            {{HAZARDS[loadedAlert?.hazardScenario] | translate}}
+            <span class="Icon Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(loadedAlert?.hazardScenario) ? getCSSHazard(loadedAlert?.hazardScenario) : 'Icon--alert')}}"></span>
+            {{loadedAlert?.hazardScenario != -1 ? (HAZARDS[loadedAlert?.hazardScenario] | translate) : (loadedAlert?.otherName)}}
           </div>
           <div class="col-6 text-right">
             {{"ALERT.LAST_UPDATED" | translate}} <strong>{{(loadedAlert?.timeUpdated>0) ? (loadedAlert?.timeUpdated |

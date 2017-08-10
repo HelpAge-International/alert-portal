@@ -30,7 +30,7 @@
                   *ngIf="hazard.key == 'countryContext'">{{"RISK_MONITORING.MAIN_PAGE.COUNTRY_CONTEXT" | translate}}
           </option>
           <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
-                  *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) : hazard.otherName}}
+                  *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
           </option>
         </template>
       </select>
