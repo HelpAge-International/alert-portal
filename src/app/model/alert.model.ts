@@ -26,6 +26,7 @@ export class ModelAlert extends BaseModel {
     public updatedBy: string;
     public updatedByName: string;
     public otherName: string;
+    public displayName: string;
 
     constructor() {
       super();

@@ -430,8 +430,8 @@ export class ActionsService {
         if (modelAlert.hazardScenario == -1) {
           this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + modelAlert.otherName)
             .first()
-            .subscribe(nameObj =>{
-              modelAlert.otherName = nameObj.name;
+            .subscribe(nameObj => {
+              modelAlert.displayName = nameObj.name;
             })
         }
       })
@@ -498,6 +498,9 @@ export class ActionsService {
     updateData["createdBy"] = alert.createdBy;
     updateData["estimatedPopulation"] = alert.estimatedPopulation;
     updateData["hazardScenario"] = alert.hazardScenario;
+    if (alert.hazardScenario == -1) {
+      updateData["otherName"] = alert.otherName;
+    }
     updateData["infoNotes"] = alert.infoNotes;
     if (alert.reasonForRedAlert) {
       updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
@@ -510,7 +513,12 @@ export class ActionsService {
     this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
-      const riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[alert.hazardScenario]);
+      let riskNameTranslated = "";
+      if (alert.hazardScenario != -1) {
+        riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[alert.hazardScenario]);
+      } else {
+        riskNameTranslated = this.translate.instant(alert.displayName);
+      }
       const levelBefore = this.translate.instant(Constants.ALERTS[alertLevelBefore]);
       const levelAfter = this.translate.instant(Constants.ALERTS[alert.alertLevel]);
 
