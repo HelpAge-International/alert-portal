@@ -86,8 +86,8 @@
         </div>
 
         <div *ngFor="let alertLevelKey of alertLevelsList"
-             class="form-group col-sm-12 row {{!alertLevelKey ? 'Spaced-above' : ''}}">
-          <img class="oval_green__wrap--risk {{!alertLevelKey ? 'Spaced-above' : ''}}"
+             class="form-group col-sm-12 row Spaced-above">
+          <img class="oval_green__wrap--risk Spaced-above"
                src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
           <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput"
                  [(ngModel)]="indicatorData.trigger[alertLevelKey].triggerValue"
