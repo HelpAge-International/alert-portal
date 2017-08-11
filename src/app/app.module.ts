@@ -1,8 +1,8 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {NgModule} from "@angular/core";
 import {FormsModule} from "@angular/forms";
-import {HttpModule, Http} from "@angular/http";
-import {AngularFireModule, AuthProviders, AuthMethods} from "angularfire2";
+import {Http, HttpModule} from "@angular/http";
+import {AngularFireModule, AuthMethods, AuthProviders} from "angularfire2";
 import {AppComponent} from "./app.component";
 import {LoginComponent} from "./login/login.component";
 import {SystemAdminComponent} from "./system-admin/agency/system-admin.component";
@@ -26,7 +26,7 @@ import {SystemSettingsComponent} from "./system-admin/system-settings/system-set
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import "hammerjs";
 import {SystemAdminHeaderComponent} from "./system-admin/system-admin-header/system-admin-header.component";
-import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
+import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
 import {CreateEditCountryComponent} from "./agency-admin/country-office/create-edit-country/create-edit-country.component";
@@ -58,8 +58,7 @@ import {AgencyChangePasswordComponent} from './agency-admin/agency-account-setti
 import {CreateEditRegionComponent} from './agency-admin/country-office/create-edit-region/create-edit-region.component';
 import {RxHelper} from './utils/RxHelper';
 import {ModalModule} from "angular2-modal";
-import {BootstrapModalModule} from "angular2-modal/plugins/bootstrap";
-import {Modal} from 'angular2-modal/plugins/bootstrap';
+import {BootstrapModalModule, Modal} from "angular2-modal/plugins/bootstrap";
 import {AgencyAdminSettingsResponsePlanComponent} from './agency-admin/settings/agency-admin-settings-response-plan/agency-admin-settings-response-plan.component';
 import {SystemSettingsResponsePlansComponent} from './system-admin/system-settings/system-settings-response-plans/system-settings-response-plans.component';
 import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/system-settings-documents/system-settings-documents.component';
@@ -185,14 +184,15 @@ import {DashboardOverviewComponent} from './dashboard/dashboard-overview/dashboa
 import {PrepActionService} from "./services/prepactions.service";
 import {SumPipe} from "./utils/pipes/sum.pipe";
 import {NewUserPasswordComponent} from './new-user-password/new-user-password.component';
-import { CountryOverviewComponent } from "./commons/country-overview/country-overview.component";
-import { ActionsService } from "./services/actions.service";
-import { PartnerValidationComponent } from './commons/partner-validation/partner-validation.component';
+import {CountryOverviewComponent} from "./commons/country-overview/country-overview.component";
+import {ActionsService} from "./services/actions.service";
+import {PartnerValidationComponent} from './commons/partner-validation/partner-validation.component';
 import {WindowRefService} from "./services/window-ref.service";
-import { AfterValidationComponent } from './commons/partner-validation/after-validation/after-validation.component';
-import { AccountSettingProfileComponent } from './commons/account-setting-profile/account-setting-profile.component';
-import { AccountSettingPasswordComponent } from './commons/account-setting-password/account-setting-password.component';
-import { DirectorAccountSettingsComponent } from './director/director-account-settings/director-account-settings.component';
+import {AfterValidationComponent} from './commons/partner-validation/after-validation/after-validation.component';
+import {AccountSettingProfileComponent} from './commons/account-setting-profile/account-setting-profile.component';
+import {AccountSettingPasswordComponent} from './commons/account-setting-password/account-setting-password.component';
+import {DirectorAccountSettingsComponent} from './director/director-account-settings/director-account-settings.component';
+import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -401,7 +401,8 @@ const firebaseAuthConfig = {
     LocalStorageModule.withConfig({
       prefix: 'my-app',
       storageType: 'localStorage'
-    })
+    }),
+    Angulartics2Module.forRoot([Angulartics2GoogleAnalytics])
   ],
   providers: [
     RxHelper,

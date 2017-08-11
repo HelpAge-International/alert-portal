@@ -15,6 +15,7 @@ import {
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
+
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
 
@@ -81,7 +82,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private route: ActivatedRoute,
+              private router: Router,
+              private userService: UserService,
+              private actionService: ActionsService) {
   }
 
   ngOnInit() {
@@ -184,7 +190,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.getCountryData();
     });
     this.userService.getSystemAdminId(this.NODE_TO_CHECK, this.uid)
-      .subscribe(systemId => { this.systemId = systemId;})
+      .subscribe(systemId => {
+        this.systemId = systemId;
+      })
   }
 
   private loadDataForPartnerUser(agencyId, countryId) {
@@ -417,11 +425,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
     }
     this.actionService.getRedAlerts(this.countryId)
-    .subscribe(alerts =>
-    {
-      alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
-      this.isRedAlert =  alerts.length > 0;
-    });
+      .subscribe(alerts => {
+        alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+        this.isRedAlert = alerts.length > 0;
+      });
   }
 
   showAffectedAreasForAlert(affectedAreas) {
@@ -450,9 +457,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         let tempList = [];
         list.forEach(hazard => {
           if (hazard.hazardScenario == -1) {
-            this.af.database.object(Constants.APP_STATUS + "/hazardOther/"+hazard.otherName)
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
               .first()
-              .subscribe(nameObj =>{
+              .subscribe(nameObj => {
                 hazard.otherName = nameObj.name;
                 this.hazards.push(hazard);
               });
@@ -495,7 +502,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getCHSActionTask(action) {
     if (action.type == ActionType.chs) {
       this.actionService.getCHSActionTask(action, this.systemId)
-        .subscribe(task => { action.task = task; })
+        .subscribe(task => {
+          action.task = task;
+        })
     }
   }
 
