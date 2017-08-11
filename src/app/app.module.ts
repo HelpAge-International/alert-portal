@@ -193,6 +193,7 @@ import { AfterValidationComponent } from './commons/partner-validation/after-val
 import { AccountSettingProfileComponent } from './commons/account-setting-profile/account-setting-profile.component';
 import { AccountSettingPasswordComponent } from './commons/account-setting-password/account-setting-password.component';
 import { DirectorAccountSettingsComponent } from './director/director-account-settings/director-account-settings.component';
+import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -408,7 +409,8 @@ const firebaseAuthConfig = {
     LocalStorageModule.withConfig({
       prefix: 'my-app',
       storageType: 'localStorage'
-    })
+    }),
+    Angulartics2Module.forRoot([ Angulartics2GoogleAnalytics ])
   ],
   providers: [
     RxHelper,

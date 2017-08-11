@@ -15,6 +15,8 @@ import {
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
+import {Angulartics2GoogleAnalytics} from "angulartics2/dist";
+
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
 
@@ -81,7 +83,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private router: Router, private userService: UserService, private actionService: ActionsService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private route: ActivatedRoute,
+              private router: Router,
+              private userService: UserService,
+              public angulartics2GoogleAnalytics: Angulartics2GoogleAnalytics,
+              private actionService: ActionsService) {
   }
 
   ngOnInit() {
