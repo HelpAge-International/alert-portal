@@ -506,6 +506,12 @@ export class PageControlService {
     //
     // });
   }
+  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
+    // TODO: Implement this functionality
+    this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+      func(auth.auth, null, [], []);
+    });
+  }
 
 
 
@@ -624,9 +630,9 @@ export class PageControlService {
    *  This includes all user types.
    * =============================================================================================
    */
-  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
-    // TODO: Implement this functionality
-  }
+  // public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
+  //   // TODO: Implement this functionality
+  // }
   // ========================================================================================================
 
 

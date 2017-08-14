@@ -38,6 +38,10 @@ export class Constants {
   static AGENCY_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
   static DEFAULT_CLOCK_SETTINGS_DURATION_VAL = 1;
 
+  //network admin
+  static NETWORK_ADMIN_LOGO_MAX_SIZE = 2000000; //in bytes
+  static NETWORK_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
+
   // country administrator
   static COUNTRY_ADMIN_HOME = "/dashboard";
   static COUNTRY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.COUNTRY_USER",

@@ -193,6 +193,9 @@ import {AccountSettingProfileComponent} from './commons/account-setting-profile/
 import {AccountSettingPasswordComponent} from './commons/account-setting-password/account-setting-password.component';
 import {DirectorAccountSettingsComponent} from './director/director-account-settings/director-account-settings.component';
 import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
+import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
+import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
+import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -378,7 +381,10 @@ const firebaseAuthConfig = {
     AfterValidationComponent,
     AccountSettingProfileComponent,
     AccountSettingPasswordComponent,
-    DirectorAccountSettingsComponent
+    DirectorAccountSettingsComponent,
+    NetworkCreatePasswordComponent,
+    NewNetworkDetailsComponent,
+    NetworkAccountSelectionComponent
   ],
   imports: [
     BrowserModule,

@@ -133,9 +133,11 @@
             "EMAIL_ADDRESS": "Email Address",
             "POSTCODE": "Postcode/Zip Code",
             "PHONE": "Phone Number",
-            "WEB_ADDRESS": "Website address",
+            "WEB_ADDRESS": "Website Address",
             "POSITION": "Position",
-            "TITLE": "Title"
+            "TITLE": "Title",
+            "TELEPHONE_NUMBER":"Telephone Number"
+
         },
         "USER_TYPE": {
             "ALL_USERS": "All Users",
@@ -654,6 +656,28 @@
             "ERROR_NO_GROUP_NAME": "Please enter the group name to add a new group",
             "ERROR_NO_EDIT_GROUP_NAME": "Please enter the group name"
         }
+    },
+    "NETWORK_ADMIN":{
+      "NETWORK_ADMINISTRATOR": "Network Administrator",
+      "PLEASE_FILL": "Please fill in your network details below.",
+      "ACCOUNT_SELECTION": "Account Selection",
+      "PLEASE_SELECT_ACCOUNT_TO_CONTINUE": "Please select an account",
+      "PLEASE_SELECT_ACCOUNT": "Please select the account you would like to log in as",
+      "UPDATE_DETAILS": {
+        "NETWORK_LOGO": "Network Logo",
+        "NETWORK_LOGO_INVALID_FILETYPE": "The agency logo image type is invalid",
+        "NETWORK_LOGO_SIZE_EXCEEDED": "The agency logo image size is too large",
+        "NETWORK_NAME": "Network Name",
+        "SUPPORTED_FORMATS": "Supported formats",
+        "REPLACE_IMAGE": "Replace image",
+        "REMOVE_IMAGE": "Remove image",
+        "DELETE_LOGO_MODEL_TEXT": "Are you sure you want to remove the logo of your agency?",
+        "NO_ADDRESS_1": "Please enter address line 1",
+        "NO_COUNTRY": "Please select a country",
+        "NO_CITY": "Please enter the name of the city",
+        "NO_TELEPHONE": "Please enter the telephone number",
+        "NO_CURRENCY": "Please select a currency type"
+      }
     },
     "AGENCY_ADMIN": {
         "PLEASE_FILL": "Please fill in your agency details below",

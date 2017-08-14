@@ -76,8 +76,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           // Check if we are a network admin!
           this.checkNetworkLogin(success.uid,
             (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
-              console.log("Network Admin Login detected!");
-              this.regularLogin(success.uid);
+              //TODO:
+              this.router.navigateByUrl("/network/network-create-password")
             },
             () => {                                                           // REGULAR LOGIN
               this.regularLogin(success.uid);

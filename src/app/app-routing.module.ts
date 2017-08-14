@@ -118,6 +118,9 @@ import {NewUserPasswordComponent} from "./new-user-password/new-user-password.co
 import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
 import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
 import {DirectorAccountSettingsComponent} from "./director/director-account-settings/director-account-settings.component";
+import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
+import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
+import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -356,7 +359,14 @@ const routes: Routes = [
    * Partner Vlidation
    * */
   {path: 'partner-validation', component: PartnerValidationComponent},
-  {path: 'after-validation', component: AfterValidationComponent}
+  {path: 'after-validation', component: AfterValidationComponent},
+
+    /**
+     * Network Users
+     */
+  {path: 'network/network-create-password', component: NetworkCreatePasswordComponent},
+  {path: 'network/new-network-details', component: NewNetworkDetailsComponent},
+  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
 
 ];
 

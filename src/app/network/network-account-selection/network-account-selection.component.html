@@ -1,0 +1,34 @@
+<div id="wrap">
+  <div class="Header_bar">
+    <div class="Header_bar__wrap--inner">
+      <div class="logo"></div>
+    </div>
+  </div>
+
+  <app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
+                    (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+  <div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+
+      <div class="Header-title__wrap">
+        <h1>{{"NETWORK_ADMIN.ACCOUNT_SELECTION" | translate}}</h1>
+      </div>
+      <h3>{{"NETWORK_ADMIN.PLEASE_SELECT_ACCOUNT" | translate}}</h3>
+
+      <!--Network admin accounts for multiple networks-->
+      <div class="row Spaced" *ngIf="networkAdminAccount && networkAdminAccount.networks">
+        <label *ngFor="let network of networkAdminAccount.networks" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5 font-weight-bold">
+          <img src="{{network.logoPath ? network.logoPath : 'assets/images/alert_logo--grey.svg'}}" alt="">
+          <p>{{"NETWORK_ADMIN.NETWORK_ADMINISTRATOR" | translate}} {{"GLOBAL.OF" | translate}} {{network.name}}</p>
+          <input type="radio" name="Action-type" (click)="onSelectedNetworkAdminAccount(network.$key)">
+        </label>
+      </div>
+
+
+      <div class="Form-submit__wrapper">
+        <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.CONTINUE" | translate | uppercase}}</div>
+      </div>
+    </div>
+  </div>
+</div>
