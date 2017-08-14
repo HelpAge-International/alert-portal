@@ -1,9 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -35,10 +36,8 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log(this.ngUnsubscribe);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    console.log(this.ngUnsubscribe);
   }
 
   addNetwork() {

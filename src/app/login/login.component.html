@@ -17,7 +17,7 @@
 <!--Start Put page data-->
 <div class="Page-top__wrap">
   <div class="Login__wrap--inner">
-    <form (ngSubmit)="onSubmit()" >
+    <form (ngSubmit)="onSubmit()">
       <div class="Login__logo-container">
         <img src="/assets/images/alert_logo.svg" class="Login__logo">
       </div>
@@ -27,13 +27,15 @@
 
       <div class="input-group" [ngClass]="{'has-danger': alerts[localUser.userEmail]}">
         <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
-        <input name="userEmail" [(ngModel)]="localUser.userEmail" type="text" class="form-control" placeholder="Email Address" aria-describedby="basic-addon1">
+        <input name="userEmail" [(ngModel)]="localUser.userEmail" type="text" class="form-control"
+               placeholder="Email Address" aria-describedby="basic-addon1">
       </div>
 
       <div class="input-group" [ngClass]="{'has-danger': alerts[localUser.password]}">
 
         <span class="input-group-addon" id="basic-addon2"><i class="fa fa-lock" aria-hidden="true"></i></span>
-        <input name="password" [(ngModel)]="localUser.password" type="password" id="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
+        <input name="password" [(ngModel)]="localUser.password" type="password" id="password" class="form-control"
+               placeholder="Password" aria-describedby="basic-addon1">
         <label class="input-group-addon" id="basic-addon2">
           <input type="checkbox" style="display:none"
                  onclick="(function(e, el){

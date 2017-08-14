@@ -478,94 +478,40 @@ export class UserService {
   getUserType(uid: string): Observable<any> {
 
     const paths = [
-      Constants.APP_STATUS + "/administratorCountry/" + uid,
-      Constants.APP_STATUS + "/countryDirector/" + uid,
-      Constants.APP_STATUS + "/regionDirector/" + uid,
-      Constants.APP_STATUS + "/globalDirector/" + uid,
-      Constants.APP_STATUS + "/globalUser/" + uid,
-      Constants.APP_STATUS + "/countryUser/" + uid,
-      Constants.APP_STATUS + "/ertLeader/" + uid,
-      Constants.APP_STATUS + "/ert/" + uid,
-      Constants.APP_STATUS + "/donor/" + uid,
-      Constants.APP_STATUS + "/partnerUser/" + uid
+      {path: Constants.APP_STATUS + "/administratorCountry/" + uid, type: UserType.CountryAdmin},
+      {path: Constants.APP_STATUS + "/countryDirector/" + uid, type: UserType.CountryDirector},
+      {path: Constants.APP_STATUS + "/regionDirector/" + uid, type: UserType.RegionalDirector},
+      {path: Constants.APP_STATUS + "/globalDirector/" + uid, type: UserType.GlobalDirector},
+      {path: Constants.APP_STATUS + "/globalUser/" + uid, type: UserType.GlobalUser},
+      {path: Constants.APP_STATUS + "/countryUser/" + uid, type: UserType.CountryUser},
+      {path: Constants.APP_STATUS + "/ertLeader/" + uid, type: UserType.ErtLeader},
+      {path: Constants.APP_STATUS + "/ert/" + uid, type: UserType.Ert},
+      {path: Constants.APP_STATUS + "/donor/" + uid, type: UserType.Donor},
+      {path: Constants.APP_STATUS + "/partnerUser/" + uid, type: UserType.PartnerUser}
       // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
     ];
 
     if (!uid) {
       return null;
     }
-    const userTypeSubscription = this.af.database.object(paths[0])
-      .flatMap(adminCountry => {
-        if (adminCountry.agencyAdmin) {
-          return Observable.of(UserType.CountryAdmin);
-        } else {
-          return this.af.database.object(paths[1])
-            .flatMap(directorCountry => {
-              if (directorCountry.agencyAdmin) {
-                return Observable.of(UserType.CountryDirector);
-              } else {
-                return this.af.database.object(paths[2])
-                  .flatMap(regionDirector => {
-                    if (regionDirector.agencyAdmin) {
-                      return Observable.of(UserType.RegionalDirector);
-                    } else {
-                      return this.af.database.object(paths[3])
-                        .flatMap(globalDirector => {
-                          if (globalDirector.agencyAdmin) {
-                            return Observable.of(UserType.GlobalDirector);
-                          } else {
-                            return this.af.database.object(paths[4])
-                              .flatMap(globalUser => {
-                                if (globalUser.agencyAdmin) {
-                                  return Observable.of(UserType.GlobalUser);
-                                } else {
-                                  return this.af.database.object(paths[5])
-                                    .flatMap(countryUser => {
-                                      if (countryUser.agencyAdmin) {
-                                        return Observable.of(UserType.CountryUser);
-                                      } else {
-                                        return this.af.database.object(paths[6])
-                                          .flatMap(ertLeader => {
-                                            if (ertLeader.agencyAdmin) {
-                                              return Observable.of(UserType.ErtLeader);
-                                            } else {
-                                              return this.af.database.object(paths[7])
-                                                .flatMap(ert => {
-                                                  if (ert.agencyAdmin) {
-                                                    return Observable.of(UserType.Ert);
-                                                  } else {
-                                                    return this.af.database.object(paths[8])
-                                                      .flatMap(donor => {
-                                                        if (donor.agencyAdmin) {
-                                                          return Observable.of(UserType.Donor);
-                                                        } else {
-                                                          return this.af.database.object(paths[9])
-                                                            .flatMap(partnerUser => {
-                                                              if (partnerUser.agencyAdmin) {
-                                                                return Observable.of(UserType.PartnerUser);
-                                                              } else {
-                                                                return Observable.empty();
-                                                              }
-                                                            });
-                                                        }
-                                                      });
-                                                  }
-                                                });
-                                            }
-                                          });
-                                      }
-                                    });
-                                }
-                              });
-                          }
-                        });
-                    }
-                  })
+
+    return this.af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
+      .flatMap((snap) => {
+        if (snap.val() != null) {
+          return Observable.of(UserType.SystemAdmin);
+        }
+        else {
+          return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+            .flatMap((mySnap) => {
+              if (mySnap.val() != null) {
+                return Observable.of(UserType.AgencyAdmin);
+              }
+              else {
+                return UserService.recursiveUserMap(this.af, paths, 0);
               }
             });
         }
       });
-    return userTypeSubscription;
   }
 
   //get user country id

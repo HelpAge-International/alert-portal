@@ -6,6 +6,8 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkAdminAccount} from "./Models/network-admin-account";
 import {Constants} from "../../utils/Constants";
 import {NetworkUserAccountType, UserType} from "../../utils/Enums";
+import {UserService} from "../../services/user.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -26,7 +28,12 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private selectedAccountId: string;
   private selectedUserAccountType: any;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              @Inject(FirebaseApp) firebaseApp: any,
+              private af: AngularFire,
+              private userSerivce: UserService,
+              private router: Router) {
     this.firebase = firebaseApp;
   }
 
@@ -37,8 +44,24 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
       this.downloadNetworkAdminAccount();
       this.downloadAllNetworkCountryAdminAccounts();
-      this.downloadAllOtherUserAccounts();
+
+      this.userSerivce.getUserType(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(userType => {
+          if (userType) {
+            console.log(UserType[userType]);
+          }
+        });
+
     });
+
+    // this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+    //   if (user.uid) {
+    //     this.downloadOtherUserAccount(user, userType, countryId, agencyId, systemId);
+    //   } else {
+    //     console.log("no regular user exist!!")
+    //   }
+    // });
   }
 
   ngOnDestroy() {
@@ -46,79 +69,79 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  private downloadNetworkAdminAccount(){
-     this.networkAdminAccount = new NetworkAdminAccount();
-     this.networkAdminAccount.networks = [];
+  private downloadNetworkAdminAccount() {
+    this.networkAdminAccount = new NetworkAdminAccount();
+    this.networkAdminAccount.networks = [];
 
-     this.af.database.list(Constants.APP_STATUS + "/networkAdmin/" + this.uid + "/networkIds")
-       .flatMap(networkIds =>{
-         let keys = [];
-         networkIds.forEach(id =>{
-           keys.push(id.$key);
-         });
-         return Observable.from(keys);
-       })
-       .flatMap(key =>{
-         return this.af.database.object(Constants.APP_STATUS+"/network/"+key);
-       })
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((network) => {
-          this.filterAndInsertToList(network);
+    this.af.database.list(Constants.APP_STATUS + "/networkAdmin/" + this.uid + "/networkIds")
+      .flatMap(networkIds => {
+        let keys = [];
+        networkIds.forEach(id => {
+          keys.push(id.$key);
         });
+        return Observable.from(keys);
+      })
+      .flatMap(key => {
+        return this.af.database.object(Constants.APP_STATUS + "/network/" + key);
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((network) => {
+        this.filterAndInsertToList(network);
+      });
   }
 
-  private filterAndInsertToList(newNetwork){
+  private filterAndInsertToList(newNetwork) {
     var isExistingNetwork = false;
     var existingIndex = -1;
     console.log(newNetwork.name);
 
-    this.networkAdminAccount.networks.forEach(function(existingNetwork, index) {
-      if (newNetwork.$key == existingNetwork.$key){
+    this.networkAdminAccount.networks.forEach(function (existingNetwork, index) {
+      if (newNetwork.$key == existingNetwork.$key) {
         isExistingNetwork = true;
         existingIndex = index;
       }
     });
 
-    if (isExistingNetwork){
-     if(newNetwork.isActive){
-       this.networkAdminAccount.networks[existingIndex] = newNetwork;
-     }else{
-       this.networkAdminAccount.networks.splice(existingIndex, 1);
-     }
-    }else{
-      if(newNetwork.isActive){
+    if (isExistingNetwork) {
+      if (newNetwork.isActive) {
+        this.networkAdminAccount.networks[existingIndex] = newNetwork;
+      } else {
+        this.networkAdminAccount.networks.splice(existingIndex, 1);
+      }
+    } else {
+      if (newNetwork.isActive) {
         this.networkAdminAccount.networks.push(newNetwork);
       }
     }
   }
 
-  private downloadAllNetworkCountryAdminAccounts(){
+  private downloadAllNetworkCountryAdminAccounts() {
 
   }
 
-  private downloadAllOtherUserAccounts(){
+  private downloadOtherUserAccount(user, userType, countryId, agencyId, systemId) {
 
   }
 
-  onSelectedNetworkAdminAccount(networkId : string){
+  onSelectedNetworkAdminAccount(networkId: string) {
     console.log(networkId);
     this.selectedAccountId = networkId;
     this.selectedUserAccountType = NetworkUserAccountType.NetworkAdmin;
   }
 
-  onSelectedNetworkCountryAdminAccount(networkCountryId : string){
+  onSelectedNetworkCountryAdminAccount(networkCountryId: string) {
     this.selectedUserAccountType = NetworkUserAccountType.NetworkCountryAdmin;
 
   }
 
-  onSelectedOtherUserAccount(){
+  onSelectedOtherUserAccount() {
     //TODO: set the user account type to the firebase user type variable
     // this.selectedOtherUserAccountType =
   }
 
-  onSubmit(){
-    if (this.validate()){
-      switch (this.selectedUserAccountType){
+  onSubmit() {
+    if (this.validate()) {
+      switch (this.selectedUserAccountType) {
         case NetworkUserAccountType.NetworkAdmin:
           this.router.navigate(['/network/new-network-details', {networkId: this.selectedAccountId}]);
           break;
@@ -149,9 +172,9 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private validate(){
+  private validate() {
     console.log(this.selectedAccountId);
-    if (!this.selectedAccountId){
+    if (!this.selectedAccountId) {
       this.alertSuccess = false;
       this.alertShow = true;
       this.alertMessage = "NETWORK_ADMIN.PLEASE_SELECT_ACCOUNT_TO_CONTINUE";

@@ -1,15 +1,16 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
-import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
-import {ModelNetwork, ModelNetworkOld} from "../../../model/network.model";
+import {ModelNetwork} from "../../../model/network.model";
 import {UUID} from "../../../utils/UUID";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {Countries} from "../../../utils/Enums";
 
 @Component({
   selector: 'app-create-edit-global-network',
@@ -52,22 +53,29 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  private isGlobal: boolean = true;
+  private country: string;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.systemAdminUid = user.uid;
-      this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
-      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
-        console.log("load: " + params["id"]);
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
         if (params["id"]) {
+          console.log("load: " + params["id"]);
           this.isEdit = true;
           this.networkId = params["id"];
           this.loadNetworkInfo(this.networkId);
         }
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.systemAdminUid = systemId;
+          this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+        });
       });
-    });
+
   }
 
   private loadNetworkInfo(networkId) {
@@ -75,6 +83,10 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       .flatMap(network => {
         this.preNetworkName = network.name;
         this.networkName = network.name;
+        this.isGlobal = network.isGlobal;
+        if (!this.isGlobal) {
+          this.country = this.COUNTRY[network.countryCode];
+        }
         this.networkAdminId = network.networkAdminId;
         return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + network.networkAdminId)
       })
@@ -218,16 +230,20 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     }
   }
 
-  private saveNetworkToFirebase(){
+  private saveNetworkToFirebase() {
     /**
      * Upload network data to /network/ node
-    **/
+     **/
 
     let newNetwork = new ModelNetwork();
     newNetwork.name = this.networkName;
     newNetwork.isActive = true;
     newNetwork.logoPath = "";
     newNetwork.isInitialisedNetwork = false;
+    newNetwork.isGlobal = this.isGlobal;
+    if (this.isGlobal) {
+      newNetwork.countryCode = this.COUNTRY.indexOf(this.country);
+    }
 
     let networkPath = Constants.APP_STATUS + '/network/';
     this.af.database.list(networkPath).push(newNetwork)
@@ -237,9 +253,9 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       });
   }
 
-  private updateNetworkName(){
-    let networkPath = Constants.APP_STATUS + '/network/'+this.networkId;
-    this.af.database.object(networkPath+"/name").set(this.networkName).then(() => {
+  private updateNetworkName() {
+    let networkPath = Constants.APP_STATUS + '/network/' + this.networkId;
+    this.af.database.object(networkPath + "/name").set(this.networkName).then(() => {
       console.log("Updated network name");
     });
     this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
@@ -291,7 +307,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       });
   }
 
-  private referenceNetwork(networkAdminId: string, networkId: string){
+  private referenceNetwork(networkAdminId: string, networkId: string) {
     console.log("Referencing new network");
     this.networkId = networkId;
 
@@ -299,47 +315,61 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
      * Updating network admin id in the network node
      **/
 
-    let networkPath = Constants.APP_STATUS + '/network/'+networkId;
-    this.af.database.object(networkPath+"/networkAdminId").set(networkAdminId).then(() => {
+    let networkPath = Constants.APP_STATUS + '/network/' + networkId;
+    this.af.database.object(networkPath + "/networkAdminId").set(networkAdminId).then(() => {
       console.log("Updated network node with network admin id");
+    });
+
+    this.af.database.object(networkPath + "/isGlobal").set(this.isGlobal).then(() => {
+      console.log("Updated network isGlobal node");
+    });
+
+    let countryCodeUpdate = {};
+    if (!this.isGlobal) {
+      countryCodeUpdate['/network/' + networkId +"/countryCode"] = this.COUNTRY.indexOf(this.country);
+    } else {
+      countryCodeUpdate['/network/' + networkId +"/countryCode"] = null;
+    }
+    this.af.database.object(Constants.APP_STATUS).update(countryCodeUpdate).then(() =>{
+      console.log("country code updated");
     });
 
     /**
      * Other referencing
      **/
 
-    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/'+networkAdminId;
+    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/' + networkAdminId;
     this.af.database.object(networkAdminPath, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((networkAdmin: any) => {
-          console.log(networkAdmin.val());
-          if(networkAdmin.val() != null){
-            console.log("Update existing node");
-            this.af.database.object(networkAdminPath + "/networkIds/" + this.networkId).set(true).then(() => {
-              console.log("Network ID added to existing user");
-            })
-          } else{
-            let newNetworkIds = {};
-            newNetworkIds[this.networkId] = true;
-            let systemAdminData = {};
-            systemAdminData[this.systemAdminUid] = true;
-            let newAdminData = {};
+        console.log(networkAdmin.val());
+        if (networkAdmin.val() != null) {
+          console.log("Update existing node");
+          this.af.database.object(networkAdminPath + "/networkIds/" + this.networkId).set(true).then(() => {
+            console.log("Network ID added to existing user");
+          })
+        } else {
+          let newNetworkIds = {};
+          newNetworkIds[this.networkId] = true;
+          let systemAdminData = {};
+          systemAdminData[this.systemAdminUid] = true;
+          let newAdminData = {};
 
-            newAdminData["networkIds"] = newNetworkIds;
-            newAdminData["systemAdmin"] = systemAdminData;
+          newAdminData["networkIds"] = newNetworkIds;
+          newAdminData["systemAdmin"] = systemAdminData;
 
-            this.af.database.object(networkAdminPath).set(newAdminData).then(() => {
-              console.log("New network ids pushed");
+          this.af.database.object(networkAdminPath).set(newAdminData).then(() => {
+            console.log("New network ids pushed");
 
-            }).catch(error => {
-              console.log("New network ids push failed --> " + error.message);
-              console.log(error.message);
-              this.waringMessage = "GLOBAL.GENERAL_ERROR";
-              this.showAlert();
-            });
-          }
+          }).catch(error => {
+            console.log("New network ids push failed --> " + error.message);
+            console.log(error.message);
+            this.waringMessage = "GLOBAL.GENERAL_ERROR";
+            this.showAlert();
+          });
+        }
 
-          this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
+        this.router.navigateByUrl(Constants.SYSTEM_ADMIN_NETWORK_HOME);
       });
   }
 
@@ -355,7 +385,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private editWithNewEmail() {
     console.log("edit with new email");
     let oldNetworkAdminId = this.networkAdminId;
-    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/'+oldNetworkAdminId;
+    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/' + oldNetworkAdminId;
     this.af.database.object(networkAdminPath + "/networkIds/" + this.networkId).set(null).then(() => {
       console.log("Network id deleted from old user");
     });
@@ -366,5 +396,15 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private refreshData() {
     this.isUserExist = false;
     this.uidUserExist = "";
+  }
+
+  selectNetworkType(value) {
+    this.isGlobal = value;
+    console.log(this.isGlobal);
+  }
+
+  selectCountry() {
+    console.log(this.country);
+    console.log(this.COUNTRY.indexOf(this.country));
   }
 }

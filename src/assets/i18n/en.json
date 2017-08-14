@@ -541,7 +541,7 @@
     "SYSTEM_ADMIN": {
         "MENU": {
             "AGENCIES": "Agencies",
-            "NETWORK": "Global Networks",
+            "NETWORK": "Networks",
             "CHS": "CHS Minimum Preparedness Actions",
             "MPAAPA": "Generic MPA/APAs",
             "SETTING": "System Settings",
@@ -571,8 +571,8 @@
             "EMAIL_IN_USE_ERROR": "The agency administrator email address you entered is already in use, please enter another email address to continue"
         },
         "GLOBAL_NETWORKS": {
-            "GLOBAL_NETWORKS": "Global Networks",
-            "EMPTY_LIST": "No Global Networks have been added to ALERT",
+            "GLOBAL_NETWORKS": "Networks",
+            "EMPTY_LIST": "No Networks have been added to ALERT",
             "ADD_NEW_NETWORK": "Add new network",
             "SAVE_NEW_NETWORK": "Save new network",
             "EDIT_NETWORK": "Edit network",
