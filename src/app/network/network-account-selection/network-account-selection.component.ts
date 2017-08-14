@@ -52,16 +52,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
             console.log(UserType[userType]);
           }
         });
-
     });
-
-    // this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-    //   if (user.uid) {
-    //     this.downloadOtherUserAccount(user, userType, countryId, agencyId, systemId);
-    //   } else {
-    //     console.log("no regular user exist!!")
-    //   }
-    // });
   }
 
   ngOnDestroy() {
@@ -116,10 +107,6 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   }
 
   private downloadAllNetworkCountryAdminAccounts() {
-
-  }
-
-  private downloadOtherUserAccount(user, userType, countryId, agencyId, systemId) {
 
   }
 
