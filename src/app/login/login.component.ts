@@ -5,9 +5,6 @@ import {Constants} from "../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
-import {until} from "selenium-webdriver";
-import elementIsNotSelected = until.elementIsNotSelected;
-import {UserType} from "../utils/Enums";
 
 @Component({
   selector: 'app-login',
@@ -29,7 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     password: ''
   };
   private userChecks: number = 0;
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private ngUnsubscribe: Subject<any> = new Subject<any>();
   private mErrorCodes: Map<string, string> = new Map<string, string>();
 
   // Temporary values for the login user type.
@@ -76,7 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
         .then((success) => {
 
-            // Check if we are a network admin!
+          // Check if we are a network admin!
           this.checkNetworkLogin(success.uid,
             (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
               console.log("Network Admin Login detected!");
@@ -119,11 +116,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   private networkCount = 0;
   private networkAdmin: boolean = false;
   private networkCountryAdmin: boolean = false;
+
   private checkNetworkLogin(successUid: string, isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
     this.networkCount = 0;
     this.checkNetworkLoginNode(successUid, this.NETWORK_NODE_ADMIN, isNetwork, isNotNetwork);
     this.checkNetworkLoginNode(successUid, this.NETWORK_NODE_COUNTRY_ADMIN, isNetwork, isNotNetwork);
   }
+
   private checkNetworkLoginNode(successUid: string, userNode: string, isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
     this.networkCount++;
     this.af.database.object(Constants.APP_STATUS + "/" + userNode + "/" + successUid, {preserveSnapshot: true})
@@ -138,6 +137,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.checkNetworkAll(isNetwork, isNotNetwork);
       })
   }
+
   private checkNetworkAll(isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
     this.networkCount--;
     if (this.networkCount == 0) {
@@ -207,10 +207,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginCheckingAgency(successUid, "administratorAgency",
       Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
   }
+
   // Override method for checking the login. Just passes it to below with no firstLogin dir
   private loginChecking(successUid: string, userNodeName: string, directToIfSuccess: string) {
     this.loginCheckingFirstLoginValue(successUid, userNodeName, directToIfSuccess, null);
   }
+
   // Login checking if a firstLogin: true field exists.
   private loginCheckingFirstLoginValue(successUid: string, userNodeName: string, directToIfSuccess: string, directToIfFirst: string) {
     this.userChecks++;
@@ -233,45 +235,47 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   private loginCheckingDeactivated(successUid: string, userNodeName: string, directToIfSuccess: string, directToIfFirst, disallowed: () => void) {
     this.loginCheckingCustom(successUid, userNodeName,
       (snapshot) => {
-          this.mCheckLoginDisallowCountryId = snapshot.countryId;
-          let x = "";
-          for (let s in snapshot.agencyAdmin) {
-            x = s;
-          }
-          return this.af.database.object(Constants.APP_STATUS + "/agency/" + x, {preserveSnapshot: true})
-            .map((snap) => {
-              if (snap.val() != null) {
-                return snap.key;
+        this.mCheckLoginDisallowCountryId = snapshot.countryId;
+        let x = "";
+        for (let s in snapshot.agencyAdmin) {
+          x = s;
+        }
+        return this.af.database.object(Constants.APP_STATUS + "/agency/" + x, {preserveSnapshot: true})
+          .map((snap) => {
+            if (snap.val() != null) {
+              return snap.key;
+            }
+            else {
+              this.showAlert(true, "LOGIN.AGENCY_DOESNT_EXIST");
+            }
+          })
+          .flatMap((s) => {
+            return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + s + "/" + this.mCheckLoginDisallowCountryId, {preserveSnapshot: true});
+          })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((snaps) => {
+            if (snaps.val() != null) {
+              if (snaps.val().isActive) {
+                this.router.navigateByUrl(directToIfSuccess);
               }
               else {
-                this.showAlert(true, "LOGIN.AGENCY_DOESNT_EXIST");
+                disallowed();
               }
-            })
-            .flatMap((s) => {
-              return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + s + "/" + this.mCheckLoginDisallowCountryId, {preserveSnapshot: true});
-            })
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((snaps) => {
-              if (snaps.val() != null) {
-                if (snaps.val().isActive) {
-                  this.router.navigateByUrl(directToIfSuccess);
-                }
-                else {
-                  disallowed();
-                }
-              }
-              else {
-                this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
-              }
-            });
+            }
+            else {
+              this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
+            }
+          });
       },
       (firstLoginSnapshot) => {
         this.router.navigateByUrl(directToIfFirst);
       });
   }
+
   // Login with some custom behaviour on success / first login hit.
   private loginCheckingCustom(successUid: string, userNodeName: string, success: (snap) => void, firstLogin: (snap) => void) {
     this.userChecks++;
@@ -321,8 +325,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
 
-
-
   /**
    * Method ran when the login calls are finished for the system
    */
@@ -362,7 +364,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    * if the password field is empty,
    * @returns {boolean}
    */
-    validate() {
+  validate() {
     if ((!(this.localUser.userEmail)) && (!(this.localUser.password))) {
       this.alerts[this.localUser.userEmail] = true;
       this.alerts[this.localUser.password] = true;

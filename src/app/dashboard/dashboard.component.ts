@@ -73,7 +73,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private ngUnsubscribe: Subject<any> = new Subject<any>();
   private userType: UserType;
 
   // Module settings
