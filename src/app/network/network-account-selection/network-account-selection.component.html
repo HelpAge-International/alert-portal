@@ -18,14 +18,11 @@
 
       <!--Network admin accounts for multiple networks-->
       <div class="row Spaced" *ngIf="networkAdminAccount && networkAdminAccount.networks">
-        <div class="Checkbox--agency col-lg-3 col-md-4 col-sm-5 font-weight-bold">
-          <label *ngFor="let network of networkAdminAccount.networks">
-            <img src="{{network.logoPath ? network.logoPath : 'assets/images/alert_logo--grey.svg'}}" alt="">
-            <p>{{"NETWORK_ADMIN.NETWORK_ADMINISTRATOR" | translate}} {{"GLOBAL.OF" | translate}} {{network.name}}</p>
-            <input type="radio" name="Action-type" (click)="onSelectedNetworkAdminAccount(network.$key)">
-          </label>
-        </div>
-
+        <label *ngFor="let network of networkAdminAccount.networks" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5 font-weight-bold">
+          <img src="{{network.logoPath ? network.logoPath : 'assets/images/alert_logo--grey.svg'}}" alt="">
+          <p>{{"NETWORK_ADMIN.NETWORK_ADMINISTRATOR" | translate}} {{"GLOBAL.OF" | translate}} {{network.name}}</p>
+          <input type="radio" name="Action-type" (click)="onSelectedNetworkAdminAccount(network.$key)">
+        </label>
       </div>
 
 
