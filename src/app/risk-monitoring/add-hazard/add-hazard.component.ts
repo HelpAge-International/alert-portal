@@ -300,7 +300,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
                 let updateHazardObj = {
                   hazardScenario: -1,
                   otherName: key.key
-                }
+                };
                 this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + hazardKey.key).update(updateHazardObj).then(_ => {
                   this.router.navigate(['/risk-monitoring/']);
                 }).catch(err => {
@@ -310,6 +310,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
                 console.log(err);
                 this.alertMessage = new AlertMessageModel("Error updating the other hazard data");
               });
+            } else {
+              this.router.navigate(['/risk-monitoring/']);
             }
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
