@@ -357,6 +357,9 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
           newAdminData["networkIds"] = newNetworkIds;
           newAdminData["systemAdmin"] = systemAdminData;
+          if (!this.isEdit) {
+            newAdminData["firstLogin"] = true;
+          }
 
           this.af.database.object(networkAdminPath).set(newAdminData).then(() => {
             console.log("New network ids pushed");

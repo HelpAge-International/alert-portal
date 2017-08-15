@@ -296,16 +296,6 @@ export class UserService {
       partner.modifiedAt = Date.now();
 
       //add partnerUser group node
-      //TODO DELETE LATER
-      // let partnerUser = {};
-      // let agencyAdmin = {};
-      // agencyAdmin[agencyId] = true;
-      // let systemAdmin = {};
-      // systemAdmin[systemId] = true;
-      // partnerUser['agencyAdmin'] = agencyAdmin;
-      // partnerUser['systemAdmin'] = systemAdmin;
-      // partnerUser['countryId'] = countryId;
-      // partnerData['/partnerUser/' + uid + '/'] = partnerUser;
 
       partnerData['/partnerUser/' + uid + '/systemAdmin/' + systemId] = true;
       partnerData['/partnerUser/' + uid + '/agencies/' + agencyId] = countryId;
@@ -525,13 +515,19 @@ export class UserService {
   }
 
   getAgencyId(userType: string, uid): Observable<string> {
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
-      .map(agencyIds => {
-        if (agencyIds.length > 0 && agencyIds[0].$value) {
-          return agencyIds[0].$key;
-        }
-      });
-    return subscription;
+    if (userType == "administratorAgency") {
+      return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + '/agencyId')
+        .map(agencyId => {
+          return agencyId.$value;
+        });
+    } else {
+      return this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
+        .map(agencyIds => {
+          if (agencyIds.length > 0 && agencyIds[0].$value) {
+            return agencyIds[0].$key;
+          }
+        });
+    }
   }
 
   getSystemAdminId(userType: string, uid): Observable<string> {
@@ -597,5 +593,12 @@ export class UserService {
 
   getAgencyDetail(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
+  checkFirstLoginRegular(uid, type) {
+    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[type] + "/" + uid)
+      .map(user => {
+        return user.firstLogin ? user.firstLogin : false;
+      });
   }
 }

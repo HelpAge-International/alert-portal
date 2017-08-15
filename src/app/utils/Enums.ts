@@ -127,8 +127,8 @@ export enum StaffPosition {
 /*Only used for account selection*/
 
 export enum NetworkUserAccountType {
-  NetworkAdmin = 0,
-  NetworkCountryAdmin = 1
+  NetworkAdmin = 20,
+  NetworkCountryAdmin = 21
 }
 
 export enum UserType {

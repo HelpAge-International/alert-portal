@@ -1,16 +1,19 @@
-import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelNetwork} from "../../model/network.model";
+import {NetworkService} from "../../services/network.service";
+
 declare var jQuery: any;
 
 @Component({
   selector: 'app-new-network-details',
   templateUrl: './new-network-details.component.html',
-  styleUrls: ['./new-network-details.component.css']
+  styleUrls: ['./new-network-details.component.css'],
+  providers: [NetworkService]
 })
 
 export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
@@ -40,7 +43,12 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   private networkLogo: string;
   private networkId: string;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              @Inject(FirebaseApp) firebaseApp: any,
+              private af: AngularFire,
+              private networkService: NetworkService,
+              private router: Router) {
     this.firebase = firebaseApp;
   }
 
@@ -55,19 +63,44 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
           this.networkAdminName = user.firstName;
         });
 
-      this.route.params
+      this.networkService.checkNetworkUserSelection(this.uid)
+        .flatMap(data => {
+          console.log(data);
+          if (data.isNetworkAdmin) {
+            this.networkId = data.networkId;
+            return this.networkService.getNetworkDetail(data.networkId);
+          } else {
+            //TODO GET NETWORK COUNTRY DETAIL
+          }
+        })
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          this.networkId = params["networkId"];
-          console.log(this.networkId);
-
-          this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(network => {
-              this.networkName = network.name;
-              this.networkLogo = network.logoPath;
-            });
+        .subscribe(network => {
+          network.name ? this.networkName = network.name : this.networkName = "";
+          network.logoPath ? this.networkLogo = network.logoPath : this.networkLogo = "";
+          network.addressLine1 ? this.networkAddressLine1 = network.addressLine1 : this.networkAddressLine1 = "";
+          network.addressLine2 ? this.networkAddressLine2 = network.addressLine2 : this.networkAddressLine2 = "";
+          network.addressLine3 ? this.networkAddressLine3 = network.addressLine3 : this.networkAddressLine3 = "";
+          network.countryId ? this.networkCountry = network.countryId : this.networkCountry = -1;
+          network.city ? this.networkCity = network.city : this.networkCity = "";
+          network.postCode ? this.networkPostCode = network.postCode : this.networkPostCode = "";
+          network.telephone ? this.networkTelephone = network.telephone : this.networkTelephone = "";
+          network.websiteAddress ? this.networkWebAddress = network.websiteAddress : this.networkWebAddress = "";
         });
+
+
+      // this.route.params
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe((params: Params) => {
+      //     this.networkId = params["networkId"];
+      //     console.log(this.networkId);
+      //
+      //     this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId)
+      //       .takeUntil(this.ngUnsubscribe)
+      //       .subscribe(network => {
+      //         this.networkName = network.name;
+      //         this.networkLogo = network.logoPath;
+      //       });
+      //   });
     });
   }
 
@@ -91,6 +124,8 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
       newNetwork.isInitialisedNetwork = true;
 
+      console.log(newNetwork);
+
       if (this.logoFile) {
         console.log("With logo");
         this.uploadNetworkLogo().then(result => {
@@ -106,7 +141,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
                   this.successInactive = true;
 
                   //TODO: navigation to next page
-                  //this.router.navigateByUrl('/agency-admin/country-office');
+                  this.router.navigateByUrl('/network/network-offices');
                 });
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -130,7 +165,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
               this.successInactive = true;
 
               //TODO: navigation to next page
-              //this.router.navigateByUrl('/agency-admin/country-office');
+              this.router.navigateByUrl('/network/network-offices');
             });
         }, error => {
           this.errorMessage = 'GLOBAL.GENERAL_ERROR';

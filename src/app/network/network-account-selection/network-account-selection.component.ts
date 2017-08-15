@@ -7,13 +7,15 @@ import {NetworkAdminAccount} from "./Models/network-admin-account";
 import {Constants} from "../../utils/Constants";
 import {NetworkUserAccountType, UserType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
+import {NetworkService} from "../../services/network.service";
 
 declare var jQuery: any;
 
 @Component({
   selector: 'app-network-account-selection',
   templateUrl: './network-account-selection.component.html',
-  styleUrls: ['./network-account-selection.component.css']
+  styleUrls: ['./network-account-selection.component.css'],
+  providers: [NetworkService]
 })
 
 export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
@@ -28,11 +30,16 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private selectedAccountId: string;
   private selectedUserAccountType: any;
 
+  private agencyDetail: any;
+  private UserType = UserType;
+  private userType: UserType;
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               @Inject(FirebaseApp) firebaseApp: any,
               private af: AngularFire,
               private userSerivce: UserService,
+              private networkService: NetworkService,
               private router: Router) {
     this.firebase = firebaseApp;
   }
@@ -49,7 +56,17 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(userType => {
           if (userType) {
-            console.log(UserType[userType]);
+            this.userType = userType;
+            this.userSerivce.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+              .flatMap(agencyId => {
+                console.log(agencyId)
+                return this.userSerivce.getAgencyDetail(agencyId);
+              })
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyDetail => {
+                this.agencyDetail = agencyDetail;
+                console.log(this.agencyDetail)
+              });
           }
         });
     });
@@ -121,42 +138,101 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
   }
 
-  onSelectedOtherUserAccount() {
-    //TODO: set the user account type to the firebase user type variable
-    // this.selectedOtherUserAccountType =
+  onSelectedRegularAccount(agencyId) {
+    this.selectedAccountId = agencyId;
+    this.selectedUserAccountType = this.userType;
   }
 
   onSubmit() {
     if (this.validate()) {
+      console.log("submit");
       switch (this.selectedUserAccountType) {
         case NetworkUserAccountType.NetworkAdmin:
-          this.router.navigate(['/network/new-network-details', {networkId: this.selectedAccountId}]);
+          this.goToNetworkAdmin();
           break;
         case NetworkUserAccountType.NetworkCountryAdmin:
           //TODO
           break;
-        case UserType.AgencyAdmin:
+        default:
+          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          });
           break;
-        case UserType.CountryAdmin:
-          break;
-        case UserType.CountryDirector:
-          break;
-        case UserType.CountryUser:
-          break;
-        case UserType.Donor:
-          break;
-        case UserType.Ert:
-          break;
-        case UserType.ErtLeader:
-          break;
-        case UserType.GlobalDirector:
-          break;
-        case UserType.GlobalUser:
-          break;
-        case UserType.RegionalDirector:
-          break;
+        // case UserType.AgencyAdmin:
+        //   console.log("agency admin")
+        //   break;
+        // case UserType.CountryAdmin:
+        //   break;
+        // case UserType.CountryDirector:
+        //   break;
+        // case UserType.CountryUser:
+        //   break;
+        // case UserType.Donor:
+        //   break;
+        // case UserType.Ert:
+        //   break;
+        // case UserType.ErtLeader:
+        //   break;
+        // case UserType.GlobalDirector:
+        //   break;
+        // case UserType.GlobalUser:
+        //   break;
+        // case UserType.RegionalDirector:
+        //   break;
       }
     }
+  }
+
+  private goToNetworkAdmin() {
+    // this.router.navigate(['/network/new-network-details', {networkId: this.selectedAccountId}]);
+    // this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(firstLogin => {
+    //     if (firstLogin) {
+    //
+    //       this.router.navigateByUrl("network/network-create-password");
+    //     } else {
+    //
+    //     }
+    //   })
+
+    let selectionUpdate = {};
+    selectionUpdate["/networkAdmin/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
+    selectionUpdate["/networkAdmin/" + this.uid + "/selectedNetworkCountry"] = null;
+    this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(() => {
+
+      let firstLoginCheck = [];
+      if (this.userType) {
+        Observable.merge(this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType), this.userSerivce.checkFirstLoginRegular(this.uid, this.userType))
+          .take(2)
+          .subscribe(firstLogin => {
+            firstLoginCheck.push(firstLogin);
+            if (firstLoginCheck.length == 2) {
+              if (firstLoginCheck[0] != null && firstLoginCheck[0] == true && firstLoginCheck[1] != null && firstLoginCheck[1] == true) {
+                this.router.navigateByUrl("network/network-create-password");
+              } else {
+                //TODO NAVIGATTE TO NETWORK ADMIN DASHBOARD
+                console.log("navigate to network admin page!!!");
+                this.router.navigateByUrl('/network/network-offices');
+              }
+            }
+          });
+      } else {
+        this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
+          .first()
+          .subscribe(firstLogin => {
+            if (firstLogin) {
+              this.router.navigateByUrl("network/network-create-password");
+            } else {
+              console.log("to main page")
+              //TODO NAVIGATE TO ADMIN PAGE
+              this.router.navigateByUrl('/network/network-offices');
+            }
+          })
+      }
+
+    });
+
+
   }
 
   private validate() {

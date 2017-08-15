@@ -121,6 +121,10 @@ import {DirectorAccountSettingsComponent} from "./director/director-account-sett
 import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
 import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
+import {NetworkOfficesComponent} from "./network/network-offices/network-offices.component";
+import {NetworkAgenciesComponent} from "./network/network-agencies/network-agencies.component";
+import {NetworkSettingsComponent} from "./network/network-settings/network-settings.component";
+import {NetworkMpaComponent} from "./network/network-mpa/network-mpa.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -361,11 +365,15 @@ const routes: Routes = [
   {path: 'partner-validation', component: PartnerValidationComponent},
   {path: 'after-validation', component: AfterValidationComponent},
 
-    /**
-     * Network Users
-     */
+  /**
+   * Network Users
+   */
   {path: 'network/network-create-password', component: NetworkCreatePasswordComponent},
   {path: 'network/new-network-details', component: NewNetworkDetailsComponent},
+  {path: 'network/network-offices', component: NetworkOfficesComponent},
+  {path: 'network/network-agencies', component: NetworkAgenciesComponent},
+  {path: 'network/network-settings', component: NetworkSettingsComponent},
+  {path: 'network/network-mpa', component: NetworkMpaComponent},
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
 
 ];

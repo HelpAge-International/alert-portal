@@ -1,15 +1,18 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire, FirebaseAuthState} from "angularfire2";
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AngularFire} from "angularfire2";
+import {ActivatedRoute, Router} from "@angular/router";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Constants} from "../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
+import {NetworkService} from "../../services/network.service";
+import {NetworkUserAccountType} from "../../utils/Enums";
 
 @Component({
   selector: 'app-network-create-password',
   templateUrl: './network-create-password.component.html',
-  styleUrls: ['./network-create-password.component.css']
+  styleUrls: ['./network-create-password.component.css'],
+  providers: [NetworkService]
 })
 
 export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
@@ -25,8 +28,13 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
   private authState: firebase.User;
   private uid: string;
   private networkAdminName: string;
+  private networkUserType: NetworkUserAccountType;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
 
   }
 
@@ -36,16 +44,23 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, prevUserType, networkIds, networkCountryIds) => {
-        console.log("Authenticated: " + user.uid);
-        this.authState = user;
-        this.uid = user.uid;
-        console.log('New network admin uid: ' + this.uid);
-        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(user => {
-            this.networkAdminName = user.firstName;
-          });
-      });
+      console.log("Authenticated: " + user.uid);
+      this.authState = user;
+      this.uid = user.uid;
+      console.log('New network admin uid: ' + this.uid);
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.networkAdminName = user.firstName;
+        });
+
+      this.networkService.getNetworkUserType(this.uid)
+        .first()
+        .subscribe(userType => {
+          this.networkUserType = userType;
+        })
+
+    });
 
   }
 
@@ -62,10 +77,18 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
     if (this.validate()) {
       this.authState.updatePassword(this.passwordEntered).then(() => {
         this.successInactive = false;
+        let path = "";
+        if (this.networkUserType == NetworkUserAccountType.NetworkAdmin) {
+          path = Constants.APP_STATUS + "/networkAdmin/" + this.uid + "/firstLogin";
+        } else {
+          path = Constants.APP_STATUS + "/networkCountryAdmin/" + this.uid + "/firstLogin";
+        }
+        console.log(path);
+        this.af.database.object(path).set(false);
         Observable.timer(Constants.ALERT_REDIRECT_DURATION)
           .takeUntil(this.ngUnsubscribe).subscribe(() => {
           this.successInactive = true;
-          this.router.navigateByUrl('network/network-account-selection');
+          this.router.navigateByUrl('network/new-network-details');
         });
       }, error => {
         console.log(error.message);
