@@ -337,10 +337,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   saveIndicator() {
 
-    // if (!this.indicatorData.triggerSelected) {
-    //   this.indicatorData.triggerSelected = 0;
-    // }
-
     if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
