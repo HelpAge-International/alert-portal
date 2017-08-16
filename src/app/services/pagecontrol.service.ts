@@ -166,7 +166,8 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "new-user-password"
+    "new-user-password",
+    "export-proposal*"
   ]);
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",
@@ -177,7 +178,8 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "new-user-password"
+    "new-user-password",
+    "export-proposal*"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
@@ -188,7 +190,8 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "new-user-password"
+    "new-user-password",
+    "export-proposal*"
   ]);
   public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
     "dashboard*",
