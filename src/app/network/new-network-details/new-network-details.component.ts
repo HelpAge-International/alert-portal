@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -42,6 +42,8 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   private networkCountry: number;
   private networkLogo: string;
   private networkId: string;
+
+  @Input() notFirstLogin: boolean = false;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -141,7 +143,9 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
                   this.successInactive = true;
 
                   //TODO: navigation to next page
-                  this.router.navigateByUrl('/network/network-offices');
+                  if (!this.notFirstLogin) {
+                    this.router.navigateByUrl('/network/network-offices');
+                  }
                 });
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -165,7 +169,9 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
               this.successInactive = true;
 
               //TODO: navigation to next page
-              this.router.navigateByUrl('/network/network-offices');
+              if (!this.notFirstLogin) {
+                this.router.navigateByUrl('/network/network-offices');
+              }
             });
         }, error => {
           this.errorMessage = 'GLOBAL.GENERAL_ERROR';

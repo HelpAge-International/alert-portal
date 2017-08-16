@@ -202,6 +202,11 @@ import { NetworkOfficesComponent } from './network/network-offices/network-offic
 import { NetworkAgenciesComponent } from './network/network-agencies/network-agencies.component';
 import { NetworkMpaComponent } from './network/network-mpa/network-mpa.component';
 import { NetworkSettingsComponent } from './network/network-settings/network-settings.component';
+import { NetworkMessageComponent } from './network/network-message/network-message.component';
+import { NetworkAccountSettingsComponent } from './network/network-account-settings/network-account-settings.component';
+import { NetworkAccountDetailsComponent } from './network/network-account-details/network-account-details.component';
+import {NetworkService} from "./services/network.service";
+import { NetworkChangePasswordComponent } from './network/network-account-settings/network-change-password/network-change-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -396,7 +401,11 @@ const firebaseAuthConfig = {
     NetworkOfficesComponent,
     NetworkAgenciesComponent,
     NetworkMpaComponent,
-    NetworkSettingsComponent
+    NetworkSettingsComponent,
+    NetworkMessageComponent,
+    NetworkAccountSettingsComponent,
+    NetworkAccountDetailsComponent,
+    NetworkChangePasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -440,6 +449,7 @@ const firebaseAuthConfig = {
     PageControlService,
     ContactService,
     WindowRefService,
+    NetworkService,
     ActionsService],
   bootstrap: [AppComponent]
 })

@@ -10,6 +10,7 @@ import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
 import {Observable} from "rxjs/Observable";
+
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -39,6 +40,7 @@ export class AgencyModulesEnabled {
   constructor() {
     this.all(false);
   }
+
   all(type: boolean) {
     this.minimumPreparedness = type;
     this.advancedPreparedness = type;
@@ -250,16 +252,6 @@ export class PageControlService {
    */
 
 
-
-
-
-
-
-
-
-
-
-
   /**
    * Dynamic module permissions objects
    *  =========================================================================================
@@ -333,14 +325,6 @@ export class PageControlService {
   }
 
 
-
-
-
-
-
-
-
-
   /**
    *  PAGE ACCESS FUNCTIONALITY FOR REGULAR USERS.
    *
@@ -407,17 +391,8 @@ export class PageControlService {
       }
     });
   }
+
   // =============================================================================================
-
-
-
-
-
-
-
-
-
-
 
 
   /**
@@ -427,9 +402,11 @@ export class PageControlService {
   public authUserObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
     this.authoriseUser(ngUnsubscribe, route, router, null, func);
   }
+
   public authUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
     this.authoriseUser(ngUnsubscribe, route, router, func, null);
   }
+
   private authoriseUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
                         userCallback: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,
                         authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
@@ -496,34 +473,44 @@ export class PageControlService {
       }
     });
   }
+
   private authNetworkAdmin(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
     // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
     //
     // });
   }
+
   private authNetworkCountry(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User) => void) {
     // this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
     //
     // });
   }
+
   public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
     // TODO: Implement this functionality
-    this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-      func(auth.auth, null, [], []);
-    });
+    this.af.auth
+      .takeUntil(ngUnsubscribe)
+      .subscribe((auth) => {
+        if (!auth || !auth.uid) {
+          router.navigateByUrl(Constants.LOGIN_PATH);
+        } else {
+          func(auth.auth, null, [], []);
+        }
+      });
   }
 
-
-
-
-
-
-
-
-
-
-
-
+  public networkAuthState(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
+    // TODO: Implement this functionality
+    this.af.auth
+      .takeUntil(ngUnsubscribe)
+      .subscribe((auth) => {
+        if (!auth || !auth.uid) {
+          router.navigateByUrl(Constants.LOGIN_PATH);
+        } else {
+          func(auth, null, [], []);
+        }
+      });
+  }
 
 
   // Given we are authenticated and valid, check permissions to see if we need to be kicked out
@@ -561,6 +548,7 @@ export class PageControlService {
       router.navigateByUrl(type.redirectTo);
     }
   }
+
   // Method to recursively return the user object for a usertype
   private checkAuth(ngUnsubscribe: Subject<void>, uid: string, modelTypes: ModelUserTypeReturn[], index: number, fun: (userType: UserType, user: any) => void) {
     if (index == modelTypes.length) {
@@ -612,18 +600,6 @@ export class PageControlService {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   /**
    *  PAGE ACCESS FUNCTIONALITY FOR NETWORK ADMIN / NETWORK COUNTRY ADMIN
    *
@@ -634,20 +610,6 @@ export class PageControlService {
   //   // TODO: Implement this functionality
   // }
   // ========================================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   /**
@@ -683,6 +645,7 @@ export class PageControlService {
         fun(list);
       });
   }
+
   static agencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
     PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, uid, folder, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
@@ -735,8 +698,9 @@ export class PageControlService {
         fun(list);
       });
   }
+
   static agencyModuleMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, agencyId: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
-    PageControlService.agencyModuleListMatrix(af, ngUnsubscribe,agencyId, (list) => {
+    PageControlService.agencyModuleListMatrix(af, ngUnsubscribe, agencyId, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
       for (let x of list) {
         if (x.permission === PermissionsAgency.MinimumPreparedness) {
@@ -775,22 +739,8 @@ export class PageControlService {
     }
     return false;
   }
+
   // ========================================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   /**
@@ -871,6 +821,7 @@ export class PageControlService {
         });
     }
   }
+
   // ========================================================================================================
 }
 

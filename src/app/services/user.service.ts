@@ -601,4 +601,8 @@ export class UserService {
         return user.firstLogin ? user.firstLogin : false;
       });
   }
+
+  logout() {
+    this.af.auth.logout();
+  }
 }

@@ -2,16 +2,19 @@
   <div class="Header_bar__wrap--inner">
     <div class="logo" (click)="goToHome()"></div>
     <ul>
-      <li class="Header_bar__username">{{firstName+" "+lastName}}</li>
+      <li class="Header_bar__username">{{user?.firstName+" "+user?.lastName}}</li>
       <!--<li class="Header_bar__username" (click)="test()">{{firstName+" "+lastName}}</li>-->
       <li class="Header_bar__country">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{agencyName}}</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{network?.name}}</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/agency-admin/agency-account-details">
-            {{"SYSTEM_ADMIN.AGENCIES.AGENCY_DETAIL" | translate}}
+          <a class="dropdown-item" routerLink="/network/network-account-details">
+            Network Details
           </a>
-          <a class="dropdown-item" routerLink="/agency-admin/agency-account-settings">
+          <a class="dropdown-item" routerLink="/network/network-account-settings">
             {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
+          </a>
+          <a class="dropdown-item" routerLink="/network/network-account-selection">
+            Switch Accounts
           </a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}

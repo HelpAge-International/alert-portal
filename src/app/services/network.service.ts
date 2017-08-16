@@ -55,4 +55,12 @@ export class NetworkService {
     return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId);
   }
 
+  //TODO ADD FOR NETWORK COUNTRY
+  getNetworkDetailByUid(uid) {
+    return this.checkNetworkUserSelection(uid)
+      .flatMap(data => {
+        return data.isNetworkAdmin ? this.getNetworkDetail(data.networkId) : null;
+      })
+  }
+
 }
