@@ -166,7 +166,8 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "new-user-password"
+    "new-user-password",
+    "export-proposal*"
   ]);
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",

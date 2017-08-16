@@ -30,7 +30,8 @@
                   *ngIf="hazard.key == 'countryContext'">{{"RISK_MONITORING.MAIN_PAGE.COUNTRY_CONTEXT" | translate}}
           </option>
           <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
-                  *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
+                  *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ?
+            (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
           </option>
         </template>
       </select>
@@ -40,7 +41,7 @@
     <!--Indicator -->
     <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.INDICATOR" | translate}}</b>
       <tooltip
-        [level1]= "'TOOLTIPS.RISK_MONITORING.TT2.LEVEL1'"
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT2.LEVEL1'"
       ></tooltip>
     </h6>
     <div class="Spaced-above form-group col-sm-12 row">
@@ -52,8 +53,8 @@
     <div class="row Spaced-above">
       <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.SOURCE_INFORMATION" | translate}}</b></h6>
       <tooltip
-        [level1]= "'TOOLTIPS.RISK_MONITORING.TT12.LEVEL1'"
-        [level2]= "'TOOLTIPS.RISK_MONITORING.TT12.LEVEL2'"
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT12.LEVEL1'"
+        [level2]="'TOOLTIPS.RISK_MONITORING.TT12.LEVEL2'"
       ></tooltip>
     </div>
 
@@ -80,8 +81,8 @@
         <div class="row">
           <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.TRIGGER_VALUES" | translate}}</b></h6>
           <tooltip
-            [level1]= "'TOOLTIPS.RISK_MONITORING.TT3.LEVEL1'"
-            [level2]= "'TOOLTIPS.RISK_MONITORING.TT3.LEVEL2'"
+            [level1]="'TOOLTIPS.RISK_MONITORING.TT3.LEVEL1'"
+            [level2]="'TOOLTIPS.RISK_MONITORING.TT3.LEVEL2'"
           ></tooltip>
         </div>
 
@@ -204,10 +205,12 @@
 
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="isEdit">{{"RISK_MONITORING.ADD_INDICATOR.SAVE_INDICATOR" |
+      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="isEdit">
+        {{"RISK_MONITORING.ADD_INDICATOR.SAVE_INDICATOR" |
         translate}}
       </div>
-      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="!isEdit">{{"RISK_MONITORING.ADD_INDICATOR.SAVE_NEW_INDICATOR" |
+      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="!isEdit">
+        {{"RISK_MONITORING.ADD_INDICATOR.SAVE_NEW_INDICATOR" |
         translate}}
       </div>
       <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>

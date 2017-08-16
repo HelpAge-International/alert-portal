@@ -22,9 +22,9 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
-import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
+import {MessageModel} from "../../model/message.model";
 
 declare var jQuery: any;
 
@@ -116,7 +116,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private copySystemId: string;
   private agencyOverview: boolean;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire,
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
               private router: Router,
               private _commonService: CommonService,
               private route: ActivatedRoute,
@@ -238,7 +239,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               this.uid = user.uid;
               this.UserType = userType;
               this.countryID = countryId;
-              console.log(this.countryID)
               this._getIndicator(this.hazardID, this.indicatorID);
             } else {
               this.navigateToLogin();
@@ -336,6 +336,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   saveIndicator() {
+
+    // if (!this.indicatorData.triggerSelected) {
+    //   this.indicatorData.triggerSelected = 0;
+    // }
+
     if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
@@ -345,7 +350,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.indicatorData.triggerSelected = 0;
         }
         this.indicatorData.category = parseInt(this.indicatorData.category);
-        this.indicatorData.dueDate = this._calculationDueDate(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType, this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue);
+        this.indicatorData.dueDate = this._calculationDueDate(Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType), Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue));
         this.indicatorData.updatedAt = new Date().getTime();
         if (!this.indicatorData.assignee) {
           this.indicatorData.assignee = null;
@@ -633,9 +638,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     var CurrentDate = new Date();
     var currentYear = new Date().getFullYear();
 
-    var hour = 3600;
-    var day = 86400;
-    var week = 604800;
+    let miliBase = 1000;
+    var hour = 3600 * miliBase;
+    var day = 86400 * miliBase;
+    var week = 604800 * miliBase;
 
     if (durationType == DetailedDurationType.Hour) {
       var differenceTime = frequencyValue * hour;
@@ -647,10 +653,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       var resultDate = CurrentDate.setMonth(CurrentDate.getMonth() + frequencyValue);
       var differenceTime = resultDate - currentUnixTime;
     } else if (durationType == DetailedDurationType.Year) {
-      differenceTime = this._getDifferenceTimeByYear(frequencyValue);
+      var differenceTime = this._getDifferenceTimeByYear(frequencyValue);
     }
-
-    console.log(currentUnixTime + differenceTime);
 
     var dueDate = currentUnixTime + differenceTime;
     return dueDate;
@@ -659,9 +663,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _getDifferenceTimeByYear(years: number) {
 
+    let miliBase = 1000;
     var currentYear = new Date().getFullYear();
-    var year = 315036000;
-    var leapYear = 31622400;
+    var year = 315036000 * miliBase;
+    var leapYear = 31622400 * miliBase;
 
     var i;
     var differenceTime = 0;
