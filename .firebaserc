@@ -1,6 +1,5 @@
 {
   "projects": {
-    "default": "alert-190fa",
-    "uat-2": "alert-uat-2"
+    "default": "alert-live"
   }
 }
