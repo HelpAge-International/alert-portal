@@ -175,28 +175,28 @@ exports.handleUserAccountUat2 = functions.database.ref('/uat-2/userPublic/{userI
     }
   });
 
-exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
+// exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
 
 exports.handleUserAccountD1s1 = functions.database.ref('/d1s1/userPublic/{userId}')
   .onWrite(event => {
