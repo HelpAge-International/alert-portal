@@ -10,7 +10,8 @@ import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {UUID} from "../../../utils/UUID";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Countries} from "../../../utils/Enums";
+import {DurationType, Privacy} from "../../../utils/Enums";
+import {ModuleSettingsModel} from "../../../model/module-settings.model";
 
 @Component({
   selector: 'app-create-edit-global-network',
@@ -56,7 +57,10 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private isGlobal: boolean = true;
   private country: string;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -71,7 +75,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.systemAdminUid = systemId;
+          this.systemAdminUid = user.uid;
           this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
         });
       });
@@ -249,7 +253,9 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     this.af.database.list(networkPath).push(newNetwork)
       .then((value) => {
         console.log("New network created successfully");
-        this.addUserToFirebaseAuth(value.key);
+        this.createInitialSettings(value.key, newNetwork).then(() => {
+          this.addUserToFirebaseAuth(value.key);
+        });
       });
   }
 
@@ -326,11 +332,11 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
     let countryCodeUpdate = {};
     if (!this.isGlobal) {
-      countryCodeUpdate['/network/' + networkId +"/countryCode"] = this.COUNTRY.indexOf(this.country);
+      countryCodeUpdate['/network/' + networkId + "/countryCode"] = this.COUNTRY.indexOf(this.country);
     } else {
-      countryCodeUpdate['/network/' + networkId +"/countryCode"] = null;
+      countryCodeUpdate['/network/' + networkId + "/countryCode"] = null;
     }
-    this.af.database.object(Constants.APP_STATUS).update(countryCodeUpdate).then(() =>{
+    this.af.database.object(Constants.APP_STATUS).update(countryCodeUpdate).then(() => {
       console.log("country code updated");
     });
 
@@ -409,5 +415,60 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   selectCountry() {
     console.log(this.country);
     console.log(this.COUNTRY.indexOf(this.country));
+  }
+
+  private createInitialSettings(networkId, networkModel): Promise<any> {
+
+    return new Promise((res, rej) => {
+      let networkData = {};
+
+      // init clock settings
+      let clockSetting = {};
+      let prepareness = {};
+      prepareness["durationType"] = DurationType.Year;
+      prepareness["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
+      clockSetting["preparedness"] = prepareness;
+      let response = {};
+      response["durationType"] = DurationType.Year;
+      response["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
+      clockSetting["responsePlans"] = prepareness;
+      let validFor = {};
+      validFor["durationType"] = DurationType.Year;
+      validFor["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
+      let logs = {};
+      logs["durationType"] = DurationType.Year;
+      logs["value"] = Constants.DEFAULT_CLOCK_SETTINGS_DURATION_VAL;
+      let risk = {};
+      risk["hazardsValidFor"] = validFor;
+      risk["showLogsFrom"] = logs;
+      clockSetting["riskMonitoring"] = risk;
+      networkModel.clockSettings = clockSetting;
+
+      //init response plan settings
+      let sections: boolean[] = [true, true, true, true, true, true, true, true, true, true];
+      let responseSetting = {};
+      responseSetting["sections"] = sections;
+      networkModel.responsePlanSettings = responseSetting;
+
+      //actual model update
+      networkData["/network/" + networkId] = networkModel;
+
+      //init module settings in different node
+      let moduleList: ModuleSettingsModel[] = [];
+      for (let i = 0; i < 6; i++) {
+        let setting = new ModuleSettingsModel();
+        setting.privacy = Privacy.Public;
+        setting.status = true;
+        moduleList.push(setting);
+      }
+      networkData["/module/" + networkId] = moduleList;
+
+      this.af.database.object(Constants.APP_STATUS).update(networkData).then(() => {
+        res(true);
+      }, error => {
+        rej(error.message);
+        console.log(error.message);
+      });
+    });
   }
 }

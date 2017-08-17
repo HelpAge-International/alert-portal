@@ -63,4 +63,24 @@ export class NetworkService {
       })
   }
 
+  getSelectedId(uid: string) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
+      .flatMap(snap => {
+        if (snap.val()) {
+          let selection = snap.val();
+          let selectData = {};
+          if (selection.selectedNetwork) {
+            selectData["userType"] = NetworkUserAccountType.NetworkAdmin;
+            selectData["id"] = selection.selectedNetwork;
+          } else {
+            selectData["userType"] = NetworkUserAccountType.NetworkCountryAdmin;
+            selectData["id"] = selection.selectedNetworkCountry;
+          }
+          return Observable.of(selectData);
+        } else {
+          return Observable.empty();
+        }
+      })
+  }
+
 }

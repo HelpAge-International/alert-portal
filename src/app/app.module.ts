@@ -196,18 +196,22 @@ import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
 import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
 import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
-import { NetworkHeaderComponent } from './network/network-header/network-header.component';
-import { NetworkMenuComponent } from './network/network-menu/network-menu.component';
-import { NetworkOfficesComponent } from './network/network-offices/network-offices.component';
-import { NetworkAgenciesComponent } from './network/network-agencies/network-agencies.component';
-import { NetworkMpaComponent } from './network/network-mpa/network-mpa.component';
-import { NetworkSettingsComponent } from './network/network-settings/network-settings.component';
-import { NetworkMessageComponent } from './network/network-message/network-message.component';
-import { NetworkAccountSettingsComponent } from './network/network-account-settings/network-account-settings.component';
-import { NetworkAccountDetailsComponent } from './network/network-account-details/network-account-details.component';
+import {NetworkHeaderComponent} from './network/network-header/network-header.component';
+import {NetworkMenuComponent} from './network/network-menu/network-menu.component';
+import {NetworkOfficesComponent} from './network/network-offices/network-offices.component';
+import {NetworkAgenciesComponent} from './network/network-agencies/network-agencies.component';
+import {NetworkMpaComponent} from './network/network-mpa/network-mpa.component';
+import {NetworkMessageComponent} from './network/network-message/network-message.component';
+import {NetworkAccountSettingsComponent} from './network/network-account-settings/network-account-settings.component';
+import {NetworkAccountDetailsComponent} from './network/network-account-details/network-account-details.component';
 import {NetworkService} from "./services/network.service";
-import { NetworkChangePasswordComponent } from './network/network-account-settings/network-change-password/network-change-password.component';
-import { AddEditNetworkOfficeComponent } from './network/network-offices/add-edit-network-office/add-edit-network-office.component';
+import {NetworkChangePasswordComponent} from './network/network-account-settings/network-change-password/network-change-password.component';
+import {AddEditNetworkOfficeComponent} from './network/network-offices/add-edit-network-office/add-edit-network-office.component';
+import {NetworkModuleSettingsComponent} from './network/network-settings/network-module-settings/network-module-settings.component';
+import {NetworkPlanSettingsComponent} from './network/network-settings/network-plan-settings/network-plan-settings.component';
+import {NetworkClockSettingsComponent} from './network/network-settings/network-clock-settings/network-clock-settings.component';
+import {NetworkDocumentSettingsComponent} from './network/network-settings/network-document-settings/network-document-settings.component';
+import { NetworkSettingMenusComponent } from './network/network-settings/network-setting-menus/network-setting-menus.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -402,12 +406,16 @@ const firebaseAuthConfig = {
     NetworkOfficesComponent,
     NetworkAgenciesComponent,
     NetworkMpaComponent,
-    NetworkSettingsComponent,
     NetworkMessageComponent,
     NetworkAccountSettingsComponent,
     NetworkAccountDetailsComponent,
     NetworkChangePasswordComponent,
-    AddEditNetworkOfficeComponent
+    AddEditNetworkOfficeComponent,
+    NetworkModuleSettingsComponent,
+    NetworkPlanSettingsComponent,
+    NetworkClockSettingsComponent,
+    NetworkDocumentSettingsComponent,
+    NetworkSettingMenusComponent
   ],
   imports: [
     BrowserModule,

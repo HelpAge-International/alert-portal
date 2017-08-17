@@ -1,8 +1,11 @@
 /**
  * Created by Fei on 24/03/2017.
  */
+import {BaseModel} from "./base.model";
+import {AlertMessageModel} from "./alert-message.model";
 
-export class ModelNetwork {
+export class ModelNetwork extends BaseModel{
+
   public networkAdminId: string;
   public name: string;
   public isActive: boolean;
@@ -18,5 +21,11 @@ export class ModelNetwork {
   public websiteAddress: string;
   public isGlobal: boolean;
   public countryCode: number;
+  public clockSettings:{} = {};
+  public responsePlanSettings:{} = {};
+
+  validate(excludedFields: any): AlertMessageModel {
+    throw new Error("Method not implemented.");
+  }
 
 }

@@ -9,12 +9,13 @@ import {ModelAgency} from "../../model/agency.model";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
-import {DurationType, PersonTitle, Privacy} from "../../utils/Enums";
+import {DurationType, Privacy} from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NotificationSettingsModel} from "../../model/notification-settings.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -62,18 +63,18 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.systemAdminUid = user.uid;
-        this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
-        this.inactive = true;
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["id"]) {
-              this.agencyId = params["id"];
-              this.isEdit = true;
-              this.loadAgencyInfo(params["id"]);
-            }
-          });
+      this.systemAdminUid = user.uid;
+      this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+      this.inactive = true;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.agencyId = params["id"];
+            this.isEdit = true;
+            this.loadAgencyInfo(params["id"]);
+          }
+        });
     });
   }
 
@@ -255,7 +256,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       this.writeToFirebase(uid);
       // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
       this.secondApp.auth().signOut();
-    }, (error:any) => {
+    }, (error: any) => {
       console.log(error.message);
       console.log(error.code);
       if (error.code == 'auth/email-already-in-use') {

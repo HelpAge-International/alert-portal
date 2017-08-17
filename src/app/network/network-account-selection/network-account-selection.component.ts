@@ -195,9 +195,12 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     //     }
     //   })
 
+    //TODO DOUBLE CHECK
     let selectionUpdate = {};
     selectionUpdate["/networkAdmin/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
     selectionUpdate["/networkAdmin/" + this.uid + "/selectedNetworkCountry"] = null;
+    selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
+    selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetworkCountry"] = null;
     this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(() => {
 
       let firstLoginCheck = [];
