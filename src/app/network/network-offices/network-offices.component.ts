@@ -13,6 +13,7 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
   }
 
   ngOnDestroy() {

@@ -207,6 +207,7 @@ import { NetworkAccountSettingsComponent } from './network/network-account-setti
 import { NetworkAccountDetailsComponent } from './network/network-account-details/network-account-details.component';
 import {NetworkService} from "./services/network.service";
 import { NetworkChangePasswordComponent } from './network/network-account-settings/network-change-password/network-change-password.component';
+import { AddEditNetworkOfficeComponent } from './network/network-offices/add-edit-network-office/add-edit-network-office.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -405,7 +406,8 @@ const firebaseAuthConfig = {
     NetworkMessageComponent,
     NetworkAccountSettingsComponent,
     NetworkAccountDetailsComponent,
-    NetworkChangePasswordComponent
+    NetworkChangePasswordComponent,
+    AddEditNetworkOfficeComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,128 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap padding-top-none">
+  <div class="Full-page__wrap--inner">
+    <!--<div class="Back&#45;&#45;button row">Country Offices</div> &lt;!&ndash; Back button&ndash;&gt;-->
+    <h1 class="col-sm-12 margin-top-one">Add new network office</h1><br>
+    <h6 class="col-sm-12 font-weight-bold">Network office details</h6>
+    <div class="Line-row"></div>
+
+    <form #networkOfficeForm="ngForm" (ngSubmit)="submit()">
+      <div class="row col-sm-12">
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="networkOffice" class="Spaced-above">Country*</label>
+
+            <select class="form-control" id="networkOffice" required [(ngModel)]="networkOffice.location"
+                    name="networkOfficeLocation">
+              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+              <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">
+                {{COUNTRIES[country] | translate}}
+              </option>
+            </select>
+
+          </div>
+        </div>
+      </div>
+      <br>
+
+      <h6 class="col-sm-12 font-weight-bold Spaced-above">Network office administrator details</h6>
+      <div class="Line-row"></div>
+
+      <div class="row col-sm-12">
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="title">Title*</label>
+
+            <select class="form-control" id="title" required [(ngModel)]="networkAdmin.title"
+                    name="title">
+              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+              <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">
+                {{PERSON_TITLE[title] | translate}}
+              </option>
+            </select>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="City">First Name*</label>
+            <input type="text" class="form-control" id="firstName" placeholder="Please enter" required [(ngModel)]="networkAdmin.firstName"
+                   name="firstName">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="Postcode">Last Name*</label>
+            <input type="text" class="form-control" id="lastName" placeholder="Please enter" required [(ngModel)]="networkAdmin.lastName"
+                   name="lastName">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="A-line-1">Email Address*</label>
+            <input type="email" class="form-control" id="emailAddress" placeholder="Please enter" required [(ngModel)]="networkAdmin.email"
+                   name="email">
+          </div>
+        </div>
+      </div>
+
+
+      <div class="row col-sm-12 Spaced-above"><br>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-1">Address Line 1</label>
+            <input type="text" class="form-control" id="A-line-1" placeholder="Optional" [(ngModel)]="networkAdmin.addressLine1"
+                   name="address1">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-2">Address Line 2</label>
+            <input type="text" class="form-control" id="A-line-2" placeholder="Optional" [(ngModel)]="networkAdmin.addressLine2"
+                   name="address2">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-3">Address Line 3</label>
+            <input type="text" class="form-control" id="A-line-3" placeholder="Optional" [(ngModel)]="networkAdmin.addressLine3"
+                   name="address3">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="adminCountry">Country</label>
+            <select class="form-control" id="adminCountry"
+                    name="adminCountry">
+              <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="City">City</label>
+            <input type="text" class="form-control" id="City" placeholder="Optional" [(ngModel)]="networkAdmin.city"
+                   name="city">
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 Spaced-above">
+          <div class="form-group">
+            <label for="Postcode">Postcode/Zip Code</label>
+            <input type="text" class="form-control" id="Postcode" placeholder="Optional" [(ngModel)]="networkAdmin.postCode"
+                   name="postCode">
+          </div>
+        </div>
+      </div>
+
+      <div class="Form-submit__wrapper col-sm-2">
+        <button class="btn btn-primary text-uppercase">save new network office</button>
+        <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)">Cancel</a></div>
+      </div>
+    </form>
+
+
+  </div>
+</div>

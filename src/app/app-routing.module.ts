@@ -129,6 +129,7 @@ import {NetworkAccountDetailsComponent} from "./network/network-account-details/
 import {NetworkAccountSettingsComponent} from "./network/network-account-settings/network-account-settings.component";
 import {NetworkChangePasswordComponent} from "./network/network-account-settings/network-change-password/network-change-password.component";
 import {NetworkMessageComponent} from "./network/network-message/network-message.component";
+import {AddEditNetworkOfficeComponent} from "./network/network-offices/add-edit-network-office/add-edit-network-office.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -378,6 +379,7 @@ const routes: Routes = [
   {path: 'network/network-account-settings', component: NetworkAccountSettingsComponent},
   {path: 'network/network-account-settings/network-change-password', component: NetworkChangePasswordComponent},
   {path: 'network/network-offices', component: NetworkOfficesComponent},
+  {path: 'network/network-offices/add-edit-network-office', component: AddEditNetworkOfficeComponent},
   {path: 'network/network-agencies', component: NetworkAgenciesComponent},
   {path: 'network/network-settings', component: NetworkSettingsComponent},
   {path: 'network/network-message', component: NetworkMessageComponent},
