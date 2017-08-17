@@ -118,6 +118,18 @@ import {NewUserPasswordComponent} from "./new-user-password/new-user-password.co
 import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
 import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
 import {DirectorAccountSettingsComponent} from "./director/director-account-settings/director-account-settings.component";
+import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
+import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
+import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
+import {NetworkOfficesComponent} from "./network/network-offices/network-offices.component";
+import {NetworkAgenciesComponent} from "./network/network-agencies/network-agencies.component";
+import {NetworkSettingsComponent} from "./network/network-settings/network-settings.component";
+import {NetworkMpaComponent} from "./network/network-mpa/network-mpa.component";
+import {NetworkAccountDetailsComponent} from "./network/network-account-details/network-account-details.component";
+import {NetworkAccountSettingsComponent} from "./network/network-account-settings/network-account-settings.component";
+import {NetworkChangePasswordComponent} from "./network/network-account-settings/network-change-password/network-change-password.component";
+import {NetworkMessageComponent} from "./network/network-message/network-message.component";
+import {AddEditNetworkOfficeComponent} from "./network/network-offices/add-edit-network-office/add-edit-network-office.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -356,7 +368,23 @@ const routes: Routes = [
    * Partner Vlidation
    * */
   {path: 'partner-validation', component: PartnerValidationComponent},
-  {path: 'after-validation', component: AfterValidationComponent}
+  {path: 'after-validation', component: AfterValidationComponent},
+
+  /**
+   * Network Users
+   */
+  {path: 'network/network-create-password', component: NetworkCreatePasswordComponent},
+  {path: 'network/new-network-details', component: NewNetworkDetailsComponent},
+  {path: 'network/network-account-details', component: NetworkAccountDetailsComponent},
+  {path: 'network/network-account-settings', component: NetworkAccountSettingsComponent},
+  {path: 'network/network-account-settings/network-change-password', component: NetworkChangePasswordComponent},
+  {path: 'network/network-offices', component: NetworkOfficesComponent},
+  {path: 'network/network-offices/add-edit-network-office', component: AddEditNetworkOfficeComponent},
+  {path: 'network/network-agencies', component: NetworkAgenciesComponent},
+  {path: 'network/network-settings', component: NetworkSettingsComponent},
+  {path: 'network/network-message', component: NetworkMessageComponent},
+  {path: 'network/network-mpa', component: NetworkMpaComponent},
+  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
 
 ];
 

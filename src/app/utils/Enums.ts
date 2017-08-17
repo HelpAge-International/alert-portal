@@ -124,6 +124,13 @@ export enum StaffPosition {
   OfficeStarff = 2
 }
 
+/*Only used for account selection*/
+
+export enum NetworkUserAccountType {
+  NetworkAdmin = 20,
+  NetworkCountryAdmin = 21
+}
+
 export enum UserType {
   All = 0,
   GlobalDirector = 1,

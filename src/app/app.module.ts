@@ -193,6 +193,21 @@ import {AccountSettingProfileComponent} from './commons/account-setting-profile/
 import {AccountSettingPasswordComponent} from './commons/account-setting-password/account-setting-password.component';
 import {DirectorAccountSettingsComponent} from './director/director-account-settings/director-account-settings.component';
 import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
+import {NetworkCreatePasswordComponent} from "./network/network-create-password/network-create-password.component";
+import {NewNetworkDetailsComponent} from "./network/new-network-details/new-network-details.component";
+import {NetworkAccountSelectionComponent} from "./network/network-account-selection/network-account-selection.component";
+import { NetworkHeaderComponent } from './network/network-header/network-header.component';
+import { NetworkMenuComponent } from './network/network-menu/network-menu.component';
+import { NetworkOfficesComponent } from './network/network-offices/network-offices.component';
+import { NetworkAgenciesComponent } from './network/network-agencies/network-agencies.component';
+import { NetworkMpaComponent } from './network/network-mpa/network-mpa.component';
+import { NetworkSettingsComponent } from './network/network-settings/network-settings.component';
+import { NetworkMessageComponent } from './network/network-message/network-message.component';
+import { NetworkAccountSettingsComponent } from './network/network-account-settings/network-account-settings.component';
+import { NetworkAccountDetailsComponent } from './network/network-account-details/network-account-details.component';
+import {NetworkService} from "./services/network.service";
+import { NetworkChangePasswordComponent } from './network/network-account-settings/network-change-password/network-change-password.component';
+import { AddEditNetworkOfficeComponent } from './network/network-offices/add-edit-network-office/add-edit-network-office.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -378,7 +393,21 @@ const firebaseAuthConfig = {
     AfterValidationComponent,
     AccountSettingProfileComponent,
     AccountSettingPasswordComponent,
-    DirectorAccountSettingsComponent
+    DirectorAccountSettingsComponent,
+    NetworkCreatePasswordComponent,
+    NewNetworkDetailsComponent,
+    NetworkAccountSelectionComponent,
+    NetworkHeaderComponent,
+    NetworkMenuComponent,
+    NetworkOfficesComponent,
+    NetworkAgenciesComponent,
+    NetworkMpaComponent,
+    NetworkSettingsComponent,
+    NetworkMessageComponent,
+    NetworkAccountSettingsComponent,
+    NetworkAccountDetailsComponent,
+    NetworkChangePasswordComponent,
+    AddEditNetworkOfficeComponent
   ],
   imports: [
     BrowserModule,
@@ -422,6 +451,7 @@ const firebaseAuthConfig = {
     PageControlService,
     ContactService,
     WindowRefService,
+    NetworkService,
     ActionsService],
   bootstrap: [AppComponent]
 })
