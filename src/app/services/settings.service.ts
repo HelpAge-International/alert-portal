@@ -132,12 +132,12 @@ export class SettingsService {
     }
 
     let update = {};
-    update["/module/" + countryId +"/0/privacy"] = countryPrivacy.mpa;
-    update["/module/" + countryId +"/1/privacy"] = countryPrivacy.apa;
-    update["/module/" + countryId +"/2/privacy"] = countryPrivacy.chs;
-    update["/module/" + countryId +"/3/privacy"] = countryPrivacy.riskMonitoring;
-    update["/module/" + countryId +"/4/privacy"] = countryPrivacy.officeProfile;
-    update["/module/" + countryId +"/5/privacy"] = countryPrivacy.responsePlan;
+    update["/module/" + countryId + "/0/privacy"] = countryPrivacy.mpa;
+    update["/module/" + countryId + "/1/privacy"] = countryPrivacy.apa;
+    update["/module/" + countryId + "/2/privacy"] = countryPrivacy.chs;
+    update["/module/" + countryId + "/3/privacy"] = countryPrivacy.riskMonitoring;
+    update["/module/" + countryId + "/4/privacy"] = countryPrivacy.officeProfile;
+    update["/module/" + countryId + "/5/privacy"] = countryPrivacy.responsePlan;
 
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
@@ -207,4 +207,50 @@ export class SettingsService {
   getAgencyClockSettings(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings");
   }
+
+  getNetworkClockSettings(networkId: string): Observable<ClockSettingsModel> {
+    if (!networkId) {
+      throw new Error("No network id");
+    }
+    return this.af.database.object(Constants.APP_STATUS + '/network/' + networkId + '/clockSettings')
+      .map(items => {
+        if (items.$key) {
+          const clockSettings = new ClockSettingsModel();
+          clockSettings.mapFromObject(items);
+          return clockSettings;
+        }
+        return null;
+      });
+  }
+
+  saveNetworkClockSettings(networkId: string, clockSettings: ClockSettingsModel): firebase.Promise<any> {
+    if (!networkId) {
+      return null;
+    }
+
+    const clockSettingsData = {};
+    clockSettingsData['/network/' + networkId + '/clockSettings'] = clockSettings;
+
+    return this.af.database.object(Constants.APP_STATUS).update(clockSettingsData);
+  }
+
+  getNetworkPlanSettings(networkId: string) {
+    if (!networkId) {
+      return null;
+    }
+
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/responsePlanSettings/sections", {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          return snap.val();
+        }
+      })
+  }
+
+  saveNetworkPlanSettings(networkId: string, sections: [boolean]): firebase.Promise<void> {
+    const planSettings = {};
+    planSettings['/network/' + networkId + '/responsePlanSettings/sections'] = sections;
+    return this.af.database.object(Constants.APP_STATUS).update(planSettings);
+  }
+
 }

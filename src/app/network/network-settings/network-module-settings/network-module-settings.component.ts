@@ -6,7 +6,8 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NetworkService} from "../../../services/network.service";
 import {ModuleSettingsModel} from "../../../model/module-settings.model";
-import {Privacy} from "../../../utils/Enums";
+import {AlertMessageType, Privacy} from "../../../utils/Enums";
+import {AlertMessageModel} from "../../../model/alert-message.model";
 
 @Component({
   selector: 'app-network-module-settings',
@@ -14,13 +15,20 @@ import {Privacy} from "../../../utils/Enums";
   styleUrls: ['./network-module-settings.component.css']
 })
 export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
-  private modules: ModuleSettingsModel[];
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
   //constants adn enums
   private MODULE_NAME = Constants.MODULE_NAME;
   private Privacy = Privacy;
+  private networkId: string;
+
+  //logic info
+  private modules: ModuleSettingsModel[];
+
+  // Models
+  private alertMessage: AlertMessageModel = null;
+  private alertMessageType = AlertMessageType;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -33,6 +41,7 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user,) => {
       this.networkService.getSelectedId(user.uid)
         .flatMap(selection => {
+          this.networkId = selection["id"];
           return this.settingService.getCountryModulesSettings(selection["id"]);
         })
         .takeUntil(this.ngUnsubscribe)
@@ -60,7 +69,12 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
   }
 
   saveChanges() {
-    console.log("save changes")
+    console.log("save changes");
+    this.settingService.saveCountryModuleSettings(this.networkId, this.modules).then(()=>{
+      this.alertMessage = new AlertMessageModel("Module Settings successfully saved!", AlertMessageType.Success);
+    }, error =>{
+      this.alertMessage = new AlertMessageModel(error.message);
+    });
   }
 
 }

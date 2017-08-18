@@ -11,7 +11,6 @@ import {Subject} from "rxjs/Subject";
 })
 export class StatusAlertComponent implements OnInit {
   private _show: boolean = false;
-  private _subscriptions: RxHelper;
   @Input() message: string;
   @Input() success: boolean;
   @Output() onAlertHidden = new EventEmitter<boolean>();

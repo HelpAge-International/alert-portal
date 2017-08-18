@@ -44,6 +44,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   private networkId: string;
 
   @Input() notFirstLogin: boolean = false;
+  private loadedNetwork: ModelNetwork;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -77,6 +78,8 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
         })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(network => {
+          this.loadedNetwork = network;
+
           network.name ? this.networkName = network.name : this.networkName = "";
           network.logoPath ? this.networkLogo = network.logoPath : this.networkLogo = "";
           network.addressLine1 ? this.networkAddressLine1 = network.addressLine1 : this.networkAddressLine1 = "";
@@ -123,8 +126,9 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
       newNetwork.postcode = this.networkPostCode;
       newNetwork.telephone = this.networkTelephone;
       newNetwork.websiteAddress = this.networkWebAddress;
-
       newNetwork.isInitialisedNetwork = true;
+      newNetwork.clockSettings = this.loadedNetwork.clockSettings;
+      newNetwork.responsePlanSettings = this.loadedNetwork.responsePlanSettings;
 
       console.log(newNetwork);
 
