@@ -9,6 +9,7 @@ import {ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import * as firebase from "firebase";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare const jQuery: any;
 
@@ -252,6 +253,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       approvalUid = this.regionId;
     } else if (this.userType === UserType.CountryDirector) {
       approvalUid = this.countryId;
+    } else if (this.userType === UserType.PartnerUser) {
+      approvalUid = this.uid;
     }
     return approvalUid;
   }

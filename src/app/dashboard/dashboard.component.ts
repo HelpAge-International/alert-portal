@@ -103,7 +103,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
+      console.log(this.userType);
       if (this.userType == UserType.PartnerUser) {
+        console.log("partner user")
         this.agencyId = agencyId;
         this.countryId = countryId;
         this.loadDataForPartnerUser(agencyId, countryId);
@@ -193,7 +195,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getAlerts();
     this.getCountryContextIndicators();
     this.getHazards();
-    // this.initData();
+    this.initData();
     this.getCountryData();
   }
 
@@ -344,6 +346,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     //TODO change temp id to actual uid
     if (this.userType == UserType.PartnerUser) {
+      console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
