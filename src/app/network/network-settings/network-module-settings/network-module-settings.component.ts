@@ -59,4 +59,8 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
     this.ngOnInit();
   }
 
+  saveChanges() {
+    console.log("save changes")
+  }
+
 }
