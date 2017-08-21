@@ -159,12 +159,13 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
             this.hazardRedAlert[countryOffice.$key] = new Map<HazardScenario, boolean>();
 
             this._getResponsePlans(countryOffice);
-            this._getAlertLevel(countryOffice);
+            this._getAlertLevel(countryOffice).then(() => {
+              console.log("alert triggered")
+              this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, countryOffice.agencyId, this._systemId);
 
-            this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, countryOffice.agencyId, this._systemId)
-
-            this.prepActionService[countryOffice.$key].addUpdater(() => {
-              this.recalculateAll(countryOffice);
+              this.prepActionService[countryOffice.$key].addUpdater(() => {
+                this.recalculateAll(countryOffice);
+              });
             });
 
             // this.agencyService.getPrivacySettingForAgency(countryOffice.agencyId)
@@ -204,23 +205,30 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  _getAlertLevel(countryOffice) {
-    countryOffice.alertLevel = AlertLevels.Green;
-    this.actionsService.getAlerts(countryOffice.$key)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((alerts: ModelAlert[]) => {
-        alerts.forEach(alert => {
-          this.hazardRedAlert[countryOffice.$key].set(alert.hazardScenario, false);
-          if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
-            countryOffice.alertLevel = AlertLevels.Red;
-            this.hazardRedAlert[countryOffice.$key].set(alert.hazardScenario, true);
-          }
-          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
-            || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
-            countryOffice.alertLevel = AlertLevels.Amber;
-          }
+  _getAlertLevel(countryOffice): Promise<any> {
+
+    let promise = new Promise((res, rej) => {
+      countryOffice.alertLevel = AlertLevels.Green;
+      this.actionsService.getAlerts(countryOffice.$key)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((alerts: ModelAlert[]) => {
+          alerts.forEach(alert => {
+            this.hazardRedAlert[countryOffice.$key].set(alert.hazardScenario, false);
+            if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
+              countryOffice.alertLevel = AlertLevels.Red;
+              this.hazardRedAlert[countryOffice.$key].set(alert.hazardScenario, true);
+            }
+            if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
+              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
+              countryOffice.alertLevel = AlertLevels.Amber;
+            }
+          });
+          res(true);
         });
-      });
+    });
+
+    return promise;
+
   }
 
   _getSystemThreshold(tresholdType: string) {
@@ -246,8 +254,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     let minPrepPercentage: number;
     let advPrepPercentage: number;
 
-    console.log("'Recalculating'");
-    console.log(this.prepActionService);
 
     for (let x of this.prepActionService[countryOffice.$key].actions) {
       if (x.level == ActionLevel.MPA) {
@@ -325,8 +331,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     if (action.isArchived == true) {
       return false;
     }
-    console.log('ACTION COMPLETED: ' + countryID);
-    console.log(action.level);
+
     if (action.level == ActionLevel.APA) {
       console.log('RED ALERT: ' + action.isRedAlertActive(this.hazardRedAlert[countryID]));
       if (action.isRedAlertActive(this.hazardRedAlert[countryID]) && action.isComplete != null) {
