@@ -116,6 +116,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private copySystemId: string;
   private agencyOverview: boolean;
 
+  private countryLocation: number;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -184,6 +186,13 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               this.countryLevelsValues = content;
               err => console.log(err);
             });
+
+          //get country location enum
+          this.userService.getCountryDetail(this.countryID, this.agencyId)
+            .first()
+            .subscribe(country => {
+              this.countryLocation = country.location;
+            });
         });
       });
   }
@@ -246,7 +255,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           });
         } else {
           this.addAnotherSource();
-          this.addAnotherLocation();
+          // this.addAnotherLocation();
           this.addIndicatorTrigger();
         }
       });
@@ -270,7 +279,10 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   addAnotherLocation() {
-    this.indicatorData.affectedLocation.push(new OperationAreaModel());
+    let modelArea = new OperationAreaModel();
+    modelArea.country = this.countryLocation;
+    this.indicatorData.affectedLocation.push(modelArea);
+    console.log(this.indicatorData)
   }
 
   removeAnotherLocation(key: number,) {
