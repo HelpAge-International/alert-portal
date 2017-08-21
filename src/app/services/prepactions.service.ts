@@ -178,6 +178,7 @@ export class PrepActionService {
     if (action.hasOwnProperty('assignHazard')) {
       this.actions[i].assignedHazards = [];
       for (const x of action.assignHazard) {
+        console.log("PUSHING HAZARD (" + x + ")");
         this.actions[i].assignedHazards.push(x);
       }
     }
@@ -260,8 +261,8 @@ export class PrepActionService {
       updated(this.actions[i]);
     }
 
-    console.log("Updating!");
-    console.log(this.actions[i]);
+    // console.log("Updating!");
+    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {
@@ -418,7 +419,10 @@ export class PreparednessAction {
 
   public isRedAlertActive(map: Map<HazardScenario, boolean>): boolean {
     if (this.assignedHazards != null && this.assignedHazards.length != 0) {
+      console.log("here 2")
+      console.log(this.assignedHazards);
       for (let x of this.assignedHazards) {
+        console.log(x)
         if (map.get(+x)) {
           return true;
         }

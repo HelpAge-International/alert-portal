@@ -246,6 +246,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     let minPrepPercentage: number;
     let advPrepPercentage: number;
 
+    console.log("'Recalculating'");
+    console.log(this.prepActionService);
+
     for (let x of this.prepActionService[countryOffice.$key].actions) {
       if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
@@ -322,7 +325,10 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     if (action.isArchived == true) {
       return false;
     }
+    console.log('ACTION COMPLETED: ' + countryID);
+    console.log(action.level);
     if (action.level == ActionLevel.APA) {
+      console.log('RED ALERT: ' + action.isRedAlertActive(this.hazardRedAlert[countryID]));
       if (action.isRedAlertActive(this.hazardRedAlert[countryID]) && action.isComplete != null) {
         return action.isCompleteAt + action.computedClockSetting > this.date;
       }
