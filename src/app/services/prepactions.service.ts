@@ -36,7 +36,7 @@ export class PrepActionService {
    * Initialisation method for the actions
    */
   public initActions(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
-          ids: (countryId: string, agencyId: string, systemId: string) => void) {
+                     ids: (countryId: string, agencyId: string, systemId: string) => void) {
     this.isMPA = isMPA;
     this.actions = [];
     this.ngUnsubscribe = ngUnsubscribe;
@@ -59,7 +59,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfo(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
-    countryId: string, agencyId: string, systemId: string) {
+                             countryId: string, agencyId: string, systemId: string) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -113,6 +113,7 @@ export class PrepActionService {
         }
       });
   }
+
   public static clockCalculation(value: number, type: number) {
     let val: number = 1000 * 60 * 60 * 24; // Milliseconds in one day
     val = val * value;
@@ -151,6 +152,7 @@ export class PrepActionService {
         });
       });
   }
+
   private initSpecific(af: AngularFire, path: string, userId: string, source: PrepSourceTypes, actionId: string, updated: (action: PreparednessAction) => void) {
     af.database.object(Constants.APP_STATUS + "/" + path + "/" + userId + "/" + actionId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -172,13 +174,12 @@ export class PrepActionService {
     let i = this.findOrCreateIndex(id, whichUser, source);
     let applyCustom = false; // Fixes bug with frequencyValue and frequencyBase
     if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee;
-      else if (action.type == ActionType.custom) this.actions[i].asignee = null;
+    else if (action.type == ActionType.custom) this.actions[i].asignee = null;
     if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate;
-      else if (action.type == ActionType.custom) this.actions[i].dueDate = null;
+    else if (action.type == ActionType.custom) this.actions[i].dueDate = null;
     if (action.hasOwnProperty('assignHazard')) {
       this.actions[i].assignedHazards = [];
       for (const x of action.assignHazard) {
-        console.log("PUSHING HAZARD (" + x + ")");
         this.actions[i].assignedHazards.push(x);
       }
     }
@@ -201,33 +202,39 @@ export class PrepActionService {
     //   this.actions[i].type = null;
     // }
     if (action.hasOwnProperty('updatedAt')) this.actions[i].updatedAt = action.updatedAt;
-      else if (action.type == ActionType.custom) action.isArchived = null;
+    else if (action.type == ActionType.custom) action.isArchived = null;
     if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived;
-      else if (action.type == ActionType.custom) action.isArchived = null;
+    else if (action.type == ActionType.custom) action.isArchived = null;
     if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget;
-      else if (action.type == ActionType.custom) action.budget = null;
+    else if (action.type == ActionType.custom) action.budget = null;
     if (action.hasOwnProperty('department')) this.actions[i].department = action.department; // else action.department = null;
     if (action.hasOwnProperty('level')) this.actions[i].level = action.level; // else action.level = null;
     if (action.hasOwnProperty('calculatedIsComplete')) this.actions[i].isComplete = action.calculatedIsComplete;
-      else if (action.type == ActionType.custom) action.calculatedIsComplete = null;
+    else if (action.type == ActionType.custom) action.calculatedIsComplete = null;
     if (action.hasOwnProperty('isCompleteAt')) this.actions[i].isCompleteAt = action.isCompleteAt;
     else if (action.type == ActionType.custom) action.isCompleteAt = null;
     if (action.hasOwnProperty('isComplete')) this.actions[i].isComplete = action.isComplete;
     else if (action.type == ActionType.custom) action.isComplete = null;
     if (action.hasOwnProperty('requireDoc')) this.actions[i].requireDoc = action.requireDoc;
-      else if (action.type == ActionType.custom) action.requireDoc = null;
+    else if (action.type == ActionType.custom) action.requireDoc = null;
     if (action.hasOwnProperty('task')) this.actions[i].task = action.task; // else action.task = null;
-    if (action.hasOwnProperty('frequencyBase')) { this.actions[i].frequencyBase = action.frequencyBase; applyCustom = true; }
-      else action.frequencyBase = null;
-    if (action.hasOwnProperty('frequencyValue')) { this.actions[i].frequencyValue = action.frequencyValue; applyCustom = true; }
-      else action.frequencyValue = null;
+    if (action.hasOwnProperty('frequencyBase')) {
+      this.actions[i].frequencyBase = action.frequencyBase;
+      applyCustom = true;
+    }
+    else action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) {
+      this.actions[i].frequencyValue = action.frequencyValue;
+      applyCustom = true;
+    }
+    else action.frequencyValue = null;
     this.initNotes(af, id, run);
 
     // Document deletion check
     if (action.hasOwnProperty('documents')) {
       let docsToRemove: string[] = [];
       for (let x of this.actions[i].documents) {
-        let docIsGoneFromOnline:boolean = true;
+        let docIsGoneFromOnline: boolean = true;
         for (let doc in action.documents) {
           if (doc == x.documentId) {
             docIsGoneFromOnline = false;
@@ -302,6 +309,7 @@ export class PrepActionService {
       this.actions[returnI].countryUid = uid;
     return returnI;
   }
+
   public findAction(id: string) {
     for (let x of this.actions) {
       if (x.id == id)
@@ -333,6 +341,7 @@ export class PrepActionService {
         });
     }
   }
+
   // Adding a note to action
   protected addNoteToAction(note: PreparednessNotes, n: PreparednessAction) {
     let ran = false;
@@ -419,10 +428,7 @@ export class PreparednessAction {
 
   public isRedAlertActive(map: Map<HazardScenario, boolean>): boolean {
     if (this.assignedHazards != null && this.assignedHazards.length != 0) {
-      console.log("here 2")
-      console.log(this.assignedHazards);
       for (let x of this.assignedHazards) {
-        console.log(x)
         if (map.get(+x)) {
           return true;
         }
@@ -467,7 +473,6 @@ export class PreparednessAction {
     // console.log(this.documents);
   }
 }
-
 
 
 /**

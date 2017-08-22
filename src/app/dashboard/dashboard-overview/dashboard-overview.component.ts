@@ -12,6 +12,7 @@ import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {SettingsService} from "../../services/settings.service";
+import {Location} from "@angular/common";
 
 declare var jQuery: any;
 
@@ -58,6 +59,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
               private alertService: ActionsService,
               private agencyService: AgencyService,
               private countryService:SettingsService,
+              private location:Location,
               private router: Router) {
     this.initMainMenu();
     this.initOfficeSubMenu();
@@ -212,6 +214,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  backForDonor() {
+    this.location.back();
   }
 
   menuSelection(menuName: string) {

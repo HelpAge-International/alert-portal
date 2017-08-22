@@ -207,6 +207,7 @@ export class PageControlService {
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*",
     "dashboard/dashboard-overview*",
+    "response-plans/view-plan*",
     "new-user-password"
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
@@ -214,6 +215,7 @@ export class PageControlService {
     "dashboard/dashboard-overview*",
     "map;isDirector=true",
     "map/map-countries-list;isDirector=true",
+    "response-plans/view-plan*",
     // "risk-monitoring*",
     // "preparedness*",
     // "response-plans*",

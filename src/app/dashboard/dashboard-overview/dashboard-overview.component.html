@@ -17,14 +17,22 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <!--<div *ngIf="!agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
-    <div *ngIf="!agencyOverview"
-         class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
-      {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
-      translate}}
+    <div *ngIf="userType != UserType.Donor">
+      <div *ngIf="!agencyOverview"
+           class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
+        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+        translate}}
+      </div>
+      <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
+      <div *ngIf="agencyOverview"
+           class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+        translate}}
+      </div>
     </div>
-    <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
-    <div *ngIf="agencyOverview"
-         class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+
+    <div *ngIf="userType == UserType.Donor"
+         class="Back--button" (click)="backForDonor()">{{agencyName}} :
       {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
       translate}}
     </div>
@@ -52,7 +60,7 @@
                class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
               <span>{{"ALERT.RISK" | translate}}:</span>
-              {{HazardScenariosList[alert.hazardScenario] | translate}}
+              {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : alert.otherName}}
             </div>
           </div>
           <div class="col-md-3 Alert-Widget__item">
@@ -119,7 +127,9 @@
 <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
 <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
 
-<div *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') " class="Page-top__wrap--w_sub_header--no-paddng">
+<div
+  *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+  class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Empty--ribbon">
       No permission to view country details for this agency!

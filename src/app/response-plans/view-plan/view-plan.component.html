@@ -1,16 +1,31 @@
-<app-country-admin-header *ngIf="!isViewing || canCopy"></app-country-admin-header>
-<app-country-admin-menu *ngIf="!isViewing || canCopy"></app-country-admin-menu>
-<app-director-header *ngIf="isViewing && !canCopy"></app-director-header>
-<app-director-menu *ngIf="isViewing && !canCopy"></app-director-menu>
+<div *ngIf="userType != UserType.Donor">
+  <app-country-admin-header *ngIf="!isViewing || canCopy"></app-country-admin-header>
+  <app-country-admin-menu *ngIf="!isViewing || canCopy"></app-country-admin-menu>
+  <app-director-header *ngIf="isViewing && !canCopy"></app-director-header>
+  <app-director-menu *ngIf="isViewing && !canCopy"></app-director-menu>
+</div>
+
+<div *ngIf="userType == UserType.Donor">
+  <app-donor-header></app-donor-header>
+  <app-donor-menu></app-donor-menu>
+</div>
+
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div *ngIf="!isViewing" class="Back--button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" |
-      translate}}
+    <div *ngIf="userType != UserType.Donor">
+      <div *ngIf="!isViewing" class="Back--button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" |
+        translate}}
+      </div>
+      <div *ngIf="isViewing" class="Back--button" (click)="backToViewingPlan()">{{countryName |
+        translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+      </div>
     </div>
-    <div *ngIf="isViewing" class="Back--button" (click)="backToViewingPlan()">{{countryName |
+    <div *ngIf="userType == UserType.Donor" class="Back--button" (click)="backForDonor()">{{countryName |
       translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
     </div>
+
+
     <app-view-response-plan></app-view-response-plan>
   </div>
 </div>

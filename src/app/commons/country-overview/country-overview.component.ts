@@ -160,9 +160,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
             this._getResponsePlans(countryOffice);
             this._getAlertLevel(countryOffice).then(() => {
-              console.log("alert triggered")
               this.prepActionService[countryOffice.$key].initActionsWithInfo(this.af, this.ngUnsubscribe, this._userId, this._userType, null, countryOffice.$key, countryOffice.agencyId, this._systemId);
-
               this.prepActionService[countryOffice.$key].addUpdater(() => {
                 this.recalculateAll(countryOffice);
               });
@@ -333,7 +331,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     }
 
     if (action.level == ActionLevel.APA) {
-      console.log('RED ALERT: ' + action.isRedAlertActive(this.hazardRedAlert[countryID]));
       if (action.isRedAlertActive(this.hazardRedAlert[countryID]) && action.isComplete != null) {
         return action.isCompleteAt + action.computedClockSetting > this.date;
       }
