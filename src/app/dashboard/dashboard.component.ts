@@ -103,7 +103,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
-      console.log(this.userType);
       if (this.userType == UserType.PartnerUser) {
         console.log("partner user")
         this.agencyId = agencyId;
@@ -116,7 +115,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
         this.moduleSettings = isEnabled;
-        console.log(this.moduleSettings);
       }));
 
       // Load in the country permissions
@@ -391,7 +389,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAlerts() {
     if (this.DashboardTypeUsed == DashboardType.default) {
-      console.log(this.countryId);
       this.alerts = this.actionService.getAlerts(this.countryId);
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
@@ -457,7 +454,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(object => {
-        console.log(object);
         this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key =>!key.includes("$")).length;
       });
   }
