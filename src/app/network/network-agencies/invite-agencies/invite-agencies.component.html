@@ -11,7 +11,7 @@
       <h1 class="col-sm-9">Select Agencies</h1><br>
       <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)">Cancel</a></div>
       <div class="col-sm-2">
-        <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase">Send invites</button>
+        <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase" (click)="showSelectedAgencies()">Send invites</button>
       </div>
     </div>
 
@@ -21,20 +21,18 @@
     </div>
 
     <!-- Remember to use unique identifiers for the labels -->
-    <div class="row Spaced">
-      <label for="item1" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"><img class="margin-bottom-none"
-                                                                                  src="assets/images/donor/action-against-hunger.png"
-                                                                                  alt="">
-        <p>Action Against Hunger</p><input type="checkbox" name="Action-type" id="item1"></label>
-      <label for="item2" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"><img class="margin-bottom-none"
-                                                                                  src="assets/images/donor/agency-preview.svg"
-                                                                                  alt="">
-        <p>Concern</p><input type="checkbox" name="Action-type" id="item2"></label>
-      <label for="item3" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"><img class="margin-bottom-none"
-                                                                                  src="assets/images/donor/helpage-international-logo.png"
-                                                                                  alt="">
-        <p>HelpAge International</p><input type="checkbox" name="Action-type" id="item3"></label>
+    <div *ngIf="agencies | async as agencyList; else empty" class="row Spaced">
+      <label *ngFor="let agency of agencyList; index as i" for="item{{i}}"
+             class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"><img
+        class="margin-bottom-none"
+        src="{{agency.logoPath ? agency.logoPath : 'assets/images/donor/agency-preview.svg'}}">
+        <p>{{agency.name}}</p><input type="checkbox" name="Action-type" id="item{{i}}" #selection
+                                     (change)="toggleAgencySelection(agency, selection.checked)"></label>
     </div>
+
+    <ng-template #empty>
+      <div class="Empty--ribbon">No agencies available</div>
+    </ng-template>
 
 
     <!--Lead Agency Selection Modal (first time agency is invited)-->
@@ -76,9 +74,7 @@
           </div>
           <div class="modal-body text-center">
             <p>You are about to invite the following agencies to be a part of your network:</p>
-            <p class="font-weight-bold">Action Against Hunger</p>
-            <p class="font-weight-bold">Concern</p>
-            <p class="font-weight-bold">HelpAge International</p>
+            <p *ngFor="let agencyId of selectedAgencies" class="font-weight-bold">{{agencyNameMap.get(agencyId)}}</p>
             <p>Are you sure you want to continue?</p>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">

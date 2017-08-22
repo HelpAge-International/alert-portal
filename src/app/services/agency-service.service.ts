@@ -7,6 +7,7 @@ import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
 import {Observable} from "rxjs/Observable";
 import {DurationType} from "../utils/Enums";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
+import {ModelAgency} from "../model/agency.model";
 
 @Injectable()
 export class AgencyService {
@@ -130,6 +131,20 @@ export class AgencyService {
           return privacy;
         }
       });
+  }
+
+  public getAllAgencyFromPlatform() {
+    return this.af.database.list(Constants.APP_STATUS + "/agency")
+      .map(agencies => {
+        let models: ModelAgency[] = [];
+        agencies.forEach(item => {
+          let modelAgency = new ModelAgency(item.name);
+          modelAgency.mapFromObject(item);
+          modelAgency.id = item.$key;
+          models.push(modelAgency);
+        });
+        return models;
+      })
   }
 
   unSubscribeNow() {

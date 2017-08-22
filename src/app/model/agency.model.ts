@@ -1,8 +1,12 @@
 /**
  * Created by Fei on 08/03/2017.
  */
+import {BaseModel} from "./base.model";
+import {AlertMessageModel} from "./alert-message.model";
 
-export class ModelAgency {
+export class ModelAgency extends BaseModel{
+
+  public id:string;
   public adminId:string;
   public name:string;
   public addressLine1:string;
@@ -25,6 +29,11 @@ export class ModelAgency {
   public responsePlanSettings:{} = {};
 
   constructor(name:string) {
+    super();
     this.name = name;
+  }
+
+  validate(excludedFields): AlertMessageModel {
+    return undefined;
   }
 }
