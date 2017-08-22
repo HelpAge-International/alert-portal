@@ -26,6 +26,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private alertMessageType = AlertMessageType;
+  private AlertLevels = AlertLevels;
   private alertMessage: AlertMessageModel = null;
 
   public uid: string;

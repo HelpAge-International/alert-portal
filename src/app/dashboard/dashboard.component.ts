@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private Countries = Countries;
   private CountriesList = Constants.COUNTRIES;
-  private countryLocation: any;
+  private countryLocation: number;
 
   private AlertLevels = AlertLevels;
   private AlertStatus = AlertStatus;

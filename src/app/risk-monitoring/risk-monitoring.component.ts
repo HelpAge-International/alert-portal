@@ -242,7 +242,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
 
       this.indicatorsCC = indicators;
-      console.log(this.indicatorsCC);
     });
   }
 
@@ -272,7 +271,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           });
 
           if (hazard.isActive) {
-            console.log(hazard);
             this.activeHazards.push(hazard);
             if (hazard.hazardScenario == -1) {
               this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
@@ -281,7 +279,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                   hazard.hazardName = snap.val().name;
                 });
             }
-            console.log(this.activeHazards);
           } else {
             this.archivedHazards.push(hazard);
           }
