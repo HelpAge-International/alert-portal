@@ -11,6 +11,8 @@ import {AgencyService} from "../services/agency-service.service";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
 
+declare const jQuery: any;
+
 @Component({
   selector: 'app-director',
   templateUrl: './director.component.html',
@@ -58,7 +60,12 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private countryOffices = [];
   private regionalCountryOffices = [];
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private actionService: ActionsService, private userService: UserService) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private actionService: ActionsService,
+              private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
@@ -77,24 +84,21 @@ export class DirectorComponent implements OnInit, OnDestroy {
     //set initial loader status
     this.loaderInactive = false;
 
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
-
-      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyId => {
-          this.agencyId = agencyId;
-          this.userService.getUserType(this.uid)
-            .flatMap(userType => {
-              return this.userService.getSystemAdminId(Constants.USER_PATHS[userType], this.uid);
-            })
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(systemAdminId => {
-              this.systemAdminId = systemAdminId;
-              this.loadData();
-            });
-        });
+      this.agencyId = agencyId;
+      this.systemAdminId = systemId;
+      if (this.userType == UserType.RegionalDirector) {
+        this.userService.getRegionId(Constants.USER_PATHS[userType], this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(regionId => {
+            this.regionId = regionId;
+            this.loadData();
+          });
+      } else {
+        this.loadData();
+      }
     });
   }
 
@@ -169,65 +173,35 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
     this.getAgencyName();
 
-    if (this.userType != UserType.RegionalDirector) {
-      //for each country do following
-      // this.actionService.getActionsDueInWeek(countryId, this.uid)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(actions => {
-      //     this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday).concat(this.actionsToday);
-      //     this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday).concat(this.actionsThisWeek);
-      //   });
+    this.getAllRegionsAndCountries().then(() => {
 
-      // this.actionService.getIndicatorsDueInWeek(countryId, this.uid)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(indicators => {
-      //     let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
-      //     let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
-      //     if (dayIndicators.length > 0) {
-      //       dayIndicators.forEach(indicator => {
-      //         if (this.actionService.isExist(indicator.$key, this.indicatorsToday)) {
-      //           let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsToday);
-      //           if (index != -1) {
-      //             this.indicatorsToday[index] = indicator;
-      //           }
-      //         } else {
-      //           this.indicatorsToday.push(indicator);
-      //         }
-      //       });
-      //     }
-      //     if (weekIndicators.length > 0) {
-      //       weekIndicators.forEach(indicator => {
-      //         if (this.actionService.isExist(indicator.$key, this.indicatorsThisWeek)) {
-      //           let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsThisWeek);
-      //           if (index != -1) {
-      //             this.indicatorsThisWeek[index] = indicator;
-      //           }
-      //         } else {
-      //           this.indicatorsThisWeek.push(indicator);
-      //         }
-      //       });
-      //     }
-      //   });
+      //open region tab
+      jQuery('#mapParent-' + this.regionId).collapse();
 
-
-      this.getAllRegionsAndCountries().then(() => {
+      if (this.userType != UserType.RegionalDirector) {
         this.countryOffices.forEach(countryOffice => {
           this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryOffice.$key, this.uid, this.agencyId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(plans => {
               this.approvalPlans = this.approvalPlans.concat(plans);
             });
-        })
+        });
+      }
 
-        this.regions.forEach(region => {
-          this.regionalCountryOffices[region.regionId] = this.countryOffices.filter(x => region.countries.has(x.$key));
-        })
-
-        // other regions
-        this.regionalCountryOffices[this.otherRegion.regionId] = this.countryOffices.filter(x => this.otherRegion.countries.has(x.$key));
+      this.regions.forEach(region => {
+        this.regionalCountryOffices[region.regionId] = this.countryOffices.filter(x => region.countries.has(x.$key));
       });
-    } else {
+
+      // other regions
+      this.regionalCountryOffices[this.otherRegion.regionId] = this.countryOffices.filter(x => this.otherRegion.countries.has(x.$key));
+
+    });
+
+
+    if (this.userType == UserType.RegionalDirector) {
+
       this.getCountryIdsForRegion().then(() => {
+
         this.idsOfCountriesInRegion.forEach(countryId => {
 
           this.actionService.getResponsePlanFoRegionalDirectorToApproval(countryId, this.uid, this.regionId)
@@ -260,24 +234,20 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private getCountryIdsForRegion(): Promise<any> {
 
     let promise = new Promise((res, rej) => {
-      this.userService.getRegionId(this.userPaths[this.userType], this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(regionId => {
-          this.regionId = regionId;
 
-          if (this.agencyId && this.regionId) {
-            this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((region) => {
+      if (this.agencyId && this.regionId) {
+        this.af.database.object(Constants.APP_STATUS + "/region/" + this.agencyId + '/' + this.regionId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((region) => {
 
-                this.regionName = region.name ? region.name : "Region";
-                for (let country in region.countries) {
-                  this.idsOfCountriesInRegion.push(country);
-                }
-                res(true);
-              });
-          }
-        });
+            this.regionName = region.name ? region.name : "Region";
+            for (let country in region.countries) {
+              this.idsOfCountriesInRegion.push(country);
+            }
+            res(true);
+          });
+      }
+
     });
     return promise;
   }
@@ -310,7 +280,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
         res(true);
       });
-    })
+    });
 
     return promise;
 

@@ -102,7 +102,7 @@
         </div>
       </div>
 
-      <div *ngIf="userType != UserType.RegionalDirector" class="Ribbon__section__wrap Spaced">
+      <div class="Ribbon__section__wrap Spaced">
 
         <div *ngFor="let x of regions">
           <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
@@ -125,7 +125,9 @@
 
           <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
 
-            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionalCountryOffices[x.regionId]" [isDirector]="true"></app-country-overview>
+            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType"
+                                  [countryOfficeData]="regionalCountryOffices[x.regionId]"
+                                  [isDirector]="true"></app-country-overview>
 
           </div>
         </div>
@@ -141,18 +143,12 @@
             </div>
           </div>
           <div id="{{otherRegion.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
-            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionalCountryOffices[otherRegion.regionId]" [isDirector]="true"></app-country-overview>
+            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType"
+                                  [countryOfficeData]="regionalCountryOffices[otherRegion.regionId]"
+                                  [isDirector]="true"></app-country-overview>
           </div>
         </div>
       </div>
-
-
-      <div *ngIf="userType == UserType.RegionalDirector">
-
-        <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionCountryOffice" [isDirector]="true"></app-country-overview>
-
-      </div>
-
 
     </div>
   </div>
