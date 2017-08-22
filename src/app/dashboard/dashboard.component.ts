@@ -126,7 +126,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -458,7 +457,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(object => {
-        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).length;
+        console.log(object);
+        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key =>!key.includes("$")).length;
       });
   }
 
