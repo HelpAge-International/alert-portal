@@ -32,9 +32,9 @@
 
       <div class="input-group" [ngClass]="{'has-danger': alerts[localUser.password]}">
 
-        <span class="input-group-addon" id="basic-addon2"><i class="fa fa-lock" aria-hidden="true"></i></span>
+        <span class="input-group-addon"><i class="fa fa-lock" aria-hidden="true"></i></span>
         <input name="password" [(ngModel)]="localUser.password" type="password" id="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1">
-        <label class="input-group-addon" id="basic-addon2">
+        <label class="input-group-addon">
           <input type="checkbox" style="display:none"
                  onclick="(function(e, el){
           document.getElementById('password').type = el.checked ? 'text' : 'password';

@@ -24,8 +24,8 @@ export class NotificationService {
       });
 
     return notificationSettingsSubscription;
-  } 
- 
+  }
+
  deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
    let deleteData = {};
 
@@ -34,7 +34,7 @@ export class NotificationService {
   for (let node of nodesAdministratorAgency) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -46,7 +46,7 @@ export class NotificationService {
   for (let node of nodesAdministratorCountry) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -58,7 +58,7 @@ export class NotificationService {
   for (let node of nodesCountryDirector) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -70,7 +70,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   for (let node of nodesRegionDirector) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
 }
 
@@ -82,7 +82,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   for (let node of nodesGlobalDirector) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -94,7 +94,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   for (let node of nodesGlobalUser) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -106,10 +106,10 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   for (let node of nodesDonor) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
- 
+
  deleteERTLeadsNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
    let deleteData = {};
 
@@ -118,7 +118,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   for (let node of nodesErtLeader) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -130,7 +130,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   for (let node of nodesErt) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
 
@@ -146,7 +146,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
   for (let node of nodesCountryUser) {
     deleteData[node + '/' + messageId] = null;
   }
-  
+
   return this.deleteNotification(deleteData);
  }
   deleteNotification(deleteData): firebase.Promise<any>{
@@ -171,7 +171,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     // Global staff
     this._userService.getGlobalStaffList(agencyId).subscribe(staffs => {
       staffs.forEach(staff => {
-        if(staff.notification && (staff.userType === UserType.RegionalDirector || staff.userType === UserType.GlobalDirector) 
+        if(staff.notification && (staff.userType === UserType.RegionalDirector || staff.userType === UserType.GlobalDirector)
             && staff.notification.indexOf(notificationSetting) !== -1)
         {
           this.saveUserNotification(staff.id, message, staff.userType, agencyId, countryId).then(() => {});
@@ -245,7 +245,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
       case UserType.CountryUser:
         node = "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/{messageId}";
         break;
-      
+
     }
 
     return this.saveNotification(node, message);
@@ -272,7 +272,7 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     if(!node) {
       return;
     }
-    
+
     return this.af.database.list(Constants.APP_STATUS + node)
       .map(list => {
         let messages = [];
@@ -285,7 +285,7 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
       });
   }
 
-  
+
   setNotificationsAsRead(node: string): Observable<any>  {
     if(!node) {
       return;
@@ -376,6 +376,7 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/ertleads/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/ertleads/" + userId]
   }
@@ -385,6 +386,7 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/erts/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/erts/" + userId]
   }
@@ -394,15 +396,17 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/donor/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/donor/" + userId]
   }
-  
+
   getPartnerNodes(agencyId: string, countryId: string, userId: string)
   {
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
+            "/messageRef/agency/" + agencyId + "/partner/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/partner/" + userId]
   }

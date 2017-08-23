@@ -73,7 +73,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           });
         }
         if (!user.anonymous) {
-          this.uid = user.uid;
+          this.uid = user.auth.uid;
 
           if(userType == UserType.CountryAdmin){
             this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
