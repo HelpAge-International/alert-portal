@@ -10,6 +10,8 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
 import {Observable} from "rxjs/Observable";
 
+declare const jQuery: any;
+
 @Component({
   selector: 'app-invite-agencies',
   templateUrl: './invite-agencies.component.html',
@@ -33,6 +35,7 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
   private agencySelectionMap = new Map<string, boolean>();
   private agencyNameMap = new Map<string, string>();
   private selectedAgencies: string[];
+  private leadAgencyId: string;
 
 
   constructor(private pageControl: PageControlService,
@@ -52,7 +55,16 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
 
           //fetch all agencies
-          this.agencies = this.agencyService.getAllAgencyFromPlatform()
+          this.agencies = this.agencyService.getAllAgencyFromPlatform();
+
+          //fetch lead agency id
+          this.networkService.getLeadAgencyId(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(id => {
+              if (id) {
+                this.leadAgencyId = id;
+              }
+            });
 
         })
     });
@@ -71,11 +83,28 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
 
   showSelectedAgencies() {
     this.selectedAgencies = [];
-    this.agencySelectionMap.forEach((v,k) =>{
+    this.agencySelectionMap.forEach((v, k) => {
       if (v) {
         this.selectedAgencies.push(k);
       }
     });
+  }
+
+  confirmInvitation() {
+    console.log("confirm invitation");
+    if (!this.leadAgencyId) {
+      jQuery('#leadAgencySelection').modal('show');
+    }
+  }
+
+  saveAgenciesAndLead() {
+    console.log("save agencies and lead agency");
+    this.networkService.updateAgenciesForNetwork(this.networkId, this.leadAgencyId, this.selectedAgencies).then(() => {
+      this.router.navigateByUrl("/network/network-agencies");
+    }).catch(rej => {
+      this.alertMessage = new AlertMessageModel(rej.message);
+    });
+
   }
 
 }

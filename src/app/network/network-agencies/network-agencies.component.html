@@ -4,9 +4,121 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>Network Agencies</h1>
-      <button type="button" class="btn btn-primary uppercase" routerLink="/network/network-agencies/invite-agencies">Invite Agencies</button>
+      <button type="button" class="btn btn-primary uppercase" routerLink="/network/network-agencies/invite-agencies">
+        Invite Agencies
+      </button>
     </div>
 
-    <div class="Empty--ribbon">You have not selected any agencies to be part of your network</div>
+    <div *ngIf="!leadAgencyId" class="Empty--ribbon">You have not selected any agencies to be part of your network</div>
+
+    <div *ngIf="leadAgencyId">
+      <div class="row col-sm-12 Spaced-above" *ngIf="leadAgency | async as lead">
+        <div class="row col-sm-8">
+          <p class="col-sm-5 margin-left-two-half"><strong>Lead Agency:</strong> {{lead.name}}</p>
+          <a href="#leadAgencySelection" data-toggle="modal" class="col-sm-1">edit</a>
+        </div>
+      </div>
+
+      <div *ngFor="let agency of networkAgencies; index as i">
+        <div class="row col-sm-12">
+          <p class="font-weight-bold col-sm-9">Agency</p>
+          <p class="font-weight-bold col-sm-3">Status</p>
+        </div>
+        <div class="Line-row"></div>
+
+        <div class="row col-sm-12">
+          <div class="col-sm-1"><img src="{{agency.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}">
+          </div>
+          <p class="col-sm-4 margin-top-two">{{agency.name}}</p>
+          <a href="#agencyAdminTooltipOne{{i}}" data-toggle="collapse" class="col-sm-4 margin-top-two"><img
+            class="margin-right-one" src="assets/images/icons/contact.svg" alt="">View Agency admin contact info</a>
+          <p class="col-sm-2 margin-top-two">{{agency.isApproved ? 'Active' : 'Invitation sent'}}
+            <a *ngIf="!agency.isApproved" href="#">&nbsp;Resend</a></p>
+          <div class="col-sm-1 margin-top-one">
+            <button href="#leadAgencyRemove" data-toggle="modal" class="btn btn-danger">Remove</button>
+          </div>
+        </div>
+        <div class="Line-row"></div>
+
+        <!--Agency Admin Contact information Tooltip-->
+        <div class="Tooltip__bubble container-fluid network-agency info collapse" id="agencyAdminTooltipOne{{i}}"
+             data-parent="#agencyAdminTooltipOne" aria-controls="agencyAdminTooltipOne">
+          <div class="log_left p-3 row col-sm-12">
+            <h3 class="font-weight-bold">Agency Admin Contact Information</h3>
+            <a href="#agencyAdminTooltipOne{{i}}" class="margin-left-five text-right col-sm-12" data-toggle="collapse">Close</a>
+          </div>
+          <div class="row col-sm-10 no-padding">
+            <div class="col-sm-2 min-width-contact"><p><strong>Contact's Name</strong></p></div>
+            <div class="col-sm-4"><p>{{agency.adminName}}</p></div>
+          </div>
+          <div class="row col-sm-10 no-padding">
+            <div class="col-sm-2 no-padding-right min-width-contact"><p><strong>Contact's Telephone</strong></p></div>
+            <div class="col-sm-4"><p>{{agency.adminPhone}}</p></div>
+          </div>
+          <div class="row col-sm-10 no-padding">
+            <div class="col-sm-2 min-width-contact"><p><strong>Contact's Email</strong></p></div>
+            <div class="col-sm-4"><p>{{agency.adminEmail}}</p></div>
+          </div>
+        </div>
+        <!--Agency Admin Contact information Tooltip End-->
+      </div>
+
+      <!--Lead Agency Selection Modal (first time agency is invited)-->
+      <div class="modal fade" id="leadAgencySelection" tabindex="-1" role="dialog" aria-labelledby="leadAgencySelection"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h6 class="modal-title" class="Spaced-above">Lead agency selection</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p class="col-sm-12"><strong>Lead Agency</strong></p>
+              <div class="col-sm-12 ">
+                <select name="" id="" class="form-control" [(ngModel)]="leadAgencyId">
+                  <option *ngFor="let agency of networkAgencies" [value]="agency.id">{{agency.name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row Right-aligned Spaced col-sm-12">
+              <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">Cancel</a>
+              <button href="#notification-success" data-toggle="collapse" data-dismiss="modal"
+                      class="btn btn-primary col-sm-3 text-uppercase" (click)="confirmLeadAgencyChange()">Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Remove Agency Modal-->
+      <div class="modal fade" id="leadAgencyRemove" tabindex="-1" role="dialog" aria-labelledby="leadAgencyRemove"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">F
+            <div class="modal-header">
+              <h6 class="modal-title" class="Spaced-above">Remove <span
+                class="font-weight-bold">Action Against Hunger?</span></h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body Text-center">
+              <div>
+                <p>Are you sure you want to remove this agency from the network? Any actions assigned to users in this
+                  agency will become unassigned.</p>
+              </div>
+            </div>
+            <div class="row Right-aligned Spaced col-sm-12">
+              <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">Cancel</a>
+              <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </div>

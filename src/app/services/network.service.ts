@@ -3,6 +3,7 @@ import {AngularFire} from "angularfire2";
 import {NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
+import {NetworkAgencyModel} from "../network/network-agencies/network-agency.model";
 
 @Injectable()
 export class NetworkService {
@@ -83,4 +84,41 @@ export class NetworkService {
       })
   }
 
+  getLeadAgencyId(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/leadAgencyId")
+      .map(data => {
+        return data.$value;
+      });
+  }
+
+  updateAgenciesForNetwork(networkId: string, leadAgencyId: string, selectedAgencies: string[]) {
+    let data = {};
+    data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
+    selectedAgencies.forEach(agencyId => {
+      let item = {};
+      item["isApproved"] = false;
+      data["/network/" + networkId + "/agencies/" + agencyId] = item;
+    });
+    return this.af.database.object(Constants.APP_STATUS).update(data);
+  }
+
+  getAgenciesForNetwork(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
+      .map(agencies => {
+        if (agencies.length > 0) {
+          let agencyModels = [];
+          agencies.forEach(agency => {
+            let model = new NetworkAgencyModel();
+            model.id = agency.$key;
+            model.isApproved = agency.isApproved;
+            agencyModels.push(model);
+          });
+          return agencyModels;
+        }
+      });
+  }
+
+  updateNetworkField(data) {
+    return this.af.database.object(Constants.APP_STATUS).update(data);
+  }
 }

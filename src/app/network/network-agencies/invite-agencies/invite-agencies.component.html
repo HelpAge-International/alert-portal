@@ -11,7 +11,9 @@
       <h1 class="col-sm-9">Select Agencies</h1><br>
       <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)">Cancel</a></div>
       <div class="col-sm-2">
-        <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase" (click)="showSelectedAgencies()">Send invites</button>
+        <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase"
+                (click)="showSelectedAgencies()">Send invites
+        </button>
       </div>
     </div>
 
@@ -48,14 +50,16 @@
           </div>
           <div class="modal-body">
             <p class="col-sm-12"><strong>Lead Agency</strong></p>
-            <div class="col-sm-12 "><select name="" id="" class="form-control">
-              <option value="Please select">Please select</option>
-            </select>
+            <div class="col-sm-12 ">
+              <select name="leadAgency" id="leadAgency" class="form-control" [(ngModel)]="leadAgencyId">
+                <option value="undefined" hidden selected disabled>Please select</option>
+                <option *ngFor="let agencyId of selectedAgencies" [value]="agencyId">{{agencyNameMap.get(agencyId)}}</option>
+              </select>
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">Cancel</a>
-            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase">Save</button>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAgenciesAndLead()">Save</button>
           </div>
         </div>
       </div>
@@ -74,12 +78,15 @@
           </div>
           <div class="modal-body text-center">
             <p>You are about to invite the following agencies to be a part of your network:</p>
-            <p *ngFor="let agencyId of selectedAgencies" class="font-weight-bold">{{agencyNameMap.get(agencyId)}}</p>
+            <p *ngFor="let agencyId of selectedAgencies" class="font-weight-bold">
+              {{agencyNameMap.get(agencyId)}}</p>
             <p>Are you sure you want to continue?</p>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">Cancel</a>
-            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase">Confirm</button>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                    (click)="confirmInvitation()">Confirm
+            </button>
           </div>
         </div>
       </div>
