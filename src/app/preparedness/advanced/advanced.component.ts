@@ -33,6 +33,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
+import {WindowRefService} from "../../services/window-ref.service";
 
 declare var jQuery: any;
 
@@ -120,6 +121,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               protected agencyService: AgencyService,
               protected countryService: SettingsService,
               protected notificationService: NotificationService,
+              private windowService:WindowRefService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
@@ -701,5 +703,13 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   public closeModal() {
     jQuery("#leadAgencySelection").modal('hide');
+  }
+
+  checkIfLink(source) {
+    if (source.startsWith("http://")) {
+      this.windowService.getNativeWindow().open(source);
+    } else if (source.startsWith("www.")) {
+      this.windowService.getNativeWindow().open("http://" + source);
+    }
   }
 }

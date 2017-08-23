@@ -19,6 +19,7 @@ import {ModelHazard} from "../../model/hazard.model";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
+
 declare var jQuery: any;
 
 @Component({
@@ -306,12 +307,27 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         this.hazards = [];
         snap.forEach((snapshot) => {
-          let x: ModelHazard = new ModelHazard();
-          x.id = snapshot.key;
-          x.category = snapshot.val().category;
-          x.hazardScenario = snapshot.val().hazardScenario;
-          x.isSeasonal = snapshot.val().isSeasonal;
-          this.hazards.push(x);
+          if (snapshot.val().hazardScenario != -1) {
+            let x: ModelHazard = new ModelHazard();
+            x.id = snapshot.key;
+            x.category = snapshot.val().category;
+            x.hazardScenario = snapshot.val().hazardScenario;
+            x.isSeasonal = snapshot.val().isSeasonal;
+            this.hazards.push(x);
+          } else {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(snapOther => {
+                let x: ModelHazard = new ModelHazard();
+                x.id = snapshot.key;
+                x.category = snapshot.val().category;
+                x.hazardScenario = snapshot.val().hazardScenario;
+                x.isSeasonal = snapshot.val().isSeasonal;
+                x.displayName = snapOther.val().name;
+                this.hazards.push(x);
+              })
+          }
+
         });
       });
   }
@@ -444,17 +460,18 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         // Updating
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
 
-          if(updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+          if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
             const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", { actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
             console.log("Updating:");
             console.log(notification.content);
 
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+            });
           }
 
           this._location.back();
@@ -465,16 +482,17 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         updateObj.createdAt = new Date().getTime();
         this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
 
-          if(updateObj.asignee) {
+          if (updateObj.asignee) {
             // Send notification to the assignee
             let notification = new MessageModel();
             notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                                                                        : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", { actionName: updateObj.task})
-                                                                          : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", { actionName: updateObj.task});
+              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => { });
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+            });
           }
 
           this._location.back();
@@ -486,6 +504,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   public getNow() {
     return this.now.getTime();
   }
+
   public getNowDate() {
     return this.now;
   }
@@ -496,21 +515,26 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected removeFilterLockTask() {
     this.filterLockTask = false;
   }
+
   protected removeFilterLockLevel() {
     this.filterLockLevel = false;
     if (this.action.id == null) {
       this.showDueDate = this.action.level == ActionLevel.MPA;
     }
   }
+
   protected removeFilterLockDepartment() {
     this.filterLockDepartment = false;
   }
+
   protected removeFilterLockDueDate() {
     this.filterLockDueDate = false;
   }
+
   protected removeFilterLockBudget() {
     this.filterLockBudget = false;
   }
+
   protected removeFilterLockDoc() {
     this.filterLockDocument = false;
   }
@@ -566,6 +590,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   protected showActionConfirm(modal: string) {
     jQuery("#" + modal).modal('show');
   }
+
   protected closeActionCancel(modal: string) {
     jQuery("#" + modal).modal('hide');
   }

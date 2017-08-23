@@ -98,7 +98,7 @@
                      (change)="selectHazardCategory(hList.hazardScenario, $event)" name="hazardCategory">
               <span
                 class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{getHazardImage(hList.hazardScenario)}}"></span>
-              &nbsp; {{hazardCategory[hList.hazardScenario] | translate}}
+              &nbsp; {{hList.hazardScenario != -1 ? (hazardCategory[hList.hazardScenario] | translate) : hList.displayName}}
             </label>
           </div>
         </div>
