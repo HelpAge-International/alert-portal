@@ -6,10 +6,10 @@
 
 <div class="Page-top__wrap padding-top-none">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row">Network Agencies</div> <!-- Back button-->
+    <div class="Back--button" routerLink="/network/network-agencies">Network Agencies</div> <!-- Back button-->
     <div class="row col-sm-12">
       <h1 class="col-sm-9">Select Agencies</h1><br>
-      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)">Cancel</a></div>
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" routerLink="/network/network-agencies">Cancel</a></div>
       <div class="col-sm-2">
         <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase"
                 (click)="showSelectedAgencies()">Send invites
@@ -25,7 +25,8 @@
     <!-- Remember to use unique identifiers for the labels -->
     <div *ngIf="agencies | async as agencyList; else empty" class="row Spaced">
       <label *ngFor="let agency of agencyList; index as i" for="item{{i}}"
-             class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"><img
+             class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"
+             [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.id) !=-1"><img
         class="margin-bottom-none"
         src="{{agency.logoPath ? agency.logoPath : 'assets/images/donor/agency-preview.svg'}}">
         <p>{{agency.name}}</p><input type="checkbox" name="Action-type" id="item{{i}}" #selection
@@ -53,13 +54,16 @@
             <div class="col-sm-12 ">
               <select name="leadAgency" id="leadAgency" class="form-control" [(ngModel)]="leadAgencyId">
                 <option value="undefined" hidden selected disabled>Please select</option>
-                <option *ngFor="let agencyId of selectedAgencies" [value]="agencyId">{{agencyNameMap.get(agencyId)}}</option>
+                <option *ngFor="let agencyId of selectedAgencies" [value]="agencyId">{{agencyNameMap.get(agencyId)}}
+                </option>
               </select>
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">Cancel</a>
-            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAgenciesAndLead()">Save</button>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                    (click)="saveAgenciesAndLead()">Save
+            </button>
           </div>
         </div>
       </div>

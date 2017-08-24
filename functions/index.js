@@ -27,11 +27,11 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
   admin.auth().updateUser(userUid, {
     password: userPassword
   })
-    .then(function(userRecord){
+    .then(function (userRecord) {
       console.log("Successfully updated user password", userRecord.toJSON());
       return sendWelcomeEmail(email, userPassword);
-  })
-    .catch(function(error){
+    })
+    .catch(function (error) {
       console.log("Error updating user password:", error);
     });
 });
@@ -45,7 +45,7 @@ function sendWelcomeEmail(email, userPassword) {
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
   mailOptions.text = `Hello,
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
-                      \n Your temporary password is "`+userPassword+`", please login with your email address to update your credentials.
+                      \n Your temporary password is "` + userPassword + `", please login with your email address to update your credentials.
                       \n https://platform.alertpreparedness.org
                       \n Thanks
                       \n Your ALERT team `;
@@ -54,21 +54,21 @@ function sendWelcomeEmail(email, userPassword) {
   });
 }
 
-function generateRandomPassword(){
+function generateRandomPassword() {
   var chars = "ABCDEFGHIJKLMNOPQRSTUVWXTZ0123456789";
-  var string_length = getRandomInt(8,10);
+  var string_length = getRandomInt(8, 10);
   var randomstring = '';
   var charCount = 0;
   var numCount = 0;
 
-  for (var i=0; i<string_length; i++) {
-    if((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
+  for (var i = 0; i < string_length; i++) {
+    if ((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
       var rnum = Math.floor(Math.random() * 10);
       randomstring += rnum;
       numCount += 1;
     } else {
       var rnum = Math.floor(Math.random() * chars.length);
-      randomstring += chars.substring(rnum,rnum+1);
+      randomstring += chars.substring(rnum, rnum + 1);
       charCount += 1;
     }
   }
@@ -1511,11 +1511,11 @@ exports.sendSystemAdminNotificationsEmail_SAND = functions.database.ref('/sand/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('sand/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1534,7 +1534,7 @@ exports.sendSystemAdminNotificationsEmail_SAND = functions.database.ref('/sand/m
           });
         }
       }, error => {
-         console.log(error.message);
+        console.log(error.message);
       });
     }
   });
@@ -1549,11 +1549,11 @@ exports.sendSystemAdminNotificationsEmail_TEST = functions.database.ref('/test/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('test/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('test/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('test/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1587,11 +1587,11 @@ exports.sendSystemAdminNotificationsEmail_UAT = functions.database.ref('/uat/mes
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('uat/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('uat/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('uat/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1625,11 +1625,11 @@ exports.sendSystemAdminNotificationsEmail_UAT_2 = functions.database.ref('/uat-2
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('uat-2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('uat-2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('uat-2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1663,11 +1663,11 @@ exports.sendSystemAdminNotificationsEmail_D1S1 = functions.database.ref('/d1s1/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d1s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d1s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d1s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1701,11 +1701,11 @@ exports.sendSystemAdminNotificationsEmail_D1S2 = functions.database.ref('/d1s2/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d1s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d1s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d1s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1739,11 +1739,11 @@ exports.sendSystemAdminNotificationsEmail_D2S1 = functions.database.ref('/d2s1/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d2s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d2s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d2s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1777,11 +1777,11 @@ exports.sendSystemAdminNotificationsEmail_D2S2 = functions.database.ref('/d2s2/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d2s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d2s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d2s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1815,11 +1815,11 @@ exports.sendSystemAdminNotificationsEmail_D3S1 = functions.database.ref('/d3s1/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d3s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d3s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d3s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1853,11 +1853,11 @@ exports.sendSystemAdminNotificationsEmail_D3S2 = functions.database.ref('/d3s2/m
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d3s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d3s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d3s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1942,11 +1942,11 @@ exports.sendAgencyNotificationsEmail_SAND = functions.database.ref('/sand/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('sand/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -1980,11 +1980,11 @@ exports.sendAgencyNotificationsEmail_TEST = functions.database.ref('/test/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('test/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('test/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('test/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2018,11 +2018,11 @@ exports.sendAgencyNotificationsEmail_UAT = functions.database.ref('/uat/messageR
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('uat/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('uat/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('uat/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2056,11 +2056,11 @@ exports.sendAgencyNotificationsEmail_UAT_2 = functions.database.ref('/uat-2/mess
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('uat-2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('uat-2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('uat-2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2094,11 +2094,11 @@ exports.sendAgencyNotificationsEmail_D1S1 = functions.database.ref('/d1s1/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d1s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d1s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d1s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2132,11 +2132,11 @@ exports.sendAgencyNotificationsEmail_D1S2 = functions.database.ref('/d1s2/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d1s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d1s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d1s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2170,11 +2170,11 @@ exports.sendAgencyNotificationsEmail_D2S1 = functions.database.ref('/d2s1/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d2s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d2s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d2s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2208,11 +2208,11 @@ exports.sendAgencyNotificationsEmail_D2S2 = functions.database.ref('/d2s2/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d2s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d2s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d2s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2246,11 +2246,11 @@ exports.sendAgencyNotificationsEmail_D3S1 = functions.database.ref('/d3s1/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d3s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d3s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d3s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2284,11 +2284,11 @@ exports.sendAgencyNotificationsEmail_D3S2 = functions.database.ref('/d3s2/messag
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d3s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d3s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d3s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2411,11 +2411,11 @@ exports.sendCountryNotificationsEmail_TEST = functions.database.ref('/test/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('test/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('test/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('test/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2449,11 +2449,11 @@ exports.sendCountryNotificationsEmail_UAT = functions.database.ref('/uat/message
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('uat/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('uat/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('uat/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2487,11 +2487,11 @@ exports.sendCountryNotificationsEmail_UAT_2 = functions.database.ref('/uat-2/mes
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('uat-2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('uat-2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('uat-2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2525,11 +2525,11 @@ exports.sendCountryNotificationsEmail_D1S1 = functions.database.ref('/d1s1/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d1s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d1s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d1s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2563,11 +2563,11 @@ exports.sendCountryNotificationsEmail_D1S2 = functions.database.ref('/d1s2/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d1s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d1s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d1s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2601,11 +2601,11 @@ exports.sendCountryNotificationsEmail_D2S1 = functions.database.ref('/d2s1/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d2s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d2s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d2s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2639,11 +2639,11 @@ exports.sendCountryNotificationsEmail_D2S2 = functions.database.ref('/d2s2/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d2s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d2s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d2s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2677,11 +2677,11 @@ exports.sendCountryNotificationsEmail_D3S1 = functions.database.ref('/d3s1/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d3s1/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d3s1/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d3s1/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2715,11 +2715,11 @@ exports.sendCountryNotificationsEmail_D3S2 = functions.database.ref('/d3s2/messa
     let msgId = event.params['messageId'];
 
     if (!preData && currData) {
-      admin.database().ref('d3s2/userPublic/' + userId+ "/email").on('value', snapshot => {
+      admin.database().ref('d3s2/userPublic/' + userId + "/email").on('value', snapshot => {
 
         let email = snapshot.val();
 
-        if(email){
+        if (email) {
           admin.database().ref('d3s2/message/' + msgId).on('value', snapshot => {
             let title = snapshot.val().title;
             let content = snapshot.val().content;
@@ -2782,3 +2782,62 @@ exports.sendCountryNotificationsEmail_D3S2 = functions.database.ref('/d3s2/messa
 //       });
 //     }
 //   });
+
+/***********************************************************************************************************************/
+//for sand
+exports.sendNetworkAgencyValidationEmail = functions.database.ref('/sand/network/{networkId}/agencies/{agencyId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("Network agency added");
+
+      let networkId = event.params['networkId'];
+      let agencyId = event.params['agencyId'];
+
+      admin.database().ref('/sand/agency/' + agencyId + '/adminId').once("value", (data) => {
+        let adminId = data.val();
+        console.log("admin id: " + adminId);
+
+        admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
+          let email = user.val().email;
+          console.log("admin email: " + email);
+
+          admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
+            let network = networkSnap.val();
+
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            admin.database().ref('sand/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT partner organisation" <noreply@firebase.com>',
+                to: email
+              };
+
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                          \n Thanks
+                          \n Your ALERT team `;
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+
+          });
+
+        });
+      });
+
+
+    }
+  });
+/***********************************************************************************************************************/

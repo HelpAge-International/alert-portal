@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
-import {Constants} from "../../../utils/Constants";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -36,6 +35,7 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
   private agencyNameMap = new Map<string, string>();
   private selectedAgencies: string[];
   private leadAgencyId: string;
+  private existingAgencyIds: string[];
 
 
   constructor(private pageControl: PageControlService,
@@ -56,6 +56,15 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
 
           //fetch all agencies
           this.agencies = this.agencyService.getAllAgencyFromPlatform();
+
+          //fetch already added agency ids
+          this.networkService.getAgencyIdsForNetwork(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(ids => {
+              if (ids) {
+                this.existingAgencyIds = ids;
+              }
+            });
 
           //fetch lead agency id
           this.networkService.getLeadAgencyId(this.networkId)
@@ -92,8 +101,14 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
 
   confirmInvitation() {
     console.log("confirm invitation");
+    if (!this.selectedAgencies || this.selectedAgencies.length == 0) {
+      this.alertMessage = new AlertMessageModel("No agencies was selected!");
+      return;
+    }
     if (!this.leadAgencyId) {
       jQuery('#leadAgencySelection').modal('show');
+    } else {
+      this.saveAgenciesAndLead();
     }
   }
 

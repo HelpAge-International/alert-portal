@@ -4,6 +4,7 @@ import {NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network/network-agencies/network-agency.model";
+import * as moment from "moment";
 
 @Injectable()
 export class NetworkService {
@@ -118,7 +119,37 @@ export class NetworkService {
       });
   }
 
+  getAgencyIdsForNetwork(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies", {preserveSnapshot: true})
+      .map(snap => {
+        if (snap && snap.val()) {
+          return Object.keys(snap.val());
+        }
+      })
+  }
+
   updateNetworkField(data) {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
+
+  deleteNetworkField(path) {
+    return this.af.database.object(Constants.APP_STATUS + path).set(null);
+  }
+
+  validateNetworkAgencyToken(agencyId, token) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkAgencyValidation/" + agencyId + "/validationToken")
+      .map(tokenObj => {
+        if (tokenObj) {
+          if (token === tokenObj.token) {
+            let expiry = tokenObj.expiry;
+            let currentTime = moment.utc();
+            let tokenExpiryTime = moment.utc(expiry);
+            return !currentTime.isAfter(tokenExpiryTime);
+          }
+        } else {
+          return false;
+        }
+      })
+  }
+
 }

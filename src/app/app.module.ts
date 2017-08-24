@@ -213,6 +213,7 @@ import {NetworkClockSettingsComponent} from './network/network-settings/network-
 import {NetworkDocumentSettingsComponent} from './network/network-settings/network-document-settings/network-document-settings.component';
 import { NetworkSettingMenusComponent } from './network/network-settings/network-setting-menus/network-setting-menus.component';
 import { InviteAgenciesComponent } from './network/network-agencies/invite-agencies/invite-agencies.component';
+import { NetworkAgencyValidationComponent } from './commons/network-agency-validation/network-agency-validation.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -417,7 +418,8 @@ const firebaseAuthConfig = {
     NetworkClockSettingsComponent,
     NetworkDocumentSettingsComponent,
     NetworkSettingMenusComponent,
-    InviteAgenciesComponent
+    InviteAgenciesComponent,
+    NetworkAgencyValidationComponent
   ],
   imports: [
     BrowserModule,

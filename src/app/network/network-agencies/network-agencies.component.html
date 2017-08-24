@@ -19,13 +19,13 @@
         </div>
       </div>
 
-      <div *ngFor="let agency of networkAgencies; index as i">
-        <div class="row col-sm-12">
-          <p class="font-weight-bold col-sm-9">Agency</p>
-          <p class="font-weight-bold col-sm-3">Status</p>
-        </div>
-        <div class="Line-row"></div>
+      <div class="row col-sm-12">
+        <p class="font-weight-bold col-sm-9">Agency</p>
+        <p class="font-weight-bold col-sm-3">Status</p>
+      </div>
+      <div class="Line-row"></div>
 
+      <div *ngFor="let agency of networkAgencies; index as i">
         <div class="row col-sm-12">
           <div class="col-sm-1"><img src="{{agency.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}">
           </div>
@@ -35,7 +35,9 @@
           <p class="col-sm-2 margin-top-two">{{agency.isApproved ? 'Active' : 'Invitation sent'}}
             <a *ngIf="!agency.isApproved" href="#">&nbsp;Resend</a></p>
           <div class="col-sm-1 margin-top-one">
-            <button href="#leadAgencyRemove" data-toggle="modal" class="btn btn-danger">Remove</button>
+            <button href="#leadAgencyRemove" data-toggle="modal" class="btn btn-danger"
+                    (click)="removeAgency(agency.id)">Remove
+            </button>
           </div>
         </div>
         <div class="Line-row"></div>
@@ -96,10 +98,10 @@
       <div class="modal fade" id="leadAgencyRemove" tabindex="-1" role="dialog" aria-labelledby="leadAgencyRemove"
            aria-hidden="true">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">F
+          <div class="modal-content" *ngIf="removeAgencyObj|async as agency">
             <div class="modal-header">
               <h6 class="modal-title" class="Spaced-above">Remove <span
-                class="font-weight-bold">Action Against Hunger?</span></h6>
+                class="font-weight-bold">{{agency.name}}</span></h6>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -112,7 +114,9 @@
             </div>
             <div class="row Right-aligned Spaced col-sm-12">
               <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">Cancel</a>
-              <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase">Confirm</button>
+              <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                      (click)="confirmRemove(agency.$key)">Confirm
+              </button>
             </div>
           </div>
         </div>

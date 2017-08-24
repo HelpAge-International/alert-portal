@@ -32,6 +32,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
   private leadAgencyId: string;
   private leadAgency: FirebaseObjectObservable<any>;
   private networkAgencies: NetworkAgencyModel[] = [];
+  private removeAgencyObj: FirebaseObjectObservable<any>;
 
 
   constructor(private pageControl: PageControlService,
@@ -53,6 +54,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
 
           //fetch network agencies
           this.networkService.getAgenciesForNetwork(this.networkId)
+          //extra fetching works
             .do((agencies: NetworkAgencyModel[]) => {
               if (agencies) {
                 agencies.forEach(model => {
@@ -107,6 +109,18 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
     let update = {};
     update["/network/" + this.networkId + "/leadAgencyId"] = this.leadAgencyId;
     this.networkService.updateNetworkField(update);
+  }
+
+  removeAgency(agencyId) {
+    this.removeAgencyObj = this.agencyService.getAgency(agencyId);
+  }
+
+  confirmRemove(agencyId) {
+    console.log(agencyId);
+    let path = "/network/" + this.networkId + "/agencies/" + agencyId;
+    let validationPath = "/networkAgencyValidation/" + agencyId;
+    this.networkService.deleteNetworkField(path);
+    this.networkService.deleteNetworkField(validationPath);
   }
 
 }

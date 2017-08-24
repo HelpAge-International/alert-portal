@@ -134,6 +134,7 @@ import {NetworkClockSettingsComponent} from "./network/network-settings/network-
 import {NetworkPlanSettingsComponent} from "./network/network-settings/network-plan-settings/network-plan-settings.component";
 import {NetworkDocumentSettingsComponent} from "./network/network-settings/network-document-settings/network-document-settings.component";
 import {InviteAgenciesComponent} from "./network/network-agencies/invite-agencies/invite-agencies.component";
+import {NetworkAgencyValidationComponent} from "./commons/network-agency-validation/network-agency-validation.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -387,6 +388,7 @@ const routes: Routes = [
   {path: 'network/network-offices/add-edit-network-office', component: AddEditNetworkOfficeComponent},
   {path: 'network/network-agencies', component: NetworkAgenciesComponent},
   {path: 'network/network-agencies/invite-agencies', component: InviteAgenciesComponent},
+  {path: 'network-agency-validation', component: NetworkAgencyValidationComponent},
   {path: 'network/network-settings/modules', component: NetworkModuleSettingsComponent},
   {path: 'network/network-settings/clock-settings', component: NetworkClockSettingsComponent},
   {path: 'network/network-settings/response-plans', component: NetworkPlanSettingsComponent},
