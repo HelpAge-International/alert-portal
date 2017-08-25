@@ -5,6 +5,7 @@ import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network/network-agencies/network-agency.model";
 import * as moment from "moment";
+import * as firebase from "firebase/app";
 
 @Injectable()
 export class NetworkService {
@@ -65,7 +66,7 @@ export class NetworkService {
       })
   }
 
-  getSelectedId(uid: string) {
+  getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
       .flatMap(snap => {
         if (snap.val()) {
@@ -151,5 +152,14 @@ export class NetworkService {
         }
       })
   }
+
+  public generateKeyForNetworkCountry():string {
+    return firebase.database().ref(Constants.APP_STATUS+"/networkCountry/").push().key;
+  }
+
+  public generateKeyUserPublic():string {
+    return firebase.database().ref(Constants.APP_STATUS + "/userPublic/").push().key;
+  }
+
 
 }

@@ -38,7 +38,7 @@
           <div class="form-group">
             <label for="title">Title*</label>
 
-            <select class="form-control" id="title" required [(ngModel)]="networkAdmin.title"
+            <select class="form-control" id="title" required [(ngModel)]="networkCountryUser.title"
                     name="title">
               <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
               <option *ngFor="let title of PERSON_TITLE_SELECTION" [value]="title">
@@ -51,21 +51,21 @@
         <div class="col-lg-4 col-md-6 Spaced-above">
           <div class="form-group">
             <label for="City">First Name*</label>
-            <input type="text" class="form-control" id="firstName" placeholder="Please enter" required [(ngModel)]="networkAdmin.firstName"
+            <input type="text" class="form-control" id="firstName" placeholder="Please enter" required [(ngModel)]="networkCountryUser.firstName"
                    name="firstName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6 Spaced-above">
           <div class="form-group">
             <label for="Postcode">Last Name*</label>
-            <input type="text" class="form-control" id="lastName" placeholder="Please enter" required [(ngModel)]="networkAdmin.lastName"
+            <input type="text" class="form-control" id="lastName" placeholder="Please enter" required [(ngModel)]="networkCountryUser.lastName"
                    name="lastName">
           </div>
         </div>
         <div class="col-lg-4 col-md-6 Spaced-above">
           <div class="form-group">
             <label for="A-line-1">Email Address*</label>
-            <input type="email" class="form-control" id="emailAddress" placeholder="Please enter" required [(ngModel)]="networkAdmin.email"
+            <input type="email" class="form-control" id="emailAddress" placeholder="Please enter" required [(ngModel)]="networkCountryUser.email"
                    name="email">
           </div>
         </div>
@@ -76,28 +76,28 @@
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="A-line-1">Address Line 1</label>
-            <input type="text" class="form-control" id="A-line-1" placeholder="Optional" [(ngModel)]="networkAdmin.addressLine1"
+            <input type="text" class="form-control" id="A-line-1" placeholder="Optional" [(ngModel)]="networkCountryUser.addressLine1"
                    name="address1">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="A-line-2">Address Line 2</label>
-            <input type="text" class="form-control" id="A-line-2" placeholder="Optional" [(ngModel)]="networkAdmin.addressLine2"
+            <input type="text" class="form-control" id="A-line-2" placeholder="Optional" [(ngModel)]="networkCountryUser.addressLine2"
                    name="address2">
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
             <label for="A-line-3">Address Line 3</label>
-            <input type="text" class="form-control" id="A-line-3" placeholder="Optional" [(ngModel)]="networkAdmin.addressLine3"
+            <input type="text" class="form-control" id="A-line-3" placeholder="Optional" [(ngModel)]="networkCountryUser.addressLine3"
                    name="address3">
           </div>
         </div>
         <div class="col-lg-4 col-md-6 Spaced-above">
           <div class="form-group">
             <label for="adminCountry">Country</label>
-            <select class="form-control" id="adminCountry" [(ngModel)]="networkAdmin.country"
+            <select class="form-control" id="adminCountry" [(ngModel)]="networkCountryUser.country"
                     name="adminCountry">
               <option value="undefined" selected hidden disabled>Optional</option>
               <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">
@@ -109,14 +109,14 @@
         <div class="col-lg-4 col-md-6 Spaced-above">
           <div class="form-group">
             <label for="City">City</label>
-            <input type="text" class="form-control" id="City" placeholder="Optional" [(ngModel)]="networkAdmin.city"
+            <input type="text" class="form-control" id="City" placeholder="Optional" [(ngModel)]="networkCountryUser.city"
                    name="city">
           </div>
         </div>
         <div class="col-lg-4 col-md-6 Spaced-above">
           <div class="form-group">
             <label for="Postcode">Postcode/Zip Code</label>
-            <input type="text" class="form-control" id="Postcode" placeholder="Optional" [(ngModel)]="networkAdmin.postCode"
+            <input type="text" class="form-control" id="Postcode" placeholder="Optional" [(ngModel)]="networkCountryUser.postCode"
                    name="postCode">
           </div>
         </div>

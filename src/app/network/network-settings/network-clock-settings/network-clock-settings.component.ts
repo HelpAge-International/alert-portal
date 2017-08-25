@@ -48,7 +48,7 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.networkService.getSelectedId(user.uid)
+      this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];
           return this.settingService.getNetworkClockSettings(selection["id"]);

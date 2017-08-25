@@ -15,6 +15,7 @@ const APP_NAME = 'ALERT';
 const WEEK = 0;
 const MONTH = 1;
 const YEAR = 2;
+const TEMP_PASS = "testtest";
 
 exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
 
@@ -2814,7 +2815,7 @@ exports.sendNetworkAgencyValidationEmail = functions.database.ref('/sand/network
             admin.database().ref('sand/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
               console.log('success validationToken');
               const mailOptions = {
-                from: '"ALERT partner organisation" <noreply@firebase.com>',
+                from: '"ALERT Network" <noreply@firebase.com>',
                 to: email
               };
 
@@ -2838,6 +2839,36 @@ exports.sendNetworkAgencyValidationEmail = functions.database.ref('/sand/network
       });
 
 
+    }
+  });
+/***********************************************************************************************************************/
+
+/***********************************************************************************************************************/
+exports.sandCreateUserNetworkCountry = functions.database.ref('/sand/networkCountryAdmin/{adminId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("network country admin added");
+      let adminId = event.params['adminId'];
+      console.log()
+      admin.database().ref("/sand/userPublic/" + adminId)
+        .once("value", data => {
+          let userDb = data.val();
+          let userCreate = {};
+          userCreate["uid"] = adminId;
+          userCreate["email"] = userDb.email;
+          userCreate["password"] = TEMP_PASS;
+          admin.auth.createUser(userCreate)
+            .then(user => {
+              console.log("Successfully created new user: " + user.uid)
+            })
+            .catch(error => {
+              console.log(error.message)
+            })
+
+        });
     }
   });
 /***********************************************************************************************************************/

@@ -47,7 +47,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
 
       //get network id
-      this.networkService.getSelectedId(user.uid)
+      this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
