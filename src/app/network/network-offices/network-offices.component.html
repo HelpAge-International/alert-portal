@@ -17,8 +17,33 @@
     </div>
 
     <!--empty message-->
-    <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">You have not added any
-      network offices to your network</p></div>
+    <ng-template #empty>
+      <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">You have not added any
+        network offices to your network</p></div>
+    </ng-template>
+
+
+    <div *ngIf="networkOffices | async as offices; else empty">
+      <div class="row Spaced-above font-weight-bold">
+        <p class="col-sm-2">Country</p>
+        <p class="col-sm-6">Network Country Administrator</p>
+        <p class="col-sm-4">Status</p>
+      </div>
+      <div class="Line-row"></div>
+
+      <div *ngFor="let office of offices" class="row Spaced-above">
+        <p class="col-sm-2">{{Countries[office.location] | translate}}</p>
+        <p class="col-sm-6">{{office.adminId}}</p>
+        <p class="col-sm-1">{{office.isActive ? 'Active' : 'Deactive'}}</p>
+        <div class="col-sm-12 col-md-1 country-offices-btn">
+          <button class="btn btn-danger">Deactivate</button>
+        </div>
+        <span class="padding-one"></span>
+        <div class="col-sm-12 col-md-1 country-offices-btn">
+          <button class="btn btn-primary">Edit</button>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>

@@ -38,6 +38,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
 
   //logic info
   private uid: string;
+  private networkId: string;
   private network: any;
   private networkModuleSetting: ModuleSettingsModel[];
   private isEditing: boolean;
@@ -58,6 +59,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
       this.networkService.getSelectedIdObj(this.uid)
         .flatMap((idObj: {}) => {
           //get network detail
+          this.networkId = idObj["id"];
           return this.networkService.getNetworkDetail(idObj["id"]);
         })
         .subscribe(network => {
@@ -72,7 +74,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
             });
 
         })
-    })
+    });
   }
 
   ngOnDestroy() {
@@ -121,10 +123,11 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     let networkCountryIds = {};
     networkCountryIds[keyNetworkCountry] = true;
     this.networkCountryAdmin.networkCountryIds = networkCountryIds;
+    this.networkCountryAdmin.networkId = this.networkId;
 
     //root update data
     let data = {};
-    data["/networkCountry/" + keyNetworkCountry] = this.networkOffice;
+    data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
     data["/module/" + keyNetworkCountry] = this.networkModuleSetting;
     data["/userPublic/" + keyUser] = this.networkCountryUser;
     data["/networkCountryAdmin/" + keyUser] = this.networkCountryAdmin;
@@ -151,7 +154,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
 
     //root update data
     let data = {};
-    data["/networkCountry/" + keyNetworkCountry] = this.networkOffice;
+    data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
     data["/module/" + keyNetworkCountry] = this.networkModuleSetting;
     data["/userPublic/" + keyUser] = this.networkCountryUser;
     data["/networkCountryAdmin/" + keyUser] = this.networkCountryAdmin;

@@ -6,6 +6,7 @@ import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network/network-agencies/network-agency.model";
 import * as moment from "moment";
 import * as firebase from "firebase/app";
+import {NetworkOfficeModel} from "../network/network-offices/add-edit-network-office/network-office.model";
 
 @Injectable()
 export class NetworkService {
@@ -153,11 +154,25 @@ export class NetworkService {
       })
   }
 
-  public generateKeyForNetworkCountry():string {
-    return firebase.database().ref(Constants.APP_STATUS+"/networkCountry/").push().key;
+  getNetworkOffices(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+      .map(officeObjs => {
+        let officeModels:NetworkOfficeModel[] = [];
+        officeObjs.forEach(obj =>{
+          let office = new NetworkOfficeModel();
+          office.mapFromObject(obj);
+          office.id = obj.$key;
+          officeModels.push(office);
+        });
+        return officeModels;
+      });
   }
 
-  public generateKeyUserPublic():string {
+  public generateKeyForNetworkCountry(): string {
+    return firebase.database().ref(Constants.APP_STATUS + "/networkCountry/").push().key;
+  }
+
+  public generateKeyUserPublic(): string {
     return firebase.database().ref(Constants.APP_STATUS + "/userPublic/").push().key;
   }
 

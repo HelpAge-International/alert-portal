@@ -2844,6 +2844,7 @@ exports.sendNetworkAgencyValidationEmail = functions.database.ref('/sand/network
 /***********************************************************************************************************************/
 
 /***********************************************************************************************************************/
+//for sand
 exports.sandCreateUserNetworkCountry = functions.database.ref('/sand/networkCountryAdmin/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
@@ -2852,20 +2853,22 @@ exports.sandCreateUserNetworkCountry = functions.database.ref('/sand/networkCoun
     if (!preData && currData) {
       console.log("network country admin added");
       let adminId = event.params['adminId'];
-      console.log()
+      console.log("admin id: " + adminId);
       admin.database().ref("/sand/userPublic/" + adminId)
         .once("value", data => {
           let userDb = data.val();
-          let userCreate = {};
-          userCreate["uid"] = adminId;
-          userCreate["email"] = userDb.email;
-          userCreate["password"] = TEMP_PASS;
-          admin.auth.createUser(userCreate)
+          console.log(userDb);
+
+          admin.auth().createUser({
+            uid: adminId,
+            email: userDb.email,
+            password: TEMP_PASS
+          })
             .then(user => {
               console.log("Successfully created new user: " + user.uid)
             })
             .catch(error => {
-              console.log(error.message)
+              console.log("Error creating new user:", error)
             })
 
         });
