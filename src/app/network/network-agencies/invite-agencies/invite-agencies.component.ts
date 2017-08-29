@@ -36,6 +36,7 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
   private selectedAgencies: string[];
   private leadAgencyId: string;
   private existingAgencyIds: string[];
+  private showLoader:boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -47,12 +48,14 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+          this.showLoader = false;
 
           //fetch all agencies
           this.agencies = this.agencyService.getAllAgencyFromPlatform();

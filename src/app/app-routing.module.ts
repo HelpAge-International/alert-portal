@@ -135,6 +135,7 @@ import {NetworkPlanSettingsComponent} from "./network/network-settings/network-p
 import {NetworkDocumentSettingsComponent} from "./network/network-settings/network-document-settings/network-document-settings.component";
 import {InviteAgenciesComponent} from "./network/network-agencies/invite-agencies/invite-agencies.component";
 import {NetworkAgencyValidationComponent} from "./commons/network-agency-validation/network-agency-validation.component";
+import {NetworkCreateEditMpaComponent} from "./network/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -395,6 +396,7 @@ const routes: Routes = [
   {path: 'network/network-settings/documents', component: NetworkDocumentSettingsComponent},
   {path: 'network/network-message', component: NetworkMessageComponent},
   {path: 'network/network-mpa', component: NetworkMpaComponent},
+  {path: 'network/network-mpa/network-create-edit-mpa', component: NetworkCreateEditMpaComponent},
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
 
 ];

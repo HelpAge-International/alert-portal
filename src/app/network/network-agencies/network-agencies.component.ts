@@ -33,6 +33,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
   private leadAgency: FirebaseObjectObservable<any>;
   private networkAgencies: NetworkAgencyModel[] = [];
   private removeAgencyObj: FirebaseObjectObservable<any>;
+  private showLoader:boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -45,6 +46,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -84,6 +86,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
               if (agencies) {
                 this.networkAgencies = agencies;
               }
+              this.showLoader = false;
             });
 
           //fetch lead agency id
@@ -121,6 +124,11 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
     let validationPath = "/networkAgencyValidation/" + agencyId;
     this.networkService.deleteNetworkField(path);
     this.networkService.deleteNetworkField(validationPath);
+  }
+
+  resendEmail(agencyId) {
+    console.log(agencyId);
+    this.networkService.resendEmail(this.networkId, agencyId);
   }
 
 }

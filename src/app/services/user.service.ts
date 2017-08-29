@@ -79,8 +79,8 @@ export class UserService {
       .map(item => {
         if (item.length > 0) {
           let userPublic = new ModelUserPublic(null, null, null, null);
-          userPublic.id = item.$key;
-          userPublic.mapFromObject(item);
+          userPublic.id = item[0].$key;
+          userPublic.mapFromObject(item[0]);
           return userPublic;
         } else {
           return null;
@@ -599,6 +599,13 @@ export class UserService {
     return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[type] + "/" + uid)
       .map(user => {
         return user.firstLogin ? user.firstLogin : false;
+      });
+  }
+
+  getUserName(uid): Observable<string> {
+    return this.getUser(uid)
+      .map(user => {
+        return user.firstName + " " + user.lastName;
       });
   }
 

@@ -63,9 +63,4 @@ export class NetworkChangePasswordComponent implements OnInit,OnDestroy {
 
     return !this.alertMessage;
   }
-
-  goBack() {
-    this.router.navigateByUrl('/dashboard');
-  }
-
 }

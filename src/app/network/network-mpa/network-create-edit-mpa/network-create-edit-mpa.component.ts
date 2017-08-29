@@ -1,19 +1,19 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
-import {AlertMessageModel} from "../../model/alert-message.model";
-import {AlertMessageType} from "../../utils/Enums";
-import {PageControlService} from "../../services/pagecontrol.service";
-import {NetworkService} from "../../services/network.service";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {AlertMessageType} from "../../../utils/Enums";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AgencyService} from "../../services/agency-service.service";
-import {UserService} from "../../services/user.service";
+import {AgencyService} from "../../../services/agency-service.service";
+import {UserService} from "../../../services/user.service";
 
 @Component({
-  selector: 'app-network-mpa',
-  templateUrl: './network-mpa.component.html',
-  styleUrls: ['./network-mpa.component.css']
+  selector: 'app-network-create-edit-mpa',
+  templateUrl: './network-create-edit-mpa.component.html',
+  styleUrls: ['./network-create-edit-mpa.component.css']
 })
-export class NetworkMpaComponent implements OnInit, OnDestroy {
+export class NetworkCreateEditMpaComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 

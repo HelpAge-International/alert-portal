@@ -3,6 +3,8 @@
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
 
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
 <!--Start Put page data-->
 <div class="Page-top__wrap padding-top-none">
   <div class="Full-page__wrap--inner">
@@ -123,7 +125,7 @@
       </div>
 
       <div class="Form-submit__wrapper col-sm-2">
-        <button class="btn btn-primary text-uppercase">save new network office</button>
+        <button class="btn btn-primary text-uppercase">{{isEditing ? 'update network office' : 'save new network office'}}</button>
         <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" (click)="back()">Cancel</a></div>
       </div>
     </form>

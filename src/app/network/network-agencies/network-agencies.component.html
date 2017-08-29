@@ -1,5 +1,8 @@
 <app-network-header></app-network-header>
 <app-network-menu></app-network-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
@@ -33,7 +36,7 @@
           <a href="#agencyAdminTooltipOne{{i}}" data-toggle="collapse" class="col-sm-4 margin-top-two"><img
             class="margin-right-one" src="assets/images/icons/contact.svg" alt="">View Agency admin contact info</a>
           <p class="col-sm-2 margin-top-two">{{agency.isApproved ? 'Active' : 'Invitation sent'}}
-            <a *ngIf="!agency.isApproved" href="#">&nbsp;Resend</a></p>
+            <a *ngIf="!agency.isApproved" href="javascript:void(0)" (click)="resendEmail(agency.id)">&nbsp;Resend</a></p>
           <div class="col-sm-1 margin-top-one">
             <button href="#leadAgencyRemove" data-toggle="modal" class="btn btn-danger"
                     (click)="removeAgency(agency.id)">Remove

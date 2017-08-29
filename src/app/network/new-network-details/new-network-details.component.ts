@@ -45,6 +45,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
   @Input() notFirstLogin: boolean = false;
   private loadedNetwork: ModelNetwork;
+  private showLoader:boolean;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -59,6 +60,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, prevUserType, networkIds, networkCountryIds) => {
       this.uid = user.uid;
       console.log("Network admin uid: " + this.uid);
+      this.showLoader = true;
 
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -87,9 +89,11 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
           network.addressLine3 ? this.networkAddressLine3 = network.addressLine3 : this.networkAddressLine3 = "";
           network.countryId ? this.networkCountry = network.countryId : this.networkCountry = -1;
           network.city ? this.networkCity = network.city : this.networkCity = "";
-          network.postCode ? this.networkPostCode = network.postCode : this.networkPostCode = "";
+          network.postcode ? this.networkPostCode = network.postcode : this.networkPostCode = "";
           network.telephone ? this.networkTelephone = network.telephone : this.networkTelephone = "";
           network.websiteAddress ? this.networkWebAddress = network.websiteAddress : this.networkWebAddress = "";
+
+          this.showLoader = false;
         });
 
 

@@ -23,6 +23,7 @@ export class ModelNetwork extends BaseModel{
   public countryCode: number;
   public clockSettings:{} = {};
   public responsePlanSettings:{} = {};
+  public id:string;
 
   validate(excludedFields: any): AlertMessageModel {
     throw new Error("Method not implemented.");

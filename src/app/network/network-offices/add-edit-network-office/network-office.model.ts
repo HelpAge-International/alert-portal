@@ -1,5 +1,6 @@
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {BaseModel} from "../../../model/base.model";
+import {Observable} from "rxjs/Observable";
 
 export class NetworkOfficeModel extends BaseModel {
 
@@ -8,7 +9,7 @@ export class NetworkOfficeModel extends BaseModel {
   public isActive:boolean;
   public adminId:string;
   public clockSettings:any;
-  public adminName: string;
+  public adminName: Observable<string>;
 
   validate(excludedFields = []): AlertMessageModel {
     if (!this.location && !this.isExcluded('location', excludedFields)) {

@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Observable} from "rxjs/Observable";
 import {NetworkOfficeModel} from "./add-edit-network-office/network-office.model";
 import {Constants} from "../../utils/Constants";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-network-offices',
@@ -30,10 +31,12 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   private uid: string;
   private networkId: string;
   private networkOffices: Observable<NetworkOfficeModel[]>;
+  private showLoader:boolean;
 
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
+              private userService: UserService,
               private networkService: NetworkService,
               private router: Router) {
   }
@@ -46,15 +49,31 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
       this.networkOffices = this.networkService.getSelectedIdObj(this.uid)
         .flatMap((idObj: {}) => {
           this.networkId = idObj["id"];
-          return this.networkService.getNetworkOffices(idObj["id"]);
+          this.showLoader = true;
+          return this.networkService.getNetworkOffices(idObj["id"])
+            .do((offices: NetworkOfficeModel[]) => {
+              offices.forEach(office => {
+                office.adminName = this.userService.getUserName(office.adminId);
+              });
+              this.showLoader = false;
+            });
         })
-
     });
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  toggleOfficeActive(office: NetworkOfficeModel) {
+    let data = {};
+    data["/networkCountry/" + this.networkId + "/" + office.id + "/isActive"] = !office.isActive;
+    this.networkService.updateNetworkField(data);
+  }
+
+  editOffice(id) {
+    this.router.navigate(["/network/network-offices/add-edit-network-office", {id: id}]);
   }
 
 }

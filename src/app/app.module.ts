@@ -214,6 +214,8 @@ import {NetworkDocumentSettingsComponent} from './network/network-settings/netwo
 import { NetworkSettingMenusComponent } from './network/network-settings/network-setting-menus/network-setting-menus.component';
 import { InviteAgenciesComponent } from './network/network-agencies/invite-agencies/invite-agencies.component';
 import { NetworkAgencyValidationComponent } from './commons/network-agency-validation/network-agency-validation.component';
+import {NetworkCountryService} from "./services/network-country.service";
+import { NetworkCreateEditMpaComponent } from './network/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -419,7 +421,8 @@ const firebaseAuthConfig = {
     NetworkDocumentSettingsComponent,
     NetworkSettingMenusComponent,
     InviteAgenciesComponent,
-    NetworkAgencyValidationComponent
+    NetworkAgencyValidationComponent,
+    NetworkCreateEditMpaComponent
   ],
   imports: [
     BrowserModule,
@@ -464,6 +467,7 @@ const firebaseAuthConfig = {
     ContactService,
     WindowRefService,
     NetworkService,
+    NetworkCountryService,
     ActionsService],
   bootstrap: [AppComponent]
 })

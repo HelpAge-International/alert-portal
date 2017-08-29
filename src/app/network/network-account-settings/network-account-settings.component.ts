@@ -40,7 +40,6 @@ export class NetworkAccountSettingsComponent implements OnInit, OnDestroy {
   constructor(private pageControl: PageControlService,
               private router: Router,
               private route: ActivatedRoute,
-              private location:Location,
               private userService: UserService) {
   }
 
@@ -89,9 +88,4 @@ export class NetworkAccountSettingsComponent implements OnInit, OnDestroy {
         });
     }
   }
-
-  goBack() {
-    this.location.back();
-  }
-
 }

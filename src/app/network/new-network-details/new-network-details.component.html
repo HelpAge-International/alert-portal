@@ -13,6 +13,8 @@
     {{errorMessage | translate}}
   </div>
 
+  <app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
   <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
 
@@ -116,7 +118,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.CONTINUE" | translate | uppercase}}</div>
+          <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE" | translate | uppercase}}</div>
         </div>
 
       </div>

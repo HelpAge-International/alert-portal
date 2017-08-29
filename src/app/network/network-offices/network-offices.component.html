@@ -1,6 +1,8 @@
 <app-network-header></app-network-header>
 <app-network-menu></app-network-menu>
 
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
@@ -16,13 +18,6 @@
       </div>
     </div>
 
-    <!--empty message-->
-    <ng-template #empty>
-      <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">You have not added any
-        network offices to your network</p></div>
-    </ng-template>
-
-
     <div *ngIf="networkOffices | async as offices; else empty">
       <div class="row Spaced-above font-weight-bold">
         <p class="col-sm-2">Country</p>
@@ -33,17 +28,27 @@
 
       <div *ngFor="let office of offices" class="row Spaced-above">
         <p class="col-sm-2">{{Countries[office.location] | translate}}</p>
-        <p class="col-sm-6">{{office.adminId}}</p>
+        <p class="col-sm-6">{{office?.adminName | async}}</p>
         <p class="col-sm-1">{{office.isActive ? 'Active' : 'Deactive'}}</p>
         <div class="col-sm-12 col-md-1 country-offices-btn">
-          <button class="btn btn-danger">Deactivate</button>
+          <button class="btn" [class.btn-danger]="office.isActive"
+                  [class.btn-success]="!office.isActive" (click)="toggleOfficeActive(office)">
+            {{office.isActive ? 'Deactivate' : 'Activate'}}
+          </button>
         </div>
         <span class="padding-one"></span>
         <div class="col-sm-12 col-md-1 country-offices-btn">
-          <button class="btn btn-primary">Edit</button>
+          <button class="btn btn-primary" (click)="editOffice(office.id)">Edit</button>
         </div>
       </div>
     </div>
 
+    <!--empty message-->
+    <ng-template #empty>
+      <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">You have not added any
+        network offices to your network</p></div>
+    </ng-template>
+
   </div>
 </div>
+

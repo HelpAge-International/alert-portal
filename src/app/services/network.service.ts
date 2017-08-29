@@ -7,6 +7,7 @@ import {NetworkAgencyModel} from "../network/network-agencies/network-agency.mod
 import * as moment from "moment";
 import * as firebase from "firebase/app";
 import {NetworkOfficeModel} from "../network/network-offices/add-edit-network-office/network-office.model";
+import {ModelNetwork} from "../model/network.model";
 
 @Injectable()
 export class NetworkService {
@@ -55,8 +56,14 @@ export class NetworkService {
       })
   }
 
-  getNetworkDetail(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId);
+  getNetworkDetail(networkId): Observable<ModelNetwork> {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId)
+      .map(network => {
+        let model = new ModelNetwork();
+        model.mapFromObject(network);
+        model.id = network.$key;
+        return model;
+      });
   }
 
   //TODO ADD FOR NETWORK COUNTRY
@@ -157,8 +164,8 @@ export class NetworkService {
   getNetworkOffices(networkId) {
     return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
       .map(officeObjs => {
-        let officeModels:NetworkOfficeModel[] = [];
-        officeObjs.forEach(obj =>{
+        let officeModels: NetworkOfficeModel[] = [];
+        officeObjs.forEach(obj => {
           let office = new NetworkOfficeModel();
           office.mapFromObject(obj);
           office.id = obj.$key;
@@ -166,6 +173,14 @@ export class NetworkService {
         });
         return officeModels;
       });
+  }
+
+  resendEmail(networkId, agencyId) {
+    let data = {};
+    data["isApproved"] = false;
+    this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(null).then(() => {
+      this.af.database.object(Constants.APP_STATUS+"/network/" + networkId + "/agencies/" + agencyId).set(data);
+    });
   }
 
   public generateKeyForNetworkCountry(): string {
