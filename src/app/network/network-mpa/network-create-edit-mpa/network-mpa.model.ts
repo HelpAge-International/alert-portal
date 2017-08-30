@@ -2,13 +2,14 @@ import {ActionLevel, ActionType} from "../../../utils/Enums";
 import {BaseModel} from "../../../model/base.model";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 
-export class NetworkMpaModel extends BaseModel {
+export class NetworkActionModel extends BaseModel {
 
+  public id:string;
   public task: string;
   public type: ActionType;
-  public level: ActionLevel;
+  public level: any;
   public createdAt: number;
-  public isActive: boolean;
+  // public isActive: boolean;
 
   validate(excludedFields: any): AlertMessageModel {
     if (!this.task && !this.isExcluded('task', excludedFields)) {

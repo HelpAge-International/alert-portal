@@ -1,12 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {AlertMessageType} from "../../utils/Enums";
+import {ActionLevel, AlertMessageType, GenericActionCategory} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../services/agency-service.service";
 import {UserService} from "../../services/user.service";
+import {Observable} from "rxjs/Observable";
+import {NetworkActionModel} from "./network-create-edit-mpa/network-mpa.model";
+import {Constants} from "../../utils/Constants";
 
 @Component({
   selector: 'app-network-mpa',
@@ -27,6 +30,10 @@ export class NetworkMpaComponent implements OnInit, OnDestroy {
 
   //logic
   private networkId: string;
+  private actions: Observable<NetworkActionModel[]>;
+  private showLoader: boolean;
+  private initFilterSelection = ActionLevel.ALL;
+  private actionIdToDelete: string;
 
 
   constructor(private pageControl: PageControlService,
@@ -38,7 +45,7 @@ export class NetworkMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
+    this.showLoader = true;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
 
       //get network id
@@ -46,13 +53,39 @@ export class NetworkMpaComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+          this.actions = this.getActions();
+          this.showLoader = false;
         })
     });
+  }
+
+  private getActions() {
+    return this.initFilterSelection == ActionLevel.ALL ? this.networkService.getNetworkActions(this.networkId) :
+      this.initFilterSelection == ActionLevel.MPA ? this.networkService.getNetworkMpa(this.networkId) :
+        this.networkService.getNetworkApa(this.networkId);
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  filterActions() {
+    this.actions = this.getActions();
+  }
+
+  editAction(actionId) {
+    console.log(actionId);
+    this.router.navigate(["/network/network-mpa/network-create-edit-mpa", {id: actionId}]);
+  }
+
+  getActionIdToDelete(actionId) {
+    console.log(actionId);
+    this.actionIdToDelete = actionId;
+  }
+
+  deleteMandatedAction() {
+    this.networkService.deleteNetworkAction(this.networkId, this.actionIdToDelete);
   }
 
 }

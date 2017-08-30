@@ -3,7 +3,7 @@
  */
 import {
   Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType,
-  AlertLevels
+  AlertLevels, GenericActionCategory
 } from "./Enums";
 
 export class Constants {
@@ -96,6 +96,20 @@ export class Constants {
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Security",
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes",
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.EmergencyResponseTeamManagement"];
+
+  static CATEGORY_SELECTION: GenericActionCategory[] = [
+    GenericActionCategory.All,
+    GenericActionCategory.OfficeAdministration,
+    GenericActionCategory.Finance,
+    GenericActionCategory.ITFieldCommunications,
+    GenericActionCategory.Logistics,
+    GenericActionCategory.CommunicationsMedia,
+    GenericActionCategory.HumanResources,
+    GenericActionCategory.DonorFundingReporting,
+    GenericActionCategory.Accountability,
+    GenericActionCategory.Security,
+    GenericActionCategory.Programmes,
+    GenericActionCategory.EmergencyResponseTeamManagement];
 
   static ACTION_LEVEL: string[] = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
   static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.INACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED"];

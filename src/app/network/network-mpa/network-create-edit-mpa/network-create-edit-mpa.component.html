@@ -1,9 +1,17 @@
 <app-network-header></app-network-header>
 <app-network-menu></app-network-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
 <div class="Page-top__wrap no-padding">
   <div class="Full-page__wrap--inner">
     <div class="row col-sm-12 Spaced-above">
-      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">Mandated preparedness actions</div> <!-- Back button-->
+      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">Mandated preparedness
+        actions
+      </div> <!-- Back button-->
     </div>
     <div class="row col-sm-12">
       <h1 class="col-sm-12">Create new mandated preparedness acton</h1><br>
@@ -11,7 +19,7 @@
 
     <div class="col-sm-12 Spaced-above">
       <h6 class="font-weight-bold">What needs to be done?</h6>
-      <div><textarea name="" id="" cols="100" rows="5"></textarea></div>
+      <div><textarea name="" id="" cols="100" rows="5" [(ngModel)]="networkActionModel.task"></textarea></div>
     </div>
     <br>
 
@@ -20,14 +28,14 @@
 
       <div class="bg-grey padding-one col-sm-3 Spaced-above">
         <div class="row">
-          <div class="col-sm-1"><input type="radio"></div>
+          <div class="col-sm-1"><input type="radio" value="1" [(ngModel)]="networkActionModel.level"></div>
           <div class="col-sm-10"><p>Minimum preparedness</p></div>
         </div>
       </div>
 
       <div class="bg-grey padding-one col-sm-3 Spaced-above">
         <div class="row">
-          <div class="col-sm-1"><input type="radio"></div>
+          <div class="col-sm-1"><input type="radio" value="2" [(ngModel)]="networkActionModel.level"></div>
           <div class="col-sm-10"><p>Advanced preparedness</p></div>
         </div>
       </div>
@@ -36,10 +44,14 @@
 
     <div class="row col-sm-12 Spaced-above">
       <div class="col-sm-2">
-        <button class="btn btn-primary text-uppercase">save new action</button>
+        <button class="btn btn-primary text-uppercase" (click)="saveNetworkMpa()">
+          {{isEditing ? 'update action' : 'save new action'}}
+        </button>
       </div>
-      <div class="col-sm-1 margin-top-one"><a href="#" class="col-sm-12">Cancel</a></div>
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="col-sm-12"
+                                              routerLink="/network/network-mpa">Cancel</a></div>
     </div>
 
   </div>
 </div>
+

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {NetworkUserAccountType} from "../utils/Enums";
+import {ActionLevel, NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network/network-agencies/network-agency.model";
@@ -8,6 +8,9 @@ import * as moment from "moment";
 import * as firebase from "firebase/app";
 import {NetworkOfficeModel} from "../network/network-offices/add-edit-network-office/network-office.model";
 import {ModelNetwork} from "../model/network.model";
+import {NetworkActionModel} from "../network/network-mpa/network-create-edit-mpa/network-mpa.model";
+import {GenericActionModel} from "../network/network-mpa/network-add-generic-action/generic-action.model";
+import {NetworkAdminAccount} from "../network/network-account-selection/Models/network-admin-account";
 
 @Injectable()
 export class NetworkService {
@@ -179,7 +182,7 @@ export class NetworkService {
     let data = {};
     data["isApproved"] = false;
     this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(null).then(() => {
-      this.af.database.object(Constants.APP_STATUS+"/network/" + networkId + "/agencies/" + agencyId).set(data);
+      this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(data);
     });
   }
 
@@ -191,5 +194,132 @@ export class NetworkService {
     return firebase.database().ref(Constants.APP_STATUS + "/userPublic/").push().key;
   }
 
+  public generateKeyNetworkMpa(networkId): string {
+    return firebase.database().ref(Constants.APP_STATUS + "/actionMandated/" + networkId).push().key;
+  }
+
+  getNetworkActions(networkId): Observable<NetworkActionModel[]> {
+    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId)
+      .map(mpaObjs => {
+        let actions = mpaObjs.map(obj => {
+          let model = new NetworkActionModel();
+          model.mapFromObject(obj);
+          model.id = obj.$key;
+          return model;
+        });
+        actions.sort((a, b) => b.createdAt - a.createdAt);
+        return actions;
+      });
+  }
+
+  getNetworkMpa(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId, {
+      query: {
+        orderByChild: "level",
+        equalTo: String(ActionLevel.MPA)
+      }
+    })
+      .map(mpaObjs => {
+        let actions = mpaObjs.map(obj => {
+          let model = new NetworkActionModel();
+          model.mapFromObject(obj);
+          model.id = obj.$key;
+          return model;
+        });
+        actions.sort((a, b) => b.createdAt - a.createdAt);
+        return actions;
+      });
+  }
+
+  getNetworkApa(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId, {
+      query: {
+        orderByChild: "level",
+        equalTo: String(ActionLevel.APA)
+      }
+    })
+      .map(mpaObjs => {
+        let actions = mpaObjs.map(obj => {
+          let model = new NetworkActionModel();
+          model.mapFromObject(obj);
+          model.id = obj.$key;
+          return model;
+        });
+        actions.sort((a, b) => b.createdAt - a.createdAt);
+        return actions;
+      });
+  }
+
+  getNetworkActionDetail(networkId, actionId): Observable<NetworkActionModel> {
+    return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId)
+      .map(obj => {
+        let model = new NetworkActionModel();
+        model.mapFromObject(obj);
+        model.id = obj.$key;
+        return model;
+      });
+  }
+
+  saveNetworkAction(networkId: string, action: NetworkActionModel) {
+    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId).push(action);
+  }
+
+  updateNetworkAction(networkId: string, actionId: string, action: NetworkActionModel) {
+    return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId).update(action);
+  }
+
+  deleteNetworkAction(networkId: string, actionId: string) {
+    return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId).remove();
+  }
+
+  getGenericActions(systemId): Observable<GenericActionModel[]> {
+    return this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + systemId)
+      .map(actions => {
+        return actions.map(action => {
+          let model = new GenericActionModel();
+          model.mapFromObject(action);
+          model.id = action.$key;
+          return model;
+        });
+      })
+  }
+
+  getGenericActionsByFilter(systemId: string, level: ActionLevel): Observable<GenericActionModel[]> {
+    return this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + systemId, {
+      query: {
+        orderByChild: "level",
+        equalTo: level
+      }
+    })
+      .map(actions => {
+        return actions.map(action => {
+          let model = new GenericActionModel();
+          model.mapFromObject(action);
+          model.id = action.$key;
+          return model;
+        });
+      })
+  }
+
+  getSystemIdForNetworkAdmin(uid): Observable<string> {
+    return this.af.database.object(Constants.APP_STATUS + "/networkAdmin/" + uid + "/systemAdmin")
+      .map(obj => {
+        return Object.keys(obj).shift();
+      })
+  }
+
+  addGenericActionsToNetwork(networkId: string, actionMap: Map<string, GenericActionModel>, actionSelectionMap: Map<string, boolean>) {
+    const idsToPush = Array.from(actionSelectionMap.keys()).filter(key => actionSelectionMap.get(key));
+    let update = {};
+    idsToPush.forEach(id => {
+      let key = this.generateKeyNetworkMpa(networkId);
+      let model = actionMap.get(id);
+      model.category = null;
+      model.id = null;
+      model.createdAt = moment.utc().valueOf();
+      update["/actionMandated/" + networkId + "/" + key] = model;
+    });
+    return this.updateNetworkField(update);
+  }
 
 }

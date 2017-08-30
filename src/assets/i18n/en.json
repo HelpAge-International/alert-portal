@@ -616,7 +616,7 @@
                 "CATEGORY": "Category",
                 "ACTION": "Action",
                 "CATEGORIES": {
-                    "All": "All",
+                    "All": "All categories",
                     "OfficeAdministration": "Office Administration",
                     "Finance": "Finance",
                     "ITFieldCommunications": "IT and Field Communications",

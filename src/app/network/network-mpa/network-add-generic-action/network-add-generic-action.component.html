@@ -1,0 +1,56 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap no-padding">
+  <div class="Full-page__wrap--inner">
+    <div class="row col-sm-12 Spaced-above">
+      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">Mandated preparedness
+        actions
+      </div> <!-- Back button-->
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" (click)="resetSelections()">Cancel</a></div>
+      <div class="col-sm-2">
+        <button class="btn btn-primary text-uppercase" (click)="addActions()">add new action(s)</button>
+      </div>
+    </div>
+    <div class="row col-sm-12">
+      <h1 class="col-sm-12">Add generic preparedness actions</h1><br>
+    </div>
+
+    <div class="row col-sm-9 Spaced-above">
+      <div class="padding-one col-sm-1"><p>Filter:</p></div>
+      <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedLevel" (change)="triggerFilter()">
+        <option class="" value="0">All Preparedness</option>
+        <option class="" value="1">Minimum Preparedness</option>
+        <option class="" value="2">Advanced Preparedness</option>
+      </select></div>
+      <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedCategory" (change)="triggerFilter()">
+        <option *ngFor="let category of CategorySelection" [value]="category">{{CategoryName[category] | translate}}</option>
+      </select></div>
+    </div>
+
+    <div *ngIf="genericActions | async as actions; else empty">
+      <div *ngFor="let action of actions" class="bg-grey Spaced text-center padding-one">
+        <div class="row col-sm-12">
+          <div class="col-sm-1 max-width-contact"><input #box type="checkbox" (change)="selectAction(action, box.checked)"></div>
+          <div class="col-sm-9"><p class="text-left">{{action.task}}</p></div>
+        </div>
+        <div class="row col-sm-12">
+          <div class="col-sm-1 max-width-contact"></div>
+          <div class="text-left col-sm-11 "><p>Category: <strong>{{CategoryName[action.category] | translate}}</strong></p></div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #empty>
+      <div class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">No generic actions is available!</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>
