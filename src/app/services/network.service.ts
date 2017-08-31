@@ -3,14 +3,14 @@ import {AngularFire} from "angularfire2";
 import {ActionLevel, NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
-import {NetworkAgencyModel} from "../network/network-agencies/network-agency.model";
+import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
 import * as moment from "moment";
 import * as firebase from "firebase/app";
-import {NetworkOfficeModel} from "../network/network-offices/add-edit-network-office/network-office.model";
+import {NetworkOfficeModel} from "../network-admin/network-offices/add-edit-network-office/network-office.model";
 import {ModelNetwork} from "../model/network.model";
-import {NetworkActionModel} from "../network/network-mpa/network-create-edit-mpa/network-mpa.model";
-import {GenericActionModel} from "../network/network-mpa/network-add-generic-action/generic-action.model";
-import {NetworkAdminAccount} from "../network/network-account-selection/Models/network-admin-account";
+import {NetworkActionModel} from "../network-admin/network-mpa/network-create-edit-mpa/network-mpa.model";
+import {GenericActionModel} from "../network-admin/network-mpa/network-add-generic-action/generic-action.model";
+import {NetworkAdminAccount} from "../network-admin/network-account-selection/Models/network-admin-account";
 
 @Injectable()
 export class NetworkService {
