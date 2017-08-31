@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {SkillType, UserType} from "../../../utils/Enums";
+import {NotificationSettingEvents, SkillType, UserType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
@@ -46,6 +46,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private officeTypeConstant = Constants.OFFICE_TYPE;
   private officeTypeSelection = Constants.OFFICE_TYPE_SELECTION;
   private notificationsSettingsSelection = Constants.NOTIFICATION_SETTINGS;
+  private UserType = UserType;
 
   private countryList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
@@ -534,6 +535,12 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         });
       });
     this.checkUserType();
+
+    //requested by client to lock red alert checked if user type is country director
+    if (userType == UserType.CountryDirector) {
+      this.notificationSettings[NotificationSettingEvents.RedAlertRequest] = true;
+      this.notificationsMap.set(NotificationSettingEvents.RedAlertRequest, true);
+    }
   }
 
   deleteStaff() {

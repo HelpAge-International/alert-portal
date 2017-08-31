@@ -147,7 +147,7 @@
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
-                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key] |
+                 [checked]="notificationSettings[notification?.$key]" [disabled]="userType==UserType.CountryDirector && notification.$key==1">{{NOTIFICATION_SETTINGS[notification.$key] |
           translate}}</label>
       </div>
 

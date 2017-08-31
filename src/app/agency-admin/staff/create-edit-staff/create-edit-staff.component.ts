@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {OfficeType, SkillType, UserType} from "../../../utils/Enums";
+import {NotificationSettingEvents, OfficeType, SkillType, UserType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {ModelUserPublic} from "../../../model/user-public.model";
@@ -14,7 +14,6 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ModelDepartment} from "../../../model/department.model";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -573,7 +572,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         staffData["/staff/globalUser/" + this.agencyId + "/" + uid] = null;
       } else if ((this.editInitialUserType == UserType.CountryDirector || this.editInitialUserType == UserType.Ert || this.editInitialUserType == UserType.ErtLeader || this.editInitialUserType == UserType.CountryUser) &&
         (this.userType == UserType.GlobalDirector || this.userType == UserType.RegionalDirector || this.userType == UserType.GlobalUser || this.userType == UserType.Donor)) {
-        staffData["/staff/"+ this.selectedOfficeId + "/" + uid] = null;
+        staffData["/staff/" + this.selectedOfficeId + "/" + uid] = null;
       }
 
     }
@@ -606,6 +605,12 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       });
     console.log(this.userType);
     this.checkUserType();
+
+    //requested by client to lock red alert checked if user type is country director
+    if (userType == this.UserType.CountryDirector) {
+      this.notificationSettings[NotificationSettingEvents.RedAlertRequest] = true;
+      this.notificationsMap.set(NotificationSettingEvents.RedAlertRequest, true);
+    }
   }
 
   private checkUserType() {
