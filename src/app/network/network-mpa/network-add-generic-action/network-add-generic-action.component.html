@@ -29,20 +29,26 @@
         <option class="" value="2">Advanced Preparedness</option>
       </select></div>
       <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedCategory" (change)="triggerFilter()">
-        <option *ngFor="let category of CategorySelection" [value]="category">{{CategoryName[category] | translate}}</option>
+        <option *ngFor="let category of CategorySelection" [value]="category">{{CategoryName[category] | translate}}
+        </option>
       </select></div>
     </div>
 
     <div *ngIf="genericActions | async as actions; else empty">
       <div *ngFor="let action of actions" class="bg-grey Spaced text-center padding-one">
         <div class="row col-sm-12">
-          <div class="col-sm-1 max-width-contact"><input #box type="checkbox" (change)="selectAction(action, box.checked)"></div>
+          <div class="col-sm-1 max-width-contact"><input #box type="checkbox"
+                                                         (change)="selectAction(action, box.checked)"></div>
           <div class="col-sm-9"><p class="text-left">{{action.task}}</p></div>
         </div>
         <div class="row col-sm-12">
           <div class="col-sm-1 max-width-contact"></div>
-          <div class="text-left col-sm-11 "><p>Category: <strong>{{CategoryName[action.category] | translate}}</strong></p></div>
+          <div class="text-left col-sm-11 "><p>Category: <strong>{{CategoryName[action.category] | translate}}</strong>
+          </p></div>
         </div>
+      </div>
+      <div [hidden]="actions.length>0" class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">No generic actions is available!</p>
       </div>
     </div>
 

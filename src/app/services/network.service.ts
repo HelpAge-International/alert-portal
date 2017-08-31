@@ -288,7 +288,7 @@ export class NetworkService {
     return this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + systemId, {
       query: {
         orderByChild: "level",
-        equalTo: level
+        equalTo: Number(level)
       }
     })
       .map(actions => {

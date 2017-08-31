@@ -27,6 +27,7 @@ export class NetworkPlanSettingsComponent implements OnInit, OnDestroy {
   //logic
   private networkId: string;
   private sections: [boolean];
+  private showLoader: boolean;
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -37,6 +38,7 @@ export class NetworkPlanSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];
@@ -46,6 +48,7 @@ export class NetworkPlanSettingsComponent implements OnInit, OnDestroy {
         .subscribe(planSettings => {
           console.log(planSettings);
           this.sections = planSettings;
+          this.showLoader = false;
         });
     });
   }

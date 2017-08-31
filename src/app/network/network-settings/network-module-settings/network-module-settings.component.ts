@@ -23,12 +23,14 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
   private Privacy = Privacy;
   private networkId: string;
 
-  //logic info
-  private modules: ModuleSettingsModel[];
-
   // Models
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
+
+  //logic info
+  private modules: ModuleSettingsModel[];
+  private showLoader:boolean;
+
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -39,6 +41,7 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user,) => {
+      this.showLoader = true;
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];
@@ -47,6 +50,7 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((modules: ModuleSettingsModel[]) => {
           this.modules = modules;
+          this.showLoader = false;
         });
     });
   }

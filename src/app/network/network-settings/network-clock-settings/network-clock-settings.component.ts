@@ -33,6 +33,7 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
   //logic
   private durationMap = new Map();
   private networkId: string;
+  private showLoader: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -48,6 +49,7 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];
@@ -56,6 +58,7 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
         .subscribe((clockSettings: ClockSettingsModel) => {
           console.log(clockSettings);
           this.clockSettings = clockSettings;
+          this.showLoader = false;
         });
     });
   }

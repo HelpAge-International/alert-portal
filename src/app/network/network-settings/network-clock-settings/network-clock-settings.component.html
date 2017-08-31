@@ -1,6 +1,8 @@
 <app-network-header></app-network-header>
 <app-network-menu></app-network-menu>
 
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
 

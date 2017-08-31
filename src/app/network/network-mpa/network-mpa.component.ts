@@ -59,15 +59,15 @@ export class NetworkMpaComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
   private getActions() {
     return this.initFilterSelection == ActionLevel.ALL ? this.networkService.getNetworkActions(this.networkId) :
       this.initFilterSelection == ActionLevel.MPA ? this.networkService.getNetworkMpa(this.networkId) :
         this.networkService.getNetworkApa(this.networkId);
-  }
-
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   filterActions() {

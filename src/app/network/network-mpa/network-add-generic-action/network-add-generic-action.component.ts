@@ -5,8 +5,6 @@ import {ActionLevel, AlertMessageType, GenericActionCategory} from "../../../uti
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AgencyService} from "../../../services/agency-service.service";
-import {UserService} from "../../../services/user.service";
 import {Observable} from "rxjs/Observable";
 import {GenericActionModel} from "./generic-action.model";
 import {Constants} from "../../../utils/Constants";
@@ -37,20 +35,19 @@ export class NetworkAddGenericActionComponent implements OnInit, OnDestroy {
   private actionMap = new Map<string, GenericActionModel>();
   private selectedLevel: ActionLevel = ActionLevel.ALL;
   private selectedCategory: GenericActionCategory = GenericActionCategory.All;
+  private showLoader:boolean;
 
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
-              private agencyService: AgencyService,
-              private userService: UserService,
               private router: Router) {
   }
 
   ngOnInit() {
 
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-
+      this.showLoader = true;
       this.uid = user.uid;
 
       //get generic actions
@@ -61,6 +58,7 @@ export class NetworkAddGenericActionComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+          this.showLoader = false;
         });
     });
   }
@@ -105,8 +103,37 @@ export class NetworkAddGenericActionComponent implements OnInit, OnDestroy {
   }
 
   triggerFilter() {
-    console.log(this.selectedLevel);
-    console.log(this.selectedCategory);
+    this.selectedLevel == ActionLevel.ALL ? this.fetchAllLevels() : this.fetchSpecificLevel(this.selectedLevel);
+  }
+
+  private fetchAllLevels() {
+    this.selectedCategory == GenericActionCategory.All ?
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
+        .flatMap(systemId => {
+          return this.networkService.getGenericActions(systemId)
+        }) :
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
+        .flatMap(systemId => {
+          return this.networkService.getGenericActions(systemId)
+        })
+        .map(actions => {
+          return actions.filter(action => action.category == this.selectedCategory);
+        });
+  }
+
+  private fetchSpecificLevel(level) {
+    this.selectedCategory == GenericActionCategory.All ?
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
+        .flatMap(systemId => {
+          return this.networkService.getGenericActionsByFilter(systemId, level);
+        }) :
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
+        .flatMap(systemId => {
+          return this.networkService.getGenericActionsByFilter(systemId, level);
+        })
+        .map(actions => {
+          return actions.filter(action => action.category == this.selectedCategory);
+        });
   }
 
 }
