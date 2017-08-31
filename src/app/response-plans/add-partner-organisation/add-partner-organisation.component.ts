@@ -16,7 +16,6 @@ import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import {AngularFire} from "angularfire2";
-import has = Reflect.has;
 
 declare var jQuery: any;
 
@@ -166,7 +165,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     let project = this.partnerOrganisation.projects[pin];
 
     if (project.sector[i]) {
-      project.sector.splice(i, 1);
+      this.isEdit ? project.sector[i]=!project.sector[i]: project.sector.splice(i, 1);
     } else {
       project.sector[i] = true;
     }

@@ -70,6 +70,7 @@ export class PartnerOrganisationProjectModel extends BaseModel {
   public endDate: number;
   public sector: any[];
   public operationAreas: OperationAreaModel[];
+  public otherName:string;
 
   constructor() {
     super();

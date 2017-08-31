@@ -31,7 +31,7 @@
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHAT" |
       translate}}</h6>
-      <tooltip 
+      <tooltip
       [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT1.LEVEL1'"
       ></tooltip>
       </div>
@@ -42,7 +42,7 @@
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
       translate}}</h6>
-       <tooltip 
+       <tooltip
       [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT2.LEVEL1'"
       ></tooltip>
       </div>
@@ -52,7 +52,7 @@
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
       translate}}</h6>
-       <tooltip 
+       <tooltip
       [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT3.LEVEL1'"
       ></tooltip>
       </div>
@@ -62,19 +62,19 @@
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" |
       translate}}</h6>
-       <tooltip 
+       <tooltip
       [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"
       ></tooltip>
       </div>
     <div class="row">
       <div class="col-sm-3 padding-left-none">
-        <select class="form-control" id="select1" (change)="setMonth($event)" [(ngModel)]="when['month']">
+        <select class="form-control" (change)="setMonth($event)" [(ngModel)]="when['month']">
           <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
           <option *ngFor="let m of MonthList" [value]="m">{{Month[m] | translate}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-2">
-        <select class="form-control" id="select1" (change)="setYear($event)" [(ngModel)]="when['year']">
+        <select class="form-control" (change)="setYear($event)" [(ngModel)]="when['year']">
           <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
           <option [value]="2017">2017</option>
           <option [value]="2018">2018</option>
