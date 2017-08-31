@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, AlertMessageType, DurationType} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -139,7 +139,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
         this.alertData.approval['countryDirector'] = [];
-        this.alertData.approval['countryDirector'][this.countryID] = (this.alertData.alertLevel == AlertLevels.Red ? 0 : 1);
+        this.alertData.approval['countryDirector'][this.countryID] = (this.alertData.alertLevel == AlertLevels.Red ? this.UserType == UserType.CountryDirector ? 1 : 0 : 1);
         this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
 
         var dataToSave = this.alertData;
