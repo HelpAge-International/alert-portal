@@ -9,25 +9,29 @@
 
     <div class="Header-title__wrap">
       <h1>Network Messages</h1>
-      <a routerLink="/agency-admin/agency-messages/create-edit-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</a>
+      <a routerLink="/network/network-message/network-create-edit-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE"
+        | translate | uppercase}}</a>
     </div>
 
-    <div class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>
+    <div>
+      <div class="Data--ribbon">
+        <div class="row col-lg-9 col-sm-10">
+          <div class="Info--ribbon--wrap">
+            <div class="col-sm-5">{{"GLOBAL.SENT_AT" | translate}}<b>11/22/33</b></div>
+          </div>
+          <div class="col-sm-12">
+            <h5>title</h5>
+            <p>content</p>
+          </div>
+        </div>
+        <div class="col-sm-2 col-lg-3 Right-aligned">
+          <div class="btn btn-danger">{{"GLOBAL.DELETE" | translate}}</div>
+        </div>
+      </div>
 
-    <div class="Data--ribbon">
-      <div class="row col-lg-9 col-sm-10">
-        <div class="Info--ribbon--wrap">
-          <div class="col-sm-5">{{"GLOBAL.SENT_AT" | translate}}<b>11/22/33</b></div>
-        </div>
-        <div class="col-sm-12">
-          <h5>title</h5>
-          <p>content</p>
-        </div>
-      </div>
-      <div class="col-sm-2 col-lg-3 Right-aligned">
-        <div class="btn btn-danger">{{"GLOBAL.DELETE" | translate}}</div>
-      </div>
+      <div class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>
     </div>
+
 
   </div>
 </div>
@@ -46,8 +50,10 @@
         <div class="text-center"><p>{{"DELETE_MESSAGE_DIALOG.CONTENT" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="deleteFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
       </div>
     </div>
   </div>

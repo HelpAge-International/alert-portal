@@ -198,6 +198,10 @@ export class NetworkService {
     return firebase.database().ref(Constants.APP_STATUS + "/actionMandated/" + networkId).push().key;
   }
 
+  public generateKeyMessage(): string {
+    return firebase.database().ref(Constants.APP_STATUS + "/message").push().key;
+  }
+
   getNetworkActions(networkId): Observable<NetworkActionModel[]> {
     return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId)
       .map(mpaObjs => {
@@ -320,6 +324,10 @@ export class NetworkService {
       update["/actionMandated/" + networkId + "/" + key] = model;
     });
     return this.updateNetworkField(update);
+  }
+
+  saveNetworkMessage(networkId:string, agencyId:string,  messageId:string, groupPaths:string[]) {
+
   }
 
 }

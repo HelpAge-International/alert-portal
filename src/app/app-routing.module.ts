@@ -137,6 +137,7 @@ import {InviteAgenciesComponent} from "./network-admin/network-agencies/invite-a
 import {NetworkAgencyValidationComponent} from "./commons/network-agency-validation/network-agency-validation.component";
 import {NetworkCreateEditMpaComponent} from "./network-admin/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component";
 import {NetworkAddGenericActionComponent} from "./network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component";
+import {NetworkCreateEditMessageComponent} from "./network-admin/network-message/network-create-edit-message/network-create-edit-message.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -396,6 +397,7 @@ const routes: Routes = [
   {path: 'network/network-settings/response-plans', component: NetworkPlanSettingsComponent},
   {path: 'network/network-settings/documents', component: NetworkDocumentSettingsComponent},
   {path: 'network/network-message', component: NetworkMessageComponent},
+  {path: 'network/network-message/network-create-edit-message', component: NetworkCreateEditMessageComponent},
   {path: 'network/network-mpa', component: NetworkMpaComponent},
   {path: 'network/network-mpa/network-create-edit-mpa', component: NetworkCreateEditMpaComponent},
   {path: 'network/network-mpa/network-add-generic-action', component: NetworkAddGenericActionComponent},
